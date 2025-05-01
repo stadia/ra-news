@@ -1,10 +1,10 @@
 # config/initializers/ruby_llm.rb or similar
 RubyLLM.configure do |config|
-  config.gemini_api_key = Rails.application.credentials['GEMINI_API_KEY']
+  config.gemini_api_key = Rails.application.credentials["GEMINI_API_KEY"]
 
   # --- Default Models ---
   # Used by RubyLLM.chat, RubyLLM.embed, RubyLLM.paint if no model is specified.
-  config.default_model = 'gemini-2.0-flash'
+  config.default_model = "gemini-2.0-flash"
 
   # --- Connection Settings ---
   config.request_timeout = 120  # Request timeout in seconds (default: 120)
