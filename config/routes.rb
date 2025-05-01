@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   resources :users
-  resources :articles
+  resources :articles, only: %i[index show]
   resource :session
   resources :passwords, param: :token
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

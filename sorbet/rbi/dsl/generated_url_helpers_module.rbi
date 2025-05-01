@@ -16,9 +16,6 @@ module GeneratedUrlHelpersModule
   def articles_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_article_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -26,9 +23,6 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_article_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_password_url(*args); end

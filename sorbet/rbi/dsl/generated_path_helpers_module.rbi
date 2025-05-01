@@ -16,9 +16,6 @@ module GeneratedPathHelpersModule
   def articles_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_article_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def edit_password_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -26,9 +23,6 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def edit_user_path(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
-  def new_article_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_password_path(*args); end

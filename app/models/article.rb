@@ -14,13 +14,3 @@ class Article < ApplicationRecord
     update(title:) if title.is_a?(String)
   end
 end
-
-class ArticleTool < RubyLLM::Tool
-  description "아이디로 가져온 Article을 JSON 형태로 출력합니다."
-
-  param :id, desc: "Article 아이디"
-
-  def execute(id:)
-    Article.find_by(id: id).to_json
-  end
-end
