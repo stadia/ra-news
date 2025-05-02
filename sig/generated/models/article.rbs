@@ -1,0 +1,5 @@
+# Generated from app/models/article.rb with RBS::Inline
+
+class Article < ApplicationRecord
+  def generate_title: () -> untyped
+end

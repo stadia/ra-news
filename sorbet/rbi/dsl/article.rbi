@@ -548,51 +548,6 @@ class Article
     sig { void }
     def created_at_will_change!; end
 
-    sig { returns(T.nilable(::String)) }
-    def detail_summary; end
-
-    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-    def detail_summary=(value); end
-
-    sig { returns(T::Boolean) }
-    def detail_summary?; end
-
-    sig { returns(T.nilable(::String)) }
-    def detail_summary_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def detail_summary_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def detail_summary_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def detail_summary_change; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def detail_summary_change_to_be_saved; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def detail_summary_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def detail_summary_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def detail_summary_previous_change; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def detail_summary_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def detail_summary_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def detail_summary_was; end
-
-    sig { void }
-    def detail_summary_will_change!; end
-
     sig { returns(::Integer) }
     def id; end
 
@@ -683,56 +638,8 @@ class Article
     sig { void }
     def id_will_change!; end
 
-    sig { returns(T.nilable(::String)) }
-    def key_summary; end
-
-    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
-    def key_summary=(value); end
-
-    sig { returns(T::Boolean) }
-    def key_summary?; end
-
-    sig { returns(T.nilable(::String)) }
-    def key_summary_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def key_summary_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def key_summary_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def key_summary_change; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def key_summary_change_to_be_saved; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def key_summary_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def key_summary_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def key_summary_previous_change; end
-
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
-    def key_summary_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::String)) }
-    def key_summary_previously_was; end
-
-    sig { returns(T.nilable(::String)) }
-    def key_summary_was; end
-
-    sig { void }
-    def key_summary_will_change!; end
-
     sig { void }
     def restore_created_at!; end
-
-    sig { void }
-    def restore_detail_summary!; end
 
     sig { void }
     def restore_id!; end
@@ -741,7 +648,10 @@ class Article
     def restore_id_value!; end
 
     sig { void }
-    def restore_key_summary!; end
+    def restore_summary_detail!; end
+
+    sig { void }
+    def restore_summary_key!; end
 
     sig { void }
     def restore_title!; end
@@ -764,12 +674,6 @@ class Article
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def saved_change_to_detail_summary; end
-
-    sig { returns(T::Boolean) }
-    def saved_change_to_detail_summary?; end
-
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
 
@@ -782,11 +686,17 @@ class Article
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
 
-    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
-    def saved_change_to_key_summary; end
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_summary_detail; end
 
     sig { returns(T::Boolean) }
-    def saved_change_to_key_summary?; end
+    def saved_change_to_summary_detail?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_summary_key; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_summary_key?; end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_title; end
@@ -817,6 +727,96 @@ class Article
 
     sig { returns(T::Boolean) }
     def saved_change_to_user_id?; end
+
+    sig { returns(T.untyped) }
+    def summary_detail; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_detail=(value); end
+
+    sig { returns(T::Boolean) }
+    def summary_detail?; end
+
+    sig { returns(T.untyped) }
+    def summary_detail_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_detail_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def summary_detail_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_detail_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_detail_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_detail_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_detail_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_detail_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_detail_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_detail_previously_was; end
+
+    sig { returns(T.untyped) }
+    def summary_detail_was; end
+
+    sig { void }
+    def summary_detail_will_change!; end
+
+    sig { returns(T.untyped) }
+    def summary_key; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_key=(value); end
+
+    sig { returns(T::Boolean) }
+    def summary_key?; end
+
+    sig { returns(T.untyped) }
+    def summary_key_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_key_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def summary_key_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_key_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_key_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_key_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_key_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_key_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_key_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_key_previously_was; end
+
+    sig { returns(T.untyped) }
+    def summary_key_was; end
+
+    sig { void }
+    def summary_key_will_change!; end
 
     sig { returns(T.nilable(::String)) }
     def title; end
@@ -1047,16 +1047,16 @@ class Article
     def will_save_change_to_created_at?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_detail_summary?; end
-
-    sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id_value?; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_key_summary?; end
+    def will_save_change_to_summary_detail?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_summary_key?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_title?; end

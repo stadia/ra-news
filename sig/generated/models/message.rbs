@@ -1,0 +1,4 @@
+# Generated from app/models/message.rb with RBS::Inline
+
+class Message < ApplicationRecord
+end
