@@ -7,7 +7,7 @@ class Article < ApplicationRecord
 
   after_create :generate_title
 
-  def generate_title
+  def generate_title #: void
     response = Faraday.get(url)
     if response.status == 301
       update(url: response.headers["location"])

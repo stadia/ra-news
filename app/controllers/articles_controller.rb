@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# rbs_inline: enabled
+
 class ArticlesController < ApplicationController
   before_action :set_article, only: %i[ show ]
 

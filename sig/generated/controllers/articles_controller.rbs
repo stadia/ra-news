@@ -1,0 +1,14 @@
+# Generated from app/controllers/articles_controller.rb with RBS::Inline
+
+class ArticlesController < ApplicationController
+  # GET /articles or /articles.json
+  def index: () -> untyped
+
+  # GET /articles/1 or /articles/1.json
+  def show: () -> untyped
+
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_article: () -> untyped
+end

@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# rbs_inline: enabled
+
 class PasswordsController < ApplicationController
   allow_unauthenticated_access
   before_action :set_user_by_token, only: %i[ edit update ]

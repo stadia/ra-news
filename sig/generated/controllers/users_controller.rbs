@@ -1,0 +1,32 @@
+# Generated from app/controllers/users_controller.rb with RBS::Inline
+
+class UsersController < ApplicationController
+  # GET /users or /users.json
+  def index: () -> untyped
+
+  # GET /users/1 or /users/1.json
+  def show: () -> untyped
+
+  # GET /users/new
+  def new: () -> untyped
+
+  # GET /users/1/edit
+  def edit: () -> untyped
+
+  # POST /users or /users.json
+  def create: () -> untyped
+
+  # PATCH/PUT /users/1 or /users/1.json
+  def update: () -> untyped
+
+  # DELETE /users/1 or /users/1.json
+  def destroy: () -> untyped
+
+  private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_user: () -> untyped
+
+  # Only allow a list of trusted parameters through.
+  def user_params: () -> untyped
+end
