@@ -1,4 +1,25 @@
 <div id="<%= dom_id article %>">
-    <%= article.id %>
-    <%= article.title %>
+    <%= link_to article.title || article.title_ko, article %><br/>
+    <%= article.url %><br/>
+    <% if article.summary_key.is_a?(Array) %>
+    <ul>
+        <% article.summary_key&.each do %>
+            <li><%= it %></li>
+        <% end %>
+    </ul>
+    <div>
+        <% if article.summary_detail['main_content'].is_a?(Array) %>
+            <%= article.summary_detail['main_content'].join("<br />").html_safe %>
+        <% else %>
+            <%= article.summary_detail['main_content'] %>
+        <% end%>
+    </div>
+    <div>
+        <% if article.summary_detail['conclusion'].is_a?(Array) %>
+            <%= article.summary_detail['conclusion'].join("<br />").html_safe %>
+        <% else %>
+            <%= article.summary_detail['conclusion'] %>
+        <% end%>
+    </div>
+    <% end %>
 </div>

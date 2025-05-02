@@ -6,9 +6,16 @@
 
 <div id="articles">
   <% @articles.each do |article| %>
-    <%= render article %>
-    <p>
-      <%= link_to "Show this article", article %>
-    </p>
+    <div id="<%= dom_id article %>">
+      <%= link_to article.title || article.title_ko, article %><br/>
+      <%= article.url %><br/>
+      <% if article.summary_key.is_a?(Array) %>
+      <ul>
+          <% article.summary_key&.each do %>
+              <li><%= it %></li>
+          <% end %>
+      </ul>
+      <% end %>
+    </div>
   <% end %>
 </div>
