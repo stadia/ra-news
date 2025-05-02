@@ -1,6 +1,11 @@
+# frozen_string_literal: true
+
+# rbs_inline: enabled
+
 class ArticleJob < ApplicationJob
   queue_as :default
 
+  #: (id int) -> void
   def perform(id)
     article = Article.find_by(id: id)
     return unless article.is_a?(Article)

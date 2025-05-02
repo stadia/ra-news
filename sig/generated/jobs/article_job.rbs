@@ -1,0 +1,6 @@
+# Generated from app/jobs/article_job.rb with RBS::Inline
+
+class ArticleJob < ApplicationJob
+  # : (id int) -> void
+  def perform: (id int) -> void
+end
