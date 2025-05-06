@@ -2,4 +2,6 @@
 
 class Article < ApplicationRecord
   def generate_title: () -> void
+
+  def main_content: () -> untyped
 end

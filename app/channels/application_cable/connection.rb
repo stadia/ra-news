@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# rbs_inline: enabled
+
 module ApplicationCable
   class Connection < ActionCable::Connection::Base
     identified_by :current_user

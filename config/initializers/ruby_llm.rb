@@ -1,6 +1,6 @@
 # config/initializers/ruby_llm.rb or similar
 RubyLLM.configure do |config|
-  config.gemini_api_key = Rails.application.credentials["GEMINI_API_KEY"]
+  config.gemini_api_key = ENV["GEMINI_API_KEY"]
 
   # --- Default Models ---
   # Used by RubyLLM.chat, RubyLLM.embed, RubyLLM.paint if no model is specified.

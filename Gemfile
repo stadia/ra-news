@@ -51,12 +51,14 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "tapioca", require: false
   gem "steep", require: false
+  gem "dotenv-rails"
 end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
   gem "sorbet"
+  gem "spoom"
 end
 
 group :test do
@@ -69,3 +71,5 @@ gem "sorbet-runtime"
 gem "ruby_llm", "~> 1.2"
 gem "pagy", "~> 9.3" # omit patch digit
 gem "kramdown"
+
+gem "honeybadger", "~> 5.28"

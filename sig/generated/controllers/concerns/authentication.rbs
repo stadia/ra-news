@@ -1,0 +1,25 @@
+# Generated from app/controllers/concerns/authentication.rb with RBS::Inline
+
+module Authentication
+  extend ActiveSupport::Concern
+
+  def allow_unauthenticated_access: (**untyped options) -> untyped
+
+  private
+
+  def authenticated?: () -> untyped
+
+  def require_authentication: () -> untyped
+
+  def resume_session: () -> untyped
+
+  def find_session_by_cookie: () -> untyped
+
+  def request_authentication: () -> untyped
+
+  def after_authentication_url: () -> untyped
+
+  def start_new_session_for: (untyped user) -> untyped
+
+  def terminate_session: () -> untyped
+end
