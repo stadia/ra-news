@@ -30,11 +30,15 @@
         <div class="py-6">
             <h2 class="text-xl font-semibold mb-4">본문</h2>
             <div class="prose max-w-none text-gray-700">
-                <%= Kramdown::Document.new(@article.summary_detail["main_content"]).to_html.html_safe %>
+                <% if @article.summary_detail&.dig("main_content").is_a?(String) %>
+                    <%= Kramdown::Document.new(@article.summary_detail.dig("main_content")).to_html.html_safe %>
+                <% end %>
             </div>
             <h3 class="text-lg font-semibold mt-6 mb-4">결론</h3>
             <div class="prose max-w-none text-gray-700">
-                <%= @article.summary_detail['conclusion'] %>
+                <% if @article.summary_detail&.dig("conclusion").is_a?(String) %>
+                    <%= @article.summary_detail['conclusion'] %>
+                <% end %>
         </div>
     </div>
   </div>
