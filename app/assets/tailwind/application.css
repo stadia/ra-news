@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
 @theme {
     --color-primary-50:  #f0fdf4;
     --color-primary-100: #dcfce7;

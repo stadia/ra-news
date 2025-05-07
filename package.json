@@ -1,0 +1,6 @@
+{
+  "name": "al-news",
+  "devDependencies": {
+    "flowbite": "^3.1.2"
+  }
+}
