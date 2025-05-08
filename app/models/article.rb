@@ -7,6 +7,12 @@ class Article < ApplicationRecord
 
   after_create :generate_title
 
+  after_commit do
+    next unless saved_change_to_url?
+
+    ArticleJob.perform_later(id)
+  end
+
   def generate_title #: void
     response = Faraday.get(url)
     if response.status == 301
@@ -16,11 +22,5 @@ class Article < ApplicationRecord
     doc = Nokogiri::HTML(response.body)
     title = doc.at("title").text
     update(title:) if title.is_a?(String)
-  end
-
-  def main_content
-    Kramdown::Document.new(summary_detail["main_content"]).to_html if summary_detail["main_content"].is_a?(String)
-
-    summary_detail["main_content"].map { Kramdown::Document.new(it).to_html }.join("").html_safe
   end
 end
