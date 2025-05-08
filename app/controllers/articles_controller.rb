@@ -3,6 +3,8 @@
 # rbs_inline: enabled
 
 class ArticlesController < ApplicationController
+  allow_unauthenticated_access
+
   before_action :set_article, only: %i[ show ]
 
   # GET /articles or /articles.json
