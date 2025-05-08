@@ -28,7 +28,7 @@ ENV RAILS_ENV="production" \
 # Throw-away build stage to reduce size of final image
 FROM base AS build
 
-# Install packages needed to build gems
+# Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config node-gyp python-is-python3 && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
@@ -62,6 +62,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
+RUN rm -rf node_modules
 
 
 # Final stage for app image
