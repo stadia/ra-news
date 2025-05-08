@@ -2,7 +2,7 @@ name: Releasee
 
 on:
   push:
-    branches: [ main ]
+    branches: [ v*.*.* ]
 
 env:
   REGISTRY: ghcr.io
