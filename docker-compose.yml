@@ -10,6 +10,7 @@ services:
       - RAILS_LOG_LEVEL=debug
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - DATABASE_URL=${DATABASE_URL}
+      - RAILS_ENV=production
     labels:
       - al-news.enable=true
     networks:
