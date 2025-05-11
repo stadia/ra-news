@@ -81,16 +81,16 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    url: <%= ENV["DATABASE_URL"] %>
+    url: <%= "#{ENV["DATABASE_URL"]}/al_news_production" %>
   cache:
     <<: *primary_production
-    database: al_news_production_cache
+    url: <%= "#{ENV["DATABASE_URL"]}/al_news_production_cache" %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: al_news_production_queue
+    url: <%= "#{ENV["DATABASE_URL"]}/al_news_production_queue" %>
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: al_news_production_cable
+    url: <%= "#{ENV["DATABASE_URL"]}/al_news_production_cable" %>
     migrations_paths: db/cable_migrate
