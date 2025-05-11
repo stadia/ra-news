@@ -32,12 +32,12 @@ jobs:
           id: meta
           uses: docker/metadata-action@v5
           with:
-            images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+            images: ghcr.io/stadia/al-news
         - name: Build and push Docker image
           id: push
           uses: docker/build-push-action@v6
           with:
             context: .
             push: true
-            tags: ${{ steps.meta.outputs.tags }}
+            tags: ghcr.io/stadia/al-news:latest
             labels: ${{ steps.meta.outputs.labels }}
