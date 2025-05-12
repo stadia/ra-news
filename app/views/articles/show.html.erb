@@ -21,24 +21,28 @@
         <div class="border-t border-b border-gray-100 py-6">
             <h2 class="text-xl font-semibold mb-4">3줄 요약</h2>
             <% if @article.summary_key.is_a?(Array) %>
-                <ul>
+                <ul class="list-disc pl-5 space-y-2 my-4">
                     <% @article.summary_key&.each do %>
-                        <li><%= it %></li>
+                        <li class="text-gray-700"><%= it %></li>
                     <% end %>
                 </ul>
             <% end %>
         </div>
 
-        <div class="py-6">
-            <div class="prose max-w-none text-gray-700">
-                <% if @article.summary_detail %>
-                    <p>
+        <div class="py-8 mx-auto">
+            <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                <% if @article.summary_detail.is_a?(Hash) %>
+                    <p class="mb-6">
                         <%= @article.summary_detail["introduction"] %>
                     </p>
-                    <p>
+
+                    <p class="mb-6">
                         <%= @article.summary_detail["body"] %>
                     </p>
-                    <p>
+
+                    <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">결론</h2>
+
+                    <p class="mb-6">
                         <%= @article.summary_detail["conclusion"] %>
                     </p>
                 <% end %>
