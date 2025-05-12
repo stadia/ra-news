@@ -9,7 +9,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    @articles = Article.all.order(id: :desc)
+    @articles = Article.all.order(published_at: :desc, id: :desc)
   end
 
   # GET /articles/1 or /articles/1.json

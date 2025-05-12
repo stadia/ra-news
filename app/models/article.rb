@@ -21,6 +21,10 @@ class Article < ApplicationRecord
     ArticleJob.perform_later(id)
   end
 
+  before_save do
+    published_at = Time.zone.now if published_at.blank?
+  end
+
   def generate_title #: void
     response = Faraday.get(url)
     if response.status == 301
