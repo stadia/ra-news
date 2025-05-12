@@ -12,7 +12,15 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - RAILS_ENV=production
     labels:
-      - al-news.enable=true
+      - "traefik.enable=true"
+      - "traefik.http.services.news.loadbalancer.server.port=3000"
+      - "traefik.http.middlewares.news-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.news-http.entrypoints=web"
+      - "traefik.http.routers.news-http.middlewares=news-https"
+      - "traefik.http.routers.news-http.rule=Host(`news.stadiasphere.xyz`)"
+      - "traefik.http.routers.news.entrypoints=websecure"
+      - "traefik.http.routers.news.rule=Host(`news.stadiasphere.xyz`)"
+      - "traefik.http.routers.news.tls.certresolver=letsencrypt"
     networks:
       - homeNetwork
     restart: unless-stopped
