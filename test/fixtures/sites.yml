@@ -6,8 +6,8 @@
 #
 one:
   name: <%= Faker::Company.name %>
-  url: <%= Faker::Internet.url %>
+  base_uri: <%= "https://#{Faker::Internet.domain_name}" %>
 
 two:
   name: <%= Faker::Company.name %>
-  url: <%= Faker::Internet.url %>
+  base_uri: <%= "https://#{Faker::Internet.domain_name}" %>
