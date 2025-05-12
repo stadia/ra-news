@@ -1,0 +1,5 @@
+# Generated from app/jobs/rails_at_scale_job.rb with RBS::Inline
+
+class RailsAtScaleJob < ApplicationJob
+  def perform: () -> boolean
+end
