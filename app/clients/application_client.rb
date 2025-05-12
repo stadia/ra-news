@@ -94,25 +94,45 @@ class ApplicationClient
 
     Rails.logger.debug("#{klass.name.split("::").last.upcase}: #{uri}")
 
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true if uri.instance_of? URI::HTTPS
-
     all_headers = default_headers.merge(headers)
     all_headers.delete("Content-Type") if klass == Net::HTTP::Get
 
-    request = klass.new(uri.request_uri, all_headers)
-
-    if body.present?
-      request.body = build_body(body)
-    elsif form_data.present?
-      request.set_form(form_data, "multipart/form-data")
+    conn = if form_data.present?
+      Faraday.new(url: "#{uri.scheme}://#{uri.host}", headers: all_headers) do |conn|
+        conn.request :url_encoded
+      end
+    else
+      Faraday.new(url: "#{uri.scheme}://#{uri.host}", headers: all_headers)
     end
 
-    handle_response Response.new(http.request(request))
+    response = case klass
+    when Net::HTTP::Get.class
+      conn.get(uri.request_uri) do |req|
+        req.params = uri.query if query_params.present?
+      end
+    when Net::HTTP::Post.class
+      conn.post(uri.request_uri, build_body(body) || form_data) do |req|
+        req.params = uri.query if query_params.present?
+      end
+    when Net::HTTP::Patch.class
+      conn.patch(uri.request_uri, build_body(body) || form_data) do |req|
+        req.params = uri.query if query_params.present?
+      end
+    when Net::HTTP::Put.class
+      conn.put(uri.request_uri, build_body(body)) do |req|
+        req.params = uri.query if query_params.present?
+      end
+    when Net::HTTP::Delete.class
+      conn.delete(uri.request_uri) do |req|
+        req.params = uri.query if query_params.present?
+      end
+    end
+
+    response
   end
 
   def handle_response(response)
-    case response.code
+    case response.status
     when "200", "201", "202", "203", "204"
       response
     when "401"
@@ -126,7 +146,7 @@ class ApplicationClient
     when "500"
       raise InternalError, response.body
     else
-      raise Error, "#{response.code} - #{response.body}"
+      raise Error, "#{response.status} - #{response.body}"
     end
   end
 
@@ -136,36 +156,6 @@ class ApplicationClient
       body
     else
       body.to_json
-    end
-  end
-
-  class Response
-    JSON_OBJECT_CLASS = OpenStruct
-    PARSER = {
-      "application/json" => ->(response) { JSON.parse(response.body, object_class: JSON_OBJECT_CLASS) },
-      "application/xml" => ->(response) { Nokogiri::XML(response.body) }
-    }
-    FALLBACK_PARSER = ->(response) { response.body }
-
-    attr_reader :original_response
-
-    delegate :code, :body, to: :original_response
-    delegate_missing_to :parsed_body
-
-    def initialize(original_response)
-      @original_response = original_response
-    end
-
-    def headers
-      @headers ||= original_response.each_header.to_h.transform_keys { |k| k.underscore.to_sym }
-    end
-
-    def content_type
-      headers[:content_type].split(";").first
-    end
-
-    def parsed_body
-      @parsed_body ||= PARSER.fetch(content_type, FALLBACK_PARSER).call(self)
     end
   end
 end
