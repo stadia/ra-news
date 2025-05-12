@@ -1,4 +1,0 @@
-production:
-  rails_at_scale_job:
-    class: RailsAtScaleJob
-    schedule: "0 7 * * *"
