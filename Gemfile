@@ -79,3 +79,5 @@ gem "google-protobuf", require: false
 gem "ostruct"
 gem "mission_control-jobs"
 gem "rss"
+gem "gmail"
+gem "net-imap", "~> 0.4.9" # 또는 다른 안정적인 버전으로 시도
