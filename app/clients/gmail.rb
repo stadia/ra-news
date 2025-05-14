@@ -35,7 +35,7 @@ class Gmail
     emails
   end
 
-  IGNORE_HOSTS = %w[www.meetup.com maily.so github.com bsky.app threadreaderapp.com x.com www.linkedin.com meet.google.com www.twitch.tv inf.run lu.ma]
+  IGNORE_HOSTS = %w[www.meetup.com maily.so github.com bsky.app threadreaderapp.com x.com www.linkedin.com meet.google.com www.twitch.tv inf.run lu.ma newsletter.shortruby.com]
 
   def fetch_email_links(options = {})
     links = []
@@ -73,11 +73,13 @@ class Gmail
               url = URI.parse(query_params["url"])
               next if IGNORE_HOSTS.include?(url.host) || url.path.size < 2
 
-              url
+              url.to_s
             end
           end
         else
-                   uri
+                   next if IGNORE_HOSTS.include?(uri.host) || uri.path.size < 2
+
+                   uri.to_s
         end
       }
     end

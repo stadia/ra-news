@@ -12,5 +12,10 @@ class GmailJob < ApplicationJob
     end
 
     links = Gmail.new.fetch_email_links(from: email)
+    return if links.empty?
+
+    links.each do |link|
+      Article.create(url: link) unless Article.exists?(url: link)
+    end
   end
 end
