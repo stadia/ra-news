@@ -32,7 +32,7 @@ class Article < ApplicationRecord
 
     response = Faraday.get(url)
     logger.debug response.status
-    self.url = response.headers["location"] if response.status == 301 || response.status == 302
+    self.url = response.headers["location"] if response.status >= 300 && response.status < 400
     parsed_url = URI.parse(url)
     self.host = parsed_url.host
     self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host.match?(/#{pattern}/i) }
@@ -40,7 +40,9 @@ class Article < ApplicationRecord
 
   def generate_title #: void
     response = Faraday.get(url)
+
     doc = Nokogiri::HTML(response.body)
+    logger.debug doc
     title = doc.at("title")&.text
     update(title:) if title.is_a?(String)
   end
