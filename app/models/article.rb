@@ -28,6 +28,7 @@ class Article < ApplicationRecord
   end
 
   IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev] #: Array[String]
+  DATE_PATTERN = %r{(\d{4})[/-](\d{2})[/-](\d{2})}
 
   before_create do
     next unless url.is_a?(String)
@@ -37,6 +38,7 @@ class Article < ApplicationRecord
     self.url = response.headers["location"] if response.status >= 300 && response.status < 400
     parsed_url = URI.parse(url)
     self.host = parsed_url.host
+    self.published_at = url_to_published_at
     self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host.match?(/#{pattern}/i) }
   end
 
@@ -65,5 +67,12 @@ class Article < ApplicationRecord
     return unless tsr
 
     tsr.map { |it| it.dig("transcriptSegmentRenderer", "startTimeText", "simpleText").to_s + " - " + it.dig("transcriptSegmentRenderer", "snippet", "runs").map { |it| it.dig("text") }.join(" ") }.join("\n")
+  end
+
+  def url_to_published_at #: DateTime?
+    match_data = URI.parse(url).path.match(DATE_PATTERN)
+    return unless match_data
+
+    Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")
   end
 end
