@@ -5,7 +5,9 @@
 class Article < ApplicationRecord
   belongs_to :user, optional: true
 
-  validates :url, presence: true, uniqueness: true
+  belongs_to :site, optional: true
+
+  validates :url, :origin_url, presence: true, uniqueness: true
 
   after_create :generate_title
 

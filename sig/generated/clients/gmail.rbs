@@ -5,7 +5,8 @@ class Gmail
 
   def fetch_emails: (?untyped options) -> untyped
 
-  IGNORE_HOSTS: ::Array[untyped]
-
   def fetch_email_links: (?untyped options) -> untyped
+
+  # : (uri URI::HTTPS) -> string?
+  def check_link: (untyped uri) -> untyped
 end

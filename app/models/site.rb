@@ -3,6 +3,8 @@
 # rbs_inline: enabled
 
 class Site < ApplicationRecord
+  has_many :articles, dependent: :nullify
+
   validates :name, :client, presence: true
 
   def execute_client #: Object?

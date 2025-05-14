@@ -6,6 +6,7 @@
 
 
 class Site
+  include GeneratedAssociationMethods
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
@@ -327,6 +328,22 @@ class Site
     def third_to_last!; end
   end
 
+  module GeneratedAssociationMethods
+    sig { returns(T::Array[T.untyped]) }
+    def article_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def article_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Site` class because it declared `has_many :articles`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Article::PrivateCollectionProxy) }
+    def articles; end
+
+    sig { params(value: T::Enumerable[::Article]).void }
+    def articles=(value); end
+  end
+
   module GeneratedAssociationRelationMethods
     sig { returns(PrivateAssociationRelation) }
     def all; end
@@ -473,10 +490,10 @@ class Site
   end
 
   module GeneratedAttributeMethods
-    sig { returns(::String) }
+    sig { returns(T.nilable(::String)) }
     def base_uri; end
 
-    sig { params(value: ::String).returns(::String) }
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
     def base_uri=(value); end
 
     sig { returns(T::Boolean) }
@@ -491,22 +508,22 @@ class Site
     sig { returns(T::Boolean) }
     def base_uri_came_from_user?; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def base_uri_change; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def base_uri_change_to_be_saved; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def base_uri_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def base_uri_in_database; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def base_uri_previous_change; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
     def base_uri_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -607,6 +624,51 @@ class Site
 
     sig { void }
     def created_at_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def email; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def email=(value); end
+
+    sig { returns(T::Boolean) }
+    def email?; end
+
+    sig { returns(T.nilable(::String)) }
+    def email_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def email_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def email_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def email_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def email_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def email_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def email_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def email_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def email_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def email_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def email_was; end
+
+    sig { void }
+    def email_will_change!; end
 
     sig { returns(::Integer) }
     def id; end
@@ -808,6 +870,9 @@ class Site
     def restore_created_at!; end
 
     sig { void }
+    def restore_email!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
@@ -822,7 +887,7 @@ class Site
     sig { void }
     def restore_updated_at!; end
 
-    sig { returns(T.nilable([::String, ::String])) }
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_base_uri; end
 
     sig { returns(T::Boolean) }
@@ -839,6 +904,12 @@ class Site
 
     sig { returns(T::Boolean) }
     def saved_change_to_created_at?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_email; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_email?; end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
@@ -923,6 +994,9 @@ class Site
 
     sig { returns(T::Boolean) }
     def will_save_change_to_created_at?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_email?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id?; end

@@ -1,6 +1,8 @@
 # Generated from app/models/article.rb with RBS::Inline
 
 class Article < ApplicationRecord
+  IGNORE_HOSTS: Array[String]
+
   def generate_title: () -> void
 
   def is_youtube?: () -> bool
