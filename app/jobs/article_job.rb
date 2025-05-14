@@ -36,6 +36,7 @@ class ArticleJob < ApplicationJob
       chat.ask("제공한 유튜브의 링크와 자막을 #{prompt} #{article.url} #{transcript}")
     else
       # YouTube URL이 아닌 경우
+      logger.debug "제공한 링크의 본문을 #{prompt} #{article.url}"
       chat.ask("제공한 링크의 본문을 #{prompt} #{article.url}")
     end
     logger.debug response.content

@@ -3,9 +3,11 @@
 # rbs_inline: enabled
 
 class RailsAtScaleJob < ApplicationJob
-  def perform #: boolean
+  def perform #: void
     site = Site.find_by(client: "RailsAtScale")
-    feed = site.client.feed
+    feed = site.execute_client&.feed
+    return if feed.nil?
+
     last_checked_at = Time.zone.now
     user = User.first
     site.last_checked_at

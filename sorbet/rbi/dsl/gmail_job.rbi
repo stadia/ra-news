@@ -7,10 +7,15 @@
 
 class GmailJob
   class << self
-    sig { params(block: T.nilable(T.proc.params(job: GmailJob).void)).returns(T.any(GmailJob, FalseClass)) }
-    def perform_later(&block); end
+    sig do
+      params(
+        email: T.untyped,
+        block: T.nilable(T.proc.params(job: GmailJob).void)
+      ).returns(T.any(GmailJob, FalseClass))
+    end
+    def perform_later(email = T.unsafe(nil), &block); end
 
-    sig { returns(T.untyped) }
-    def perform_now; end
+    sig { params(email: T.untyped).returns(T.untyped) }
+    def perform_now(email = T.unsafe(nil)); end
   end
 end

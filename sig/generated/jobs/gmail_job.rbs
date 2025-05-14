@@ -1,5 +1,6 @@
 # Generated from app/jobs/gmail_job.rb with RBS::Inline
 
 class GmailJob < ApplicationJob
-  def perform: () -> untyped
+  # : (email String) -> void
+  def perform: (email String) -> void
 end

@@ -10,7 +10,7 @@ class Article < ApplicationRecord
   after_create :generate_title
 
   after_create do
-    return unless url.is_a?(String)
+    next unless url.is_a?(String)
 
     ArticleJob.perform_later(id)
   end
@@ -25,14 +25,18 @@ class Article < ApplicationRecord
     published_at = Time.zone.now if published_at.blank?
   end
 
+  before_create do
+    next unless url.is_a?(String)
+
+    response = Faraday.get(url)
+    logger.debug response.status
+    self.url = response.headers["location"] if response.status == 301 || response.status == 302
+  end
+
   def generate_title #: void
     response = Faraday.get(url)
-    if response.status == 301
-      update(url: response.headers["location"])
-      response = Faraday.get(url)
-    end
     doc = Nokogiri::HTML(response.body)
-    title = doc.at("title").text
+    title = doc.at("title")&.text
     update(title:) if title.is_a?(String)
   end
 

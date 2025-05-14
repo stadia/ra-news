@@ -1,0 +1,5 @@
+# Generated from app/models/site.rb with RBS::Inline
+
+class Site < ApplicationRecord
+  def execute_client: () -> Object?
+end

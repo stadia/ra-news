@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_14_013806) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_14_014717) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,7 +40,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_013806) do
 
   create_table "sites", force: :cascade do |t|
     t.string "name", null: false
-    t.string "base_uri", null: false
+    t.string "base_uri"
     t.string "client", null: false
     t.datetime "last_checked_at"
     t.datetime "created_at", null: false
@@ -53,6 +53,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_14_013806) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
