@@ -32,7 +32,7 @@
         </div>
         <div class="mt-auto pt-4 flex justify-between text-sm text-gray-500 border-t border-gray-100">
             <span>작성자: <%= article.user&.id %></span>
-            <span><%= article.published_at&.strftime("%Y-%m-%d %H:%M") %></span>
+            <span><%= article.published_at&.strftime("%Y-%m-%d") %></span>
         </div>
       </div>
     </div>

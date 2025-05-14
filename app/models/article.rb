@@ -28,27 +28,21 @@ class Article < ApplicationRecord
   end
 
   IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev] #: Array[String]
-  DATE_PATTERN = %r{(\d{4})[/-](\d{2})[/-](\d{2})}
 
-  before_create do
-    next unless url.is_a?(String)
+  def generate_metadata #: void
+    return unless url.is_a?(String)
 
     response = Faraday.get(url)
-    logger.debug response.status
     self.url = response.headers["location"] if response.status >= 300 && response.status < 400
+
     parsed_url = URI.parse(url)
     self.host = parsed_url.host
-    self.published_at = url_to_published_at
     self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host.match?(/#{pattern}/i) }
-  end
-
-  def generate_title #: void
-    response = Faraday.get(url)
+    self.published_at = url_to_published_at || parse_to_published_at(response.body) || Time.zone.now
 
     doc = Nokogiri::HTML(response.body)
-    logger.debug doc
-    title = doc.at("title")&.text
-    update(title:) if title.is_a?(String)
+    temp_title = doc.at("title")&.text
+    self.title = temp_title if temp_title.is_a?(String)
   end
 
   def is_youtube? #: bool
@@ -70,9 +64,21 @@ class Article < ApplicationRecord
   end
 
   def url_to_published_at #: DateTime?
-    match_data = URI.parse(url).path.match(DATE_PATTERN)
+    match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{2})[/-](\d{2})})
     return unless match_data
 
     Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")
+  end
+
+  private
+
+  def parse_to_published_at(body) #: DateTime?
+    match_data = body.strip.match(/([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})/)
+    return unless match_data
+
+    Time.zone.parse("#{match_data[3]}-#{match_data[1]}-#{match_data[2]}")
+  rescue StandardError => e
+    puts "Error parsing published_at: #{e.message}"
+    nil
   end
 end
