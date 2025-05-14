@@ -12,18 +12,20 @@ class Article < ApplicationRecord
   after_create do
     next unless url.is_a?(String)
 
-    ArticleJob.perform_later(id)
+    ArticleJob.perform_later(id) if deleted_at.nil?
   end
 
   after_commit do
     next unless saved_change_to_url?
 
-    ArticleJob.perform_later(id)
+    ArticleJob.perform_later(id) if deleted_at.nil?
   end
 
   before_save do
     published_at = Time.zone.now if published_at.blank?
   end
+
+  IGNORE_HOSTS = %w[bsky.app threadreaderapp.com x.com]
 
   before_create do
     next unless url.is_a?(String)
@@ -31,6 +33,7 @@ class Article < ApplicationRecord
     response = Faraday.get(url)
     logger.debug response.status
     self.url = response.headers["location"] if response.status == 301 || response.status == 302
+    self.deleted_at = Time.zone.now if IGNORE_HOSTS.include?(URI.parse(url).host)
   end
 
   def generate_title #: void

@@ -35,8 +35,7 @@ class Gmail
     emails
   end
 
-  IGNORE_HOSTS = [ "www.meetup.com", "maily.so", "github.com", "bsky.app", "threadreaderapp.com", "x.com",
-  "www.linkedin.com", "meet.google.com", "www.twitch.tv", "inf.run", "lu.ma" ]
+  IGNORE_HOSTS = %w[www.meetup.com maily.so github.com bsky.app threadreaderapp.com x.com www.linkedin.com meet.google.com www.twitch.tv inf.run lu.ma]
 
   def fetch_email_links(options = {})
     links = []
