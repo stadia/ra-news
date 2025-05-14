@@ -54,7 +54,7 @@ class Article < ApplicationRecord
   end
 
   def youtube_id #: string?
-    url.split("?v=").last.split("&").first if is_youtube?
+    url.split("v=").last.split("&").first if is_youtube?
   end
 
   def youtube_transcript #: string?
