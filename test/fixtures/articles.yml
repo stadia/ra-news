@@ -1,11 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
+<% url = Faker::Internet.url %>
 one:
   title: <%= Faker::Book.title %>
-  url: <%= Faker::Internet.url %>
+  url: <%= url %>
+  origin_url: <%= url %>
   user: one
 
+<% url = Faker::Internet.url %>
 two:
   title: <%= Faker::Book.title %>
-  url: <%= Faker::Internet.url %>
+  url: <%= url %>
+  origin_url: <%= url %>
   user: two
