@@ -25,7 +25,7 @@ class Article < ApplicationRecord
     published_at = Time.zone.now if published_at.blank?
   end
 
-  IGNORE_HOSTS = %w[www.meetup.com maily.so github.com bsky.app threadreaderapp.com x.com www.linkedin.com meet.google.com www.twitch.tv inf.run lu.ma newsletter.shortruby.com] #: Array[String]
+  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev] #: Array[String]
 
   before_create do
     next unless url.is_a?(String)
@@ -33,7 +33,9 @@ class Article < ApplicationRecord
     response = Faraday.get(url)
     logger.debug response.status
     self.url = response.headers["location"] if response.status == 301 || response.status == 302
-    self.deleted_at = Time.zone.now if IGNORE_HOSTS.include?(URI.parse(url).host)
+    parsed_url = URI.parse(url)
+    self.host = parsed_url.host
+    self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host.match?(/#{pattern}/i) }
   end
 
   def generate_title #: void

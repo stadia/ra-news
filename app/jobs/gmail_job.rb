@@ -14,11 +14,12 @@ class GmailJob < ApplicationJob
     links = Gmail.new.fetch_email_links(from: email)
     return if links.empty?
 
+    logger.debug links
     links.each do |link|
-      next if Article.exists?(url: link)
+      next if Article.exists?(origin_url: link)
 
       begin
-        Article.create(url: link)
+        Article.create(url: link, origin_url: link)
       rescue StandardError => e
         logger.error e
       end

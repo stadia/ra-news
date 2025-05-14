@@ -603,6 +603,51 @@ class Article
     sig { void }
     def deleted_at_will_change!; end
 
+    sig { returns(T.nilable(::String)) }
+    def host; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def host=(value); end
+
+    sig { returns(T::Boolean) }
+    def host?; end
+
+    sig { returns(T.nilable(::String)) }
+    def host_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def host_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def host_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def host_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def host_change_to_be_saved; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def host_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def host_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def host_previous_change; end
+
+    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    def host_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def host_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def host_was; end
+
+    sig { void }
+    def host_will_change!; end
+
     sig { returns(::Integer) }
     def id; end
 
@@ -693,6 +738,51 @@ class Article
     sig { void }
     def id_will_change!; end
 
+    sig { returns(::String) }
+    def origin_url; end
+
+    sig { params(value: ::String).returns(::String) }
+    def origin_url=(value); end
+
+    sig { returns(T::Boolean) }
+    def origin_url?; end
+
+    sig { returns(T.nilable(::String)) }
+    def origin_url_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def origin_url_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def origin_url_came_from_user?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def origin_url_change; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def origin_url_change_to_be_saved; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def origin_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def origin_url_in_database; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def origin_url_previous_change; end
+
+    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    def origin_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def origin_url_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def origin_url_was; end
+
+    sig { void }
+    def origin_url_will_change!; end
+
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def published_at; end
 
@@ -755,10 +845,16 @@ class Article
     def restore_deleted_at!; end
 
     sig { void }
+    def restore_host!; end
+
+    sig { void }
     def restore_id!; end
 
     sig { void }
     def restore_id_value!; end
+
+    sig { void }
+    def restore_origin_url!; end
 
     sig { void }
     def restore_published_at!; end
@@ -796,6 +892,12 @@ class Article
     sig { returns(T::Boolean) }
     def saved_change_to_deleted_at?; end
 
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_host; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_host?; end
+
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
 
@@ -807,6 +909,12 @@ class Article
 
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
+
+    sig { returns(T.nilable([::String, ::String])) }
+    def saved_change_to_origin_url; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_origin_url?; end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_published_at; end
@@ -1178,10 +1286,16 @@ class Article
     def will_save_change_to_deleted_at?; end
 
     sig { returns(T::Boolean) }
+    def will_save_change_to_host?; end
+
+    sig { returns(T::Boolean) }
     def will_save_change_to_id?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id_value?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_origin_url?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_published_at?; end

@@ -68,11 +68,12 @@ class Gmail
           if uri.respond_to?(:query) && uri.query
             # 쿼리 문자열을 해시(맵)으로 변환
             query_params = URI.decode_www_form(uri.query).to_h
-            links << check_link(URI.parse(query_params["url"])) if query_params["url"].is_a?(String)
+            link = check_link(URI.parse(query_params["url"])) if query_params["url"].is_a?(String)
           end
         else
-          links << check_link(uri)
+          link = check_link(uri)
         end
+        links << link if link.is_a?(String)
       }
     end
     links.uniq
@@ -80,7 +81,7 @@ class Gmail
 
   #: (uri URI::HTTPS) -> string?
   def check_link(uri)
-    return if Article::IGNORE_HOSTS.include?(uri.host) || uri.path.nil? || uri.path.size < 2
+    return if uri.path.nil? || uri.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| uri.host.match?(/#{pattern}/i) }
 
     uri.to_s
   end
