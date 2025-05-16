@@ -46,7 +46,11 @@
               <%= link_to "홈", root_path, class: "block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-black-700 md:p-0 md:dark:text-black-500", "aria-current" => "page" %>
             </li>
             <li>
-              <%= link_to "로그인", new_session_path, id: "loginLink", class: "block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-black-700 md:p-0 md:dark:text-black-500", "aria_current" => "page" %>
+              <% if authenticated? %>
+                <span class="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-black-700 md:p-0 md:dark:text-black-500" aria-current="page"><%= Current.user.name %></span>
+              <% else %>
+                <%= link_to "로그인", new_session_path, id: "loginLink", class: "block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-black-700 md:p-0 md:dark:text-black-500", "aria_current" => "page" %>
+              <% end %>
             </li>
           </ul>
         </div>
