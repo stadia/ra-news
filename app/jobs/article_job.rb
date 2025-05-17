@@ -64,6 +64,9 @@ PROMPT
     article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko"))
   end
 
+  private
+
+  #: (url string) -> string
   def markdown(url)
     response = Faraday.get(url)
     body_content = Nokogiri::HTML(response.body).at_css("body")&.inner_html

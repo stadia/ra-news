@@ -4,7 +4,6 @@ class ArticlesController < ApplicationController
   # GET /articles or /articles.json
   def index: () -> untyped
 
-  # GET /articles/1 or /articles/1.json
   def show: () -> untyped
 
   # GET /articles/new

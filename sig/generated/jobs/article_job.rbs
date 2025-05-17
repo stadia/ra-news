@@ -3,4 +3,9 @@
 class ArticleJob < ApplicationJob
   # : (id int) -> void
   def perform: (id int) -> void
+
+  private
+
+  # : (url string) -> string
+  def markdown: (url string) -> string
 end

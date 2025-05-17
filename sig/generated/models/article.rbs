@@ -13,6 +13,8 @@ class Article < ApplicationRecord
 
   def url_to_published_at: () -> DateTime?
 
+  def update_slug: () -> bool
+
   private
 
   def parse_to_published_at: (untyped body) -> DateTime?
