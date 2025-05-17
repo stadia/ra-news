@@ -9,7 +9,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    @articles = Article.where(deleted_at: nil).all.order(published_at: :desc, id: :desc)
+    @articles = Article.where(deleted_at: nil).all.order(created_at: :desc)
   end
 
   def show

@@ -44,7 +44,7 @@ class Article < ApplicationRecord
 
     parsed_url = URI.parse(url)
     self.host = parsed_url.host
-    self.slug = is_youtube? ? youtube_id : parsed_url.path.split("/").last
+    self.slug = is_youtube? ? youtube_id : parsed_url.path.split("/").last.split(".").first
     self.published_at = url_to_published_at || parse_to_published_at(response.body) || Time.zone.now if published_at.blank?
     self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
 
@@ -54,7 +54,7 @@ class Article < ApplicationRecord
   end
 
   def is_youtube? #: bool
-    url.start_with?("https://www.youtube.com/watch?") || url.start_with?("https://youtu.be/")
+    url.start_with?("https://www.youtube.com") || url.start_with?("https://youtu.be/")
   end
 
   def youtube_id #: string?
@@ -76,6 +76,10 @@ class Article < ApplicationRecord
     return unless match_data
 
     Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")
+  end
+
+  def update_slug #: bool
+    update(slug: is_youtube? ? youtube_id : URI.parse(url).path.split("/").last.split(".").first)
   end
 
   private
