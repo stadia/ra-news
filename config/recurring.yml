@@ -4,4 +4,4 @@ production:
     schedule: "0 7 * * *"
   gmail_article_job:
     class: GmailArticleJob
-    schedule: "0 8 * * *"
+    schedule: "0 10 * * 2"
