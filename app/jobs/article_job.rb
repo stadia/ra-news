@@ -70,7 +70,7 @@ PROMPT
   #: (url string) -> string
   def markdown(url)
     response = Faraday.get(url)
-    body_content = Nokogiri::HTML(response.body).at_css("body")&.inner_html
-    Kramdown::Document.new(body_content, input: "html").to_kramdown
+    body_content = Nokogiri::HTML(response.body).at_css("body")&.to_html
+    Kramdown::Document.new(body_content, input: "html", auto_ids: false).to_kramdown
   end
 end
