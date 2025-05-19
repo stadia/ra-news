@@ -71,14 +71,14 @@ PROMPT
   def markdown(url)
     response = Faraday.get(url)
     html_content = response.body
-    return '' if html_content.blank?
+    return "" if html_content.blank?
 
     # Readability를 사용하여 주요 콘텐츠 HTML 추출
     # Readability::Document는 전체 HTML 문자열을 인자로 받습니다.
     main_article_html = Readability::Document.new(html_content).content
-    return '' if main_article_html.blank? # 주요 내용이 없으면 빈 문자열 반환
+    return "" if main_article_html.blank? # 주요 내용이 없으면 빈 문자열 반환
 
     # 추출된 주요 콘텐츠 HTML을 Markdown으로 변환
-    Kramdown::Document.new(main_article_html, input: 'html', auto_ids: false).to_kramdown
+    Kramdown::Document.new(main_article_html, input: "html", auto_ids: false).to_kramdown
   end
 end

@@ -15,16 +15,22 @@ class RssSiteJob < ApplicationJob
     user = User.first
 
     feed.items.each do |item|
+      attrs = nil
       case item
       when RSS::Atom::Feed::Entry
         !site.last_checked_at.nil? && site.last_checked_at > item.published.content and next
 
-        Article.create(title: item.title.content, url: item.link.href, origin_url: item.link.href, published_at: item.published.content, user:)
+        attrs = { title: item.title.content, url: item.link.href, origin_url: item.link.href, published_at: item.published.content, user: }
       when RSS::Rss::Channel::Item
         !site.last_checked_at.nil? && site.last_checked_at > item.pubDate and next
 
-        Article.create(title: item.title, url: item.link, origin_url: item.link, published_at: item.pubDate, user:)
+        attrs = { title: item.title, url: item.link, origin_url: item.link, published_at: item.pubDate, user: }
       end
+      next if attrs.nil? || attrs.empty?
+
+      Article.exists?(origin_url: attrs[:origin_url]) and next
+
+      Article.create(attrs)
     end
 
     site.update(last_checked_at:)
