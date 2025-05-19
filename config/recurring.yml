@@ -1,6 +1,6 @@
 production:
   rails_at_scale_job:
-    class: RailsAtScaleJob
+    class: RssSiteJob
     schedule: "0 7 * * *"
   gmail_article_job:
     class: GmailArticleJob

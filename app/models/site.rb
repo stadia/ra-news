@@ -7,7 +7,7 @@ class Site < ApplicationRecord
 
   validates :name, :client, presence: true
 
-  def execute_client #: Object?
+  def init_client #: Object?
     return unless base_uri.is_a?(String)
 
     client.constantize.new(base_uri: base_uri)
