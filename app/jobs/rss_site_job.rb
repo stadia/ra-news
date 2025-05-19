@@ -20,17 +20,17 @@ class RssSiteJob < ApplicationJob
       when RSS::Atom::Feed::Entry
         !site.last_checked_at.nil? && site.last_checked_at > item.published.content and next
 
-        attrs = { title: item.title.content, url: item.link.href, origin_url: item.link.href, published_at: item.published.content, user: }
+        attrs = { title: item.title.content, url: item.link.href, origin_url: item.link.href, published_at: item.published.content }
       when RSS::Rss::Channel::Item
         !site.last_checked_at.nil? && site.last_checked_at > item.pubDate and next
 
-        attrs = { title: item.title, url: item.link, origin_url: item.link, published_at: item.pubDate, user: }
+        attrs = { title: item.title, url: item.link, origin_url: item.link, published_at: item.pubDate }
       end
       next if attrs.nil? || attrs.empty?
 
       Article.exists?(origin_url: attrs[:origin_url]) and next
 
-      Article.create(attrs)
+      Article.create(attrs.merge(site:, created_at: attrs[:published_at], updated_at: attrs[:published_at]))
     end
 
     site.update(last_checked_at:)
