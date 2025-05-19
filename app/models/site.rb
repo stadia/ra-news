@@ -12,4 +12,8 @@ class Site < ApplicationRecord
 
     client.constantize.new(base_uri: base_uri)
   end
+
+  def is_rss?
+    client == "RssClient"
+  end
 end

@@ -5,6 +5,12 @@
 class RssSiteJob < ApplicationJob
   #: (id Integer) -> void
   def perform(id = nil)
+    if id.nil?
+      jobs = Site.all.select { |site| site.is_rss? }.map { RssSiteJob.new(it.id) }
+      ActiveJob.perform_all_later(jobs) unless jobs.empty?
+      return
+    end
+
     site = Site.find_by(id:)
     return if site.nil?
 
