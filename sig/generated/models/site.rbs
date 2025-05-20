@@ -2,4 +2,6 @@
 
 class Site < ApplicationRecord
   def init_client: () -> Object?
+
+  def is_rss?: () -> untyped
 end

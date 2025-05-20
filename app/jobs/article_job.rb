@@ -63,6 +63,7 @@ PROMPT
 
     # JSON 데이터 저장
     article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko"))
+    SitemapJob.perform_later
   end
 
   private
