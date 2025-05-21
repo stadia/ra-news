@@ -36,7 +36,7 @@ class ArticleJob < ApplicationJob
 PROMPT
 
     chat = RubyLLM.chat(model: "gemini-2.5-flash-preview-04-17", provider: :gemini, assume_model_exists: true)
-    chat.with_instructions("You are an expert in Ruby programming language and RubyOnRails framework. Be precise and concise. Use OREO technique, pyramid structure, and transition expressions actively.")
+    chat.with_instructions("You are an expert in the Ruby programming language and RubyOnRails framework. You are precise and concise. Use OREO technique, pyramid structure, and transition expressions actively. All output should be in Korean.")
     response =  if article.is_youtube?
       # YouTube URL인 경우
       transcript = article.youtube_transcript
@@ -83,28 +83,3 @@ PROMPT
     Kramdown::Document.new(main_article_html, input: "html", auto_ids: false).to_kramdown
   end
 end
-
-# 제공된 HTML 형식의 텍스트를 주의 깊게 읽고 요약, 정리 한 내용을 한국어로 제공합니다. 간단한 핵심 요약과 상세 요약을 제공합니다. 요약, 정리를 하기 위해 또 다른 사이트나 문서를 참고 할 수 있습니다. 답변은 전문적인 어조로 작성하십시오.
-#
-# 입력 텍스트:
-# {html_text}<div><div>\n <p>In 2023 I attended RubyKaigi for the first time and also wrote my first recap,
-#
-# 출력 형식:
-# *   핵심 요약은 3줄 이내로 작성합니다.
-# *   상세 요약은 서론(introduction)-본론(body)-결론(conclusion)의 3단 구조를 기본으로 합니다. 상세 요약은 800자 이상 1600자 이내로 작성합니다.
-# *   JSON 형태로 제목(title_ko), 핵심 요약(summary_key), 상세 요약(summary_detail) 세 항목을 출력합니다.
-# *   상세 요약은 markdown 형식으로 작성합니다.
-#
-# 출력 예제:
-#
-# ```json
-# {
-#   "title_ko": "",
-#   "summary_key": [
-#     "",
-#     "",
-#     ""
-#   ],
-#   "summary_detail": { "introduction": "", "body": "", "conclusion": "" }
-# }
-# ```
