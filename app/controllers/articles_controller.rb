@@ -7,9 +7,11 @@ class ArticlesController < ApplicationController
 
   before_action :set_article, only: %i[ show edit update destroy ]
 
+  include Pagy::Backend
+
   # GET /articles or /articles.json
   def index
-    @articles = Article.where(deleted_at: nil).all.order(created_at: :desc)
+    @pagy, @articles = pagy(Article.where(deleted_at: nil).order(created_at: :desc))
   end
 
   def show
