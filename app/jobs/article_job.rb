@@ -37,7 +37,7 @@ class ArticleJob < ApplicationJob
 ```
 PROMPT
 
-    chat = RubyLLM.chat(model: "gemini-2.5-flash-preview-04-17", provider: :gemini, assume_model_exists: true)
+    chat = RubyLLM.chat(model: "gemini-2.5-flash-preview-05-20", provider: :gemini, assume_model_exists: true)
     chat.with_instructions("You are an expert in the Ruby programming language and RubyOnRails framework. You are precise and concise. Use OREO technique, pyramid structure, and transition expressions actively. All output should be in Korean.")
     response =  if article.is_youtube?
       # YouTube URL인 경우
