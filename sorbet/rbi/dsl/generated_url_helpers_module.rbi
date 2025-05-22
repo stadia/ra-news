@@ -19,6 +19,9 @@ module GeneratedUrlHelpersModule
   def edit_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_users_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def logout_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -35,6 +38,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_session_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_user_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def password_url(*args); end
@@ -143,4 +149,10 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def update_rails_disk_service_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def users_url(*args); end
 end

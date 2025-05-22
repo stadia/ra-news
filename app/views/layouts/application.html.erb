@@ -45,6 +45,9 @@
             <li>
               <%= link_to "홈", root_path, class: "block py-2 px-3 text-white hover:text-green-200 rounded-sm md:text-white md:hover:text-green-200 md:p-0", "aria-current" => "page" %>
             </li>
+            <li>
+              <%= link_to "지난 글", articles_path, class: "block py-2 px-3 text-white hover:text-green-200 rounded-sm md:text-white md:hover:text-green-200 md:p-0", "aria-current" => "page" %>
+            </li>
             <% if authenticated? %>
               <li>
                 <%= link_to "글 등록", new_article_path, class: "block py-2 px-3 text-white hover:text-green-200 rounded-sm md:text-white md:hover:text-green-200 md:p-0", "aria_current" => "page" %>
