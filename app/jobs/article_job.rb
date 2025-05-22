@@ -16,10 +16,10 @@ class ArticleJob < ApplicationJob
 핵심 요약은 3줄 이내로 작성합니다.
 상세 요약은 서론(introduction)-본론(body)-결론(conclusion)의 3단 구조를 기본으로 합니다. 상세 요약(summary_detail)은 800자 이상 1500자 이내로 작성합니다.
 1. 입력 포맷
-- Expect Markdown-formatted text
+- Expect HTML-formatted text
 - Process both inline formatting (bold, italic, links) and block elements (headings, lists, code blocks)
 - Preserve the context of structured content
-- Handle nested Markdown elements appropriately
+- Handle nested HTML elements appropriately
 2. 출력 결과
 - JSON 형태로 제목(title_ko), 핵심 요약(summary_key), 상세 요약(summary_detail) 세 항목을 출력합니다.
 - 상세 요약은 markdown 형식으로 작성합니다.
@@ -46,8 +46,9 @@ PROMPT
       transcript.nil? ? nil : chat.ask("<Link>#{article.url}</Link> <Transcript>#{transcript}</Transcript> 제공한 youtube의 Link와 Transcript를 #{prompt}")
     else
       # YouTube URL이 아닌 경우
-      logger.debug "<Document>#{markdown(article.url)}</Document> 제공한 Document를 #{prompt}"
-      chat.ask("<Document>#{markdown(article.url)}</Document> 제공한 Document를 #{prompt}")
+      html = readability_html(article.url)
+      logger.debug "<Document>#{html}</Document> 제공한 Document를 #{prompt}"
+      chat.ask("<Document>#{html}</Document> 제공한 Document를 #{prompt}") if html.is_a?(String)
     end
 
     unless response.respond_to?(:content)
@@ -71,18 +72,13 @@ PROMPT
 
   private
 
-  #: (url string) -> string
-  def markdown(url)
+  #: (url String) -> String?
+  def readability_html(url)
     response = Faraday.get(url)
     html_content = response.body
-    return "" if html_content.blank?
+    return nil if html_content.blank?
 
-    # Readability를 사용하여 주요 콘텐츠 HTML 추출
-    # Readability::Document는 전체 HTML 문자열을 인자로 받습니다.
-    main_article_html = Readability::Document.new(html_content).content
-    return "" if main_article_html.blank? # 주요 내용이 없으면 빈 문자열 반환
-
-    # 추출된 주요 콘텐츠 HTML을 Markdown으로 변환
-    Kramdown::Document.new(main_article_html, input: "html", auto_ids: false).to_kramdown
+    # Readability를 사용하여 주요 콘텐츠 HTML 추출. Readability::Document는 전체 HTML 문자열을 인자로 받습니다.
+    Readability::Document.new(html_content).content
   end
 end
