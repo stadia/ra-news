@@ -40,7 +40,7 @@ class Article < ApplicationRecord
       self.url = if response.headers["location"].start_with?("http")
         response.headers["location"]
       else
-        self.url = URI.join(url, response.headers["location"]).to_s
+        URI.join(url, response.headers["location"]).to_s
       end
     end
 
