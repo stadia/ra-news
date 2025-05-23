@@ -1,6 +1,5 @@
 # Generated from app/jobs/html_content_tool.rb with RBS::Inline
 
-# rbs_inline: enabled
 class HtmlContentTool < RubyLLM::Tool
   # : (url String) -> String?
   def execute: (url String) -> String?

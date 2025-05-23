@@ -1,6 +1,6 @@
 # Generated from app/jobs/gmail_article_job.rb with RBS::Inline
 
 class GmailArticleJob < ApplicationJob
-  # : (email String) -> void
-  def perform: (email String) -> void
+  # : (id Integer) -> void
+  def perform: (id Integer) -> void
 end

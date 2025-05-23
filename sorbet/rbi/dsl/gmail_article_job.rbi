@@ -9,13 +9,13 @@ class GmailArticleJob
   class << self
     sig do
       params(
-        email: T.untyped,
+        id: T.untyped,
         block: T.nilable(T.proc.params(job: GmailArticleJob).void)
       ).returns(T.any(GmailArticleJob, FalseClass))
     end
-    def perform_later(email = T.unsafe(nil), &block); end
+    def perform_later(id = T.unsafe(nil), &block); end
 
-    sig { params(email: T.untyped).returns(T.untyped) }
-    def perform_now(email = T.unsafe(nil)); end
+    sig { params(id: T.untyped).returns(T.untyped) }
+    def perform_now(id = T.unsafe(nil)); end
   end
 end
