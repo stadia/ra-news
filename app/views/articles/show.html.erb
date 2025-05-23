@@ -1,13 +1,6 @@
 <% content_for :title, @article.title_ko %>
 
-<div class="space-y-6" id="<%= dom_id @article %>">
-  <%= link_to articles_path, class: "inline-flex items-center text-blue-400 hover:text-blue-300 mb-6" do %>
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd" />
-      </svg>
-      목록으로 돌아가기
-  <% end %>
-
+<div class="space-y-6 max-w-6xl mx-auto" id="<%= dom_id @article %>">
   <div id="articleDetail" class="bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-700">
     <div class="p-8">
         <h1 class="text-2xl font-bold text-gray-100 mb-3"><%= @article.title_ko %></h1>
