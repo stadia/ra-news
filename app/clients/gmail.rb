@@ -51,8 +51,8 @@ class Gmail
         html_content = body.body.decoded.encode(Encoding::UTF_8, invalid: :replace, undef: :replace, replace: "")
       end
       # 특수 문자 및 인코딩 문제 해결
-      html_content = html_content.gsub(/[\r\n]+/, " ")  # 줄바꿈 제거
-                                  .gsub(/=\r?\n/, "")    # quoted-printable 줄바꿈 제거
+      html_content = html_content.gsub(/[\r\n]+/, " ") # 줄바꿈 제거
+                                  .gsub(/=\r?\n/, "") # quoted-printable 줄바꿈 제거
       Rails.logger.debug html_content
       next unless html_content
 
