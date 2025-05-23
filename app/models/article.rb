@@ -64,16 +64,6 @@ class Article < ApplicationRecord
     URI.decode_www_form(URI.parse(url).query).to_h["v"]
   end
 
-  def youtube_transcript #: String?
-    return unless is_youtube?
-
-    rc = Youtube::Transcript.get(youtube_id)
-    tsr = rc.dig("actions").first.dig("updateEngagementPanelAction", "content", "transcriptRenderer", "content", "transcriptSearchPanelRenderer", "body", "transcriptSegmentListRenderer", "initialSegments")
-    return unless tsr
-
-    tsr.map { |it| it.dig("transcriptSegmentRenderer", "startTimeText", "simpleText").to_s + " - " + it.dig("transcriptSegmentRenderer", "snippet", "runs").map { |it| it.dig("text") }.join(" ") }.join("\n")
-  end
-
   def url_to_published_at #: DateTime?
     match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{2})[/-](\d{2})})
     return unless match_data

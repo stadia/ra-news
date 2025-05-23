@@ -17,18 +17,13 @@ class RssSiteJob < ApplicationJob
     return if feed.nil?
 
     last_checked_at = Time.zone.now
-    user = User.first
 
     feed.items.each do |item|
       attrs = nil
       case item
       when RSS::Atom::Feed::Entry
-        !site.last_checked_at.nil? && site.last_checked_at > item.published.content and next
-
         attrs = { title: item.title.content, url: item.link.href, origin_url: item.link.href, published_at: item.published.content }
       when RSS::Rss::Channel::Item
-        !site.last_checked_at.nil? && site.last_checked_at > item.pubDate and next
-
         attrs = { title: item.title, url: item.link, origin_url: item.link, published_at: item.pubDate }
       end
       next if attrs.nil? || attrs.empty?

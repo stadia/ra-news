@@ -1,5 +1,5 @@
 # Generated from app/jobs/sitemap_job.rb with RBS::Inline
 
 class SitemapJob < ApplicationJob
-  def perform: () -> untyped
+  def perform: () -> void
 end

@@ -9,8 +9,6 @@ class Article < ApplicationRecord
 
   def youtube_id: () -> String?
 
-  def youtube_transcript: () -> String?
-
   def url_to_published_at: () -> DateTime?
 
   def update_slug: () -> bool

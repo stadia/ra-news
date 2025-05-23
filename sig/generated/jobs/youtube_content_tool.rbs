@@ -1,0 +1,6 @@
+# Generated from app/jobs/youtube_content_tool.rb with RBS::Inline
+
+class YoutubeContentTool < RubyLLM::Tool
+  # : (url String) -> String?
+  def execute: (url String) -> String?
+end
