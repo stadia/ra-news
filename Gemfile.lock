@@ -132,6 +132,7 @@ GEM
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-aarch64-linux-musl)
     ffi (1.17.2-arm64-darwin)
+    ffi (1.17.2-x86_64-darwin)
     ffi (1.17.2-x86_64-linux-gnu)
     ffi (1.17.2-x86_64-linux-musl)
     fileutils (1.7.3)
@@ -147,6 +148,9 @@ GEM
       bigdecimal
       rake (>= 13)
     google-protobuf (4.31.0-arm64-darwin)
+      bigdecimal
+      rake (>= 13)
+    google-protobuf (4.31.0-x86_64-darwin)
       bigdecimal
       rake (>= 13)
     google-protobuf (4.31.0-x86_64-linux-gnu)
@@ -241,6 +245,8 @@ GEM
     nokogiri (1.18.8-aarch64-linux-musl)
       racc (~> 1.4)
     nokogiri (1.18.8-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.18.8-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-gnu)
       racc (~> 1.4)
@@ -446,6 +452,7 @@ GEM
     tailwindcss-ruby (4.1.7-aarch64-linux-gnu)
     tailwindcss-ruby (4.1.7-aarch64-linux-musl)
     tailwindcss-ruby (4.1.7-arm64-darwin)
+    tailwindcss-ruby (4.1.7-x86_64-darwin)
     tailwindcss-ruby (4.1.7-x86_64-linux-gnu)
     tailwindcss-ruby (4.1.7-x86_64-linux-musl)
     tapioca (0.16.11)
@@ -463,6 +470,7 @@ GEM
     thor (1.3.2)
     thruster (0.1.13-aarch64-linux)
     thruster (0.1.13-arm64-darwin)
+    thruster (0.1.13-x86_64-darwin)
     thruster (0.1.13-x86_64-linux)
     timeout (0.4.3)
     turbo-rails (2.0.13)
@@ -498,6 +506,7 @@ PLATFORMS
   aarch64-linux-gnu
   aarch64-linux-musl
   arm64-darwin-24
+  x86_64-darwin-22
   x86_64-linux
   x86_64-linux-gnu
   x86_64-linux-musl
