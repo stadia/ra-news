@@ -499,6 +499,8 @@ GEM
     yard-sorbet (0.9.0)
       sorbet-runtime
       yard
+    yt (0.34.0)
+      activesupport
     zeitwerk (2.7.3)
 
 PLATFORMS
@@ -554,6 +556,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+  yt
 
 BUNDLED WITH
    2.6.8

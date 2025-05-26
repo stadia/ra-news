@@ -48,7 +48,7 @@ class Article < ApplicationRecord
     self.host = parsed_url.host
     self.slug = is_youtube? ? youtube_id : parsed_url.path.split("/").last.split(".").first
     self.slug = "#{slug}-#{SecureRandom.hex(4)}" if Article.exists?(slug: self.slug)
-    self.published_at = url_to_published_at || parse_to_published_at(response.body) || Time.zone.now if published_at.blank?
+    self.published_at = url_to_published_at || parse_to_published_at(response.body) || Time.zone.now
     self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
 
     doc = Nokogiri::HTML(response.body)
@@ -65,6 +65,11 @@ class Article < ApplicationRecord
   end
 
   def url_to_published_at #: DateTime?
+    if is_youtube?
+      video = Yt::Video.new id: youtube_id
+      return video.published_at if video&.published_at.is_a?(Time)
+    end
+
     match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{2})[/-](\d{2})})
     return unless match_data
 
