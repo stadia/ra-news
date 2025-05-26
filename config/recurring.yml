@@ -5,3 +5,6 @@ production:
   gmail_article_job:
     class: GmailArticleJob
     schedule: "0 10 * * 2"
+  youtube_channel_job:
+    class: YoutubeChannelJob
+    schedule: "0 8 * * *"

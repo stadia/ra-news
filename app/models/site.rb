@@ -8,6 +8,8 @@ class Site < ApplicationRecord
   validates :name, :client, presence: true
 
   def init_client #: Object?
+    return Youtube::Channel.new(id: channel) if is_youtube?
+
     return unless base_uri.is_a?(String)
 
     client.constantize.new(base_uri: base_uri)
@@ -15,5 +17,9 @@ class Site < ApplicationRecord
 
   def is_rss?
     client == "RssClient"
+  end
+
+  def is_youtube?
+    channel.present? && client == "Youtube::Channel"
   end
 end
