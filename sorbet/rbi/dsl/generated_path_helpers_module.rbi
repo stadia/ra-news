@@ -16,6 +16,15 @@ module GeneratedPathHelpersModule
   def articles_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_article_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_site_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_user_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_password_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -25,10 +34,40 @@ module GeneratedPathHelpersModule
   def logout_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def madmin_article_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_articles_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_root_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_site_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_sites_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_user_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_users_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def mission_control_jobs_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_article_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_article_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_site_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_user_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_password_path(*args); end

@@ -16,6 +16,15 @@ module GeneratedUrlHelpersModule
   def articles_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_site_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_user_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -25,10 +34,40 @@ module GeneratedUrlHelpersModule
   def logout_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_articles_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_root_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_site_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_sites_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_user_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_users_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def mission_control_jobs_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_site_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_user_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_password_url(*args); end

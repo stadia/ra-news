@@ -86,3 +86,5 @@ gem "ruby-readability"
 gem "acts-as-taggable-on"
 gem "rails-i18n"
 gem "yt"
+
+gem "madmin", "~> 2.0"
