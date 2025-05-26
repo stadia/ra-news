@@ -22,4 +22,6 @@ Rails.application.routes.draw do
 
   get "signup" => "users#new", as: :new_user
   post "signup" => "users#create", as: :user
+
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 end

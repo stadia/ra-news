@@ -25,6 +25,9 @@ module GeneratedUrlHelpersModule
   def logout_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def mission_control_jobs_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_article_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }

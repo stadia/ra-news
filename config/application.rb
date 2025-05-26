@@ -26,5 +26,8 @@ module AlNews
 
     config.i18n.available_locales = %w[en ko]
     config.i18n.default_locale = :ko
+
+    config.mission_control.jobs.base_controller_class = "AdminController"
+    config.mission_control.jobs.http_basic_auth_enabled = false
   end
 end

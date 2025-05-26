@@ -25,6 +25,9 @@ module GeneratedPathHelpersModule
   def logout_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def mission_control_jobs_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_article_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
