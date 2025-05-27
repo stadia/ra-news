@@ -6,7 +6,7 @@ class GmailArticleJob < ApplicationJob
   #: (id Integer) -> void
   def perform(id = nil)
     if id.nil?
-      Site.where.not(email: nil).map { GmailArticleJob.perform_later(it.it) }
+      Site.where.not(email: nil).map { GmailArticleJob.perform_later(it.id) }
       return
     end
 

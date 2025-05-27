@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_26_082356) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_27_013123) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,7 +31,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_26_082356) do
     t.string "slug"
     t.index ["deleted_at"], name: "index_articles_on_deleted_at"
     t.index ["origin_url"], name: "index_articles_on_origin_url", unique: true
-    t.index ["slug"], name: "index_articles_on_slug", unique: true
+    t.index ["slug"], name: "index_articles_on_slug", unique: true, where: "(deleted_at IS NULL)"
     t.index ["url"], name: "index_articles_on_url", unique: true
     t.index ["user_id"], name: "index_articles_on_user_id"
   end
