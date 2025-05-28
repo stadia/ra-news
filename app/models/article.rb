@@ -74,18 +74,18 @@ class Article < ApplicationRecord
     URI.decode_www_form(URI.parse(url).query).to_h["v"]
   end
 
+  def update_slug #: bool
+    update(slug: is_youtube? ? youtube_id : URI.parse(url).path.split("/").last.split(".").first)
+  end
+
+  private
+
   def url_to_published_at #: DateTime?
     match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{2})[/-](\d{2})})
     return unless match_data
 
     Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")
   end
-
-  def update_slug #: bool
-    update(slug: is_youtube? ? youtube_id : URI.parse(url).path.split("/").last.split(".").first)
-  end
-
-  private
 
   def parse_to_published_at(body) #: DateTime?
     match_data = body.strip.match(/([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})/)
