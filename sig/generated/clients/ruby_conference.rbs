@@ -3,11 +3,13 @@
 class RubyConference < ApplicationClient
   BASE_URI: ::String
 
-  def conferences: () -> untyped
+  def initialize: () -> RubyConference
 
-  def conferences_cached: () -> untyped
+  def conferences: () -> Array
+
+  def conferences_cached: () -> Array
 
   private
 
-  def content_type: () -> untyped
+  def content_type: () -> String
 end

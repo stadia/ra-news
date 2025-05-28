@@ -1,0 +1,11 @@
+# Generated from app/clients/youtube/channel.rb with RBS::Inline
+
+module Youtube
+  class Channel
+    attr_reader channel: untyped
+
+    def initialize: (?id: untyped) -> untyped
+
+    def videos: () -> untyped
+  end
+end

@@ -1,7 +1,7 @@
 # Generated from app/clients/gmail.rb with RBS::Inline
 
 class Gmail
-  def initialize: () -> untyped
+  def initialize: () -> Gmail
 
   def fetch_emails: (?untyped options) -> untyped
 

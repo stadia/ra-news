@@ -1,0 +1,6 @@
+# Generated from app/jobs/youtube_site_job.rb with RBS::Inline
+
+class YoutubeSiteJob < ApplicationJob
+  # : (id Integer) -> void
+  def perform: (id Integer) -> void
+end
