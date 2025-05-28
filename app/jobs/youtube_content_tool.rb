@@ -12,8 +12,19 @@ class YoutubeContentTool < RubyLLM::Tool
     youtube_id = URI.decode_www_form(URI.parse(url).query).to_h["v"]
     return unless youtube_id
 
-    rc = Youtube::Transcript.get(youtube_id)
-    tsr = rc.dig("actions").first.dig("updateEngagementPanelAction", "content", "transcriptRenderer", "content", "transcriptSearchPanelRenderer", "body", "transcriptSegmentListRenderer", "initialSegments")
+    transcript = nil
+    video = Yt::Video.new id: youtube_id
+    video.captions.map(&:language).each do |lang|
+      rc = Youtube::Transcript.send("get_#{lang}", youtube_id)
+      transcript = format_transcript(rc.dig("actions"))
+      break if transcript.present?
+    end
+    transcript
+  end
+
+  private
+  def format_transcript(actions)
+    tsr = actions&.first&.dig("updateEngagementPanelAction", "content", "transcriptRenderer", "content", "transcriptSearchPanelRenderer", "body", "transcriptSegmentListRenderer", "initialSegments")
     return unless tsr
 
     tsr.map { |it| it.dig("transcriptSegmentRenderer", "startTimeText", "simpleText").to_s + " - " + it.dig("transcriptSegmentRenderer", "snippet", "runs").map { |it| it.dig("text") }.join(" ") }.join("\n")
