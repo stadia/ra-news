@@ -8,8 +8,7 @@ module Youtube
   class Transcript
     attr_reader :response
 
-    def get(video_id)
-      message = { one: "asr", two: "en" }
+    def get(video_id, message = { one: "asr", two: "en" })
       typedef = MessageType
       two = get_base64_protobuf(message, typedef)
 
@@ -38,8 +37,24 @@ module Youtube
       @response.body
     end
 
+    def get_en(video_id)
+      get(video_id, { one: "asr", two: "en" })
+    end
+
+    def get_ja(video_id)
+      get(video_id, { one: "asr", two: "ja" })
+    end
+
     def self.get(video_id)
       new.get(video_id)
+    end
+
+    def self.get_en(video_id)
+      new.get_en(video_id)
+    end
+
+    def self.get_ja(video_id)
+      new.get_ja(video_id)
     end
 
     private
