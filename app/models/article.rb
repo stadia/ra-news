@@ -49,14 +49,21 @@ class Article < ApplicationRecord
 
     parsed_url = URI.parse(url)
     self.host = parsed_url.host
-    self.slug = is_youtube? ? youtube_id : parsed_url.path.split("/").last.split(".").first
-    self.slug = "#{slug}-#{SecureRandom.hex(4)}" if Article.exists?(slug: self.slug)
-    self.published_at = url_to_published_at || parse_to_published_at(response.body) || Time.zone.now
     self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
 
-    doc = Nokogiri::HTML(response.body)
-    temp_title = doc.at("title")&.text
-    self.title = temp_title if temp_title.is_a?(String)
+    if is_youtube?
+      self.slug = youtube_id
+      video = Yt::Video.new id: youtube_id
+      self.published_at = video.published_at if video&.published_at.is_a?(Time)
+      self.title = video.title if video&.title.is_a?(String)
+    else
+      self.slug = parsed_url.path.split("/").last.split(".").first
+      self.published_at = url_to_published_at || parse_to_published_at(response.body) || Time.zone.now
+      doc = Nokogiri::HTML(response.body)
+      temp_title = doc.at("title")&.text
+      self.title = temp_title if temp_title.is_a?(String)
+    end
+    self.slug = "#{slug}-#{SecureRandom.hex(4)}" if Article.exists?(slug: self.slug)
   end
 
   def is_youtube? #: bool
@@ -67,23 +74,18 @@ class Article < ApplicationRecord
     URI.decode_www_form(URI.parse(url).query).to_h["v"]
   end
 
-  def url_to_published_at #: DateTime?
-    if is_youtube?
-      video = Yt::Video.new id: youtube_id
-      return video.published_at if video&.published_at.is_a?(Time)
-    end
-
-    match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{2})[/-](\d{2})})
-    return unless match_data
-
-    Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")
-  end
-
   def update_slug #: bool
     update(slug: is_youtube? ? youtube_id : URI.parse(url).path.split("/").last.split(".").first)
   end
 
   private
+
+  def url_to_published_at #: DateTime?
+    match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{2})[/-](\d{2})})
+    return unless match_data
+
+    Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")
+  end
 
   def parse_to_published_at(body) #: DateTime?
     match_data = body.strip.match(/([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})/)
