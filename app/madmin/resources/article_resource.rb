@@ -2,22 +2,23 @@ class ArticleResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
   attribute :title
-  attribute :url
+  attribute :title_ko, index: true
+  attribute :slug, index: true
+  attribute :deleted_at, index: true
   attribute :created_at, form: false
+
+  attribute :url, index: false
   attribute :updated_at, form: false
-  attribute :summary_key
-  attribute :summary_detail
-  attribute :title_ko
+  attribute :summary_key, index: false
+  attribute :summary_detail, index: false
   attribute :published_at
-  attribute :deleted_at
-  attribute :origin_url
+  attribute :origin_url, index: false
   attribute :host
-  attribute :slug
   attribute :tag_list, index: false
 
   # Associations
-  attribute :user
-  attribute :site
+  attribute :user, index: false, form: false
+  attribute :site, index: false, form: false
 
   # Add scopes to easily filter records
   # scope :published
