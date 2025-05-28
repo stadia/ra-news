@@ -19,7 +19,7 @@ class YoutubeSiteJob < ApplicationJob
     last_checked_at = Time.zone.now
 
     videos.each do |video|
-      # break if site.last_checked_at > video.published_at
+      break if site.last_checked_at > video.published_at
 
       url = "https://www.youtube.com/watch?v=#{video.id}"
       Article.create(url: url, origin_url: url, title: video.title, published_at: video.published_at, site:) unless Article.exists?(origin_url: url)

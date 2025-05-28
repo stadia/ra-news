@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class Gmail
-  def initialize
+  def initialize #: Gmail
     email ||= ENV["GMAIL_ADDRESS"] || "stadia@gmail.com"
     password ||= ENV["GMAIL_PASSWORD"]
 

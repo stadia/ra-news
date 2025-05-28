@@ -44,6 +44,7 @@ class Article < ApplicationRecord
       else
         URI.join(url, response.headers["location"]).to_s
       end
+      self.url = "https://www.youtube.com/watch?v=#{youtube_id}" if is_youtube?
     end
 
     parsed_url = URI.parse(url)

@@ -3,5 +3,7 @@
 class Site < ApplicationRecord
   def init_client: () -> Object?
 
-  def is_rss?: () -> untyped
+  def is_rss?: () -> bool
+
+  def is_youtube?: () -> bool
 end
