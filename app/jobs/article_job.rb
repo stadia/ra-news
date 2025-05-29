@@ -22,8 +22,10 @@ class ArticleJob < ApplicationJob
 - Preserve the context of structured content
 - Handle nested HTML elements appropriately
 2. 출력 결과
+- 핵심 내용 위주로 정보를 제공하고, 불필요한 내용은 생략합니다.
 - JSON 형태로 제목(title_ko), 핵심 요약(summary_key), 상세 요약(summary_detail), 키워드(tags) 세 항목을 출력합니다.
-- 상세 요약은 markdown 형식으로 작성합니다.
+- 주요 키워드를 제공합니다.
+- 상세 요약은 요약된 내용을 보기 쉽고 이해하기 쉬운 markdown 형식으로 제공합니다.
 - 출력 예제
 ```json
 {
