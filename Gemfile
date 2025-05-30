@@ -72,7 +72,7 @@ end
 
 gem "sorbet-runtime"
 
-gem "ruby_llm", "~> 1.2"
+gem "ruby_llm", "~> 1.3rc1"
 gem "pagy", "~> 9.3" # omit patch digit
 gem "honeybadger", "~> 5.28"
 gem "google-protobuf", require: false

@@ -10,4 +10,7 @@ RubyLLM.configure do |config|
   config.request_timeout = 120  # Request timeout in seconds (default: 120)
   config.max_retries = 3        # Max retries on transient network errors (default: 3)
   config.retry_interval = 0.1 # Initial delay in seconds (default: 0.1)
+
+  config.openai_api_key = "lm_studio" # Your OpenAI API key
+  config.openai_api_base = "http://127.0.0.1:1234/v1" # Your endpoint
 end
