@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_27_013123) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_30_043429) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -29,6 +29,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_013123) do
     t.string "host"
     t.bigint "site_id", default: 0, null: false
     t.string "slug"
+    t.boolean "is_youtube", default: false, null: false
     t.index ["deleted_at"], name: "index_articles_on_deleted_at"
     t.index ["origin_url"], name: "index_articles_on_origin_url", unique: true
     t.index ["slug"], name: "index_articles_on_slug", unique: true, where: "(deleted_at IS NULL)"

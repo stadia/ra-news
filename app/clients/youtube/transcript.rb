@@ -8,6 +8,7 @@ module Youtube
   class Transcript
     attr_reader :response
 
+    #: (String video_id, ?lang: String) -> Hash
     def get(video_id, lang: "en")
       message = { one: "asr", two: lang }
       typedef = MessageType
@@ -38,17 +39,20 @@ module Youtube
       @response.body
     end
 
+    #: (String video_id, ?lang: String) -> Hash
     def self.get(video_id, lang: "en")
       new.get(video_id, lang:)
     end
 
     private
 
+    #: (Hash message, MessageType typedef) -> String
     def encode_message(message, typedef)
       encoded_message = typedef.new(message)
       encoded_message.to_proto
     end
 
+    #: (Hash message, MessageType typedef) -> String
     def get_base64_protobuf(message, typedef)
       encoded_data = encode_message(message, typedef)
       Base64.encode64(encoded_data).delete("\n")

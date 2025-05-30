@@ -821,6 +821,51 @@ class Article
     sig { void }
     def id_will_change!; end
 
+    sig { returns(T::Boolean) }
+    def is_youtube; end
+
+    sig { params(value: T::Boolean).returns(T::Boolean) }
+    def is_youtube=(value); end
+
+    sig { returns(T::Boolean) }
+    def is_youtube?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_youtube_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def is_youtube_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def is_youtube_came_from_user?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def is_youtube_change; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def is_youtube_change_to_be_saved; end
+
+    sig { params(from: T::Boolean, to: T::Boolean).returns(T::Boolean) }
+    def is_youtube_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_youtube_in_database; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def is_youtube_previous_change; end
+
+    sig { params(from: T::Boolean, to: T::Boolean).returns(T::Boolean) }
+    def is_youtube_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_youtube_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_youtube_was; end
+
+    sig { void }
+    def is_youtube_will_change!; end
+
     sig { returns(::String) }
     def origin_url; end
 
@@ -937,6 +982,9 @@ class Article
     def restore_id_value!; end
 
     sig { void }
+    def restore_is_youtube!; end
+
+    sig { void }
     def restore_origin_url!; end
 
     sig { void }
@@ -1001,6 +1049,12 @@ class Article
 
     sig { returns(T::Boolean) }
     def saved_change_to_id_value?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def saved_change_to_is_youtube; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_is_youtube?; end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_origin_url; end
@@ -1538,6 +1592,9 @@ class Article
 
     sig { returns(T::Boolean) }
     def will_save_change_to_id_value?; end
+
+    sig { returns(T::Boolean) }
+    def will_save_change_to_is_youtube?; end
 
     sig { returns(T::Boolean) }
     def will_save_change_to_origin_url?; end
