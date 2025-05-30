@@ -3,6 +3,8 @@
 # rbs_inline: enabled
 
 class Article < ApplicationRecord
+  include PgSearch::Model
+
   belongs_to :user, optional: true
 
   belongs_to :site, optional: true
