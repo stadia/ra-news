@@ -37,9 +37,10 @@ class ArticleJob < ApplicationJob
 ```
 PROMPT
 
-    chat = RubyLLM.chat(model: "gemini-2.5-flash-preview-05-20", provider: :gemini, assume_model_exists: true)
-
-    chat.with_instructions("You are an expert in the Ruby programming language and RubyOnRails framework. You are precise and concise. Use OREO technique, pyramid structure, and transition expressions actively. All output should be in Korean.")
+    chat = RubyLLM.chat(model: "gemini-2.5-flash-preview-04-17", provider: :gemini)
+    # chat = RubyLLM.chat(model: "deepseek/deepseek-r1-0528-qwen3-8b", provider: :openai, assume_model_exists: true)
+    llm_instructions = "You are an expert in the Ruby programming language and RubyOnRails framework. You are precise and concise. Use OREO technique, pyramid structure, and transition expressions actively. All output should be in Korean."
+    chat.with_instructions(llm_instructions)
     response =  if article.is_youtube?
       # YouTube URL인 경우
       chat.with_tool(YoutubeContentTool.new)

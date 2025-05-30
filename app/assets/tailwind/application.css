@@ -26,6 +26,16 @@
     --font-body: 'Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans KR', 'sans-serif', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  /* background-color: var(--color-background); /* Optionally use theme variable */
+  /* color: var(--color-foreground); */ /* Optionally use theme variable */
+}
+
+body input, body textarea, body select {
+  @apply text-gray-800 rounded-md;
+}
+
 .pagy {
   @apply flex space-x-1 font-semibold text-sm text-gray-400; /* text-gray-500 to text-gray-400 */
   a:not(.gap) {
@@ -46,12 +56,6 @@
       @apply bg-gray-800 border-none rounded-md text-gray-200; /* bg-gray-100 to bg-gray-800, add text-gray-200 */
     }
   }
-}
-
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  /* background-color: var(--color-background); /* Optionally use theme variable */
-  /* color: var(--color-foreground); */ /* Optionally use theme variable */
 }
 
 .article-content h1, .article-content h2, .article-content h3, .article-content h4, .article-content h5, .article-content h6 {

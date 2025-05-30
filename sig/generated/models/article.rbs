@@ -5,15 +5,23 @@ class Article < ApplicationRecord
 
   def generate_metadata: () -> void
 
-  def is_youtube?: () -> bool
-
   def youtube_id: () -> String?
-
-  def url_to_published_at: () -> DateTime?
 
   def update_slug: () -> bool
 
   private
+
+  def set_youtube_metadata: () -> void
+
+  # : (String body) -> void
+  def set_webpage_metadata: (String body) -> void
+
+  # : (Faraday::Response response) -> void
+  def handle_redirection: (Faraday::Response response) -> void
+
+  def fetch_url_content: () -> Faraday::Response?
+
+  def url_to_published_at: () -> DateTime?
 
   def parse_to_published_at: (untyped body) -> DateTime?
 end

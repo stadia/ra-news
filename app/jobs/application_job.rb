@@ -8,4 +8,17 @@ class ApplicationJob < ActiveJob::Base
 
   # Most jobs are safe to ignore if the underlying records are no longer available
   # discard_on ActiveJob::DeserializationError
+
+  rescue_from(StandardError) do |exception|
+    honeybadger_context = {
+      job: {
+        class: self.class.name,
+        arguments: arguments,
+        queue_name: queue_name
+      }
+    }
+    logger.error exception.backtrace if Rails.env.development?
+    Honeybadger.notify(exception, error_class: exception.class.name, backtrace: exception.backtrace,
+    error_message: exception.message, context: honeybadger_context)
+  end
 end

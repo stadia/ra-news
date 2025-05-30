@@ -18,30 +18,32 @@ class ApplicationClient
   BASE_URI = "https://example.org"
   NET_HTTP_ERRORS = [ Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError ]
 
+  #: (?token: String, ?base_uri: String) -> ApplicationClient
   def initialize(token: nil, base_uri: nil)
     @token = token
     @base_uri = base_uri || BASE_URI
   end
 
-  def default_headers
+  def default_headers #: Hash[String, String]
     {
       "Accept" => content_type,
       "Content-Type" => content_type
     }.merge(authorization_header)
   end
 
-  def content_type
+  def content_type #: String
     "application/json"
   end
 
-  def authorization_header
+  def authorization_header #: Hash[String, String]
     token ? { "Authorization" => "Bearer #{token}" } : {}
   end
 
-  def default_query_params
+  def default_query_params #: Hash[String, String]
     {}
   end
 
+  #: (String path, ?headers: Hash, ?query: untyped)
   def get(path, headers: {}, query: nil)
     make_request(klass: Net::HTTP::Get, path: path, headers: headers, query: query)
   end

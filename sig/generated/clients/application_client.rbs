@@ -23,16 +23,18 @@ class ApplicationClient
 
   NET_HTTP_ERRORS: ::Array[untyped]
 
-  def initialize: (?token: untyped, ?base_uri: untyped) -> untyped
+  # : (?token: String, ?base_uri: String) -> ApplicationClient
+  def initialize: (?token: String, ?base_uri: String) -> ApplicationClient
 
-  def default_headers: () -> untyped
+  def default_headers: () -> Hash[String, String]
 
-  def content_type: () -> untyped
+  def content_type: () -> String
 
-  def authorization_header: () -> untyped
+  def authorization_header: () -> Hash[String, String]
 
-  def default_query_params: () -> untyped
+  def default_query_params: () -> Hash[String, String]
 
+  # : (String path, ?headers: Hash, ?query: untyped)
   def get: (untyped path, ?headers: untyped, ?query: untyped) -> untyped
 
   def post: (untyped path, ?headers: untyped, ?query: untyped, ?body: untyped, ?form_data: untyped) -> untyped

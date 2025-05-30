@@ -2,9 +2,10 @@
 
 module Youtube
   class Channel
-    attr_reader channel: untyped
+    attr_reader channel: Yt::Channel
 
-    def initialize: (?id: untyped) -> untyped
+    # : (?id: String) -> Youtube::Channel
+    def initialize: (?id: String) -> Youtube::Channel
 
     def videos: () -> untyped
   end

@@ -15,7 +15,7 @@ class YoutubeContentTool < RubyLLM::Tool
     transcript = nil
     video = Yt::Video.new id: youtube_id
     video.captions.map(&:language).each do |lang|
-      rc = Youtube::Transcript.send("get_#{lang}", youtube_id)
+      rc = Youtube::Transcript.get(youtube_id, lang: lang)
       transcript = format_transcript(rc.dig("actions"))
       break if transcript.present?
     end
@@ -25,8 +25,8 @@ class YoutubeContentTool < RubyLLM::Tool
   private
   def format_transcript(actions)
     tsr = actions&.first&.dig("updateEngagementPanelAction", "content", "transcriptRenderer", "content", "transcriptSearchPanelRenderer", "body", "transcriptSegmentListRenderer", "initialSegments")
-    return unless tsr
+    return nil if tsr.nil? || tsr.empty?
 
-    tsr.map { |it| it.dig("transcriptSegmentRenderer", "startTimeText", "simpleText").to_s + " - " + it.dig("transcriptSegmentRenderer", "snippet", "runs").map { |it| it.dig("text") }.join(" ") }.join("\n")
+    tsr.map { |it| it.dig("transcriptSegmentRenderer", "startTimeText", "simpleText").to_s + " - " + (it.dig("transcriptSegmentRenderer", "snippet", "runs")&.map { |it| it.dig("text") }&.join(" ") || "") }.join("\n")
   end
 end
