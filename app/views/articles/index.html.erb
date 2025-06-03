@@ -5,9 +5,10 @@
     <div id="<%= dom_id article %>" class="bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-gray-700 p-3 md:p-6 flex flex-col">
       <div class="mb-3">
         <h2 class="text-xl font-semibold text-gray-100 hover:text-green-400"><%= link_to article.title_ko || article.title, article_path(article.slug) %></h2>
+        <h3 class="text-l text-gray-100"><%= article.title %></h3>
       </div>
       <div class="mb-4">
-        <%= link_to article.url, target: "_blank", class: "inline-flex items-center text-sm text-blue-400 hover:text-blue-300 hover:underline font-medium" do %>
+        <%= link_to article.url, target: "_blank", class: "inline-flex items-center text-m text-blue-400 hover:text-blue-300 hover:underline font-medium" do %>
           <%= article.url %>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1">
             <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5zm0 3a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5zm0 3a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5zm8-5a.75.75 0 01.75-.75h.5a.75.75 0 01.75.75v.5c0 .414.336.75.75.75h.5a.75.75 0 01.75.75v.5a.75.75 0 01-.75.75h-.5a.75.75 0 01-.75-.75v-.5a.75.75 0 00-.75-.75h-.5a.75.75 0 01-.75-.75v-.5zM5 3.25a.75.75 0 01.75-.75h8.5a.75.75 0 01.75.75v8.5a.75.75 0 01-.75.75h-8.5a.75.75 0 01-.75-.75v-8.5z" clip-rule="evenodd" />
