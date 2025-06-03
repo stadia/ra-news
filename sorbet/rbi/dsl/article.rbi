@@ -343,11 +343,20 @@ class Article
     sig { params(value: T::Enumerable[::ActsAsTaggableOn::Tag]).void }
     def base_tags=(value); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::PgSearch::Document) }
+    def build_pg_search_document(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::Site) }
     def build_site(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def build_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::PgSearch::Document) }
+    def create_pg_search_document(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::PgSearch::Document) }
+    def create_pg_search_document!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Site) }
     def create_site(*args, &blk); end
@@ -361,11 +370,23 @@ class Article
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def create_user!(*args, &blk); end
 
+    sig { returns(T.nilable(::PgSearch::Document)) }
+    def pg_search_document; end
+
+    sig { params(value: T.nilable(::PgSearch::Document)).void }
+    def pg_search_document=(value); end
+
+    sig { returns(T.nilable(::PgSearch::Document)) }
+    def reload_pg_search_document; end
+
     sig { returns(T.nilable(::Site)) }
     def reload_site; end
 
     sig { returns(T.nilable(::User)) }
     def reload_user; end
+
+    sig { void }
+    def reset_pg_search_document; end
 
     sig { void }
     def reset_site; end
@@ -476,6 +497,9 @@ class Article
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def from(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def full_text_search_for(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationGroupChain) }
     def group(*args, &blk); end
@@ -1669,6 +1693,9 @@ class Article
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def from(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def full_text_search_for(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationGroupChain) }
     def group(*args, &blk); end

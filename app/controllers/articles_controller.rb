@@ -12,11 +12,11 @@ class ArticlesController < ApplicationController
   # GET /articles or /articles.json
   def index
     article = if params[:search].present?
-      Article.where("title ILIKE :search OR title_ko ILIKE :search", search: "%#{params[:search]}%")
+      Article.full_text_search_for(params[:search])
     else
       Article.where.not(id: Article.select(:id).where(deleted_at: nil).limit(9).order(created_at: :desc).map(&:id))
     end
-    @pagy, @articles = pagy(article.where(deleted_at: nil).order(published_at: :desc))
+    @pagy, @articles = pagy(article.includes(:user).where(deleted_at: nil).order(published_at: :desc))
   end
 
   def show

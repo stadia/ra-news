@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_03_024621) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_03_064551) do
   create_schema "ra_news"
 
   # These are extensions that must be enabled in order to support this database
@@ -41,6 +41,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_024621) do
     t.index ["title_ko"], name: "index_articles_on_title_ko", opclass: :gin_bigm_ops, using: :gin
     t.index ["url"], name: "index_articles_on_url", unique: true
     t.index ["user_id"], name: "index_articles_on_user_id"
+  end
+
+  create_table "pg_search_documents", force: :cascade do |t|
+    t.text "content"
+    t.string "searchable_type"
+    t.bigint "searchable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "to_tsvector('simple'::regconfig, COALESCE(content, ''::text))", name: "idx_on_to_tsvector_simple_coalesce_pg_search_docume_39455b0632", using: :gin
+    t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
   end
 
   create_table "sessions", force: :cascade do |t|
