@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_03_075925) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_03_085514) do
   create_schema "ra_news"
 
   # These are extensions that must be enabled in order to support this database
@@ -50,7 +50,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_03_075925) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.tsvector "tsvector_content_tsearch"
-    t.index "to_tsvector('simple'::regconfig, COALESCE(content, ''::text))", name: "idx_on_to_tsvector_simple_coalesce_pg_search_docume_39455b0632", using: :gin
     t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
     t.index ["tsvector_content_tsearch"], name: "index_pg_search_documents_on_tsvector_content_tsearch", using: :gin
   end
