@@ -10,7 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_30_063142) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_03_024621) do
+  create_schema "ra_news"
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "fuzzystrmatch"
   enable_extension "pg_bigm"
@@ -35,6 +37,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_30_063142) do
     t.index ["deleted_at"], name: "index_articles_on_deleted_at"
     t.index ["origin_url"], name: "index_articles_on_origin_url", unique: true
     t.index ["slug"], name: "index_articles_on_slug", unique: true, where: "(deleted_at IS NULL)"
+    t.index ["title"], name: "index_articles_on_title", opclass: :gin_bigm_ops, using: :gin
+    t.index ["title_ko"], name: "index_articles_on_title_ko", opclass: :gin_bigm_ops, using: :gin
     t.index ["url"], name: "index_articles_on_url", unique: true
     t.index ["user_id"], name: "index_articles_on_user_id"
   end
