@@ -5,7 +5,7 @@
     <div class="p-4 md:p-8">
         <h1 class="text-2xl font-bold text-gray-100 mb-3"><%= @article.title_ko %></h1>
 
-        <h2 class="text-xl font-semibold text-white-100 mb-3"><%= @article.title %></h2>
+        <h2 class="text-xl font-semibold text-white mb-3"><%= @article.title %></h2>
 
         <div class="flex flex-wrap items-center text-xs text-gray-400 mb-3 md:mb-6">
             <span class="mr-4 inline-flex items-center">
@@ -20,7 +20,7 @@
               </svg>
               <%= @article.published_at&.strftime("%Y년 %m월 %d일") || 'N/A' %>
             </span>
-            <%= link_to @article.url, target: "_blank", class: "inline-flex items-center text-sm text-blue-400 hover:text-blue-300 hover:underline font-medium" do %>
+            <%= link_to @article.url, target: "_blank", class: "inline-flex items-center text-base text-blue-400 hover:text-blue-300 hover:underline font-medium" do %>
               <%= @article.url %>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1">
                 <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5zm0 3a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5zm0 3a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5zm8-5a.75.75 0 01.75-.75h.5a.75.75 0 01.75.75v.5c0 .414.336.75.75.75h.5a.75.75 0 01.75.75v.5a.75.75 0 01-.75.75h-.5a.75.75 0 01-.75-.75v-.5a.75.75 0 00-.75-.75h-.5a.75.75 0 01-.75-.75v-.5zM5 3.25a.75.75 0 01.75-.75h8.5a.75.75 0 01.75.75v8.5a.75.75 0 01-.75.75h-8.5a.75.75 0 01-.75-.75v-8.5z" clip-rule="evenodd" />
