@@ -86,5 +86,6 @@ gem "ruby-readability"
 gem "acts-as-taggable-on"
 gem "rails-i18n"
 gem "yt"
-
+gem "pg_search"
+gem "hairtrigger"
 gem "madmin", "~> 2.0"

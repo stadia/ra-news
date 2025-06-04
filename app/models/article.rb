@@ -3,6 +3,16 @@
 # rbs_inline: enabled
 
 class Article < ApplicationRecord
+  include PgSearch::Model
+
+  multisearchable against: [ :title, :title_ko, :summary_key, :summary_detail ], if: lambda { |record| record.deleted_at.nil? }
+
+  scope :full_text_search_for, ->(term) do
+    joins(:pg_search_document).merge(
+      PgSearch.multisearch(term).where(searchable_type: self.name)
+    )
+  end
+
   belongs_to :user, optional: true
 
   belongs_to :site, optional: true

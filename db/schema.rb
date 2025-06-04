@@ -10,8 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_30_043429) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_03_085514) do
+  create_schema "ra_news"
+
   # These are extensions that must be enabled in order to support this database
+  enable_extension "fuzzystrmatch"
+  enable_extension "pg_bigm"
   enable_extension "pg_catalog.plpgsql"
 
   create_table "articles", force: :cascade do |t|
@@ -33,8 +37,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_30_043429) do
     t.index ["deleted_at"], name: "index_articles_on_deleted_at"
     t.index ["origin_url"], name: "index_articles_on_origin_url", unique: true
     t.index ["slug"], name: "index_articles_on_slug", unique: true, where: "(deleted_at IS NULL)"
+    t.index ["title"], name: "index_articles_on_title", opclass: :gin_bigm_ops, using: :gin
+    t.index ["title_ko"], name: "index_articles_on_title_ko", opclass: :gin_bigm_ops, using: :gin
     t.index ["url"], name: "index_articles_on_url", unique: true
     t.index ["user_id"], name: "index_articles_on_user_id"
+  end
+
+  create_table "pg_search_documents", force: :cascade do |t|
+    t.text "content"
+    t.string "searchable_type"
+    t.bigint "searchable_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.tsvector "tsvector_content_tsearch"
+    t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
+    t.index ["tsvector_content_tsearch"], name: "index_pg_search_documents_on_tsvector_content_tsearch", using: :gin
   end
 
   create_table "sessions", force: :cascade do |t|

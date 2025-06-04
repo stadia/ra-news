@@ -69,5 +69,6 @@ PROMPT
     article.tag_list.add(parsed_json["tags"]) if parsed_json["tags"].is_a?(Array)
     article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko"))
     SitemapJob.perform_later
+    PgSearch::Multisearch.rebuild(Article)
   end
 end
