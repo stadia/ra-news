@@ -22,6 +22,9 @@ module GeneratedPathHelpersModule
   def edit_madmin_site_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_tag_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_madmin_user_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -49,6 +52,12 @@ module GeneratedPathHelpersModule
   def madmin_sites_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def madmin_tag_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_tags_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def madmin_user_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -65,6 +74,9 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_madmin_site_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_tag_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_madmin_user_path(*args); end

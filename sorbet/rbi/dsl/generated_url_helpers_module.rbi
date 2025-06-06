@@ -22,6 +22,9 @@ module GeneratedUrlHelpersModule
   def edit_madmin_site_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_tag_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_madmin_user_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -49,6 +52,12 @@ module GeneratedUrlHelpersModule
   def madmin_sites_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def madmin_tag_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_tags_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def madmin_user_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -65,6 +74,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def new_madmin_site_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_tag_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_madmin_user_url(*args); end
