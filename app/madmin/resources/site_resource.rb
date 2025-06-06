@@ -2,17 +2,18 @@ class SiteResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
   attribute :name
-  attribute :base_uri
+  attribute :base_uri, index: true
+  attribute :email, index: true
+  attribute :path, index: true
+  attribute :channel, index: true
+  attribute :last_checked_at, index: true, form: false
+
   attribute :client
-  attribute :last_checked_at
-  attribute :created_at, form: false
+  attribute :created_at, form: false, index: false
   attribute :updated_at, form: false
-  attribute :email
-  attribute :path
-  attribute :channel
 
   # Associations
-  attribute :articles
+  attribute :articles, form: false
 
   # Add scopes to easily filter records
   # scope :published

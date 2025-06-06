@@ -6,14 +6,14 @@ class ArticleResource < Madmin::Resource
   attribute :slug, index: true
   attribute :deleted_at, index: true
   attribute :created_at, form: false
+  attribute :host, index: true
 
   attribute :url, index: false
   attribute :updated_at, form: false
-  attribute :summary_key, index: false
-  attribute :summary_detail, index: false
+  attribute :summary_key, index: false, form: false
+  attribute :summary_detail, index: false, form: false
   attribute :published_at
   attribute :origin_url, index: false
-  attribute :host
   attribute :tag_list, index: false
 
   # Associations
