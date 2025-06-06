@@ -27,40 +27,16 @@ class ArticlesController < ApplicationController
     @article = Article.new(user: Current.user)
   end
 
-  # GET /articles/1/edit
-  def edit
-  end
-
   # POST /articles
   def create
     @article = Article.new(article_params.merge(origin_url: article_params[:url], user: Current.user))
 
     respond_to do |format|
       if @article.save
-        format.html { redirect_to @article, notice: "Article was successfully created." }
+        format.html { redirect_to article_path(@article), notice: "Article was successfully created." }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
-    end
-  end
-
-  # PATCH/PUT /articles/1
-  def update
-    respond_to do |format|
-      if @article.update(article_params)
-        format.html { redirect_to @article, notice: "Article was successfully updated." }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /articles/1
-  def destroy
-    @article.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to articles_path, status: :see_other, notice: "Article was successfully destroyed." }
     end
   end
 
