@@ -16,8 +16,6 @@ class RssSiteJob < ApplicationJob
     feed = site.init_client&.feed(site.path)
     return if feed.nil?
 
-    last_checked_at = Time.zone.now
-
     feed.items.each do |item|
       attrs = nil
       case item
@@ -35,6 +33,6 @@ class RssSiteJob < ApplicationJob
       Article.create(attrs.merge(site:, created_at: attrs[:published_at], updated_at: attrs[:published_at]))
     end
 
-    site.update(last_checked_at:)
+    site.update(last_checked_at: Time.zone.now)
   end
 end

@@ -16,8 +16,6 @@ class YoutubeSiteJob < ApplicationJob
     videos = site.init_client&.videos
     return if videos.nil?
 
-    last_checked_at = Time.zone.now
-
     videos.each do |video|
       break if site.last_checked_at > video.published_at
 
@@ -25,6 +23,6 @@ class YoutubeSiteJob < ApplicationJob
       Article.create(url: url, origin_url: url, title: video.title, published_at: video.published_at, site:) unless Article.exists?(origin_url: url)
     end
 
-    site.update(last_checked_at:)
+    site.update(last_checked_at: Time.zone.now)
   end
 end
