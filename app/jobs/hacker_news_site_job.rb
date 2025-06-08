@@ -9,7 +9,7 @@ class HackerNewsSiteJob < ApplicationJob
     client = HackerNews.new
     top_story_ids = client.new_stories
 
-    tags = Tag.where(is_confirmed: true, taggings_count: 4...).map(&:name)
+    tags = Tag.where(is_confirmed: true, taggings_count: 2...).map(&:name)
 
     # Process each story ID
     top_story_ids.each do |id|
