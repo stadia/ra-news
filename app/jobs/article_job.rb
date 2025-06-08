@@ -16,6 +16,7 @@ class ArticleJob < ApplicationJob
 핵심 요약은 3줄 이내로 작성합니다.
 상세 요약은 서론(introduction)-본론(body)-결론(conclusion)의 3단 구조를 기본으로 합니다. 상세 요약(summary_detail)은 800자 이상 1500자 이내로 작성합니다.
 주요 태그를 최대 3개 추출합니다. 이 태그는 가급적 본문에 포함 된 단어를 사용하며 주제를 표현할 수 있는 핵심 키워드들입니다. 태그는 한국어로 번역하지 않아도 됩니다.
+요약, 정리 후 주어진 내용이 진짜 Ruby Programming Language 와 관련이 있는지 확인해서 출력 결과에 is_related 키로 boolean 값으로 표시합니다.
 1. 입력 포맷
 - Expect HTML-formatted text
 - Process both inline formatting (bold, italic, links) and block elements (headings, lists, code blocks)
@@ -32,14 +33,15 @@ class ArticleJob < ApplicationJob
   "title_ko": "",
   "summary_key": ["", "", ""],
   "summary_detail": { "introduction": "", "body": "", "conclusion": "" },
-  "tags": ["", "", ""]
+  "tags": ["", "", ""],
+  "is_related": true
 }
 ```
 PROMPT
 
     chat = RubyLLM.chat(model: "gemini-2.5-flash-preview-04-17", provider: :gemini)
     # chat = RubyLLM.chat(model: "deepseek/deepseek-r1-0528-qwen3-8b", provider: :openai, assume_model_exists: true)
-    llm_instructions = "You are an expert in the Ruby programming language and RubyOnRails framework. You are precise and concise. Use OREO technique, pyramid structure, and transition expressions actively. All output should be in Korean."
+    llm_instructions = "You are an expert in the Ruby Programming Language and RubyOnRails framework. You are precise and concise. Use OREO technique, pyramid structure, and transition expressions actively. All output should be in Korean."
     chat.with_instructions(llm_instructions)
     response =  if article.is_youtube?
       # YouTube URL인 경우
@@ -60,6 +62,7 @@ PROMPT
     # JSON 데이터 추출 및 파싱
     json_string = response.content.match(/\{.*\}/m).to_s # 첫 번째 JSON 객체만 추출
     parsed_json = JSON.load(json_string) # JSON 파싱
+    logger.debug parsed_json.inspect
     if parsed_json.blank? || parsed_json.empty?
       article.discard
       return
@@ -67,7 +70,8 @@ PROMPT
 
     # JSON 데이터 저장
     article.tag_list.add(parsed_json["tags"]) if parsed_json["tags"].is_a?(Array)
-    article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko"))
+    article.deleted_at = Time.zone.now if parsed_json["is_related"] == false && article.site&.client == "HackerNews"
+    article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related"))
     SitemapJob.perform_later
     PgSearch::Multisearch.rebuild(Article)
   end

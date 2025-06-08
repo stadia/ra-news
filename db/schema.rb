@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_06_053411) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_08_074332) do
   create_schema "ra_news"
 
   # These are extensions that must be enabled in order to support this database
@@ -34,6 +34,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_06_053411) do
     t.bigint "site_id", default: 0, null: false
     t.string "slug"
     t.boolean "is_youtube", default: false, null: false
+    t.boolean "is_related", default: false, null: false
     t.index ["deleted_at"], name: "index_articles_on_deleted_at"
     t.index ["origin_url"], name: "index_articles_on_origin_url", unique: true
     t.index ["slug"], name: "index_articles_on_slug", unique: true, where: "(deleted_at IS NULL)"

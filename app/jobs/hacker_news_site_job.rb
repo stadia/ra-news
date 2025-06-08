@@ -43,7 +43,8 @@ class HackerNewsSiteJob < ApplicationJob
         title: item["title"],
         url: item["url"],
         origin_url: item["url"],
-        published_at: Time.at(item["time"])
+        published_at: Time.at(item["time"]),
+        site: site
       )
     end
     site.update(last_checked_at: Time.zone.now)

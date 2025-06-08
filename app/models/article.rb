@@ -95,7 +95,7 @@ class Article < ApplicationRecord
     self.published_at = url_to_published_at || parse_to_published_at(body) || Time.zone.now
     doc = Nokogiri::HTML(body)
     temp_title = doc.at("title")&.text
-    self.title = temp_title if temp_title.is_a?(String)
+    self.title = temp_title.strip&.gsub(/\s+/, " ") if temp_title.is_a?(String)
   rescue URI::InvalidURIError
     logger.error "Invalid URI for webpage metadata: #{url}"
     # slug, published_at, title 등에 대한 기본값 설정 또는 오류 처리
