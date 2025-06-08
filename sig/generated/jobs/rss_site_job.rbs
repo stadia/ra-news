@@ -3,4 +3,15 @@
 class RssSiteJob < ApplicationJob
   # : (id Integer) -> void
   def perform: (id Integer) -> void
+
+  private
+
+  # : (RSS::Rss | RSS::Atom::Feed feed, Site site) -> void
+  def process_feed_items: (RSS::Rss | RSS::Atom::Feed feed, Site site) -> void
+
+  # : (RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry item) -> Hash?
+  def extract_item_attributes: (RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry item) -> Hash?
+
+  # : (String | Time | nil time_value) -> Time?
+  def parse_time: (String | Time | nil time_value) -> Time?
 end

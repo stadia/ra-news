@@ -5,5 +5,9 @@ class HackerNews < ApplicationClient
 
   def top_stories: () -> untyped
 
+  def new_stories: () -> untyped
+
+  def best_stories: () -> untyped
+
   def item: (untyped id) -> untyped
 end

@@ -13,26 +13,76 @@ class RssSiteJob < ApplicationJob
     site = Site.find_by(id:)
     return if site.nil?
 
-    feed = site.init_client&.feed(site.path)
-    return if feed.nil?
+    begin
+      feed = site.init_client&.feed(site.path)
+      return unless feed
 
-    feed.items.each do |item|
-      attrs = nil
-      case item
-      when RSS::Atom::Feed::Entry
-        attrs = { title: item.title.content, url: item.link.href, origin_url: item.link.href, published_at: item.published.content }
-      when RSS::Rss::Channel::Item
-        attrs = { title: item.title, url: item.link, origin_url: item.link, published_at: item.pubDate }
-      end
-      next if attrs.nil? || attrs.empty?
+      process_feed_items(feed, site)
+      site.update(last_checked_at: Time.zone.now)
+    rescue => e
+      logger.error "RSS parsing error for site #{site.id}: #{e.message}"
+    end
+  end
 
-      break if site.last_checked_at > attrs[:published_at]
+  private
 
-      Article.exists?(origin_url: attrs[:origin_url]) and next
-
-      Article.create(attrs.merge(site:, created_at: attrs[:published_at], updated_at: attrs[:published_at]))
+  #: (RSS::Rss | RSS::Atom::Feed feed, Site site) -> void
+  def process_feed_items(feed, site)
+    items = case feed
+    when RSS::Rss
+              feed.items
+    when RSS::Atom::Feed
+              feed.entries
+    else
+              []
     end
 
-    site.update(last_checked_at: Time.zone.now)
+    items.each do |item|
+      attrs = extract_item_attributes(item)
+      next unless attrs
+
+      # 이미 체크한 시간보다 오래된 항목이면 중단
+      break if site.last_checked_at && attrs[:published_at] < site.last_checked_at
+
+      # 중복 체크
+      next if Article.exists?(origin_url: attrs[:origin_url])
+
+      Article.create(attrs.merge(site:,
+        created_at: attrs[:published_at],
+        updated_at: attrs[:published_at]
+      ))
+    end
+  end
+
+  #: (RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry item) -> Hash?
+  def extract_item_attributes(item)
+    case item
+    when RSS::Atom::Feed::Entry
+      {
+        title: item.title&.content,
+        url: item.link&.href,
+        origin_url: item.link&.href,
+        published_at: parse_time(item.published&.content) || Time.zone.now
+      }
+    when RSS::Rss::Channel::Item
+      {
+        title: item.title,
+        url: item.link,
+        origin_url: item.link,
+        published_at: parse_time(item.pubDate) || Time.zone.now
+      }
+    end
+  end
+
+  #: (String | Time | nil time_value) -> Time?
+  def parse_time(time_value)
+    case time_value
+    when Time
+      time_value
+    when String
+      Time.zone.parse(time_value)
+    else
+      nil
+    end
   end
 end
