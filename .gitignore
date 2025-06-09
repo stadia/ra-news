@@ -42,3 +42,4 @@
 node_modules
 .yarn
 public/sitemap.xml.gz
+db/schema.rb
