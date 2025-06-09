@@ -7,7 +7,7 @@ class CreatePgSearchDocuments < ActiveRecord::Migration[8.0]
         t.timestamps null: false
       end
     end
-    add_index :pg_search_documents, %[to_tsvector('simple', coalesce("pg_search_documents"."content"::text, ''))], using: :gin, opclass: :gin_bigm_ops
+    add_index :pg_search_documents, %[to_tsvector('simple', coalesce("pg_search_documents"."content"::text, ''))], using: :gin, opclass: :gin_bigm_ops unless Rails.env.test?
   end
 
   def down
