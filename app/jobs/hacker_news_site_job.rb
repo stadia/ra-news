@@ -18,7 +18,13 @@ class HackerNewsSiteJob < ApplicationJob
       next if item.nil? || item["type"] != "story" || item["url"].blank?
 
       url = item["url"]
-      parsed_url = URI.parse(url)
+      begin
+        parsed_url = URI.parse(url)
+      rescue StandardError => e
+        logger.error "Failed to parse URL #{url}: #{e.message}"
+        next
+      end
+
       next if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
 
       break if site.last_checked_at > Time.at(item["time"])
