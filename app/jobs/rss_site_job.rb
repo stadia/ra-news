@@ -57,16 +57,16 @@ class RssSiteJob < ApplicationJob
     when RSS::Atom::Feed::Entry
       {
         title: item.title&.content,
-        url: item.link&.href,
-        origin_url: item.link&.href,
-        published_at: parse_time(item.updated&.content) || Time.zone.now
+        url: item.link.href,
+        origin_url: item.link.href,
+        published_at: item.published&.content || item.updated&.content || Time.zone.now
       }
     when RSS::Rss::Channel::Item
       {
         title: item.title,
         url: item.link,
         origin_url: item.link,
-        published_at: parse_time(item.pubDate) || Time.zone.now
+        published_at: item.pubDate || Time.zone.now
       }
     end
   end
