@@ -61,8 +61,7 @@ PROMPT
     logger.debug response.content
     # JSON 데이터 추출 및 파싱
     parsed_json = begin
-                    # `json_string = response.content.match(/\{.*\}/m).to_s` 대신 더 안전한 JSON 파싱 시도
-                    JSON.parse(response.content.scan(/\{.*?\}/m).first || "{}") # 첫 번째 JSON 객체만 추출하거나, 없으면 빈 JSON 객체
+                    JSON.parse(response.content.scan(/\{.*\}/m).first || "{}") # 첫 번째 JSON 객체만 추출하거나, 없으면 빈 JSON 객체
                   rescue JSON::ParserError => e
                     logger.error "JSON 파싱 오류: #{e.message} - 원본 응답: #{response.content}"
                     article.discard
