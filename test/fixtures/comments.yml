@@ -2,6 +2,10 @@
 
 one:
   body: MyString
+  user: one
+  article: one
 
 two:
   body: MyString
+  user: two
+  article: two
