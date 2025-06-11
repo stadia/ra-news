@@ -54,4 +54,9 @@ class ApplicationClient
   def handle_response: (untyped response) -> untyped
 
   def build_body: (untyped body) -> untyped
+
+  private
+
+  # : (URI uri, Hash headers, untyped form_data) -> Faraday::Connection
+  def initialize_faraday_connection: (URI uri, Hash headers, untyped form_data) -> Faraday::Connection
 end

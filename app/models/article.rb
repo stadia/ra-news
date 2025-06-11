@@ -30,22 +30,24 @@ class Article < ApplicationRecord
   acts_as_taggable_on :tags
 
   after_create do
-    next unless url.is_a?(String)
-
     ArticleJob.perform_later(id) if deleted_at.nil?
   end
 
   after_commit do
-    next unless saved_change_to_url?
-
-    ArticleJob.perform_later(id) if deleted_at.nil?
+    ArticleJob.perform_later(id) if saved_change_to_url? && deleted_at.nil? # Ensure deleted_at is checked here too
   end
 
   before_save do
-    published_at = Time.zone.now if published_at.blank?
+    # published_at이 없으면 현재 시간으로 설정.
+    # 단, LLM 요약 전에는 원본 URL에서 최대한 추출하는 것이 좋으므로,
+    # 이 부분은 generate_metadata 내에서 처리되도록 합니다.
+    self.published_at ||= Time.zone.now
   end
 
-  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev] #: Array[String]
+  # YouTube URL의 정규화된 호스트를 상수로 정의
+  YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
+
+  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev].freeze #: Array[String]
 
   def generate_metadata #: void
     return unless url.is_a?(String)
@@ -55,39 +57,57 @@ class Article < ApplicationRecord
 
     handle_redirection(response)
 
-    parsed_url = URI.parse(url)
-    self.host = parsed_url.host
-    self.deleted_at = Time.zone.now if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
-    self.is_youtube = true if host&.match?(/youtube/i)
+    set_initial_url_and_host # URL 및 호스트 초기 설정, 삭제 여부 판단
 
     if is_youtube?
       set_youtube_metadata
     else
       set_webpage_metadata(response.body)
     end
-    self.slug = "#{slug}-#{SecureRandom.hex(4)}" if Article.exists?(slug: self.slug)
+
+    # slug 중복 처리 (slug가 설정된 후에만 확인)
+    self.slug = "#{slug}-#{SecureRandom.hex(4)}" if slug.present? && Article.exists?(slug: self.slug)
   end
 
   def youtube_id #: String?
-    URI.decode_www_form(URI.parse(url).query).to_h["v"]
+    # nil 체크를 포함하여 안전하게 접근
+    URI.decode_www_form(URI.parse(url).query).to_h["v"] if url.is_a?(String) && URI.parse(url).query.present?
+  rescue URI::InvalidURIError
+    logger.error "Invalid URI for youtube_id: #{url}"
+    nil
   end
 
   def update_slug #: bool
-    update(slug: is_youtube? ? youtube_id : URI.parse(url).path.split("/").last.split(".").first)
+    new_slug = is_youtube? ? youtube_id : URI.parse(url).path.split("/").last.split(".").first
+    update(slug: new_slug)
+  rescue URI::InvalidURIError
+    logger.error "Invalid URI for slug update: #{url}"
+    false
   end
 
   def update_published_at #: bool
     response = fetch_url_content
     return false unless response
 
-    update(published_at: url_to_published_at || parse_to_published_at(response.body) || Time.zone.now)
+    update(published_at: url_to_published_at || extract_published_at_from_content(response.body) || Time.zone.now)
   end
 
   private
 
+  def set_initial_url_and_host #: void
+    parsed_url = URI.parse(url)
+    self.host = parsed_url.host
+    self.is_youtube = true if host&.match?(/youtube/i)
+    # IGNORE_HOSTS 패턴에 맞는 호스트이거나 경로가 너무 짧으면 discard
+    self.deleted_at = Time.zone.now if !is_youtube && parsed_url.path.nil? || parsed_url.path.size < 2 || IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
+  rescue URI::InvalidURIError
+    logger.error "Invalid URI for initial URL parsing: #{url}"
+    self.deleted_at = Time.zone.now # 유효하지 않은 URL은 삭제 처리
+  end
+
   def set_youtube_metadata #: void
     self.slug = youtube_id
-    self.url = "https://www.youtube.com/watch?v=#{youtube_id}" # 정규화
+    self.url = "https://#{YOUTUBE_NORMALIZED_HOST}/watch?v=#{video.id}" # 정규화
     video = Yt::Video.new id: youtube_id
     self.published_at = video.published_at if video&.published_at.is_a?(Time)
     self.title = video.title if video&.title.is_a?(String)
@@ -99,7 +119,7 @@ class Article < ApplicationRecord
   #: (String body) -> void
   def set_webpage_metadata(body)
     self.slug = URI.parse(url)&.path.split("/").last.split(".").first
-    self.published_at = url_to_published_at || parse_to_published_at(body) || Time.zone.now
+    self.published_at = url_to_published_at || extract_published_at_from_content(body) || Time.zone.now
     return if title.present?
 
     doc = Nokogiri::HTML5(body)
@@ -135,13 +155,21 @@ class Article < ApplicationRecord
     return unless match_data
 
     Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")
+  rescue URI::InvalidURIError
+    logger.error "Invalid URI for published_at extraction: #{url}"
+    nil
   end
 
-  def parse_to_published_at(body) #: DateTime?
+  #: (String body) -> DateTime?
+  def extract_published_at_from_content(body)
     doc = Nokogiri::HTML(body)
     published_at = if doc.at("time").present?
       time_element = doc.at("time")
-      time_element&.[]("datetime").present? ? Time.zone.parse(time_element&.[]("datetime")) : (time_element.text.present? ? Time.zone.parse(time_element.text) : nil)
+      if time_element.[]("datetime").present?
+        Time.zone.parse(time_element.[]("datetime"))
+      else
+        time_element.text.present? ? Time.zone.parse(time_element.text) : nil
+      end
     elsif doc.css(".date").present?
       # Nokogiri::HTML::Document에서 class가 "date"인 요소를 찾는 방법
       date_element = doc.css(".date").first
@@ -159,7 +187,7 @@ class Article < ApplicationRecord
       nil
     end
   rescue StandardError => e
-    puts "Error parsing published_at: #{e.message}"
+    logger.error "Error parsing published_at: #{e.message}"
     nil
   end
 end

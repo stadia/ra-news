@@ -5,6 +5,9 @@ class Article < ApplicationRecord
 
   include Discard::Model
 
+  # YouTube URL의 정규화된 호스트를 상수로 정의
+  YOUTUBE_NORMALIZED_HOST: untyped
+
   IGNORE_HOSTS: Array[String]
 
   def generate_metadata: () -> void
@@ -16,6 +19,8 @@ class Article < ApplicationRecord
   def update_published_at: () -> bool
 
   private
+
+  def set_initial_url_and_host: () -> void
 
   def set_youtube_metadata: () -> void
 
@@ -29,5 +34,6 @@ class Article < ApplicationRecord
 
   def url_to_published_at: () -> DateTime?
 
-  def parse_to_published_at: (untyped body) -> DateTime?
+  # : (String body) -> DateTime?
+  def extract_published_at_from_content: (String body) -> DateTime?
 end

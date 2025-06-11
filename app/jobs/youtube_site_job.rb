@@ -3,9 +3,6 @@
 # rbs_inline: enabled
 
 class YoutubeSiteJob < ApplicationJob
-  # YouTube URL의 정규화된 호스트를 상수로 정의
-  YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
-
   #: (id Integer) -> void
   def perform(id = nil)
     if id.nil?
@@ -23,7 +20,7 @@ class YoutubeSiteJob < ApplicationJob
       break if site.last_checked_at > video.published_at
 
       # 정규화된 URL 사용
-      url = "https://#{YOUTUBE_NORMALIZED_HOST}/watch?v=#{video.id}"
+      url = "https://#{Article::YOUTUBE_NORMALIZED_HOST}/watch?v=#{video.id}"
       Article.create(url: url, origin_url: url, title: video.title, published_at: video.published_at, site:) unless Article.exists?(origin_url: url)
     end
 
