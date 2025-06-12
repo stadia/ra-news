@@ -81,7 +81,7 @@
             </div>
             <div class="flex justify-end">
               <%= form.submit "댓글 작성",
-                  class: "px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors" %>
+                  class: "px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-lg border border-green-600 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-300" %>
             </div>
           <% end %>
         </div>
@@ -89,7 +89,7 @@
         <div class="mb-8 p-4 bg-gray-700 rounded-lg text-center">
           <p class="text-gray-300 mb-3">댓글을 작성하려면 로그인이 필요합니다.</p>
           <%= link_to "로그인", new_session_path,
-              class: "inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors" %>
+              class: "inline-block px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-lg border border-green-600 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-300" %>
         </div>
       <% end %>
 
