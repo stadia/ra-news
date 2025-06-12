@@ -42,10 +42,6 @@
   </div>
 <% end %>
 
-<%= turbo_stream.update "comments_header" do %>
-  댓글 (<%= @article.comments.count %>)
-<% end %>
-
 <%= turbo_stream.update "comment_form" do %>
   <%= form_with model: [@article, Comment.new], local: true, class: "space-y-4" do |form| %>
     <div>

@@ -1,1 +1,5 @@
 <%= turbo_stream.remove "comment_#{@comment.id}" %>
+
+<%= turbo_stream.update "comments_header" do %>
+  댓글 (<%= @article.comments.count %>)
+<% end %>
