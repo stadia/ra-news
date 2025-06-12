@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   resources :passwords, param: :token
   resources :articles, only: %i[index show new create] do
-    resources :comments, only: %i[index create edit update destroy]
+    resources :comments, only: %i[create destroy]
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

@@ -9,4 +9,8 @@ class User < ApplicationRecord
   validates :name, presence: true
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
+
+  def admin?
+    email_address == "stadia@gmail.com"
+  end
 end

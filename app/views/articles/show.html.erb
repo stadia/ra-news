@@ -63,4 +63,78 @@
         </div>
     </div>
   </div>
+
+  <!-- 댓글 섹션 -->
+  <div class="bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-700">
+    <div class="p-4 md:p-8">
+      <h3 class="text-xl font-semibold text-gray-100 mb-6">댓글 (<%= @comments.count %>)</h3>
+
+      <!-- 댓글 작성 폼 -->
+      <% if authenticated? %>
+        <div class="mb-8 p-4 bg-gray-700 rounded-lg" id="comment_form">
+          <%= form_with model: [@article, @comment], local: true, class: "space-y-4" do |form| %>
+            <div>
+              <%= form.text_area :body,
+                  placeholder: "댓글을 작성해주세요...",
+                  rows: 3,
+                  class: "w-full p-3 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" %>
+            </div>
+            <div class="flex justify-end">
+              <%= form.submit "댓글 작성",
+                  class: "px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors" %>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="mb-8 p-4 bg-gray-700 rounded-lg text-center">
+          <p class="text-gray-300 mb-3">댓글을 작성하려면 로그인이 필요합니다.</p>
+          <%= link_to "로그인", new_session_path,
+              class: "inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors" %>
+        </div>
+      <% end %>
+
+      <!-- 댓글 목록 -->
+      <div id="comments" class="space-y-4">
+        <% if @comments.any? %>
+          <% @comments.each do |comment| %>
+            <div class="p-4 bg-gray-700 rounded-lg border-l-4 border-blue-500">
+              <div class="flex justify-between items-start mb-3">
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold text-sm">
+                      <%= comment.user&.name&.first&.upcase || 'U' %>
+                    </span>
+                  </div>
+                  <div>
+                    <p class="text-white font-medium"><%= comment.user&.name || 'Unknown User' %></p>
+                    <p class="text-gray-400 text-sm">
+                      <%= time_ago_in_words(comment.created_at) %> 전
+                    </p>
+                  </div>
+                </div>
+                <% if authenticated? && (Current.user == comment.user || Current.user&.admin?) %>
+                  <%= link_to comment_path(comment),
+                      method: :delete,
+                      data: {
+                        confirm: "정말 이 댓글을 삭제하시겠습니까?",
+                        turbo_method: :delete
+                      },
+                      class: "text-red-400 hover:text-red-300 text-sm" do %>
+                    삭제
+                  <% end %>
+                <% end %>
+              </div>
+              <div class="text-gray-300 leading-relaxed">
+                <%= simple_format(comment.body) %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-8">
+            <p class="text-gray-400">아직 댓글이 없습니다. 첫 번째 댓글을 작성해보세요!</p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>

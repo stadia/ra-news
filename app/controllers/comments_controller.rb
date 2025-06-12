@@ -1,65 +1,45 @@
 class CommentsController < ApplicationController
-  before_action :set_comment, only: %i[ show edit update destroy ]
+  before_action :set_comment, only: %i[ destroy ]
+  before_action :set_article, only: %i[ create ]
 
-  # GET /comments or /comments.json
-  def index
-    @comments = Comment.all
-  end
-
-  # GET /comments/1 or /comments/1.json
-  def show
-  end
-
-  # GET /comments/1/edit
-  def edit
-  end
-
-  # POST /comments or /comments.json
+  # POST /comments
   def create
-    @comment = Comment.new(comment_params)
+    @comment = @article.comments.build(comment_params)
+    @comment.user = Current.user
 
     respond_to do |format|
       if @comment.save
-        format.html { redirect_to @comment, notice: "Comment was successfully created." }
-        format.json { render :show, status: :created, location: @comment }
+        format.html { redirect_to @article, notice: "댓글이 성공적으로 작성되었습니다." }
+        format.turbo_stream
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
+        @comments = @article.comments.includes(:user).order(created_at: :desc)
+        format.html { redirect_to @article, alert: "댓글 작성에 실패했습니다." }
       end
     end
   end
 
-  # PATCH/PUT /comments/1 or /comments/1.json
-  def update
-    respond_to do |format|
-      if @comment.update(comment_params)
-        format.html { redirect_to @comment, notice: "Comment was successfully updated." }
-        format.json { render :show, status: :ok, location: @comment }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @comment.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /comments/1 or /comments/1.json
+  # DELETE /comments/1
   def destroy
-    @comment.destroy!
+    @article = @comment.article
+    @comment.destroy
 
     respond_to do |format|
-      format.html { redirect_to comments_path, status: :see_other, notice: "Comment was successfully destroyed." }
-      format.json { head :no_content }
+      format.html { redirect_to @article, notice: "댓글이 삭제되었습니다." }
+      format.turbo_stream
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+
+    def set_article
+      @article = Article.kept.find_by!(slug: params.expect(:article_id))
+    end
+
     def set_comment
       @comment = Comment.find(params.expect(:id))
     end
 
-    # Only allow a list of trusted parameters through.
     def comment_params
-      params.expect(comment: [ :body ])
+      params.expect(comment: [ :content ])
     end
 end
