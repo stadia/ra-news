@@ -21,6 +21,8 @@ class Article < ApplicationRecord
 
   belongs_to :site, optional: true
 
+  has_many :comments, dependent: :nullify
+
   validates :url, :origin_url, presence: true, uniqueness: true
 
   validates :slug, uniqueness: true, allow_blank: true
