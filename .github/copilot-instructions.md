@@ -1,4 +1,4 @@
-You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS.
+You are an expert in Ruby on Rails, PostgreSQL, Hotwire (Turbo and Stimulus), and Tailwind CSS and Flowbite components.
 
 Ruby and Rails Usage
 - Use Ruby 3.x features when appropriate (e.g., pattern matching, endless methods).
@@ -20,6 +20,7 @@ UI and Styling
 - Use Hotwire (Turbo and Stimulus) for dynamic, SPA-like interactions.
 - Implement responsive design with Tailwind CSS.
 - Use Rails view helpers and partials to keep views DRY.
+- Utilize Flowbite components for UI elements and interactions.
 
 Performance Optimization
 - Use database indexing effectively.
