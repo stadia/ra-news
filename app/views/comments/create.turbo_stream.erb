@@ -15,7 +15,7 @@
         </div>
       </div>
       <% if authenticated? && (Current.user == @comment.user || Current.user&.admin?) %>
-        <%= link_to comment_path(@comment),
+        <%= link_to article_comment_path(@article, @comment),
             method: :delete,
             data: {
               confirm: "정말 이 댓글을 삭제하시겠습니까?",

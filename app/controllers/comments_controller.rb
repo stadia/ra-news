@@ -40,6 +40,6 @@ class CommentsController < ApplicationController
     end
 
     def comment_params
-      params.expect(comment: [ :content ])
+      params.expect(comment: [ :body ])
     end
 end

@@ -94,6 +94,16 @@ class Article < ApplicationRecord
     update(published_at: url_to_published_at || extract_published_at_from_content(response.body) || Time.zone.now)
   end
 
+  # URL에서 slug를 사용하도록 설정
+  def to_param
+    slug
+  end
+
+  # slug로 Article을 찾는 메서드
+  def self.find_by_slug(slug)
+    find_by(slug: slug)
+  end
+
   private
 
   def set_initial_url_and_host #: void

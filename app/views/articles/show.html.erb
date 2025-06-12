@@ -95,7 +95,7 @@
 
       <!-- 댓글 목록 -->
       <div id="comments" class="space-y-4">
-        <% if @comments.any? %>
+        <% if @comments.present? %>
           <% @comments.each do |comment| %>
             <div class="p-4 bg-gray-700 rounded-lg border-l-4 border-blue-500">
               <div class="flex justify-between items-start mb-3">
@@ -113,12 +113,9 @@
                   </div>
                 </div>
                 <% if authenticated? && (Current.user == comment.user || Current.user&.admin?) %>
-                  <%= link_to comment_path(comment),
+                  <%= link_to article_comment_path(@article, comment),
                       method: :delete,
-                      data: {
-                        confirm: "정말 이 댓글을 삭제하시겠습니까?",
-                        turbo_method: :delete
-                      },
+                      data: { confirm: "정말 이 댓글을 삭제하시겠습니까?", turbo_method: :delete },
                       class: "text-red-400 hover:text-red-300 text-sm" do %>
                     삭제
                   <% end %>
