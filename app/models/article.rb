@@ -119,7 +119,7 @@ class Article < ApplicationRecord
 
   def set_youtube_metadata #: void
     self.slug = youtube_id
-    self.url = "https://#{YOUTUBE_NORMALIZED_HOST}/watch?v=#{video.id}" # 정규화
+    self.url = "https://#{YOUTUBE_NORMALIZED_HOST}/watch?v=#{youtube_id}" # 정규화
     video = Yt::Video.new id: youtube_id
     self.published_at = video.published_at if video&.published_at.is_a?(Time)
     self.title = video.title if video&.title.is_a?(String)
