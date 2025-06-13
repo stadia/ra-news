@@ -153,10 +153,13 @@ class Article < ApplicationRecord
     else
                  URI.join(url, redirect_url).to_s
     end
+
+    response = fetch_url_content
+    handle_redirection(response)
   end
 
   def fetch_url_content #: Faraday::Response?
-    Faraday.get(url)
+    Faraday.get(url, headers: { "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0" })
   rescue Faraday::Error => e
     logger.error "Error fetching URL #{url}: #{e.message}"
     nil

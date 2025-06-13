@@ -9,7 +9,7 @@ class HtmlContentTool < RubyLLM::Tool
 
   #: (url String) -> String?
   def execute(url:)
-    response = Faraday.get(url)
+    response = Faraday.get(url, headers: { "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0" })
     html_content = response.body
     return nil if html_content.blank?
 
