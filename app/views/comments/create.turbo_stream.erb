@@ -8,7 +8,7 @@
 <%= turbo_stream.update "comment_form" do %>
   <%= form_with model: [@article, Comment.new], local: true, class: "space-y-4" do |form| %>
     <div>
-      <%= form.text_area :content,
+      <%= form.text_area :body,
           placeholder: "댓글을 작성해주세요...",
           rows: 3,
           class: "w-full p-3 bg-gray-600 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" %>

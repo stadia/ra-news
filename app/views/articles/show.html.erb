@@ -71,11 +71,11 @@
 
       <!-- 댓글 목록 -->
       <div id="comments">
-        <%= render partial: 'comments/comments', locals: { article: @article, comments: @article.comments.includes(:user).order(created_at: :desc) } %>
+        <%= render partial: 'comments/comments', locals: { article: @article, comments: @comments } %>
       </div>
 
       <!-- 댓글 작성 폼 -->
-      <%= render partial: 'comments/form', locals: { article: @article, comment: Comment.new } %>
+      <%= render partial: 'comments/form', locals: { article: @article, comment: @comment } %>
     </div>
   </div>
 </div>
