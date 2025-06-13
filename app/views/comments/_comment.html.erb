@@ -1,8 +1,12 @@
 <div id="comment_<%= comment.id %>" class="p-2 border rounded mb-2">
-  <div class="text-sm text-gray-700"><%= comment.user&.name || "익명" %></div>
+  <div class="flex items-center justify-between text-xs text-white-400 mt-1">
+    <div class="flex items-center gap-2">
+      <span class="text-sm text-white-700"><%= comment.user&.name || "익명" %></span>
+      <span><%= l(comment.created_at, format: :short) %></span>
+    </div>
+    <% if authenticated? && comment.user == Current.user %>
+      <%= button_to '삭제', article_comment_path(@article, comment), method: :delete, data: { turbo_confirm: "정말 삭제하시겠습니까?" }, form: { data: { turbo_stream: true } }, class: "text-red-500 text-xs" %>
+    <% end %>
+  </div>
   <div class="text-base"><%= comment.body %></div>
-  <div class="text-xs text-gray-400"><%= l(comment.created_at, format: :short) %></div>
-  <% if authenticated? && comment.user == Current.user %>
-    <%= button_to '삭제', article_comment_path(@article,comment), method: :delete, data: { turbo_confirm: "정말 삭제하시겠습니까?" }, form: { data: { turbo_stream: true } }, class: "text-red-500 text-xs" %>
-  <% end %>
 </div>
