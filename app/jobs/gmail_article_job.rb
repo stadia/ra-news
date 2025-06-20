@@ -18,6 +18,8 @@ class GmailArticleJob < ApplicationJob
 
     logger.debug links
     links.each do |link|
+      link = extract_libhunt(link) if link.start_with?("https://www.libhunt.com")
+      link = extract_rubyweekly(link) if link.start_with?("https://rubyweekly.com/link")
       next if Article.exists?(origin_url: link)
 
       begin
@@ -29,5 +31,26 @@ class GmailArticleJob < ApplicationJob
     end
 
     site.update(last_checked_at: Time.zone.now)
+  end
+
+  def extract_libhunt(link)
+    uri = URI.parse(link)
+    params = URI.decode_www_form(uri.query || "").to_h
+    if params["url"].present?
+      params["url"]
+    else
+      link
+    end
+  end
+
+  def extract_rubyweekly(link)
+    resp = Faraday.get(link)
+    return link if resp.status == 200
+
+    if resp.headers["location"].present?
+      resp.headers["location"]
+    else
+      link
+    end
   end
 end
