@@ -49,7 +49,8 @@ class Article < ApplicationRecord
   # YouTube URL의 정규화된 호스트를 상수로 정의
   YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
 
-  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev].freeze #: Array[String]
+  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com
+    linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev libhunt.com hotwireweekly.com].freeze #: Array[String]
 
   def generate_metadata #: void
     return unless url.is_a?(String)
@@ -130,6 +131,9 @@ class Article < ApplicationRecord
 
   #: (String body) -> void
   def set_webpage_metadata(body)
+    logger.debug "Setting webpage metadata for #{url}"
+    return if deleted_at.present?
+
     self.slug = URI.parse(url)&.path.split("/").last.split(".").first
     self.published_at = url_to_published_at || extract_published_at_from_content(body) || Time.zone.now
     return if title.present?
@@ -143,9 +147,13 @@ class Article < ApplicationRecord
   end
 
   #: (Faraday::Response response) -> void
-  def handle_redirection(response)
+  def handle_redirection(response, count = 0)
+    logger.debug response.status
+    logger.debug count
     return unless response.status.between?(300, 399) && response.headers["location"]
+    return if count > 3
 
+    logger.debug response.headers["location"]
     # 3xx 응답인 경우 리다이렉트된 URL을 사용
     redirect_url = response.headers["location"]
     self.url = if redirect_url.start_with?("http")
@@ -155,7 +163,7 @@ class Article < ApplicationRecord
     end
 
     response = fetch_url_content
-    handle_redirection(response)
+    handle_redirection(response, count + 1)
   end
 
   def fetch_url_content #: Faraday::Response?

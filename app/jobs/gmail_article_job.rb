@@ -20,6 +20,7 @@ class GmailArticleJob < ApplicationJob
     links.each do |link|
       link = extract_libhunt(link) if link.start_with?("https://www.libhunt.com")
       link = extract_rubyweekly(link) if link.start_with?("https://rubyweekly.com/link")
+      logger.info link
       next if Article.exists?(origin_url: link)
 
       begin
