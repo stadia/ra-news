@@ -68,6 +68,8 @@ class Article < ApplicationRecord
       set_webpage_metadata(response.body)
     end
 
+    self.slug = "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}" unless slug.present?
+
     # slug 중복 처리 (slug가 설정된 후에만 확인)
     self.slug = "#{slug}-#{SecureRandom.hex(4)}" if slug.present? && Article.exists?(slug: self.slug)
   end

@@ -76,7 +76,7 @@ PROMPT
     # JSON 데이터 저장
     article.tag_list.add(parsed_json["tags"]) if parsed_json["tags"].is_a?(Array)
     # 매직 스트링 대신 Site.clients enum 사용
-    if parsed_json["is_related"] == false && [ Site.clients[:hacker_news], Site.clients[:rss] ].include?(article.site&.client)
+    if parsed_json["is_related"] == false && [ Site.clients[:hacker_news], Site.clients[:rss], Site.clients[:gmail] ].include?(article.site&.client)
       article.discard # `deleted_at = Time.zone.now` 대신 discard 사용
     end
     article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related"))
