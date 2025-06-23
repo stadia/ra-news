@@ -17,6 +17,7 @@ class ArticleResource < Madmin::Resource
   attribute :origin_url, index: false
   attribute :tag_list, index: false
   attribute :is_youtube, index: false
+  attribute :body, index: false, form: true
 
   # Associations
   attribute :user, index: false, form: false
