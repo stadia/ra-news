@@ -1,4 +1,5 @@
---dir
-.
+--ignore=bin/
 --ignore=tmp/
 --ignore=vendor/
+--disable-watchman
+--enable-all-beta-lsp-feature
