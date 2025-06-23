@@ -169,7 +169,7 @@ class Article < ApplicationRecord
   end
 
   def fetch_url_content #: Faraday::Response?
-    Faraday.get(url, headers: { "User-Agent" => "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0" })
+    Faraday.get(url)
   rescue Faraday::Error => e
     logger.error "Error fetching URL #{url}: #{e.message}"
     nil
