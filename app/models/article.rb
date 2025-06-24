@@ -51,7 +51,7 @@ class Article < ApplicationRecord
   # YouTube URL의 정규화된 호스트를 상수로 정의
   YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
 
-  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com beehiiv.com join1440.com visualstudio.com ruby.social elk.zone
+  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com mail.beehiiv.com join1440.com visualstudio.com ruby.social elk.zone
     indieweb.social
     linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev libhunt.com hotwireweekly.com reddit.com sfdsfsdf].freeze #: Array[String]
 
