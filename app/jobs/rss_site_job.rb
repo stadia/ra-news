@@ -3,73 +3,102 @@
 # rbs_inline: enabled
 
 class RssSiteJob < ApplicationJob
+  # Enqueues a job for each RSS site with a 2-minute delay between each job.
   def self.enqueue_all #: void
-    start = -2
-    ActiveJob.perform_all_later(Site.rss.map { |site| start += 2; RssSiteJob.new(site.id).set(wait: start.minutes) })
+    Site.rss.find_each.with_index do |site, index|
+      set(wait: (index * 2).minutes).perform_later(site.id)
+    end
   end
 
-  #: (id Integer) -> void
-  def perform(id = nil)
-    RssSiteJob.enqueue_all and return if id.nil?
+  # Performs the job for a given site ID.
+  #: (site_id ?Integer) -> void
+  def perform(site_id = nil)
+    RssSiteJob.enqueue_all and return if site_id.blank?
 
-    site = Site.find_by(id:)
-    return if site.nil?
+    site = Site.find(site_id)
+    feed = fetch_feed(site)
+    return unless feed
 
-    begin
-      feed = site.init_client&.feed(site.path)
-      return unless feed
+    create_articles_from_feed(feed, site)
 
-      process_feed_items(feed, site)
-      site.update(last_checked_at: Time.zone.now)
-    rescue => e
-      logger.error "RSS parsing error for site #{site.id}: #{e.message}"
-    end
+    site.update!(last_checked_at: Time.zone.now)
   end
 
   private
 
-  #: (RSS::Rss | RSS::Atom::Feed feed, Site site) -> void
-  def process_feed_items(feed, site)
-    items = case feed
-    when RSS::Rss
-              feed.items
-    when RSS::Atom::Feed
-              feed.entries
-    else
-              []
-    end
-
-    items.each do |item|
-      attrs = extract_item_attributes(item)
-      next unless attrs
-
-      # 이미 체크한 시간보다 오래된 항목이면 중단
-      break if site.last_checked_at && attrs[:published_at] < site.last_checked_at
-
-      # 중복 체크
-      next if Article.exists?(origin_url: attrs[:origin_url])
-
-      Article.create(attrs.merge(site:))
+  def create_articles_from_feed(feed, site)
+    new_articles = new_articles_from_feed(feed, site)
+    new_articles.each do |article_attrs|
+      create_article(article_attrs.merge(site: site))
     end
   end
 
-  #: (RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry item) -> Hash?
-  def extract_item_attributes(item)
-    case item
-    when RSS::Atom::Feed::Entry
-      {
-        title: item.title&.content,
-        url: item.link.href,
-        origin_url: item.link.href,
-        published_at: item.published&.content || item.updated&.content || Time.zone.now
-      }
-    when RSS::Rss::Channel::Item
-      {
-        title: item.title,
-        url: item.link,
-        origin_url: item.link,
-        published_at: item.pubDate || Time.zone.now
-      }
+  def create_article(attributes)
+    # Double check existence to prevent race conditions
+    return if Article.exists?(origin_url: attributes[:origin_url])
+
+    Article.create!(attributes)
+    logger.info "Created article for #{attributes[:url]}"
+  rescue ActiveRecord::RecordInvalid => e
+    logger.error "Failed to create article for #{attributes[:url]}: #{e.message}"
+  end
+
+  # Fetches and parses the RSS feed for a site.
+  #: (site Site) -> RSS::Rss || RSS::Atom::Feed
+  def fetch_feed(site)
+    site.init_client&.feed(site.path)
+  rescue StandardError => e
+    logger.error "RSS parsing error for site #{site.id}: #{e.message}"
+    nil
+  end
+
+  # Extracts new article attributes from the feed, ready for creation.
+  def new_articles_from_feed(feed, site)
+    attributes = feed_items(feed).map { |item| extract_item_attributes(item) }.compact
+
+    if site.last_checked_at
+      attributes.reject! { |attr| attr[:published_at] < site.last_checked_at }
     end
+    return [] if attributes.empty?
+
+    existing_urls = Article.where(origin_url: attributes.pluck(:origin_url)).pluck(:origin_url)
+    attributes.reject! { |attr| existing_urls.include?(attr[:origin_url]) }
+    attributes
+  end
+
+  # Returns the items from an RSS or Atom feed.
+  def feed_items(feed)
+    case feed
+    when RSS::Rss
+      feed.items
+    when RSS::Atom::Feed
+      feed.entries
+    else
+      []
+    end
+  end
+
+  # Extracts attributes from a feed item.
+  def extract_item_attributes(item)
+    attrs = case item
+    when RSS::Atom::Feed::Entry
+              {
+                title: item.title&.content,
+                url: item.link&.href,
+                origin_url: item.link&.href,
+                published_at: item.published&.content || item.updated&.content || Time.zone.now
+              }
+    when RSS::Rss::Channel::Item
+              {
+                title: item.title,
+                url: item.link,
+                origin_url: item.link,
+                published_at: item.pubDate || Time.zone.now
+              }
+    end
+
+    return nil if attrs.blank? || attrs[:url].blank?
+
+    attrs
   end
 end

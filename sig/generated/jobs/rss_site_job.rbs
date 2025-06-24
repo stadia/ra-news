@@ -1,14 +1,29 @@
 # Generated from app/jobs/rss_site_job.rb with RBS::Inline
 
 class RssSiteJob < ApplicationJob
-  # : (id Integer) -> void
-  def perform: (id Integer) -> void
+  # Enqueues a job for each RSS site with a 2-minute delay between each job.
+  def self.enqueue_all: () -> void
+
+  # Performs the job for a given site ID.
+  # : (site_id ?Integer) -> void
+  def perform: (site_id? Integer) -> void
 
   private
 
-  # : (RSS::Rss | RSS::Atom::Feed feed, Site site) -> void
-  def process_feed_items: (RSS::Rss | RSS::Atom::Feed feed, Site site) -> void
+  def create_articles_from_feed: (untyped feed, untyped site) -> untyped
 
-  # : (RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry item) -> Hash?
-  def extract_item_attributes: (RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry item) -> Hash?
+  def create_article: (untyped attributes) -> untyped
+
+  # Fetches and parses the RSS feed for a site.
+  # : (site Site) -> RSS::Rss || RSS::Atom::Feed
+  def fetch_feed: (site Site) -> RSS::Rss
+
+  # Extracts new article attributes from the feed, ready for creation.
+  def new_articles_from_feed: (untyped feed, untyped site) -> untyped
+
+  # Returns the items from an RSS or Atom feed.
+  def feed_items: (untyped feed) -> untyped
+
+  # Extracts attributes from a feed item.
+  def extract_item_attributes: (untyped item) -> untyped
 end

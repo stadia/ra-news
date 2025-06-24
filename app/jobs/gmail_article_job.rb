@@ -5,8 +5,9 @@
 class GmailArticleJob < ApplicationJob
   # Enqueues a job for each Gmail site.
   def self.enqueue_all #: void
-    start = -2
-    ActiveJob.perform_all_later(Site.gmail.map { |site| start += 2; GmailArticleJob.new(site.id).set(wait: start.minutes) })
+    Site.gmail.find_each.with_index do |site, index|
+      set(wait: (index * 2).minutes).perform_later(site.id)
+    end
   end
 
   # Performs the job for a given site ID.
