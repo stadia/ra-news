@@ -3,4 +3,8 @@
 class HtmlContentTool < RubyLLM::Tool
   # : (url String) -> String?
   def execute: (url String) -> String?
+
+  private
+
+  def handle_redirection: (untyped url, ?untyped count) -> untyped
 end

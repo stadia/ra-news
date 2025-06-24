@@ -1,6 +1,44 @@
 # Generated from app/jobs/gmail_article_job.rb with RBS::Inline
 
 class GmailArticleJob < ApplicationJob
-  # : (id Integer) -> void
-  def perform: (id Integer) -> void
+  # Enqueues a job for each Gmail site.
+  def self.enqueue_all: () -> void
+
+  # Performs the job for a given site ID.
+  # : (site_id ?int) -> void
+  def perform: (site_id? int) -> void
+
+  private
+
+  # Fetches new email links from the site's email account.
+  # : (site Site) -> Array<String>
+  def fetch_new_email_links: (site Site) -> Array
+
+  # Iterates over links and creates articles.
+  # : (links Array<String>, site Site) -> void
+  def create_articles_from_links: (untyped links, untyped site) -> untyped
+
+  # Creates an article for a given link.
+  # : (link String, site Site) -> void
+  def create_article: (link String, site Site) -> void
+
+  # Extracts the target link from a given URL, handling various redirect and tracking services.
+  # : (link String) -> String?
+  def extract_link: (link String) -> String?
+
+  # Checks if a URI is invalid for article creation.
+  # : (uri URI) -> bool
+  def invalid_uri?: (uri URI) -> bool
+
+  # Extracts the 'url' parameter from a URI's query string.
+  # : (uri URI) -> String?
+  def extract_url_param: (uri URI) -> String?
+
+  # Handles links from rubyweekly.com.
+  # : (link String) -> String?
+  def handle_rubyweekly_link: (link String) -> String?
+
+  # Performs a GET request to find the redirect location.
+  # : (link String) -> String?
+  def extract_redirect_location: (link String) -> String?
 end

@@ -9,7 +9,4 @@ class Gmail
   def fetch_emails: (?untyped options) -> untyped
 
   def fetch_email_links: (?untyped options) -> untyped
-
-  # : (uri URI::HTTPS) -> String?
-  def check_link: (untyped uri) -> untyped
 end

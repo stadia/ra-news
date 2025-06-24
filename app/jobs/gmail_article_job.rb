@@ -3,74 +3,106 @@
 # rbs_inline: enabled
 
 class GmailArticleJob < ApplicationJob
-  #: (id Integer) -> void
-  def perform(id = nil)
-    if id.nil?
-      Site.gmail.map { GmailArticleJob.perform_later(it.id) }
-      return
-    end
-
-    site = Site.find_by(id: id)
-    return if site.nil? || site.email.nil?
-
-    links = site.init_client.fetch_email_links(from: site.email, since: site.last_checked_at - 1.days)
-    return if links.empty?
-
-    links.each do |link|
-      link = extract_link(link)
-      next if link.nil?
-
-      logger.info link
-
-      next if Article.exists?(origin_url: link)
-
-      begin
-        Article.create(url: link, origin_url: link, site: site)
-        logger.info "Created article for #{link}"
-      rescue StandardError => e
-        logger.error e
-      end
-    end
-
-    site.update(last_checked_at: Time.zone.now)
+  # Enqueues a job for each Gmail site.
+  def self.enqueue_all #: void
+    start = -2
+    ActiveJob.perform_all_later(Site.gmail.map { |site| start += 2; GmailArticleJob.new(site.id).set(wait: start.minutes) })
   end
 
-  def extract_link(link)
-    target = case URI.parse(link).host
-    when "maily.so", "www.libhunt.com"
-             extract_params(link)
-    when "rubyweekly.com"
-             link.start_with?("https://rubyweekly.com/link") ? extract_location(link) : nil
-    else
-             link
-    end
-    return nil if target.nil?
+  # Performs the job for a given site ID.
+  #: (site_id ?int) -> void
+  def perform(site_id = nil)
+    GmailArticleJob.enqueue_all and return if site_id.blank?
 
-    uri = URI.parse(target)
-    return nil if uri.path.nil? || uri.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| uri.host&.match?(/#{pattern}/i) }
+    site = Site.find(site_id)
+    return if site.email.blank?
+
+    links = fetch_new_email_links(site)
+    return if links.empty?
+
+    create_articles_from_links(links, site)
+
+    site.update!(last_checked_at: Time.zone.now)
+  end
+
+  private
+
+  # Fetches new email links from the site's email account.
+  #: (site Site) -> Array<String>
+  def fetch_new_email_links(site)
+    site.init_client.fetch_email_links(from: site.email, since: site.last_checked_at - 1.day)
+  end
+
+  # Iterates over links and creates articles.
+  #: (links Array<String>, site Site) -> void
+  def create_articles_from_links(links, site)
+    links.each do |link|
+      processed_link = extract_link(link)
+      next if processed_link.blank?
+
+      logger.info "Processing link: #{processed_link}"
+      next if Article.exists?(origin_url: processed_link)
+
+      create_article(processed_link, site)
+    end
+  end
+
+  # Creates an article for a given link.
+  #: (link String, site Site) -> void
+  def create_article(link, site)
+    Article.create!(url: link, origin_url: link, site: site)
+    logger.info "Created article for #{link}"
+  rescue ActiveRecord::RecordInvalid => e
+    logger.error "Failed to create article for #{link}: #{e.message}"
+  end
+
+  # Extracts the target link from a given URL, handling various redirect and tracking services.
+  #: (link String) -> String?
+  def extract_link(link)
+    uri = URI.parse(link)
+    target = case uri.host
+    when "maily.so", "www.libhunt.com"
+               extract_url_param(uri)
+    when "rubyweekly.com"
+               handle_rubyweekly_link(link)
+    else
+               link
+    end
+    return if target.blank?
+
+    normalized_uri = URI.parse(target)
+    return if invalid_uri?(normalized_uri)
 
     target
   end
 
-  def extract_params(link)
-    uri = URI.parse(link)
-    if uri.respond_to?(:query) && uri.query
-      # 쿼리 문자열을 해시(맵)으로 변환
-      query_params = URI.decode_www_form(uri.query || "").to_h
-      query_params["url"].present? ? query_params["url"] : nil
-    else
-      nil
-    end
+  # Checks if a URI is invalid for article creation.
+  #: (uri URI) -> bool
+  def invalid_uri?(uri)
+    (uri.path.blank? || uri.path.size < 2) ||
+      Article::IGNORE_HOSTS.any? { |pattern| uri.host&.match?(/#{pattern}/i) }
   end
 
-  def extract_location(link)
-    resp = Faraday.get(link)
-    return link if resp.status == 200
+  # Extracts the 'url' parameter from a URI's query string.
+  #: (uri URI) -> String?
+  def extract_url_param(uri)
+    return unless uri.query
 
-    if resp.headers["location"].present?
-      resp.headers["location"]
-    else
-      nil
-    end
+    Rack::Utils.parse_nested_query(uri.query)["url"]
+  end
+
+  # Handles links from rubyweekly.com.
+  #: (link String) -> String?
+  def handle_rubyweekly_link(link)
+    return unless link.starts_with?("https://rubyweekly.com/link")
+
+    extract_redirect_location(link)
+  end
+
+  # Performs a GET request to find the redirect location.
+  #: (link String) -> String?
+  def extract_redirect_location(link)
+    response = Faraday.get(link)
+    response.headers["location"] if response.status.in?(300..399)
   end
 end

@@ -115,7 +115,7 @@ class Article < ApplicationRecord
     parsed_url = URI.parse(url)
     if parsed_url.respond_to?(:query) && parsed_url.query
       query_params = URI.decode_www_form(parsed_url.query || "").to_h
-      query_params.except!('utm_source', 'utm_medium', 'utm_campaign')
+      query_params.except!("utm_source", "utm_medium", "utm_campaign")
       self.url = "#{parsed_url.scheme}://#{parsed_url.host}#{parsed_url.path}?#{query_params.map { |k, v| "#{k}=#{v}" }.join('&')}"
     end
     self.host = parsed_url.host
