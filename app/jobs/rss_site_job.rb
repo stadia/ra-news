@@ -3,17 +3,17 @@
 # rbs_inline: enabled
 
 class RssSiteJob < ApplicationJob
-  # Enqueues a job for each RSS site with a 2-minute delay between each job.
-  def self.enqueue_all #: void
-    Site.rss.find_each.with_index do |site, index|
-      set(wait: (index * 2).minutes).perform_later(site.id)
-    end
-  end
-
   # Performs the job for a given site ID.
   #: (site_id ?Integer) -> void
   def perform(site_id = nil)
-    RssSiteJob.enqueue_all and return if site_id.blank?
+    if site_id.blank?
+      jobs = []
+      Site.rss.find_each.with_index do |site, index|
+        jobs << RssSiteJob.new(site.id).set(wait: (index * 1).minutes)
+      end
+      ActiveJob.perform_all_later(jobs)
+      return
+    end
 
     site = Site.find(site_id)
     feed = fetch_feed(site)

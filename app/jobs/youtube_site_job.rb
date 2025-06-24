@@ -6,7 +6,11 @@ class YoutubeSiteJob < ApplicationJob
   #: (id Integer) -> void
   def perform(id = nil)
     if id.nil?
-      Site.youtube.map { YoutubeSiteJob.perform_later(it.id) }
+      jobs = []
+      Site.youtube.find_each.with_index do |site, index|
+        jobs << YoutubeSiteJob.new(site.id).set(wait: (index * 1).minutes)
+      end
+      ActiveJob.perform_all_later(jobs)
       return
     end
 
