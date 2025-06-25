@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="ROBOTS" content="NOODP">
-    <meta name="viewport" content="initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
       <% if content_for? :title %>
         <%= yield(:title) %> -
@@ -13,11 +13,11 @@
     <%= csrf_meta_tags %>
     <%= render "javascript" %>
   </head>
-  <body>
-    <aside id="sidebar">
+  <body class="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+    <aside id="sidebar" class="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-gray-200 p-4 md:h-screen">
       <%= render "navigation" %>
     </aside>
-    <main>
+    <main class="flex-1 p-4 max-w-5xl mx-auto w-full">
       <%= render "flash" %>
       <%= yield %>
     </main>
