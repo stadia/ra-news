@@ -2,16 +2,19 @@
 
 <header class="header flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
   <h1 class="text-2xl font-bold"><%= resource.friendly_name.pluralize %></h1>
+
   <div class="actions flex flex-col md:flex-row gap-2 items-stretch md:items-center">
     <form class="search flex items-center border rounded bg-white px-2" action="" method="get">
       <%= hidden_field_tag :page, params[:page], value: 1 %>
       <%= search_field_tag :q, params[:q], placeholder: "Search", class: "px-2 py-1 outline-none" %>
     </form>
+
     <%= link_to clear_search_params, class: "btn btn-secondary ml-2" do %>
       <svg xmlns="http://www.w3.org/2000/svg" height="1rem" width="1rem" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
       </svg>
     <% end if params[:q].present? %>
+
     <%= link_to "New #{resource.friendly_name}", resource.new_path, class: "btn btn-secondary bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 whitespace-nowrap" %>
   </div>
 </header>
@@ -20,6 +23,7 @@
   <% if resource.scopes.any? %>
     <%= link_to "All", resource.index_path, class: class_names("btn btn-secondary bg-gray-200 rounded px-3 py-1", {"active" => params[:scope].blank?}) %>
   <% end %>
+
   <% resource.scopes.each do |scope| %>
     <%= link_to scope.to_s.humanize, resource.index_path(scope: scope), class: class_names("btn btn-secondary bg-gray-200 rounded px-3 py-1", {"active" => params[:scope] == scope.to_s}) %>
   <% end %>
@@ -32,11 +36,13 @@
         <% resource.attributes.values.each do |attribute| %>
           <% next if attribute.field.nil? %>
           <% next unless attribute.field.visible?(action_name) %>
+
           <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap"><%= sortable attribute.name, attribute.name.to_s.titleize %></th>
         <% end %>
         <th></th>
       </tr>
     </thead>
+
     <tbody class="bg-white divide-y divide-gray-100">
       <% @records.each do |record| %>
         <tr>
@@ -45,6 +51,7 @@
             <% next unless attribute.field.visible?(action_name) %>
             <td class="px-4 py-2 whitespace-nowrap"><%= render partial: attribute.field.to_partial_path("index"), locals: { field: attribute.field, record: record, resource: resource } %></td>
           <% end %>
+
           <td class="px-4 py-2 whitespace-nowrap flex gap-2">
             <%= link_to "View", resource.show_path(record), class: "text-blue-600 hover:underline" %>
             <%= link_to "Edit", resource.edit_path(record), class: "text-gray-600 hover:underline" %>

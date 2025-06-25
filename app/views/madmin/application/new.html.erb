@@ -1,9 +1,9 @@
 <%= content_for :title, "New #{resource.friendly_name}" %>
 
-<header class="header">
-  <h1>
-    <%= link_to resource.friendly_name.pluralize, resource.index_path %>
-    /
+<header class="header flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+  <h1 class="text-2xl font-bold">
+    <%= link_to resource.friendly_name.pluralize, resource.index_path, class: "text-gray-500 hover:text-blue-600" %>
+    <span class="mx-2 text-gray-400">/</span>
     <strong>New <%= resource.friendly_name %></strong>
   </h1>
 </header>
