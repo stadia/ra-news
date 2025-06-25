@@ -1,9 +1,9 @@
 <%= content_for :title, resource.friendly_name.pluralize %>
 
-<header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+<header class="header flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
   <h1 class="text-2xl font-bold"><%= resource.friendly_name.pluralize %></h1>
-  <div class="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
-    <form class="flex items-center border rounded bg-white px-2" action="" method="get">
+  <div class="actions flex flex-col md:flex-row gap-2 items-stretch md:items-center">
+    <form class="search flex items-center border rounded bg-white px-2" action="" method="get">
       <%= hidden_field_tag :page, params[:page], value: 1 %>
       <%= search_field_tag :q, params[:q], placeholder: "Search", class: "px-2 py-1 outline-none" %>
       <% if params[:q].present? %>
@@ -14,20 +14,20 @@
         <% end %>
       <% end %>
     </form>
-    <%= link_to "New #{resource.friendly_name}", resource.new_path, class: "btn bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 whitespace-nowrap" %>
+    <%= link_to "New #{resource.friendly_name}", resource.new_path, class: "btn btn-secondary bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700 whitespace-nowrap" %>
   </div>
 </header>
 
-<nav class="flex flex-wrap gap-2 mb-4">
+<nav class="scopesflex flex-wrap gap-2 mb-4">
   <% if resource.scopes.any? %>
-    <%= link_to "All", resource.index_path, class: class_names("btn bg-gray-200 rounded px-3 py-1", {"bg-blue-600 text-white" => params[:scope].blank?}) %>
+    <%= link_to "All", resource.index_path, class: class_names("btn btn-secondary bg-gray-200 rounded px-3 py-1", {"active" => params[:scope].blank?}) %>
   <% end %>
   <% resource.scopes.each do |scope| %>
-    <%= link_to scope.to_s.humanize, resource.index_path(scope: scope), class: class_names("btn bg-gray-200 rounded px-3 py-1", {"bg-blue-600 text-white" => params[:scope] == scope.to_s}) %>
+    <%= link_to scope.to_s.humanize, resource.index_path(scope: scope), class: class_names("btn btn-secondary bg-gray-200 rounded px-3 py-1", {"active" => params[:scope] == scope.to_s}) %>
   <% end %>
 </nav>
 
-<div class="overflow-x-auto rounded shadow bg-white">
+<div class="table-scroll overflow-x-auto rounded shadow bg-white">
   <table class="min-w-full divide-y divide-gray-200">
     <thead class="bg-gray-50">
       <tr>
@@ -57,7 +57,7 @@
   </table>
 </div>
 
-<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mt-4">
+<div class="pagination flex flex-col md:flex-row md:items-center md:justify-between gap-2 mt-4">
   <%== pagy_nav @pagy if @pagy.pages > 1 %>
   <span class="text-sm text-gray-500">Showing <%= tag.strong @pagy.in %> of <%= tag.strong @pagy.count %></span>
 </div>

@@ -1,6 +1,6 @@
 <%= form_with model: [:madmin, record], url: (record.persisted? ? resource.show_path(record) : resource.index_path), local: true, class: "space-y-6" do |form| %>
   <% if form.object.errors.any? %>
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    <div class="alert alert-danger bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
       <div>There was <%= pluralize form.object.errors.full_messages.count, "error" %> with your submission:</div>
       <ul class="list-disc pl-5">
         <% form.object.errors.full_messages.each do |message| %>
@@ -10,14 +10,14 @@
     </div>
   <% end %>
   <% resource.attributes.values.select{ _1.field.present? && _1.field.visible?(action_name) }.each do |attribute| %>
-    <div class="mb-4">
+    <div class="form-group mb-4">
       <%= render "madmin/shared/label", form: form, field: attribute.field, class: "block font-medium mb-1" %>
       <%= render partial: attribute.field.to_partial_path("form"), locals: { field: attribute.field, record: record, form: form, resource: resource } %>
-      <%= tag.div attribute.field.options.description, class: "text-xs text-gray-500 mt-1" if attribute.field.options.description.present? %>
+      <%= tag.div attribute.field.options.description, class: "form-description text-xs text-gray-500 mt-1" if attribute.field.options.description.present? %>
     </div>
   <% end %>
   <div class="flex gap-2">
-    <%= form.submit class: "btn bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700" %>
+    <%= form.submit class: "btn btn-primary bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700" %>
     <%= link_to "Cancel", (record.persisted? ? resource.show_path(record) : resource.index_path), class: "btn bg-gray-200 rounded px-4 py-2 hover:bg-gray-300" %>
   </div>
 <% end %>
