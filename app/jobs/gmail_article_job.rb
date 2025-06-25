@@ -4,14 +4,14 @@
 
 class GmailArticleJob < ApplicationJob
   def self.enqueue_all
-    Site.gmail.find_each.with_index do |site, index|
-      GmailArticleJob.set(wait: index.minutes).perform_later(site.id)
-    end
+    GmailArticleJob.perform_later(Site.gmail.order("id ASC").pluck(:id))
   end
 
   # Performs the job for a given site ID.
-  #: (site_id ?int) -> void
-  def perform(site_id = nil)
+  #: (ids Array[int] | int) -> void
+  def perform(ids)
+    ids = [ ids ] unless ids.is_a?(Array)
+    site_id = ids.shift
     site = Site.find(site_id)
     return if site.email.blank?
 
@@ -21,6 +21,7 @@ class GmailArticleJob < ApplicationJob
     create_articles_from_links(links, site)
 
     site.update!(last_checked_at: Time.zone.now)
+    GmailArticleJob.perform_later(ids) unless ids.empty?
   end
 
   private

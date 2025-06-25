@@ -3,18 +3,15 @@
 # rbs_inline: enabled
 
 class YoutubeSiteJob < ApplicationJob
-  #: (id Integer) -> void
-  def perform(id = nil)
-    if id.nil?
-      jobs = []
-      Site.youtube.find_each.with_index do |site, index|
-        jobs << YoutubeSiteJob.new(site.id).set(wait: (index * 1).minutes)
-      end
-      ActiveJob.perform_all_later(jobs)
-      return
-    end
+  def self.enqueue_all
+    YoutubeSiteJob.perform_later(Site.youtube.order("id ASC").pluck(:id))
+  end
 
-    site = Site.find_by(id:)
+  #: (ids Array[int] | int) -> void
+  def perform(ids)
+    ids = [ ids ] unless ids.is_a?(Array)
+    site_id = ids.shift
+    site = Site.find(site_id)
     return if site.nil?
 
     videos = site.init_client&.videos
@@ -29,5 +26,6 @@ class YoutubeSiteJob < ApplicationJob
     end
 
     site.update(last_checked_at: Time.zone.now)
+    YoutubeSiteJob.perform_later(ids) unless ids.empty?
   end
 end

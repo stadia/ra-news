@@ -7,7 +7,7 @@ production:
     command: "GmailArticleJob.enqueue_all"
     schedule: "0 10 * * 1-5"
   youtube_site_job:
-    class: YoutubeSiteJob
+    class: "YoutubeSiteJob.enqueue_all"
     schedule: "0 8 * * *"
   hacker_news_job:
     class: HackerNewsSiteJob

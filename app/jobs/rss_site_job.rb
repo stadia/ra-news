@@ -4,14 +4,14 @@
 
 class RssSiteJob < ApplicationJob
   def self.enqueue_all
-    Site.rss.find_each.with_index do |site, index|
-      RssSiteJob.set(wait: index.minutes).perform_later(site.id)
-    end
+    RssSiteJob.perform_later(Site.rss.order("id ASC").pluck(:id))
   end
 
   # Performs the job for a given site ID.
-  #: (site_id ?Integer) -> void
-  def perform(site_id = nil)
+  #: (ids Array[int] | int) -> void
+  def perform(ids)
+    ids = [ ids ] unless ids.is_a?(Array)
+    site_id = ids.shift
     site = Site.find(site_id)
     feed = fetch_feed(site)
     return unless feed
@@ -19,6 +19,7 @@ class RssSiteJob < ApplicationJob
     create_articles_from_feed(feed, site)
 
     site.update!(last_checked_at: Time.zone.now)
+    RssSiteJob.perform_later(ids) unless ids.empty?
   end
 
   private
