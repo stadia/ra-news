@@ -33,7 +33,8 @@
             "includedPatterns": ["**/bin/**/*"]
         },
         "rubyLsp.erbSupport": true,
-        "sorbet.enabled": true
+        "sorbet.enabled": true,
+        "deno.path": "/Users/jeff.dean/.local/share/mise/shims/deno"
     },
     "extensions": {
         "recommendations": [

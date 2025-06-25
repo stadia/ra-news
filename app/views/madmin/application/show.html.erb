@@ -6,6 +6,7 @@
     <span class="mx-2 text-gray-400">/</span>
     <%= resource.display_name(@record) %>
   </h1>
+
   <div class="actions flex gap-2">
     <% resource.member_actions.each do |action| %>
       <%= instance_exec(@record, &action) %>
@@ -21,10 +22,12 @@
     <% resource.attributes.values.each do |attribute| %>
       <% next if attribute.field.nil? %>
       <% next unless attribute.field.visible?(action_name) %>
+
       <tr>
         <th class="label px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap w-1/4">
           <%= attribute.field.options.label || attribute.name.to_s.titleize %>
         </th>
+
         <td class="px-4 py-2 whitespace-nowrap">
           <%= render partial: attribute.field.to_partial_path("show"), locals: { field: attribute.field, record: @record, resource: resource } %>
         </td>
