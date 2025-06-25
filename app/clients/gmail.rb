@@ -31,10 +31,10 @@ class Gmail
       formatted_date = since_date.strftime("%d-%b-%Y")
       query += " SINCE \"#{formatted_date}\""
     end
-    Rails.logger.debug "IMAP 검색 쿼리: #{query}"
+    logger.debug "IMAP 검색 쿼리: #{query}"
 
     emails = Mail.find(order: :desc, keys: query)
-    Rails.logger.info "검색된 이메일 수: #{emails.length}"
+    logger.info "검색된 이메일 수: #{emails.length}"
     emails
   end
 
@@ -56,7 +56,7 @@ class Gmail
       # 특수 문자 및 인코딩 문제 해결
       html_content = html_content.gsub(/[\r\n]+/, " ") # 줄바꿈 제거
                                   .gsub(/=\r?\n/, "") # quoted-printable 줄바꿈 제거
-      # Rails.logger.debug html_content
+      # logger.debug html_content
       next unless html_content
 
       # Nokogiri로 파싱
@@ -69,5 +69,11 @@ class Gmail
       }
     end
     links.uniq
+  end
+
+  private
+
+  def logger
+    Rails.logger
   end
 end

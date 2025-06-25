@@ -95,7 +95,7 @@ class ApplicationClient
     query_params = existing_params.merge(query || {})
     uri.query = Rack::Utils.build_query(query_params) if query_params.present?
 
-    Rails.logger.debug("#{klass.name.split("::").last.upcase}: #{uri}")
+    logger.debug("#{klass.name.split("::").last.upcase}: #{uri}")
 
     all_headers = default_headers.merge(headers)
     all_headers.delete("Content-Type") if klass == Net::HTTP::Get
@@ -154,6 +154,12 @@ class ApplicationClient
     else
       body.to_json
     end
+  end
+
+  protected
+
+  def logger
+    Rails.logger
   end
 
   private
