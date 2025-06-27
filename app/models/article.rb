@@ -52,7 +52,7 @@ class Article < ApplicationRecord
   YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
 
   IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com beehiiv.com join1440.com visualstudio.com ruby.social elk.zone
-    indieweb.social rubygems.org javascriptweekly.com postgresweekly.com rubyweekly.com job-boards.greenhouse.io jobs.ashbyhq.com
+    indieweb.social rubygems.org javascriptweekly.com postgresweekly.com rubyweekly.com
     linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev libhunt.com hotwireweekly.com reddit.com].freeze #: Array[String]
 
   def generate_metadata #: void
@@ -125,7 +125,9 @@ class Article < ApplicationRecord
         host == ignore_host ||
         host.end_with?(".#{ignore_host}") ||
         # 추가적으로 www 서브도메인도 고려
-        (host.start_with?("www.") && host[4..] == ignore_host)
+        (host.start_with?("www.") && host[4..] == ignore_host) ||
+        # 서브도메인 매칭
+        host.start_with?("job")
       end
     rescue URI::InvalidURIError => e
       logger.warn "Invalid URI detected: #{url} - #{e.message}"
