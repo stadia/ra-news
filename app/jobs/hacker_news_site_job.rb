@@ -27,7 +27,7 @@ class HackerNewsSiteJob < ApplicationJob
         next
       end
 
-      next if parsed_url.path.nil? || parsed_url.path.size < 2 || Article::IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
+      next if parsed_url.path.nil? || parsed_url.path.size < 2 || Article.should_ignore_url?(parsed_url)
 
       break if site.last_checked_at > Time.at(item["time"])
 

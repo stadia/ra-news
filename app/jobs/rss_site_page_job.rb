@@ -50,11 +50,10 @@ class RssSitePageJob < ApplicationJob
     end
 
     links = links.uniq
-    puts links
 
     links.each do |link|
       processed_link = extract_link(link)
-      next if processed_link.blank? || processed_link.end_with?("pdf") || Article::IGNORE_HOSTS.any? { |pattern| processed_link&.match?(/#{pattern}/i) }
+      next if processed_link.blank? || processed_link.end_with?("pdf") || Article.should_ignore_url?(processed_link)
 
       logger.info "Processing link: #{processed_link}"
       next if Article.exists?(url: processed_link) || Article.exists?(origin_url: processed_link)
@@ -62,7 +61,7 @@ class RssSitePageJob < ApplicationJob
       create_article(origin_url: processed_link, url: processed_link, site: site)
     end
 
-    # site.update!(last_checked_at: Time.zone.now)
-    # RssSitePageJob.perform_later(ids) unless ids.empty?
+    site.update!(last_checked_at: Time.zone.now)
+    RssSitePageJob.perform_later(ids) unless ids.empty?
   end
 end

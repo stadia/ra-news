@@ -28,8 +28,7 @@ module LinkHelper
   # Checks if a URI is invalid for article creation.
   #: (uri URI) -> bool
   def invalid_uri?(uri)
-    (uri.path.blank? || uri.path.size < 2) ||
-      Article::IGNORE_HOSTS.any? { |pattern| uri.host&.match?(/#{pattern}/i) }
+    (uri.path.blank? || uri.path.size < 2) || Article.should_ignore_url?(uri.to_s)
   end
 
   # Extracts the 'url' parameter from a URI's query string.

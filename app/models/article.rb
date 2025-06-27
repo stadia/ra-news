@@ -52,7 +52,7 @@ class Article < ApplicationRecord
   YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
 
   IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com beehiiv.com join1440.com visualstudio.com ruby.social elk.zone
-    indieweb.social rubygems.org javascriptweekly.com postgresweekly.com rubyweekly.com
+    indieweb.social rubygems.org javascriptweekly.com postgresweekly.com rubyweekly.com job-boards.greenhouse.io jobs.ashbyhq.com
     linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev libhunt.com hotwireweekly.com reddit.com].freeze #: Array[String]
 
   def generate_metadata #: void
@@ -110,6 +110,29 @@ class Article < ApplicationRecord
     find_by(slug: slug)
   end
 
+  # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
+  #: (String url) -> bool
+  def self.should_ignore_url?(url)
+    return true if url.blank?
+
+    begin
+      uri = URI.parse(url)
+      host = uri.host&.downcase
+      return true if host.blank?
+
+      IGNORE_HOSTS.any? do |ignore_host|
+        # 정확한 도메인 매칭
+        host == ignore_host ||
+        host.end_with?(".#{ignore_host}") ||
+        # 추가적으로 www 서브도메인도 고려
+        (host.start_with?("www.") && host[4..] == ignore_host)
+      end
+    rescue URI::InvalidURIError => e
+      logger.warn "Invalid URI detected: #{url} - #{e.message}"
+      true
+    end
+  end
+
   private
 
   def set_initial_url_and_host #: void
@@ -122,7 +145,7 @@ class Article < ApplicationRecord
     self.host = parsed_url.host
     self.is_youtube = true if host&.match?(/youtube/i)
     # IGNORE_HOSTS 패턴에 맞는 호스트이거나 경로가 너무 짧으면 discard
-    self.deleted_at = Time.zone.now if !is_youtube && parsed_url.path.nil? || parsed_url.path.size < 2 || IGNORE_HOSTS.any? { |pattern| parsed_url.host&.match?(/#{pattern}/i) }
+    self.deleted_at = Time.zone.now if !is_youtube && parsed_url.path.nil? || parsed_url.path.size < 2 || Article.should_ignore_url?(parsed_url.to_s)
   rescue URI::InvalidURIError
     logger.error "Invalid URI for initial URL parsing: #{url}"
     self.deleted_at = Time.zone.now # 유효하지 않은 URL은 삭제 처리
