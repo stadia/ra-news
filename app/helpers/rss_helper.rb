@@ -9,7 +9,7 @@ module RssHelper
     Article.create!(attributes)
     logger.info "Created article for #{attributes[:url]}"
     sleep 1
-  rescue ActiveRecord::RecordInvalid => e
+  rescue ActiveRecord::ActiveRecordError => e
     logger.error "Failed to create article for #{attributes[:url]}: #{e.message}"
   end
 
