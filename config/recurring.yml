@@ -11,4 +11,8 @@ production:
     schedule: "0 8 * * *"
   hacker_news_job:
     class: HackerNewsSiteJob
+    schedule: "0 0,12 * * *"
+  rss_site_page_job:
+    class:
+    command: "RssSitePageJob.enqueue_all"
     schedule: "0 6 * * *"
