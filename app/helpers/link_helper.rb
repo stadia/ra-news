@@ -53,4 +53,19 @@ module LinkHelper
     response = Faraday.get(link)
     response.headers["location"] if response.status.in?(300..399)
   end
+
+  def youtube_id(url) #: String?
+    # nil 체크를 포함하여 안전하게 접근
+    if url.is_a?(String)
+      uri = URI.parse(url)
+      if uri.query.present?
+        URI.decode_www_form(uri.query).to_h["v"]
+      elsif uri.path.start_with?("/live")
+        uri.path.split("/").last
+      end
+    end
+  rescue URI::InvalidURIError
+    logger.error "Invalid URI for youtube_id: #{url}"
+    nil
+  end
 end
