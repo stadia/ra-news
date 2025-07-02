@@ -23,6 +23,7 @@ class YoutubeSiteJob < ApplicationJob
       # 정규화된 URL 사용
       url = "https://#{Article::YOUTUBE_NORMALIZED_HOST}/watch?v=#{video.id}"
       Article.create(url: url, origin_url: url, title: video.title, published_at: video.published_at, site:) unless Article.exists?(origin_url: url)
+      sleep 1
     end
 
     site.update(last_checked_at: Time.zone.now)

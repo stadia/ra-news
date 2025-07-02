@@ -54,6 +54,7 @@ class HackerNewsSiteJob < ApplicationJob
         published_at: Time.at(item["time"]),
         site: site
       )
+      sleep 1
     end
     site.update(last_checked_at: Time.zone.now)
   end
