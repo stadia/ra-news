@@ -11,7 +11,7 @@ class Article < ApplicationRecord
 
   self.discard_column = :deleted_at
 
-  multisearchable against: [ :title, :title_ko, :summary_key, :summary_detail ], if: lambda { |record| record.deleted_at.nil? }
+  multisearchable against: [ :title, :title_ko, :summary_key, :summary_detail, :body ], if: lambda { |record| record.deleted_at.nil? }
 
   scope :full_text_search_for, ->(term) do
     joins(:pg_search_document).merge(
