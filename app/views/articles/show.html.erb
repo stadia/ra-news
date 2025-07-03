@@ -40,7 +40,7 @@
             <% end %>
         </div>
 
-        <div class="py-4 md:py-8 mx-auto">
+        <div class="mx-auto">
             <div class="prose prose-lg max-w-none text-gray-300 leading-relaxed article-content">
                 <% if @article.summary_detail.is_a?(Hash) %>
                     <div class="mb-4 md:mb-8 p-3 md:p-6 bg-gray-700 rounded-lg">
@@ -53,7 +53,7 @@
                         <%= Kramdown::Document.new(@article.summary_detail["body"]).to_html.html_safe %>
                     </div>
 
-                    <div class="mb-4 md:mb-8 p-3 md:p-6 bg-gray-700 rounded-lg">
+                    <div class="p-3 md:p-6 bg-gray-700 rounded-lg">
                         <p class="text-gray-300 leading-relaxed">
                             <%= @article.summary_detail["conclusion"] %>
                         </p>
@@ -61,6 +61,18 @@
                 <% end %>
             </div>
         </div>
+    </div>
+  </div>
+
+  <div id="articleDetail" class="bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-700">
+    <div class="p-4 md:p-8">
+      <h2 class="text-xl font-semibold text-gray-100 mb-4">관련 글들</h2>
+      <% @similar_articles.each do |article| %>
+      <div class="bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-gray-600 p-4 mb-4">
+        <h3 class="text-lg font-semibold text-gray-100 mb-2"><%= link_to article.title_ko || article.title, article_path(article.slug) %></h3>
+        <p class="text-gray-300 text-sm mb-2"><%= article.summary_key.is_a?(String) ? article.summary_key : article.summary_key.first %></p>
+      </div>
+    <% end %>
     </div>
   </div>
 
