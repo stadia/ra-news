@@ -423,12 +423,12 @@ GEM
       fugit (~> 1.11.0)
       railties (>= 7.1)
       thor (~> 1.3.1)
-    sorbet (0.5.12214)
-      sorbet-static (= 0.5.12214)
+    sorbet (0.5.12216)
+      sorbet-static (= 0.5.12216)
     sorbet-runtime (0.5.12214)
-    sorbet-static (0.5.12214-aarch64-linux)
-    sorbet-static (0.5.12214-universal-darwin)
-    sorbet-static (0.5.12214-x86_64-linux)
+    sorbet-static (0.5.12216-aarch64-linux)
+    sorbet-static (0.5.12216-universal-darwin)
+    sorbet-static (0.5.12216-x86_64-linux)
     sshkit (1.24.0)
       base64
       logger
