@@ -70,7 +70,7 @@
       <% @similar_articles.each do |article| %>
       <div class="bg-gray-700 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-gray-600 p-4 mb-4">
         <h3 class="text-lg font-semibold text-gray-100 mb-2"><%= link_to article.title_ko || article.title, article_path(article.slug) %></h3>
-        <p class="text-gray-300 text-sm mb-2"><%= article.summary_key.is_a?(String) ? article.summary_key : article.summary_key.first %></p>
+        <p class="text-gray-300 text-sm mb-2"><%= article.summary_key.is_a?(String) ? article.summary_key : article.summary_key&.first %></p>
       </div>
     <% end %>
     </div>
