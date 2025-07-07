@@ -21,15 +21,21 @@ class ArticleResource < Madmin::Resource
 
   # Associations
   attribute :user, index: false, form: false
-  attribute :site, index: false, form: false
+  attribute :site, index: true, form: false
 
   # Add scopes to easily filter records
   # scope :published
 
   # Add actions to the resource's show page
-  # member_action do |record|
-  #   link_to "Do Something", some_path
-  # end
+  member_action do |record|
+    if record.is_a?(Article) && record.deleted_at.nil?
+      button_to "Discard", discard_madmin_article_path(record), method: :put, data: { turbo_confirm: "Are you sure you want to discard this article?" },
+    class: "btn btn-danger bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700"
+    else
+      button_to "Restore", restore_madmin_article_path(record), method: :put, data: { turbo_confirm: "Are you sure you want to restore this article?" },
+    class: "btn btn-success bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700"
+    end
+  end
 
   # Customize the display name of records in the admin area.
   # def self.display_name(record) = record.name
@@ -38,10 +44,4 @@ class ArticleResource < Madmin::Resource
   # def self.default_sort_column = "created_at"
   #
   # def self.default_sort_direction = "desc"
-
-  class << self
-    def model_find(id)
-      model.find_by_slug(id)
-    end
-  end
 end

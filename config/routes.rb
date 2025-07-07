@@ -28,4 +28,13 @@ Rails.application.routes.draw do
   post "signup" => "users#create", as: :user
 
   mount MissionControl::Jobs::Engine, at: "/jobs"
+
+  namespace :madmin do
+    resources :articles do
+      member do
+        put :discard
+        put :restore
+      end
+    end
+  end
 end

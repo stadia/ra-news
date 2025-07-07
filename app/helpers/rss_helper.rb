@@ -11,6 +11,8 @@ module RssHelper
     sleep 1
   rescue ActiveRecord::ActiveRecordError => e
     logger.error "Failed to create article for #{attributes[:url]}: #{e.message}"
+  rescue StandardError => e
+    logger.error "Unexpected error creating article for #{attributes[:url]}: #{e.message}"
   end
 
   # Fetches and parses the RSS feed for a site.
