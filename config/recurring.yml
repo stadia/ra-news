@@ -1,6 +1,5 @@
 production:
   rss_site_job:
-    class:
     command: "RssSiteJob.enqueue_all"
     schedule: "0 7 * * *"
   gmail_article_job:
@@ -13,9 +12,8 @@ production:
     class: HackerNewsSiteJob
     schedule: "0 0,12 * * *"
   rss_site_page_job:
-    class:
     command: "RssSitePageJob.enqueue_all"
     schedule: "0 6 * * *"
   sitemap_refresh:
-      command: "SitemapService.call"
-      schedule: "30/* * * *"
+    command: "SitemapService.call"
+    schedule: "30 * * * 1-5"
