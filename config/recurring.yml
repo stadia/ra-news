@@ -16,3 +16,6 @@ production:
     class:
     command: "RssSitePageJob.enqueue_all"
     schedule: "0 6 * * *"
+  sitemap_refresh:
+      command: "SitemapService.call"
+      schedule: "30/* * * *"

@@ -18,7 +18,11 @@ SitemapGenerator::Sitemap.create do
   # Add '/articles'
   #
   #   add articles_path, :priority => 0.7, :changefreq => 'daily'
-  Article.kept.find_each do |article|
-    add article_path(article.slug), lastmod: article.updated_at
+  Article.kept.find_in_batches(batch_size: 200, order: [ :desc ]) do |group|
+    group.each do |article|
+      add article_path(article.slug), lastmod: article.updated_at
+    end
   end
 end
+# Compress set to true will generate an '.xml.gz' file
+SitemapGenerator::Sitemap.compress = true
