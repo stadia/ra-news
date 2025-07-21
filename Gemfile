@@ -90,3 +90,5 @@ gem "madmin", "~> 2.0"
 gem "discard"
 gem "awesome_nested_set"
 gem "neighbor"
+
+gem "erb-formatter", "~> 0.7.3"
