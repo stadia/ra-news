@@ -170,7 +170,7 @@ GEM
       activerecord (>= 6.0, < 9)
       ruby2ruby (~> 2.4)
       ruby_parser (~> 3.10)
-    honeybadger (5.29.1)
+    honeybadger (6.0.0)
       logger
       ostruct
     i18n (1.14.7)
@@ -528,7 +528,7 @@ DEPENDENCIES
   faker
   google-protobuf
   hairtrigger
-  honeybadger (~> 5.28)
+  honeybadger (~> 6.0)
   importmap-rails
   jbuilder
   kamal
