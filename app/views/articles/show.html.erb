@@ -179,14 +179,14 @@
         <%= render partial: 'comments/header', locals: { comments: @comments } %>
       </h3>
 
-      <!-- 댓글 목록 -->
-      <div class="space-y-4 mb-8">
-        <%= render partial: 'comments/comments', locals: { article: @article, comments: @comments } %>
+      <!-- 댓글 작성 폼 -->
+      <div id="comment_form" class="border-t border-gray-700 mb-4">
+        <%= render partial: 'comments/form', locals: { article: @article, comment: @comment } %>
       </div>
 
-      <!-- 댓글 작성 폼 -->
-      <div id="comment_form" class="border-t border-gray-700 pt-6">
-        <%= render partial: 'comments/form', locals: { article: @article, comment: @comment } %>
+      <!-- 댓글 목록 -->
+      <div class="space-y-4 pt-6">
+        <%= render partial: 'comments/comments', locals: { article: @article, comments: @comments } %>
       </div>
     </div>
   </section>
