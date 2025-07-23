@@ -17,9 +17,9 @@ services:
       - "traefik.http.middlewares.news-https.redirectscheme.scheme=https"
       - "traefik.http.routers.news-http.entrypoints=web"
       - "traefik.http.routers.news-http.middlewares=news-https"
-      - "traefik.http.routers.news-http.rule=Host(`news.stadiasphere.xyz`)"
+      - "traefik.http.routers.news-http.rule=Host(`ruby-news.kr`)"
       - "traefik.http.routers.news.entrypoints=websecure"
-      - "traefik.http.routers.news.rule=Host(`news.stadiasphere.xyz`)"
+      - "traefik.http.routers.news.rule=Host(`ruby-news.kr`)"
       - "traefik.http.routers.news.tls.certresolver=letsencrypt"
     networks:
       - homeNetwork

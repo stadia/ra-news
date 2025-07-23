@@ -1,6 +1,6 @@
 # Set the host name for URL creation
 SitemapGenerator::Sitemap.create(
-  default_host: "https://news.stadiasphere.xyz",
+  default_host: "https://ruby-news.kr",
   sitemaps_path: "sitemaps/"
 ) do
   # Put links creation logic here.
