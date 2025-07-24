@@ -70,7 +70,7 @@ group :test do
 end
 
 gem "sorbet-runtime"
-gem "ruby_llm", "~> 1.3.0"
+gem "ruby_llm", "~> 1.3.2beta1"
 gem "pagy", "~> 9.3" # omit patch digit
 gem "honeybadger", "~> 6.0.0"
 gem "google-protobuf", require: false
