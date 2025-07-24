@@ -1,11 +1,11 @@
-<% if @article.comments.size == 1 %>
-  <%= turbo_stream.replace "comments", partial: "comments/comments", locals: { article: @article, comments: @article.comments } %>
+<% if @comments.size == 1 %>
+  <%= turbo_stream.replace "comments", partial: "comments/comments", locals: { article: @article, comments: @comments } %>
 <% else %>
   <%= turbo_stream.prepend "comments", partial: "comments/comment", locals: { comment: @comment } %>
 <% end %>
 
 <%= turbo_stream.update "comments_header" do %>
-  <%= render partial: 'comments/header', locals: { comments: @article.comments } %>
+  <%= render partial: 'comments/header', locals: { comments: @comments } %>
 <% end %>
 
 <%= turbo_stream.update "comment_form" do %>

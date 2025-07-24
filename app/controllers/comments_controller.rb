@@ -9,6 +9,7 @@ class CommentsController < ApplicationController
 
     respond_to do |format|
       if @comment.save
+        @comments = @article.comments.includes(:user).order(created_at: :desc)
         format.html { redirect_to @article, notice: "댓글이 성공적으로 작성되었습니다." }
         format.turbo_stream
       else
@@ -22,6 +23,7 @@ class CommentsController < ApplicationController
   def destroy
     @article = @comment.article
     @comment.destroy
+    @comments = @article.comments.includes(:user).order(created_at: :desc)
 
     respond_to do |format|
       format.html { redirect_to @article, notice: "댓글이 삭제되었습니다." }
