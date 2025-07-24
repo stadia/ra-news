@@ -1,5 +1,5 @@
 <%= turbo_stream.remove "comment_#{@comment.id}" %>
 
 <%= turbo_stream.update "comments_header" do %>
-  <%= render partial: 'comments/header', locals: { comments: @article.comments } %>
+  <%= render partial: 'comments/header', locals: { comments: @comments } %>
 <% end %>

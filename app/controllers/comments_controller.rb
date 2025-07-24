@@ -9,10 +9,11 @@ class CommentsController < ApplicationController
 
     respond_to do |format|
       if @comment.save
+        load_comments
         format.html { redirect_to @article, notice: "댓글이 성공적으로 작성되었습니다." }
         format.turbo_stream
       else
-        @comments = @article.comments.includes(:user).order(created_at: :desc)
+        load_comments
         format.html { redirect_to @article, alert: "댓글 작성에 실패했습니다." }
       end
     end
@@ -22,6 +23,7 @@ class CommentsController < ApplicationController
   def destroy
     @article = @comment.article
     @comment.destroy
+    load_comments
 
     respond_to do |format|
       format.html { redirect_to @article, notice: "댓글이 삭제되었습니다." }
@@ -38,6 +40,10 @@ class CommentsController < ApplicationController
 
     def set_comment
       @comment = Comment.find(params.expect(:id))
+    end
+
+    def load_comments
+      @comments = @article.comments.includes(:user).order(created_at: :desc)
     end
 
     def comment_params
