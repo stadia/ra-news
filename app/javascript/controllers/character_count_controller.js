@@ -15,6 +15,11 @@ export default class extends Controller {
   }
 
   updateCount() {
+    if (!this.inputTarget?.value) {
+      this.counterTarget.textContent = 0;
+      return;
+    }
+
     const currentLength = this.inputTarget.value.length
     this.counterTarget.textContent = currentLength
 
