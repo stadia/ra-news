@@ -1,4 +1,4 @@
-<% if @comments.size == 1 %>
+<% if @comments.length == 1 %>
   <%= turbo_stream.replace "comments", partial: "comments/comments", locals: { article: @article, comments: @comments } %>
 <% else %>
   <%= turbo_stream.prepend "comments", partial: "comments/comment", locals: { comment: @comment } %>
