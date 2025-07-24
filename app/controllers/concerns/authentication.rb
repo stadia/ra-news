@@ -35,7 +35,6 @@ module Authentication
 
     def request_authentication
       session[:return_to_after_authenticating] = request.url
-      flash[:alert] = "댓글을 작성하시려면 로그인이 필요합니다."
       redirect_to new_session_path
     end
 
