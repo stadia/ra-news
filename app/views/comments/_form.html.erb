@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "new_comment" do %>
-  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600">
+  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600" data-controller="character-count" data-character-count-max-length-value="1000">
     <h4 class="text-lg font-semibold text-gray-100 mb-4 flex items-center">
       <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
@@ -33,9 +33,10 @@
               (comment.errors[:body].none? ? "border-gray-600 hover:border-gray-500" : "border-red-500 focus:ring-red-500")
             ].join(' '),
             placeholder: "댓글을 입력하세요...",
-            maxlength: 1000 %>
+            maxlength: 1000,
+            data: { character_count_target: "input", action: "input->character-count#updateCount" } %>
         <div class="text-xs text-gray-400 text-right">
-          <span id="comment-char-count">0</span>/1000
+          <span data-character-count-target="counter">0</span>/1000
         </div>
       </div>
 
@@ -54,15 +55,3 @@
   </div>
 <% end %>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const textarea = document.querySelector('#comment_body');
-    const charCount = document.querySelector('#comment-char-count');
-
-    if (textarea && charCount) {
-      textarea.addEventListener('input', function() {
-        charCount.textContent = this.value.length;
-      });
-    }
-  });
-</script>
