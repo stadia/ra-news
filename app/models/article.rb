@@ -145,6 +145,16 @@ class Article < ApplicationRecord
     end
   end
 
+  def user_name
+    return user&.name.present? ? user.name : "알 수 없음" if user&.name.present?
+
+    if site.present?
+      site.base_uri.present? ? "#{site.name} (#{site.base_uri})" : site.name
+    else
+      "알 수 없음"
+    end
+  end
+
   private
 
   def set_initial_url_and_host #: void

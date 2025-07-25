@@ -5,9 +5,6 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :articles, only: %i[index show new create] do
     resources :comments, only: %i[create destroy]
-    collection do
-      get :rss
-    end
   end
 
   resource :users, only: %i[edit update destroy]
@@ -22,6 +19,8 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "home#index"
+
+  get "rss" => "home#rss", as: :rss
 
   get "login" => "sessions#new", as: :new_session
   post "login" => "sessions#create", as: :session
