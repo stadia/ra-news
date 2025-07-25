@@ -26,6 +26,13 @@ module Madmin
         recent: Comment.order(created_at: :desc).limit(5)
       }
 
+      @host_stats = Article.kept
+        .group(:host)
+        .count
+        .sort_by { |host, count| -count }
+        .first(5)
+        .to_h
+
       @system_stats = {
         database_size: get_database_size,
         cache_keys: Rails.cache.respond_to?(:stats) ? Rails.cache.stats : nil
