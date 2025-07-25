@@ -1,0 +1,227 @@
+<%= content_for :title, "관리자 대시보드" %>
+
+<header class="header mb-6">
+  <h1 class="text-3xl font-bold text-gray-900">관리자 대시보드</h1>
+  <p class="text-gray-600 mt-2">RA-News 서비스 현황 모니터링</p>
+</header>
+
+<!-- 주요 지표 카드 그리드 -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <!-- 전체 기사 수 -->
+  <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">전체 기사</h3>
+        <p class="text-3xl font-bold text-gray-900"><%= @article_stats[:total] %></p>
+        <p class="text-sm text-gray-600 mt-1">오늘 +<%= @article_stats[:today] %>개</p>
+      </div>
+      <div class="flex-shrink-0">
+        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사이트 수 -->
+  <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">RSS 피드</h3>
+        <p class="text-3xl font-bold text-gray-900"><%= @site_stats[:total] %></p>
+        <p class="text-sm text-gray-600 mt-1">활성 <%= @site_stats[:active] %>개</p>
+      </div>
+      <div class="flex-shrink-0">
+        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사용자 수 -->
+  <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">사용자</h3>
+        <p class="text-3xl font-bold text-gray-900"><%= @user_stats[:total] %></p>
+        <p class="text-sm text-gray-600 mt-1">등록된 사용자</p>
+      </div>
+      <div class="flex-shrink-0">
+        <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-2.239"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 댓글 수 -->
+  <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+    <div class="flex items-center">
+      <div class="flex-1">
+        <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">댓글</h3>
+        <p class="text-3xl font-bold text-gray-900"><%= @comment_stats[:total] %></p>
+        <p class="text-sm text-gray-600 mt-1">총 댓글 수</p>
+      </div>
+      <div class="flex-shrink-0">
+        <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 상세 정보 그리드 -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+  <!-- 최근 기사 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900">최근 기사</h3>
+        <%= link_to "전체 보기", madmin_articles_path, class: "text-blue-600 hover:text-blue-800 text-sm" %>
+      </div>
+    </div>
+    <div class="px-6 py-4">
+      <% if @article_stats[:recent].any? %>
+        <div class="space-y-4">
+          <% @article_stats[:recent].each do |article| %>
+            <div class="flex items-start space-x-3">
+              <div class="flex-1 min-w-0">
+                <%= link_to madmin_article_path(article), class: "text-blue-600 hover:text-blue-800" do %>
+                  <p class="text-sm font-medium text-gray-900 truncate"><%= article.title %></p>
+                <% end %>
+                <p class="text-xs text-gray-500 mt-1">
+                  <%= article.created_at.strftime("%Y-%m-%d %H:%M") %>
+                  <% if article.site %>
+                    • <%= article.site.name %>
+                  <% end %>
+                </p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-sm">최근 기사가 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- RSS 피드 상태 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900">RSS 피드 상태</h3>
+        <%= link_to "전체 보기", madmin_sites_path, class: "text-blue-600 hover:text-blue-800 text-sm" %>
+      </div>
+    </div>
+    <div class="px-6 py-4">
+      <% if @site_stats[:recent_feeds].any? %>
+        <div class="space-y-4">
+          <% @site_stats[:recent_feeds].each do |site| %>
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <%= link_to madmin_site_path(site), class: "text-blue-600 hover:text-blue-800" do %>
+                  <p class="text-sm font-medium text-gray-900 truncate"><%= site.name %></p>
+                <% end %>
+                <p class="text-xs text-gray-500 mt-1">
+                  <% if site.last_checked_at %>
+                    마지막 수집: <%= time_ago_in_words(site.last_checked_at) %> 전
+                  <% else %>
+                    아직 수집되지 않음
+                  <% end %>
+                </p>
+              </div>
+              <div class="flex-shrink-0">
+                <% if site.last_checked_at && site.last_checked_at > 1.day.ago %>
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">활성</span>
+                <% elsif site.last_checked_at %>
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">지연</span>
+                <% else %>
+                  <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">비활성</span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-sm">등록된 RSS 피드가 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- 시스템 상태 -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <!-- 기사 상태 분포 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">기사 상태</h3>
+    </div>
+    <div class="px-6 py-4">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">활성 기사</span>
+          <span class="text-sm font-semibold text-green-600"><%= @article_stats[:total] %>개</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">삭제된 기사</span>
+          <span class="text-sm font-semibold text-red-600"><%= @article_stats[:discarded] %>개</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">오늘 추가</span>
+          <span class="text-sm font-semibold text-blue-600"><%= @article_stats[:today] %>개</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 최근 댓글 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-medium text-gray-900">최근 댓글</h3>
+        <%= link_to "전체 보기", madmin_comments_path, class: "text-blue-600 hover:text-blue-800 text-sm" %>
+      </div>
+    </div>
+    <div class="px-6 py-4">
+      <% if @comment_stats[:recent].any? %>
+        <div class="space-y-3">
+          <% @comment_stats[:recent].take(3).each do |comment| %>
+            <div class="border-b border-gray-100 last:border-b-0 pb-3 last:pb-0">
+              <%= link_to madmin_comment_path(comment), class: "text-blue-600 hover:text-blue-800" do %>
+                <p class="text-sm text-gray-900 line-clamp-2"><%= truncate(comment.body, length: 60) %></p>
+              <% end %>
+              <p class="text-xs text-gray-500 mt-1"><%= time_ago_in_words(comment.created_at) %> 전</p>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-sm">최근 댓글이 없습니다.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 시스템 정보 -->
+  <div class="bg-white rounded-lg shadow">
+    <div class="px-6 py-4 border-b border-gray-200">
+      <h3 class="text-lg font-medium text-gray-900">시스템 정보</h3>
+    </div>
+    <div class="px-6 py-4">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">데이터베이스 크기</span>
+          <span class="text-sm font-semibold text-gray-900"><%= @system_stats[:database_size] %></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Rails 환경</span>
+          <span class="text-sm font-semibold text-gray-900"><%= Rails.env.capitalize %></span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">현재 시간</span>
+          <span class="text-sm font-semibold text-gray-900"><%= Time.current.strftime("%Y-%m-%d %H:%M") %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
