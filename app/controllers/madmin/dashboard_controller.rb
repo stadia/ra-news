@@ -5,14 +5,16 @@ module Madmin
     def show #: () -> void
       @article_stats = {
         total: Article.kept.count,
-        recent: Article.kept.order(created_at: :desc).limit(5),
+        recent: Article.kept.includes(:site).order(created_at: :desc).limit(5),
         discarded: Article.discarded.count,
         today: Article.kept.where(created_at: Date.current.all_day).count
       }
 
+      # Optimize site stats with single query
+      site_counts = Site.select("COUNT(*) AS total, COUNT(last_checked_at) AS active").first
       @site_stats = {
-        total: Site.count,
-        active: Site.where.not(last_checked_at: nil).count,
+        total: site_counts.total,
+        active: site_counts.active,
         recent_feeds: Site.order(last_checked_at: :desc).limit(5)
       }
 
@@ -23,7 +25,7 @@ module Madmin
 
       @comment_stats = {
         total: Comment.count,
-        recent: Comment.order(created_at: :desc).limit(5)
+        recent: Comment.order(created_at: :desc).limit(3)
       }
 
       @host_stats = Article.kept
