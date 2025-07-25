@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class ArticlesController < ApplicationController
-  allow_unauthenticated_access only: %i[ index show ]
+  allow_unauthenticated_access only: %i[ index show rss ]
 
   before_action :set_article, only: %i[ show edit ]
 
@@ -23,6 +23,15 @@ class ArticlesController < ApplicationController
     @comments = @article.comments.includes(:user).order(created_at: :desc)
     @similar_articles = Article.kept.where.not(id: @article.id).nearest_neighbors(:embedding, @article.embedding, distance: "cosine", precision: "half").first(3)
     @comment = Comment.new
+  end
+
+  # GET /articles.rss
+  def rss
+    @articles = Article.kept.where.not(slug: nil).order(created_at: :desc).limit(100)
+    
+    respond_to do |format|
+      format.rss { render layout: false }
+    end
   end
 
   # GET /articles/new
