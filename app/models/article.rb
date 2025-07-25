@@ -43,6 +43,7 @@ class Article < ApplicationRecord
 
   after_create do
     ArticleJob.perform_later(id) if deleted_at.nil?
+    Rails.cache.delete("rss_articles")
   end
 
   after_commit do
