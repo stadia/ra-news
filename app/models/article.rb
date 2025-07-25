@@ -46,6 +46,10 @@ class Article < ApplicationRecord
     Rails.cache.delete("rss_articles")
   end
 
+  after_discard do
+    Rails.cache.delete("rss_articles")
+  end
+
   after_commit do
     # ArticleJob.perform_later(id) if saved_change_to_url? && deleted_at.nil? # Ensure deleted_at is checked here too
   end
@@ -147,7 +151,7 @@ class Article < ApplicationRecord
   end
 
   def user_name
-    return user&.name.present? ? user.name : "알 수 없음" if user&.name.present?
+    return user&.name.present? ? user.name : "알 수 없음" if user.present?
 
     if site.present?
       site.base_uri.present? ? "#{site.name} (#{site.base_uri})" : site.name
