@@ -25,15 +25,6 @@ class ArticlesController < ApplicationController
     @comment = Comment.new
   end
 
-  # GET /articles.rss
-  def rss
-    @articles = Article.kept.where.not(slug: nil).order(created_at: :desc).limit(100)
-    
-    respond_to do |format|
-      format.rss { render layout: false }
-    end
-  end
-
   # GET /articles/new
   def new
     @article = Article.new(user: Current.user)

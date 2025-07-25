@@ -10,12 +10,12 @@ xml.rss version: "2.0" do
 
     @articles.each do |article|
       xml.item do
-        xml.title article.title || "제목 없음"
-        xml.description article.summary_detail || article.title || "설명 없음"
+        xml.title article.title_ko || article.title || "제목 없음"
+        xml.description article.summary_key.join("\n") || "핵심 요약이 없습니다"
         xml.pubDate article.published_at&.rfc822 || article.created_at&.rfc822
-        xml.link article_url(article)
-        xml.guid article_url(article), isPermaLink: true
-        xml.author article.user&.email if article.user&.email
+        xml.link article_url(article.slug || article.id)
+        xml.guid article_url(article.slug || article.id), isPermaLink: true
+        xml.author article.user_name
       end
     end
   end
