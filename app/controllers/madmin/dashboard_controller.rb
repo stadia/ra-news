@@ -11,7 +11,7 @@ module Madmin
       }
 
       # Optimize site stats with single query
-      site_counts = Site.select("COUNT(*) AS total, COUNT(last_checked_at) AS active").first
+      site_counts = Site.unscoped.select("COUNT(*) AS total, COUNT(last_checked_at) AS active").take
       @site_stats = {
         total: site_counts.total,
         active: site_counts.active,
