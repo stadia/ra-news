@@ -11,12 +11,20 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    article = if params[:search].present?
-      Article.full_text_search_for(params[:search])
+    scope = Article.kept.where.not(slug: nil)
+    article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
+    id = if article_count < 9
+      scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
     else
-      Article.where.not(id: Article.kept.select(:id).where.not(slug: nil).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id))
+      scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
     end
-    @pagy, @articles = pagy(article.includes(:user).where.not(slug: nil).kept.order(published_at: :desc))
+
+    article = if params[:search].present?
+      scope.full_text_search_for(params[:search])
+    else
+      scope.where.not(id: id)
+    end
+    @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
   end
 
   def show

@@ -2,7 +2,13 @@ class HomeController < ApplicationController
   allow_unauthenticated_access
 
   def index
-    @articles = Article.includes(:user, :site).kept.where.not(slug: nil).where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
+    scope = Article.includes(:user, :site).kept.where.not(slug: nil)
+    article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
+    @articles = if article_count < 9
+      scope.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
+    else
+      scope.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
+    end
   end
 
   # GET /rss
