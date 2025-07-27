@@ -8,3 +8,273 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* ===== MODERN CSS NAVIGATION ===== */
+
+/* View Transitions API */
+@view-transition {
+  navigation: auto;
+}
+
+/* View transition customization for smooth page changes */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+}
+
+::view-transition-old(root) {
+  animation-name: fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: fade-in;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* CSS-only mobile menu toggle */
+.mobile-menu-toggle {
+  display: none;
+}
+
+.mobile-menu-toggle:checked + .mobile-menu-button .menu-icon-open {
+  display: none;
+}
+
+.mobile-menu-toggle:checked + .mobile-menu-button .menu-icon-close {
+  display: block;
+}
+
+.mobile-menu-toggle:checked ~ .mobile-menu {
+  display: block !important;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* CSS-only loading animations with container queries */
+@container (max-width: 768px) {
+  .loading-indicator {
+    scale: 0.8;
+  }
+}
+
+/* Optimized animations for reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.1s;
+  }
+  
+  .mobile-menu-toggle:checked ~ .mobile-menu {
+    animation: none;
+  }
+}
+
+/* CSS-only hover and focus enhancements */
+.nav-link {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link:focus::after {
+  width: 100%;
+  left: 0;
+}
+
+/* CSS Grid for responsive navigation layout */
+.nav-container {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    grid-template-columns: auto auto;
+  }
+}
+
+/* CSS Subgrid for nested navigation items */
+@supports (grid-template-rows: subgrid) {
+  .nav-items {
+    display: grid;
+    grid-template-rows: subgrid;
+  }
+}
+
+/* Container queries for responsive design */
+@container (min-width: 768px) {
+  .mobile-only {
+    display: none;
+  }
+}
+
+@container (max-width: 767px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* CSS Anchor positioning for dropdowns (if supported) */
+@supports (anchor-name: --dropdown) {
+  .dropdown-anchor {
+    anchor-name: --dropdown;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    position-anchor: --dropdown;
+    top: anchor(bottom);
+    left: anchor(left);
+  }
+}
+
+/* Scroll-driven animations for navigation feedback */
+@supports (animation-timeline: scroll()) {
+  .scroll-indicator {
+    animation: progress-bar auto linear;
+    animation-timeline: scroll(root);
+  }
+  
+  @keyframes progress-bar {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+}
+
+/* CSS Nesting for better organization */
+.navigation {
+  & .nav-item {
+    position: relative;
+    
+    & .nav-link {
+      display: block;
+      padding: 0.5rem 1rem;
+      
+      &:hover,
+      &:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 0.25rem;
+      }
+    }
+  }
+}
+
+/* Scroll progress indicator using CSS-only */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #10b981 0%, #10b981 var(--scroll-progress, 0%), transparent var(--scroll-progress, 0%));
+  z-index: 1000;
+}
+
+/* bfcache optimization styles */
+.bfcache-optimized {
+  /* Avoid complex animations that might block bfcache */
+  contain: layout style paint;
+  will-change: auto;
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  .nav-link::after {
+    display: none; /* Remove hover effects on mobile for better performance */
+  }
+  
+  .navigation {
+    contain: layout;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .nav-link {
+    border: 1px solid transparent;
+  }
+  
+  .nav-link:hover,
+  .nav-link:focus {
+    border-color: currentColor;
+  }
+}
+
+/* CSS Layers for better cascade control */
+@layer reset, base, components, utilities;
+
+@layer base {
+  :root {
+    --nav-bg: #047857;
+    --nav-hover: rgba(255, 255, 255, 0.1);
+    --transition-duration: 0.2s;
+  }
+}
+
+@layer components {
+  .modern-nav {
+    background-color: var(--nav-bg);
+    transition: background-color var(--transition-duration) ease;
+  }
+}
+
+/* CSS Container Queries for responsive navigation */
+@container navigation (min-width: 768px) {
+  .mobile-menu-toggle,
+  .mobile-menu-button {
+    display: none;
+  }
+}
+
+/* Focus-visible for better keyboard navigation */
+.nav-link:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

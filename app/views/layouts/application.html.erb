@@ -44,43 +44,77 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
+    <%# Enable CSS View Transitions API for smooth page transitions %>
+    <meta name="view-transition" content="same-origin">
+    
+    <%# bfcache optimization - prevent cache blocking %>
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-title" content="RA News">
+    
+    <%# Speculation Rules for instant navigation %>
+    <script type="speculationrules">
+    {
+      "prerender": [{
+        "where": { "href_matches": "/*" },
+        "eagerness": "moderate"
+      }],
+      "prefetch": [{
+        "where": { "href_matches": "/*" },
+        "eagerness": "conservative"
+      }]
+    }
+    </script>
+    
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    
+    <%# Modern CSS Navigation with minimal JavaScript %>
+    <script src="<%= asset_path('modern_navigation.js') %>" defer></script>
   </head>
 
-  <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col"
-        data-controller="navbar page-loader"
-        data-action="click@window->navbar#clickOutside keydown@window->navbar#keydown turbo:before-visit@window->page-loader#beforeTurboVisit turbo:load@window->page-loader#afterTurboLoad">
+  <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col bfcache-optimized">
 
-    <!-- Loading Indicator -->
-    <div data-page-loader-target="loader" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center">
+    <!-- CSS-only Scroll Progress Indicator -->
+    <div class="scroll-progress"></div>
+
+    <!-- CSS-only Loading Indicator with View Transitions -->
+    <div class="loading-indicator fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center" 
+         style="view-transition-name: loading;">
       <div class="flex flex-col items-center space-y-4">
         <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent"></div>
         <div class="text-white font-medium">로딩 중...</div>
       </div>
     </div>
 
-    <nav class="bg-green-700 border-green-800">
-      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <!-- Modern CSS-only Navigation -->
+    <nav class="bg-green-700 border-green-800 navigation" style="view-transition-name: navigation;">
+      <div class="max-w-screen-xl nav-container mx-auto p-4">
         <%= link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse" do %>
           <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">RA || 루비 AI 뉴스</span>
         <% end %>
-        <button data-collapse-toggle="navbar-search" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500" aria-controls="navbar-search" aria-expanded="false">
-          <span class="sr-only">Open main menu</span>
-          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+        
+        <!-- CSS-only Mobile Menu Toggle -->
+        <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle" aria-hidden="true">
+        <label for="mobile-menu-toggle" class="mobile-menu-button inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer" aria-controls="navbar-search">
+          <span class="sr-only">메인 메뉴 열기</span>
+          <svg class="menu-icon-open w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
           </svg>
-        </button>
-        <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
-          <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-green-600 rounded-lg bg-green-600 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-green-700">
-            <li>
-              <%= link_to "홈", root_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria-current" => "page" %>
+          <svg class="menu-icon-close w-5 h-5 hidden" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+          </svg>
+        </label>
+        
+        <div class="mobile-menu items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
+          <ul class="nav-items flex flex-col p-4 md:p-0 mt-4 font-medium border border-green-600 rounded-lg bg-green-600 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-green-700">
+            <li class="nav-item">
+              <%= link_to "홈", root_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria-current" => "page" %>
             </li>
-            <li>
-              <%= link_to "지난 글", articles_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria-current" => "page" %>
+            <li class="nav-item">
+              <%= link_to "지난 글", articles_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria-current" => "page" %>
             </li>
-            <li class="flex items-center">
+            <li class="nav-item flex items-center">
               <%= form_with url: articles_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
                 <%= form.text_field :search,
                     placeholder: "검색...",
@@ -91,18 +125,18 @@
               <% end %>
             </li>
             <% if authenticated? %>
-              <li>
-                <%= link_to "글 등록", new_article_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
+              <li class="nav-item">
+                <%= link_to "글 등록", new_article_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
               </li>
-              <li>
+              <li class="nav-item">
                 <span class="block py-2 px-3 text-gray-100 rounded-sm md:p-0" aria-current="page"><%= Current.user.name %></span>
               </li>
             <% end %>
-            <li>
+            <li class="nav-item">
               <% if authenticated? %>
-                <%= link_to "로그아웃", logout_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
+                <%= link_to "로그아웃", logout_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
               <% else %>
-                <%= link_to "로그인", new_session_path, id: "loginLink", class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
+                <%= link_to "로그인", new_session_path, id: "loginLink", class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
               <% end %>
             </li>
           </ul>
