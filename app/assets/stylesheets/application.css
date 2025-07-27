@@ -118,14 +118,26 @@
 /* CSS Grid for responsive navigation layout */
 .nav-container {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto auto auto 1fr;
   align-items: center;
   gap: 1rem;
 }
 
 @media (max-width: 768px) {
   .nav-container {
-    grid-template-columns: auto auto;
+    grid-template-columns: auto auto auto;
+  }
+}
+
+/* Hide mobile toggle elements on desktop */
+@media (min-width: 769px) {
+  .mobile-menu-toggle,
+  .mobile-menu-button {
+    display: none !important;
+  }
+  
+  .nav-container {
+    grid-template-columns: auto 1fr;
   }
 }
 
@@ -258,7 +270,7 @@
 @container navigation (min-width: 768px) {
   .mobile-menu-toggle,
   .mobile-menu-button {
-    display: none;
+    display: none !important;
   }
 }
 
