@@ -139,6 +139,13 @@
   .nav-container {
     grid-template-columns: auto 1fr;
   }
+  
+  /* Ensure navbar-search takes full width and aligns content to the right */
+  #navbar-search {
+    width: 100%;
+    display: flex !important;
+    justify-content: flex-end;
+  }
 }
 
 
