@@ -141,13 +141,6 @@
   }
 }
 
-/* CSS Subgrid for nested navigation items */
-@supports (grid-template-rows: subgrid) {
-  .nav-items {
-    display: grid;
-    grid-template-rows: subgrid;
-  }
-}
 
 /* Container queries for responsive design */
 @container (min-width: 768px) {
