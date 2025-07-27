@@ -55,11 +55,11 @@
     <script type="speculationrules">
     {
       "prerender": [{
-        "where": { "href_matches": "/*" },
+        "where": { "href_matches": "/articles/*" },
         "eagerness": "moderate"
       }],
       "prefetch": [{
-        "where": { "href_matches": "/*" },
+        "where": { "href_matches": "/(articles|admin)/*" },
         "eagerness": "conservative"
       }]
     }
@@ -88,7 +88,7 @@
     </div>
 
     <!-- Modern CSS-only Navigation -->
-    <nav class="bg-green-700 border-green-800 navigation" style="view-transition-name: navigation;">
+    <nav class="bg-green-700 border-green-800 navigation" style="view-transition-name: navigation; container-type: inline-size; container-name: navigation;">
       <div class="max-w-screen-xl nav-container mx-auto p-4">
         <%= link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse" do %>
           <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">RA || 루비 AI 뉴스</span>
