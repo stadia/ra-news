@@ -7,7 +7,7 @@
 function updateScrollProgress() {
   const scrollTop = window.pageYOffset;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  const scrollPercent = (scrollTop / docHeight) * 100;
+  const scrollPercent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
   
   document.documentElement.style.setProperty('--scroll-progress', `${scrollPercent}%`);
 }
@@ -28,17 +28,37 @@ document.addEventListener('click', function(event) {
   }
 });
 
+// Update aria-expanded for accessibility
+function updateAriaExpanded() {
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const button = document.querySelector('.mobile-menu-button');
+  if (toggle && button) {
+    button.setAttribute('aria-expanded', toggle.checked);
+  }
+}
+
 // Keyboard navigation for mobile menu
 document.addEventListener('keydown', function(event) {
   if (event.key === 'Escape') {
     const mobileToggle = document.getElementById('mobile-menu-toggle');
     if (mobileToggle && mobileToggle.checked) {
       mobileToggle.checked = false;
+      updateAriaExpanded();
       // Focus the menu button for better UX
       document.querySelector('.mobile-menu-button')?.focus();
     }
   }
 });
+
+// Listen for mobile menu toggle changes
+document.addEventListener('change', function(event) {
+  if (event.target.id === 'mobile-menu-toggle') {
+    updateAriaExpanded();
+  }
+});
+
+// Initialize aria-expanded on page load
+document.addEventListener('DOMContentLoaded', updateAriaExpanded);
 
 // View Transitions API integration for enhanced navigation
 if ('startViewTransition' in document) {
@@ -55,4 +75,3 @@ if ('startViewTransition' in document) {
   });
 }
 
-console.log('🚀 Modern CSS Navigation loaded - Using View Transitions API, CSS-only animations, and bfcache optimization');
