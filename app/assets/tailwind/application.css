@@ -172,3 +172,128 @@ body input, body textarea, body select {
 #article-detail-body p {
   margin-bottom: 1.25rem; /* Add bottom margin for spacing */
 }
+
+/* View Transitions API Support */
+@supports (view-transition-name: none) {
+  /* Root view transition */
+  :root {
+    view-transition-name: root;
+  }
+
+  /* Named transitions for key elements */
+  .view-transition-nav {
+    view-transition-name: navbar;
+  }
+
+  .view-transition-main {
+    view-transition-name: main-content;
+  }
+
+  .view-transition-footer {
+    view-transition-name: footer;
+  }
+
+  .view-transition-article-card {
+    view-transition-name: article-card;
+  }
+
+  /* Page transition animations */
+  ::view-transition-old(root) {
+    animation: fade-out 0.2s ease-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: fade-in 0.3s ease-in;
+  }
+
+  /* Navbar persistence during transitions */
+  ::view-transition-old(navbar) {
+    animation: none;
+  }
+
+  ::view-transition-new(navbar) {
+    animation: none;
+  }
+
+  /* Main content smooth transitions */
+  ::view-transition-old(main-content) {
+    animation: slide-out-left 0.25s ease-out;
+  }
+
+  ::view-transition-new(main-content) {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  /* Article card shared element transitions */
+  ::view-transition-old(article-card) {
+    animation: scale-down 0.2s ease-out;
+  }
+
+  ::view-transition-new(article-card) {
+    animation: scale-up 0.3s ease-out;
+  }
+}
+
+/* View transition keyframes */
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-out-left {
+  from { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to { 
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+@keyframes slide-in-right {
+  from { 
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scale-down {
+  from { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  to { 
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes scale-up {
+  from { 
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* bfcache optimization - ensure CSS animations are GPU-accelerated */
+.view-transition-nav,
+.view-transition-main,
+.view-transition-footer {
+  will-change: auto;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
