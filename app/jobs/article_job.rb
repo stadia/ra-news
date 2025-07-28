@@ -8,6 +8,7 @@ class ArticleJob < ApplicationJob
   #: (Integer id) -> void
   def perform(id)
     article = Article.kept.find_by(id: id)
+    logger.info "ArticleJob started for article id: #{id}"
     return unless article.is_a?(Article)
 
     prompt = <<~PROMPT
@@ -41,16 +42,18 @@ PROMPT
 
     chat = RubyLLM.chat(model: "gemini-2.5-flash", provider: :gemini).with_temperature(0.6)
     # chat = RubyLLM.chat(model: "google/gemma-3n-e4b", provider: :ollama, assume_model_exists: true).with_temperature(0.7)
-    llm_instructions = "You are an expert in the Ruby Programming Language and RubyOnRails framework. You are precise and concise. Use OREO technique, pyramid structure, and transition expressions actively. All output should be in Korean."
+    llm_instructions = "You are a professional developer of the Ruby programming language. On top of that, you are an excellent technical writer. All output should be in Korean."
     chat.with_instructions(llm_instructions)
     chat.with_tool(ArticleBodyTool.new)
     response =  if article.is_youtube?
       # YouTube URL인 경우
       article.update(body: YoutubeContentTool.new.execute(url: article.url)) if article.body.blank?
+      logger.info "YoutubeContent url: #{article.url}, id: #{article.id})"
       chat.ask("YoutubeContent 로 제공한 url과 Transcript를 #{prompt} (url: #{article.url}, id: #{article.id})")
     else
       # YouTube URL이 아닌 경우
       article.update(body: HtmlContentTool.new.execute(url: article.url)) if article.body.blank?
+      logger.info "HtmlContent url: #{article.url}, id: #{article.id})"
       chat.ask("HtmlContent 로 제공한 url과 본문을 #{prompt} (url: #{article.url}, id: #{article.id})")
     end
 
@@ -68,7 +71,7 @@ PROMPT
       return
     end
 
-    logger.debug response.content
+    logger.info response.content
     # JSON 데이터 추출 및 파싱
     parsed_json = begin
                     JSON.parse(response.content.scan(/\{.*\}/m).first || "{}") # 첫 번째 JSON 객체만 추출하거나, 없으면 빈 JSON 객체
