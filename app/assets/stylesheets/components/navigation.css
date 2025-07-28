@@ -69,13 +69,13 @@ a {
 }
 
 .mobile-menu-toggle:focus + label {
-  outline: 2px solid #10b981;
+  outline: 2px solid theme('colors.green.500');
   outline-offset: 2px;
 }
 
 /* Enhanced focus styles for better keyboard navigation */
 .nav-link:focus {
-  outline: 2px solid #10b981;
+  outline: 2px solid theme('colors.green.500');
   outline-offset: 2px;
   border-radius: 4px;
 }
