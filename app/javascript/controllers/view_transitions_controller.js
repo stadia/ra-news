@@ -5,7 +5,7 @@ export default class extends Controller {
   connect() {
     // Check for View Transitions API support
     if (!document.startViewTransition) {
-      document.documentElement.style.setProperty('view-transition-name', 'none');
+document.documentElement.classList.add('no-view-transitions');
     }
 
     // Enhanced bfcache compatibility
