@@ -193,8 +193,12 @@ body input, body textarea, body select {
     view-transition-name: footer;
   }
 
+  /* Article card shared element transitions
+     Note: Use dynamic view-transition-name in templates instead:
+     style="view-transition-name: article-<%= article.id %>"
+     This prevents naming conflicts with multiple cards */
   .view-transition-article-card {
-    view-transition-name: article-card;
+    /* view-transition-name set dynamically in templates */
   }
 
   /* Page transition animations */
@@ -289,11 +293,10 @@ body input, body textarea, body select {
   }
 }
 
-/* bfcache optimization - ensure CSS animations are GPU-accelerated */
+/* Force GPU acceleration for smoother view transitions */
 .view-transition-nav,
 .view-transition-main,
 .view-transition-footer {
-  will-change: auto;
   backface-visibility: hidden;
   transform: translateZ(0);
 }

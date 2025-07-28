@@ -19,7 +19,6 @@
 
     <!-- Modern Browser Features -->
     <meta name="view-transition" content="same-origin">
-    <meta name="page-transition" content="cross-document">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="최신 Ruby, Rails, AI 관련 뉴스와 트렌드를 한곳에서 만나보세요">
@@ -59,13 +58,18 @@
         "where": { "and": [
           { "href_matches": "/*" },
           { "not": { "href_matches": "/logout" } },
-          { "not": { "href_matches": "/sessions/new" } },
+          { "not": { "href_matches": "/login" } },
           { "not": { "href_matches": "/articles/new" } }
         ]},
         "eagerness": "moderate"
       }],
       "prefetch": [{
-        "where": { "href_matches": "/*" },
+        "where": { "and": [
+          { "href_matches": "/*" },
+          { "not": { "href_matches": "/logout" } },
+          { "not": { "href_matches": "/login" } },
+          { "not": { "href_matches": "/articles/new" } }
+        ]},
         "eagerness": "conservative"
       }]
     }
