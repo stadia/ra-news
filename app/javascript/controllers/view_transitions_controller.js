@@ -9,11 +9,12 @@ export default class extends Controller {
     }
     
     // Enhanced bfcache compatibility
-    window.addEventListener('pageshow', this.handlePageShow.bind(this));
+    this.boundHandlePageShow = this.handlePageShow.bind(this);
+    window.addEventListener('pageshow', this.boundHandlePageShow);
   }
 
   disconnect() {
-    window.removeEventListener('pageshow', this.handlePageShow.bind(this));
+    window.removeEventListener('pageshow', this.boundHandlePageShow);
   }
 
   handlePageShow(event) {
