@@ -77,7 +77,15 @@ body input, body textarea, body select {
 .scroll-reveal {
   opacity: 0;
   transform: translateY(2rem);
-  transition: all 0.6s ease-out;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* 'all' 대신 특정 속성 */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .scroll-reveal.revealed {
@@ -86,16 +94,9 @@ body input, body textarea, body select {
 }
 
 /* Staggered animation delays for multiple items */
-.scroll-reveal:nth-child(1) { transition-delay: 0.1s; }
-.scroll-reveal:nth-child(2) { transition-delay: 0.2s; }
-.scroll-reveal:nth-child(3) { transition-delay: 0.3s; }
-.scroll-reveal:nth-child(4) { transition-delay: 0.4s; }
-.scroll-reveal:nth-child(5) { transition-delay: 0.5s; }
-.scroll-reveal:nth-child(6) { transition-delay: 0.6s; }
-.scroll-reveal:nth-child(7) { transition-delay: 0.7s; }
-.scroll-reveal:nth-child(8) { transition-delay: 0.8s; }
-.scroll-reveal:nth-child(9) { transition-delay: 0.9s; }
-.scroll-reveal:nth-child(10) { transition-delay: 1.0s; }
+.scroll-reveal {
+  transition-delay: calc(var(--stagger-index, 0) * 0.1s);
+}
 
 /* Alternative: CSS View Transitions API support (for modern browsers) */
 @supports (animation-timeline: view()) {
