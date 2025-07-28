@@ -10,10 +10,10 @@
 
       gtag('config', 'G-56PSNXG7QG');
     </script>
-    
+
     <!-- View Transitions API -->
     <meta name="view-transition" content="same-origin">
-    
+
     <title><%= content_for(:title) || "RA || 루비 AI 뉴스" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -53,11 +53,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" as="style">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
-    
+
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-    
+
     <!-- Speculation Rules for Performance (Safe Routes Only) -->
     <script type="speculationrules">
     {
@@ -109,7 +109,7 @@
         <%= link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse" do %>
           <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">RA || 루비 AI 뉴스</span>
         <% end %>
-        
+
         <!-- Mobile Menu Toggle (Improved Accessibility) -->
         <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle peer">
         <label for="mobile-menu-toggle" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer" tabindex="0">
@@ -118,9 +118,9 @@
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
           </svg>
         </label>
-        
+
         <!-- Navigation Menu -->
-        <div class="items-center justify-between w-full md:flex md:w-auto md:order-1 
+        <div class="items-center justify-between w-full md:flex md:w-auto md:order-1
                     hidden peer-checked:block
                     transition-all duration-300 ease-in-out
                     md:transition-none" id="navbar-search">
@@ -153,9 +153,9 @@
             <% end %>
             <li>
               <% if authenticated? %>
-                <%= link_to "로그아웃", logout_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria_current" => "page" %>
+                <%= link_to "로그아웃", logout_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150" %>
               <% else %>
-                <%= link_to "로그인", new_session_path, id: "loginLink", class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria_current" => "page" %>
+                <%= link_to "로그인", new_session_path, id: "loginLink", class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150" %>
               <% end %>
             </li>
           </ul>
