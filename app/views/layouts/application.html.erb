@@ -10,6 +10,10 @@
 
       gtag('config', 'G-56PSNXG7QG');
     </script>
+    
+    <!-- View Transitions API -->
+    <meta name="view-transition" content="same-origin">
+    
     <title><%= content_for(:title) || "RA || 루비 AI 뉴스" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -47,11 +51,25 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    
+    <!-- Speculation Rules for Performance -->
+    <script type="speculationrules">
+    {
+      "prerender": [{
+        "where": { "href_matches": "/*" },
+        "eagerness": "moderate"
+      }],
+      "prefetch": [{
+        "where": { "href_matches": "/*" },
+        "eagerness": "conservative"
+      }]
+    }
+    </script>
   </head>
 
   <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col"
-        data-controller="navbar page-loader"
-        data-action="click@window->navbar#clickOutside keydown@window->navbar#keydown turbo:before-visit@window->page-loader#beforeTurboVisit turbo:load@window->page-loader#afterTurboLoad">
+        data-controller="page-loader"
+        data-action="turbo:before-visit@window->page-loader#beforeTurboVisit turbo:load@window->page-loader#afterTurboLoad">
 
     <!-- Loading Indicator -->
     <div data-page-loader-target="loader" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center">
@@ -61,38 +79,49 @@
       </div>
     </div>
 
+    <!-- Modern CSS-only Navigation -->
     <nav class="bg-green-700 border-green-800">
       <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <%= link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse" do %>
           <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">RA || 루비 AI 뉴스</span>
         <% end %>
-        <button data-collapse-toggle="navbar-search" type="button" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500" aria-controls="navbar-search" aria-expanded="false">
+        
+        <!-- Mobile Menu Toggle (CSS-only) -->
+        <input type="checkbox" id="mobile-menu-toggle" class="hidden peer">
+        <label for="mobile-menu-toggle" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer">
           <span class="sr-only">Open main menu</span>
-          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+          <svg class="w-5 h-5 transition-transform duration-200 peer-checked:rotate-45" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
           </svg>
-        </button>
-        <div class="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
-          <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-green-600 rounded-lg bg-green-600 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-green-700">
+        </label>
+        
+        <!-- Navigation Menu -->
+        <div class="items-center justify-between w-full md:flex md:w-auto md:order-1 
+                    hidden peer-checked:block
+                    transition-all duration-300 ease-in-out
+                    md:transition-none" id="navbar-search">
+          <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-green-600 rounded-lg bg-green-600 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-green-700
+                     animate-in slide-in-from-top-2 fade-in duration-200
+                     md:animate-none">
             <li>
-              <%= link_to "홈", root_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria-current" => "page" %>
+              <%= link_to "홈", root_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria-current" => "page" %>
             </li>
             <li>
-              <%= link_to "지난 글", articles_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria-current" => "page" %>
+              <%= link_to "지난 글", articles_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria-current" => "page" %>
             </li>
             <li class="flex items-center">
               <%= form_with url: articles_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
                 <%= form.text_field :search,
                     placeholder: "검색...",
                     value: params[:search],
-                    class: "px-3 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 w-32 md:w-40" %>
+                    class: "px-3 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 w-32 md:w-40 transition-all duration-150" %>
                 <%= form.submit "검색",
-                    class: "px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-lg border border-green-600 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-300" %>
+                    class: "px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-lg border border-green-600 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-300 transition-all duration-150" %>
               <% end %>
             </li>
             <% if authenticated? %>
               <li>
-                <%= link_to "글 등록", new_article_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
+                <%= link_to "글 등록", new_article_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria_current" => "page" %>
               </li>
               <li>
                 <span class="block py-2 px-3 text-gray-100 rounded-sm md:p-0" aria-current="page"><%= Current.user.name %></span>
@@ -100,9 +129,9 @@
             <% end %>
             <li>
               <% if authenticated? %>
-                <%= link_to "로그아웃", logout_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
+                <%= link_to "로그아웃", logout_path, class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria_current" => "page" %>
               <% else %>
-                <%= link_to "로그인", new_session_path, id: "loginLink", class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0", "aria_current" => "page" %>
+                <%= link_to "로그인", new_session_path, id: "loginLink", class: "block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria_current" => "page" %>
               <% end %>
             </li>
           </ul>
@@ -122,7 +151,88 @@
         </div>
     </footer>
   </body>
+  
   <style>
-      @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+    
+    /* View Transitions API Support */
+    @view-transition {
+      navigation: auto;
+    }
+    
+    /* Smooth page transitions for modern browsers */
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 0.3s;
+      animation-timing-function: ease-in-out;
+    }
+    
+    ::view-transition-old(root) {
+      animation-name: slide-out-to-left;
+    }
+    
+    ::view-transition-new(root) {
+      animation-name: slide-in-from-right;
+    }
+    
+    @keyframes slide-out-to-left {
+      to {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+    }
+    
+    @keyframes slide-in-from-right {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    /* Enhanced mobile menu animations */
+    .peer:checked ~ div {
+      animation: slide-down 0.3s ease-out;
+    }
+    
+    @keyframes slide-down {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Performance optimizations for bfcache */
+    * {
+      will-change: auto;
+    }
+    
+    /* Smooth link hover effects */
+    a {
+      transition: color 0.15s ease-in-out;
+    }
   </style>
+  
+  <!-- Modern navigation enhancements -->
+  <script>
+    // Minimal JS for View Transitions support in older browsers
+    if (!document.startViewTransition) {
+      document.documentElement.style.setProperty('view-transition-name', 'none');
+    }
+    
+    // Enhanced bfcache compatibility
+    window.addEventListener('pageshow', function(event) {
+      if (event.persisted) {
+        // Page was restored from bfcache
+        document.body.classList.remove('loading');
+      }
+    });
+  </script>
 </html>
