@@ -7,7 +7,7 @@ export default class extends Controller {
     if (!document.startViewTransition) {
       document.documentElement.style.setProperty('view-transition-name', 'none');
     }
-    
+
     // Enhanced bfcache compatibility
     this.boundHandlePageShow = this.handlePageShow.bind(this);
     window.addEventListener('pageshow', this.boundHandlePageShow);
@@ -22,10 +22,10 @@ export default class extends Controller {
       // Page was restored from bfcache
       // Find and hide any active page loader
       const pageLoaderController = this.application.getControllerForElementAndIdentifier(
-        document.querySelector('[data-controller*="page-loader"]'), 
+        document.querySelector('[data-controller~="page-loader"]'),
         'page-loader'
       );
-      
+
       if (pageLoaderController && pageLoaderController.hide) {
         pageLoaderController.hide();
       }
