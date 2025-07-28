@@ -228,14 +228,9 @@ body input, body textarea, body select {
     animation: slide-in-right 0.3s ease-out;
   }
 
-  /* Article card shared element transitions */
-  ::view-transition-old(article-card) {
-    animation: scale-down 0.2s ease-out;
-  }
-
-  ::view-transition-new(article-card) {
-    animation: scale-up 0.3s ease-out;
-  }
+  /* Article card shared element transitions 
+     Note: These are removed since we use dynamic naming per article.
+     Individual article transitions use: view-transition-name: article-<%= article.id %> */
 }
 
 /* View transition keyframes */
@@ -299,4 +294,52 @@ body input, body textarea, body select {
 .view-transition-footer {
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+
+/* Accessibility: Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  /* Disable view transitions for users who prefer reduced motion */
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(main-content),
+  ::view-transition-new(main-content),
+  ::view-transition-old(navbar),
+  ::view-transition-new(navbar),
+  ::view-transition-old(footer),
+  ::view-transition-new(footer) {
+    animation: none !important;
+  }
+  
+  /* Also disable custom animations */
+  .animate-fade-in-up {
+    animation: none !important;
+  }
+  
+  /* Use instant transitions instead */
+  body {
+    scroll-behavior: auto;
+  }
+}
+
+/* Fallback animations for browsers that don't support View Transitions API */
+@supports not (view-transition-name: none) {
+  /* Basic page transition fallback */
+  .page-transition-fallback {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  
+  .page-transition-fallback.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  
+  /* Smooth hover effects for cards as fallback */
+  .view-transition-article-card {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+  
+  .view-transition-article-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
 }

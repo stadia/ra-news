@@ -55,17 +55,20 @@
     <script type="speculationrules">
     {
       "prerender": [{
-        "where": { "and": [
-          { "href_matches": "/*" },
-          { "not": { "href_matches": "/logout" } },
-          { "not": { "href_matches": "/login" } },
-          { "not": { "href_matches": "/articles/new" } }
+        "where": { "or": [
+          { "href_matches": "/" },
+          { "href_matches": "/articles" },
+          { "href_matches": "/articles/*" }
         ]},
         "eagerness": "moderate"
       }],
       "prefetch": [{
         "where": { "and": [
-          { "href_matches": "/*" },
+          { "or": [
+            { "href_matches": "/" },
+            { "href_matches": "/articles" },
+            { "href_matches": "/articles/*" }
+          ]},
           { "not": { "href_matches": "/logout" } },
           { "not": { "href_matches": "/login" } },
           { "not": { "href_matches": "/articles/new" } }
