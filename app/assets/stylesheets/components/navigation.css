@@ -1,8 +1,41 @@
-/* Navigation and Smooth Transition Styles */
+/* Navigation and View Transitions Styles */
 
-/* Smooth page transitions using standard CSS animations */
-.page-transition {
-  animation: fade-in 0.3s ease-in-out;
+/* View Transitions API Support */
+@view-transition {
+  navigation: auto;
+}
+
+/* Smooth page transitions for modern browsers */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.3s;
+  animation-timing-function: ease-in-out;
+}
+
+::view-transition-old(root) {
+  animation-name: slide-out-to-left;
+}
+
+::view-transition-new(root) {
+  animation-name: slide-in-from-right;
+}
+
+@keyframes slide-out-to-left {
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 @keyframes fade-in {
@@ -14,6 +47,22 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth page transitions using standard CSS animations */
+.page-transition {
+  animation: fade-in 0.3s ease-in-out;
 }
 
 /* Smooth navigation link transitions */
@@ -28,17 +77,6 @@
 /* Enhanced mobile menu animations */
 .peer:checked ~ div {
   animation: slide-down 0.3s ease-out;
-}
-
-@keyframes slide-down {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 /* Smooth link hover effects */
