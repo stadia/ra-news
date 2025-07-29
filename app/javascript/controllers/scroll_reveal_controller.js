@@ -39,6 +39,8 @@ export default class extends Controller {
       if (!item.classList.contains("scroll-reveal")) {
         item.classList.add("scroll-reveal")
       }
+      // Staggering을 위해 CSS 변수 설정
+      item.style.setProperty('--stagger-index', index);
       this.observer.observe(item)
     })
   }
