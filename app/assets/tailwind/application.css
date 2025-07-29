@@ -77,7 +77,7 @@ body input, body textarea, body select {
 .scroll-reveal {
   opacity: 0;
   transform: translateY(2rem);
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out; /* 'all' 대신 특정 속성 */
+transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
