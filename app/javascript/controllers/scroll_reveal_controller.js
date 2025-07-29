@@ -46,7 +46,7 @@ export default class extends Controller {
   }
 
   itemTargetConnected(item) {
-    if (this.observer) {
+    if (this.observer && item) {
       const index = this.itemTargets.indexOf(item);
       this._setupItemForObservation(item, index);
     }
