@@ -55,10 +55,10 @@ export default class extends Controller {
   _setupItemForObservation(item, index) {
     // Re-introduce staggering via CSS custom property used by application.css
     item.style.setProperty('--stagger-index', index);
-
-    // Add base class for CSS animations if not present
-    if (!item.classList.contains("scroll-reveal")) {
-      item.classList.add("scroll-reveal");
+    // Add default animation class if no specific scroll-reveal class is present
+    const hasRevealClass = Array.from(item.classList).some(c => c.startsWith('scroll-reveal'));
+    if (!hasRevealClass) {
+      item.classList.add('scroll-reveal');
     }
     this.observer.observe(item);
   }
