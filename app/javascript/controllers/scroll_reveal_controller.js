@@ -19,6 +19,12 @@ export default class extends Controller {
   }
 
   createObserver() {
+    if (!window.IntersectionObserver) {
+      // 폴백: 모든 요소를 즉시 표시
+      this.itemTargets.forEach(item => item.classList.add("revealed"))
+      return
+    }
+
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -46,7 +52,10 @@ export default class extends Controller {
   }
 
   itemTargetConnected(item) {
-    if (this.observer) {
+    if (this.observer && item) {
+      const index = this.itemTargets.indexOf(item);
+      item.style.setProperty('--stagger-index', index);
+
       if (!item.classList.contains("scroll-reveal")) {
         item.classList.add("scroll-reveal")
       }
