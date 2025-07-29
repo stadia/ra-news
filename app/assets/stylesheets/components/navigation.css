@@ -1,8 +1,10 @@
 /* Navigation and View Transitions Styles */
 
 /* View Transitions API Support */
-@view-transition {
-  navigation: auto;
+@supports (view-transition-name: auto) {
+  @view-transition {
+    navigation: auto;
+  }
 }
 
 /* Smooth page transitions for modern browsers */
