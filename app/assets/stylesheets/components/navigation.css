@@ -113,7 +113,7 @@ a {
     display: flex;
     align-items: center;
   }
-  
+
   /* Ensure search form elements are touch-friendly */
   input[type="text"], input[type="search"], button[type="submit"] {
     min-height: 44px;
@@ -128,15 +128,6 @@ a {
 .article-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
-/* Better text contrast and readability */
-.text-improved-contrast {
-  color: theme('colors.gray.200');
-}
-
-.text-meta-improved {
-  color: theme('colors.gray.300');
 }
 
 /* Current page indicator styles */

@@ -128,10 +128,10 @@
                      animate-in slide-in-from-top-2 fade-in duration-200
                      md:animate-none">
             <li>
-              <%= link_to "홈", root_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center", "aria-current" => (current_page?(root_path) ? "page" : nil) %>
+              <%= nav_link_to "홈", root_path %>
             </li>
             <li>
-              <%= link_to "지난 글", articles_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center", "aria-current" => (current_page?(articles_path) ? "page" : nil) %>
+              <%= nav_link_to "지난 글", articles_path %>
             </li>
             <li class="flex items-center">
               <%= form_with url: articles_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
@@ -145,7 +145,7 @@
             </li>
             <% if authenticated? %>
               <li>
-                <%= link_to "글 등록", new_article_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center", "aria-current" => (current_page?(new_article_path) ? "page" : nil) %>
+                <%= nav_link_to "글 등록", new_article_path %>
               </li>
               <li>
                 <span class="block py-3 px-4 text-gray-100 rounded-sm md:p-0 min-h-[44px] flex items-center" aria-current="page"><%= Current.user.name %></span>
@@ -153,9 +153,9 @@
             <% end %>
             <li>
               <% if authenticated? %>
-                <%= link_to "로그아웃", logout_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center" %>
+                <%= nav_link_to "로그아웃", logout_path %>
               <% else %>
-                <%= link_to "로그인", new_session_path, id: "loginLink", class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center" %>
+                <%= nav_link_to "로그인", new_session_path %>
               <% end %>
             </li>
           </ul>
