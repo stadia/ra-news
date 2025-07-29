@@ -21,6 +21,7 @@ class HtmlContentTool < RubyLLM::Tool
   #: (String url, ?Integer? count) -> Faraday::Response
   def handle_redirection(url, count = 0)
     response = Faraday.get(url)
+    Rails.logger.debug "#{response.status} #{url}"
     return response unless response.status.between?(300, 399) && response.headers["location"]
     return response if count > 3
 
