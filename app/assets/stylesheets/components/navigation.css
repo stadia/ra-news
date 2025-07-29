@@ -138,3 +138,9 @@ a {
   color: white;
   font-weight: 600;
 }
+
+/* 한국어 텍스트를 위한 추가 개선 */
+.article-content {
+  word-break: keep-all; /* 한국어 단어 단위 줄바꿈 */
+  line-height: 1.7; /* 한글 가독성을 위한 줄 간격 */
+}
