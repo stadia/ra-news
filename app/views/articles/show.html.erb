@@ -18,7 +18,7 @@
       </div>
 
       <!-- 메타데이터 -->
-      <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-400">
+      <div class="flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-300">
         <!-- 작성자 -->
         <div class="flex items-center">
           <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mr-3">
@@ -27,7 +27,7 @@
             </svg>
           </div>
           <div>
-            <div class="text-xs text-gray-400">작성자</div>
+            <div class="text-xs text-gray-300">작성자</div>
             <div class="font-medium text-gray-200"><%= render partial: 'shared/article_user', locals: { article: @article } %></div>
           </div>
         </div>
@@ -38,7 +38,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
           </svg>
           <div>
-            <div class="text-xs text-gray-400">발행일</div>
+            <div class="text-xs text-gray-300">발행일</div>
             <div class="font-medium text-gray-200">
               <%= @article.published_at&.strftime("%Y년 %m월 %d일") || 'N/A' %>
             </div>
@@ -60,7 +60,7 @@
               <div class="text-sm font-medium text-blue-300 group-hover:text-blue-200 transition-colors">
                 원문 보기
               </div>
-              <div class="text-xs text-gray-400 truncate">
+              <div class="text-xs text-gray-300 truncate">
                 <%= URI.parse(@article.url).host %>
               </div>
             </div>
@@ -105,7 +105,7 @@
           <% if @article.summary_detail["introduction"].present? %>
             <div class="mb-8 p-6 bg-gray-700 rounded-xl border-l-4 border-blue-500">
               <h3 class="text-lg font-semibold text-blue-300 mb-3">도입</h3>
-              <div class="text-gray-300 leading-relaxed text-base">
+              <div class="text-gray-200 leading-relaxed text-base">
                 <%= @article.summary_detail["introduction"] %>
               </div>
             </div>
@@ -114,7 +114,7 @@
           <!-- 본문 -->
           <% if @article.summary_detail["body"].present? %>
             <div class="mb-8 article-content" id="article-detail-body">
-              <div class="prose prose-lg max-w-none text-gray-300">
+              <div class="prose prose-lg max-w-none text-gray-200 leading-loose">
                 <%= Kramdown::Document.new(@article.summary_detail["body"]).to_html.html_safe %>
               </div>
             </div>
@@ -124,7 +124,7 @@
           <% if @article.summary_detail["conclusion"].present? %>
             <div class="p-6 bg-gray-700 rounded-xl border-l-4 border-green-500">
               <h3 class="text-lg font-semibold text-green-300 mb-3">결론</h3>
-              <div class="text-gray-300 leading-relaxed text-base">
+              <div class="text-gray-200 leading-relaxed text-base">
                 <%= @article.summary_detail["conclusion"] %>
               </div>
             </div>
@@ -152,10 +152,10 @@
                 <h3 class="text-lg font-semibold text-gray-100 group-hover:text-green-400 transition-colors duration-200 mb-3 line-clamp-2">
                   <%= article.title_ko || article.title %>
                 </h3>
-                <p class="text-gray-300 text-sm leading-relaxed line-clamp-3 mb-4">
+                <p class="text-gray-200 text-sm leading-relaxed line-clamp-3 mb-4">
                   <%= article.summary_key.is_a?(String) ? article.summary_key : article.summary_key&.first %>
                 </p>
-                <div class="flex items-center justify-between text-xs text-gray-400">
+                <div class="flex items-center justify-between text-xs text-gray-300">
                   <span class="flex items-center">
                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>

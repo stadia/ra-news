@@ -112,7 +112,7 @@
 
         <!-- Mobile Menu Toggle (Improved Accessibility) -->
         <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle peer">
-        <label for="mobile-menu-toggle" class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer" tabindex="0">
+        <label for="mobile-menu-toggle" class="inline-flex items-center p-2 w-11 h-11 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer">
           <span class="sr-only">Open main menu</span>
           <svg class="w-5 h-5 transition-transform duration-200 peer-checked:rotate-45" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
@@ -128,34 +128,34 @@
                      animate-in slide-in-from-top-2 fade-in duration-200
                      md:animate-none">
             <li>
-              <%= link_to "홈", root_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria-current" => "page" %>
+              <%= link_to "홈", root_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center", "aria-current" => (current_page?(root_path) ? "page" : nil) %>
             </li>
             <li>
-              <%= link_to "지난 글", articles_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria-current" => "page" %>
+              <%= link_to "지난 글", articles_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center", "aria-current" => (current_page?(articles_path) ? "page" : nil) %>
             </li>
             <li class="flex items-center">
               <%= form_with url: articles_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
                 <%= form.text_field :search,
                     placeholder: "검색...",
                     value: params[:search],
-                    class: "px-3 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 w-32 md:w-40 transition-all duration-150" %>
+                    class: "px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 w-40 md:w-48 transition-all duration-150" %>
                 <%= form.submit "검색",
-                    class: "px-3 py-1 text-sm font-medium text-white bg-green-600 rounded-lg border border-green-600 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-300 transition-all duration-150" %>
+                    class: "px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg border border-green-600 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-300 transition-all duration-150 min-h-[44px]" %>
               <% end %>
             </li>
             <% if authenticated? %>
               <li>
-                <%= link_to "글 등록", new_article_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150", "aria_current" => "page" %>
+                <%= link_to "글 등록", new_article_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center", "aria-current" => (current_page?(new_article_path) ? "page" : nil) %>
               </li>
               <li>
-                <span class="block py-2 px-3 text-gray-100 rounded-sm md:p-0" aria-current="page"><%= Current.user.name %></span>
+                <span class="block py-3 px-4 text-gray-100 rounded-sm md:p-0 min-h-[44px] flex items-center" aria-current="page"><%= Current.user.name %></span>
               </li>
             <% end %>
             <li>
               <% if authenticated? %>
-                <%= link_to "로그아웃", logout_path, class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150" %>
+                <%= link_to "로그아웃", logout_path, class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center" %>
               <% else %>
-                <%= link_to "로그인", new_session_path, id: "loginLink", class: "nav-link block py-2 px-3 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150" %>
+                <%= link_to "로그인", new_session_path, id: "loginLink", class: "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center" %>
               <% end %>
             </li>
           </ul>

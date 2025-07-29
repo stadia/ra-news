@@ -104,3 +104,44 @@ a {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* Improved touch target sizes for mobile accessibility */
+@media (max-width: 768px) {
+  .nav-link {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Ensure search form elements are touch-friendly */
+  input[type="text"], input[type="search"], button[type="submit"] {
+    min-height: 44px;
+  }
+}
+
+/* Enhanced card hover states for better visual feedback */
+.article-card {
+  transition: all 0.3s ease;
+}
+
+.article-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Better text contrast and readability */
+.text-improved-contrast {
+  color: theme('colors.gray.200');
+}
+
+.text-meta-improved {
+  color: theme('colors.gray.300');
+}
+
+/* Current page indicator styles */
+[aria-current="page"] {
+  background-color: theme('colors.green.600');
+  color: white;
+  font-weight: 600;
+}
