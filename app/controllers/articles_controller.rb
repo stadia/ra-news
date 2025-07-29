@@ -56,7 +56,7 @@ class ArticlesController < ApplicationController
     def set_article
       id = params[:id]
       return head :bad_request if id.blank?
-    
+
       @article = Article.kept.find_by_slug(id) || Article.kept.find_by(id: id)
       raise ActiveRecord::RecordNotFound if @article.nil?
     end
