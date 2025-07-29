@@ -40,27 +40,27 @@ export default class extends Controller {
   }
 
   observeItems() {
-    this.itemTargets.forEach((item) => {
-      // 기본 scroll-reveal 클래스 추가 (CSS에서 애니메이션 처리)
-      if (!item.classList.contains("scroll-reveal")) {
-        item.classList.add("scroll-reveal")
-      }
-      // Staggering을 위해 CSS 변수 설정
-      item.style.setProperty('--stagger-index', index);
-      this.observer.observe(item)
-    })
+    this.itemTargets.forEach((item, index) => {
+      this._setupItemForObservation(item, index);
+    });
   }
 
   itemTargetConnected(item) {
-    if (this.observer && item) {
+    if (this.observer) {
       const index = this.itemTargets.indexOf(item);
-      item.style.setProperty('--stagger-index', index);
-
-      if (!item.classList.contains("scroll-reveal")) {
-        item.classList.add("scroll-reveal")
-      }
-      this.observer.observe(item)
+      this._setupItemForObservation(item, index);
     }
+  }
+
+  _setupItemForObservation(item, index) {
+    // Re-introduce staggering via CSS custom property used by application.css
+    item.style.setProperty('--stagger-index', index);
+
+    // Add base class for CSS animations if not present
+    if (!item.classList.contains("scroll-reveal")) {
+      item.classList.add("scroll-reveal");
+    }
+    this.observer.observe(item);
   }
 
   itemTargetDisconnected(item) {
