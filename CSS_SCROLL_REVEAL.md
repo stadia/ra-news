@@ -45,10 +45,9 @@
 
 ### 스태거링 딜레이
 
-CSS nth-child 선택자로 자동 스태거링:
-- 첫 번째 아이템: 0.1초 딜레이
-- 두 번째 아이템: 0.2초 딜레이
-- 10번째 아이템까지 자동 지원
+CSS 커스텀 프로퍼티(--stagger-index)로 자동 스태거링:
+- 각 아이템에 JavaScript로 `--stagger-index`가 0부터 순차적으로 설정됩니다.
+- CSS의 `transition-delay`가 이 변수를 사용하여 딜레이를 계산합니다 (예: `calc(var(--stagger-index, 0) * 0.1s)`).
 
 ### 모던 브라우저 지원
 
