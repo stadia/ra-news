@@ -94,7 +94,11 @@ body input, body textarea, body select {
 }
 
 /* Staggered animation delays for multiple items */
-.scroll-reveal {
+.scroll-reveal,
+.scroll-reveal-fade,
+.scroll-reveal-slide-left,
+.scroll-reveal-slide-right,
+.scroll-reveal-scale {
   transition-delay: calc(var(--stagger-index, 0) * 0.1s);
 }
 
