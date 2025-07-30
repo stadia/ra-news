@@ -99,5 +99,8 @@ PROMPT
     article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related"))
     PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false)
     # PgSearch::Multisearch.rebuild(Article, transactional: false)
+    
+    # Trigger Twitter posting after successful article processing
+    TwitterPostJob.perform_later(article.id)
   end
 end
