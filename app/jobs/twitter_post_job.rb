@@ -5,12 +5,17 @@
 class TwitterPostJob < ApplicationJob
   queue_as :default
 
+  # Twitter constants
+  TWITTER_CHARACTER_LIMIT = 280
+  TWITTER_SHORTENED_URL_LENGTH = 23  # Twitter shortens all URLs to this length
+  FORMATTING_BUFFER = 4  # For newlines and spacing ("\n\n" before summary and URL)
+
   #: (Integer id) -> void
   def perform(id)
     article = Article.kept.find_by(id: id)
     logger.info "TwitterPostJob started for article id: #{id}"
     
-    unless article.is_a?(Article)
+    unless article
       logger.error "Article with id #{id} not found or has been discarded."
       return
     end
@@ -35,7 +40,7 @@ class TwitterPostJob < ApplicationJob
   #: (Article article) -> bool
   def should_post_article?(article)
     # Only post Ruby-related articles with proper content
-    article.is_related == true &&
+    article.is_related &&
       article.title_ko.present? &&
       article.summary_key.present? &&
       article.url.present?
@@ -50,7 +55,12 @@ class TwitterPostJob < ApplicationJob
     client = X::Client.new
     response = client.post("tweets", { text: tweet_text }.to_json)
     
-    logger.info "Twitter API response for article id: #{article.id} - #{response.status}"
+    # Validate API response
+    unless response.status.success?
+      raise "Twitter API error: #{response.status} - #{response.body}"
+    end
+    
+    logger.info "Successfully posted to Twitter for article id: #{article.id} - Status: #{response.status}"
   end
 
   #: (Article article) -> String
@@ -59,23 +69,20 @@ class TwitterPostJob < ApplicationJob
     title = article.title_ko.presence || article.title
     
     # Get first summary key point
-    summary = if article.summary_key.is_a?(Array) && article.summary_key.any?
-                article.summary_key.first
-              else
-                "새로운 Ruby 관련 글이 올라왔습니다."
-              end
+    summary = article.summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
     
     # Build the tweet with title, summary, and URL
-    # Twitter has a 280 character limit, so we need to be careful
-    base_text = "#{title}\n\n#{summary}\n\n#{article.url}"
+    # Twitter shortens all URLs to exactly 23 characters regardless of original length
+    content = "#{title}\n\n#{summary}"
     
-    # Truncate if too long (leave room for URL which is auto-shortened by Twitter)
-    if base_text.length > 280
-      available_length = 280 - article.url.length - 4 # 4 for newlines and spacing
-      truncated_content = "#{title}\n\n#{summary}"[0, available_length - 3] + "..."
-      "#{truncated_content}\n\n#{article.url}"
-    else
-      base_text
+    # Calculate maximum length for content (excluding URL and formatting)
+    max_content_length = TWITTER_CHARACTER_LIMIT - TWITTER_SHORTENED_URL_LENGTH - FORMATTING_BUFFER
+    
+    # Truncate content if needed using Active Support's truncate method
+    if content.length > max_content_length
+      content = content.truncate(max_content_length, omission: "...")
     end
+    
+    "#{content}\n\n#{article.url}"
   end
 end
