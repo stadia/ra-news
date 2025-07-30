@@ -41,17 +41,13 @@ class Article < ApplicationRecord
 
   acts_as_taggable_on :tags
 
-  after_create do
-    ArticleJob.perform_later(id) if deleted_at.nil?
-    Rails.cache.delete("rss_articles")
-  end
-
   after_discard do
     Rails.cache.delete("rss_articles")
   end
 
-  after_commit do
-    # ArticleJob.perform_later(id) if saved_change_to_url? && deleted_at.nil? # Ensure deleted_at is checked here too
+  after_commit on: :create do
+    ArticleJob.perform_later(id) if deleted_at.nil?
+    Rails.cache.delete("rss_articles")
   end
 
   before_save do
