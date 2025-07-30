@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
       start_new_session_for user
       redirect_to root_url
     else
-      redirect_to new_session_path, alert: "Try another email address or password."
+      redirect_to new_session_path, alert: "이메일 주소나 비밀번호를 다시 확인해 주세요."
     end
   end
 

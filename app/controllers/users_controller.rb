@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     respond_to do |format|
       if @user.save
         start_new_session_for @user
-        format.html { redirect_to new_session_path, notice: "User was successfully created." }
+        format.html { redirect_to new_session_path, notice: t("registration_success") }
         format.json { render :show, status: :created, location: @user }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -61,6 +61,6 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.expect(user: [ :email_address, :name, :password ])
+      params.expect(user: [ :email_address, :name, :password, :password_confirmation ])
     end
 end

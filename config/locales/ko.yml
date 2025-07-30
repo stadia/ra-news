@@ -28,6 +28,34 @@
 #       enabled: "ON"
 
 ko:
+  activerecord:
+    attributes:
+      user:
+        email_address: "이메일 주소"  
+        name: "이름"
+        password: "비밀번호"
+        password_confirmation: "비밀번호 확인"
+    errors:
+      models:
+        user:
+          attributes:
+            email_address:
+              taken: "이미 사용 중인 이메일입니다"
+              invalid: "이메일 형식이 올바르지 않습니다"
+              blank: "이메일을 입력해주세요"
+            name:
+              blank: "이름을 입력해주세요"
+              too_short: "이름은 최소 2글자 이상이어야 합니다"
+              too_long: "이름은 50글자를 초과할 수 없습니다"
+              invalid: "한글, 영문, 공백만 사용할 수 있습니다"
+            password:
+              blank: "비밀번호를 입력해주세요"
+              too_short: "비밀번호는 최소 8자 이상이어야 합니다"
+              invalid: "영문 대소문자, 숫자, 특수문자를 모두 포함해야 합니다"
+            password_confirmation:
+              confirmation: "비밀번호가 일치하지 않습니다"
+
+  # UI labels
   email_address: "이메일 주소"
   password: "비밀번호"
   password_confirmation: "비밀번호 확인"
@@ -35,3 +63,9 @@ ko:
   sign_in: "로그인"
   sign_out: "로그아웃"
   sign_up: "회원가입"
+  name: "이름"
+  
+  # Success messages
+  registration_success: "회원가입이 완료되었습니다. 환영합니다!"
+  login_success: "로그인되었습니다"
+  logout_success: "로그아웃되었습니다"
