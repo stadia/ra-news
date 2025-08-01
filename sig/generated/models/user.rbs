@@ -1,5 +1,7 @@
 # Generated from app/models/user.rb with RBS::Inline
 
 class User < ApplicationRecord
-  def admin?: () -> untyped
+  def admin?: () -> bool
+
+  def full_name: () -> String
 end

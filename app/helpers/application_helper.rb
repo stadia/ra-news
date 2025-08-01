@@ -41,7 +41,7 @@ module ApplicationHelper
 
   # app/helpers/application_helper.rb
   def nav_link_to(text, path, options = {})
-    options[:class] = "nav-link block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center".html_safe
+    options[:class] = "block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center".html_safe
     options[:"aria-current"] = "page" if current_page?(path)
     link_to(text, path, options)
   end

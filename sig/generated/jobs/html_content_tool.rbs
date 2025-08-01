@@ -1,6 +1,8 @@
 # Generated from app/jobs/html_content_tool.rb with RBS::Inline
 
 class HtmlContentTool < RubyLLM::Tool
+  include ToolHelper
+
   # : (url: String) -> String?
   def execute: (url: String) -> String?
 

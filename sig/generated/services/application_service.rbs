@@ -1,0 +1,9 @@
+# Generated from app/services/application_service.rb with RBS::Inline
+
+class ApplicationService
+  include ActiveModel::Model
+
+  def self.call: (*untyped args, **untyped kwargs) -> untyped
+
+  def call: () -> untyped
+end

@@ -34,7 +34,9 @@
         },
         "rubyLsp.erbSupport": true,
         "sorbet.enabled": true,
-        "deno.path": "/Users/jeff.dean/.local/share/mise/shims/deno"
+        "deno.path": "/Users/jeff.dean/.local/share/mise/shims/deno",
+        "java.jdt.ls.java.home": "/Users/jeff.dean/.local/share/mise/installs/java/temurin-21.0.8+9.0.LTS",
+        "java.import.gradle.java.home": "/Users/jeff.dean/.local/share/mise/installs/java/temurin-21.0.8+9.0.LTS"
     },
     "extensions": {
         "recommendations": [

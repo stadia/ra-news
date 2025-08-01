@@ -15,11 +15,9 @@
 
 <!-- 아티클 목록 -->
 <div id="articlesList"
-     class="space-y-6 lg:space-y-8 max-w-6xl mx-auto"
-     data-controller="scroll-reveal"
-     data-scroll-reveal-threshold-value="0.1">
+     class="space-y-6 lg:space-y-8 max-w-6xl mx-auto">
   <% @articles.each do |article| %>
-    <div id="<%= dom_id article %>" data-scroll-reveal-target="item" class="bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-gray-700 p-3 md:p-6 flex flex-col">
+    <div id="<%= dom_id article %>" class="bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-gray-700 p-3 md:p-6 flex flex-col">
       <div class="mb-3">
         <h2 class="text-xl font-semibold text-gray-100 hover:text-green-400"><%= link_to article.title_ko || article.title, article_path(article.slug) %></h2>
         <h3 class="text-l text-gray-100"><%= article.title %></h3>

@@ -19,7 +19,7 @@ class ArticleJob < ApplicationJob
 간단한 핵심 요약과 상세 요약을 제공합니다. 요약, 정리를 하기 위해 또 다른 사이트나 문서를 참고 할 수 있습니다.
 핵심 요약은 3줄 이내로 작성합니다.
 상세 요약은 서론(introduction)-본론(body)-결론(conclusion)의 3단 구조를 기본으로 합니다. 상세 요약(summary_detail)은 800자 이상 1500자 이내로 작성합니다.
-주요 태그를 최대 3개 추출합니다. 이 태그는 가급적 본문에 포함 된 단어를 사용하며 주제를 표현할 수 있는 핵심 키워드들입니다. 태그는 한국어로 번역하지 않아도 됩니다.
+주요 태그(tags)를 최대 3개 추출합니다. 이 태그는 가급적 본문에 포함 된 단어를 사용하며 주제를 표현할 수 있는 핵심 키워드들입니다. 태그는 한국어로 번역하지 않아도 됩니다.
 요약, 정리 후 주어진 내용이 진짜 Ruby Programming Language 와 관련이 있는지 확인해서 출력 결과에 is_related 키로 boolean 값으로 표시합니다.
 1. 입력 포맷
 - Expect HTML-formatted text
@@ -31,21 +31,15 @@ class ArticleJob < ApplicationJob
 - JSON 형태로 제목(title_ko), 핵심 요약(summary_key), 상세 요약(summary_detail), 키워드(tags) 세 항목을 출력합니다.
 - 주요 키워드를 제공합니다.
 - 상세 요약은 요약된 내용을 보기 쉽고 이해하기 쉬운 markdown 형식으로 제공합니다.
-- 출력 예제
-```json
-{
-  "title_ko": "",
-  "summary_key": ["", "", ""],
-  "summary_detail": { "introduction": "", "body": "", "conclusion": "" },
-  "tags": ["", "", ""],
-  "is_related": true
-}
-```
+3. 출력 예제
+- JSON 형태로 출력하며, 다음과 같은 구조를 따릅니다
+#{ArticleSchema.new.to_json}
 PROMPT
 
     chat = RubyLLM.chat(model: "gemini-2.5-flash", provider: :gemini).with_temperature(0.6)
     # chat = RubyLLM.chat(model: "google/gemma-3n-e4b", provider: :ollama, assume_model_exists: true).with_temperature(0.7)
     llm_instructions = "You are a professional developer of the Ruby programming language. On top of that, you are an excellent technical writer. All output should be in Korean."
+    # chat.with_schema(ArticleSchema)
     chat.with_instructions(llm_instructions)
     chat.with_tool(ArticleBodyTool.new)
     response =  if article.is_youtube?
@@ -84,6 +78,7 @@ PROMPT
                     article.discard
                     return nil # 파싱 실패 시 nil 반환하여 이후 로직 중단
                   end
+    # parsed_json = response.content
     logger.debug parsed_json.inspect
     if parsed_json.blank? || parsed_json.empty?
       article.discard

@@ -12,4 +12,7 @@ RubyLLM.configure do |config|
   config.retry_interval = 0.1 # Initial delay in seconds (default: 0.1)
 
   config.ollama_api_base = "http://127.0.0.1:1234/v1"
+
+  # --- OR Custom Logger ---
+  config.logger = Rails.logger
 end

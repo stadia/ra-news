@@ -1,6 +1,8 @@
 # Generated from app/jobs/article_body_tool.rb with RBS::Inline
 
 class ArticleBodyTool < RubyLLM::Tool
+  include ToolHelper
+
   # : (String url) -> String?
   def execute: (String url) -> String?
 end

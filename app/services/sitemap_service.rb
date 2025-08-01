@@ -1,6 +1,15 @@
-# services/sitemap_generator.rb
-class SitemapService
-  def self.call
+# frozen_string_literal: true
+
+# rbs_inline: enabled
+
+class SitemapService < ApplicationService
+  # This service generates a sitemap for the application.
+  # It uses the SitemapGenerator gem to create the sitemap XML file.
+  # The sitemap will include links to articles that have a slug and are kept (not deleted).
+  # The sitemap is compressed into an XML.gz file.
+
+  # Call this method to generate the sitemap.
+  def call
     SitemapGenerator::Sitemap.create(
       default_host: "https://ruby-news.kr",
       sitemaps_path: "sitemaps/"
