@@ -93,6 +93,4 @@ gem "madmin", "~> 2.0"
 gem "discard"
 gem "awesome_nested_set"
 gem "neighbor"
-gem "x", "~> 0.18"
-
-gem "erb-formatter", "~> 0.7.3"
+gem "x"

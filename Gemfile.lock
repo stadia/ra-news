@@ -120,8 +120,6 @@ GEM
     drb (2.2.3)
     ed25519 (1.4.0)
     erb (5.0.2)
-    erb-formatter (0.7.3)
-      syntax_tree (~> 6.0)
     erubi (1.13.1)
     et-orbi (1.2.11)
       tzinfo
@@ -292,7 +290,6 @@ GEM
       activesupport (>= 6.1)
     pp (0.6.2)
       prettyprint
-    prettier_print (1.2.1)
     prettyprint (0.2.0)
     prism (1.4.0)
     propshaft (1.2.1)
@@ -472,8 +469,6 @@ GEM
       railties (>= 6.0.0)
     stringio (3.1.7)
     strscan (3.1.5)
-    syntax_tree (6.3.0)
-      prettier_print (>= 1.2.0)
     tailwindcss-rails (4.3.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
@@ -512,6 +507,8 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
+    x (0.16.0)
+      base64 (>= 0.2)
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yt (0.34.0)
@@ -539,7 +536,6 @@ DEPENDENCIES
   debug
   discard
   dotenv-rails
-  erb-formatter (~> 0.7.3)
   faker
   google-protobuf
   hairtrigger
@@ -580,6 +576,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+  x
   yt
 
 BUNDLED WITH

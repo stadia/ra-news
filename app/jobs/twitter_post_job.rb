@@ -14,7 +14,7 @@ class TwitterPostJob < ApplicationJob
   def perform(id)
     article = Article.kept.find_by(id: id)
     logger.info "TwitterPostJob started for article id: #{id}"
-    
+
     unless article
       logger.error "Article with id #{id} not found or has been discarded."
       return
@@ -50,16 +50,16 @@ class TwitterPostJob < ApplicationJob
   def post_to_twitter(article)
     # Create the tweet content
     tweet_text = build_tweet_text(article)
-    
+
     # Post to Twitter using the X gem
     client = X::Client.new
     response = client.post("tweets", { text: tweet_text }.to_json)
-    
+
     # Validate API response
     unless response.status.success?
       raise "Twitter API error: #{response.status} - #{response.body}"
     end
-    
+
     logger.info "Successfully posted to Twitter for article id: #{article.id} - Status: #{response.status}"
   end
 
@@ -67,22 +67,22 @@ class TwitterPostJob < ApplicationJob
   def build_tweet_text(article)
     # Get the Korean title or fallback to original title
     title = article.title_ko.presence || article.title
-    
+
     # Get first summary key point
     summary = article.summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
-    
+
     # Build the tweet with title, summary, and URL
     # Twitter shortens all URLs to exactly 23 characters regardless of original length
     content = "#{title}\n\n#{summary}"
-    
+
     # Calculate maximum length for content (excluding URL and formatting)
     max_content_length = TWITTER_CHARACTER_LIMIT - TWITTER_SHORTENED_URL_LENGTH - FORMATTING_BUFFER
-    
+
     # Truncate content if needed using Active Support's truncate method
     if content.length > max_content_length
       content = content.truncate(max_content_length, omission: "...")
     end
-    
+
     "#{content}\n\n#{article.url}"
   end
 end

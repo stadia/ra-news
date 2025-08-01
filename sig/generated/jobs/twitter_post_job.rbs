@@ -1,0 +1,24 @@
+# Generated from app/jobs/twitter_post_job.rb with RBS::Inline
+
+class TwitterPostJob < ApplicationJob
+  # Twitter constants
+  TWITTER_CHARACTER_LIMIT: ::Integer
+
+  TWITTER_SHORTENED_URL_LENGTH: ::Integer
+
+  FORMATTING_BUFFER: ::Integer
+
+  # : (Integer id) -> void
+  def perform: (Integer id) -> void
+
+  private
+
+  # : (Article article) -> bool
+  def should_post_article?: (Article article) -> bool
+
+  # : (Article article) -> void
+  def post_to_twitter: (Article article) -> void
+
+  # : (Article article) -> String
+  def build_tweet_text: (Article article) -> String
+end
