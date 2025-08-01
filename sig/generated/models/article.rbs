@@ -25,6 +25,8 @@ class Article < ApplicationRecord
   # : (String url) -> bool
   def self.should_ignore_url?: (String url) -> bool
 
+  def user_name: () -> untyped
+
   private
 
   def set_initial_url_and_host: () -> void
