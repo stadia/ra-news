@@ -9,6 +9,11 @@ class ApplicationJob < ActiveJob::Base
   # Most jobs are safe to ignore if the underlying records are no longer available
   # discard_on ActiveJob::DeserializationError
 
+  # Provides default URL options for URL helpers in jobs.
+  def default_url_options
+    { host: "ruby-news.kr" }
+  end
+
   rescue_from(StandardError) do |exception|
     honeybadger_context = {
       job: {

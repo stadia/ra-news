@@ -68,7 +68,7 @@ class TwitterPostJob < ApplicationJob
     content = "#{title}\n#{summary}"
     truncated_content = truncate_for_twitter(content)
     article_link = article_url(article.slug)
-    "#{truncated_content}\n\n#{article_link}"
+    "#{truncated_content}\n#{article_link}"
   end
 
   #: (String content) -> String
