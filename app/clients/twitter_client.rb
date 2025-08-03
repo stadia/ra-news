@@ -2,20 +2,22 @@
 
 # rbs_inline: enabled
 
-class TwitterClient < ApplicationClient
+class TwitterClient
   attr_reader :client
 
   def initialize
-    @client = X::Client.new
+    x_credentials = {
+      api_key: ENV["X_API_Key"],
+      api_key_secret: ENV["X_API_Key_SECRET"],
+      access_token: ENV["X_ACCESS_TOKEN"],
+      access_token_secret: ENV["X_ACCESS_TOKEN_SECRET"]
+    }
+    @client = X::Client.new(**x_credentials)
   end
 
   def post(text)
     response = client.post("tweets", { text: text }.to_json)
-
-    unless response.status.success?
-      raise Error, "Twitter API error: #{response.status} - #{response.body}"
-    end
-
+    Rails.logger.debug "Twitter post response: #{response.inspect}"
     response
   end
 end
