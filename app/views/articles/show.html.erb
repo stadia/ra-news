@@ -28,7 +28,9 @@
           </div>
           <div>
             <div class="text-xs text-gray-300">작성자</div>
-            <div class="font-medium text-gray-200"><%= render partial: 'shared/article_user', locals: { article: @article } %></div>
+            <div class="font-medium text-gray-200">
+              <%= render(ArticleUserComponent.new(article: @article)) %>
+            </div>
           </div>
         </div>
 
