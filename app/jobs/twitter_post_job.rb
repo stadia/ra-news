@@ -5,10 +5,13 @@
 class TwitterPostJob < ApplicationJob
   queue_as :default
 
-  # Twitter constants
-  TWITTER_CHARACTER_LIMIT = 280
-  TWITTER_SHORTENED_URL_LENGTH = 23  # Twitter shortens all URLs to this length
-  FORMATTING_BUFFER = 4  # For newlines and spacing ("\n\n" before summary and URL)
+  TwitterConfig = Struct.new(:character_limit, :shortened_url_length, :formatting_buffer) do
+    def max_content_length
+      character_limit - shortened_url_length - formatting_buffer
+    end
+  end
+
+  TWITTER_CONFIG = TwitterConfig.new(280, 23, 4)
 
   #: (Integer id) -> void
   def perform(id)
@@ -48,12 +51,8 @@ class TwitterPostJob < ApplicationJob
 
   #: (Article article) -> void
   def post_to_twitter(article)
-    # Create the tweet content
     tweet_text = build_tweet_text(article)
-
-    # Post to Twitter using the X gem
-    client = X::Client.new
-    response = client.post("tweets", { text: tweet_text }.to_json)
+    response = twitter_client.post(tweet_text)
 
     # Validate API response
     unless response.status.success?
@@ -65,24 +64,20 @@ class TwitterPostJob < ApplicationJob
 
   #: (Article article) -> String
   def build_tweet_text(article)
-    # Get the Korean title or fallback to original title
     title = article.title_ko.presence || article.title
-
-    # Get first summary key point
     summary = article.summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
-
-    # Build the tweet with title, summary, and URL
-    # Twitter shortens all URLs to exactly 23 characters regardless of original length
     content = "#{title}\n\n#{summary}"
+    truncated_content = truncate_for_twitter(content)
+    "#{truncated_content}\n\n#{article.url}"
+  end
 
-    # Calculate maximum length for content (excluding URL and formatting)
-    max_content_length = TWITTER_CHARACTER_LIMIT - TWITTER_SHORTENED_URL_LENGTH - FORMATTING_BUFFER
+  #: (String content) -> String
+  def truncate_for_twitter(content)
+    content.truncate(TWITTER_CONFIG.max_content_length, omission: "...")
+  end
 
-    # Truncate content if needed using Active Support's truncate method
-    if content.length > max_content_length
-      content = content.truncate(max_content_length, omission: "...")
-    end
-
-    "#{content}\n\n#{article.url}"
+  #: () -> X::Client
+  def twitter_client
+    TwitterClient.new
   end
 end
