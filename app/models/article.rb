@@ -57,6 +57,10 @@ class Article < ApplicationRecord
     self.published_at ||= Time.zone.now
   end
 
+  before_validation on: :create do
+    self.origin_url = url if origin_url.blank?
+  end
+
   # YouTube URL의 정규화된 호스트를 상수로 정의
   YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
 
@@ -187,17 +191,18 @@ class Article < ApplicationRecord
   end
 
   #: (String body) -> void
-  def set_webpage_metadata(body)
+  def set_webpage_metadata(fetch_body)
     logger.debug "Setting webpage metadata for #{url}"
     return if deleted_at.present?
 
     self.slug = URI.parse(url)&.path.split("/").last.split(".").first
-    self.published_at = url_to_published_at || extract_published_at_from_content(body) || Time.zone.now
+    self.published_at = url_to_published_at || extract_published_at_from_content(fetch_body) || Time.zone.now
     return if title.present?
 
-    doc = Nokogiri::HTML5(body)
+    doc = Nokogiri::HTML5(fetch_body)
     temp_title = doc.at("title")&.text
     self.title = temp_title.strip.gsub(/\s+/, " ") if temp_title.is_a?(String)
+    self.body = Readability::Document.new(fetch_body).content if body.blank?
   rescue URI::InvalidURIError
     logger.error "Invalid URI for webpage metadata: #{url}"
     # slug, published_at, title 등에 대한 기본값 설정 또는 오류 처리

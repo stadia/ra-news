@@ -107,6 +107,15 @@
           <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">RA || 루비 AI 뉴스</span>
         <% end %>
 
+        <!-- Mobile Menu Toggle (Improved Accessibility) -->
+        <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle peer">
+        <label for="mobile-menu-toggle" class="inline-flex items-center p-2 w-11 h-11 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer">
+          <span class="sr-only">Open main menu</span>
+          <svg class="w-5 h-5 transition-transform duration-200 peer-checked:rotate-45" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+          </svg>
+        </label>
+
         <!-- Navigation Menu -->
         <div class="items-center justify-between w-full md:flex md:w-auto md:order-1
                     hidden peer-checked:block

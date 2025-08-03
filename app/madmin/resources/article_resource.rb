@@ -1,22 +1,22 @@
 class ArticleResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
-  attribute :title
-  attribute :title_ko, index: true
-  attribute :slug, index: true
-  attribute :deleted_at, index: true
+  attribute :title, new: false
+  attribute :title_ko, index: true, new: false
+  attribute :slug, index: true, form: false
+  attribute :deleted_at, index: true, form: false
   attribute :created_at, form: false
-  attribute :host, index: true
-  attribute :is_related, index: true
+  attribute :host, index: true, form: false
+  attribute :is_related, index: true, new: false
 
   attribute :url, index: false
   attribute :updated_at, form: false
   attribute :summary_key, index: false, form: false
   attribute :summary_detail, index: false, form: false
-  attribute :published_at
-  attribute :origin_url, index: false
-  attribute :tag_list, index: false
-  attribute :is_youtube, index: false
+  attribute :published_at, new: false
+  attribute :origin_url, index: false, new: false
+  attribute :tag_list, index: false, new: false
+  attribute :is_youtube, index: false, new: false
   attribute :body, index: false, form: true
 
   # Associations

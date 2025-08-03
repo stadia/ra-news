@@ -106,6 +106,20 @@ body input, body textarea, body select {
   }
 }
 
+/* Mobile menu toggle accessibility improvements */
+.mobile-menu-toggle {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.mobile-menu-toggle:focus + label {
+    outline: 2px solid theme("colors.green.500");
+    outline-offset: 2px;
+}
+
 .article-content h1, .article-content h2, .article-content h3, .article-content h4, .article-content h5, .article-content h6 {
   color: #f3f4f6; /* gray-100 */
 }
