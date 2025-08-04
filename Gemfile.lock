@@ -173,12 +173,12 @@ GEM
       activerecord (>= 6.0, < 9)
       ruby2ruby (~> 2.4)
       ruby_parser (~> 3.10)
-    herb (0.4.2-aarch64-linux-gnu)
-    herb (0.4.2-aarch64-linux-musl)
-    herb (0.4.2-arm64-darwin)
-    herb (0.4.2-x86_64-darwin)
-    herb (0.4.2-x86_64-linux-gnu)
-    herb (0.4.2-x86_64-linux-musl)
+    herb (0.4.3-aarch64-linux-gnu)
+    herb (0.4.3-aarch64-linux-musl)
+    herb (0.4.3-arm64-darwin)
+    herb (0.4.3-x86_64-darwin)
+    herb (0.4.3-x86_64-linux-gnu)
+    herb (0.4.3-x86_64-linux-musl)
     honeybadger (6.0.2)
       logger
       ostruct
