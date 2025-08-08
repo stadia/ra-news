@@ -95,7 +95,8 @@ PROMPT
     PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false)
     # PgSearch::Multisearch.rebuild(Article, transactional: false)
 
-    # Trigger Twitter posting after successful article processing
+    # Trigger social media posting after successful article processing
     TwitterPostJob.perform_later(article.id)
+    BlueskyPostJob.perform_later(article.id)
   end
 end
