@@ -4,6 +4,7 @@
 
 class Site < ApplicationRecord
   has_many :articles, dependent: :nullify
+  has_one :activitypub_actor, dependent: :destroy
 
   validates :name, :client, presence: true
 

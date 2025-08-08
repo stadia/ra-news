@@ -31,6 +31,15 @@ Rails.application.routes.draw do
 
   mount MissionControl::Jobs::Engine, at: "/jobs"
 
+  # ActivityPub routes
+  get "/.well-known/webfinger", to: "webfinger#show"
+  
+  namespace :activitypub do
+    get "actors/:username", to: "activitypub#actor", as: :actor
+    get "actors/:username/outbox", to: "activitypub#outbox", as: :outbox
+    post "actors/:username/inbox", to: "activitypub#inbox", as: :inbox
+  end
+
   namespace :madmin do
     resources :articles do
       member do
