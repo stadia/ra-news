@@ -67,8 +67,9 @@ class TwitterPostJob < ApplicationJob
     summary = article.summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
     content = "#{title}\n#{summary}"
     truncated_content = truncate_for_twitter(content)
+    tags = article.tags.select { |it| it.is_confirmed? }.map { |it| "##{it.name.gsub(/\s+/, '_').downcase}" }.join(" ")
     article_link = article_url(article.slug)
-    "#{truncated_content}\n#{article_link}"
+    "#{truncated_content} #{tags}\n#{article_link}"
   end
 
   #: (String content) -> String

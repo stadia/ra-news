@@ -135,6 +135,8 @@ class Article < ApplicationRecord
       host = uri.host&.downcase
       return true if host.blank?
 
+      return true if %w[.epub .pdf].any? do |ext| uri.path.end_with?(ext) end
+
       IGNORE_HOSTS.any? do |ignore_host|
         # 정확한 도메인 매칭
         host == ignore_host ||

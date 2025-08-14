@@ -65,7 +65,7 @@ jobs:
 
     steps:
       - name: 'Checkout PR code'
-        uses: 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' # ratchet:actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 'Generate GitHub App Token'
         id: 'generate_token'
@@ -211,7 +211,7 @@ jobs:
             ## Steps
 
             Start by running these commands to gather the required data:
-            1. Run: echo $"{REPOSITORY}" to get the github repository in <OWNER>/<REPO> format
+            1. Run: echo "${REPOSITORY}" to get the github repository in <OWNER>/<REPO> format
             2. Run: echo "${PR_DATA}" to get PR details (JSON format)
             3. Run: echo "${CHANGED_FILES}" to get the list of changed files
             4. Run: echo "${PR_NUMBER}" to get the PR number

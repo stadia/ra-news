@@ -19,6 +19,7 @@ class GmailArticleJob < ApplicationJob
 
     links = fetch_new_email_links(site)
     if links.empty?
+      site.update!(last_checked_at: Time.zone.now)
       GmailArticleJob.perform_later(ids) unless ids.empty?
       return
     end
