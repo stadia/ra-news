@@ -11,7 +11,8 @@ class TagResource < Madmin::Resource
   # attribute :taggings
 
   # Add scopes to easily filter records
-  # scope :published
+  scope :confirmed
+  scope :unconfirmed
 
   # Add actions to the resource's show page
   # member_action do |record|

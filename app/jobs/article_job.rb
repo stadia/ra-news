@@ -49,7 +49,7 @@ PROMPT
       chat.ask("YoutubeContent 로 제공한 url과 Transcript를 #{prompt} (url: #{article.url}, id: #{article.id})")
     else
       # YouTube URL이 아닌 경우
-      article.update(body: HtmlContentTool.new.execute(url: article.url)) if article.body.blank?
+      article.update(body: HtmlContentTool.new.execute(url: article.url)) if article.body.blank? || article.body.size < 100
       logger.info "HtmlContent url: #{article.url}, id: #{article.id})"
       chat.ask("HtmlContent 로 제공한 url과 본문을 #{prompt} (url: #{article.url}, id: #{article.id})")
     end

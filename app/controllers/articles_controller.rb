@@ -12,12 +12,13 @@ class ArticlesController < ApplicationController
   # GET /articles or /articles.json
   def index
     scope = Article.kept.where.not(slug: nil)
-    article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
-    id = if article_count < 9
-      scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
-    else
-      scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
-    end
+    # article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
+    # id = if article_count < 9
+    #   scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
+    # else
+    #   scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
+    # end
+    id = scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
 
     article = if params[:search].present?
       scope.full_text_search_for(params[:search])
