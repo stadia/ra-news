@@ -15,25 +15,58 @@ class ArticleJob < ApplicationJob
     end
 
     prompt = <<~PROMPT
-주의 깊게 읽고 요약, 정리 한 내용을 한국어로 제공합니다. 답변은 전문적인 어투로 작성하며, 주어진 내용에서 벗어나지 않도록 합니다.
-간단한 핵심 요약과 상세 요약을 제공합니다. 요약, 정리를 하기 위해 또 다른 사이트나 문서를 참고 할 수 있습니다.
-핵심 요약은 3줄 이내로 작성합니다.
-상세 요약은 서론(introduction)-본론(body)-결론(conclusion)의 3단 구조를 기본으로 합니다. 상세 요약에 markdown 포맷으로 헤더와 글머리 기호 목록을 사용하여 스캔할 수 있도록 하세요. 상세 요약(summary_detail)은 800자 이상 1500자 이내로 작성합니다.
-주요 태그(tags)를 최대 3개 추출합니다. 이 태그는 가급적 본문에 포함 된 단어를 사용하며 주제를 표현할 수 있는 핵심 키워드들입니다. 태그는 한국어로 번역하지 않아도 됩니다.
-요약, 정리 후 주어진 내용이 진짜 Ruby Programming Language 와 관련이 있는지 확인해서 출력 결과에 is_related 키로 boolean 값으로 표시합니다.
-1. 입력 포맷
-- Expect HTML-formatted text
-- Process both inline formatting (bold, italic, links) and block elements (headings, lists, code blocks)
-- Preserve the context of structured content
-- Handle nested HTML elements appropriately
-2. 출력 결과
-- 의미와 사실적 정확성을 유지하고, 불필요한 내용은 생략합니다.
-- JSON 형태로 제목(title_ko), 핵심 요약(summary_key), 상세 요약(summary_detail), 키워드(tags) 세 항목을 출력합니다.
-- 주요 키워드를 제공합니다.
-- 상세 요약은 요약된 내용을 보기 쉽고 이해하기 쉬운 markdown 형식으로 제공합니다.
-3. 출력 예제
-- JSON 형태로 출력하며, 다음과 같은 구조를 따릅니다
-#{ArticleSchema.new.to_json}
+주의 깊게 읽고 요약, 정리한 내용을 한국어로 제공합니다. 답변은 전문적인 어투로 작성하며, 주어진 내용에서 벗어나지 않도록 합니다.
+
+## 출력 구조 및 요구사항
+
+### 1. 핵심 요약 (summary_key)
+- 3개의 문자열 배열로 구성
+- 각 요약은 한 줄로 작성 (100자 이내)
+- 가장 중요한 내용 순으로 정렬
+
+### 2. 상세 요약 (summary_detail)
+다음 3단 구조의 객체로 구성:
+- **introduction** (서론): 주제와 배경 설명 (200-300자)
+- **body** (본론): 핵심 내용과 세부사항 (400-800자)
+- **conclusion** (결론): 요약과 시사점 (200-300자)
+
+body(본론)은 markdown 형식으로 작성하되, 헤더와 글머리 기호를 적극 활용하여 가독성을 높입니다.
+
+### 3. 태그 (tags)
+- 최대 3개의 문자열 배열
+- 본문에서 추출한 핵심 키워드 우선
+- 기술 용어는 원어 유지 (예: Rails, Ruby, Gem)
+- 일반 명사보다는 구체적 개념 우선
+
+### 4. Ruby 관련성 판단 (is_related)
+다음 기준으로 true/false 판단:
+- **true**: Ruby 언어, Rails, Gem, Ruby 개발 도구, Ruby 커뮤니티 관련
+- **false**: 다른 프로그래밍 언어만 다루거나 Ruby와 직접적 연관 없음
+
+## 입력 포맷 처리
+- HTML 형식 텍스트 처리
+- 인라인 포맷(bold, italic, links)과 블록 요소(headings, lists, code blocks) 모두 고려
+- 구조화된 콘텐츠의 컨텍스트 보존
+- 중첩된 HTML 요소 적절히 처리
+
+## 출력 예제
+```json
+{
+  "title_ko": "Ruby 3.4의 새로운 기능과 성능 개선 사항",
+  "summary_key": [
+    "Ruby 3.4에서 도입된 주요 성능 최적화 기능",
+    "새로운 Fiber 스케줄러와 메모리 관리 개선",
+    "개발자 경험 향상을 위한 디버깅 도구 강화"
+  ],
+  "summary_detail": {
+    "introduction": "Ruby 3.4 버전이 공식 릴리스되어 여러 성능 개선사항과 새로운 기능들이 추가되었습니다.",
+    "body": "## 주요 개선사항\n\n- **성능 최적화**: JIT 컴파일러 개선으로 25% 성능 향상\n- **Fiber 스케줄러**: 새로운 동시성 모델 도입\n- **메모리 관리**: GC 알고리즘 최적화",
+    "conclusion": "이번 업데이트로 Ruby의 성능과 개발자 경험이 크게 개선되어 더욱 매력적인 언어가 되었습니다."
+  },
+  "tags": ["Ruby", "Performance", "JIT"],
+  "is_related": true
+}
+```
 PROMPT
 
     chat = RubyLLM.chat(model: "gemini-2.5-flash", provider: :gemini).with_temperature(0.6)
