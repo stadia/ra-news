@@ -18,7 +18,7 @@ class ArticleJob < ApplicationJob
 주의 깊게 읽고 요약, 정리 한 내용을 한국어로 제공합니다. 답변은 전문적인 어투로 작성하며, 주어진 내용에서 벗어나지 않도록 합니다.
 간단한 핵심 요약과 상세 요약을 제공합니다. 요약, 정리를 하기 위해 또 다른 사이트나 문서를 참고 할 수 있습니다.
 핵심 요약은 3줄 이내로 작성합니다.
-상세 요약은 서론(introduction)-본론(body)-결론(conclusion)의 3단 구조를 기본으로 합니다. 상세 요약(summary_detail)은 800자 이상 1500자 이내로 작성합니다.
+상세 요약은 서론(introduction)-본론(body)-결론(conclusion)의 3단 구조를 기본으로 합니다. markdown 포맷으로 헤더와 글머리 기호 목록을 사용하여 스캔할 수 있도록 하세요.
 주요 태그(tags)를 최대 3개 추출합니다. 이 태그는 가급적 본문에 포함 된 단어를 사용하며 주제를 표현할 수 있는 핵심 키워드들입니다. 태그는 한국어로 번역하지 않아도 됩니다.
 요약, 정리 후 주어진 내용이 진짜 Ruby Programming Language 와 관련이 있는지 확인해서 출력 결과에 is_related 키로 boolean 값으로 표시합니다.
 1. 입력 포맷
@@ -27,7 +27,7 @@ class ArticleJob < ApplicationJob
 - Preserve the context of structured content
 - Handle nested HTML elements appropriately
 2. 출력 결과
-- 핵심 내용 위주로 정보를 제공하고, 불필요한 내용은 생략합니다.
+- 의미와 사실적 정확성을 유지하고, 불필요한 내용은 생략합니다.
 - JSON 형태로 제목(title_ko), 핵심 요약(summary_key), 상세 요약(summary_detail), 키워드(tags) 세 항목을 출력합니다.
 - 주요 키워드를 제공합니다.
 - 상세 요약은 요약된 내용을 보기 쉽고 이해하기 쉬운 markdown 형식으로 제공합니다.

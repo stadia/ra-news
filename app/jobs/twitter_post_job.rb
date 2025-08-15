@@ -17,6 +17,8 @@ class TwitterPostJob < ApplicationJob
 
   #: (Integer id) -> void
   def perform(id)
+    return unless Rails.env.production?
+
     article = Article.kept.find_by(id: id)
     logger.info "TwitterPostJob started for article id: #{id}"
 
