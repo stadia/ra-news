@@ -21,7 +21,7 @@ class ArticleJob < ApplicationJob
 
 ### 1. 핵심 요약 (summary_key)
 - 3개의 문자열 배열로 구성
-- 각 요약은 한 줄로 작성 (100자 이내)
+- 각 요약은 한 줄로 작성 (200자 이내)
 - 가장 중요한 내용 순으로 정렬
 
 ### 2. 상세 요약 (summary_detail)
