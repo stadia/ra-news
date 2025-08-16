@@ -33,7 +33,7 @@ class Article < ApplicationRecord
 
   has_many :comments, dependent: :nullify
 
-  validates :url, :origin_url, presence: true, uniqueness: true
+  validates :url, :origin_url, presence: true, uniqueness: { case_sensitive: false }
 
   validates :slug, uniqueness: true, allow_blank: true
 
@@ -41,14 +41,9 @@ class Article < ApplicationRecord
 
   acts_as_taggable_on :tags
 
-  after_discard do
-    Rails.cache.delete("rss_articles")
-  end
-
-  after_commit on: :create do
-    ArticleJob.perform_later(id) if deleted_at.nil?
-    Rails.cache.delete("rss_articles")
-  end
+  after_discard :clear_rss_cache
+  after_commit :enqueue_article_processing, on: :create
+  after_commit :clear_rss_cache, on: [:create, :update, :destroy]
 
   before_save do
     # published_at이 없으면 현재 시간으로 설정.
@@ -276,5 +271,15 @@ class Article < ApplicationRecord
   rescue StandardError => e
     logger.error "Error parsing published_at: #{e.message}"
     nil
+  end
+
+  private
+
+  def enqueue_article_processing
+    ArticleJob.perform_later(id) if kept?
+  end
+
+  def clear_rss_cache
+    Rails.cache.delete("rss_articles")
   end
 end

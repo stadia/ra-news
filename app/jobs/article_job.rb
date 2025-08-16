@@ -73,13 +73,14 @@ PROMPT
     end
     logger.info "Response received for article id: #{id}"
 
-    if article.embedding.blank?
+    # Generate embeddings if not present and body exists
+    if article.embedding.blank? && article.body.present?
       embedded_body = RubyLLM.embed(
         article.body,
         model: "gemini-embedding-001", # Google's model
         dimensions: 1536 # 1536차원
       )
-      article.update(embedding: embedded_body.vectors.to_a)
+      article.update_column(:embedding, embedded_body.vectors.to_a) # Skip callbacks for performance
     end
 
     unless response.respond_to?(:content)
@@ -105,13 +106,20 @@ PROMPT
 
     # JSON 데이터 저장
     article.tag_list.add(parsed_json["tags"]) if parsed_json["tags"].is_a?(Array)
-    # 매직 스트링 대신 Site.clients enum 사용
-    if parsed_json["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
-      article.discard # `deleted_at = Time.zone.now` 대신 discard 사용
+    # Use ActiveRecord transaction for data consistency
+    Article.transaction do
+      # 매직 스트링 대신 Site.clients enum 사용
+      if parsed_json["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
+        article.discard # `deleted_at = Time.zone.now` 대신 discard 사용
+        return # Exit early if discarded
+      end
+      
+      # Update article attributes in single query
+      article.update!(parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related"))
     end
-    article.update(parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related"))
-    PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false)
-    # PgSearch::Multisearch.rebuild(Article, transactional: false)
+    
+    # Rebuild search index only for kept articles
+    PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false) unless article.discarded?
 
     # Trigger Twitter posting after successful article processing
     TwitterPostJob.perform_later(article.id)

@@ -30,7 +30,16 @@ class ArticlesController < ApplicationController
 
   def show
     @comments = @article.comments.includes(:user).order(created_at: :desc)
-    @similar_articles = Article.kept.where.not(id: @article.id).nearest_neighbors(:embedding, @article.embedding, distance: "cosine", precision: "half").first(3)
+
+    # Only load similar articles if embedding exists
+    @similar_articles = if @article.embedding.present?
+      Article.kept.where.not(id: @article.id)
+             .nearest_neighbors(:embedding, @article.embedding, distance: "cosine", precision: "half")
+             .limit(4)
+    else
+      Article.none
+    end
+
     @comment = Comment.new
   end
 

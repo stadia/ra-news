@@ -29,5 +29,11 @@ module AlNews
 
     config.mission_control.jobs.base_controller_class = "Madmin::ApplicationController"
     config.mission_control.jobs.http_basic_auth_enabled = false
+    
+    # Cache query log tags for better performance
+    config.active_record.cache_query_log_tags = true
+    
+    # Enable query log tags around perform for better debugging
+    config.active_job.log_query_tags_around_perform = true
   end
 end

@@ -133,17 +133,17 @@ class ApplicationClient
     when 200, 201, 202, 203, 204
       response
     when 401
-      raise Unauthorized, response.body
+      raise Unauthorized, "Unauthorized: #{response.body}"
     when 403
-      raise Forbidden, response.body
+      raise Forbidden, "Forbidden: #{response.body}"
     when 404
-      raise NotFound, response.body
+      raise NotFound, "Not Found: #{response.body}"
     when 429
-      raise RateLimit, response.body
-    when 500
-      raise InternalError, response.body
+      raise RateLimit, "Rate Limited: #{response.body}"
+    when 500..599
+      raise InternalError, "Server Error (#{response.status}): #{response.body}"
     else
-      raise Error, "#{response.status} - #{response.body}"
+      raise Error, "HTTP Error #{response.status}: #{response.body}"
     end
   end
 
@@ -167,12 +167,21 @@ class ApplicationClient
   #: (URI uri, Hash headers, untyped form_data) -> Faraday::Connection
   def initialize_faraday_connection(uri, headers, form_data)
     Faraday.new(url: "#{uri.scheme}://#{uri.host}", headers: headers) do |conn|
+      # Add retry middleware for resilience
+      conn.request :retry, max: 3, interval: 0.5, backoff_factor: 2,
+                   exceptions: [Errno::ETIMEDOUT, 'Timeout::Error', Faraday::TimeoutError]
+      
       if form_data.present?
         conn.request :url_encoded
       elsif headers["Accept"] == "application/json"
         conn.request :json
       end
+      
       conn.response :json, content_type: /\bjson$/
+      
+      # Set reasonable timeouts
+      conn.options.timeout = 30
+      conn.options.open_timeout = 10
     end
   end
 end
