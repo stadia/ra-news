@@ -1,0 +1,63 @@
+<!-- 태그 쇼케이스 카드 -->
+<div class="bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-700 p-6 group">
+  <header class="mb-6">
+    <div class="flex items-center space-x-3 mb-3">
+      <div class="p-2 bg-blue-600/20 rounded-lg">
+        <svg class="w-6 h-6 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767L6.5 12.914a2.5 2.5 0 001.768.732H10.5a2.5 2.5 0 002.5-2.5v-1.382a2.5 2.5 0 00-.732-1.767L9.5 5.229A2.5 2.5 0 007.732 4.5H5.5zM15 11.25a.75.75 0 01.75-.75h.5a2.5 2.5 0 012.5 2.5v1.25a.75.75 0 01-1.5 0V13a1 1 0 00-1-1h-.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold text-white group-hover:text-blue-400 transition-colors duration-200">
+          인기 태그
+        </h2>
+        <p class="text-sm text-gray-400">관심 있는 주제를 찾아보세요</p>
+      </div>
+    </div>
+
+    <% if current_tag %>
+      <div class="mb-4 p-3 bg-blue-900/30 border border-blue-700/50 rounded-lg">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <svg class="w-4 h-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-sm text-blue-300">
+              '<span class="font-medium text-blue-200"><%= current_tag %></span>' 필터링 중
+            </span>
+          </div>
+          <%= link_to root_path,
+                      class: "inline-flex items-center px-2 py-1 text-xs font-medium text-blue-300 hover:text-blue-200 transition-colors duration-200" %>
+            <svg class="w-3 h-3 mr-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+            </svg>
+            전체 보기
+          </a>
+        </div>
+      </div>
+    <% end %>
+  </header>
+
+  <!-- 태그 그리드 -->
+  <div class="space-y-4">
+    <div class="flex flex-wrap gap-2" data-controller="tag-filter" data-tag-filter-target="container">
+      <% popular_tags.each_with_index do |tag, index| %>
+        <% active = current_tag == tag.name %>
+        <%= link_to tag.name, articles_path(tag: tag.name),
+        class: "inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:scale-105 #{active ? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-500' : 'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600 hover:text-white hover:border-gray-500'}",
+        data: { tag: tag.name, count: tag.taggings_count }, "aria-pressed": active.to_s %>
+      <% end %>
+    </div>
+
+    <% if popular_tags.size > 12 %>
+      <div class="pt-3 border-t border-gray-700">
+        <%= link_to articles_path, class: "inline-flex items-center text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors duration-200 group" do %>
+          <span>더 많은 태그 보기</span>
+          <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+          </svg>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

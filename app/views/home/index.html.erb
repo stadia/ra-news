@@ -1,14 +1,13 @@
 <% content_for :title, "RA || 루비 AI 뉴스" %>
 
-<!-- 태그 필터 -->
-<% if @popular_tags.present? %>
-  <%= render(TagFilterComponent.new(popular_tags: @popular_tags, current_tag: @current_tag)) %>
-<% end %>
-
 <!-- 기사 목록 -->
 <div id="articlesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
   <% if @articles.any? %>
-    <% @articles.each do |article| %>
+    <% @articles.each_with_index do |article, index| %>
+      <% if index == 2 && @popular_tags.present? %>
+        <!-- 세 번째 위치에 태그 쇼케이스 삽입 -->
+        <%= render(TagShowcaseComponent.new(popular_tags: @popular_tags)) %>
+      <% end %>
       <%= render(ArticleComponent.new(article: article)) %>
     <% end %>
   <% else %>

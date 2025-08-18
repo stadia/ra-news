@@ -1,0 +1,85 @@
+<!-- 사이드바 -->
+<aside class="lg:w-80 flex-shrink-0">
+  <div class="sticky top-8 space-y-6">
+
+    <!-- 태그 필터 섹션 -->
+    <div class="bg-gray-800 rounded-lg shadow-md border border-gray-700 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center space-x-3 mb-4">
+          <div class="p-2 bg-blue-600/20 rounded-lg">
+            <svg class="w-5 h-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767L6.5 12.914a2.5 2.5 0 001.768.732H10.5a2.5 2.5 0 002.5-2.5v-1.382a2.5 2.5 0 00-.732-1.767L9.5 5.229A2.5 2.5 0 007.732 4.5H5.5zM15 11.25a.75.75 0 01.75-.75h.5a2.5 2.5 0 012.5 2.5v1.25a.75.75 0 01-1.5 0V13a1 1 0 00-1-1h-.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-white">태그별 찾기</h2>
+            <p class="text-sm text-gray-400"><%= popular_tags.size %>개 태그</p>
+          </div>
+        </div>
+
+        <!-- 현재 필터 상태 -->
+        <% if current_tag %>
+          <div class="mb-4 p-4 bg-blue-900/30 border border-blue-700/50 rounded-lg">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <svg class="w-4 h-4 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                </svg>
+                <div class="text-sm">
+                  <div class="text-blue-300">필터링 중:</div>
+                  <div class="font-medium text-blue-200"><%= current_tag %></div>
+                </div>
+              </div>
+              <%= link_to articles_path,
+                          class: "inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-300 bg-blue-800/50 border border-blue-600 rounded-lg hover:bg-blue-700/50 hover:text-blue-200 transition-colors duration-200" do %>
+                <svg class="w-4 h-4 mr-1.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                </svg>
+                전체 보기
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- 검색 입력 -->
+        <div class="mb-4">
+          <div class="relative">
+            <input type="text"
+                   placeholder="태그 검색..."
+                   class="w-full px-4 py-2.5 pl-10 text-sm text-gray-300 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                   data-controller="tag-search"
+                   data-action="input->tag-search#search"
+                   data-tag-search-target="input">
+            <svg class="absolute left-3 top-3 w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- 태그 목록 -->
+        <div class="space-y-1 max-h-80 overflow-y-auto" data-tag-search-target="container">
+          <% popular_tags.each do |tag| %>
+            <% active = current_tag == tag.name %>
+            <%= link_to articles_path(tag: tag.name),
+                        class: "flex items-center justify-between w-full px-3 py-2.5 text-sm rounded-lg transition-all duration-200 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-500 #{active ? 'bg-blue-600 text-white shadow-md' : 'text-gray-300 hover:bg-gray-700 hover:text-white'}",
+                        data: {
+                          tag: tag.name.downcase,
+                          action: "click->tag-filter#selectTag"
+                        },
+                        "aria-pressed": active.to_s do %>
+              <span class="flex items-center space-x-2">
+                <svg class="w-4 h-4 <%= active ? 'text-blue-200' : 'text-gray-500' %>" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.5 3A2.5 2.5 0 003 5.5v2.879a2.5 2.5 0 00.732 1.767L6.5 12.914a2.5 2.5 0 001.768.732H10.5a2.5 2.5 0 002.5-2.5v-1.382a2.5 2.5 0 00-.732-1.767L9.5 5.229A2.5 2.5 0 007.732 4.5H5.5z" clip-rule="evenodd" />
+                </svg>
+                <span><%= tag.name %></span>
+              </span>
+              <span class="px-2 py-1 text-xs font-medium rounded-full <%= active ? 'bg-blue-500/50 text-blue-100' : 'bg-gray-600 text-gray-400' %>">
+                <%= tag.taggings_count %>
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>

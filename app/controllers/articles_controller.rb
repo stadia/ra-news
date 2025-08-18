@@ -22,8 +22,8 @@ class ArticlesController < ApplicationController
     # 최신 기사 제외 로직 (검색이나 태그 필터가 없을 때만)
     id = if params[:search].blank? && params[:tag].blank?
       article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
-      if article_count < 9
-        scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
+      if article_count < 8
+        scope.select(:id).limit(8).order(created_at: :desc).map(&:id)
       else
         scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
       end

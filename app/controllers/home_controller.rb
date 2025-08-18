@@ -5,14 +5,14 @@ class HomeController < ApplicationController
     scope = Article.includes(:user, :site).kept.where.not(slug: nil)
 
     article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
-    @articles = if article_count < 9
-      scope.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
+    @articles = if article_count < 8
+      scope.limit(8).order(created_at: :desc).sort_by { -it.published_at.to_i }
     else
       scope.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
     end
 
     # 인기 태그 목록
-    @popular_tags = Tag.popular_tags
+    @popular_tags = Tag.popular_tags(30)
   end
 
   # GET /rss

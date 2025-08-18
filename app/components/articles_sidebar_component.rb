@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class TagFilterComponent < ViewComponent::Base
+class ArticlesSidebarComponent < ViewComponent::Base
   def initialize(popular_tags:, current_tag: nil)
     @popular_tags = popular_tags
     @current_tag = current_tag
