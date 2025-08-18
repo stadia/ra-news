@@ -12,20 +12,37 @@ class ArticlesController < ApplicationController
   # GET /articles or /articles.json
   def index
     scope = Article.kept.where.not(slug: nil)
-    # article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
-    # id = if article_count < 9
-    #   scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
-    # else
-    #   scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
-    # end
-    id = scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
+
+    # 태그 필터링
+    if params[:tag].present?
+      scope = scope.tagged_with(params[:tag])
+      @current_tag = params[:tag]
+    end
+
+    # 최신 기사 제외 로직 (검색이나 태그 필터가 없을 때만)
+    id = if params[:search].blank? && params[:tag].blank?
+      article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
+      if article_count < 9
+        scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
+      else
+        scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
+      end
+    else
+      []
+    end
 
     article = if params[:search].present?
       scope.full_text_search_for(params[:search])
+    elsif params[:tag].present?
+      scope # 태그 필터가 있으면 전체 결과 표시
     else
       scope.where.not(id: id)
     end
+
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
+
+    # 인기 태그 목록 (사이드바나 필터용)
+    @popular_tags = Tag.popular_tags(20)
   end
 
   def show

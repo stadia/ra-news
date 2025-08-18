@@ -1,0 +1,61 @@
+<div class="tag-filter-section mb-8" data-controller="tag-filter">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+    <h2 class="text-lg font-semibold text-white mb-3 md:mb-0">
+      <% if current_tag %>
+        '<%= current_tag %>' 태그 필터링 중
+      <% else %>
+        인기 태그
+      <% end %>
+    </h2>
+
+    <% if current_tag %>
+      <%= link_to "전체 보기",
+                  articles_path,
+                  class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300
+                         bg-gray-700 rounded-lg hover:bg-gray-600 hover:text-white
+                         transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500",
+                  data: { action: "click->tag-filter#clearFilter" } %>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap gap-2" data-tag-filter-target="container">
+    <% popular_tags.each do |tag| %>
+      <% active = current_tag == tag.name %>
+      <%= link_to tag.name, articles_path + "?tag=#{CGI.escape(tag.name)}",
+                  class: "tag-filter-button inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium
+                         transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50
+                         #{if active
+                             'bg-blue-600 text-white border-2 border-blue-400 shadow-lg'
+                           else
+                             'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600 hover:text-white hover:border-gray-500'
+                           end}",
+                  data: {
+                    tag: tag.name,
+                    action: "click->tag-filter#selectTag",
+                    count: tag.taggings_count
+                  },
+                  "aria-pressed": active.to_s %>
+        <span class="ml-1.5 px-1.5 py-0.5 text-xs rounded-full
+                     <%= active ? 'bg-blue-500 text-blue-100' : 'bg-gray-600 text-gray-400' %>">
+          <%= tag.taggings_count %>
+        </span>
+      <% end %>
+    </% end %>
+  </div>
+
+  <!-- 태그 검색 입력 (향후 확장용) -->
+  <div class="mt-4 hidden" data-tag-filter-target="search">
+    <div class="relative">
+      <input type="text"
+             placeholder="태그 검색..."
+             class="w-full md:w-64 px-4 py-2 pl-10 text-sm text-gray-900 bg-white border border-gray-300
+                    rounded-lg focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+             data-tag-filter-target="searchInput"
+             data-action="input->tag-filter#searchTags">
+      <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-500"
+           xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+      </svg>
+    </div>
+  </div>
+</div>

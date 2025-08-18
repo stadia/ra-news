@@ -1,11 +1,16 @@
 <% if @article.user %>
-    <%= @article.user&.name %>
+  <span class="font-medium text-gray-300"><%= @article.user&.name %></span>
 <% elsif @article.site %>
-    <% if @article.site.base_uri.present?  %>
-        <%= link_to @article.site.name, @article.site.base_uri, target: "_blank" %>
-    <% else %>
-        <%= @article.site.name %>
-    <% end %>
+  <% if @article.site.base_uri.present? %>
+    <%= link_to @article.site.name, 
+                @article.site.base_uri, 
+                target: "_blank", 
+                rel: "noopener noreferrer",
+                class: "article-link font-medium text-blue-300 hover:text-blue-200 transition-colors duration-200",
+                tabindex: "0" %>
+  <% else %>
+    <span class="font-medium text-gray-300"><%= @article.site.name %></span>
+  <% end %>
 <% else %>
-    <span class="text-gray-500">알 수 없음</span>
+  <span class="text-gray-500 italic">알 수 없음</span>
 <% end %>

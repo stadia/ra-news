@@ -157,6 +157,36 @@ class Article < ApplicationRecord
     end
   end
 
+
+  # 주요 태그 추출 (상위 5개)
+  #: -> Array[String]
+  def primary_tags
+    tag_list.first(5)
+  end
+
+  # 중요도 점수 계산 (0-10)
+  #: -> Float
+  def importance_score
+    score = 5.0 # 기본 점수
+
+    # 최신성 점수 (최근 24시간: +2, 일주일: +1)
+    if published_at && published_at > 24.hours.ago
+      score += 2
+    elsif published_at && published_at > 1.week.ago
+      score += 1
+    end
+
+    # 콘텐츠 풍부도 점수
+    score += 1 if summary_key.present?
+    score += 1 if summary_detail.present?
+    score += 0.5 if body.present? && body.length > 500
+
+    # 유명 사이트 보너스
+    score += 1 if host&.match?(/github\.com|ruby|rails/i)
+
+    [ score, 10.0 ].min
+  end
+
   private
 
   def set_initial_url_and_host #: void

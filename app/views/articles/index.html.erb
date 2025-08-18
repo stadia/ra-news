@@ -9,9 +9,16 @@
     <%= @pagy.count %>개의 글이 있습니다
     <% if params[:search].present? %>
       · "<%= params[:search] %>" 검색 결과
+    <% elsif @current_tag %>
+      · "<%= @current_tag %>" 태그 필터링
     <% end %>
   </p>
 </div>
+
+<!-- 태그 필터 -->
+<% if @popular_tags.present? %>
+  <%= render(TagFilterComponent.new(popular_tags: @popular_tags, current_tag: @current_tag)) %>
+<% end %>
 
 <!-- 아티클 목록 -->
 <div id="articlesList"
