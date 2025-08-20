@@ -1,0 +1,21 @@
+.pagy {
+  @apply flex space-x-1 font-semibold text-sm text-gray-400; /* text-gray-500 to text-gray-400 */
+  a:not(.gap) {
+    @apply block rounded-lg px-3 py-1 bg-gray-700 text-gray-300; /* bg-gray-200 to bg-gray-700, add text-gray-300 */
+    &:hover {
+      @apply bg-gray-600 text-gray-200; /* bg-gray-300 to bg-gray-600, add text-gray-200 */
+    }
+    &:not([href]) { /* disabled links */
+      @apply text-gray-500 bg-gray-800 cursor-default; /* text-gray-300 to text-gray-500, bg-gray-100 to bg-gray-800 */
+    }
+    &.current {
+      @apply text-white bg-green-600; /* bg-gray-400 to bg-green-600 (to match nav/footer) */
+    }
+  }
+  label {
+    @apply inline-block whitespace-nowrap bg-gray-700 text-gray-300 rounded-lg px-3 py-0.5; /* bg-gray-200 to bg-gray-700, add text-gray-300 */
+    input {
+      @apply bg-gray-800 border-none rounded-md text-gray-200; /* bg-gray-100 to bg-gray-800, add text-gray-200 */
+    }
+  }
+}
