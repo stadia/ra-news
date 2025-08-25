@@ -4,7 +4,7 @@ This file provides guidance to AI Agents when working with code in this reposito
 
 ## Technology Stack
 
-**RA-News** is a Korean Ruby-focused news aggregation platform built with Rails 8. Key technologies:
+**Ruby-News** is a Korean Ruby-focused news aggregation platform built with Rails 8. Key technologies:
 
 - **Rails 8** with Solid Queue, Solid Cache, Solid Cable
 - **Ruby 3.4** with RBS inline type annotations
@@ -150,39 +150,39 @@ Your project uses: **Rails 8**, **Ruby 3.4**, **PostgreSQL with vector embedding
 ### Specialist Assignments
 
 #### Backend Development
-- **Rails Core Logic** → @.claude-on-rails/prompts/architect.md
+- **Rails Core Logic** → @.claude/agents/architect.md
   - Job processing pipeline (ArticleJob, RssSiteJob, YoutubeSiteJob, GmailArticleJob)
   - AI content processing with RubyLLM and Gemini models
   - Custom authentication system, soft delete patterns
   - Korean localization and timezone handling
 
-- **API Development** → @.claude-on-rails/prompts/api.md
+- **API Development** → @.claude/agents/api.md
   - RESTful endpoints for content aggregation
   - API versioning and rate limiting
   - JSON serialization for Korean content
   - Authentication patterns for API access
 
-- **Database Optimization** → @@.claude-on-rails/prompts/models.md
+- **Database Optimization** → @@.claude/agents/models.md
   - PostgreSQL vector embeddings for article similarity
   - Full-text search optimization (Korean/English dictionaries)
   - Complex queries for content recommendations
   - Performance tuning for background job processing
 
 #### Frontend Development
-- **UI Components** → @.claude-on-rails/prompts/views.md
+- **UI Components** → @.claude/agents/views.md
   - Hotwire (Turbo/Stimulus) patterns
   - Real-time updates for news feeds
   - Korean UI/UX considerations
   - Responsive design for mobile news consumption
 
-- **Styling & Layout** → @.claude-on-rails/prompts/views.md/
+- **Styling & Layout** → @.claude/agents/views.md/
   - Tailwind CSS 4.2 configuration
   - Korean typography and layout patterns
   - Flowbite component integration
   - Dark mode and accessibility features
 
 #### Architecture & Quality
-- **System Design** → @.claude-on-rails/prompts/architect.md
+- **System Design** → @.claude/agents/architect.md
   - Solid Queue, Solid Cache, Solid Cable architecture
   - External service integrations (YouTube, Gmail, HackerNews)
   - Scalable news aggregation patterns
@@ -227,4 +227,4 @@ Your project uses: **Rails 8**, **Ruby 3.4**, **PostgreSQL with vector embedding
 - "Add webhook endpoints for external sources"
 - "Create mobile app API endpoints"
 
-Your specialized Rails AI team is ready to help with RA-News development!
+Your specialized Rails AI team is ready to help with Ruby-News development!
