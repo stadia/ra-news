@@ -7,16 +7,11 @@ class ContentService < ApplicationService
 
   attr_reader :article #: Article
 
-  attr_reader :force #: Boolean
-
-  def initialize(article, force = false)
+  def initialize(article)
     @article = article
-    @force = force
   end
 
   def call
-    return nil if (@article.body.present? && article.body.size > 100) && !force
-
     body = if article.is_youtube?
       # YouTube URL인 경우
       execute_youtube(article.url)
