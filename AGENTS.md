@@ -150,39 +150,39 @@ Your project uses: **Rails 8**, **Ruby 3.4**, **PostgreSQL with vector embedding
 ### Specialist Assignments
 
 #### Backend Development
-- **Rails Core Logic** → @.claude/agents/architect.md
+- **Rails Core Logic** → @.claude/agents/rails-architect.md
   - Job processing pipeline (ArticleJob, RssSiteJob, YoutubeSiteJob, GmailArticleJob)
   - AI content processing with RubyLLM and Gemini models
   - Custom authentication system, soft delete patterns
   - Korean localization and timezone handling
 
-- **API Development** → @.claude/agents/api.md
+- **API Development** → @.claude/agents/rails-controller-specialist.md
   - RESTful endpoints for content aggregation
   - API versioning and rate limiting
   - JSON serialization for Korean content
   - Authentication patterns for API access
 
-- **Database Optimization** → @@.claude/agents/models.md
+- **Database Optimization** → @.claude/agents/models-specialist.md
   - PostgreSQL vector embeddings for article similarity
   - Full-text search optimization (Korean/English dictionaries)
   - Complex queries for content recommendations
   - Performance tuning for background job processing
 
 #### Frontend Development
-- **UI Components** → @.claude/agents/views.md
+- **UI Components** → @.claude/agents/stimulus-turbo-specialist.md
   - Hotwire (Turbo/Stimulus) patterns
   - Real-time updates for news feeds
   - Korean UI/UX considerations
   - Responsive design for mobile news consumption
 
-- **Styling & Layout** → @.claude/agents/views.md/
+- **Styling & Layout** → @.claude/agents/rails-views-specialist.md/
   - Tailwind CSS 4.2 configuration
   - Korean typography and layout patterns
   - Flowbite component integration
   - Dark mode and accessibility features
 
 #### Architecture & Quality
-- **System Design** → @.claude/agents/architect.md
+- **System Design** → @.claude/agents/rails-architect.md
   - Solid Queue, Solid Cache, Solid Cable architecture
   - External service integrations (YouTube, Gmail, HackerNews)
   - Scalable news aggregation patterns
