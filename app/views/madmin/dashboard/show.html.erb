@@ -50,11 +50,26 @@
     <!-- Popular Tags -->
     <div class="bg-white p-6 rounded-lg shadow">
       <h2 class="text-xl font-bold mb-4">인기 태그</h2>
-      <div class="flex flex-wrap gap-2">
-        <% @popular_tags.each do |tag| %>
-          <span class="bg-blue-100 text-blue-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded"><%= tag.name %></span>
-        <% end %>
-      </div>
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3">태그</th>
+            <th scope="col" class="px-6 py-3">카운트</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @popular_tags.each do |tag| %>
+            <tr class="bg-white border-b">
+              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                <%= tag.name %>
+              </th>
+              <td class="px-6 py-4">
+                <%= tag.taggings_count %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
     </div>
   </div>
 
