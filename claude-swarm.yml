@@ -17,7 +17,7 @@ swarm:
       directory: .
       model: sonnet
       connections: [models, controllers, views, stimulus, services, jobs, tests]
-      prompt_file: .claude-on-rails/prompts/architect.md
+      prompt_file: .claude/agents/architect.md
       vibe: true
 
     models:
@@ -25,7 +25,7 @@ swarm:
       directory: ./app/models
       model: sonnet
       allowed_tools: [Read, Edit, Write, Bash, Grep, Glob, LS]
-      prompt_file: .claude-on-rails/prompts/models.md
+      prompt_file: .claude/agents/models.md
 
     controllers:
       description: "Rails controllers, routing, and request handling specialist"
@@ -35,7 +35,7 @@ swarm:
       connections: [services]
 
       allowed_tools: [Read, Edit, Write, Bash, Grep, Glob, LS]
-      prompt_file: .claude-on-rails/prompts/controllers.md
+      prompt_file: .claude/agents/controllers.md
 
     views:
       description: "Rails views, layouts, partials, and asset pipeline specialist"
@@ -45,32 +45,32 @@ swarm:
       connections: [stimulus]
 
       allowed_tools: [Read, Edit, Write, Bash, Grep, Glob, LS]
-      prompt_file: .claude-on-rails/prompts/views.md
+      prompt_file: .claude/agents/views.md
 
     stimulus:
       description: "Stimulus.js controllers and Turbo integration specialist"
       directory: ./app/javascript
       model: sonnet
       allowed_tools: [Read, Edit, Write, Bash, Grep, Glob, LS]
-      prompt_file: .claude-on-rails/prompts/stimulus.md
+      prompt_file: .claude/agents/stimulus.md
 
     services:
       description: "Service objects, business logic, and design patterns specialist"
       directory: ./app/services
       model: sonnet
       allowed_tools: [Read, Edit, Write, Bash, Grep, Glob, LS]
-      prompt_file: .claude-on-rails/prompts/services.md
+      prompt_file: .claude/agents/services.md
 
     jobs:
       description: "Background jobs, ActiveJob, and async processing specialist"
       directory: ./app/jobs
       model: sonnet
       allowed_tools: [Read, Edit, Write, Bash, Grep, Glob, LS]
-      prompt_file: .claude-on-rails/prompts/jobs.md
+      prompt_file: .claude/agents/jobs.md
 
     tests:
       description: "Minitest testing, factories, and test coverage specialist"
       directory: ./test
       model: sonnet
       allowed_tools: [Read, Edit, Write, Bash, Grep, Glob, LS]
-      prompt_file: .claude-on-rails/prompts/tests.md
+      prompt_file: .claude/agents/tests.md
