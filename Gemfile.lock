@@ -495,7 +495,7 @@ GEM
       faraday-retry (>= 1)
       marcel (~> 1.0)
       zeitwerk (~> 2)
-    ruby_llm-schema (0.1.9)
+    ruby_llm-schema (0.2.1)
     ruby_parser (3.21.1)
       racc (~> 1.5)
       sexp_processor (~> 4.16)
