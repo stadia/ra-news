@@ -14,7 +14,7 @@ class ArticleJob < ApplicationJob
       return
     end
 
-    if article.body.blank?
+    if article.body.blank? || article.body.size < 25
       body = ContentService.call(article)
       article.discard! and return if body.blank?
 
@@ -43,7 +43,7 @@ body(본론)은 markdown 형식으로 작성하되, 헤더와 글머리 기호�
 - 최대 3개의 문자열 배열
 - 본문에서 추출한 핵심 키워드 우선
 - ruby, rails, ruby on rails, web development 와 같은 일반적인 키워드는 무시
-- 공백은 _ 로 대체
+- snake case 로 작성
 - 기술 용어는 원어 유지 (예: Rails, Ruby, Gem)
 - 일반 명사보다는 구체적 개념 우선
 
