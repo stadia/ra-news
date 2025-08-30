@@ -11,13 +11,17 @@ class ArticleResource < Madmin::Resource
 
   attribute :url, index: false
   attribute :updated_at, form: false
-  attribute :summary_key, index: false, form: false
-  attribute :summary_detail, index: false, form: false
   attribute :published_at, new: false
   attribute :origin_url, index: false, new: false
   attribute :tag_list, index: false, new: false
   attribute :is_youtube, index: false, new: false
   attribute :body, index: false, form: true
+
+  attribute :summary_key, index: false, form: false
+  attribute :summary_detail, index: false, form: false
+  attribute :summary_introduction, index: false
+  attribute :summary_body, index: false
+  attribute :summary_conclusion, index: false
 
   # Associations
   attribute :user, index: false, form: false

@@ -33,6 +33,8 @@ class Article < ApplicationRecord
 
   has_many :comments, dependent: :nullify
 
+  store_accessor :summary_detail, :body, :introduction, :conclusion, prefix: :summary
+
   validates :url, :origin_url, presence: true, uniqueness: { case_sensitive: false }
   validates :slug, uniqueness: true, allow_blank: true
 
