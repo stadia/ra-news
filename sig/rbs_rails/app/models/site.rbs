@@ -1,0 +1,388 @@
+class Site < ::ApplicationRecord
+  extend ::_ActiveRecord_Relation_ClassMethods[::Site, ::Site::ActiveRecord_Relation, ::Integer]
+
+  module GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: () -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: () -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: () -> bool
+
+    def will_save_change_to_id?: () -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def name: () -> ::String
+
+    def name=: (::String) -> ::String
+
+    def name?: () -> bool
+
+    def name_changed?: () -> bool
+
+    def name_change: () -> [ ::String?, ::String? ]
+
+    def name_will_change!: () -> void
+
+    def name_was: () -> ::String?
+
+    def name_previously_changed?: () -> bool
+
+    def name_previous_change: () -> ::Array[::String?]?
+
+    def name_previously_was: () -> ::String?
+
+    def name_before_last_save: () -> ::String?
+
+    def name_change_to_be_saved: () -> ::Array[::String?]?
+
+    def name_in_database: () -> ::String?
+
+    def saved_change_to_name: () -> ::Array[::String?]?
+
+    def saved_change_to_name?: () -> bool
+
+    def will_save_change_to_name?: () -> bool
+
+    def restore_name!: () -> void
+
+    def clear_name_change: () -> void
+
+    def base_uri: () -> ::String?
+
+    def base_uri=: (::String?) -> ::String?
+
+    def base_uri?: () -> bool
+
+    def base_uri_changed?: () -> bool
+
+    def base_uri_change: () -> [ ::String?, ::String? ]
+
+    def base_uri_will_change!: () -> void
+
+    def base_uri_was: () -> ::String?
+
+    def base_uri_previously_changed?: () -> bool
+
+    def base_uri_previous_change: () -> ::Array[::String?]?
+
+    def base_uri_previously_was: () -> ::String?
+
+    def base_uri_before_last_save: () -> ::String?
+
+    def base_uri_change_to_be_saved: () -> ::Array[::String?]?
+
+    def base_uri_in_database: () -> ::String?
+
+    def saved_change_to_base_uri: () -> ::Array[::String?]?
+
+    def saved_change_to_base_uri?: () -> bool
+
+    def will_save_change_to_base_uri?: () -> bool
+
+    def restore_base_uri!: () -> void
+
+    def clear_base_uri_change: () -> void
+
+    def client: () -> ::Integer
+
+    def client=: (::Integer) -> ::Integer
+
+    def client?: () -> bool
+
+    def client_changed?: () -> bool
+
+    def client_change: () -> [ ::Integer?, ::Integer? ]
+
+    def client_will_change!: () -> void
+
+    def client_was: () -> ::Integer?
+
+    def client_previously_changed?: () -> bool
+
+    def client_previous_change: () -> ::Array[::Integer?]?
+
+    def client_previously_was: () -> ::Integer?
+
+    def client_before_last_save: () -> ::Integer?
+
+    def client_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def client_in_database: () -> ::Integer?
+
+    def saved_change_to_client: () -> ::Array[::Integer?]?
+
+    def saved_change_to_client?: () -> bool
+
+    def will_save_change_to_client?: () -> bool
+
+    def restore_client!: () -> void
+
+    def clear_client_change: () -> void
+
+    def last_checked_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def last_checked_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def last_checked_at?: () -> bool
+
+    def last_checked_at_changed?: () -> bool
+
+    def last_checked_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def last_checked_at_will_change!: () -> void
+
+    def last_checked_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def last_checked_at_previously_changed?: () -> bool
+
+    def last_checked_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def last_checked_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def last_checked_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def last_checked_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def last_checked_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_last_checked_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_last_checked_at?: () -> bool
+
+    def will_save_change_to_last_checked_at?: () -> bool
+
+    def restore_last_checked_at!: () -> void
+
+    def clear_last_checked_at_change: () -> void
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: () -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: () -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: () -> bool
+
+    def will_save_change_to_created_at?: () -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: () -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: () -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: () -> bool
+
+    def will_save_change_to_updated_at?: () -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def email: () -> ::String?
+
+    def email=: (::String?) -> ::String?
+
+    def email?: () -> bool
+
+    def email_changed?: () -> bool
+
+    def email_change: () -> [ ::String?, ::String? ]
+
+    def email_will_change!: () -> void
+
+    def email_was: () -> ::String?
+
+    def email_previously_changed?: () -> bool
+
+    def email_previous_change: () -> ::Array[::String?]?
+
+    def email_previously_was: () -> ::String?
+
+    def email_before_last_save: () -> ::String?
+
+    def email_change_to_be_saved: () -> ::Array[::String?]?
+
+    def email_in_database: () -> ::String?
+
+    def saved_change_to_email: () -> ::Array[::String?]?
+
+    def saved_change_to_email?: () -> bool
+
+    def will_save_change_to_email?: () -> bool
+
+    def restore_email!: () -> void
+
+    def clear_email_change: () -> void
+
+    def path: () -> ::String?
+
+    def path=: (::String?) -> ::String?
+
+    def path?: () -> bool
+
+    def path_changed?: () -> bool
+
+    def path_change: () -> [ ::String?, ::String? ]
+
+    def path_will_change!: () -> void
+
+    def path_was: () -> ::String?
+
+    def path_previously_changed?: () -> bool
+
+    def path_previous_change: () -> ::Array[::String?]?
+
+    def path_previously_was: () -> ::String?
+
+    def path_before_last_save: () -> ::String?
+
+    def path_change_to_be_saved: () -> ::Array[::String?]?
+
+    def path_in_database: () -> ::String?
+
+    def saved_change_to_path: () -> ::Array[::String?]?
+
+    def saved_change_to_path?: () -> bool
+
+    def will_save_change_to_path?: () -> bool
+
+    def restore_path!: () -> void
+
+    def clear_path_change: () -> void
+
+    def channel: () -> ::String?
+
+    def channel=: (::String?) -> ::String?
+
+    def channel?: () -> bool
+
+    def channel_changed?: () -> bool
+
+    def channel_change: () -> [ ::String?, ::String? ]
+
+    def channel_will_change!: () -> void
+
+    def channel_was: () -> ::String?
+
+    def channel_previously_changed?: () -> bool
+
+    def channel_previous_change: () -> ::Array[::String?]?
+
+    def channel_previously_was: () -> ::String?
+
+    def channel_before_last_save: () -> ::String?
+
+    def channel_change_to_be_saved: () -> ::Array[::String?]?
+
+    def channel_in_database: () -> ::String?
+
+    def saved_change_to_channel: () -> ::Array[::String?]?
+
+    def saved_change_to_channel?: () -> bool
+
+    def will_save_change_to_channel?: () -> bool
+
+    def restore_channel!: () -> void
+
+    def clear_channel_change: () -> void
+  end
+  include GeneratedAttributeMethods
+  def articles: () -> ::Article::ActiveRecord_Associations_CollectionProxy
+  def articles=: (::Article::ActiveRecord_Associations_CollectionProxy | ::Array[::Article]) -> (::Article::ActiveRecord_Associations_CollectionProxy | ::Array[::Article])
+  def article_ids: () -> ::Array[::Integer]
+  def article_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+  module GeneratedAssociationMethods
+  end
+  include GeneratedAssociationMethods
+
+  module GeneratedRelationMethods
+  end
+
+  class ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Site::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Site, ::Integer]
+    include ::Enumerable[::Site]
+  end
+
+  class ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Site::GeneratedRelationMethods
+    include ::_ActiveRecord_Relation[::Site, ::Integer]
+  end
+end

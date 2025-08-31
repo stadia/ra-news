@@ -436,6 +436,9 @@ GEM
       ffi (~> 1.0)
     rbs (3.9.4)
       logger
+    rbs_rails (0.12.1)
+      parser
+      rbs (>= 1)
     rdoc (6.14.2)
       erb
       psych (>= 4.0.0)
@@ -659,6 +662,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2)
   rails-i18n
+  rbs_rails (~> 0.12.1)
   rss
   rubocop
   rubocop-rails-omakase

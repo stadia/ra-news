@@ -56,6 +56,7 @@ group :development, :test do
   gem "dotenv-rails"
   gem "faker"
   gem "herb"
+  gem "rbs_rails", "~> 0.12.1"
 end
 
 group :development do

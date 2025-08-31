@@ -1,0 +1,26 @@
+module ActsAsTaggableOn
+end
+class ActsAsTaggableOn::Tagging < ::ActiveRecord::Base
+end
+class ActsAsTaggableOn::Tagging::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ApplicationRecord < ::ActiveRecord::Base
+end
+class Session::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class Article::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class Comment::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ActsAsTaggableOn::Tag::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class PgSearch::Document < ::ActiveRecord::Base
+end
+class ActiveRecord::Associations::CollectionProxy < ::ActiveRecord::Relation
+end
+module PgSearch
+end
+class ActiveRecord::Relation < ::Object
+end
+module ActiveRecord::Associations
+end
