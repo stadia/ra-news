@@ -181,9 +181,12 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "full_name should return email prefix when name is nil" do
-    user = User.new(email_address: "test@example.com", password: "password123")
-    user.name = nil
-    user.save!(validate: false) # Skip validation to test nil name scenario
+    # Since name has NOT NULL constraint, we simulate the behavior instead
+    user = User.new(email_address: "test@example.com", password: "password123", name: "Test")
+    user.save!
+    
+    # Test the full_name logic by temporarily stubbing the name
+    user.stubs(:name).returns(nil)
     assert_equal "test", user.full_name
   end
 
@@ -242,6 +245,9 @@ class UserTest < ActiveSupport::TestCase
     if user.valid?
       user.save!
       assert_equal "테스트@example.com", user.email_address
+    else
+      # If Korean email is not supported, verify appropriate validation
+      assert user.errors[:email_address].any?, "Should have email validation error for Korean characters"
     end
   end
 

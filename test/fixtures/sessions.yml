@@ -2,34 +2,41 @@
 
 # Active session for John
 john_session:
-  id: 123
   user: john
+  ip_address: "127.0.0.1"
+  user_agent: "Rails Test"
 
 # Active session for Jane
 jane_session:
-  id: 456
   user: jane
+  ip_address: "127.0.0.1"
+  user_agent: "Rails Test"
 
 # Admin session
 admin_session:
-  id: 789
   user: admin
+  ip_address: "127.0.0.1"
+  user_agent: "Rails Test"
 
 # Korean user session
 korean_session:
-  id: 012
   user: korean_user
+  ip_address: "127.0.0.1"
+  user_agent: "Rails Test"
 
 # Session for testing
 test_session:
-  id: 345
   user: minimal_user
+  ip_address: "127.0.0.1"
+  user_agent: "Rails Test"
 
 # Legacy fixture names for backwards compatibility
 one:
-  id: 678
   user: one
+  ip_address: "127.0.0.1"
+  user_agent: "Rails Test"
 
 two:
-  id: 901
   user: two
+  ip_address: "127.0.0.1"
+  user_agent: "Rails Test"

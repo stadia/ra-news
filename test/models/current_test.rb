@@ -309,7 +309,11 @@ class CurrentTest < ActiveSupport::TestCase
       Current.session = session
 
       # Verify correct user context
-      assert_equal expected_user, Current.user
+      if expected_user.nil?
+        assert_nil Current.user
+      else
+        assert_equal expected_user, Current.user
+      end
 
       # Simulate request end
       Current.reset

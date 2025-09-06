@@ -218,7 +218,7 @@ class ArticleTest < ActiveSupport::TestCase
       published_at: existing_time
     )
 
-    # Mock generate_metadata to prevent it from overriding published_at
+    # generate_metadata 메서드를 직접 stub하여 published_at 덮어쓰기 방지
     Article.any_instance.stubs(:generate_metadata).returns(nil)
 
     article.save!
@@ -229,10 +229,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "should generate metadata before create" do
-    # Mock the fetch_url_content method to avoid external requests
-    Article.any_instance.stubs(:fetch_url_content).returns(
-      stub(status: 200, headers: {}, body: "<html><title>Test Title</title><body>Test content</body></html>")
-    )
+    # 외부 API 호출을 간단히 stub
+    stub_external_requests
 
     article = Article.new(
       title: "Test",
@@ -258,7 +256,11 @@ class ArticleTest < ActiveSupport::TestCase
 
     youtube_urls.each do |url, expected_id|
       article = Article.new(url: url)
-      assert_equal expected_id, article.youtube_id, "Failed for URL: #{url}"
+      if expected_id.nil?
+        assert_nil article.youtube_id, "Failed for URL: #{url}"
+      else
+        assert_equal expected_id, article.youtube_id, "Failed for URL: #{url}"
+      end
     end
   end
 
@@ -562,6 +564,22 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   private
+
+  # Helper method to stub external API requests
+  def stub_external_requests
+    # Stub Faraday HTTP requests
+    Faraday.stubs(:get).returns(
+      stub(
+        body: '{"title": "Test", "description": "Test description"}',
+        status: 200,
+        success?: true
+      )
+    )
+    
+    # Stub any other external service calls if needed
+    Article.any_instance.stubs(:fetch_url_content).returns(nil)
+    Article.any_instance.stubs(:set_youtube_metadata).returns(nil)
+  end
 
   # Helper method for testing query count
   def assert_queries(expected_count)
