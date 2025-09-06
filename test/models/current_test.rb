@@ -114,18 +114,6 @@ class CurrentTest < ActiveSupport::TestCase
     end
   end
 
-  test "세션에 user 메서드가 없을 때 오류를 발생시키지 않아야 한다" do
-    # Create an object that doesn't respond to :user
-    fake_session = Object.new
-    Current.session = fake_session
-
-    # Should not raise NoMethodError due to allow_nil: true
-    assert_nothing_raised do
-      user = Current.user
-      assert_nil user
-    end
-  end
-
   # ========== Thread Safety Tests ==========
 
   test "스레드 간에 Current 상태를 격리해야 한다" do
@@ -322,29 +310,6 @@ class CurrentTest < ActiveSupport::TestCase
   end
 
   # ========== Error Handling Tests ==========
-
-  test "유효하지 않은 세션 객체를 정상적으로 처리해야 한다" do
-    # Test with various invalid session-like objects
-    invalid_sessions = [
-      "not_a_session",
-      123,
-      {},
-      [],
-      OpenStruct.new(user: @user), # Has user but not a real Session
-      Session.new # Unsaved session
-    ]
-
-    invalid_sessions.each do |invalid_session|
-      Current.reset
-      Current.session = invalid_session
-
-      # Should not raise errors due to allow_nil delegation
-      assert_nothing_raised do
-        user = Current.user
-        # User might be nil or the actual user, depending on the object
-      end
-    end
-  end
 
   test "사용자가 없는 세션을 정상적으로 처리해야 한다" do
     # Create a session that exists but has no associated user

@@ -17,7 +17,6 @@ ruby_article:
       "introduction": "Ruby 3.4가 출시되었습니다.",
       "conclusion": "개발자들에게 많은 도움이 될 것입니다.",
     }
-  embedding: <%= [0.1] * 1536 %>
   is_youtube: false
   is_related: true
   user: john
@@ -86,7 +85,6 @@ similar_article:
   slug: ruby-performance
   published_at: <%= 4.days.ago %>
   body: "Tips and tricks for optimizing Ruby applications."
-  embedding: <%= [0.1] * 1536 %>
   is_youtube: false
   is_related: true
   user: jane
