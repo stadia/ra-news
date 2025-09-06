@@ -26,11 +26,6 @@
         "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans KR",
         "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
-    --font-body:
-        "Inter", "ui-sans-serif", "system-ui", "-apple-system", "system-ui",
-        "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans KR",
-        "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
 }
 
 /* Global Styles */
@@ -94,83 +89,84 @@ body select {
         0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
-/* Pagy Pagination Styles with Defensive Width Controls */
+/* Pagy Pagination Styles */
 .pagy {
     @apply flex font-semibold text-sm text-gray-400;
-    /* Center the pagination items */
     justify-content: center;
-    /* Defensive width constraints */
+    gap: 0.25rem;
     max-width: 100%;
     overflow: hidden;
+}
 
-    /* Use gap instead of space-x for better control */
-    gap: 0.25rem; /* 4px gap between items */
-
-    /* Responsive behavior */
-    @media (max-width: 640px) {
-        gap: 0.125rem; /* Smaller gap on mobile */
-        font-size: 0.75rem; /* Smaller text on mobile */
+@media (max-width: 640px) {
+    .pagy {
+        gap: 0.125rem;
+        font-size: 0.75rem;
     }
+}
 
-    a:not(.gap) {
-        @apply block rounded-lg bg-gray-700 text-gray-300;
-        /* Flexible padding that shrinks on smaller screens */
-        padding: 0.25rem 0.5rem; /* py-1 px-2 equivalent, smaller than before */
-        min-width: 2rem; /* Minimum width for touch targets */
-        text-align: center;
-        white-space: nowrap;
-        flex-shrink: 0; /* Prevent shrinking below min-width */
+.pagy a:not(.gap) {
+    @apply block rounded-lg bg-gray-700 text-gray-300;
+    padding: 0.25rem 0.5rem;
+    min-width: 2rem;
+    text-align: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
 
-        /* Responsive padding */
-        @media (min-width: 640px) {
-            padding: 0.25rem 0.75rem; /* py-1 px-3 on larger screens */
-            min-width: 2.5rem;
-        }
-
-        &:hover {
-            @apply bg-gray-600 text-gray-200;
-        }
-
-        &:not([href]) {
-            /* disabled links */
-            @apply text-gray-500 bg-gray-800 cursor-default;
-        }
-
-        &.current {
-            @apply text-white bg-green-600;
-            font-weight: 600; /* Make current page more prominent */
-        }
+@media (min-width: 640px) {
+    .pagy a:not(.gap) {
+        padding: 0.25rem 0.75rem;
+        min-width: 2.5rem;
     }
+}
 
-    /* Gap elements (ellipsis) styling */
-    .gap {
-        @apply text-gray-500;
-        padding: 0.25rem 0.125rem;
-        flex-shrink: 0;
+.pagy a:not(.gap):hover {
+    @apply bg-gray-600 text-gray-200;
+}
 
-        @media (min-width: 640px) {
-            padding: 0.25rem 0.25rem;
-        }
+.pagy a:not(.gap):not([href]) {
+    @apply text-gray-500 bg-gray-800 cursor-default;
+}
+
+.pagy a:not(.gap).current {
+    @apply text-white bg-green-600;
+    font-weight: 600;
+}
+
+.pagy .gap {
+    @apply text-gray-500;
+    padding: 0.25rem 0.125rem;
+    flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+    .pagy .gap {
+        padding: 0.25rem;
     }
+}
 
-    label {
-        @apply inline-block whitespace-nowrap bg-gray-700 text-gray-300 rounded-lg;
-        padding: 0.125rem 0.5rem; /* Smaller padding */
-        flex-shrink: 0;
+.pagy label {
+    @apply inline-block whitespace-nowrap bg-gray-700 text-gray-300 rounded-lg;
+    padding: 0.125rem 0.5rem;
+    flex-shrink: 0;
+}
 
-        @media (min-width: 640px) {
-            padding: 0.125rem 0.75rem;
-        }
+@media (min-width: 640px) {
+    .pagy label {
+        padding: 0.125rem 0.75rem;
+    }
+}
 
-        input {
-            @apply bg-gray-800 border-none rounded-md text-gray-200;
-            width: 3rem; /* Fixed width for page input */
-            text-align: center;
+.pagy label input {
+    @apply bg-gray-800 border-none rounded-md text-gray-200;
+    width: 3rem;
+    text-align: center;
+}
 
-            @media (min-width: 640px) {
-                width: 4rem;
-            }
-        }
+@media (min-width: 640px) {
+    .pagy label input {
+        width: 4rem;
     }
 }
 
@@ -179,31 +175,31 @@ body select {
     @apply w-full;
     max-width: 100%;
     overflow: hidden;
+}
 
-    /* Scrollable container for very wide pagination on small screens */
-    @media (max-width: 640px) {
+@media (max-width: 640px) {
+    .pagy-container {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
         scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+    }
 
-        /* Hide scrollbar on WebKit browsers but keep functionality */
-        &::-webkit-scrollbar {
-            height: 2px;
-        }
+    .pagy-container::-webkit-scrollbar {
+        height: 2px;
+    }
 
-        &::-webkit-scrollbar-track {
-            background: transparent;
-        }
+    .pagy-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-        &::-webkit-scrollbar-thumb {
-            background-color: rgba(156, 163, 175, 0.5);
-            border-radius: 1px;
-        }
+    .pagy-container::-webkit-scrollbar-thumb {
+        background-color: rgba(156, 163, 175, 0.5);
+        border-radius: 1px;
+    }
 
-        &::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(156, 163, 175, 0.7);
-        }
+    .pagy-container::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(156, 163, 175, 0.7);
     }
 }
 
@@ -214,11 +210,11 @@ body select {
     justify-content: center;
     align-items: center;
     padding: 0 1rem;
-
-    /* Ensure it doesn't expand beyond viewport */
     box-sizing: border-box;
+}
 
-    @media (max-width: 640px) {
+@media (max-width: 640px) {
+    .pagy-wrapper {
         padding: 0 0.5rem;
     }
 }
@@ -237,6 +233,7 @@ body select {
     outline-offset: 2px;
 }
 
+/* Article Content Styles */
 .article-content h1,
 .article-content h2,
 .article-content h3,
@@ -245,26 +242,32 @@ body select {
 .article-content h6 {
     color: #f3f4f6; /* gray-100 */
 }
+
 .article-content p,
 .article-content li,
 .article-content blockquote {
     color: #d1d5db; /* gray-300 */
 }
+
 .article-content a {
     color: #60a5fa; /* blue-400 */
 }
+
 .article-content a:hover {
     color: #93c5fd; /* blue-300 */
 }
+
 .article-content strong {
     color: #e5e7eb; /* gray-200 */
 }
+
 .article-content code {
     background-color: #374151; /* gray-700 */
     color: #e5e7eb; /* gray-200 */
     padding: 0.2em 0.4em;
     border-radius: 0.25rem;
 }
+
 .article-content pre {
     background-color: #1f2937; /* gray-800 */
     border: 1px solid #4b5563; /* gray-600 */
@@ -272,18 +275,22 @@ body select {
     padding: 1em;
     overflow-x: auto;
 }
+
 .article-content pre code {
     background-color: transparent;
     padding: 0;
 }
+
 .article-content ul {
     list-style-type: disc;
-    margin-left: 1.25rem; /* Add margin for disc visibility */
+    margin-left: 1.25rem;
 }
+
 .article-content ol {
     list-style-type: decimal;
-    margin-left: 1.25rem; /* Add margin for decimal visibility */
+    margin-left: 1.25rem;
 }
+
 .article-content blockquote {
     border-left-color: #4b5563; /* gray-600 */
     padding-left: 1em;
@@ -292,59 +299,5 @@ body select {
 }
 
 #article-detail-body p {
-    margin-bottom: 1.25rem; /* Add bottom margin for spacing */
-}
-
-/* Additional defensive styles for extreme pagination cases */
-.pagy a,
-.pagy span,
-.pagy label {
-    /* Ensure Korean numbers and text don't break layout */
-    font-feature-settings: "tnum" 1; /* Use tabular numbers for consistent width */
-
-    /* Maximum width constraint for very long page numbers */
-    max-width: 4rem;
-
-    @media (max-width: 640px) {
-        max-width: 3rem;
-    }
-
-    /* Prevent text overflow with ellipsis if needed */
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Special handling for very large pagination sets on tiny screens */
-@media (max-width: 480px) {
-    .pagy {
-        /* On very small screens, allow horizontal scroll with momentum */
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        /* Keep centering - when content overflows, flex centering with auto overflow works fine */
-        justify-content: center;
-
-        /* Ensure current page is always visible */
-        .current {
-            scroll-snap-align: center;
-        }
-    }
-
-    .pagy-container {
-        /* Remove the overflow hidden on very small screens to allow scroll */
-        overflow: visible;
-    }
-}
-
-/* Fallback for extremely wide pagination (more than 20 pages visible) */
-.pagy:has(> a:nth-child(20)) {
-    @media (max-width: 768px) {
-        font-size: 0.7rem; /* Even smaller text */
-        gap: 0.1rem; /* Minimal gap */
-
-        a:not(.gap) {
-            padding: 0.2rem 0.3rem;
-            min-width: 1.8rem;
-        }
-    }
+    margin-bottom: 1.25rem;
 }
