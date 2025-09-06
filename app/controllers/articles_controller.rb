@@ -11,7 +11,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    scope = Article.kept.where.not(slug: nil, title_ko: nil)
+    scope = Article.kept.where.not(slug: nil).where.not(title_ko: nil)
 
     article = if params[:search].present?
       scope.full_text_search_for(params[:search])
