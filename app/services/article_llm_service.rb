@@ -70,7 +70,7 @@ PROMPT
       logger.info "HtmlContent url: #{article.url}, id: #{article.id})"
       chat.ask("HtmlContent 로 제공한 url과 본문을 #{PROMPT} (url: #{article.url}, id: #{article.id})")
     end
-    logger.info "Response received for article id: #{id}"
+    logger.info "Response received for article id: #{article.id}"
 
     # Generate embeddings if not present and body exists
     if article.embedding.blank? && article.body.present?
@@ -82,7 +82,7 @@ PROMPT
         )
         article.update_column(:embedding, embedded_body.vectors.to_a) # Skip callbacks for performance
       rescue StandardError => e
-        logger.error "Failed to generate embeddings for article #{id}: #{e.message}"
+        logger.error "Failed to generate embeddings for article #{article.id}: #{e.message}"
         # Continue processing without embeddings
       end
     end
@@ -92,7 +92,7 @@ PROMPT
       return
     end
 
-    logger.info "article id: #{id} Response content: #{response.content}"
+    logger.info "article id: #{article.id} Response content: #{response.content}"
     # JSON 데이터 추출 및 파싱
     parsed_json = response.content
     logger.debug parsed_json.inspect
