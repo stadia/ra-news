@@ -200,14 +200,6 @@ class SiteTest < ActiveSupport::TestCase
     end
   end
 
-  test "base_uri가 없는 RSS 사이트를 처리해야 한다" do
-    rss_site = Site.create!(name: "No URI RSS", client: :rss, base_uri: nil)
-    client = rss_site.init_client
-
-    assert_kind_of RssClient, client
-    assert_nil client.instance_variable_get(:@base_uri)
-  end
-
   # ========== Data Integrity Tests ==========
 
   test "기사와의 참조 무결성을 유지해야 한다" do

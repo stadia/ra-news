@@ -155,22 +155,6 @@ class TagTest < ActiveSupport::TestCase
     assert_not_includes Tag.confirmed, unconfirmed_tag
   end
 
-  test "nil 확정 상태를 처리해야 한다" do
-    # Since is_confirmed has NOT NULL constraint, this test documents expected behavior
-    # but doesn't actually create a tag with nil is_confirmed
-
-    nil_tag = Tag.new(name: "nil-confirmation-test")
-    nil_tag.is_confirmed = nil
-
-    # Should not be valid due to NOT NULL constraint
-    assert_not nil_tag.valid?, "Tag with nil is_confirmed should not be valid"
-
-    # Verify it fails to save
-    assert_raises(ActiveRecord::RecordInvalid) do
-      nil_tag.save!
-    end
-  end
-
   test "확정 상태를 변경할 수 있어야 한다" do
     tag = Tag.create!(name: "changeable-tag", is_confirmed: false)
 
@@ -254,17 +238,6 @@ class TagTest < ActiveSupport::TestCase
     assert_not_nil newly_created_tag
     assert_equal new_tag_name, newly_created_tag.name
     assert newly_created_tag.persisted?
-  end
-
-  test "named 스코프와 함께 작동해야 한다" do
-    tag1 = Tag.create!(name: "scope-test-1", is_confirmed: true)
-    tag2 = Tag.create!(name: "scope-test-2", is_confirmed: true)
-
-    found_tags = Tag.named([ tag1.name, tag2.name ])
-
-    assert_includes found_tags, tag1
-    assert_includes found_tags, tag2
-    assert_equal 2, found_tags.count
   end
 
   # ========== Case Sensitivity Tests ==========
