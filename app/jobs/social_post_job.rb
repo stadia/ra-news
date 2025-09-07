@@ -11,8 +11,7 @@ class SocialPostJob < ApplicationJob
 
     scope = Article.kept
     scope = if id.nil?
-      slug_title_ko = "slug IS NOT NULL AND title_ko IS NOT NULL"
-      scope.where("#{slug_title_ko} AND is_posted = ?", false).where(created_at: created_at..)
+      scope.confirmed.where("is_posted = ?", false).where(created_at: created_at..)
     else
       scope.where("id = ? AND is_posted = ?", id, false)
     end

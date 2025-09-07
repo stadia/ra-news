@@ -23,6 +23,8 @@ class Article < ApplicationRecord
 
   scope :unrelated, -> { where(is_related: false) }
 
+  scope :confirmed, -> { where("slug IS NOT NULL AND title_ko IS NOT NULL") }
+
   pg_search_scope :title_matching, against: [ :title, :title_ko ], using: { tsearch: { dictionary: "korean" } }
 
   pg_search_scope :body_matching, against: :body, using: { tsearch: { dictionary: "english" } }
