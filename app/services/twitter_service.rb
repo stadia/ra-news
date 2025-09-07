@@ -61,9 +61,17 @@ class TwitterService < ApplicationService
     title = article.title_ko.presence || article.title
     summary = article.summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
     content = "#{title}\n#{summary}"
-    truncated_content = truncate_for_twitter(content)
-    tags = article.tags.select { |it| it.is_confirmed? }.map { |it| "##{it.name.gsub(/\s+/, '_').downcase}" }.join(" ")
+
+    # 태그와 링크를 먼저 생성해서 길이 계산 (taggings_count가 가장 높은 태그 하나만)
+    top_tag = article.tags.select { |it| it.is_confirmed? }.max_by(&:taggings_count)
+    tags = top_tag ? "##{top_tag.name.gsub(/\s+/, '_').downcase}" : ""
     article_link = article_url(article.slug)
+
+    # 태그와 링크를 위한 공간 확보 (공백 문자들 포함)
+    reserved_space = tags.length + article_link.length + 3 # " " + "\n" + 여분
+    available_content_length = TWITTER_CONFIG.character_limit - TWITTER_CONFIG.shortened_url_length - TWITTER_CONFIG.formatting_buffer - reserved_space
+
+    truncated_content = content.truncate([ available_content_length, 1 ].max, omission: "...")
     "#{truncated_content} #{tags}\n#{article_link}"
   end
 
