@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class TwitterService < ApplicationService
-  arrt_reader :article #: Article
+  attr_reader :article #: Article
 
   include Rails.application.routes.url_helpers
 
@@ -31,7 +31,7 @@ class TwitterService < ApplicationService
       logger.info "Successfully posted article id: #{article.id} to Twitter"
     rescue StandardError => e
       logger.error "Failed to post article id: #{article.id} to Twitter: #{e.message}"
-      Honeybadger.notify(e, context: { article_id: id, article_url: article.url })
+      Honeybadger.notify(e, context: { article_id: article.id, article_url: article.url })
     end
   end
 
