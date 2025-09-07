@@ -3,9 +3,9 @@
 # rbs_inline: enabled
 
 class TwitterService < ApplicationService
-  attr_reader :article #: Article
-
   include Rails.application.routes.url_helpers
+
+  attr_reader :article #: Article
 
   TwitterConfig = Struct.new(:character_limit, :shortened_url_length, :formatting_buffer) do
     def max_content_length
@@ -13,13 +13,14 @@ class TwitterService < ApplicationService
     end
   end
 
-  TWITTER_CONFIG = TwitterConfig.new(280, 23, 4)
+  TWITTER_CONFIG = TwitterConfig.new(280, 23, 4) #: TwitterConfig
 
+  #: (Article article) -> TwitterService
   def initialize(article)
     @article = article
   end
 
-  def call
+  def call #: void
     # Skip posting if article is not Ruby-related or lacks required content
     unless should_post_article?(article)
       logger.info "Skipping Twitter post for article id: #{article.id} - not suitable for posting"
@@ -80,7 +81,7 @@ class TwitterService < ApplicationService
     content.truncate(TWITTER_CONFIG.max_content_length, omission: "...")
   end
 
-  def twitter_client #: -> X::Client
+  def twitter_client #: X::Client
     TwitterClient.new
   end
 end

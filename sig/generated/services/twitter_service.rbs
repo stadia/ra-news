@@ -1,6 +1,8 @@
 # Generated from app/services/twitter_service.rb with RBS::Inline
 
 class TwitterService < ApplicationService
+  attr_reader article: Article
+
   class TwitterConfig < Struct[untyped]
     attr_accessor character_limit(): untyped
 
@@ -12,11 +14,12 @@ class TwitterService < ApplicationService
                 | (?character_limit: untyped, ?shortened_url_length: untyped, ?formatting_buffer: untyped) -> instance
   end
 
-  TWITTER_CONFIG: untyped
+  TWITTER_CONFIG: TwitterConfig
 
-  def initialize: (untyped article) -> untyped
+  # : (Article article) -> TwitterService
+  def initialize: (Article article) -> TwitterService
 
-  def call: () -> untyped
+  def call: () -> void
 
   private
 
@@ -32,5 +35,5 @@ class TwitterService < ApplicationService
   # : (String content) -> String
   def truncate_for_twitter: (String content) -> String
 
-  def twitter_client: () -> untyped
+  def twitter_client: () -> X::Client
 end

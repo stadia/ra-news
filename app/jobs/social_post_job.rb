@@ -6,17 +6,21 @@ class SocialPostJob < ApplicationJob
   queue_as :default
 
   #: (Integer id) -> void
-  def perform(id)
+  def perform(id = nil, created_at = Time.zone.now.beginning_of_day)
     return unless Rails.env.production?
 
-    article = Article.kept.find_by(id: id)
-    logger.info "TwitterPostJob started for article id: #{id}"
-
-    unless article
-      logger.error "Article with id #{id} not found or has been discarded."
-      retturn nil
+    scope = Article.kept
+    scope = if id.nil?
+      slug_title_ko = "slug IS NOT NULL AND title_ko IS NOT NULL"
+      scope.where("#{slug_title_ko} AND is_posted = ?", false).where(created_at: created_at..)
+    else
+      scope.where("id = ? AND is_posted = ?", id, false)
     end
 
-    TwitterService.call(article)
+    scope.find_each do |article|
+      TwitterService.call(article)
+      article.update(is_posted: true)
+      sleep 1
+    end
   end
 end
