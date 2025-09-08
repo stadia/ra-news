@@ -11,7 +11,7 @@ class SocialPostJob < ApplicationJob
 
     scope = Article.kept
     scope = if id.nil?
-      scope.confirmed.where("is_posted = ?", false).where(created_at: created_at..)
+      scope.confirmed.where("is_posted = ?", false).where(created_at: created_at..).limit(50)
     else
       scope.where("id = ? AND is_posted = ?", id, false)
     end
@@ -19,7 +19,7 @@ class SocialPostJob < ApplicationJob
     scope.find_each do |article|
       TwitterService.call(article)
       article.update(is_posted: true)
-      sleep 1
+      sleep 2
     end
   end
 end
