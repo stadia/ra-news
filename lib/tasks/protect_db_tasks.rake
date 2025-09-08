@@ -13,5 +13,5 @@ end
 Rake::Task["db:drop"].enhance([ :protect_dev_db_tasks ])
 Rake::Task["db:reset"].enhance([ :protect_dev_and_test_db_tasks ])
 Rake::Task["db:environment:set"].enhance([ :protect_dev_and_test_db_tasks ])
-Rake::Task["db:prepare"].enhance([ :protect_dev_and_test_db_tasks ])
+Rake::Task["db:prepare"].enhance([ :protect_dev_db_tasks ])
 Rake::Task["db:setup"].enhance([ :protect_dev_and_test_db_tasks ])
