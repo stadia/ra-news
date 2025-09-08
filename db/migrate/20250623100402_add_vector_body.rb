@@ -1,7 +1,9 @@
 class AddVectorBody < ActiveRecord::Migration[8.0]
   def up
-    enable_extension "vector" unless Rails.env.test?
-    execute "ALTER TABLE articles ADD COLUMN embedding vector(768);" unless Rails.env.test?
+    unless Rails.env.test?
+      enable_extension "vector"
+      execute "ALTER TABLE articles ADD COLUMN embedding vector(768);"
+    end
   end
 
   def down
