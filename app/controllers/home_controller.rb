@@ -3,13 +3,12 @@ class HomeController < ApplicationController
 
   def index
     scope = Article.includes(:user, :site).kept.confirmed
-    article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
+    article_count = scope.where(created_at: 24.hours.ago...).count
     @articles = if article_count < 9
       scope.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
     else
       scope.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
     end
-    @articles = scope.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
   end
 
   # GET /rss
