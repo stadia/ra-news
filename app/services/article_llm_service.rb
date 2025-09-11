@@ -105,8 +105,25 @@ PROMPT
     article.tag_list.add(parsed_json["tags"].map { it.downcase }.uniq) if parsed_json["tags"].is_a?(Array)
     # Use ActiveRecord transaction for data consistency
     Article.transaction do
+      # summary_detail에서 body 부분을 summary_body로 분리
+      update_attrs = parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related")
+      if parsed_json["summary_detail"].is_a?(Hash) && parsed_json["summary_detail"]["body"].present?
+        # 마크다운 포맷을 위한 이스케이프 처리 (순서 중요)
+        body_content = parsed_json["summary_detail"]["body"]
+        body_content = body_content.gsub(/\\\\/, "\x00TEMP_BACKSLASH\x00") # 임시로 \\\\ 보호
+        body_content = body_content.gsub(/\\n/, "\n")   # \\n을 실제 줄바꿈으로
+        body_content = body_content.gsub(/\\r\\n/, "\n") # \\r\\n을 줄바꿈으로
+        body_content = body_content.gsub(/\\r/, "")     # \\r 제거
+        body_content = body_content.gsub(/\\t/, "  ")   # \\t를 스페이스 2개로
+        body_content = body_content.gsub(/\\"/, '"')    # \\" 를 " 로
+        body_content = body_content.gsub(/\x00TEMP_BACKSLASH\x00/, "\\") # 임시 보호한 \\ 복원
+
+        update_attrs["summary_body"] = body_content
+        # summary_detail에서 body 제거
+        update_attrs["summary_detail"] = update_attrs["summary_detail"].except("body")
+      end
       # Update article attributes in single query
-      article.update!(parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related"))
+      article.update!(update_attrs)
 
       # 매직 스트링 대신 Site.clients enum 사용
       if parsed_json["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
