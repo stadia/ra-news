@@ -12,7 +12,7 @@ This file provides guidance to AI Agents when working with code in this reposito
 - **Ruby 3.4** with RBS inline type annotations
 - **PostgreSQL** with vector embeddings, Korean/English full-text search
 - **AI Integration**: RubyLLM with Gemini models for content processing
-- **Frontend**: Hotwire (Turbo/Stimulus), Tailwind CSS 4.2, Flowbite
+- **Frontend**: Hotwire (Turbo/Stimulus), Tailwind CSS 4.2
 
 ## Development Commands
 
@@ -174,7 +174,6 @@ Your project uses: **Rails 8**, **Ruby 3.4**, **PostgreSQL with vector embedding
 - **Styling & Layout** → @.claude/agents/rails-views-specialist.md/
   - Tailwind CSS 4.2 configuration
   - Korean typography and layout patterns
-  - Flowbite component integration
   - Dark mode and accessibility features
 
 #### Architecture & Quality

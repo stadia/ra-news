@@ -226,7 +226,7 @@
 ### 2025-05-20
 - **Tailwind CSS 통합**:
   - tailwindcss-rails gem 추가
-  - 폰트 변수 및 flowbite-typography 패키지 추가
+  - 폰트 변수 추가
 - **사이트맵**: SitemapJob 추가 및 삭제되지 않은 기사만 처리
 
 ### 2025-05-19
@@ -297,7 +297,6 @@
 
 ### 2025-05-07
 - **UI/UX 대폭 개선**:
-  - Flowbite 통합
   - 기사 카드 레이아웃 개선
   - 헤더 및 검색 기능 추가
   - 기사 요약 및 상세 내용 JSON 형태 출력
@@ -342,7 +341,7 @@
 
 ### 프론트엔드
 - **Hotwire (Turbo + Stimulus)**: SPA-like 사용자 경험
-- **Tailwind CSS + Flowbite**: 현대적이고 반응형 UI
+- **Tailwind CSS: 현대적이고 반응형 UI
 - **Kramdown**: Markdown 렌더링
 
 ### AI 및 자동화
