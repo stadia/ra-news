@@ -3,6 +3,10 @@
 # rbs_inline: enabled
 
 class Preference < ApplicationRecord
+  after_save do
+    Rails.cache.delete(name)
+  end
+
   #: (String name) -> Hash[String, untyped] || Array[untyped]
   def self.get_value(name)
     Rails.cache.fetch(name) {
