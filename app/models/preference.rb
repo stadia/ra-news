@@ -3,7 +3,6 @@
 # rbs_inline: enabled
 
 class Preference < ApplicationRecord
-
   #: (String name) -> Hash[String, untyped] || Array[untyped]
   def self.get_value(name)
     Rails.cache.fetch(name) {
@@ -12,6 +11,6 @@ class Preference < ApplicationRecord
   end
 
   def self.ignore_hosts #: Array[String]
-    get_value('ignore_hosts')
+    get_value("ignore_hosts")
   end
 end
