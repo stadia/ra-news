@@ -61,10 +61,6 @@ class Article < ApplicationRecord
   # YouTube URL의 정규화된 호스트를 상수로 정의
   YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
 
-  IGNORE_HOSTS = %w[meetup.com maily.so github.com bsky.app bsky.social threadreaderapp.com threads.com threads.net x.com beehiiv.com join1440.com visualstudio.com ruby.social elk.zone
-    indieweb.social rubygems.org javascriptweekly.com postgresweekly.com rubyweekly.com breezy.hr remoterocketship.com localhost
-    linkedin.com meet.google.com twitch.tv inf.run lu.ma shortruby.com twitter.com facebook.com daily.dev libhunt.com hotwireweekly.com reddit.com].freeze #: Array[String]
-
   def generate_metadata #: void
     return unless url.is_a?(String)
 
@@ -135,7 +131,7 @@ class Article < ApplicationRecord
       # Check for dangerous file extensions
       return true if %w[.epub .pdf .exe .zip .rar].any? { |ext| uri.path.end_with?(ext) }
 
-      IGNORE_HOSTS.any? do |ignore_host|
+      Preference.ignore_hosts.any? do |ignore_host|
         # 정확한 도메인 매칭
         host == ignore_host ||
         host.end_with?(".#{ignore_host}") ||

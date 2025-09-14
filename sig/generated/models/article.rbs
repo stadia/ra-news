@@ -8,8 +8,6 @@ class Article < ApplicationRecord
   # YouTube URL의 정규화된 호스트를 상수로 정의
   YOUTUBE_NORMALIZED_HOST: untyped
 
-  IGNORE_HOSTS: Array[String]
-
   def generate_metadata: () -> void
 
   def youtube_id: () -> String?

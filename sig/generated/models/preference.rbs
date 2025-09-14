@@ -1,0 +1,8 @@
+# Generated from app/models/preference.rb with RBS::Inline
+
+class Preference < ApplicationRecord
+  # : (String name) -> Hash[String, untyped] || Array[untyped]
+  def self.get_value: (String name) -> Hash[String, untyped]
+
+  def self.ignore_hosts: () -> Array[String]
+end
