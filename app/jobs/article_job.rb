@@ -15,6 +15,6 @@ class ArticleJob < ApplicationJob
       return nil
     end
 
-    ArticleLLMService.call(article)
+    ArticleLlmService.call(article)
   end
 end

@@ -2,7 +2,7 @@
 
 # rbs_inline: enabled
 
-class ArticleLLMService < ApplicationService
+class ArticleLlmService < ApplicationService
   attr_reader :article #: Article
 
   PROMPT = <<~PROMPT

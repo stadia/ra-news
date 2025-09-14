@@ -1,6 +1,6 @@
 # Generated from app/services/article_llm_service.rb with RBS::Inline
 
-class ArticleLLMService < ApplicationService
+class ArticleLlmService < ApplicationService
   attr_reader article: Article
 
   PROMPT: ::String
