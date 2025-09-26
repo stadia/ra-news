@@ -120,8 +120,6 @@ GEM
     drb (2.2.3)
     ed25519 (1.4.0)
     erb (5.0.2)
-    erb-formatter (0.7.3)
-      syntax_tree (~> 6.0)
     erubi (1.13.1)
     et-orbi (1.3.0)
       tzinfo
@@ -296,7 +294,6 @@ GEM
       activesupport (>= 6.1)
     pp (0.6.2)
       prettyprint
-    prettier_print (1.2.1)
     prettyprint (0.2.0)
     prism (1.5.1)
     propshaft (1.3.1)
@@ -487,8 +484,6 @@ GEM
       railties (>= 6.0.0)
     stringio (3.1.7)
     strscan (3.1.5)
-    syntax_tree (6.3.0)
-      prettier_print (>= 1.2.0)
     tailwindcss-rails (4.3.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
@@ -560,7 +555,6 @@ DEPENDENCIES
   debug
   discard
   dotenv-rails
-  erb-formatter (~> 0.7.3)
   faker
   google-protobuf
   hairtrigger
