@@ -108,17 +108,16 @@ PROMPT
       # summary_detail에서 body 부분을 summary_body로 분리
       update_attrs = parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related")
       if parsed_json["summary_detail"].is_a?(Hash) && parsed_json["summary_detail"]["body"].present?
-        # 마크다운 포맷을 위한 이스케이프 처리 (순서 중요)
-        body_content = parsed_json["summary_detail"]["body"]
-        body_content = body_content.gsub(/\\\\/, "\x00TEMP_BACKSLASH\x00") # 임시로 \\\\ 보호
-        body_content = body_content.gsub(/\\n/, "\n")   # \\n을 실제 줄바꿈으로
-        body_content = body_content.gsub(/\\r\\n/, "\n") # \\r\\n을 줄바꿈으로
-        body_content = body_content.gsub(/\\r/, "")     # \\r 제거
-        body_content = body_content.gsub(/\\t/, "  ")   # \\t를 스페이스 2개로
-        body_content = body_content.gsub(/\\"/, '"')    # \\" 를 " 로
-        body_content = body_content.gsub(/\x00TEMP_BACKSLASH\x00/, "\\") # 임시 보호한 \\ 복원
-
-        update_attrs["summary_body"] = body_content
+        # 마크다운 포맷 정규화 - 체이닝으로 간소화
+        update_attrs["summary_body"] = parsed_json["summary_detail"]["body"]
+          .gsub('\\n', "\n")  # 이스케이프 문자를 실제 개행으로 변환
+          .gsub(/([가-힣a-zA-Z0-9\.\)])(\#{1,6})([^#\n])/, "\\1\n\n\\2 \\3")  # 헤더 앞 간격 추가
+          .gsub(/\n(\*\s+|\-\s+|\d+\.\s+)/, "\n\n\\1")  # 리스트 앞 간격 추가
+          .gsub(/([가-힣a-zA-Z0-9\.\)])(\*\s+|\-\s+|\d+\.\s+)/, "\\1\n\\2")  # 문자 뒤 리스트 간격
+          .gsub(/\n#+\s*\n/, "\n\n")  # 홀로 있는 # 제거
+          .gsub(/^#+\s*$/m, "")  # 줄 시작의 홀로 있는 # 제거
+          .gsub(/\n{3,}/, "\n\n")  # 연속 개행 정리
+          .strip
         # summary_detail에서 body 제거
         update_attrs["summary_detail"] = update_attrs["summary_detail"].except("body")
       end
