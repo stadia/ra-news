@@ -5,7 +5,7 @@
 class SocialController < ApplicationController
   # provider OAuth2 인증 시작
   def provider_authorize #: () -> void
-    client = Preference.oauth_client(provider)
+    client = OauthClientService.call(provider)
 
     redirect_uri = social_provider_callback_url(provider: provider)
 
@@ -39,7 +39,7 @@ class SocialController < ApplicationController
       nil
     end
 
-    client = Preference.oauth_client(provider)
+    client = OauthClientService.call(provider)
 
     begin
         token = client.auth_code.get_token(
