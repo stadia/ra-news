@@ -1,11 +1,12 @@
 module Madmin
   class PreferencesController < Madmin::ResourceController
-    def create
-      super
-    end
+    private
 
-    def update
-      super
+    def resource_params
+      params_hash = super
+      record_methods = @record.methods
+      params_hash.delete_if { |key, _value| !record_methods.include?(key.to_sym) }
+      params_hash
     end
   end
 end
