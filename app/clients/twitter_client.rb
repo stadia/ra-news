@@ -10,9 +10,10 @@ class TwitterClient
     raise ArgumentError, "OAuth 설정이 비어있습니다: xcom_oauth" if oauth_config.blank?
 
     x_credentials = {
-      access_token: oauth_config["access_token"],
-      base_url: "https://api.x.com/2/",
-      bearer_token: oauth_config["access_token"]
+      api_key: ENV["X_API_KEY"],
+      api_key_secret: ENV["X_API_KEY_SECRET"],
+      access_token: ENV["X_ACCESS_TOKEN"],
+      access_token_secret: ENV["X_ACCESS_TOKEN_SECRET"]
     }
     @client = X::Client.new(**x_credentials)
   end
