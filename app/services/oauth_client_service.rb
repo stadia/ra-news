@@ -4,7 +4,7 @@
 
 # OAuth 클라이언트 생성 및 관리 서비스
 class OauthClientService < ApplicationService
-  attr_reader :provider #: String
+  attr_reader :oauth_preference #: Preference
 
   OAUTH_CONFIG = {
     xcom: {
@@ -19,25 +19,35 @@ class OauthClientService < ApplicationService
     }
   }.freeze #: Hash<String, Hash<String, String>>
 
-  #: (String provider) -> OauthClientService
-  def initialize(provider)
-    @provider = provider
+  #: (Preference oauth_preference) -> OauthClientService
+  def initialize(oauth_preference)
+    @oauth_preference = oauth_preference
   end
 
   # OAuth 클라이언트 생성
-  def call #: OAuth2::AccessToken
-    oauth_config = Preference.get_object("#{provider}_oauth")
-    raise ArgumentError, "OAuth 설정이 비어있습니다: #{provider}_oauth" if oauth_config.blank?
+  def call #: OAuth2::Client
+    raise ArgumentError, "OAuth 설정이 비어있습니다" if oauth_preference.blank?
 
-    OAUTH_CONFIG[provider.to_sym][:default_site]
+    provider = extract_provider_from_preference_name
+    config = OAUTH_CONFIG[provider.to_sym]
+    raise ArgumentError, "지원하지 않는 provider입니다: #{provider}" if config.blank?
+
     client = OAuth2::Client.new(
-      oauth_config.client_id,
-      oauth_config.client_secret,
-      site: oauth_config.site || OAUTH_CONFIG[provider.to_sym][:default_site],
-      authorize_url: OAUTH_CONFIG[provider.to_sym][:authorize_url],
-      token_url: OAUTH_CONFIG[provider.to_sym][:token_url]
+      oauth_preference.client_id,
+      oauth_preference.client_secret,
+      site: oauth_preference.site || config[:default_site],
+      authorize_url: config[:authorize_url],
+      token_url: config[:token_url]
     )
 
     client
+  end
+
+  private
+
+  #: () -> String
+  def extract_provider_from_preference_name
+    # "xcom_oauth" -> "xcom", "mastodon_oauth" -> "mastodon"
+    oauth_preference.name.gsub(/_oauth$/, "")
   end
 end

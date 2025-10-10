@@ -9,7 +9,7 @@ class MastodonClient
     oauth_config = Preference.get_object("mastodon_oauth")
     raise ArgumentError, "OAuth 설정이 비어있습니다: mastodon_oauth" if oauth_config.blank?
 
-    oauth_client = OauthClientService.call("mastodon")
+    oauth_client = OauthClientService.call(oauth_config)
     token = check_token(oauth_client, oauth_config)
     @client = Faraday.new(url: "https://mastodon.social/") do |faraday|
       faraday.headers["Authorization"] = "Bearer #{token.token}"
