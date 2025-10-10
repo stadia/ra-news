@@ -33,4 +33,7 @@ Rails.application.routes.draw do
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
 
   mount MissionControl::Jobs::Engine, at: "/jobs"
+
+  # config/routes.rb
+  mount Federails::Engine => "/"
 end

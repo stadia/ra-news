@@ -101,3 +101,4 @@ gem "view_component", "~> 4.0"
 gem "x"
 
 gem "oauth2", "~> 2.0"
+gem "federails"
