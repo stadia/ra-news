@@ -1,43 +1,62 @@
 version: "3.3"
 
 services:
-  ra-news:
-    image: ghcr.io/stadia/ra-news:main
-    container_name: ra-news
+  rails:
+    image: ghcr.io/stadia/ra-news:latest
+    container_name: rails
     environment:
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
-      - SOLID_QUEUE_IN_PUMA=true
-      - RAILS_LOG_LEVEL=debug
+      - RAILS_LOG_LEVEL=info
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - DATABASE_URL=${DATABASE_URL}
       - RAILS_ENV=production
+      - HONEYBADGER_API_KEY=${HONEYBADGER_API_KEY}
+      - WEB_CONCURRENCY=2
+      - GMAIL_PASSWORD=${MAIL_PASSWORD}
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.news.loadbalancer.server.port=3000"
-      - "traefik.http.middlewares.news-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.news-http.entrypoints=web"
-      - "traefik.http.routers.news-http.middlewares=news-https"
-      - "traefik.http.routers.news-http.rule=Host(`ruby-news.kr`)"
-      - "traefik.http.routers.news.entrypoints=websecure"
-      - "traefik.http.routers.news.rule=Host(`ruby-news.kr`)"
-      - "traefik.http.routers.news.tls.certresolver=letsencrypt"
+      - "traefik.http.middlewares.ruby-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.ruby-http.entrypoints=web"
+      - "traefik.http.routers.ruby-http.middlewares=ruby-https"
+      - "traefik.http.routers.ruby-http.rule=Host(`ruby-news.kr`) || Host(`www.ruby-news.kr`)"
+      - "traefik.http.routers.ruby.entrypoints=websecure"
+      - "traefik.http.routers.ruby.rule=Host(`ruby-news.kr`) || Host(`www.ruby-news.kr`)"
+      - "traefik.http.routers.ruby.tls.certresolver=letsencrypt"
     networks:
       - homeNetwork
     restart: unless-stopped
-  db:
-    image: postgres:17
-    container_name: postgresql
-    restart: always
     volumes:
-      - postgresql_data:/var/lib/postgresql/data
+      - news_data:/rails/public/sitemaps
+      - news_data:/rails/storage
+
+  solid-queue:
+    image: ghcr.io/stadia/ra-news:latest
+    container_name: solid-queue
+    command: bin/jobs
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    network_mode: host
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - RAILS_LOG_LEVEL=info
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - RAILS_ENV=production
+      - HONEYBADGER_API_KEY=${HONEYBADGER_API_KEY}
+      - WEB_CONCURRENCY=2
+      - GMAIL_PASSWORD=${MAIL_PASSWORD}
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+    networks:
+      - homeNetwork
+    restart: unless-stopped
+    volumes:
+      - news_data:/rails/public/sitemaps
+      - news_data:/rails/storage
 
 networks:
   homeNetwork:
     external: true
 
 volumes:
-  postgresql_data:
+  news_data:
     external: true
