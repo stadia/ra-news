@@ -1,7 +1,6 @@
 {
   "mcpServers": {
     "serena": {
-      "type": "stdio",
       "command": "uvx",
       "args": [
         "--from",
@@ -12,19 +11,11 @@
         "ide-assistant",
         "--project",
         "./"
-      ],
-      "env": {}
+      ]
     },
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
-    }
-  },
-  "context": {
-    "fileName": ["AGENTS.md", "GEMINI.md"],
-    "loadFromIncludeDirectories": true,
-    "fileFiltering": {
-      "respectGitIgnore": true
     }
   }
 }
