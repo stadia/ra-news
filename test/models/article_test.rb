@@ -5,6 +5,7 @@ require "test_helper"
 class ArticleTest < ActiveSupport::TestCase
   # Test fixtures setup
   def setup
+    preferences(:ignore_hosts)
     @article = articles(:ruby_article)
     @youtube_article = articles(:youtube_ruby_talk)
     @korean_article = articles(:korean_content_article)
@@ -394,14 +395,6 @@ class ArticleTest < ActiveSupport::TestCase
     assert_equal "새로운 본문 요약", article.summary_body
     assert_equal "새로운 서론", article.summary_introduction
     assert_equal "새로운 결론", article.summary_conclusion
-  end
-
-  # ========== Vector Embeddings Tests ==========
-
-  test "임베딩에 대한 neighbors 기능이 있어야 한다" do
-    # Test that the has_neighbors method is set up
-    assert_respond_to @article, :embedding
-    assert_respond_to @article, :nearest_neighbors
   end
 
   # ========== Tagging Tests ==========

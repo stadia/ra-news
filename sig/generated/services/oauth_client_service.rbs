@@ -2,25 +2,18 @@
 
 # OAuth 클라이언트 생성 및 관리 서비스
 class OauthClientService < ApplicationService
-  attr_reader provider: String
+  attr_reader oauth_preference: Preference
 
-  # : (String provider) -> OauthClientService
-  def initialize: (String provider) -> OauthClientService
+  OAUTH_CONFIG: Hash
+
+  # : (Preference oauth_preference) -> OauthClientService
+  def initialize: (Preference oauth_preference) -> OauthClientService
 
   # OAuth 클라이언트 생성
-  def call: () -> OAuth2::AccessToken
+  def call: () -> OAuth2::Client
 
   private
 
-  # OAuth 기본 사이트 URL
-  # : (String provider) -> String
-  def default_site: (String provider) -> String
-
-  # OAuth 인증 URL
-  # : (String provider) -> String
-  def authorize_url: (String provider) -> String
-
-  # OAuth 토큰 URL
-  # : (String provider) -> String
-  def token_url: (String provider) -> String
+  # : () -> String
+  def extract_provider_from_preference_name: () -> String
 end

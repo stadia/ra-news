@@ -42,7 +42,7 @@ class TwitterService < SocialMediaService
     "#{truncated_content} #{tags}\n#{link}"
   end
 
-  def platform_client #: X::Client
+  def platform_client #: TwitterClient
     TwitterClient.new
   end
 end

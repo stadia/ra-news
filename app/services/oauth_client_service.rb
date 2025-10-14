@@ -13,9 +13,14 @@ class OauthClientService < ApplicationService
       token_url: "https://api.x.com/2/oauth2/token"
     },
     mastodon: {
-      default_site: "https://mastodon.social",
-      authorize_url: "https://mastodon.social/oauth/authorize",
-      token_url: "https://mastodon.social/oauth/token"
+      default_site: "https://ruby.social",
+      authorize_url: "https://ruby.social/oauth/authorize",
+      token_url: "https://ruby.social/oauth/token"
+    },
+    slack: {
+      default_site: "https://slack.com",
+      authorize_url: "https://slack.com/oauth/v2/authorize",
+      token_url: "https://slack.com/api/oauth.v2.access"
     }
   }.freeze #: Hash<String, Hash<String, String>>
 

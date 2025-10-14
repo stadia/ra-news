@@ -35,13 +35,16 @@
     <meta name="twitter:title" content="<%= content_for(:title) || "Ruby-News || 루비 AI 뉴스" %>">
     <meta name="twitter:description" content="최신 Ruby, Rails, AI 관련 뉴스와 트렌드를 한곳에서 만나보세요">
     <meta name="twitter:image" content="<%= image_url("og_main.png") %>">
+
+    <meta name="fediverse:creator" content="@news_kr@ruby.social">
+
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -169,7 +172,31 @@
     <footer class="bg-green-700 text-gray-200 rounded-lg shadow-sm m-4">
         <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
           <span class="text-sm text-gray-300 sm:text-center">© 2025 <a href="https://ruby-news.kr/" class="hover:underline hover:text-white">Ruby-News || 루비 AI 뉴스</a>. All Rights Reserved.</span>
-          <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-300 sm:mt-0">
+          <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-300 sm:mt-0 gap-4">
+            <li>
+              <a rel="me" href="https://ruby.social/@news_kr" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-white flex items-center gap-1">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.056.056 0 0 1 .017-.043.051.051 0 0 1 .043-.017c1.513.359 3.072.538 4.657.546 1.828 0 2.298-.081 3.09-.143 1.897-.149 3.566-.867 3.772-1.531.334-1.076.61-3.495.61-3.495 0-.732-.005-1.603-.05-2.447-.041-.832-.126-1.62-.333-2.377z"/>
+                </svg>
+                Mastodon
+              </a>
+            </li>
+            <li>
+              <a href="https://x.com/rubynewskr" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-white flex items-center gap-1">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Twitter/X
+              </a>
+            </li>
+            <li>
+              <a href="<%= rss_path %>" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-white flex items-center gap-1">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368C10.58 4.858 19.152 13.406 19.183 24h4.817C23.984 9.049 14.964 0 0 0v4.812z"/>
+                </svg>
+                RSS 피드
+              </a>
+            </li>
           </ul>
         </div>
     </footer>

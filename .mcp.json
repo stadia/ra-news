@@ -17,12 +17,5 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     }
-  },
-  "context": {
-    "fileName": ["AGENTS.md", "GEMINI.md"],
-    "loadFromIncludeDirectories": true,
-    "fileFiltering": {
-      "respectGitIgnore": true
-    }
   }
 }

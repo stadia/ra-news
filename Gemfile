@@ -71,8 +71,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "mocha"
-  # Use sqlite3 as the database for Active Record
-  gem "sqlite3", ">= 2.1"
 end
 
 gem "sorbet-runtime"
@@ -98,7 +96,7 @@ gem "discard"
 gem "awesome_nested_set"
 gem "neighbor"
 gem "view_component", "~> 4.0"
-gem "x"
-
 gem "oauth2", "~> 2.0"
+# Use sqlite3 as the database for Active Record
+gem "sqlite3", ">= 2.1"
 gem "federails"

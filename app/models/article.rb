@@ -7,7 +7,8 @@ class Article < ApplicationRecord
 
   include Discard::Model
 
-  has_neighbors :embedding, dimensions: 1536
+  # SQLite는 벡터 임베딩을 지원하지 않으므로 PostgreSQL에서만 활성화
+  has_neighbors :embedding, dimensions: 1536 unless Rails.env.test?
 
   self.discard_column = :deleted_at
 
