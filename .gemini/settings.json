@@ -1,7 +1,6 @@
 {
   "mcpServers": {
     "serena": {
-      "type": "stdio",
       "command": "uvx",
       "args": [
         "--from",
@@ -12,8 +11,7 @@
         "ide-assistant",
         "--project",
         "./"
-      ],
-      "env": {}
+      ]
     },
     "sequential-thinking": {
       "command": "npx",
