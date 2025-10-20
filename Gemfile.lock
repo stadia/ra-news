@@ -198,7 +198,7 @@ GEM
     json (2.15.1)
     jwt (3.1.2)
       base64
-    kamal (2.7.0)
+    kamal (2.8.0)
       activesupport (>= 7.0)
       base64 (~> 0.2)
       bcrypt_pbkdf (~> 1.0)
@@ -242,9 +242,9 @@ GEM
       importmap-rails (>= 1.2.1)
       irb (~> 1.13)
       railties (>= 7.1)
+      ruby2_keywords (>= 0.0.5)
       stimulus-rails
       turbo-rails
-      ruby2_keywords (>= 0.0.5)
     msgpack (1.8.0)
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
