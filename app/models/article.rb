@@ -28,7 +28,7 @@ class Article < ApplicationRecord
 
   pg_search_scope :title_matching, against: [ :title, :title_ko ], using: { tsearch: { dictionary: "korean" } }
 
-  pg_search_scope :body_matching, against: :body, using: { tsearch: { dictionary: "english" } }
+  pg_search_scope :body_matching, against: [ :body, :summary_body ], using: { tsearch: { dictionary: "korean" } }
 
   belongs_to :user, optional: true
 
