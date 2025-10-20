@@ -1,1 +1,1 @@
-Federails.config_from 'federails'
+Federails.config_from "federails"
