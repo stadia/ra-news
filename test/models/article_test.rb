@@ -39,9 +39,9 @@ class ArticleTest < ActiveSupport::TestCase
       url: "https://example.com/test"
     )
     # Mock generate_metadata to avoid external calls
-    Article.any_instance.stubs(:generate_metadata).returns(nil)
-
-    article.save!
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
     assert_equal "https://example.com/test", article.origin_url
   end
 
@@ -220,9 +220,9 @@ class ArticleTest < ActiveSupport::TestCase
     )
 
     # generate_metadata 메서드를 직접 stub하여 published_at 덮어쓰기 방지
-    Article.any_instance.stubs(:generate_metadata).returns(nil)
-
-    article.save!
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
 
     # The published_at should be preserved (not overridden by before_save callback)
     assert_equal existing_time.to_i, article.published_at.to_i,
@@ -230,16 +230,15 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "생성 전에 메타데이터를 생성해야 한다" do
-    # 외부 API 호출을 간단히 stub
-    stub_external_requests
-
     article = Article.new(
       title: "Test",
       url: "https://example.com/metadata-test",
       user: @user
     )
 
-    article.save!
+    stub_external_requests(article) do
+      article.save!
+    end
     assert_not_nil article.slug
     assert_not_nil article.host
   end
@@ -447,8 +446,9 @@ class ArticleTest < ActiveSupport::TestCase
     )
 
     # Mock generate_metadata to avoid external API calls
-    youtube_article.stubs(:generate_metadata)
-    youtube_article.save!
+    youtube_article.stub(:generate_metadata, nil) do
+      youtube_article.save!
+    end
 
     # Should still work even with different YouTube domain format
     assert_not_nil youtube_article.youtube_id
@@ -484,18 +484,23 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "폐기 후 RSS 캐시를 지워야 한다" do
     # Mock Rails.cache to expect the cache deletion
-    Rails.cache.expects(:delete).with("rss_articles").at_least_once
-    @article.discard!
+    deleted_keys = []
+    Rails.cache.stub(:delete, ->(key, *args, **kwargs) { deleted_keys << key; true }) do
+      @article.discard!
+    end
+    assert_includes deleted_keys, "rss_articles"
   end
 
   test "생성 후 RSS 캐시를 지워야 한다" do
-    Rails.cache.expects(:delete).with("rss_articles").once
-
-    Article.create!(
-      title: "Cache Test",
-      url: "https://example.com/cache-test",
-      origin_url: "https://example.com/cache-test-origin"
-    )
+    deleted_keys = []
+    Rails.cache.stub(:delete, ->(key, *args, **kwargs) { deleted_keys << key; true }) do
+      Article.create!(
+        title: "Cache Test",
+        url: "https://example.com/cache-test",
+        origin_url: "https://example.com/cache-test-origin"
+      )
+    end
+    assert_equal [ "rss_articles" ], deleted_keys
   end
 
   # ========== Error Handling Tests ==========
@@ -504,10 +509,10 @@ class ArticleTest < ActiveSupport::TestCase
     article = Article.new(url: "https://example.com/error-test")
 
     # Mock Faraday to raise an error
-    Faraday.expects(:get).raises(Faraday::ConnectionFailed.new("Connection failed"))
-
-    result = article.send(:fetch_url_content)
-    assert_nil result
+    Faraday.stub(:get, ->(*) { raise Faraday::ConnectionFailed.new("Connection failed") }) do
+      result = article.send(:fetch_url_content)
+      assert_nil result
+    end
   end
 
   test "YouTube API 오류를 정상적으로 처리해야 한다" do
@@ -559,19 +564,21 @@ class ArticleTest < ActiveSupport::TestCase
   private
 
   # Helper method to stub external API requests
-  def stub_external_requests
-    # Stub Faraday HTTP requests
-    response = stub(
-      body: "<html><head><title>Test</title></head><body>Test description</body></html>",
-      status: 200,
-      success?: true,
-      headers: {}
+  def stub_external_requests(article)
+    response = Struct.new(:body, :status, :success?, :headers).new(
+      "<html><head><title>Test</title></head><body>Test description</body></html>",
+      200,
+      true,
+      {}
     )
-    Faraday.stubs(:get).returns(response)
 
-    # Stub any other external service calls if needed
-    Article.any_instance.stubs(:fetch_url_content).returns(response)
-    Article.any_instance.stubs(:set_youtube_metadata).returns(nil)
+    Faraday.stub(:get, ->(*) { response }) do
+      article.stub(:fetch_url_content, response) do
+        article.stub(:set_youtube_metadata, nil) do
+          yield(response) if block_given?
+        end
+      end
+    end
   end
 
   # Helper method for testing query count

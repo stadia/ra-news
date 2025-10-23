@@ -243,8 +243,6 @@ GEM
       railties (>= 7.1)
       stimulus-rails
       turbo-rails
-    mocha (2.7.1)
-      ruby2_keywords (>= 0.0.5)
     msgpack (1.8.0)
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
@@ -410,7 +408,6 @@ GEM
     ruby-readability (0.7.2)
       guess_html_encoding (>= 0.0.4)
       nokogiri (>= 1.6.0)
-    ruby2_keywords (0.0.5)
     ruby2ruby (2.5.2)
       ruby_parser (~> 3.1)
       sexp_processor (~> 4.6)
@@ -577,7 +574,6 @@ DEPENDENCIES
   kramdown
   madmin (~> 2.0)
   mission_control-jobs
-  mocha
   neighbor
   oauth2 (~> 2.0)
   ostruct
@@ -613,4 +609,4 @@ DEPENDENCIES
   yt
 
 BUNDLED WITH
-   2.7.2
+   2.6.7

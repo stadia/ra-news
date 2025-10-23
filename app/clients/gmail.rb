@@ -3,17 +3,17 @@
 # rbs_inline: enabled
 
 class Gmail
-  # Constants for default email and password
+  # Constants for default email and imap
+  DEFAULT_IMAP_ADDRESS = "imap.gmail.com"
   DEFAULT_GMAIL_ADDRESS = "stadia@gmail.com"
 
   def initialize #: Gmail
-    email = ENV["GMAIL_ADDRESS"] || DEFAULT_GMAIL_ADDRESS
-    password = ENV["GMAIL_PASSWORD"]
+    password = ENV["MAIL_PASSWORD"]
 
     Mail.defaults do
-      retriever_method :imap, address: "imap.gmail.com",
+      retriever_method :imap, address: ENV["IMAP_ADDRESS"] || DEFAULT_IMAP_ADDRESS,
                               port: 993,
-                              user_name: email,
+                              user_name: ENV["MAIL_ADDRESS"] || DEFAULT_GMAIL_ADDRESS,
                               password: password,
                               enable_ssl: true
     end
