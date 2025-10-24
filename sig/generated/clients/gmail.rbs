@@ -1,7 +1,9 @@
 # Generated from app/clients/gmail.rb with RBS::Inline
 
 class Gmail
-  # Constants for default email and password
+  # Constants for default email and imap
+  DEFAULT_IMAP_ADDRESS: ::String
+
   DEFAULT_GMAIL_ADDRESS: ::String
 
   def initialize: () -> Gmail
