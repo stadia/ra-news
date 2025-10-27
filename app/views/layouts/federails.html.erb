@@ -1,16 +1,6 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-56PSNXG7QG"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-56PSNXG7QG');
-    </script>
-
     <title><%= content_for(:title) || "Ruby-News || 루비 AI 뉴스" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,19 +12,6 @@
     <meta name="description" content="최신 Ruby, Rails, AI 관련 뉴스와 트렌드를 한곳에서 만나보세요">
     <meta name="keywords" content="Ruby, Rails, AI, 프로그래밍, 개발, 뉴스">
     <meta name="author" content="Ruby-News || 루비 AI 뉴스">
-
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="<%= content_for(:title) || "Ruby-News || 루비 AI 뉴스" %>">
-    <meta property="og:description" content="최신 Ruby, Rails, AI 관련 뉴스와 트렌드를 한곳에서 만나보세요">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Ruby-News || 루비 AI 뉴스">
-    <meta property="og:image" content="<%= image_url("og_main.png") %>">
-
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<%= content_for(:title) || "Ruby-News || 루비 AI 뉴스" %>">
-    <meta name="twitter:description" content="최신 Ruby, Rails, AI 관련 뉴스와 트렌드를 한곳에서 만나보세요">
-    <meta name="twitter:image" content="<%= image_url("og_main.png") %>">
 
     <meta name="fediverse:creator" content="@news_kr@ruby.social">
 
@@ -56,38 +33,6 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
-
-    <!-- Speculation Rules for Performance (Safe Routes Only) -->
-    <script type="speculationrules">
-    {
-      "prerender": [{
-        "source": "document",
-        "where": {
-          "and": [
-            { "href_matches": "/*" },
-            { "not": { "href_matches": "/logout" } },
-            { "not": { "href_matches": "/login" } },
-            { "not": { "href_matches": "/signup" } },
-            { "not": { "selector_matches": "[data-turbo-method]" } }
-          ]
-        },
-        "eagerness": "moderate"
-      }],
-      "prefetch": [{
-        "source": "document",
-        "where": {
-          "and": [
-            { "href_matches": "/*" },
-            { "not": { "href_matches": "/logout" } },
-            { "not": { "href_matches": "/login" } },
-            { "not": { "href_matches": "/signup" } },
-            { "not": { "selector_matches": "[data-turbo-method]" } }
-          ]
-        },
-        "eagerness": "conservative"
-      }]
-    }
-    </script>
   </head>
 
   <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col"
@@ -119,15 +64,6 @@
                     hidden peer-checked:block
                     transition-all duration-300 ease-in-out
                     md:transition-none" id="navbar-search">
-          <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-green-600 rounded-lg bg-green-600 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-green-700
-                     animate-in slide-in-from-top-2 fade-in duration-200
-                     md:animate-none">
-            <% if authenticated? %>
-              <li>
-                <span class="block py-3 px-4 text-gray-100 rounded-sm md:p-0 min-h-[44px] flex items-center" aria-current="page"><%= Current.user.name %></span>
-              </li>
-            <% end %>
-          </ul>
         </div>
       </div>
     </nav>
