@@ -3,14 +3,15 @@ defaults: &defaults
   app_name: ruby-news.kr
   app_version:
   force_ssl: false
-  site_host: "http://localhost"
+  site_host: "https://ruby-news.kr"
   site_port: 3000
   enable_discovery: true
   open_registrations: false
-  app_layout: "layouts/application"
+  app_layout: "layouts/federails"
   server_routes_path: federation
-  client_routes_path: nil
+  client_routes_path: app
   #base_client_controller: ::ActionController::Base
+  base_client_controller: "::ApplicationController"
 
 development:
   <<: *defaults

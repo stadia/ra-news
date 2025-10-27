@@ -4,6 +4,8 @@
 
 class ApplicationController < ActionController::Base
   include Authentication
+  include Pundit::Authorization
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: { ie: false }
 
@@ -15,6 +17,10 @@ class ApplicationController < ActionController::Base
     })
   end
 
+  # Pundit 호환성을 위한 current_user 메서드
+  def current_user #: () -> User?
+    Current.user
+  end
 
   private
 
