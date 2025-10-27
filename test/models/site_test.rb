@@ -381,10 +381,11 @@ class SiteTest < ActiveSupport::TestCase
     site = @rss_site
 
     # Mock missing client class
-    RssClient.stubs(:new).raises(NameError.new("uninitialized constant"))
-
-    assert_raises NameError do
-      site.init_client
+    error = NameError.new("uninitialized constant")
+    RssClient.stub(:new, ->(*args, **kwargs) { raise error }) do
+      assert_raises(NameError) do
+        site.init_client
+      end
     end
   end
 
@@ -393,23 +394,61 @@ class SiteTest < ActiveSupport::TestCase
 
     # RSS Client
     rss_site = @rss_site
-    RssClient.expects(:new).with(base_uri: rss_site.base_uri).returns(stub)
-    rss_site.init_client
+    rss_invocations = []
+    rss_client = Object.new
+    RssClient.stub(:new, ->(**args) { rss_invocations << args; rss_client }) do
+      result = rss_site.init_client
+      assert_equal rss_client, result
+    end
+    assert_equal [ { base_uri: rss_site.base_uri } ], rss_invocations
 
     # YouTube Client
     youtube_site = @youtube_site
-    Youtube::Channel.expects(:new).with(id: youtube_site.channel).returns(stub)
-    youtube_site.init_client
+    youtube_invocations = []
+    youtube_client = Object.new
+    Youtube::Channel.stub(:new, ->(**args) { youtube_invocations << args; youtube_client }) do
+      result = youtube_site.init_client
+      assert_equal youtube_client, result
+    end
+    assert_equal [ { id: youtube_site.channel } ], youtube_invocations
 
     # Gmail Client (no parameters)
     gmail_site = @gmail_site
-    Gmail.expects(:new).with().returns(stub)
-    gmail_site.init_client
+    gmail_invocations = 0
+    gmail_args = []
+    gmail_kwargs = {}
+    gmail_client = Object.new
+    Gmail.stub(:new, ->(*args, **kwargs) do
+      gmail_invocations += 1
+      gmail_args = args
+      gmail_kwargs = kwargs
+      gmail_client
+    end) do
+      result = gmail_site.init_client
+      assert_equal gmail_client, result
+    end
+    assert_equal 1, gmail_invocations
+    assert_equal [], gmail_args
+    assert_equal({}, gmail_kwargs)
 
     # HackerNews Client (no parameters)
     hn_site = @hn_site
-    HackerNews.expects(:new).with().returns(stub)
-    hn_site.init_client
+    hacker_news_invocations = 0
+    hacker_news_args = []
+    hacker_news_kwargs = {}
+    hacker_news_client = Object.new
+    HackerNews.stub(:new, ->(*args, **kwargs) do
+      hacker_news_invocations += 1
+      hacker_news_args = args
+      hacker_news_kwargs = kwargs
+      hacker_news_client
+    end) do
+      result = hn_site.init_client
+      assert_equal hacker_news_client, result
+    end
+    assert_equal 1, hacker_news_invocations
+    assert_equal [], hacker_news_args
+    assert_equal({}, hacker_news_kwargs)
   end
 
   # ========== Fixture Validation Tests ==========

@@ -187,8 +187,9 @@ class UserTest < ActiveSupport::TestCase
     user.save!
 
     # Test the full_name logic by temporarily stubbing the name
-    user.stubs(:name).returns(nil)
-    assert_equal "test", user.full_name
+    user.stub(:name, nil) do
+      assert_equal "test", user.full_name
+    end
   end
 
   # ========== Security Tests ==========

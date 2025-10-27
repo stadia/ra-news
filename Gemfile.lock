@@ -84,7 +84,7 @@ GEM
     bcp47_spec (0.2.1)
     bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.1)
-    benchmark (0.4.1)
+    benchmark (0.5.0)
     bigdecimal (3.3.1)
     bindex (0.8.1)
     bootsnap (1.18.6)
@@ -92,7 +92,7 @@ GEM
     brakeman (7.1.0)
       racc
     builder (3.3.0)
-    bullet (8.0.8)
+    bullet (8.1.0)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     capybara (3.40.0)
@@ -155,8 +155,8 @@ GEM
     ffi (1.17.2-x86_64-linux-gnu)
     ffi (1.17.2-x86_64-linux-musl)
     fileutils (1.7.3)
-    fugit (1.11.2)
-      et-orbi (~> 1, >= 1.2.11)
+    fugit (1.12.1)
+      et-orbi (~> 1.4)
       raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
@@ -223,7 +223,7 @@ GEM
       rdf (~> 3.3)
     jwt (3.1.2)
       base64
-    kamal (2.7.0)
+    kamal (2.8.1)
       activesupport (>= 7.0)
       base64 (~> 0.2)
       bcrypt_pbkdf (~> 1.0)
@@ -263,7 +263,8 @@ GEM
       pagy (>= 3.5)
       propshaft
       rails (>= 7.0.0)
-    mail (2.8.1)
+    mail (2.9.0)
+      logger
       mini_mime (>= 0.1.1)
       net-imap
       net-pop
@@ -282,8 +283,6 @@ GEM
       railties (>= 7.1)
       stimulus-rails
       turbo-rails
-    mocha (2.7.1)
-      ruby2_keywords (>= 0.0.5)
     msgpack (1.8.0)
     multi_json (1.17.0)
     multi_xml (0.7.2)
@@ -410,9 +409,6 @@ GEM
       ffi (~> 1.0)
     rbs (3.9.5)
       logger
-    rbs_rails (0.12.1)
-      parser
-      rbs (>= 1)
     rdf (3.3.4)
       bcp47_spec (~> 0.2)
       bigdecimal (~> 3.1, >= 3.1.5)
@@ -432,7 +428,7 @@ GEM
     rexml (3.4.4)
     rss (0.3.1)
       rexml
-    rubocop (1.81.1)
+    rubocop (1.81.6)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -464,7 +460,6 @@ GEM
     ruby-readability (0.7.2)
       guess_html_encoding (>= 0.0.4)
       nokogiri (>= 1.6.0)
-    ruby2_keywords (0.0.5)
     ruby2ruby (2.5.2)
       ruby_parser (~> 3.1)
       sexp_processor (~> 4.6)
@@ -504,19 +499,19 @@ GEM
       activejob (>= 7.2)
       activerecord (>= 7.2)
       railties (>= 7.2)
-    solid_queue (1.2.1)
+    solid_queue (1.2.2)
       activejob (>= 7.1)
       activerecord (>= 7.1)
       concurrent-ruby (>= 1.3.1)
-      fugit (~> 1.11.0)
+      fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12650)
-      sorbet-static (= 0.6.12650)
-    sorbet-runtime (0.6.12650)
-    sorbet-static (0.6.12650-aarch64-linux)
-    sorbet-static (0.6.12650-universal-darwin)
-    sorbet-static (0.6.12650-x86_64-linux)
+    sorbet (0.6.12656)
+      sorbet-static (= 0.6.12656)
+    sorbet-runtime (0.6.12656)
+    sorbet-static (0.6.12656-aarch64-linux)
+    sorbet-static (0.6.12656-universal-darwin)
+    sorbet-static (0.6.12656-x86_64-linux)
     sqlite3 (2.7.4-aarch64-linux-gnu)
     sqlite3 (2.7.4-aarch64-linux-musl)
     sqlite3 (2.7.4-arm64-darwin)
@@ -563,10 +558,10 @@ GEM
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
     thor (1.4.0)
-    thruster (0.1.15-aarch64-linux)
-    thruster (0.1.15-arm64-darwin)
-    thruster (0.1.15-x86_64-darwin)
-    thruster (0.1.15-x86_64-linux)
+    thruster (0.1.16-aarch64-linux)
+    thruster (0.1.16-arm64-darwin)
+    thruster (0.1.16-x86_64-darwin)
+    thruster (0.1.16-x86_64-linux)
     timeout (0.4.3)
     tsort (0.2.0)
     turbo-rails (2.0.17)
@@ -581,8 +576,8 @@ GEM
     uri (1.0.4)
     useragent (0.16.11)
     version_gem (1.1.9)
-    view_component (4.0.2)
-      activesupport (>= 7.1.0, < 8.1)
+    view_component (4.1.0)
+      activesupport (>= 7.1.0, < 8.2)
       concurrent-ruby (~> 1)
     web-console (4.2.1)
       actionview (>= 6.0.0)
@@ -634,7 +629,6 @@ DEPENDENCIES
   kramdown
   madmin (~> 2.0)
   mission_control-jobs
-  mocha
   neighbor
   oauth2 (~> 2.0)
   ostruct
@@ -645,7 +639,6 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2)
   rails-i18n
-  rbs_rails (~> 0.12.1)
   rss
   rubocop
   rubocop-rails-omakase
@@ -671,4 +664,4 @@ DEPENDENCIES
   yt
 
 BUNDLED WITH
-   2.7.2
+   2.6.7

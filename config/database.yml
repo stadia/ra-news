@@ -22,12 +22,17 @@ default: &default
   reaping_frequency: 10
   schema_search_path: "ra_news,public"
 
+sqlite3: &sqlite3
+  adapter: sqlite3
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  timeout: 5000 # Connection timeout in milliseconds
+
 development:
   primary:
     <<: *default
     url: <%= ENV.fetch("DATABASE_URL") { "postgres://localhost:5432/ra-news_development" } %>
   cache:
-    adapter: sqlite3
+    <<: *sqlite3
     database: storage/development_cache.sqlite3
     migrations_paths: db/cache_migrate
 
@@ -66,7 +71,7 @@ test:
     adapter: sqlite3
     database: storage/test.sqlite3
   cache:
-    adapter: sqlite3
+    <<: *sqlite3
     database: storage/test_cache.sqlite3
     migrations_paths: db/cache_migrate
 
@@ -95,7 +100,7 @@ production:
     <<: *default
     url: <%= "#{ENV["DATABASE_URL"]}/ra-news_production" %>
   cache:
-    adapter: sqlite3
+    <<: *sqlite3
     database: storage/production_cache.sqlite3
     migrations_paths: db/cache_migrate
   queue:
@@ -103,6 +108,6 @@ production:
     url: <%= "#{ENV["DATABASE_URL"]}/ra-news_production_queue" %>
     migrations_paths: db/queue_migrate
   cable:
-    <<: *primary_production
-    url: <%= "#{ENV["DATABASE_URL"]}/ra-news_production_cable" %>
+    <<: *sqlite3
+    database: storage/production_cable.sqlite3
     migrations_paths: db/cable_migrate

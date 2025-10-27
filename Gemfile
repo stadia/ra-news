@@ -56,7 +56,7 @@ group :development, :test do
   gem "dotenv-rails"
   gem "faker"
   gem "herb"
-  gem "rbs_rails", "~> 0.12.1"
+  # gem "rbs_rails", "~> 0.12.1"
 end
 
 group :development do
@@ -70,7 +70,6 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
-  gem "mocha"
 end
 
 gem "sorbet-runtime"

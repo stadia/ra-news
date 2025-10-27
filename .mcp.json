@@ -16,6 +16,14 @@
     "sequential-thinking": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "postgresql-mcp": {
+      "command": "npx",
+      "args": [
+        "@henkey/postgres-mcp-server",
+        "--connection-string",
+        "postgresql://localhost:5432/ra-news_development"
+      ]
     }
   }
 }

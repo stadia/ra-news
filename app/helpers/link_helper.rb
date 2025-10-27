@@ -4,6 +4,8 @@ module LinkHelper
   # Extracts the target link from a given URL, handling various redirect and tracking services.
   #: (String link) -> String?
   def extract_link(link)
+    return if link.start_with?("mailto:")
+
     uri = URI.parse(link)
     return if uri.host.blank?
 

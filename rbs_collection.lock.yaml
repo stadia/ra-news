@@ -89,14 +89,6 @@ gems:
     revision: 10d80b1f45dd4241d64d40b49e622cd5d3cfa903
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
-- name: ast
-  version: '2.4'
-  source:
-    type: git
-    name: ruby/gem_rbs_collection
-    revision: 10d80b1f45dd4241d64d40b49e622cd5d3cfa903
-    remote: https://github.com/ruby/gem_rbs_collection.git
-    repo_dir: gems
 - name: base64
   version: 0.3.0
   source:
@@ -305,18 +297,6 @@ gems:
   version: '0'
   source:
     type: stdlib
-- name: optparse
-  version: '0'
-  source:
-    type: stdlib
-- name: parser
-  version: '3.2'
-  source:
-    type: git
-    name: ruby/gem_rbs_collection
-    revision: 10d80b1f45dd4241d64d40b49e622cd5d3cfa903
-    remote: https://github.com/ruby/gem_rbs_collection.git
-    repo_dir: gems
 - name: pathname
   version: '0'
   source:
@@ -369,14 +349,6 @@ gems:
     revision: 10d80b1f45dd4241d64d40b49e622cd5d3cfa903
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
-- name: rbs
-  version: 3.9.5
-  source:
-    type: rubygems
-- name: rbs_rails
-  version: 0.12.1
-  source:
-    type: rubygems
 - name: rdoc
   version: '0'
   source:
