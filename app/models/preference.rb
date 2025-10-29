@@ -3,17 +3,11 @@
 # rbs_inline: enabled
 
 class Preference < ApplicationRecord
+  PROTECTED_KEYS = %w[name value]
+
   after_initialize :define_dynamic_accessors, if: -> { persisted? && name.present? }
 
-  after_save do
-    Rails.cache.delete("preferences_#{name}")
-  end
-
-  def value=(val)
-    super(val.is_a?(String) ? JSON.parse(val) : val)
-  rescue JSON::ParserError
-    super({})
-  end
+  after_commit :clear_cache, on: %i[create update destroy]
 
   #: (String name) -> Hash[String, untyped] || Array[untyped]
   def self.get_value(name)
@@ -30,6 +24,10 @@ class Preference < ApplicationRecord
     get_value("ignore_hosts") || []
   end
 
+  def clear_cache
+    Rails.cache.delete("preferences_#{name}")
+  end
+
   private
 
   def define_dynamic_accessors
@@ -37,7 +35,7 @@ class Preference < ApplicationRecord
     # You should adjust this case statement to your needs.
     accessors = case name
     when "ignore_hosts" # Example name
-                  [ :hosts ]
+      [ :hosts ]
     # Add other cases for other preference names
     when /_oauth$/
       # Common keys for OAuth preferences
@@ -54,7 +52,12 @@ class Preference < ApplicationRecord
 
       # Define setter
       define_singleton_method("#{key}=") do |new_value|
-        self.value = value.is_a?(Hash) ? (value || {}).merge(key.to_s => new_value) : value
+        case key
+        when :hosts
+          self.value = new_value.split(" ")
+        else
+          self.value = value.is_a?(Hash) ? (value || {}).merge(key.to_s => new_value) : value
+        end
       end
     end
   end
