@@ -8,7 +8,7 @@ class Site < ApplicationRecord
   validates :name, :client, presence: true
 
   before_create do
-    self.last_checked_at = Time.zone.now.beginning_of_year if last_checked_at.blank?
+    self.last_checked_at = 6.months.ago if last_checked_at.blank?
   end
 
   enum :client, [ :rss, :gmail, :youtube, :hacker_news, :rss_page ], default: :rss
