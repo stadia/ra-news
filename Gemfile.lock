@@ -430,7 +430,7 @@ GEM
     ruby2ruby (2.5.2)
       ruby_parser (~> 3.1)
       sexp_processor (~> 4.6)
-    ruby_llm (1.9.0)
+    ruby_llm (1.9.1)
       base64
       event_stream_parser (~> 1)
       faraday (>= 1.10.0)
@@ -540,7 +540,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.1.0)
-    uri (1.1.0)
+    uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
     view_component (4.1.0)
@@ -609,7 +609,7 @@ DEPENDENCIES
   rubocop
   rubocop-rails-omakase
   ruby-readability
-  ruby_llm (~> 1.5)
+  ruby_llm (~> 1.9)
   ruby_llm-schema
   selenium-webdriver
   sitemap_generator
