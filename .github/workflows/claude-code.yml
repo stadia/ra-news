@@ -1,0 +1,48 @@
+# Claude Code Action
+# GitHub 이슈와 PR에서 @claude 멘션 또는 이슈 할당을 통해 Claude Code를 자동 실행합니다.
+#
+# 필수 설정:
+# 1. GitHub Secrets에 ANTHROPIC_API_KEY 추가 필요
+# 2. CLAUDE.md 및 AGENTS.md를 참고하여 한국어로 작업합니다
+#
+# 사용 방법:
+# - PR 코멘트에서 "@claude [작업 내용]" 멘션
+# - 이슈에 Claude 할당
+# - 워크플로우 수동 실행
+
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request:
+    types: [opened, synchronize, reopened, assigned]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: '이슈 또는 PR 번호'
+        required: false
+      prompt:
+        description: 'Claude에게 전달할 작업 지시사항'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Claude Code 실행
+        uses: anthropics/claude-code-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # 프로젝트 가이드라인 참조를 위해 CLAUDE.md, AGENTS.md 자동 인식
+          # 한국어 응답 및 Rails 8 기반 Ruby-News 아키텍처 준수

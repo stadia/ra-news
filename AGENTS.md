@@ -41,6 +41,16 @@ bin/rails jobs:work       # Alternative job processing
 bin/rails jobs:stats      # 큐 상태 확인 (CI 실행 전 수동 점검)
 ```
 
+### GitHub Actions
+프로젝트는 다음 GitHub Actions를 사용합니다:
+
+- **CI** (`.github/workflows/ci.yml`): 보안 스캔, Lint, 테스트 자동 실행
+- **Claude Code** (`.github/workflows/claude-code.yml`): 이슈/PR에서 `@claude` 멘션 시 AI 에이전트 자동 실행
+  - PR 코멘트에서 `@claude [작업 내용]` 형태로 호출
+  - 이슈에 Claude 할당으로 자동 실행
+  - CLAUDE.md, AGENTS.md 지침을 자동으로 참조하여 한국어로 응답
+  - 필수 설정: Repository Secrets에 `ANTHROPIC_API_KEY` 등록 필요
+
 ## Core Architecture
 
 ### Domain Models
