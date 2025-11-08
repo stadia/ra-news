@@ -9,7 +9,7 @@ class RssSitePageJob < ApplicationJob
   attr_reader :site
 
   def self.enqueue_all
-    RssSitePageJob.perform_later(Site.rss_page.order("id ASC").pluck(:id))
+    RssSitePageJob.perform_later(Site.kept.rss_page.order("id ASC").pluck(:id))
   end
 
   # Performs the job for a given site ID.

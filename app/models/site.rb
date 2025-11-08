@@ -3,6 +3,10 @@
 # rbs_inline: enabled
 
 class Site < ApplicationRecord
+  include Discard::Model
+
+  self.discard_column = :deleted_at
+
   has_many :articles, dependent: :nullify
 
   validates :name, :client, presence: true
