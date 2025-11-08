@@ -393,6 +393,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "set_initial_url_and_host는 논리 연산자 우선순위를 올바르게 처리해야 한다 (Bug fix #1)" do
+    response = Struct.new(:body, :status, :headers).new("", 200, {})
+
     # URL with no path should be deleted only if not YouTube
     article = Article.new(
       title: "No Path Test",
@@ -402,13 +404,10 @@ class ArticleTest < ActiveSupport::TestCase
 
     # Generate metadata which calls set_initial_url_and_host
     # A non-YouTube URL with no path should be deleted
-    begin
-      article.stub(:fetch_url_content, nil) do
-        article.generate_metadata
-      end
-    rescue
-      # Expected to raise or stub fetch_url_content
+    article.stub(:fetch_url_content, response) do
+      article.generate_metadata
     end
+    assert_not_nil article.deleted_at, "YouTube가 아닌 URL이고 경로가 없으면 삭제되어야 합니다."
 
     # YouTube URL should NOT be deleted even with short/no path
     youtube_article = Article.new(
@@ -417,7 +416,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://www.youtube.com"
     )
 
-    youtube_article.stub(:fetch_url_content, nil) do
+    youtube_article.stub(:fetch_url_content, response) do
       youtube_article.instance_eval do
         begin
           @url = "https://www.youtube.com"
@@ -427,7 +426,6 @@ class ArticleTest < ActiveSupport::TestCase
         end
       end
     end
-
     # YouTube should not be automatically deleted
     # (unless explicitly marked for deletion)
     assert_equal true, youtube_article.is_youtube
