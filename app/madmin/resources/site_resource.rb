@@ -11,12 +11,14 @@ class SiteResource < Madmin::Resource
   attribute :client
   attribute :created_at, form: false, index: false
   attribute :updated_at, form: false
+  attribute :deleted_at, index: true, form: false
 
   # Associations
   attribute :articles, form: false
 
   # Add scopes to easily filter records
-  # scope :published
+  scope :kept
+  scope :discarded
 
   # Add actions to the resource's show page
   # member_action do |record|

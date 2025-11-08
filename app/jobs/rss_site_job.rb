@@ -6,7 +6,7 @@ class RssSiteJob < ApplicationJob
   include RssHelper
 
   def self.enqueue_all
-    RssSiteJob.perform_later(Site.rss.order("id ASC").pluck(:id))
+    RssSiteJob.perform_later(Site.kept.rss.order("id ASC").pluck(:id))
   end
 
   # Performs the job for a given site ID.

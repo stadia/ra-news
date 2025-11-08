@@ -6,7 +6,7 @@ class GmailArticleJob < ApplicationJob
   include LinkHelper
 
   def self.enqueue_all
-    GmailArticleJob.perform_later(Site.gmail.order("id ASC").pluck(:id))
+    GmailArticleJob.perform_later(Site.kept.gmail.order("id ASC").pluck(:id))
   end
 
   # Performs the job for a given site ID.
