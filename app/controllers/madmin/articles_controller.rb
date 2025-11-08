@@ -2,7 +2,7 @@ module Madmin
   class ArticlesController < Madmin::ResourceController
     def discard
       if @record.discard
-        redirect_to madmin_article_path(@record), notice: "Article discarded successfully."
+        redirect_to madmin_article_path(@record), notice: "article discarded successfully."
       else
         redirect_to madmin_articles_path, alert: "Failed to discard article."
       end
@@ -12,7 +12,7 @@ module Madmin
 
     def restore
       if @record.undiscard
-        redirect_to madmin_article_path(@record), notice: "Article restored successfully."
+        redirect_to madmin_article_path(@record), notice: "article restored successfully."
       else
         redirect_to madmin_articles_path, alert: "Failed to restore article."
       end
