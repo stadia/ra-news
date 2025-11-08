@@ -100,12 +100,7 @@ class Article < ApplicationRecord
   end
 
   def update_slug #: bool
-    new_slug = if is_youtube?
-                 youtube_id
-               else
-                 parsed_path = URI.parse(url).path&.split("/")&.last&.split(".")&.first
-                 parsed_path.presence || "article"
-               end
+    new_slug = is_youtube? ? youtube_id : URI.parse(url).path&.split("/")&.last&.split(".")&.first
     update(slug: new_slug)
   rescue URI::InvalidURIError
     logger.error "Invalid URI for slug update: #{url}"
