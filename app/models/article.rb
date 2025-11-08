@@ -100,7 +100,7 @@ class Article < ApplicationRecord
   end
 
   def update_slug #: bool
-    new_slug = is_youtube? ? youtube_id : URI.parse(url).path.split("/").last.split(".").first
+    new_slug = is_youtube? ? youtube_id : URI.parse(url).path&.split("/")&.last&.split(".")&.first
     update(slug: new_slug)
   rescue URI::InvalidURIError
     logger.error "Invalid URI for slug update: #{url}"
@@ -170,7 +170,7 @@ class Article < ApplicationRecord
     self.host = parsed_url.host
     self.is_youtube = true if host&.match?(/youtube/i)
     # IGNORE_HOSTS 패턴에 맞는 호스트이거나 경로가 너무 짧으면 discard
-    self.deleted_at = Time.zone.now if !is_youtube && parsed_url.path.nil? || parsed_url.path.size < 2 || Article.should_ignore_url?(parsed_url.to_s)
+    self.deleted_at = Time.zone.now if !is_youtube && (parsed_url.path.nil? || parsed_url.path.size < 2) || Article.should_ignore_url?(parsed_url.to_s)
   rescue URI::InvalidURIError
     logger.error "Invalid URI for initial URL parsing: #{url}"
     self.deleted_at = Time.zone.now # 유효하지 않은 URL은 삭제 처리

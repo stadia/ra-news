@@ -23,9 +23,9 @@ class SocialController < ApplicationController
   # provider OAuth2 콜백 처리
   def provider_callback #: () -> void
     # State 검증
-    if params[:state] != session["#{provider}_state".to_sym]
+    if params[:state] != session["#{provider}_state"]
       redirect_to madmin_social_index_path, alert: "OAuth state 불일치 에러"
-      nil
+      return
     end
 
     oauth_config = Preference.get_object("#{provider}_oauth")
@@ -51,7 +51,7 @@ class SocialController < ApplicationController
       oauth_preference.save!
 
       session.delete("#{provider}_code_verifier")
-      session.delete("#{provider}_oauth_state")
+      session.delete("#{provider}_state")
 
       redirect_to madmin_social_index_path, notice: "OAuth 인증 성공! Access token이 저장되었습니다."
     rescue OAuth2::Error => e
