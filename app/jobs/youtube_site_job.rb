@@ -18,7 +18,9 @@ class YoutubeSiteJob < ApplicationJob
     return if videos.nil?
 
     videos.each do |video|
-      break if site.last_checked_at > video.published_at
+      # Skip if video has no published_at or already checked
+      next if video.published_at.blank?
+      break if site.last_checked_at && video.published_at && site.last_checked_at > video.published_at
 
       # 정규화된 URL 사용
       url = "https://#{Article::YOUTUBE_NORMALIZED_HOST}/watch?v=#{video.id}"

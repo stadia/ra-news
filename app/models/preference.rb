@@ -5,7 +5,7 @@
 class Preference < ApplicationRecord
   PROTECTED_KEYS = %w[name value]
 
-  after_initialize :define_dynamic_accessors, if: -> { persisted? && name.present? }
+  after_initialize :prepare_hash_accessor, if: -> { persisted? && name.present? }
 
   after_commit :clear_cache, on: %i[create update destroy]
 
@@ -28,37 +28,30 @@ class Preference < ApplicationRecord
     Rails.cache.delete("preferences_#{name}")
   end
 
+  # Safe hash access for preference values
+  #: (String key) -> untyped
+  def get(key)
+    return value.is_a?(Hash) ? value[key.to_s] : nil
+  end
+
+  # Safe hash setter for preference values
+  #: (String key, untyped val) -> untyped
+  def set(key, val)
+    self.value = if value.is_a?(Hash)
+                   (value || {}).merge(key.to_s => val)
+                 else
+                   { key.to_s => val }
+                 end
+    val
+  end
+
   private
 
-  def define_dynamic_accessors
-    # This is an example configuration.
-    # You should adjust this case statement to your needs.
-    accessors = case name
-    when "ignore_hosts" # Example name
-      [ :hosts ]
-    # Add other cases for other preference names
-    when /_oauth$/
-      # Common keys for OAuth preferences
-      [ :site, :client_id, :client_secret, :access_token, :refresh_token, :expires_at, :token_created_at ]
-    else
-                  []
-    end
+  def prepare_hash_accessor
+    # Ensures value is a Hash if needed based on preference name
+    return unless value.is_a?(Hash) || %w[ignore_hosts].any? { |n| name.match?(n) } || name.match?(/_oauth$/)
 
-    accessors.each do |key|
-      # Define getter
-      define_singleton_method(key) do
-        value.is_a?(Hash) ? value&.[](key.to_s) : value
-      end
-
-      # Define setter
-      define_singleton_method("#{key}=") do |new_value|
-        case key
-        when :hosts
-          self.value = new_value.split(" ")
-        else
-          self.value = value.is_a?(Hash) ? (value || {}).merge(key.to_s => new_value) : value
-        end
-      end
-    end
+    # Initialize empty hash if value is nil
+    self.value ||= {} if name.match?(/_oauth$/)
   end
 end

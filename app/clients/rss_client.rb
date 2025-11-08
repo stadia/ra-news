@@ -11,6 +11,15 @@ class RssClient < ApplicationClient
     if response.status.between?(300, 399) && response.headers["location"]
       response = get(response.headers["location"])
     end
-    RSS::Parser.parse(response.body, false)
+
+    begin
+      RSS::Parser.parse(response.body, false)
+    rescue RSS::Error => e
+      logger.error "RSS parsing error for path #{path}: #{e.message}"
+      nil
+    rescue StandardError => e
+      logger.error "Unexpected error parsing RSS from #{path}: #{e.message}"
+      nil
+    end
   end
 end

@@ -107,9 +107,12 @@ PROMPT
     Article.transaction do
       # summary_detail에서 body 부분을 summary_body로 분리
       update_attrs = parsed_json.slice("summary_key", "summary_detail", "title_ko", "is_related")
-      if parsed_json["summary_detail"].is_a?(Hash) && parsed_json["summary_detail"]["body"].present?
+
+      # Safe access to summary_detail with nil checks
+      summary_detail = parsed_json["summary_detail"]
+      if summary_detail.is_a?(Hash) && summary_detail["body"].present?
         # 마크다운 포맷 정규화 - 체이닝으로 간소화
-        update_attrs["summary_body"] = parsed_json["summary_detail"]["body"]
+        update_attrs["summary_body"] = summary_detail["body"]
           .gsub('\\n', "\n")  # 이스케이프 문자를 실제 개행으로 변환
           .gsub(/([가-힣a-zA-Z0-9\.\)])(\#{1,6})([^#\n])/, "\\1\n\n\\2 \\3")  # 헤더 앞 간격 추가
           .gsub(/\n(\*\s+|\-\s+|\d+\.\s+)/, "\n\n\\1")  # 리스트 앞 간격 추가
@@ -119,7 +122,7 @@ PROMPT
           .gsub(/\n{3,}/, "\n\n")  # 연속 개행 정리
           .strip
         # summary_detail에서 body 제거
-        update_attrs["summary_detail"] = update_attrs["summary_detail"].except("body")
+        update_attrs["summary_detail"] = summary_detail.except("body")
       end
       # Update article attributes in single query
       article.update!(update_attrs)
