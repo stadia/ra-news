@@ -9,7 +9,12 @@ namespace :madmin do
       put :restore
     end
   end
-  resources :sites
+  resources :sites do
+    member do
+      put :discard
+      put :restore
+    end
+  end
   resources :users
 
   # Social 메뉴 - OAuth 인증

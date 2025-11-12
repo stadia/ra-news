@@ -1,5 +1,7 @@
 # Generated from app/models/site.rb with RBS::Inline
 
 class Site < ApplicationRecord
+  include Discard::Model
+
   def init_client: () -> Object
 end

@@ -1,7 +1,7 @@
 class RemoveUnusedIndex < ActiveRecord::Migration[8.0]
   def up
     remove_index :articles, name: :index_articles_on_host
-    remove_index :articles, name: :index_articles_on_title
+    remove_index :articles, name: :index_articles_on_title if index_exists?(:articles, :title)
 
     remove_index :comments, name: :index_comments_on_article_id
     remove_index :comments, name: :index_comments_on_user_id

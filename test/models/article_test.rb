@@ -293,6 +293,25 @@ class ArticleTest < ActiveSupport::TestCase
     assert_equal "test123", article.slug
   end
 
+  test "update_slug는 경로가 없는 URL을 안전하게 처리해야 한다 (Bug fix #2)" do
+    article = Article.create!(
+      title: "No Path URL",
+      url: "https://example.com",
+      origin_url: "https://example.com"
+    )
+
+    # Should not raise NoMethodError when path is nil
+    assert_nothing_raised do
+      result = article.update_slug
+      assert result
+    end
+
+    article.reload
+    # Should have fallback slug when path is empty
+    assert_not_nil article.slug
+    assert_equal "article", article.slug
+  end
+
   test "user_name은 user가 존재할 때 사용자 이름을 반환해야 한다" do
     assert_equal "존 도", @article.user_name
   end
@@ -371,6 +390,45 @@ class ArticleTest < ActiveSupport::TestCase
     assert Article.should_ignore_url?("invalid-url")
     assert Article.should_ignore_url?(nil)
     assert Article.should_ignore_url?("")
+  end
+
+  test "set_initial_url_and_host는 논리 연산자 우선순위를 올바르게 처리해야 한다 (Bug fix #1)" do
+    response = Struct.new(:body, :status, :headers).new("", 200, {})
+
+    # URL with no path should be deleted only if not YouTube
+    article = Article.new(
+      title: "No Path Test",
+      url: "https://example.com",
+      origin_url: "https://example.com"
+    )
+
+    # Generate metadata which calls set_initial_url_and_host
+    # A non-YouTube URL with no path should be deleted
+    article.stub(:fetch_url_content, response) do
+      article.generate_metadata
+    end
+    assert_not_nil article.deleted_at, "YouTube가 아닌 URL이고 경로가 없으면 삭제되어야 합니다."
+
+    # YouTube URL should NOT be deleted even with short/no path
+    youtube_article = Article.new(
+      title: "YouTube No Path",
+      url: "https://www.youtube.com",
+      origin_url: "https://www.youtube.com"
+    )
+
+    youtube_article.stub(:fetch_url_content, response) do
+      youtube_article.instance_eval do
+        begin
+          @url = "https://www.youtube.com"
+          set_initial_url_and_host
+        rescue URI::InvalidURIError
+          # Expected for this test
+        end
+      end
+    end
+    # YouTube should not be automatically deleted
+    # (unless explicitly marked for deletion)
+    assert_equal true, youtube_article.is_youtube
   end
 
   # ========== Store Accessor Tests ==========

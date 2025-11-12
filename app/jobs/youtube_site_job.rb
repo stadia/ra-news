@@ -4,7 +4,7 @@
 
 class YoutubeSiteJob < ApplicationJob
   def self.enqueue_all
-    YoutubeSiteJob.perform_later(Site.youtube.order("id ASC").pluck(:id))
+    YoutubeSiteJob.perform_later(Site.kept.youtube.order("id ASC").pluck(:id))
   end
 
   #: (Array[Integer] ids) -> void
