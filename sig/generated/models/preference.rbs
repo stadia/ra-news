@@ -1,7 +1,7 @@
 # Generated from app/models/preference.rb with RBS::Inline
 
 class Preference < ApplicationRecord
-  def value=: (untyped val) -> untyped
+  PROTECTED_KEYS: ::Array[untyped]
 
   # : (String name) -> Hash[String, untyped] || Array[untyped]
   def self.get_value: (String name) -> Hash[String, untyped]
@@ -9,6 +9,8 @@ class Preference < ApplicationRecord
   def self.get_object: (untyped name) -> untyped
 
   def self.ignore_hosts: () -> Array[String]
+
+  def clear_cache: () -> untyped
 
   private
 
