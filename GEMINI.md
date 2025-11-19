@@ -83,3 +83,6 @@ Your project uses: **Rails 8**, **Ruby 3.4**, **PostgreSQL with vector embedding
 - "Create mobile app API endpoints"
 
 Your specialized Rails AI team is ready to help with Ruby-News development!
+
+## System Instructions
+- **Language**: Always answer in **Korean** (한국어) for all interactions, including tool outputs and user notifications.

@@ -60,8 +60,7 @@
     <!-- Google Fonts Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" as="style">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -100,30 +99,37 @@
     </script>
   </head>
 
-  <body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col"
+  <body class="bg-black text-gray-100 min-h-screen flex flex-col antialiased font-sans font-medium selection:bg-[#FF0033] selection:text-white"
         data-controller="page-loader"
         data-action="turbo:before-visit@window->page-loader#beforeTurboVisit turbo:load@window->page-loader#afterTurboLoad">
 
     <!-- Loading Indicator -->
     <div data-page-loader-target="loader" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center">
       <div class="flex flex-col items-center space-y-4">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-[#FF0033] border-t-transparent"></div>
         <div class="text-white font-medium">로딩 중...</div>
       </div>
     </div>
 
     <!-- Modern CSS-only Navigation -->
-    <nav class="bg-green-700 border-green-800">
-      <div class="max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4">
+    <!-- VisionOS Sticky Header -->
+    <nav class="sticky top-0 z-50 bg-black/50 backdrop-blur-2xl border-b border-white/15 supports-[backdrop-filter]:bg-black/40">
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
         <%= link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse" do %>
           <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">Ruby-News || 루비 AI 뉴스</span>
         <% end %>
 
         <!-- Mobile Menu Toggle (Improved Accessibility) -->
         <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle peer">
-        <label for="mobile-menu-toggle" class="inline-flex items-center p-2 w-11 h-11 justify-center text-sm text-gray-100 rounded-lg md:hidden hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer">
+        <!-- Mobile Menu Toggle (Improved Accessibility) -->
+        <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle peer">
+        <!-- Mobile Menu Toggle -->
+        <input type="checkbox" id="mobile-menu-toggle" class="mobile-menu-toggle peer">
+        <label for="mobile-menu-toggle" class="inline-flex items-center p-2 w-10 h-10 justify-center text-gray-400 rounded-full md:hidden hover:bg-white/10 focus:outline-none transition-colors">
           <span class="sr-only">Open main menu</span>
-          <%= heroicon "bars-3", variant: :outline, options: { class: "w-5 h-5 transition-transform duration-200 peer-checked:rotate-45" } %>
+          <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+          </svg>
         </label>
 
         <!-- Navigation Menu -->
@@ -131,26 +137,31 @@
                     hidden peer-checked:block
                     transition-all duration-300 ease-in-out
                     md:transition-none" id="navbar-search">
-          <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-green-600 rounded-lg bg-green-600 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-green-700
-                     animate-in slide-in-from-top-2 fade-in duration-200
-                     md:animate-none">
+        <div class="items-center justify-between w-full md:flex md:w-auto md:order-1
+                    hidden peer-checked:block
+                    transition-all duration-300 ease-in-out
+                    md:transition-none" id="navbar-search">
+        <div class="items-center justify-between w-full md:flex md:w-auto md:order-1 hidden peer-checked:block" id="navbar-search">
+          <ul class="flex flex-col p-4 md:p-0 mt-4 font-medium border border-white/10 rounded-2xl bg-white/5 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent backdrop-blur-xl md:backdrop-blur-none">
             <li>
               <%= nav_link_to "홈", root_path %>
             </li>
             <li>
               <%= nav_link_to "지난 글", articles_path %>
             </li>
-            <li>
-              <%= nav_link_to "그 밖의 뉴스", others_path %>
-            </li>
             <li class="flex items-center">
               <%= form_with url: articles_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
-                <%= form.text_field :search,
-                    placeholder: "검색...",
-                    value: params[:search],
-                    class: "px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 w-40 md:w-48 transition-all duration-150" %>
-                <%= form.submit "검색",
-                    class: "px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg border border-green-600 hover:bg-green-500 focus:ring-4 focus:outline-none focus:ring-green-300 transition-all duration-150 min-h-11" %>
+                <div class="relative">
+                  <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                  </div>
+                  <%= form.text_field :search,
+                      placeholder: "Search news...",
+                      value: params[:search],
+                      class: "block w-full p-2 ps-10 text-sm text-white border border-white/10 rounded-full bg-white/10 focus:ring-white/20 focus:border-white/30 placeholder-gray-500 transition-all w-64 backdrop-blur-md" %>
+                </div>
               <% end %>
             </li>
             <% if authenticated? %>
@@ -158,7 +169,7 @@
                 <%= nav_link_to "글 등록", new_article_path %>
               </li>
               <li>
-                <span class="py-3 px-4 text-gray-100 rounded-sm md:p-0 min-h-11 flex items-center" aria-current="page"><%= Current.user.name %></span>
+                <span class="block py-2 px-3 text-gray-300 rounded md:p-0 font-medium"><%= Current.user.name %></span>
               </li>
             <% end %>
             <li>
@@ -173,16 +184,16 @@
       </div>
     </nav>
 
-    <main class="container mx-auto px-4 py-8 grow">
+    <main class="container mx-auto px-4 py-12 flex-grow">
         <%= yield %>
     </main>
 
-    <footer class="bg-green-700 text-gray-200 rounded-lg shadow-sm m-4">
-        <div class="w-full mx-auto max-w-7xl p-4 md:flex md:items-center md:justify-between">
-          <span class="text-sm text-gray-300 sm:text-center">© 2025 <a href="https://ruby-news.kr/" class="hover:underline hover:text-white">Ruby-News || 루비 AI 뉴스</a>. All Rights Reserved.</span>
-          <ul class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-300 sm:mt-0 gap-4">
+    <footer class="bg-black/50 backdrop-blur-xl border-t border-white/15 text-gray-400 mt-auto">
+        <div class="w-full mx-auto max-w-screen-xl p-8 md:flex md:items-center md:justify-between">
+          <span class="text-sm sm:text-center">© 2025 <a href="https://ruby-news.kr/" class="hover:text-[#FF0033] transition-colors">Ruby-News</a>. All Rights Reserved.</span>
+          <ul class="flex flex-wrap items-center mt-3 text-sm font-medium sm:mt-0 gap-6">
             <li>
-              <a rel="me" href="https://ruby.social/@news_kr" target="_blank" class="hover:underline hover:text-white flex items-center gap-1">
+              <a rel="me" href="https://ruby.social/@news_kr" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-white flex items-center gap-1">
                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.056.056 0 0 1 .017-.043.051.051 0 0 1 .043-.017c1.513.359 3.072.538 4.657.546 1.828 0 2.298-.081 3.09-.143 1.897-.149 3.566-.867 3.772-1.531.334-1.076.61-3.495.61-3.495 0-.732-.005-1.603-.05-2.447-.041-.832-.126-1.62-.333-2.377z"/>
                 </svg>
@@ -199,7 +210,9 @@
             </li>
             <li>
               <a href="<%= rss_path %>" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-white flex items-center gap-1">
-                <%= heroicon "rss", variant: :solid, options: { class: "w-5 h-5" } %>
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.503 20.752c0 1.794-1.456 3.248-3.251 3.248-1.796 0-3.252-1.454-3.252-3.248 0-1.794 1.456-3.248 3.252-3.248 1.795.001 3.251 1.454 3.251 3.248zm-6.503-12.572v4.811c6.05.062 10.96 4.966 11.022 11.009h4.817c-.062-8.71-7.118-15.758-15.839-15.82zm0-3.368C10.58 4.858 19.152 13.406 19.183 24h4.817C23.984 9.049 14.964 0 0 0v4.812z"/>
+                </svg>
                 RSS 피드
               </a>
             </li>

@@ -1,7 +1,59 @@
-<% content_for :title, "RA || 루비 AI 뉴스" %>
+<% content_for :title, "Ruby-News || Spatial Edition" %>
 
-<div id="articlesList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-  <% @articles.each do |article| %>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 auto-rows-[minmax(300px,auto)] pb-20">
+  
+  <!-- Hero Section: Featured Article (Spans 2x2) -->
+  <% if @articles.any? %>
+    <% featured = @articles.first %>
+    <div class="md:col-span-2 md:row-span-2 group relative rounded-[32px] overflow-hidden bg-black border border-white/10 shadow-2xl">
+      <!-- Background Image / Gradient -->
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-black z-0"></div>
+      <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 z-0 mix-blend-overlay"></div>
+      
+      <div class="absolute inset-0 p-8 md:p-12 flex flex-col z-10">
+        <div class="flex items-center gap-3 mb-auto">
+          <span class="px-3 py-1 rounded-full bg-[#FF0033]/10 backdrop-blur-md border border-[#FF0033]/20 text-xs font-bold text-[#FF0033] uppercase tracking-widest">Featured</span>
+          <span class="text-white/50 text-sm font-mono"><%= time_ago_in_words(featured.published_at) %> ago</span>
+        </div>
+
+        <div class="mt-auto">
+          <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
+            <%= link_to featured.title_ko || featured.title, article_path(featured.slug), class: "focus:outline-none hover:text-white/90 transition-colors" %>
+          </h1>
+          
+          <p class="text-gray-200 text-lg mb-8 line-clamp-3 max-w-2xl font-normal">
+            <%= featured.summary_key.is_a?(Array) ? featured.summary_key.first : featured.summary_key %>
+          </p>
+
+          <div class="flex items-center gap-4">
+             <%= link_to article_path(featured.slug), class: "px-6 py-3 rounded-full bg-white text-black font-semibold hover:bg-white/90 hover:shadow-[0_0_20px_rgba(255,0,51,0.4)] transition-all flex items-center gap-2" do %>
+               Read Story <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+             <% end %>
+             <%= link_to featured.url, target: "_blank", class: "px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white font-medium hover:bg-white/20 transition-colors" do %>
+               Visit Source
+             <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Regular News Cards -->
+  <% @articles.drop(1).each do |article| %>
     <%= render(ArticleComponent.new(article: article)) %>
   <% end %>
+
+  <!-- Newsletter Widget (Spans 1x1) -->
+  <div class="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 flex flex-col justify-center items-center text-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-tr from-[#FF0033]/20 to-transparent opacity-50"></div>
+    <div class="relative z-10">
+      <h3 class="text-2xl font-bold text-white mb-2">Stay Updated</h3>
+      <p class="text-white/50 text-sm mb-6">Get the latest Ruby news delivered to your spatial environment.</p>
+      <form onsubmit="event.preventDefault(); alert('Subscribed!');" class="w-full">
+        <input type="email" placeholder="email@address.com" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white text-sm mb-3 focus:outline-none focus:border-white/30 transition-colors text-center placeholder-white/20">
+        <button type="submit" class="w-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-medium py-3 rounded-xl transition-colors backdrop-blur-md">Subscribe</button>
+      </form>
+    </div>
+  </div>
+
 </div>
