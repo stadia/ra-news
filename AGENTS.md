@@ -17,6 +17,12 @@ This file provides guidance to AI Agents when working with code in this reposito
 
 ## Development Commands
 
+### Environment Setup
+개발 환경 설정 전에 PostgreSQL 확장 설치가 필수입니다:
+- **macOS**: [docs/postgresql-extensions.md](docs/postgresql-extensions.md) 참고
+- 필수 확장: `pg_bigm`, `textsearch_ko`, `pgvector`
+- 마이그레이션 실패 시 확장 설치 상태를 먼저 확인하세요.
+
 ### Running the Application
 ```bash
 bin/dev                    # Start Rails server + CSS watching (via Procfile.dev)
@@ -106,13 +112,15 @@ Multi-layered search with Korean/English support:
 Article.full_text_search_for(term) # index: index_articles_on_tsv
 
 # Language-specific search
-Article.title_matching(query)  # Korean dictionary
+Article.title_matching(query)  # Korean dictionary (requires textsearch_ko extension)
 Article.body_matching(query)   # English dictionary
 
 # Vector similarity for related articles
 article.nearest_neighbors(:embedding, distance: "cosine")
 ```
 - 임베딩 컬럼은 1536차원 `vector` 타입이며, 신규 필드는 `lib/tasks/embeddings.rake`를 참고해 백필하세요.
+- **중요**: 한국어 검색은 `textsearch_ko` 확장에 의존하며, `mecab-ko` 형태소 분석기를 사용합니다.
+- macOS 환경에서 `textsearch_ko` 설치 시 소스 패치가 필요합니다 ([상세 가이드](docs/postgresql-extensions.md#3-textsearch_ko-소스-빌드-및-패치)).
 
 ### Social Media Integration
 외부 소셜 미디어 플랫폼에 Article을 자동으로 게시하고 삭제하는 기능:

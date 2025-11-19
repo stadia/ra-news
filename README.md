@@ -139,9 +139,14 @@ RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집
 ### 1. 요구 사항
 
 - Ruby 4.0
-- PostgreSQL (pgvector 확장 활성화)
+- PostgreSQL 14+ with 확장:
+  - pg_bigm (바이그램 전문 검색)
+  - textsearch_ko (한국어 형태소 분석)
+  - pgvector (벡터 임베딩)
 - Node.js (Tailwind 빌드용)
 - Redis (옵션: 캐시/백그라운드 처리 구성에 따라)
+
+> **macOS 사용자**: PostgreSQL 확장 설치 방법은 [PostgreSQL 확장 설치 가이드](docs/postgresql-extensions.md)를 참고하세요.
 
 ### 2. 의존성 설치
 
