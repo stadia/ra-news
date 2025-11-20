@@ -5,6 +5,8 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
+  has_many :user_roles, dependent: :destroy
+  has_many :roles, through: :user_roles
 
   # Email validations
   validates :email_address, presence: true,
@@ -27,13 +29,20 @@ class User < ApplicationRecord
   normalizes :name, with: ->(n) { n.strip }
 
   # Scopes
-  scope :admins, -> { where(email_address: [ "stadia@gmail.com" ]) }
+  scope :with_role, ->(role_name) do
+    joins(:roles).where(roles: { name: role_name.to_s }).distinct
+  end
+  scope :admins, -> { with_role(:admin) }
 
   def admin? #: bool
-    email_address == "stadia@gmail.com"
+    has_role?(:admin)
   end
 
   def full_name #: String
     name.presence || email_address.split("@").first
+  end
+
+  def has_role?(role_name) #: bool
+    roles.exists?(name: role_name.to_s)
   end
 end
