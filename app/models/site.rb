@@ -7,7 +7,7 @@ class Site < ApplicationRecord
 
   self.discard_column = :deleted_at
 
-  has_many :articles, dependent: :nullify
+  has_many :articles, dependent: :destroy
 
   validates :name, :client, presence: true
 
