@@ -7,11 +7,11 @@ class ArticlesController < ApplicationController
 
   before_action :set_article, only: %i[ show edit ]
 
-  include Pagy::Backend
+  include Pagy::Method
 
   # GET /articles or /articles.json
   def index
-    scope = Article.kept.confirmed
+    scope = Article.kept.confirmed.related
 
     article = if params[:search].present?
       scope.full_text_search_for(params[:search])
@@ -24,6 +24,11 @@ class ArticlesController < ApplicationController
       end
       scope.where.not(id: id)
     end
+    @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
+  end
+
+  def others
+    article = Article.kept.confirmed.unrelated
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
   end
 

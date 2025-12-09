@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./pagy-tailwind.css";
 
 @theme {
     --color-foreground: #bab7b6;
@@ -130,91 +131,6 @@ body select {
 .pagy a:not(.gap).current {
     @apply text-white bg-green-600;
     font-weight: 600;
-}
-
-.pagy .gap {
-    @apply text-gray-500;
-    padding: 0.25rem 0.125rem;
-    flex-shrink: 0;
-}
-
-@media (min-width: 640px) {
-    .pagy .gap {
-        padding: 0.25rem;
-    }
-}
-
-.pagy label {
-    @apply inline-block whitespace-nowrap bg-gray-700 text-gray-300 rounded-lg;
-    padding: 0.125rem 0.5rem;
-    flex-shrink: 0;
-}
-
-@media (min-width: 640px) {
-    .pagy label {
-        padding: 0.125rem 0.75rem;
-    }
-}
-
-.pagy label input {
-    @apply bg-gray-800 border-none rounded-md text-gray-200;
-    width: 3rem;
-    text-align: center;
-}
-
-@media (min-width: 640px) {
-    .pagy label input {
-        width: 4rem;
-    }
-}
-
-/* Container for pagination with overflow protection */
-.pagy-container {
-    @apply w-full;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-@media (max-width: 640px) {
-    .pagy-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
-    }
-
-    .pagy-container::-webkit-scrollbar {
-        height: 2px;
-    }
-
-    .pagy-container::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .pagy-container::-webkit-scrollbar-thumb {
-        background-color: rgba(156, 163, 175, 0.5);
-        border-radius: 1px;
-    }
-
-    .pagy-container::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(156, 163, 175, 0.7);
-    }
-}
-
-/* Wrapper for the entire pagination section */
-.pagy-wrapper {
-    @apply w-full max-w-full;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 1rem;
-    box-sizing: border-box;
-}
-
-@media (max-width: 640px) {
-    .pagy-wrapper {
-        padding: 0 0.5rem;
-    }
 }
 
 /* Mobile menu toggle accessibility improvements */

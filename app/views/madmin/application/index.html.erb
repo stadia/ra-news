@@ -63,6 +63,6 @@
 </div>
 
 <div class="pagination flex flex-col md:flex-row md:items-center md:justify-between gap-2 mt-4">
-  <%== pagy_nav @pagy if @pagy.pages > 1 %>
+  <%== @pagy.series_nav if @pagy.pages > 1 %>
   <span class="text-sm text-gray-500">Showing <%= tag.strong @pagy.in %> of <%= tag.strong @pagy.count %></span>
 </div>

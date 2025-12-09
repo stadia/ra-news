@@ -142,6 +142,9 @@
             <li>
               <%= nav_link_to "지난 글", articles_path %>
             </li>
+            <li>
+              <%= nav_link_to "그 밖의 뉴스", others_path %>
+            </li>
             <li class="flex items-center">
               <%= form_with url: articles_path, method: :get, local: true, class: "flex items-center space-x-2" do |form| %>
                 <%= form.text_field :search,

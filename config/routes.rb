@@ -7,6 +7,8 @@ Rails.application.routes.draw do
     resources :comments, only: %i[create destroy]
   end
 
+  get "others" => "articles#others"
+
   resource :users, only: %i[edit update destroy]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
