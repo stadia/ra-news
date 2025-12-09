@@ -5,8 +5,6 @@
 class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
-  has_many :user_roles, dependent: :destroy
-  has_many :roles, through: :user_roles
 
   # Email validations
   validates :email_address, presence: true,
@@ -30,7 +28,7 @@ class User < ApplicationRecord
 
   # Scopes
   scope :with_role, ->(role_name) do
-    joins(:roles).where(roles: { name: role_name.to_s }).distinct
+    where("? = ANY (roles)", role_name.to_s).distinct
   end
   scope :admins, -> { with_role(:admin) }
 
@@ -43,6 +41,6 @@ class User < ApplicationRecord
   end
 
   def has_role?(role_name) #: bool
-    roles.exists?(name: role_name.to_s)
+    roles.include? role_name.to_s
   end
 end
