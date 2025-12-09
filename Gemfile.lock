@@ -117,9 +117,9 @@ GEM
       reline (>= 0.3.8)
     discard (1.4.0)
       activerecord (>= 4.2, < 9.0)
-    dotenv (3.1.8)
-    dotenv-rails (3.1.8)
-      dotenv (= 3.1.8)
+    dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
       railties (>= 6.1)
     drb (2.2.3)
     ed25519 (1.4.0)
@@ -202,7 +202,7 @@ GEM
     jbuilder (2.14.1)
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
-    json (2.16.0)
+    json (2.17.0)
     jwt (3.1.2)
       base64
     kamal (2.9.0)
@@ -377,7 +377,7 @@ GEM
       ffi (~> 1.0)
     rbs (3.9.5)
       logger
-    rdoc (6.15.1)
+    rdoc (6.16.1)
       erb
       psych (>= 4.0.0)
       tsort
@@ -507,7 +507,7 @@ GEM
       uri (>= 0.12.0)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
-    stringio (3.1.8)
+    stringio (3.1.9)
     strscan (3.1.5)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
