@@ -5,3 +5,6 @@ admin:
 
 user:
   name: user
+
+editor:
+  name: editor

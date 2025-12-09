@@ -182,23 +182,23 @@ class UserTest < ActiveSupport::TestCase
 
   test "has_role?은 역할 보유 여부를 확인해야 한다" do
     assert @admin.has_role?(:admin)
-    assert @user.has_role?(:editor)
+    assert @user.has_role?(:user)
     assert_not @user.has_role?(:admin)
   end
 
   test "admin?은 역할 기반으로 동작해야 한다" do
-    user_roles(:admin_admin).destroy!
+    roles(:admin).destroy!
     @admin.reload
     assert_not @admin.admin?
 
-    @user.roles << @admin_role
+    @user.roles << @admin_role.name
     assert @user.admin?
   end
 
   test "사용자는 여러 역할을 가질 수 있어야 한다" do
-    @admin.roles << @editor_role
-    assert_includes @admin.roles.map(&:name), "admin"
-    assert_includes @admin.roles.map(&:name), "editor"
+    @admin.roles << @editor_role.name
+    assert_includes @admin.roles, "admin"
+    assert_includes @admin.roles, "editor"
   end
 
   test "full_name은 이름이 있을 때 이름을 반환해야 한다" do

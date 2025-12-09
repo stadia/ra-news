@@ -28,7 +28,7 @@ class User < ApplicationRecord
 
   # Scopes
   scope :with_role, ->(role_name) do
-    where("? = ANY (roles)", role_name.to_s).distinct
+    where("? = ANY (roles)", role_name.to_s)
   end
   scope :admins, -> { with_role(:admin) }
 
@@ -42,5 +42,9 @@ class User < ApplicationRecord
 
   def has_role?(role_name) #: bool
     roles.include? role_name.to_s
+  end
+
+  def roles=(role_names)
+    self[:roles] = role_names.is_a?(Array) ? role_names.uniq : role_names.split(" ").uniq
   end
 end

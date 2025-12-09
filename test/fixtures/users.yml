@@ -8,42 +8,60 @@ john:
   email_address: john@example.com
   name: 존 도
   password_digest: <%= password_digest %>
+  roles:
+    - user
+    - editor
 
 jane:
   email_address: jane@example.com
   name: 제인 스미스
   password_digest: <%= password_digest %>
+  roles:
+    - user
 
 # Admin user
 admin:
   email_address: stadia@gmail.com
   name: 관리자
   password_digest: <%= admin_password_digest %>
+  roles:
+    - user
+    - admin
 
 # Test users with Korean names
 korean_user:
   email_address: korean@example.com
   name: 김철수
   password_digest: <%= password_digest %>
+  roles:
+    - user
 
 user_with_spaces:
   email_address: spaces@example.com
   name: 홍 길 동
   password_digest: <%= password_digest %>
+  roles:
+    - user
 
 # User for validation testing
 minimal_user:
   email_address: minimal@example.com
   name: 최소
   password_digest: <%= password_digest %>
+  roles:
+    - user
 
 # Legacy fixture names for backwards compatibility
 one:
   email_address: one@example.com
   name: 사용자 일
   password_digest: <%= password_digest %>
+  roles:
+    - user
 
 two:
   email_address: two@example.com
   name: 사용자 이
   password_digest: <%= password_digest %>
+  roles:
+    - user
