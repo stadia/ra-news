@@ -1,12 +1,11 @@
 class RoleResource < Madmin::Resource
   # Attributes
   attribute :id, form: false
-  attribute :name, index: true
+  attribute :name
   attribute :created_at, form: false
   attribute :updated_at, form: false
 
   # Associations
-  attribute :users, index: false
 
   # Add scopes to easily filter records
   # scope :published
