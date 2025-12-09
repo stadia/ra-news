@@ -3,5 +3,5 @@
 admin:
   name: admin
 
-editor:
-  name: editor
+user:
+  name: user
