@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# docker build --platform linux/amd64 -f Dockerfile.postgres -t postgres-ra-news:16 .
+
+for id in $(docker ps -q)
+do
+    if [[ $(docker port "${id}") == *"5432"* ]]; then
+        echo "Stop previous container ${id}"
+        docker stop "${id}"
+        docker wait "${id}"
+    fi
+done
+
+mkdir -p $(realpath $0 | xargs dirname)/../tmp/docker/volumes/postgresql
+
+# docker pull pgvector/pgvector:pg16
+
+if docker container inspect postgresql-db >/dev/null 2>&1; then
+  echo "Restart docker db.."
+  docker restart postgresql-db
+  docker attach postgresql-db
+else
+  echo "Run docker db..."
+        docker run --name postgresql-db \
+                -e POSTGRES_USER=postgres \
+                -e POSTGRES_PASSWORD=postgres \
+                -e POSTGRES_DB=ra-news_development \
+                -p 5432:5432 \
+                -v $(realpath $0 | xargs dirname)/../tmp/docker/volumes/postgresql:/var/lib/postgresql \
+                postgres-ra-news:16
+fi
