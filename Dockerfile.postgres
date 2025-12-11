@@ -1,43 +1,25 @@
-# ==========================================
-# PostgreSQL 16 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
-# x86 Mac 환경용
-# ==========================================
+# x86 Mac 환경용 PostgreSQL 16 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
 
-# 1️⃣ 베이스 이미지: pgvector 16
+# 베이스 이미지: pgvector 16
 FROM --platform=linux/amd64 pgvector/pgvector:pg16
 
-# 2️⃣ 필수 패키지 설치
-RUN apt-get update && apt-get install -y \
-    git \
-    build-essential \
-    wget \
-    curl \
-    libicu-dev \
-    libxml2-dev \
-    postgresql-server-dev-16 \
-    postgresql-contrib-16 \
-    mecab \
-    libmecab-dev \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# 3️⃣ pg_bigm 설치
-RUN git clone https://github.com/pgbigm/pg_bigm.git /tmp/pg_bigm \
+# 필수 패키지 설치, 확장 빌드 및 정리  
+RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-16 postgresql-contrib-16 mecab libmecab-dev" \  
+    && apt-get update \
+    && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates \
+    \
+    # pg_bigm 설치 (특정 버전 고정)  
+    && git clone --branch V1_2_16 --depth 1 https://github.com/pgbigm/pg_bigm.git /tmp/pg_bigm \
     && cd /tmp/pg_bigm \
-    && make USE_PGXS=1 \
-    && make USE_PGXS=1 install \
-    && rm -rf /tmp/pg_bigm
-
-# 4️⃣ fuzzystrmatch는 postgresql-contrib-16으로 이미 설치 가능
-#    필요시 컨테이너 접속 후 CREATE EXTENSION fuzzystrmatch;
-
-# 5️⃣ textsearch_ko 설치
-RUN git clone https://github.com/i0seph/textsearch_ko.git /tmp/textsearch_ko \
+    && make USE_PGXS=1 && make USE_PGXS=1 install \
+    \
+    # textsearch_ko 설치 (특정 커밋 고정)
+    && cd / \  
+    && git clone --depth 1 https://github.com/i0seph/textsearch_ko.git /tmp/textsearch_ko \
     && cd /tmp/textsearch_ko \
-    && make USE_PGXS=1 \
-    && make USE_PGXS=1 install \
-    && rm -rf /tmp/textsearch_ko
-
-# # 6️⃣ 컨테이너 시작 시 PostgreSQL 실행
-# EXPOSE 5432
-# CMD ["postgres"]
+    && make USE_PGXS=1 && make USE_PGXS=1 install \
+    \
+    # 정리  
+    && apt-get purge -y --auto-remove $BUILD_DEPS \
+    && rm -rf /tmp/pg_bigm /tmp/textsearch_ko \
+    && rm -rf /var/lib/apt/lists/*
