@@ -1,0 +1,28 @@
+#!/bin/sh
+set -e
+
+if [ "$(docker ps -q -f name=postgresql-db)" ]; then  
+  echo "Stop previous container postgresql-db"  
+  docker stop postgresql-db  
+  docker wait postgresql-db  
+fi 
+
+
+mkdir -p $(dirname "$(realpath "$0")")/../tmp/docker/volumes/postgresql
+
+# docker pull pgvector/pgvector:pg16
+
+if docker container inspect postgresql-db >/dev/null 2>&1; then
+  echo "Restarting docker db in background..."  
+  docker restart postgresql-db  
+  echo "Container postgresql-db restarted. To view logs, run: docker logs -f postgresql-db"  
+else  
+  echo "Running docker db in background..."  
+  docker run -d --name postgresql-db \
+          -e POSTGRES_USER=postgres \
+          -e POSTGRES_PASSWORD=postgres \
+          -e POSTGRES_DB=ra-news_development \
+          -p 5432:5432 \
+          -v "$(dirname "$(realpath "$0")")/../tmp/docker/volumes/postgresql":/var/lib/postgresql \
+          postgres-ra-news:16
+fi
