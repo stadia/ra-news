@@ -1,0 +1,22 @@
+<%= form_for following, url: federails.client_following_url do |f| %>
+  <h1>DELETE ME</h1>
+  <% if following.errors.any? %>
+    <div class="error_explanation">
+      <h2><%= pluralize(following.errors.count, 'error') %> prohibited this following from being saved:</h2>
+      <ul>
+        <% following.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :target_actor %>
+    <%= f.collection_select :target_actor_id, Federails::Actor.all, :id, :name %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit 'Save' %>
+  </div>
+<% end %>

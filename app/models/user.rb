@@ -32,6 +32,20 @@ class User < ApplicationRecord
   end
   scope :admins, -> { with_role(:admin) }
 
+  # Include the concern here:
+  include Federails::ActorEntity
+
+  # Configure field names
+  acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_url
+
+  before_create do
+    if name =~ /\A[a-zA-Z0-9]+\z/
+      self.username = name
+    else
+      self.username = email_address.split("@").first
+    end
+  end
+
   def admin? #: bool
     has_role?(:admin)
   end

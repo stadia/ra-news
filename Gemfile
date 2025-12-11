@@ -98,3 +98,4 @@ gem "view_component", "~> 4.0"
 gem "oauth2", "~> 2.0"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
+gem "federails"

@@ -1,0 +1,26 @@
+Federation:
+
+<ul>
+  <%# Available publicly %>
+  <li><%= link_to 'Actors', federails.client_actors_url %></li>
+  <li><%= link_to 'Activities', federails.client_activities_url %></li>
+
+  <%# Available when user has an associated actor %>
+  <% if Federails::Client::ActivityPolicy.new(user, nil).feed? %>
+    <li><%= link_to 'Feed', federails.client_feed_url %></li>
+  <%end %>
+
+  <%# Available when user has an associated actor. The actor must exist to create the link %>
+  <% if Federails.actor_entity?(user) && user.federails_actor.present? %>
+    <li><%= link_to "You (#{user.federails_actor.username})", federails.client_actor_path(user.federails_actor) %></li>
+  <% end %>
+</ul>
+
+<%# Debug information%>
+<% if !user %>
+  Register or login to view your actor's information
+<% elsif !Federails::actor_entity?(user) %>
+  <p><%= user.class.name %> is not configured to have an associated actor; you won't be allowed to follow or be followed</p>
+<% elsif !user.federails_actor.present? %>
+  <p>Your account does not have an associated actor; you won't be allowed to follow or be followed</p>
+<% end %>
