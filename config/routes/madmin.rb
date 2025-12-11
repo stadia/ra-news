@@ -16,6 +16,7 @@ namespace :madmin do
     end
   end
   resources :users
+  resources :roles
 
   # Social 메뉴 - OAuth 인증
   get "social", to: "social#index", as: :social_index

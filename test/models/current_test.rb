@@ -250,7 +250,7 @@ class CurrentTest < ActiveSupport::TestCase
 
     assert_equal @admin, Current.user
     assert Current.user.admin?
-    assert_equal "stadia@gmail.com", Current.user.email_address
+    assert_equal "admin@example.com", Current.user.email_address
   end
 
   test "한국인 사용자와 함께 작동해야 한다" do

@@ -1,0 +1,10 @@
+# frozen_string_literal: true
+
+admin:
+  name: admin
+
+user:
+  name: user
+
+editor:
+  name: editor

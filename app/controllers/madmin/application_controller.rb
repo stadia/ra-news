@@ -6,7 +6,7 @@ module Madmin
     before_action :authenticate_admin_user
 
     def authenticate_admin_user
-      redirect_to "/", status: :not_found unless authenticated? && Current.user.email_address == "stadia@gmail.com"
+      redirect_to "/", status: :forbidden unless authenticated? && Current.user&.admin?
     end
   end
 end

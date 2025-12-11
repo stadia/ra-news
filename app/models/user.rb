@@ -27,7 +27,10 @@ class User < ApplicationRecord
   normalizes :name, with: ->(n) { n.strip }
 
   # Scopes
-  scope :admins, -> { where(email_address: [ "stadia@gmail.com" ]) }
+  scope :with_role, ->(role_name) do
+    where("? = ANY (roles)", role_name.to_s)
+  end
+  scope :admins, -> { with_role(:admin) }
 
   # Include the concern here:
   include Federails::ActorEntity
@@ -44,10 +47,18 @@ class User < ApplicationRecord
   end
 
   def admin? #: bool
-    email_address == "stadia@gmail.com"
+    has_role?(:admin)
   end
 
   def full_name #: String
     name.presence || email_address.split("@").first
+  end
+
+  def has_role?(role_name) #: bool
+    roles.include? role_name.to_s
+  end
+
+  def roles=(role_names)
+    self[:roles] = role_names.is_a?(Array) ? role_names.uniq : role_names.split(" ").uniq
   end
 end

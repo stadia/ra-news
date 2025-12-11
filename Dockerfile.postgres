@@ -1,0 +1,25 @@
+# PostgreSQL 16 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
+
+# 베이스 이미지: pgvector 16
+FROM pgvector/pgvector:pg16
+
+# 필수 패키지 설치, 확장 빌드 및 정리
+RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-16 postgresql-contrib-16 mecab libmecab-dev" \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates \
+    \
+    # pg_bigm 설치 (특정 버전 고정)
+    && git clone --branch REL1_2_STABLE --depth 1 https://github.com/pgbigm/pg_bigm.git /tmp/pg_bigm \
+    && cd /tmp/pg_bigm \
+    && make USE_PGXS=1 && make USE_PGXS=1 install \
+    \
+    # textsearch_ko 설치 (특정 커밋 고정)
+    && cd / \
+    && git clone --depth 1 https://github.com/i0seph/textsearch_ko.git /tmp/textsearch_ko \
+    && cd /tmp/textsearch_ko \
+    && make USE_PGXS=1 && make USE_PGXS=1 install \
+    \
+    # 정리
+    && apt-get purge -y --auto-remove $BUILD_DEPS \
+    && rm -rf /tmp/pg_bigm /tmp/textsearch_ko \
+    && rm -rf /var/lib/apt/lists/*

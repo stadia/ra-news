@@ -8,6 +8,8 @@ class UserTest < ActiveSupport::TestCase
     @user = users(:john)
     @admin = users(:admin)
     @korean_user = users(:korean_user)
+    @admin_role = roles(:admin)
+    @editor_role = roles(:editor)
   end
 
   # ========== Validation Tests ==========
@@ -148,7 +150,7 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  # ========== Scope Tests ==========
+  # ========== Scope Tests ========== 
 
   test "admins 스코프는 관리자 사용자를 반환해야 한다" do
     admins = User.admins
@@ -157,17 +159,46 @@ class UserTest < ActiveSupport::TestCase
     assert_not_includes admins, @korean_user
   end
 
-  test "admins 스코프는 stadia@gmail.com만 포함해야 한다" do
+  test "admins 스코프는 admin@example.com만 포함해야 한다" do
     admin_emails = User.admins.pluck(:email_address)
-    assert_equal [ "stadia@gmail.com" ], admin_emails
+    assert_equal [ "admin@example.com" ], admin_emails
   end
 
-  # ========== Instance Method Tests ==========
+  # ========== Instance Method Tests ========== 
 
   test "admin?은 관리자 사용자에 대해 true를 반환해야 한다" do
     assert @admin.admin?
     assert_not @user.admin?
     assert_not @korean_user.admin?
+  end
+
+  # ========== Role Tests ==========
+
+  test "with_role 스코프는 특정 역할을 가진 사용자만 반환해야 한다" do
+    editors = User.with_role(:editor)
+    assert_includes editors, @user
+    assert_not_includes editors, @admin
+  end
+
+  test "has_role?은 역할 보유 여부를 확인해야 한다" do
+    assert @admin.has_role?(:admin)
+    assert @user.has_role?(:user)
+    assert_not @user.has_role?(:admin)
+  end
+
+  test "admin?은 역할 기반으로 동작해야 한다" do
+    roles(:admin).destroy!
+    @admin.reload
+    assert_not @admin.admin?
+
+    @user.roles << @admin_role.name
+    assert @user.admin?
+  end
+
+  test "사용자는 여러 역할을 가질 수 있어야 한다" do
+    @admin.roles << @editor_role.name
+    assert_includes @admin.roles, "admin"
+    assert_includes @admin.roles, "editor"
   end
 
   test "full_name은 이름이 있을 때 이름을 반환해야 한다" do

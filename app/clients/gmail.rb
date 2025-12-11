@@ -5,7 +5,7 @@
 class Gmail
   # Constants for default email and imap
   DEFAULT_IMAP_ADDRESS = "imap.gmail.com"
-  DEFAULT_GMAIL_ADDRESS = "stadia@gmail.com"
+  DEFAULT_GMAIL_ADDRESS = "admin@example.com"
 
   def initialize #: Gmail
     password = ENV["MAIL_PASSWORD"]
