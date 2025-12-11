@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # docker build --platform linux/amd64 -f Dockerfile.postgres -t postgres-ra-news:16 .
 
