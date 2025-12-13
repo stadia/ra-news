@@ -5,8 +5,8 @@
     </svg>
   </div>
 
-  <h3 class="text-lg font-medium text-gray-100 mb-2">로그인이 필요합니다</h3>
-  <p class="text-gray-400 mb-6">댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다.</p>
+  <h3 class="text-lg font-medium text-gray-100 mb-2"><%= @title %></h3>
+  <p class="text-gray-400 mb-6"><%= @message %></p>
 
   <%= link_to new_session_path, class: "inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200", data: { turbo: false } do %>
     로그인 하러 가기

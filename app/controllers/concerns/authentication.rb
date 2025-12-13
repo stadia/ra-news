@@ -38,7 +38,7 @@ module Authentication
 
       if request.format.turbo_stream?
         render turbo_stream: turbo_stream.replace("new_comment",
-          partial: "shared/login_required"
+          partial: LoginRequiredComponent.new
         ), status: :unauthorized
       else
         redirect_to new_session_path

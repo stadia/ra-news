@@ -186,7 +186,7 @@
         <% if authenticated? %>
             <%= render partial: 'comments/form', locals: { article: @article, comment: @comment } %>
         <% else %>
-            <%= render partial: "shared/login_required" %>
+            <%= render LoginRequiredComponent.new %>
         <% end %>
       </div>
 
