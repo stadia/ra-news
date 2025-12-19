@@ -75,8 +75,8 @@ end
 gem "sorbet-runtime"
 gem "ruby_llm", "~> 1.5"
 gem "ruby_llm-schema"
-gem "pagy", "~> 43.0" # omit patch digit
-gem "honeybadger", "~> 6.1.0"
+gem "pagy", "~> 43.2" # omit patch digit
+gem "honeybadger", "~> 6.2.0"
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
 gem "ostruct"
@@ -99,3 +99,4 @@ gem "oauth2", "~> 2.0"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
 gem "shadcn-rails"
+gem "heroicon"

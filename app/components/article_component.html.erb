@@ -16,7 +16,7 @@
         </svg>
     <% end %>
     </div>
-    <div class="text-gray-200 mb-6 text-base leading-relaxed flex-grow space-y-2">
+    <div class="text-gray-200 mb-6 text-base leading-relaxed grow space-y-2">
     <% if @article.summary_key.is_a?(Array) && @article.summary_key.present? %>
     <ul class="list-disc pl-5 space-y-1">
         <% @article.summary_key.each do |item| %>

@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class ArticlesController < ApplicationController
-  allow_unauthenticated_access only: %i[ index show ]
+  allow_unauthenticated_access only: %i[ index show others ]
 
   before_action :set_article, only: %i[ show edit ]
 
