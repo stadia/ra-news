@@ -91,11 +91,11 @@ GEM
     base64 (0.3.0)
     bcrypt (3.1.20)
     bcrypt_pbkdf (1.1.2)
-    bigdecimal (3.3.1)
+    bigdecimal (4.0.1)
     bindex (0.8.1)
     bootsnap (1.20.1)
       msgpack (~> 1.2)
-    brakeman (7.1.1)
+    brakeman (7.1.2)
       racc
     builder (3.3.0)
     capybara (3.40.0)
@@ -134,11 +134,11 @@ GEM
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
-    faraday-multipart (1.1.1)
+    faraday-multipart (1.2.0)
       multipart-post (~> 2.0)
     faraday-net_http (3.4.2)
       net-http (~> 0.5)
-    faraday-retry (2.3.2)
+    faraday-retry (2.4.0)
       faraday (~> 2.0)
     ffi (1.17.2-aarch64-linux-gnu)
     ffi (1.17.2-aarch64-linux-musl)
@@ -175,7 +175,8 @@ GEM
       activerecord (>= 6.0, < 9)
       ruby2ruby (~> 2.4)
       ruby_parser (~> 3.10)
-    hashie (5.0.0)
+    hashie (5.1.0)
+      logger
     herb (0.8.6-aarch64-linux-gnu)
     herb (0.8.6-aarch64-linux-musl)
     herb (0.8.6-arm64-darwin)
@@ -260,8 +261,8 @@ GEM
       stimulus-rails
       turbo-rails
     msgpack (1.8.0)
-    multi_xml (0.7.2)
-      bigdecimal (~> 3.1)
+    multi_xml (0.8.0)
+      bigdecimal (>= 3.1, < 5)
     multipart-post (2.4.1)
     mutex_m (0.3.0)
     neighbor (0.6.0)
@@ -384,7 +385,7 @@ GEM
       ffi (~> 1.0)
     rbs (3.10.0)
       logger
-    rdoc (7.0.2)
+    rdoc (7.0.3)
       erb
       psych (>= 4.0.0)
       tsort
@@ -394,7 +395,7 @@ GEM
     rexml (3.4.4)
     rss (0.3.2)
       rexml
-    rubocop (1.82.0)
+    rubocop (1.82.1)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -429,8 +430,7 @@ GEM
     ruby-vips (2.3.0)
       ffi (~> 1.12)
       logger
-    ruby2ruby (2.5.2)
-      ruby_parser (~> 3.1)
+    ruby2ruby (2.6.0)
       sexp_processor (~> 4.6)
     ruby_llm (1.9.1)
       base64
@@ -454,7 +454,7 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
-    sexp_processor (4.17.4)
+    sexp_processor (4.17.5)
     shadcn-rails (0.2.1)
       railties (>= 7.0)
       stimulus-rails (>= 1.0)
@@ -483,12 +483,12 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12869)
-      sorbet-static (= 0.6.12869)
-    sorbet-runtime (0.6.12869)
-    sorbet-static (0.6.12869-aarch64-linux)
-    sorbet-static (0.6.12869-universal-darwin)
-    sorbet-static (0.6.12869-x86_64-linux)
+    sorbet (0.6.12872)
+      sorbet-static (= 0.6.12872)
+    sorbet-runtime (0.6.12872)
+    sorbet-static (0.6.12872-aarch64-linux)
+    sorbet-static (0.6.12872-universal-darwin)
+    sorbet-static (0.6.12872-x86_64-linux)
     sqlite3 (2.8.1-aarch64-linux-gnu)
     sqlite3 (2.8.1-aarch64-linux-musl)
     sqlite3 (2.8.1-arm64-darwin)
