@@ -56,7 +56,7 @@ PROMPT
       article.update(body: body)
     end
 
-    chat = RubyLLM.chat(model: "gemini-2-flash", provider: :gemini).with_temperature(0.6).with_schema(ArticleSchema)
+    chat = RubyLLM.chat(model: "gemini-2.5-flash", provider: :gemini).with_temperature(0.6).with_schema(ArticleSchema)
     # chat = RubyLLM.chat(model: "google/gemma-3n-e4b", provider: :ollama, assume_model_exists: true).with_temperature(0.7)
     llm_instructions = "You are a professional developer of the Ruby programming language. On top of that, you are an excellent technical writer. All output should be in Korean."
     chat.with_instructions(llm_instructions)

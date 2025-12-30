@@ -1,191 +1,5 @@
 [
   {
-    "id": "claude-haiku-4-5",
-    "name": "Claude Haiku 4.5",
-    "provider": "anthropic",
-    "family": "claude-haiku-4-5",
-    "created_at": null,
-    "context_window": 200000,
-    "max_output_tokens": 64000,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "image",
-        "text"
-      ],
-      "output": [
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 1.0,
-          "output_per_million": 5.0
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
-    "id": "claude-haiku-4-5-20251001",
-    "name": "Claude Haiku 4.5",
-    "provider": "anthropic",
-    "family": "claude-haiku-4-5",
-    "created_at": null,
-    "context_window": 200000,
-    "max_output_tokens": 64000,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "image",
-        "text"
-      ],
-      "output": [
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 1.0,
-          "output_per_million": 5.0
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
-    "id": "claude-opus-4-5",
-    "name": "Claude Opus 4.5",
-    "provider": "anthropic",
-    "family": "claude-opus-4-5",
-    "created_at": null,
-    "context_window": 200000,
-    "max_output_tokens": 64000,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "image",
-        "text"
-      ],
-      "output": [
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 5.0,
-          "output_per_million": 25.0
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
-    "id": "claude-opus-4-5-20251101",
-    "name": "Claude Opus 4.5",
-    "provider": "anthropic",
-    "family": "claude-opus-4-5",
-    "created_at": null,
-    "context_window": 200000,
-    "max_output_tokens": 64000,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "image",
-        "text"
-      ],
-      "output": [
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 5.0,
-          "output_per_million": 25.0
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
-    "id": "claude-sonnet-4-5",
-    "name": "Claude Sonnet 4.5",
-    "provider": "anthropic",
-    "family": "claude-sonnet-4-5",
-    "created_at": null,
-    "context_window": 200000,
-    "max_output_tokens": 64000,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "image",
-        "text"
-      ],
-      "output": [
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 3.0,
-          "output_per_million": 15.0
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
-    "id": "claude-sonnet-4-5-20250929",
-    "name": "Claude Sonnet 4.5",
-    "provider": "anthropic",
-    "family": "claude-sonnet-4-5",
-    "created_at": null,
-    "context_window": 200000,
-    "max_output_tokens": 64000,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "image",
-        "text"
-      ],
-      "output": [
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 3.0,
-          "output_per_million": 15.0
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
     "id": "deepseek-chat",
     "name": "deepseek-chat",
     "provider": "deepseek",
@@ -782,45 +596,6 @@
     }
   },
   {
-    "id": "gemini-2.0-flash-preview-image-generation",
-    "name": "Gemini 2.0 Flash Preview Image Generation",
-    "provider": "gemini",
-    "family": "gemini-2.0-flash-preview-image-generation",
-    "created_at": null,
-    "context_window": 32768,
-    "max_output_tokens": 8192,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "audio",
-        "image",
-        "text"
-      ],
-      "output": [
-        "image",
-        "text"
-      ]
-    },
-    "capabilities": [
-      "batch",
-      "structured_output"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 0.1,
-          "cached_input_per_million": 0.025,
-          "output_per_million": 0.4
-        },
-        "batch": {
-          "input_per_million": 0.05,
-          "output_per_million": 0.2
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
     "id": "gemini-2.5-computer-use-preview-10-2025",
     "name": "Gemini 2.5 Computer Use Preview 10-2025",
     "provider": "gemini",
@@ -917,37 +692,40 @@
   },
   {
     "id": "gemini-2.5-flash-image",
-    "name": "Gemini 2.5 Flash Image",
+    "name": "Nano Banana",
     "provider": "gemini",
-    "family": "gemini-2.5-flash-image",
+    "family": "other",
     "created_at": null,
-    "context_window": 65536,
+    "context_window": 32768,
     "max_output_tokens": 32768,
     "knowledge_cutoff": null,
     "modalities": {
       "input": [
+        "text",
         "image",
-        "text"
+        "pdf",
+        "video"
       ],
       "output": [
-        "image",
         "text"
       ]
     },
     "capabilities": [
+      "streaming",
+      "function_calling",
+      "structured_output",
       "batch",
-      "structured_output"
+      "caching"
     ],
     "pricing": {
       "text_tokens": {
         "standard": {
-          "input_per_million": 0.3,
-          "cached_input_per_million": 0.03,
-          "output_per_million": 2.5
+          "input_per_million": 0.075,
+          "output_per_million": 0.3
         },
         "batch": {
-          "input_per_million": 0.15,
-          "output_per_million": 1.25
+          "input_per_million": 0.0375,
+          "output_per_million": 0.15
         }
       }
     },
@@ -1060,9 +838,9 @@
   },
   {
     "id": "gemini-2.5-flash-lite-preview-09-2025",
-    "name": "Gemini 2.5 Flash-Lite Preview",
+    "name": "Gemini 2.5 Flash-Lite",
     "provider": "gemini",
-    "family": "gemini-2.5-flash-lite-preview-09-2025",
+    "family": "gemini-2.5-flash-lite",
     "created_at": null,
     "context_window": 1048576,
     "max_output_tokens": 65536,
@@ -1107,76 +885,10 @@
     }
   },
   {
-    "id": "gemini-2.5-flash-native-audio-preview-09-2025",
-    "name": "Gemini 2.5 Flash Native Audio Preview",
-    "provider": "gemini",
-    "family": "gemini-2.5-flash-native-audio-preview-12-2025",
-    "created_at": null,
-    "context_window": 131072,
-    "max_output_tokens": 8192,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "audio",
-        "text"
-      ],
-      "output": [
-        "audio",
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 0.3,
-          "cached_input_per_million": 0.03,
-          "output_per_million": 2.5
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
-    "id": "gemini-2.5-flash-native-audio-preview-12-2025",
-    "name": "Gemini 2.5 Flash Native Audio Preview",
-    "provider": "gemini",
-    "family": "gemini-2.5-flash-native-audio-preview-12-2025",
-    "created_at": null,
-    "context_window": 131072,
-    "max_output_tokens": 8192,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "audio",
-        "text"
-      ],
-      "output": [
-        "audio",
-        "text"
-      ]
-    },
-    "capabilities": [
-      "function_calling"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 0.3,
-          "cached_input_per_million": 0.03,
-          "output_per_million": 2.5
-        }
-      }
-    },
-    "metadata": {}
-  },
-  {
     "id": "gemini-2.5-flash-preview-09-2025",
-    "name": "Gemini 2.5 Flash Preview",
+    "name": "Gemini 2.5 Flash",
     "provider": "gemini",
-    "family": "gemini-2.5-flash-preview-09-2025",
+    "family": "gemini-2.5-flash",
     "created_at": null,
     "context_window": 1048576,
     "max_output_tokens": 65536,
@@ -1224,26 +936,38 @@
     "id": "gemini-2.5-flash-preview-tts",
     "name": "Gemini 2.5 Flash Preview TTS",
     "provider": "gemini",
-    "family": "gemini-2.5-flash-preview-tts",
+    "family": "other",
     "created_at": null,
     "context_window": 8192,
     "max_output_tokens": 16384,
     "knowledge_cutoff": null,
     "modalities": {
       "input": [
-        "text"
+        "text",
+        "image",
+        "pdf",
+        "video"
       ],
       "output": [
-        "audio"
+        "text"
       ]
     },
-    "capabilities": [],
+    "capabilities": [
+      "streaming",
+      "function_calling",
+      "structured_output",
+      "batch",
+      "caching"
+    ],
     "pricing": {
       "text_tokens": {
         "standard": {
-          "input_per_million": 0.3,
-          "cached_input_per_million": 0.03,
-          "output_per_million": 2.5
+          "input_per_million": 0.075,
+          "output_per_million": 0.3
+        },
+        "batch": {
+          "input_per_million": 0.0375,
+          "output_per_million": 0.15
         }
       }
     },
@@ -1308,46 +1032,10 @@
     "id": "gemini-2.5-pro-preview-tts",
     "name": "Gemini 2.5 Pro Preview TTS",
     "provider": "gemini",
-    "family": "gemini-2.5-pro-preview-tts",
+    "family": "other",
     "created_at": null,
     "context_window": 8192,
     "max_output_tokens": 16384,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "text"
-      ],
-      "output": [
-        "audio"
-      ]
-    },
-    "capabilities": [],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 1.25,
-          "cached_input_per_million": 0.125,
-          "output_per_million": 10.0
-        }
-      }
-    },
-    "metadata": {
-      "version": "gemini-2.5-pro-preview-tts-2025-05-19",
-      "description": "Gemini 2.5 Pro Preview TTS",
-      "supported_generation_methods": [
-        "countTokens",
-        "generateContent"
-      ]
-    }
-  },
-  {
-    "id": "gemini-3-flash-preview",
-    "name": "Gemini 3 Flash Preview",
-    "provider": "gemini",
-    "family": "other",
-    "created_at": null,
-    "context_window": 1048576,
-    "max_output_tokens": 65536,
     "knowledge_cutoff": null,
     "modalities": {
       "input": [
@@ -1364,7 +1052,6 @@
       "streaming",
       "function_calling",
       "structured_output",
-      "batch",
       "caching"
     ],
     "pricing": {
@@ -1376,6 +1063,53 @@
         "batch": {
           "input_per_million": 0.0375,
           "output_per_million": 0.15
+        }
+      }
+    },
+    "metadata": {
+      "version": "gemini-2.5-pro-preview-tts-2025-05-19",
+      "description": "Gemini 2.5 Pro Preview TTS",
+      "supported_generation_methods": [
+        "countTokens",
+        "generateContent",
+        "batchGenerateContent"
+      ]
+    }
+  },
+  {
+    "id": "gemini-3-flash-preview",
+    "name": "Gemini 3 Flash",
+    "provider": "gemini",
+    "family": "gemini-3-flash",
+    "created_at": null,
+    "context_window": 1048576,
+    "max_output_tokens": 65536,
+    "knowledge_cutoff": null,
+    "modalities": {
+      "input": [
+        "audio",
+        "image",
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "capabilities": [
+      "batch",
+      "function_calling",
+      "structured_output"
+    ],
+    "pricing": {
+      "text_tokens": {
+        "standard": {
+          "input_per_million": 0.5,
+          "cached_input_per_million": 0.05,
+          "output_per_million": 3.0
+        },
+        "batch": {
+          "input_per_million": 0.25,
+          "output_per_million": 1.5
         }
       }
     },
@@ -1392,36 +1126,39 @@
   },
   {
     "id": "gemini-3-pro-image-preview",
-    "name": "Gemini 3 Pro Image Preview",
+    "name": "Nano Banana Pro",
     "provider": "gemini",
-    "family": "gemini-3-pro-image-preview",
+    "family": "other",
     "created_at": null,
-    "context_window": 65536,
+    "context_window": 131072,
     "max_output_tokens": 32768,
     "knowledge_cutoff": null,
     "modalities": {
       "input": [
+        "text",
         "image",
-        "text"
+        "pdf",
+        "video"
       ],
       "output": [
-        "image",
         "text"
       ]
     },
     "capabilities": [
-      "batch",
-      "structured_output"
+      "streaming",
+      "function_calling",
+      "structured_output",
+      "caching"
     ],
     "pricing": {
       "text_tokens": {
         "standard": {
-          "input_per_million": 2.0,
-          "output_per_million": 12.0
+          "input_per_million": 0.075,
+          "output_per_million": 0.3
         },
         "batch": {
-          "input_per_million": 1.0,
-          "output_per_million": 6.0
+          "input_per_million": 0.0375,
+          "output_per_million": 0.15
         }
       }
     },
@@ -5079,6 +4816,7 @@
       ]
     },
     "capabilities": [
+      "batch",
       "function_calling",
       "structured_output"
     ],
@@ -5088,6 +4826,10 @@
           "input_per_million": 1.25,
           "cached_input_per_million": 0.125,
           "output_per_million": 10.0
+        },
+        "batch": {
+          "input_per_million": 0.625,
+          "output_per_million": 5.0
         }
       }
     },
@@ -5116,6 +4858,7 @@
       ]
     },
     "capabilities": [
+      "batch",
       "function_calling",
       "structured_output"
     ],
@@ -5125,6 +4868,10 @@
           "input_per_million": 1.25,
           "cached_input_per_million": 0.125,
           "output_per_million": 10.0
+        },
+        "batch": {
+          "input_per_million": 0.625,
+          "output_per_million": 5.0
         }
       }
     },
@@ -5301,6 +5048,7 @@
       ]
     },
     "capabilities": [
+      "batch",
       "function_calling",
       "structured_output"
     ],
@@ -5310,6 +5058,10 @@
           "input_per_million": 1.75,
           "cached_input_per_million": 0.175,
           "output_per_million": 14.0
+        },
+        "batch": {
+          "input_per_million": 0.875,
+          "output_per_million": 7.0
         }
       }
     },
@@ -5338,6 +5090,7 @@
       ]
     },
     "capabilities": [
+      "batch",
       "function_calling",
       "structured_output"
     ],
@@ -5347,6 +5100,10 @@
           "input_per_million": 1.75,
           "cached_input_per_million": 0.175,
           "output_per_million": 14.0
+        },
+        "batch": {
+          "input_per_million": 0.875,
+          "output_per_million": 7.0
         }
       }
     },
@@ -5944,39 +5701,6 @@
   },
   {
     "id": "gpt-realtime-mini-2025-10-06",
-    "name": "GPT-Realtime Mini 20251006",
-    "provider": "openai",
-    "family": "other",
-    "created_at": "2025-10-04 03:46:15 +0900",
-    "context_window": 4096,
-    "max_output_tokens": 16384,
-    "knowledge_cutoff": null,
-    "modalities": {
-      "input": [
-        "text"
-      ],
-      "output": [
-        "text"
-      ]
-    },
-    "capabilities": [
-      "streaming"
-    ],
-    "pricing": {
-      "text_tokens": {
-        "standard": {
-          "input_per_million": 0.5,
-          "output_per_million": 1.5
-        }
-      }
-    },
-    "metadata": {
-      "object": "model",
-      "owned_by": "system"
-    }
-  },
-  {
-    "id": "gpt-realtime-mini-2025-12-15",
     "name": "gpt-realtime-mini",
     "provider": "openai",
     "family": "gpt-realtime-mini",
@@ -6005,6 +5729,39 @@
           "input_per_million": 0.6,
           "cached_input_per_million": 0.06,
           "output_per_million": 2.4
+        }
+      }
+    },
+    "metadata": {
+      "object": "model",
+      "owned_by": "system"
+    }
+  },
+  {
+    "id": "gpt-realtime-mini-2025-12-15",
+    "name": "GPT-Realtime Mini 20251215",
+    "provider": "openai",
+    "family": "other",
+    "created_at": "2025-12-13 16:46:47 +0900",
+    "context_window": 4096,
+    "max_output_tokens": 16384,
+    "knowledge_cutoff": null,
+    "modalities": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "capabilities": [
+      "streaming"
+    ],
+    "pricing": {
+      "text_tokens": {
+        "standard": {
+          "input_per_million": 0.5,
+          "output_per_million": 1.5
         }
       }
     },
