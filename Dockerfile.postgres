@@ -1,4 +1,4 @@
-# PostgreSQL 16 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
+# PostgreSQL 17 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
 
 # 베이스 이미지: pgvector 17
 FROM pgvector/pgvector:pg17
