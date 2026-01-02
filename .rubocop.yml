@@ -9,7 +9,7 @@ AllCops:
     - rake
   NewCops: enable
   TargetRubyVersion: 4.0
-  TargetRailsVersion: 8.0
+  TargetRailsVersion: 8.1
 
 Layout/LeadingCommentSpace:
   Enabled: false
