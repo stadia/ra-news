@@ -7,6 +7,10 @@ class CreateRolesAndUserRoles < ActiveRecord::Migration[8.0]
     end
     add_index :roles, :name, unique: true
 
-    add_column :users, :roles, :string, array: true, default: [ 'user' ]
+    if ActiveRecord::Base.connection.adapter_name == "PostgreSQL"
+      add_column :users, :roles, :string, array: true, default: [ "user" ]
+    else
+      add_column :users, :roles, :json, default: [ "user" ]
+    end
   end
 end
