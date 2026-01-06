@@ -45,9 +45,17 @@ class ContentService < ApplicationService
     video = Yt::Video.new id: youtube_id
     video.captions.map(&:language).each do |lang|
       rc = Youtube::Transcript.get(youtube_id, lang: lang)
+      next if rc["error"].present?
+
       transcript = format_transcript(rc.dig("actions"))
       break if transcript.present?
     end
+
+    if transcript.blank?
+      fetched_transcript = YoutubeRb::Transcript::YouTubeTranscriptApi.new.fetch(youtube_id)
+      transcript = YoutubeRb::Transcript::Formatters::TextFormatter.new.format_transcript(fetched_transcript) if fetched_transcript.present?
+    end
+
     transcript
   end
 
