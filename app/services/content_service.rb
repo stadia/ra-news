@@ -43,17 +43,25 @@ class ContentService < ApplicationService
 
     transcript = nil
     video = Yt::Video.new id: youtube_id
-    video.captions.map(&:language).each do |lang|
-      rc = Youtube::Transcript.get(youtube_id, lang: lang)
-      next if rc["error"].present?
+    begin
+      video.captions.map(&:language).each do |lang|
+        rc = Youtube::Transcript.get(youtube_id, lang: lang)
+        next if rc["error"].present?
 
-      transcript = format_transcript(rc.dig("actions"))
-      break if transcript.present?
+        transcript = format_transcript(rc.dig("actions"))
+        break if transcript.present?
+      end
+    rescue StandardError => e
+      logger.error "Error fetching Youtube transcript: #{e.message}"
     end
 
     if transcript.blank?
-      fetched_transcript = YoutubeRb::Transcript::YouTubeTranscriptApi.new.fetch(youtube_id)
-      transcript = YoutubeRb::Transcript::Formatters::TextFormatter.new.format_transcript(fetched_transcript) if fetched_transcript.present?
+      begin
+        fetched_transcript = YoutubeRb::Transcript::YouTubeTranscriptApi.new.fetch(youtube_id)
+        transcript = YoutubeRb::Transcript::Formatters::TextFormatter.new.format_transcript(fetched_transcript) if fetched_transcript.present?
+      rescue StandardError => e
+        logger.error "Error fetching Youtube transcript: #{e.message}"
+      end
     end
 
     transcript
