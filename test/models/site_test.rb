@@ -27,14 +27,14 @@ class SiteTest < ActiveSupport::TestCase
     site = Site.new(client: :rss, base_uri: "https://example.com/rss")
     site.client = nil
     assert_not site.valid?
-    assert_includes site.errors[:name], "Name에 내용을 입력해 주세요"
+    assert_includes site.errors[:name], "내용을 입력해 주세요"
   end
 
   test "client는 필수 항목이어야 한다" do
     site = Site.new(name: "Test Site", base_uri: "https://example.com/rss")
     site.client = nil
     assert_not site.valid?
-    assert_includes site.errors[:client], "Client에 내용을 입력해 주세요"
+    assert_includes site.errors[:client], "내용을 입력해 주세요"
   end
 
   test "base_uri가 없는 사이트를 허용해야 한다" do
@@ -155,7 +155,7 @@ class SiteTest < ActiveSupport::TestCase
     @youtube_site.update!(channel: "UCWnPjmqvljcafA0z2U1fwKQ")
     client = @youtube_site.init_client
     assert_kind_of Youtube::Channel, client
-    assert_equal @youtube_site.channel, client.instance_variable_get(:@id)
+    assert_equal @youtube_site.channel, client.channel.id
   end
 
   test "init_client는 지원되지 않는 클라이언트에 대해 오류를 발생시켜야 한다" do

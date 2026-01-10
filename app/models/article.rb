@@ -80,7 +80,7 @@ class Article < ApplicationRecord
       set_webpage_metadata(response.body)
     end
 
-    self.slug = "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}" unless slug.present?
+    self.slug = random_slug unless slug.present?
 
     # slug 중복 처리 (slug가 설정된 후에만 확인)
     self.slug = "#{slug}-#{SecureRandom.hex(4)}" if slug.present? && Article.exists?(slug: self.slug)
@@ -102,7 +102,13 @@ class Article < ApplicationRecord
   end
 
   def update_slug #: bool
-    new_slug = is_youtube? ? youtube_id : URI.parse(url).path&.split("/")&.last&.split(".")&.first
+    if is_youtube?
+      new_slug = youtube_id
+    else
+      path = URI.parse(url).path
+      new_slug = path&.split("/")&.last&.split(".")&.first
+      new_slug = random_slug if new_slug.blank?
+    end
     update(slug: new_slug)
   rescue URI::InvalidURIError
     logger.error "Invalid URI for slug update: #{url}"
@@ -275,9 +281,11 @@ class Article < ApplicationRecord
     nil
   end
 
-  private
-
   def clear_rss_cache
     Rails.cache.delete("rss_articles")
+  end
+
+  def random_slug
+    "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
   end
 end

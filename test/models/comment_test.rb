@@ -27,19 +27,19 @@ class CommentTest < ActiveSupport::TestCase
   test "body는 필수 항목이어야 한다" do
     comment = Comment.new(user: @user, article: @article)
     assert_not comment.valid?
-    assert_includes comment.errors[:body], "Body에 내용을 입력해 주세요"
+    assert_includes comment.errors[:body], "내용을 입력해 주세요"
   end
 
   test "user는 필수 항목이어야 한다" do
     comment = Comment.new(body: "Test comment", article: @article)
     assert_not comment.valid?
-    assert_includes comment.errors[:user], "User은(는) 반드시 있어야 합니다"
+    assert_includes comment.errors[:user], "값이 반드시 필요합니다"
   end
 
   test "article은 필수 항목이어야 한다" do
     comment = Comment.new(body: "Test comment", user: @user)
     assert_not comment.valid?
-    assert_includes comment.errors[:article], "Article은(는) 반드시 있어야 합니다"
+    assert_includes comment.errors[:article], "값이 반드시 필요합니다"
   end
 
   test "body의 최소 길이를 검증해야 한다" do
@@ -49,7 +49,7 @@ class CommentTest < ActiveSupport::TestCase
       article: @article
     )
     assert_not comment.valid?
-    assert_includes comment.errors[:body], "Body은(는) 적어도 1자를 넘어야 합니다"
+    assert_includes comment.errors[:body], "값은 최소 1자여야 합니다"
   end
 
   test "body의 최대 길이를 검증해야 한다" do
@@ -60,7 +60,7 @@ class CommentTest < ActiveSupport::TestCase
       article: @article
     )
     assert_not comment.valid?
-    assert_includes comment.errors[:body], "Body은(는) #{Comment::MAX_BODY_LENGTH}자를 넘을 수 없습니다"
+    assert_includes comment.errors[:body], "값은 #{Comment::MAX_BODY_LENGTH}자를 넘을 수 없습니다"
   end
 
   test "최대 길이의 body를 허용해야 한다" do
@@ -263,7 +263,7 @@ class CommentTest < ActiveSupport::TestCase
     )
 
     assert_not comment.valid?
-    assert_includes comment.errors[:body], "Body은(는) #{Comment::MAX_BODY_LENGTH}자를 넘을 수 없습니다"
+    assert_includes comment.errors[:body], "값은 #{Comment::MAX_BODY_LENGTH}자를 넘을 수 없습니다"
   end
 
   # ========== Special Characters and Edge Cases ==========
