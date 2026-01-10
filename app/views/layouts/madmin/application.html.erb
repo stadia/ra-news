@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="ROBOTS" content="NOODP">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1">
     <title>
       <% if content_for? :title %>
         <%= yield(:title) %> -
@@ -13,13 +13,29 @@
     <%= csrf_meta_tags %>
     <%= render "javascript" %>
   </head>
-  <body class="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-    <aside id="sidebar" class="w-full md:w-64 bg-white border-b md:border-b-0 md:border-r border-gray-200 p-4 md:h-screen">
-      <%= render "navigation" %>
-    </aside>
-    <main class="flex-1 p-4 max-w-5xl mx-auto w-full">
+  <body class="<%= controller_name %> <%= action_name %>" data-controller="mobile-nav">
+    <header>
       <%= render "flash" %>
-      <%= yield %>
+    </header>
+    <header id="navbar">
+      <div class="nav-group">
+        <button id="hamburger-menu" type="button" data-action="click->mobile-nav#toggle" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5"> <path fill-rule="evenodd" d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75ZM2 10a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 10Zm0 5.25a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" /> </svg>
+        </button>
+        <%= link_to Madmin.site_name, try(:root_url) || madmin_root_url, data: {turbo: false}  %>
+      </div>
+    </header>
+
+    <main>
+      <aside id="sidebar" data-mobile-nav-target="menu">
+        <%= render "navigation" %>
+      </aside>
+
+      <div>
+        <%= yield %>
+      </div>
     </main>
+
+    <div data-mobile-nav-target="overlay" data-action="click->mobile-nav#close" class="mobile-nav-overlay"></div>
   </body>
 </html>

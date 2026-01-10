@@ -21,7 +21,12 @@ class TwitterService < SocialMediaService
   def post_to_platform(article)
     post_text = build_post_text(article)
     response = platform_client.post(post_text)
-    logger.info "Successfully posted to #{platform_name} for article id: #{article.id} - Status: #{response}"
+    if response.status >= 200 && response.status < 300
+      article.update(twitter_id: response.body["data"]["id"])
+      logger.info "Successfully posted to #{platform_name} for article id: #{article.id} - Status: #{response.body}"
+    else
+      logger.error "Failed to post to #{platform_name} for article id: #{article.id} - Status: #{response.status}"
+    end
   end
 
   #: (Article article) -> String

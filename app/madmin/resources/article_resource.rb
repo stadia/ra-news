@@ -3,11 +3,12 @@ class ArticleResource < Madmin::Resource
   attribute :id, form: false
   attribute :title, new: false
   attribute :title_ko, index: true, new: false
-  attribute :slug, index: true, form: false
-  attribute :deleted_at, index: true, form: false
-  attribute :created_at, form: false
+  attribute :slug, index: false, form: false
+  attribute :deleted_at, index: false, form: false
+  attribute :discarded?, index: true, form: false
   attribute :host, index: true, form: false
   attribute :is_related, index: true, new: false
+  attribute :created_at, index: false, form: false
 
   attribute :url, index: false
   attribute :updated_at, form: false
@@ -23,6 +24,9 @@ class ArticleResource < Madmin::Resource
   attribute :summary_introduction, index: false
   attribute :summary_body, index: false
   attribute :summary_conclusion, index: false
+
+  attribute :twitter_id, index: false, form: false
+  attribute :mastodon_id, index: false, form: false
 
   # Associations
   attribute :user, index: false, form: false

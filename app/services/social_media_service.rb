@@ -20,7 +20,6 @@ class SocialMediaService < ApplicationService
 
     begin
       post_to_platform(article)
-      logger.info "Successfully posted article id: #{article.id} to #{platform_name}"
     rescue StandardError => e
       logger.error "Failed to post article id: #{article.id} to #{platform_name}: #{e.message}"
       Honeybadger.notify(e, context: { article_id: article.id, article_url: article.url })

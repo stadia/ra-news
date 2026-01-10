@@ -38,6 +38,8 @@ class Article < ApplicationRecord
 
   store_accessor :summary_detail, :introduction, :conclusion, prefix: :summary
 
+  store_accessor :social_post_ids, :twitter_id, :mastodon_id
+
   validates :url, :origin_url, presence: true, uniqueness: { case_sensitive: false }
   validates :slug, uniqueness: true, allow_blank: true
 
