@@ -17,8 +17,8 @@ class SocialPostJob < ApplicationJob
     end
 
     scope.find_each do |article|
-      TwitterService.call(article)
-      MastodonService.call(article)
+      TwitterService.new.call(article)
+      MastodonService.new.call(article)
       article.update(is_posted: true)
       sleep 2
     end
