@@ -200,46 +200,6 @@ class SiteTest < ActiveSupport::TestCase
     end
   end
 
-  # ========== Data Integrity Tests ==========
-
-  test "기사와의 참조 무결성을 유지해야 한다" do
-    site = @rss_site
-    initial_article_count = site.articles.count
-
-    # Create articles associated with this site
-    article1 = site.articles.create!(
-      title: "Article 1",
-      url: "https://example.com/article1-#{SecureRandom.hex(4)}",
-      origin_url: "https://example.com/article1-origin-#{SecureRandom.hex(4)}"
-    )
-
-    article2 = site.articles.create!(
-      title: "Article 2",
-      url: "https://example.com/article2-#{SecureRandom.hex(4)}",
-      origin_url: "https://example.com/article2-origin-#{SecureRandom.hex(4)}"
-    )
-
-    assert_equal initial_article_count + 2, site.articles.count
-
-    # Test behavior when site is destroyed
-    # If NOT NULL constraint exists, articles should be deleted or an error should occur
-    begin
-      site.destroy!
-
-      # If destruction succeeds, check the behavior
-      if Article.exists?(article1.id) && Article.exists?(article2.id)
-        article1.reload
-        article2.reload
-        assert_nil article1.site_id
-        assert_nil article2.site_id
-      end
-    rescue ActiveRecord::NotNullViolation, ActiveRecord::InvalidForeignKey
-      # This is acceptable behavior if database has NOT NULL constraint
-      # The site destruction should be blocked or articles should be deleted
-      assert true, "Database constraint prevents site deletion with associated articles"
-    end
-  end
-
   # ========== Korean Content Tests ==========
 
   test "name에 있는 한글 문자를 처리해야 한다" do

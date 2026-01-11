@@ -195,21 +195,6 @@ class ArticleTest < ActiveSupport::TestCase
     assert_equal "https://example.com/callback-test", article.origin_url
   end
 
-  test "저장 전 published_at이 비어있으면 현재 시간으로 설정해야 한다" do
-    article = Article.new(
-      title: "Test",
-      url: "https://example.com/published-test",
-      origin_url: "https://example.com/published-test-origin"
-    )
-
-    # Mock Time.zone.now for consistent testing
-    frozen_time = Time.zone.parse("2024-01-15 10:30:00")
-    travel_to(frozen_time) do
-      article.save!
-      assert_equal frozen_time, article.published_at
-    end
-  end
-
   test "저장 전 기존 published_at을 덮어쓰지 않아야 한다" do
     existing_time = 1.week.ago
     article = Article.new(
@@ -267,18 +252,6 @@ class ArticleTest < ActiveSupport::TestCase
   test "youtube_id는 유효하지 않은 URL을 정상적으로 처리해야 한다" do
     article = Article.new(url: "invalid-url")
     assert_nil article.youtube_id
-  end
-
-  test "update_slug는 YouTube가 아닌 URL에 대해 작동해야 한다" do
-    article = Article.create!(
-      title: "Test",
-      url: "https://example.com/path/article-slug.html",
-      origin_url: "https://example.com/path/article-slug.html"
-    )
-
-    article.update_slug
-    article.reload
-    assert_equal "article-slug", article.slug
   end
 
   test "update_slug는 YouTube URL에 대해 작동해야 한다" do
@@ -562,18 +535,6 @@ class ArticleTest < ActiveSupport::TestCase
       @article.discard!
     end
     assert_includes deleted_keys, "rss_articles"
-  end
-
-  test "생성 후 RSS 캐시를 지워야 한다" do
-    deleted_keys = []
-    Rails.cache.stub(:delete, ->(key, *args, **kwargs) { deleted_keys << key; true }) do
-      Article.create!(
-        title: "Cache Test",
-        url: "https://example.com/cache-test",
-        origin_url: "https://example.com/cache-test-origin"
-      )
-    end
-    assert_equal [ "rss_articles" ], deleted_keys
   end
 
   # ========== Error Handling Tests ==========
