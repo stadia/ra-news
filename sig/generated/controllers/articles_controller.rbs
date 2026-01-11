@@ -1,10 +1,12 @@
 # Generated from app/controllers/articles_controller.rb with RBS::Inline
 
 class ArticlesController < ApplicationController
-  include Pagy::Backend
+  include Pagy::Method
 
   # GET /articles or /articles.json
   def index: () -> untyped
+
+  def others: () -> untyped
 
   def show: () -> untyped
 

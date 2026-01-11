@@ -21,6 +21,9 @@ class TwitterService < SocialMediaService
   # : (Article article) -> void
   def post_to_platform: (Article article) -> void
 
+  # : (Article article) -> void
+  def delete_from_platform: (Article article) -> void
+
   # : (Article article) -> String
   def build_post_text: (Article article) -> String
 

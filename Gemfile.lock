@@ -125,6 +125,17 @@ GEM
       dotenv (= 3.2.0)
       railties (>= 6.1)
     drb (2.2.3)
+    dry-core (1.2.0)
+      concurrent-ruby (~> 1.0)
+      logger
+      zeitwerk (~> 2.6)
+    dry-monads (1.9.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 1.1)
+      zeitwerk (~> 2.6)
+    dry-operation (1.0.1)
+      dry-monads (~> 1.6)
+      zeitwerk (~> 2.6)
     ed25519 (1.4.0)
     erb (6.0.1)
     erubi (1.13.1)
@@ -609,6 +620,7 @@ DEPENDENCIES
   debug
   discard
   dotenv-rails
+  dry-operation
   faker
   google-protobuf
   hairtrigger

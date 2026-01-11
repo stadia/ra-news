@@ -7,6 +7,8 @@ class TwitterClient
 
   def post: (untyped text) -> untyped
 
+  def delete: (untyped tweet_id) -> untyped
+
   private
 
   def check_token: (untyped client, untyped config) -> untyped

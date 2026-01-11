@@ -4,4 +4,8 @@ class User < ApplicationRecord
   def admin?: () -> bool
 
   def full_name: () -> String
+
+  def has_role?: (untyped role_name) -> bool
+
+  def roles=: (untyped role_names) -> untyped
 end

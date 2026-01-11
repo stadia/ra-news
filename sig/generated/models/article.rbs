@@ -44,7 +44,7 @@ class Article < ApplicationRecord
   # : (String body) -> DateTime?
   def extract_published_at_from_content: (String body) -> DateTime?
 
-  private
-
   def clear_rss_cache: () -> untyped
+
+  def random_slug: () -> untyped
 end

@@ -7,7 +7,6 @@ class SocialMediaService < ApplicationService
 
   attr_reader :article, :command #: Article
 
-  #: (Article article) -> void
   #: (Article article, Symbol command) -> void
   def initialize(article, command: :post)
     @article = article
@@ -55,8 +54,7 @@ class SocialMediaService < ApplicationService
     { title: title, summary: summary }
   end
 
-  #: () -> String
-  def article_link
+  def article_link #: String
     article_url(article.slug, host: "https://ruby-news.kr")
   end
 
@@ -76,8 +74,7 @@ class SocialMediaService < ApplicationService
     raise NotImplementedError, "Subclass must implement build_post_text"
   end
 
-  #: () -> String
-  def platform_name
+  def platform_name #: String
     raise NotImplementedError, "Subclass must implement platform_name"
   end
 
