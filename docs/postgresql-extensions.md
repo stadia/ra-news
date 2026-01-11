@@ -222,8 +222,10 @@ PG::ExternalRoutineException: ERROR:  mecab:
 4. 패치를 다시 적용하고 재빌드:
    ```bash
    cd /tmp/textsearch_ko
-   cp ts_mecab_ko.c.bak ts_mecab_ko.c  # 백업이 있다면
-   # 패치 재적용
+   git checkout -- ts_mecab_ko.c  # 원본 파일 복원
+   # 패치 재적용 (BREW_PREFIX 변수 설정 후)
+   BREW_PREFIX=$(brew --prefix)
+   # ... 패치 적용 (상세 설치 과정 섹션 참고)
    make USE_PGXS=1
    sudo make install USE_PGXS=1
    brew services restart postgresql@14
