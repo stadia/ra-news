@@ -116,6 +116,19 @@ echo "테스트" | mecab
 
 textsearch_ko는 PostgreSQL이 mecab 설정을 찾을 수 있도록 소스 코드 패치가 필요합니다.
 
+> **참고: Docker vs macOS 환경 차이**
+>
+> 프로젝트의 `Dockerfile.postgres`에서는 `stadia/textsearch_ko` fork를 패치 없이 사용합니다.
+> 이는 Linux 환경에서 mecab이 표준 경로(`/usr/local/etc/mecabrc`)에 설치되어
+> textsearch_ko가 자동으로 설정을 찾을 수 있기 때문입니다.
+>
+> 반면 **macOS Homebrew 환경**에서는 mecab이 비표준 경로(`/opt/homebrew` 또는 `/usr/local`)에
+> 설치되어 PostgreSQL 프로세스가 mecab 설정 파일을 찾지 못합니다.
+> 따라서 macOS에서는 아래 패치가 필요합니다.
+>
+> 두 fork(`i0seph/textsearch_ko`, `stadia/textsearch_ko`) 모두 동일한 mecab 초기화 코드를
+> 사용하므로 어느 쪽을 클론해도 macOS에서는 패치가 필요합니다.
+
 ```bash
 cd /tmp
 git clone https://github.com/i0seph/textsearch_ko.git
