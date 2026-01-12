@@ -15,7 +15,7 @@ class Site < ApplicationRecord
     self.last_checked_at = 6.months.ago if last_checked_at.blank?
   end
 
-  enum :client, [ :rss, :gmail, :youtube, :hacker_news, :rss_page ], default: :rss
+  enum :client, [ :rss, :gmail, :youtube, :hacker_news, :rss_page, :github ], default: :rss
 
   def init_client #: Object
     case client
@@ -28,6 +28,8 @@ class Site < ApplicationRecord
     when "youtube"
         return nil if channel.blank?
         Youtube::Channel.new(id: channel)
+    when "github"
+      GitHubRepoClient.new(repo_url: base_uri)
     else
       raise ArgumentError, "Unsupported client type: #{client}"
     end

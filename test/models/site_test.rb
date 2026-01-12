@@ -65,7 +65,7 @@ class SiteTest < ActiveSupport::TestCase
     assert_respond_to @rss_site, :client
 
     # Test enum values
-    expected_clients = %w[rss gmail youtube hacker_news rss_page]
+    expected_clients = %w[rss gmail youtube hacker_news rss_page github]
     assert_equal expected_clients, Site.clients.keys
 
     # Test enum methods

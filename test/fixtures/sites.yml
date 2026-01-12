@@ -52,6 +52,13 @@ minimal_site:
   name: Minimal Site
   client: rss
 
+# GitHub Site
+github_repos:
+  name: GitHub Repositories
+  client: github
+  base_uri: https://github.com
+  last_checked_at: <%= 1.hour.ago %>
+
 # Legacy fixture names
 one:
   name: Site One
