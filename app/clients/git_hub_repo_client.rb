@@ -110,6 +110,9 @@ class GitHubRepoClient
 
     Dir.children(dir).sort.each do |filename|
       filepath = File.join(dir, filename)
+
+      # 심볼릭 링크를 통한 경로 조작 방지
+      next unless safe_path?(filepath, dir)
       next unless File.file?(filepath)
       next if filename.start_with?(".")
 
@@ -121,7 +124,7 @@ class GitHubRepoClient
 
       next unless is_document
 
-      content = read_with_limit(filepath)
+      content = read_with_limit(filepath, dir)
       next if content.nil?
 
       total_size += content.bytesize
@@ -135,7 +138,8 @@ class GitHubRepoClient
 
   # 디렉토리 구조를 트리 형태로 반환 (최대 2뎁스)
   #: (String dir, ?Integer depth, ?Integer max_depth) -> Array[String]
-  def get_directory_structure(dir, depth = 0, max_depth = 2)
+  def get_directory_structure(dir, depth = 0, max_depth = 2, base_dir: nil)
+    base_dir ||= dir
     return [] if depth > max_depth
 
     structure = []
@@ -143,11 +147,15 @@ class GitHubRepoClient
 
     entries.each do |entry|
       filepath = File.join(dir, entry)
+
+      # 심볼릭 링크를 통한 경로 조작 방지
+      next unless safe_path?(filepath, base_dir)
+
       prefix = "  " * depth
 
       if File.directory?(filepath)
         structure << "#{prefix}#{entry}/"
-        structure.concat(get_directory_structure(filepath, depth + 1, max_depth))
+        structure.concat(get_directory_structure(filepath, depth + 1, max_depth, base_dir: base_dir))
       else
         structure << "#{prefix}#{entry}" if depth < max_depth
       end
@@ -180,15 +188,18 @@ class GitHubRepoClient
     config_files = []
 
     # Gemfile은 Ruby 프로젝트 공통
-    if File.exist?(File.join(dir, "Gemfile"))
-      content = read_with_limit(File.join(dir, "Gemfile"))
+    gemfile_path = File.join(dir, "Gemfile")
+    if safe_path?(gemfile_path, dir) && File.exist?(gemfile_path)
+      content = read_with_limit(gemfile_path, dir)
       config_files << { name: "Gemfile", content: content } if content
     end
 
     # gemspec 파일 처리
     if project_type == :gem
       Dir.glob(File.join(dir, "*.gemspec")).each do |gemspec|
-        content = read_with_limit(gemspec)
+        next unless safe_path?(gemspec, dir)
+
+        content = read_with_limit(gemspec, dir)
         config_files << { name: File.basename(gemspec), content: content } if content
       end
     end
@@ -196,9 +207,9 @@ class GitHubRepoClient
     # 프로젝트 유형별 설정 파일
     CONFIG_FILES[project_type]&.each do |config_path|
       filepath = File.join(dir, config_path)
-      next unless File.exist?(filepath)
+      next unless safe_path?(filepath, dir) && File.exist?(filepath)
 
-      content = read_with_limit(filepath)
+      content = read_with_limit(filepath, dir)
       config_files << { name: config_path, content: content } if content
     end
 
@@ -229,8 +240,23 @@ class GitHubRepoClient
 
   # 파일 크기 제한을 적용하여 읽기
   #: (String filepath) -> String?
-  def read_with_limit(filepath)
-    return nil unless File.exist?(filepath)
+
+  # 심볼릭 링크를 통한 경로 조작(Path Traversal) 공격 방지
+  # 파일의 실제 경로가 base_dir 내에 있는지 확인
+  #: (String filepath, String base_dir) -> bool
+  def safe_path?(filepath, base_dir)
+    return false unless File.exist?(filepath)
+
+    real_path = File.realpath(filepath)
+    real_base = File.realpath(base_dir)
+    real_path.start_with?(real_base + "/") || real_path == real_base
+  rescue Errno::ENOENT
+    # 깨진 심볼릭 링크
+    false
+  end
+
+  def read_with_limit(filepath, base_dir)
+    return nil unless safe_path?(filepath, base_dir)
     return nil if File.size(filepath) > MAX_FILE_SIZE
 
     File.read(filepath, encoding: "UTF-8")
