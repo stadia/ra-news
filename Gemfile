@@ -99,7 +99,7 @@ gem "madmin", "~> 2.3"
 gem "discard"
 gem "awesome_nested_set", git: "https://github.com/caonUlisses/awesome_nested_set.git"
 gem "neighbor"
-gem "view_component", "~> 4.0"
+gem "view_component", "~> 4.2"
 gem "oauth2", "~> 2.0"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
