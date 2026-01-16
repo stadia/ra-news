@@ -576,7 +576,7 @@ GEM
       faraday (~> 2.0)
       faraday-follow_redirects (~> 0.3)
       nokogiri (~> 1.15)
-    yt (0.34.0)
+    yt (0.34.1)
       activesupport
     zeitwerk (2.7.4)
 
