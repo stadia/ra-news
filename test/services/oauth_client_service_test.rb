@@ -7,18 +7,6 @@ require "test_helper"
 # OauthClientService 테스트
 # Preference 모델은 value 컬럼에 JSON 데이터를 저장하고 동적 accessor를 사용합니다.
 class OauthClientServiceTest < ActiveSupport::TestCase
-  # 테스트용 Preference mock 객체 생성 헬퍼
-  def create_mock_preference(name:, client_id:, client_secret:, site: nil)
-    mock = Minitest::Mock.new
-    mock.expect(:blank?, false)
-    mock.expect(:name, name)
-    mock.expect(:client_id, client_id)
-    mock.expect(:client_secret, client_secret)
-    mock.expect(:site, site)
-    mock.expect(:name, name) # extract_provider_from_preference_name 호출용
-    mock
-  end
-
   # 테스트용 Struct 기반 Preference 대체 객체
   MockPreference = Struct.new(:name, :client_id, :client_secret, :site, keyword_init: true) do
     def blank?

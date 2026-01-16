@@ -60,8 +60,8 @@ group :development, :test do
   gem "faker"
   gem "herb"
   # gem "rbs_rails", "~> 0.12.1"
-  gem "minitest", "~> 5.27"
-  gem "minitest-mock", "~> 5.27"
+  gem "minitest", "~> 6.0"
+  gem "minitest-mock"
 end
 
 group :development do
