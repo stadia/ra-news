@@ -72,7 +72,10 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      packages: read
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
 
     services:
       postgres:
