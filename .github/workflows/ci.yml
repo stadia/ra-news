@@ -71,6 +71,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    permissions:
+      packages: read
+
     services:
       postgres:
         image: ghcr.io/stadia/ra-pg17:latest
