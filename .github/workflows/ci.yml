@@ -74,6 +74,9 @@ jobs:
     services:
       postgres:
         image: ghcr.io/stadia/ra-pg17
+        credentials:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
