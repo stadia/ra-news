@@ -3,8 +3,10 @@
 # 베이스 이미지: pgvector 17
 FROM pgvector/pgvector:pg17
 
+COPY mecab-ko-dic-2.1.1-20180720.tar.gz mecab-ko-dic-2.1.1.tar.gz
+
 # 필수 패키지 설치, 확장 빌드 및 정리
-RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-17 postgresql-contrib-17 mecab libmecab-dev" \
+RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-17 postgresql-contrib-17" \
     && apt-get update \
     && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates \
     \
@@ -13,6 +15,17 @@ RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-
     && cd /tmp/pg_bigm \
     && make USE_PGXS=1 && make USE_PGXS=1 install \
     \
+    # mecab-ko 설치
+    && wget https://bitbucket.org/eunjeon/mecab-ko/get/908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz \
+    && tar -xzf 908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz \
+    && cd eunjeon-mecab-ko-908db8de3cb5 \
+    && ./configure \
+    \
+    # mecab-ko-dic 설치
+    && tar -xzf mecab-ko-dic-2.1.1.tar.gz \
+    && cd mecab-ko-dic-2.1.1 \
+    && ./configure \ && make && make install \
+    \
     # textsearch_ko 설치 (특정 커밋 고정)
     && cd / \
     && git clone --depth 1 https://github.com/stadia/textsearch_ko.git /tmp/textsearch_ko \
@@ -20,6 +33,6 @@ RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-
     && make USE_PGXS=1 && make USE_PGXS=1 install \
     \
     # 정리
-    && apt-get purge -y --auto-remove $BUILD_DEPS \
-    && rm -rf /tmp/pg_bigm /tmp/textsearch_ko \
+    apt-get purge -y --auto-remove $BUILD_DEPS \
+    && rm -rf 908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz eunjeon-mecab-ko-908db8de3cb5 /tmp/pg_bigm /tmp/textsearch_ko \
     && rm -rf /var/lib/apt/lists/*
