@@ -41,12 +41,46 @@ bin/brakeman              # Security analysis
 bin/rails test:system BROWSER=headless_firefox  # System 테스트를 headless 모드로 실행
 ```
 
+#### Test Environment
+테스트 환경은 SQLite가 아닌 **PostgreSQL**을 사용합니다:
+- **이유**: 벡터 임베딩(pgvector), 한국어 전문 검색(textsearch_ko), trigram 검색(pg_bigm) 등 production과 동일한 PostgreSQL 확장 기능을 테스트해야 합니다.
+- **설정**: `config/database.yml`의 `test` 환경은 `TEST_DATABASE_URL` 환경 변수를 우선으로 사용합니다.
+- **로컬 테스트**: `bin/rails test` 실행 전 PostgreSQL이 실행 중이어야 하며, 필수 확장(fuzzystrmatch, pg_bigm, textsearch_ko, pgvector)이 설치되어 있어야 합니다.
+- **CI 환경**: GitHub Actions CI는 커스텀 PostgreSQL 이미지(`ghcr.io/stadia/ra-pg17:latest`)를 사용하며, 모든 필수 확장이 사전 설치되어 있습니다.
+
+**중요**: 마이그레이션 파일에 `unless Rails.env.test?`와 같은 환경별 조건문을 추가하지 마세요. 모든 환경에서 동일한 스키마를 유지해야 합니다.
+
 ### Background Jobs
 ```bash
 bin/jobs                  # Start Solid Queue worker
 bin/rails jobs:work       # Alternative job processing
 bin/rails jobs:stats      # 큐 상태 확인 (CI 실행 전 수동 점검)
 ```
+
+### CI/CD
+프로젝트는 GitHub Actions를 통해 CI를 실행합니다:
+
+```yaml
+# .github/workflows/ci.yml의 주요 작업
+- scan_ruby: Brakeman(보안 스캔) + bundler-audit(gem 취약점)
+- scan_js: importmap audit(JavaScript 의존성 취약점)
+- lint: RuboCop(코딩 스타일)
+- test: 전체 테스트 스위트 실행
+```
+
+**Test 작업 환경:**
+- **PostgreSQL 서비스**: 커스텀 Docker 이미지 `ghcr.io/stadia/ra-pg17:latest` 사용
+  - 모든 필수 확장(fuzzystrmatch, pg_bigm, textsearch_ko, pgvector) 사전 설치
+  - 인증: GitHub Container Registry 접근을 위해 `DOCKER_PASSWD` 시크릿 필요
+- **환경 변수**:
+  - `TEST_DATABASE_URL`: `postgres://postgres:postgres@localhost:5432/ra-news_test`
+  - `RAILS_MASTER_KEY`: credentials 복호화용 시크릿
+- **데이터베이스 준비**: `bin/rails db:create db:migrate` 실행 후 테스트 시작
+
+**CI 실패 시 확인 사항:**
+1. PostgreSQL 서비스 연결 실패 → `DOCKER_PASSWD` 시크릿 확인
+2. 마이그레이션 실패 → 로컬에서 `TEST_DATABASE_URL`을 설정하고 `bin/rails db:migrate RAILS_ENV=test` 재현
+3. 확장 기능 오류 → 커스텀 이미지에 해당 확장이 포함되어 있는지 확인
 
 ## Core Architecture
 
