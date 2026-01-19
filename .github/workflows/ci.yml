@@ -101,7 +101,7 @@ jobs:
           RAILS_ENV: test
           TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/ra-news_test
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-        run: bin/rails db:create db:migrate test
+        run: bin/rails db:prepare test
 
   # system-test:
   #   runs-on: ubuntu-latest

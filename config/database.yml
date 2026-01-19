@@ -69,7 +69,7 @@ development:
 test:
   primary:
     <<: *default
-    url: <%= ENV.fetch("DATABASE_URL") { "postgres://localhost:5432/ra-news_test" } %>
+    url: <%= ENV.fetch("TEST_DATABASE_URL") { "postgres://localhost:5432/ra-news_test" } %>
   cache:
     <<: *sqlite3
     database: storage/test_cache.sqlite3
