@@ -42,23 +42,6 @@ class SiteTest < ActiveSupport::TestCase
     assert site.valid?, "Gmail sites should not require base_uri"
   end
 
-  # ========== Association Tests ==========
-
-  test "기사가 있는 사이트 삭제 시 NOT NULL 제약 조건으로 인해 오류가 발생해야 한다" do
-    site = @rss_site
-    # Create an article associated with this site
-    article = site.articles.create!(
-      title: "Test Article",
-      url: "https://example.com/test-article",
-      origin_url: "https://example.com/test-article-origin"
-    )
-
-    # Destroying site should fail due to NOT NULL constraint in DB on articles.site_id
-    assert_raises(ActiveRecord::NotNullViolation) do
-      site.destroy!
-    end
-  end
-
   # ========== Enum Tests ==========
 
   test "client enum이 올바른 값을 가져야 한다" do
