@@ -24,6 +24,11 @@ class MastodonClient
     response
   end
 
+  def delete(status_id)
+    response = client.delete("api/v1/statuses/#{status_id}")
+    response
+  end
+
   private
 
   def check_token(client, config)

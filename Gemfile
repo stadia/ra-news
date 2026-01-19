@@ -20,7 +20,7 @@ gem "tailwindcss-rails", "~> 4.2"
 gem "jbuilder"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.21"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -49,6 +49,9 @@ group :development, :test do
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
+  # Patch-level verification for Bundler [https://github.com/rubysec/bundler-audit]
+  gem "bundler-audit", require: false
+
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop", require: false
   gem "rubocop-rails-omakase", require: false
@@ -57,6 +60,8 @@ group :development, :test do
   gem "faker"
   gem "herb"
   # gem "rbs_rails", "~> 0.12.1"
+  gem "minitest", "~> 6.0"
+  gem "minitest-mock"
 end
 
 group :development do
@@ -73,10 +78,10 @@ group :test do
 end
 
 gem "sorbet-runtime"
-gem "ruby_llm", "~> 1.5"
+gem "ruby_llm", "~> 1.10"
 gem "ruby_llm-schema"
-gem "pagy", "~> 43.0" # omit patch digit
-gem "honeybadger", "~> 6.1.0"
+gem "pagy", "~> 43.2" # omit patch digit
+gem "honeybadger", "~> 6.2.0"
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
 gem "ostruct"
@@ -90,12 +95,18 @@ gem "rails-i18n"
 gem "yt"
 gem "pg_search"
 gem "hairtrigger"
-gem "madmin", "~> 2.0"
+gem "madmin", "~> 2.3"
 gem "discard"
-gem "awesome_nested_set", git: "https://github.com/caonUlisses/awesome_nested_set.git"
+gem "awesome_nested_set"
+# gem "awesome_nested_set", git: "https://github.com/caonUlisses/awesome_nested_set.git"
 gem "neighbor"
-gem "view_component", "~> 4.0"
+gem "view_component", "~> 4.2"
 gem "oauth2", "~> 2.0"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
+gem "shadcn-rails"
+gem "heroicon"
+gem "youtube-transcript-rb", "~> 0.2.0"
+gem "dry-operation"
+
 gem "federails"

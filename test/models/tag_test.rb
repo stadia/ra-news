@@ -394,7 +394,7 @@ class TagTest < ActiveSupport::TestCase
 
     # Should not be valid
     assert_not empty_tag.valid?
-    assert_includes empty_tag.errors[:name], "Name에 내용을 입력해 주세요"
+    assert_includes empty_tag.errors[:name], "내용을 입력해 주세요"
   end
 
   test "태그 이름에 있는 공백을 처리해야 한다" do

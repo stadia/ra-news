@@ -25,10 +25,7 @@
       <div class="mb-4">
         <%= link_to article.url, target: "_blank", class: "inline-flex items-center text-base text-blue-400 hover:text-blue-300 hover:underline font-medium" do %>
           <%= article.url %>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 ml-1">
-            <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5zm0 3a.75.75 0 000 1.5h3.5a.75.75 0 000-1.5h-3.5zm0 3a.75.75 0 000 1.5h5.5a.75.75 0 000-1.5h-5.5zm8-5a.75.75 0 01.75-.75h.5a.75.75 0 01.75.75v.5c0 .414.336.75.75.75h.5a.75.75 0 01.75.75v.5a.75.75 0 01-.75.75h-.5a.75.75 0 01-.75-.75v-.5a.75.75 0 00-.75-.75h-.5a.75.75 0 01-.75-.75v-.5zM5 3.25a.75.75 0 01.75-.75h8.5a.75.75 0 01.75.75v8.5a.75.75 0 01-.75.75h-8.5a.75.75 0 01-.75-.75v-8.5z" clip-rule="evenodd" />
-            <path d="M3 4.75A2.75 2.75 0 015.75 2h8.5A2.75 2.75 0 0117 4.75v8.5A2.75 2.75 0 0114.25 16h-8.5A2.75 2.75 0 013 13.25v-8.5zm2.75-.904a1.25 1.25 0 00-1.25 1.25v8.5c0 .69.56 1.25 1.25 1.25h8.5c.69 0 1.25-.56 1.25-1.25v-8.5c0-.69-.56-1.25-1.25-1.25h-8.5z" />
-          </svg>
+          <%= heroicon "newspaper", variant: :mini, options: { class: "w-4 h-4 ml-1" } %>
         <% end %>
       </div>
       <div class="text-gray-300 mb-4 text-sm leading-relaxed flex-grow">
@@ -44,15 +41,11 @@
       </div>
       <div class="mt-auto pt-4 flex flex-wrap justify-between items-center text-xs text-gray-400 border-t border-gray-700 gap-y-2">
         <span class="inline-flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1 text-gray-500">
-            <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
-          </svg>
+          <%= heroicon "user", variant: :mini, options: { class: "w-4 h-4 mr-1 text-gray-500" } %>
           <%= render(ArticleUserComponent.new(article: article)) %>
         </span>
         <span class="inline-flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 mr-1 text-gray-500">
-            <path fill-rule="evenodd" d="M5.75 2a.75.75 0 01.75.75V4h7V2.75a.75.75 0 011.5 0V4h.25A2.75 2.75 0 0118 6.75v8.5A2.75 2.75 0 0115.25 18H4.75A2.75 2.75 0 012 15.25v-8.5A2.75 2.75 0 014.75 4H5V2.75A.75.75 0 015.75 2zm-1 5.5c0-.414.336-.75.75-.75h10.5a.75.75 0 010 1.5H5.5a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
-          </svg>
+          <%= heroicon "calendar", variant: :mini, options: { class: "w-4 h-4 mr-1 text-gray-500" } %>
           <%= article.published_at&.strftime("%Y년 %m월 %d일") || 'N/A' %>
         </span>
       </div>

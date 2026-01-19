@@ -2,24 +2,17 @@
 
 # rbs_inline: enabled
 
-class ContentService < ApplicationService
+class ContentService < Dry::Operation
   include LinkHelper
 
-  attr_reader :article #: Article
-
-  def initialize(article)
-    @article = article
-  end
-
-  def call
-    body = if article.is_youtube?
+  def call(article)
+    if article.is_youtube?
       # YouTube URL인 경우
-      execute_youtube(article.url)
+      step execute_youtube(article.url)
     else
       # YouTube URL이 아닌 경우
-      execute_html(article.url)
+      step execute_html(article.url)
     end
-    body
   end
 
   protected
@@ -28,10 +21,10 @@ class ContentService < ApplicationService
   def execute_html(url)
     logger.info "Fetching HTML content from: #{url}"
     html_content = handle_redirection(url).body
-    return nil if html_content.blank?
+    return Failure(:no_content) if html_content.blank?
 
     # Readability를 사용하여 주요 콘텐츠 HTML 추출. Readability::Document는 전체 HTML 문자열을 인자로 받습니다.
-    Readability::Document.new(html_content).content
+    Success(Readability::Document.new(html_content).content)
   end
 
   #: (url: String) -> String?
@@ -39,16 +32,34 @@ class ContentService < ApplicationService
     logger.info "Fetching Youtube content from: #{url}"
     youtube_id = youtube_id(url)
     logger.info "Youtube ID: #{youtube_id}"
-    return unless youtube_id
+    return Failure(:not_youtube) unless youtube_id
 
     transcript = nil
     video = Yt::Video.new id: youtube_id
-    video.captions.map(&:language).each do |lang|
-      rc = Youtube::Transcript.get(youtube_id, lang: lang)
-      transcript = format_transcript(rc.dig("actions"))
-      break if transcript.present?
+    begin
+      video.captions.map(&:language).each do |lang|
+        rc = Youtube::Transcript.get(youtube_id, lang: lang)
+        next if rc["error"].present?
+
+        transcript = format_transcript(rc.dig("actions"))
+        break if transcript.present?
+      end
+    rescue StandardError => e
+      logger.error "Error fetching Youtube transcript: #{e.message}"
     end
-    transcript
+
+    if transcript.blank?
+      begin
+        fetched_transcript = YoutubeRb::Transcript::YouTubeTranscriptApi.new.fetch(youtube_id)
+        transcript = YoutubeRb::Formatters::TextFormatter.new.format_transcript(fetched_transcript) if fetched_transcript.present?
+      rescue StandardError => e
+        logger.error "Error fetching Youtube transcript: #{e.message}"
+      end
+    end
+
+    return Failure(:no_content) if transcript.blank?
+
+    Success(transcript)
   end
 
   private
@@ -64,9 +75,9 @@ class ContentService < ApplicationService
     # 3xx 응답인 경우 리다이렉트된 URL을 사용
     redirect_url = response.headers["location"]
     url = if redirect_url.start_with?("http")
-                 redirect_url
+            redirect_url
     else
-                 URI.join(url, redirect_url).to_s
+            URI.join(url, redirect_url).to_s
     end
     logger.debug "Redirecting to: #{url}"
 
@@ -78,5 +89,9 @@ class ContentService < ApplicationService
     return nil if tsr.nil? || tsr.empty?
 
     tsr.map { |it| "#{it.dig("transcriptSegmentRenderer", "startTimeText", "simpleText")} - #{it.dig("transcriptSegmentRenderer", "snippet", "runs")&.map { |run| run.dig("text") }&.join(" ")}" }.join("\n") # Use string interpolation for clarity
+  end
+
+  def logger
+    Rails.logger
   end
 end

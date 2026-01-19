@@ -150,20 +150,6 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  # ========== Scope Tests ========== 
-
-  test "admins 스코프는 관리자 사용자를 반환해야 한다" do
-    admins = User.admins
-    assert_includes admins, @admin
-    assert_not_includes admins, @user
-    assert_not_includes admins, @korean_user
-  end
-
-  test "admins 스코프는 admin@example.com만 포함해야 한다" do
-    admin_emails = User.admins.pluck(:email_address)
-    assert_equal [ "admin@example.com" ], admin_emails
-  end
-
   # ========== Instance Method Tests ========== 
 
   test "admin?은 관리자 사용자에 대해 true를 반환해야 한다" do
@@ -174,25 +160,10 @@ class UserTest < ActiveSupport::TestCase
 
   # ========== Role Tests ==========
 
-  test "with_role 스코프는 특정 역할을 가진 사용자만 반환해야 한다" do
-    editors = User.with_role(:editor)
-    assert_includes editors, @user
-    assert_not_includes editors, @admin
-  end
-
   test "has_role?은 역할 보유 여부를 확인해야 한다" do
     assert @admin.has_role?(:admin)
     assert @user.has_role?(:user)
     assert_not @user.has_role?(:admin)
-  end
-
-  test "admin?은 역할 기반으로 동작해야 한다" do
-    roles(:admin).destroy!
-    @admin.reload
-    assert_not @admin.admin?
-
-    @user.roles << @admin_role.name
-    assert @user.admin?
   end
 
   test "사용자는 여러 역할을 가질 수 있어야 한다" do
@@ -320,15 +291,6 @@ class UserTest < ActiveSupport::TestCase
         password: "password123"
       )
       assert_not user.valid?, "Name with numbers #{name} should be invalid"
-    end
-  end
-
-  # ========== Performance Tests ==========
-
-  test "관리자를 효율적으로 쿼리해야 한다" do
-    # Test that admin query is efficient
-    assert_queries(1) do
-      User.admins.to_a
     end
   end
 

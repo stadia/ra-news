@@ -31,14 +31,14 @@
             <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">인증 정보</h3>
             <dl class="space-y-2.5">
               <div class="flex items-start gap-3">
-                <dt class="text-sm text-gray-500 dark:text-gray-400 w-24 flex-shrink-0">Access Token</dt>
+                <dt class="text-sm text-gray-500 dark:text-gray-400 w-24 shrink-0">Access Token</dt>
                 <dd class="flex-1 font-mono text-xs text-gray-900 dark:text-white break-all bg-white dark:bg-gray-800 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
                   <%= social.value["access_token"][0..15] %>...
                 </dd>
               </div>
               <% if social.value["expires_at"] %>
                 <div class="flex items-start gap-3">
-                  <dt class="text-sm text-gray-500 dark:text-gray-400 w-24 flex-shrink-0">만료 시간</dt>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400 w-24 shrink-0">만료 시간</dt>
                   <dd class="flex-1 text-sm text-gray-900 dark:text-white">
                     <%= Time.at(social.value["expires_at"]).in_time_zone("Asia/Seoul").strftime("%Y-%m-%d %H:%M") %>
                   </dd>
@@ -46,7 +46,7 @@
               <% end %>
               <% if social.value["token_created_at"] %>
                 <div class="flex items-start gap-3">
-                  <dt class="text-sm text-gray-500 dark:text-gray-400 w-24 flex-shrink-0">생성 시간</dt>
+                  <dt class="text-sm text-gray-500 dark:text-gray-400 w-24 shrink-0">생성 시간</dt>
                   <dd class="flex-1 text-sm text-gray-900 dark:text-white">
                     <%= Time.at(social.value["token_created_at"]).in_time_zone("Asia/Seoul").strftime("%Y-%m-%d %H:%M") %>
                   </dd>

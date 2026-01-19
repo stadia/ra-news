@@ -20,8 +20,11 @@ class MastodonService < SocialMediaService
 
   def platform_name: () -> String
 
-  # : (Article article) -> void
-  def post_to_platform: (Article article) -> void
+  # : (Article article) -> Dry::Monads::Result
+  def post_to_platform: (Article article) -> Dry::Monads::Result
+
+  # : (Article article) -> Dry::Monads::Result
+  def delete_from_platform: (Article article) -> Dry::Monads::Result
 
   # : (Article article) -> String
   def build_post_text: (Article article) -> String

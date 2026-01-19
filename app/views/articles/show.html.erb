@@ -22,9 +22,7 @@
         <!-- 작성자 -->
         <div class="flex items-center">
           <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mr-3">
-            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-            </svg>
+            <%= heroicon "user", variant: :mini, options: { class: "w-4 h-4 text-white" } %>
           </div>
           <div>
             <div class="text-xs text-gray-300">작성자</div>
@@ -36,9 +34,7 @@
 
         <!-- 발행일 -->
         <div class="flex items-center">
-          <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
+          <%= heroicon "calendar", variant: :outline, options: { class: "w-5 h-5 mr-2 text-gray-500" } %>
           <div>
             <div class="text-xs text-gray-300">발행일</div>
             <div class="font-medium text-gray-200">
@@ -53,10 +49,8 @@
         <%= link_to @article.url, target: "_blank", rel: "noopener noreferrer",
             class: "flex items-center justify-between group hover:bg-gray-600 transition-colors duration-200 rounded-lg p-2" do %>
           <div class="flex items-center flex-1 min-w-0">
-            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3 flex-shrink-0">
-              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
+            <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3 shrink-0">
+              <%= heroicon "arrow-top-right-on-square", variant: :outline, options: { class: "w-5 h-5 text-white" } %>
             </div>
             <div class="min-w-0 flex-1">
               <div class="text-sm font-medium text-blue-300 group-hover:text-blue-200 transition-colors">
@@ -67,9 +61,7 @@
               </div>
             </div>
           </div>
-          <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-300 transition-colors flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-          </svg>
+          <%= heroicon "chevron-right", variant: :outline, options: { class: "w-5 h-5 text-gray-400 group-hover:text-gray-300 transition-colors shrink-0 ml-2" } %>
         <% end %>
       </div>
     </header>
@@ -78,18 +70,16 @@
     <div class="p-4 md:p-6 lg:p-8">
       <!-- 3줄 요약 -->
       <section class="mb-8 lg:mb-12">
-        <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-lg p-6">
+        <div class="bg-linear-to-r from-green-600 to-green-700 rounded-lg p-6">
           <h2 class="text-xl lg:text-2xl font-bold text-white mb-4 flex items-center">
-            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+            <%= heroicon "check-circle", variant: :outline, options: { class: "w-6 h-6 mr-2" } %>
             핵심 요약
           </h2>
           <% if @article.summary_key.is_a?(Array) %>
             <ul class="space-y-3">
               <% @article.summary_key&.each_with_index do |item, index| %>
                 <li class="flex items-start">
-                  <span class="flex-shrink-0 w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-xs font-bold text-white mr-3 mt-0.5">
+                  <span class="shrink-0 w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-xs font-bold text-white mr-3 mt-0.5">
                     <%= index + 1 %>
                   </span>
                   <span class="text-green-100 leading-relaxed"><%= item %></span>
@@ -117,7 +107,7 @@
           <% if @article.summary_body.present? %>
             <div class="mb-8 article-content" id="article-detail-body">
               <div class="prose prose-lg max-w-none text-gray-200 leading-loose">
-                <%= Kramdown::Document.new(@article.summary_body).to_html.html_safe %>
+                <%= sanitize Kramdown::Document.new(@article.summary_body).to_html %>
               </div>
             </div>
           <% end %>
@@ -141,9 +131,7 @@
     <section class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
       <div class="p-4 md:p-6 lg:p-8">
         <h2 class="text-xl lg:text-2xl font-bold text-gray-100 mb-6 flex items-center">
-          <svg class="w-6 h-6 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-          </svg>
+          <%= heroicon "newspaper", variant: :outline, options: { class: "w-6 h-6 mr-2 text-green-500" } %>
           관련 글들
         </h2>
 
@@ -159,9 +147,7 @@
                 </p>
                 <div class="flex items-center justify-between text-xs text-gray-300">
                   <span class="flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
+                    <%= heroicon "calendar", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
                     <%= article.published_at&.strftime("%m/%d") %>
                   </span>
                   <span class="group-hover:text-green-400 transition-colors duration-200">읽어보기 →</span>
@@ -183,7 +169,11 @@
 
       <!-- 댓글 작성 폼 -->
       <div id="comment_form" class="border-t border-gray-700 mb-4">
-        <%= render partial: 'comments/form', locals: { article: @article, comment: @comment } %>
+        <% if authenticated? %>
+            <%= render partial: 'comments/form', locals: { article: @article, comment: @comment } %>
+        <% else %>
+            <%= render LoginRequiredComponent.new %>
+        <% end %>
       </div>
 
       <!-- 댓글 목록 -->

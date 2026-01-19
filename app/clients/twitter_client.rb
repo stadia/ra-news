@@ -24,6 +24,11 @@ class TwitterClient
     response
   end
 
+  def delete(tweet_id)
+    response = client.delete("tweets/#{tweet_id}")
+    response
+  end
+
   private
 
   def check_token(client, config)

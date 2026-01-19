@@ -50,10 +50,10 @@ PROMPT
 
   def call #: void
     if article.body.blank? || article.body.size < 25
-      body = ContentService.call(article)
-      article.discard! and return if body.blank?
+      body = ContentService.new.call(article)
+      article.discard! and return if body.failure?
 
-      article.update(body: body)
+      article.update(body: body.value!)
     end
 
     chat = RubyLLM.chat(model: "gemini-2.5-flash", provider: :gemini).with_temperature(0.6).with_schema(ArticleSchema)
@@ -130,8 +130,5 @@ PROMPT
         return # Exit early if discarded
       end
     end
-
-    # Rebuild search index only for kept articles
-    PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false) unless article.discarded?
   end
 end

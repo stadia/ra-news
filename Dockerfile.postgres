@@ -1,25 +1,40 @@
-# PostgreSQL 16 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
+# PostgreSQL 17 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
 
-# 베이스 이미지: pgvector 16
-FROM pgvector/pgvector:pg16
+# 베이스 이미지: pgvector 17
+FROM pgvector/pgvector:pg17
+
+COPY mecab-ko-dic-2.1.1-20180720.tar.gz /tmp/mecab-ko-dic-2.1.1.tar.gz
 
 # 필수 패키지 설치, 확장 빌드 및 정리
-RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-16 postgresql-contrib-16 mecab libmecab-dev" \
+RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-17 postgresql-contrib-17 automake1.11" \
     && apt-get update \
-    && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates \
+    && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates mecab \
     \
     # pg_bigm 설치 (특정 버전 고정)
     && git clone --branch REL1_2_STABLE --depth 1 https://github.com/pgbigm/pg_bigm.git /tmp/pg_bigm \
     && cd /tmp/pg_bigm \
     && make USE_PGXS=1 && make USE_PGXS=1 install \
     \
+    # mecab-ko 설치
+    && cd /tmp \
+    && wget https://bitbucket.org/eunjeon/mecab-ko/get/908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz \
+    && tar -xzf 908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz \
+    && cd eunjeon-mecab-ko-908db8de3cb5 \
+    && ./configure && make && make install \
+    \
+    # mecab-ko-dic 설치
+    && cd /tmp \
+    && tar -xzf mecab-ko-dic-2.1.1.tar.gz && ls -la \
+    && cd mecab-ko-dic-2.1.1-20180720 \
+    && ./configure && make && make install \
+    \
     # textsearch_ko 설치 (특정 커밋 고정)
     && cd / \
-    && git clone --depth 1 https://github.com/i0seph/textsearch_ko.git /tmp/textsearch_ko \
+    && git clone --depth 1 https://github.com/stadia/textsearch_ko.git /tmp/textsearch_ko \
     && cd /tmp/textsearch_ko \
     && make USE_PGXS=1 && make USE_PGXS=1 install \
     \
     # 정리
     && apt-get purge -y --auto-remove $BUILD_DEPS \
-    && rm -rf /tmp/pg_bigm /tmp/textsearch_ko \
+    && rm -rf /tmp/908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz /tmp/eunjeon-mecab-ko-908db8de3cb5 /tmp/mecab-ko-dic-2.1.1.tar.gz /tmp/mecab-ko-dic-2.1.1-20180720 /tmp/pg_bigm /tmp/textsearch_ko \
     && rm -rf /var/lib/apt/lists/*

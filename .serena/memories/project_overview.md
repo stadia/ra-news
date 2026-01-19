@@ -5,7 +5,7 @@ Ruby-News is a Korean Ruby-focused news aggregation platform that aggregates con
 
 ## Tech Stack
 - **Framework**: Rails 8 with Solid Queue, Solid Cache, Solid Cable
-- **Language**: Ruby 3.4 with RBS inline type annotations
+- **Language**: Ruby 4.0 with RBS inline type annotations
 - **Database**: PostgreSQL with vector embeddings (pgvector), Korean/English full-text search
 - **AI Integration**: RubyLLM with Gemini models for Korean content processing
 - **Frontend**: Hotwire (Turbo/Stimulus), Tailwind CSS 4.2

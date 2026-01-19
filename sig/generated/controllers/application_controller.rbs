@@ -2,8 +2,4 @@
 
 class ApplicationController < ActionController::Base
   include Authentication
-
-  private
-
-  def redirect_old_domain: () -> untyped
 end

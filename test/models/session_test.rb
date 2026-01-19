@@ -26,7 +26,7 @@ class SessionTest < ActiveSupport::TestCase
   test "user는 필수 항목이어야 한다" do
     session = Session.new(ip_address: "127.0.0.1", user_agent: "Test")
     assert_not session.valid?
-    assert_includes session.errors[:user], "User은(는) 반드시 있어야 합니다"
+    assert_includes session.errors[:user], "값이 반드시 필요합니다"
   end
 
   test "다른 사용자가 다른 세션을 가질 수 있도록 허용해야 한다" do

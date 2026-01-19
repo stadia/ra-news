@@ -15,5 +15,8 @@ class ArticleBatchJob < ApplicationJob
       end
       sleep 1
     end
+
+    # Rebuild search index only for kept articles
+    PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false)
   end
 end

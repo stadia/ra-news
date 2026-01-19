@@ -7,6 +7,8 @@ class MastodonClient
 
   def post: (untyped text) -> untyped
 
+  def delete: (untyped status_id) -> untyped
+
   private
 
   def check_token: (untyped client, untyped config) -> untyped

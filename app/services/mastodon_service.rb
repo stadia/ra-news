@@ -19,11 +19,39 @@ class MastodonService < SocialMediaService
     "Mastodon"
   end
 
-  #: (Article article) -> void
+  #: (Article article) -> Dry::Monads::Result
   def post_to_platform(article)
+    return Failure(:already_posted) if article.mastodon_id.present?
+
     post_text = build_post_text(article)
     response = platform_client.post(post_text)
-    logger.info "Successfully posted to #{platform_name} for article id: #{article.id} - Status: #{response}"
+    if response.status < 200 || response.status > 299
+      logger.error "Failed to post to #{platform_name} for article id: #{article.id} - Status: #{response.status}"
+      return Failure(response.status)
+    end
+
+    mastodon_id = response.body["id"]
+    article.update(mastodon_id:)
+    logger.info "Successfully posted to #{platform_name} for article id: #{article.id} - SocialId: #{mastodon_id}"
+    Success(mastodon_id)
+  end
+
+  #: (Article article) -> Dry::Monads::Result
+  def delete_from_platform(article)
+    unless article.mastodon_id.present?
+      logger.info "Skipping #{platform_name} delete for article id: #{article.id} - no mastodon_id"
+      return Failure(:no_social_id)
+    end
+
+    response = platform_client.delete(article.mastodon_id)
+    if response.status < 200 || response.status > 299
+      logger.error "Failed to delete from #{platform_name} for article id: #{article.id} - Status: #{response.status}"
+      return Failure(response.status)
+    end
+
+    article.update(mastodon_id: nil)
+    logger.info "Successfully deleted from #{platform_name} for article id: #{article.id}"
+    Success(article.id)
   end
 
   #: (Article article) -> String
@@ -37,7 +65,7 @@ class MastodonService < SocialMediaService
                            .reverse
                            .take(3)
     tags = top_tags.map { |tag| "##{tag.name.gsub(/\s+/, '_').downcase}" }.join(" ")
-    link = article_link
+    link = article_link(article.slug)
 
     # Mastodon은 URL을 실제 길이로 계산하므로 링크 길이도 포함
     reserved_space = tags.length + link.length + 5 # 공백과 줄바꿈

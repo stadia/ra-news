@@ -1,0 +1,6 @@
+# Generated from app/jobs/social_delete_job.rb with RBS::Inline
+
+class SocialDeleteJob < ApplicationJob
+  # : (Integer id) -> void
+  def perform: (Integer id) -> void
+end

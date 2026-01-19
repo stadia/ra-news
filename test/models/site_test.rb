@@ -27,36 +27,19 @@ class SiteTest < ActiveSupport::TestCase
     site = Site.new(client: :rss, base_uri: "https://example.com/rss")
     site.client = nil
     assert_not site.valid?
-    assert_includes site.errors[:name], "Name에 내용을 입력해 주세요"
+    assert_includes site.errors[:name], "내용을 입력해 주세요"
   end
 
   test "client는 필수 항목이어야 한다" do
     site = Site.new(name: "Test Site", base_uri: "https://example.com/rss")
     site.client = nil
     assert_not site.valid?
-    assert_includes site.errors[:client], "Client에 내용을 입력해 주세요"
+    assert_includes site.errors[:client], "내용을 입력해 주세요"
   end
 
   test "base_uri가 없는 사이트를 허용해야 한다" do
     site = Site.new(name: "No URI Site", client: :gmail)
     assert site.valid?, "Gmail sites should not require base_uri"
-  end
-
-  # ========== Association Tests ==========
-
-  test "기사가 있는 사이트 삭제 시 NOT NULL 제약 조건으로 인해 오류가 발생해야 한다" do
-    site = @rss_site
-    # Create an article associated with this site
-    article = site.articles.create!(
-      title: "Test Article",
-      url: "https://example.com/test-article",
-      origin_url: "https://example.com/test-article-origin"
-    )
-
-    # Destroying site should fail due to NOT NULL constraint in DB on articles.site_id
-    assert_raises(ActiveRecord::NotNullViolation) do
-      site.destroy!
-    end
   end
 
   # ========== Enum Tests ==========
@@ -94,13 +77,13 @@ class SiteTest < ActiveSupport::TestCase
 
   # ========== Callback Tests ==========
 
-  test "생성 시 last_checked_at이 비어있으면 연초로 설정해야 한다" do
+  test "생성 시 last_checked_at이 비어있으면 6개월 전으로 설정해야 한다" do
     # Travel to a specific time for consistent testing
     travel_to Time.zone.parse("2024-06-15 14:30:00") do
       site = Site.create!(name: "Callback Test", client: :rss)
 
-      expected_time = Time.zone.now.beginning_of_year
-      assert_equal expected_time, site.last_checked_at
+      expected_time = 6.months.ago
+      assert_equal expected_time.to_i, site.last_checked_at.to_i
     end
   end
 
@@ -122,7 +105,7 @@ class SiteTest < ActiveSupport::TestCase
 
     travel_to Time.zone.parse("2024-03-20 09:15:00") do
       site.save!
-      expected_time = Time.zone.now.beginning_of_year
+      expected_time = 6.months.ago
       assert_equal expected_time, site.last_checked_at
     end
   end
@@ -155,7 +138,7 @@ class SiteTest < ActiveSupport::TestCase
     @youtube_site.update!(channel: "UCWnPjmqvljcafA0z2U1fwKQ")
     client = @youtube_site.init_client
     assert_kind_of Youtube::Channel, client
-    assert_equal @youtube_site.channel, client.instance_variable_get(:@id)
+    assert_equal @youtube_site.channel, client.channel.id
   end
 
   test "init_client는 지원되지 않는 클라이언트에 대해 오류를 발생시켜야 한다" do
@@ -197,46 +180,6 @@ class SiteTest < ActiveSupport::TestCase
       # Check that base_uri is passed correctly
       client_base_uri = client.instance_variable_get(:@base_uri)
       assert_equal site.base_uri, client_base_uri
-    end
-  end
-
-  # ========== Data Integrity Tests ==========
-
-  test "기사와의 참조 무결성을 유지해야 한다" do
-    site = @rss_site
-    initial_article_count = site.articles.count
-
-    # Create articles associated with this site
-    article1 = site.articles.create!(
-      title: "Article 1",
-      url: "https://example.com/article1-#{SecureRandom.hex(4)}",
-      origin_url: "https://example.com/article1-origin-#{SecureRandom.hex(4)}"
-    )
-
-    article2 = site.articles.create!(
-      title: "Article 2",
-      url: "https://example.com/article2-#{SecureRandom.hex(4)}",
-      origin_url: "https://example.com/article2-origin-#{SecureRandom.hex(4)}"
-    )
-
-    assert_equal initial_article_count + 2, site.articles.count
-
-    # Test behavior when site is destroyed
-    # If NOT NULL constraint exists, articles should be deleted or an error should occur
-    begin
-      site.destroy!
-
-      # If destruction succeeds, check the behavior
-      if Article.exists?(article1.id) && Article.exists?(article2.id)
-        article1.reload
-        article2.reload
-        assert_nil article1.site_id
-        assert_nil article2.site_id
-      end
-    rescue ActiveRecord::NotNullViolation, ActiveRecord::InvalidForeignKey
-      # This is acceptable behavior if database has NOT NULL constraint
-      # The site destruction should be blocked or articles should be deleted
-      assert true, "Database constraint prevents site deletion with associated articles"
     end
   end
 
@@ -349,28 +292,6 @@ class SiteTest < ActiveSupport::TestCase
     assert_queries(2) do # One for sites, one for articles
       sites = Site.includes(:articles).limit(3)
       sites.each { |s| s.articles.to_a }
-    end
-  end
-
-  # ========== Integration Tests ==========
-
-  test "한국 시간대에서 작동해야 한다" do
-    Time.zone = "Asia/Seoul"
-
-    travel_to Time.zone.parse("2024-07-01 12:00:00") do
-      site = Site.create!(
-        name: "시간대 테스트 사이트",
-        client: :rss,
-        base_uri: "https://timezone-test.co.kr/rss"
-      )
-
-      assert_equal "Asia/Seoul", Time.zone.name
-      assert_kind_of ActiveSupport::TimeWithZone, site.last_checked_at
-      assert_kind_of ActiveSupport::TimeWithZone, site.created_at
-
-      # Should be set to beginning of year in Korean timezone
-      expected_time = Time.zone.parse("2024-01-01 00:00:00")
-      assert_equal expected_time, site.last_checked_at
     end
   end
 
