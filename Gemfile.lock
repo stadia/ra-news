@@ -303,7 +303,7 @@ GEM
       snaky_hash (~> 2.0, >= 2.0.3)
       version_gem (~> 1.1, >= 1.1.9)
     ostruct (0.6.3)
-    pagy (43.2.6)
+    pagy (43.2.7)
       json
       yaml
     parallel (1.27.0)
