@@ -81,7 +81,7 @@ gem "sorbet-runtime"
 gem "ruby_llm", "~> 1.10"
 gem "ruby_llm-schema"
 gem "pagy", "~> 43.2" # omit patch digit
-gem "honeybadger", "~> 6.2.0"
+gem "honeybadger", "~> 6.2.1"
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
 gem "ostruct"
