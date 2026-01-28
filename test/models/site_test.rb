@@ -349,8 +349,8 @@ class SiteTest < ActiveSupport::TestCase
       assert_equal gmail_client, result
     end
     assert_equal 1, gmail_invocations
-    assert_equal [], gmail_args
-    assert_equal({}, gmail_kwargs)
+    assert_empty gmail_args
+    assert_empty(gmail_kwargs)
 
     # HackerNews Client (no parameters)
     hn_site = @hn_site
@@ -368,8 +368,8 @@ class SiteTest < ActiveSupport::TestCase
       assert_equal hacker_news_client, result
     end
     assert_equal 1, hacker_news_invocations
-    assert_equal [], hacker_news_args
-    assert_equal({}, hacker_news_kwargs)
+    assert_empty hacker_news_args
+    assert_empty(hacker_news_kwargs)
   end
 
   # ========== Fixture Validation Tests ==========

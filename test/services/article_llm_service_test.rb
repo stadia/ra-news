@@ -337,7 +337,7 @@ class ArticleLlmServiceTest < ActiveSupport::TestCase
 
   test "PROMPT 상수가 정의되어 있다" do
     assert_not_nil ArticleLlmService::PROMPT
-    assert ArticleLlmService::PROMPT.is_a?(String)
+    assert_kind_of String, ArticleLlmService::PROMPT
     assert ArticleLlmService::PROMPT.length > 100
   end
 end

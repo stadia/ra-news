@@ -150,7 +150,7 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  # ========== Instance Method Tests ========== 
+  # ========== Instance Method Tests ==========
 
   test "admin?은 관리자 사용자에 대해 true를 반환해야 한다" do
     assert @admin.admin?

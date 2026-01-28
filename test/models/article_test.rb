@@ -411,7 +411,7 @@ class ArticleTest < ActiveSupport::TestCase
     end
     # YouTube should not be automatically deleted
     # (unless explicitly marked for deletion)
-    assert_equal true, youtube_article.is_youtube
+    assert youtube_article.is_youtube
   end
 
   # ========== Store Accessor Tests ==========

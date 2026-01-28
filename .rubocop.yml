@@ -3,6 +3,10 @@ inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
 inherit_from: .rubocop_todo.yml
 
+plugins:
+  - rubocop-rbs_inline
+  - rubocop-minitest
+
 AllCops:
   RubyInterpreters:
     - ruby

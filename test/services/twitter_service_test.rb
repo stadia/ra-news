@@ -194,7 +194,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     # 확인된 태그(ruby_tag)는 포함되어야 함
     assert post_text.include?("#ruby"), "확인된 태그가 포함되어야 합니다"
     # 확인되지 않은 태그는 포함되지 않아야 함
-    refute post_text.include?("#new-features"), "확인되지 않은 태그는 포함되지 않아야 합니다"
+    refute_includes post_text, "#new-features", "확인되지 않은 태그는 포함되지 않아야 합니다"
   end
 
   # 가장 taggings_count가 높은 태그 하나만 사용

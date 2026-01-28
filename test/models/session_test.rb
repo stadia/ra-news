@@ -196,7 +196,7 @@ class SessionTest < ActiveSupport::TestCase
 
       assert_kind_of ActiveSupport::TimeWithZone, session.created_at
       assert_kind_of ActiveSupport::TimeWithZone, session.updated_at
-      assert_equal Time.zone.name, "Asia/Seoul"
+      assert_equal "Asia/Seoul", Time.zone.name
 
       # Should be created at the current time
       expected_time = Time.zone.parse("2024-06-15 14:30:00")

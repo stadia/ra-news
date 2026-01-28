@@ -30,7 +30,7 @@ class SitemapServiceTest < ActiveSupport::TestCase
     end
 
     assert create_called, "SitemapGenerator::Sitemap.create가 호출되어야 합니다"
-    assert_equal true, compress_value, "compress가 true로 설정되어야 합니다"
+    assert compress_value, "compress가 true로 설정되어야 합니다"
   end
 
   test "서비스는 ApplicationService를 상속한다" do
@@ -90,6 +90,6 @@ class SitemapServiceTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal true, compress_set
+    assert compress_set
   end
 end
