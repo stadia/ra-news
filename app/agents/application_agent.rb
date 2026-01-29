@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rbs_inline: enabled
+
 # ApplicationAgent - Base class for all agents in this application
 #
 # All agents inherit from this class. Configure shared settings here
@@ -25,9 +27,9 @@ class ApplicationAgent < RubyLLM::Agents::Base
   # ============================================
   # These settings are inherited by all agents
 
-  # model "gemini-2.0-flash"   # Default model for all agents
-  # temperature 0.0            # Default temperature (0.0 = deterministic)
-  # timeout 60                 # Default timeout in seconds
+  model "gemini-2.0-flash"   # Default model for all agents
+  temperature 0.0            # Default temperature (0.0 = deterministic)
+  timeout 60                 # Default timeout in seconds
 
   # ============================================
   # Shared Caching
@@ -41,7 +43,7 @@ class ApplicationAgent < RubyLLM::Agents::Base
   # Configure once here, all agents inherit these settings
 
   # Automatic retries for all agents
-  # retries max: 2, backoff: :exponential, base: 0.4, max_delay: 3.0
+  retries max: 2, backoff: :exponential, base: 0.4, max_delay: 3.0
 
   # Shared fallback models
   # fallback_models ["gpt-4o-mini", "claude-3-haiku"]
@@ -57,13 +59,25 @@ class ApplicationAgent < RubyLLM::Agents::Base
   # ============================================
   # Define methods here that can be used by all agents
 
-  # Example: Common system prompt prefix
-  # def system_prompt_prefix
-  #   "You are an AI assistant for #{Rails.application.class.module_parent_name}."
-  # end
+  # 한국어 시스템 프롬프트 prefix
+  # @rbs return: String
+  def system_prompt_prefix #: String
+    "당신은 Ruby 프로그래밍 언어 전문 개발자입니다. 모든 출력은 한국어로 작성합니다."
+  end
 
-  # Example: Common metadata
-  # def execution_metadata
-  #   { app_version: Rails.application.config.version }
-  # end
+  # 한국어 Ruby 전문가 시스템 프롬프트
+  # @rbs return: String
+  def korean_ruby_expert_prompt #: String
+    <<~PROMPT
+      당신은 Ruby 프로그래밍 언어 전문 개발자이자 뛰어난 기술 작가입니다.
+      Ruby, Rails, 그리고 Ruby 생태계에 대한 깊은 이해를 바탕으로 정확하고 유용한 정보를 제공합니다.
+      모든 출력은 한국어로 작성하며, 기술 용어는 원어를 유지합니다.
+    PROMPT
+  end
+
+  # Common metadata
+  # @rbs return: Hash[Symbol, untyped]
+  def execution_metadata #: Hash[Symbol, untyped]
+    { app_name: "RubyNews", rails_env: Rails.env }
+  end
 end
