@@ -20,7 +20,7 @@ module Articles
     description "콘텐츠의 Ruby 관련성 판단"
     version "1.0"
 
-    # 기본 모델 설정 상속 (gemini-2.0-flash, temp 0.0)
+    # 기본 모델 설정 상속 (gemini-2.5-flash, temp 0.5)
     cache 12.hours
 
     param :content, required: true
@@ -41,8 +41,6 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        #{korean_ruby_expert_prompt}
-
         ## 역할
         당신은 Ruby 생태계 콘텐츠 큐레이터입니다. 주어진 콘텐츠가 Ruby 커뮤니티에 가치 있는지 판단합니다.
 

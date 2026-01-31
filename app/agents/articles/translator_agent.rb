@@ -39,8 +39,6 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        #{korean_ruby_expert_prompt}
-
         ## 역할
         당신은 기술 콘텐츠 전문 번역가입니다. Ruby 및 소프트웨어 개발 관련 제목을 자연스러운 한국어로 번역합니다.
 

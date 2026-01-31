@@ -56,8 +56,6 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        #{korean_ruby_expert_prompt}
-
         ## 역할
         당신은 Ruby 뉴스 플랫폼의 수석 에디터입니다.
         기사의 최종 품질을 검토하고 게시 여부를 결정합니다.

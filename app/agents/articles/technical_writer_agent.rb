@@ -23,7 +23,7 @@ module Articles
 
     # 더 강력한 모델, 창의적 작문 허용
     model "gemini-2.5-flash"
-    temperature 0.6
+    temperature 0.5
     timeout 120
 
     param :content, required: true
@@ -51,8 +51,6 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        #{korean_ruby_expert_prompt}
-
         ## 역할
         당신은 Ruby 전문 기술 작가입니다. 복잡한 기술 콘텐츠를 명확하고 구조화된 마크다운으로 작성합니다.
 

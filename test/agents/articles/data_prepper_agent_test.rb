@@ -46,16 +46,6 @@ module Articles
       assert_includes result.content[:user_prompt], "원본 콘텐츠"
     end
 
-    test "system_prompt에 한국어 Ruby 전문가 프롬프트가 포함된다" do
-      result = Articles::DataPrepperAgent.call(
-        raw_content: "<p>Test</p>",
-        dry_run: true
-      )
-
-      assert_includes result.content[:system_prompt], "Ruby"
-      assert_includes result.content[:system_prompt], "한국어"
-    end
-
     test "schema가 정의되어 있다" do
       agent = Articles::DataPrepperAgent.new(raw_content: "<p>Test</p>")
       schema = agent.send(:schema)

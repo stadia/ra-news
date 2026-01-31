@@ -48,8 +48,6 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        #{korean_ruby_expert_prompt}
-
         ## 역할
         당신은 Ruby 생태계에 정통한 기술 컨설턴트입니다.
         기사의 맥락을 파악하고 독자가 더 깊이 이해할 수 있도록 배경 정보를 제공합니다.
