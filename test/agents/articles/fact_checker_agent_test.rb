@@ -7,7 +7,7 @@ require "test_helper"
 module Articles
   class FactCheckerAgentTest < ActiveSupport::TestCase
     test "에이전트가 ApplicationAgent를 상속한다" do
-      assert Articles::FactCheckerAgent < ApplicationAgent
+      assert_operator Articles::FactCheckerAgent, :<, ApplicationAgent
     end
 
     test "content와 title 파라미터가 필수다" do

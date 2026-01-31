@@ -7,7 +7,7 @@ require "test_helper"
 module Articles
   class DataPrepperAgentTest < ActiveSupport::TestCase
     test "에이전트가 ApplicationAgent를 상속한다" do
-      assert Articles::DataPrepperAgent < ApplicationAgent
+      assert_operator Articles::DataPrepperAgent, :<, ApplicationAgent
     end
 
     test "raw_content 파라미터가 필수다" do

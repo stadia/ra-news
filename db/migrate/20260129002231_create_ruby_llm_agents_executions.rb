@@ -85,9 +85,9 @@ class CreateRubyLLMAgentsExecutions < ActiveRecord::Migration[8.1]
     add_index :ruby_llm_agents_executions, :agent_type
     add_index :ruby_llm_agents_executions, :status
     add_index :ruby_llm_agents_executions, :created_at
-    add_index :ruby_llm_agents_executions, [:agent_type, :created_at]
-    add_index :ruby_llm_agents_executions, [:agent_type, :status]
-    add_index :ruby_llm_agents_executions, [:agent_type, :agent_version]
+    add_index :ruby_llm_agents_executions, [ :agent_type, :created_at ]
+    add_index :ruby_llm_agents_executions, [ :agent_type, :status ]
+    add_index :ruby_llm_agents_executions, [ :agent_type, :agent_version ]
     add_index :ruby_llm_agents_executions, :duration_ms
     add_index :ruby_llm_agents_executions, :total_cost
 
@@ -106,7 +106,7 @@ class CreateRubyLLMAgentsExecutions < ActiveRecord::Migration[8.1]
     # Workflow indexes
     add_index :ruby_llm_agents_executions, :workflow_id
     add_index :ruby_llm_agents_executions, :workflow_type
-    add_index :ruby_llm_agents_executions, [:workflow_id, :workflow_step]
+    add_index :ruby_llm_agents_executions, [ :workflow_id, :workflow_step ]
 
     # Foreign keys for execution hierarchy
     add_foreign_key :ruby_llm_agents_executions, :ruby_llm_agents_executions,

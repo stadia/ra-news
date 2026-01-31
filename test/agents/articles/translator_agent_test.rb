@@ -7,7 +7,7 @@ require "test_helper"
 module Articles
   class TranslatorAgentTest < ActiveSupport::TestCase
     test "에이전트가 ApplicationAgent를 상속한다" do
-      assert Articles::TranslatorAgent < ApplicationAgent
+      assert_operator Articles::TranslatorAgent, :<, ApplicationAgent
     end
 
     test "title 파라미터가 필수다" do
@@ -45,7 +45,7 @@ module Articles
       )
 
       # content_context 메서드에서 truncate 적용
-      assert result.content[:user_prompt].length < long_preview.length + 200
+      assert_operator result.content[:user_prompt].length, :<, long_preview.length + 200
     end
 
     test "system_prompt에 번역 원칙이 포함된다" do

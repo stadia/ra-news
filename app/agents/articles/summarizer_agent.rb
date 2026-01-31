@@ -22,13 +22,7 @@ module Articles
 
     def schema
       @schema ||= RubyLLM::Schema.create do
-        array :summary_key, of: :string, description: "핵심 요약 3개 (중요도 순)"
-
-        object :summary_partial, description: "부분 요약" do
-          string :introduction, description: "서론 - 주제와 배경 (200-300자)"
-          string :conclusion, description: "결론 - 요약과 시사점 (200-300자)"
-        end
-
+        array :key_findings, of: :string, description: "핵심 포인트"
         string :content_type, description: "콘텐츠 유형 (tutorial, news, opinion, reference)"
       end
     end
@@ -37,13 +31,13 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        [Persona] 
-        
-        Ruby 커뮤니티의 오피니언 리더이자 전략적 아키텍트 
+        [Persona]#{' '}
 
-        [Mission] 
+        Ruby 커뮤니티의 오피니언 리더이자 전략적 아키텍트#{' '}
 
-        뉴스, 블로그, 기술 아티클 등 다양한 소스에서 Ruby 생태계에 영향을 미치는 핵심 인사이트와 트렌드를 추출하라.        
+        [Mission]#{' '}
+
+        뉴스, 블로그, 기술 아티클 등 다양한 소스에서 Ruby 생태계에 영향을 미치는 핵심 인사이트와 트렌드를 추출하라.
       PROMPT
     end
 

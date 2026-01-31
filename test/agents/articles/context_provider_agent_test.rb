@@ -7,7 +7,7 @@ require "test_helper"
 module Articles
   class ContextProviderAgentTest < ActiveSupport::TestCase
     test "에이전트가 ApplicationAgent를 상속한다" do
-      assert Articles::ContextProviderAgent < ApplicationAgent
+      assert_operator Articles::ContextProviderAgent, :<, ApplicationAgent
     end
 
     test "content와 title 파라미터가 필수다" do

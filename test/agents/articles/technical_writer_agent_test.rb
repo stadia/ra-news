@@ -7,13 +7,13 @@ require "test_helper"
 module Articles
   class TechnicalWriterAgentTest < ActiveSupport::TestCase
     test "에이전트가 ApplicationAgent를 상속한다" do
-      assert Articles::TechnicalWriterAgent < ApplicationAgent
+      assert_operator Articles::TechnicalWriterAgent, :<, ApplicationAgent
     end
 
     test "content, summary_key, title 파라미터가 필수다" do
       assert_raises(ArgumentError) do
         Articles::TechnicalWriterAgent.call(
-          summary_key: ["요약1"],
+          summary_key: [ "요약1" ],
           title: "Test"
         )
       end
@@ -28,7 +28,7 @@ module Articles
       assert_raises(ArgumentError) do
         Articles::TechnicalWriterAgent.call(
           content: "Content",
-          summary_key: ["요약1"]
+          summary_key: [ "요약1" ]
         )
       end
     end
@@ -36,7 +36,7 @@ module Articles
     test "context는 선택적이다" do
       result = Articles::TechnicalWriterAgent.call(
         content: "Original content",
-        summary_key: ["핵심1", "핵심2", "핵심3"],
+        summary_key: [ "핵심1", "핵심2", "핵심3" ],
         title: "Test Article",
         dry_run: true
       )
@@ -48,7 +48,7 @@ module Articles
     test "context가 제공되면 프롬프트에 포함된다" do
       result = Articles::TechnicalWriterAgent.call(
         content: "Original content",
-        summary_key: ["핵심1", "핵심2", "핵심3"],
+        summary_key: [ "핵심1", "핵심2", "핵심3" ],
         title: "Test Article",
         context: "This is background context",
         dry_run: true
@@ -61,7 +61,7 @@ module Articles
     test "summary_key가 번호가 매겨진 목록으로 포맷된다" do
       result = Articles::TechnicalWriterAgent.call(
         content: "Content",
-        summary_key: ["첫 번째 핵심", "두 번째 핵심", "세 번째 핵심"],
+        summary_key: [ "첫 번째 핵심", "두 번째 핵심", "세 번째 핵심" ],
         title: "Test",
         dry_run: true
       )
@@ -75,7 +75,7 @@ module Articles
       long_content = "Ruby " * 2500  # 12500자
       result = Articles::TechnicalWriterAgent.call(
         content: long_content,
-        summary_key: ["요약"],
+        summary_key: [ "요약" ],
         title: "Test",
         dry_run: true
       )
@@ -86,7 +86,7 @@ module Articles
     test "system_prompt에 마크다운 작성 규칙이 포함된다" do
       result = Articles::TechnicalWriterAgent.call(
         content: "Test",
-        summary_key: ["요약"],
+        summary_key: [ "요약" ],
         title: "Test",
         dry_run: true
       )
