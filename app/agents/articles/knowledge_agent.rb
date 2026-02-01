@@ -3,11 +3,6 @@
 # rbs_inline: enabled
 
 module Articles
-  # SummarizerAgent - 핵심 요약 3줄 + 서론/결론
-  #
-  # 기사의 핵심 내용을 3가지 포인트로 요약하고,
-  # 서론(배경)과 결론(시사점)을 작성합니다.
-
   class KnowledgeAgent < ApplicationAgent
     description "기사의 글로벌 맥락과 엔티티를 뽑아내며 설계도를 생성"
     version "1.0"
@@ -18,24 +13,24 @@ module Articles
     def schema
       @schema ||= RubyLLM::Schema.create do
         object :global_context do
-          string :title
-          string :source_type
-          string :summary_goal
-          string :lead_paragraph
-          array :entities, of: :string
+          string :title, description: "제목"
+          string :source_type, description: "원본 문서 유형 (article, blog, video)"
+          string :summary_goal, description: "요약 목적"
+          string :lead_paragraph, description: "서론"
+          array :entities, of: :string, description: "키워드/엔티티 목록"
         end
         object :knowledge_architecture, description: "Ruby 생태계 관점의 지식 설계도" do
           object :technical_design do
-            string :core_abstraction
-            string :performance_impact
+            string :core_abstraction, description: "기술적 추상화"
+            string :performance_impact, description: "성능 영향"
           end
           object :ecosystem_map do
             array :dependency_landscape, of: :string
             string :philosophical_alignment
-            array :key_debates, of: :string
+            array :key_debates, of: :string, description: "논쟁 지점"
           end
           object :implementation_guide do
-            string :strategic_value
+            string :strategic_value, description: "전략적 가치"
             array :immediate_actions, of: :string
           end
         end

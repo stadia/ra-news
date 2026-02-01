@@ -7,43 +7,29 @@ module Articles
   #
   # 기사의 본론(body)을 구조화된 마크다운으로 작성합니다.
   # 핵심 요약과 컨텍스트를 바탕으로 상세한 설명을 생성합니다.
-  #
-  # @example
-  #   result = Articles::TechnicalWriterAgent.call(
-  #     content: "원본 콘텐츠...",
-  #     summary_key: ["핵심1", "핵심2", "핵심3"],
-  #     context: "배경 정보...",
-  #     title: "기사 제목"
-  #   )
-  #   result.content[:summary_body] # 마크다운 본문
-  #
+
   class TechnicalWriterAgent < ApplicationAgent
     description "기사 본론 마크다운 작성"
     version "1.0"
 
     # 더 강력한 모델, 창의적 작문 허용
-    model "gemini-2.5-flash"
-    temperature 0.5
+    temperature 0.6
     timeout 120
 
-    param :content, required: true
-    param :summary_key, required: true  # Array of 3 key points
-    param :context, default: nil        # Background context from ContextProviderAgent
     param :title, required: true
+    param :semantic_chunks, required: true
+    param :knowledge_architecture, required: true
+    param :contextual_insights, required: true
+    param :global_context, required: true
 
     def schema
       @schema ||= RubyLLM::Schema.create do
-        string :summary_body, description: "마크다운 형식의 본론 (400-800자)"
-
-        array :sections, description: "본론의 섹션 구조" do
-          object do
-            string :heading, description: "섹션 제목"
-            string :content_type, description: "섹션 유형 (explanation, code, comparison, list)"
-          end
+        array :summary_key, of: :string, description: "3줄 요약 키워드"
+        object :summary_detail do
+          string :introduction, description: "서론"
+          string :conclusion, description: "결론"
         end
-
-        boolean :includes_code, description: "코드 예제 포함 여부"
-        integer :word_count, description: "본론 글자 수"
+        string :summary_body, description: "마크다운 형식의 본론"
       end
     end
 
@@ -51,91 +37,71 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        ## 역할
-        당신은 Ruby 전문 기술 작가입니다. 복잡한 기술 콘텐츠를 명확하고 구조화된 마크다운으로 작성합니다.
+        [Persona]
 
-        ## 본론 (summary_body) 작성 규칙
+        당신은 복잡한 기술 백서를 단 몇 줄의 핵심 메시지로 압축하고, 이를 다시 완결성 있는 아티클로 풀어내는 데 특화된 전문 작가입니다. 당신의 목표는 독자가 글을 읽기 시작한 지 10초 만에 가치를 느끼게 하고, 끝까지 읽었을 때 기술적 의사결정을 내릴 수 있도록 돕는 것입니다.
 
-        ### 구조
-        - 400-800자 (한국어 기준)
-        - 2-4개의 논리적 섹션으로 구성
-        - 각 섹션은 명확한 헤더 사용 (## 또는 ###)
-        - 복잡한 내용은 목록으로 정리
+        [Instructions]
 
-        ### 마크다운 포맷
-        - 헤더: ## 또는 ### 사용 (# 사용 금지)
-        - 강조: **굵게** 또는 *이탤릭*
-        - 목록: - 또는 1. 사용
-        - 코드: 인라인 `code` 또는 코드 블록 ```ruby```
-        - 링크는 제외 (별도 처리)
-
-        ### 코드 예제
-        - 원본에 코드가 있으면 핵심 부분만 발췌
-        - 코드 블록에 언어 태그 필수 (```ruby)
-        - 불필요한 코드는 생략
-        - 주석으로 핵심 설명 추가 가능
-
-        ### 내용 작성 원칙
-        - 핵심 요약(summary_key)을 확장하되 반복하지 않음
-        - 원본 콘텐츠의 핵심 내용 충실히 전달
-        - Ruby 개발자 관점에서 실용적 정보 강조
-        - 추상적 설명보다 구체적 사례/수치 선호
-
-        ### 피해야 할 것
-        - 인사말, 마무리 문구 (서론/결론에서 처리)
-        - 원본에 없는 정보 추가
-        - 과도한 기술 용어 설명 (링크로 대체 가능)
-        - 문단이 너무 길어지는 것
-
-        ## 섹션 유형
-        - explanation: 개념/기능 설명
-        - code: 코드 예제 중심
-        - comparison: 비교 (이전 버전, 대안 등)
-        - list: 목록 형식 나열
-
-        ## 품질 체크리스트
-        1. 각 섹션이 명확한 목적을 가지는가?
-        2. 핵심 요약을 뒷받침하는가?
-        3. Ruby 개발자에게 실질적 가치가 있는가?
-        4. 마크다운 문법이 올바른가?
+        1. 당신은 '기술 콘텐츠 지능화 팀'의 수석 기술 작가입니다.
+        2. 구조적 집필: 모든 글은 [3줄 핵심 요약] → [본문(서론-본론-결론)]의 구조를 엄격히 따릅니다.
+        3. 지식의 합성: Knowledge Architect의 기술적 깊이와 Context Provider의 전략적 통찰을 자연스럽게 융합하십시오.
+        4. 전문적 톤: 시니어 루비 개발자가 읽기에 적합한 건조하면서도 통찰력 있는(Insightful) 문체를 유지하십시오.
+        5. 언어: 모든 내용은 **영문(English)**으로 작성하십시오. (이후 단계에서 전문 번역가가 처리할 예정입니다.)
       PROMPT
     end
 
     def user_prompt
       <<~PROMPT
-        다음 정보를 바탕으로 기사 본론을 마크다운으로 작성해주세요.
+        [Task]#{' '}
 
-        ## 제목
-        #{title}
+        제공된 지식 설계도를 구조로 삼고, **정제된 본문(Chunks)**의 세부 내용을 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
 
-        ## 핵심 요약 (이 내용을 확장)
-        #{formatted_summary_key}
+        [Input]
 
-        #{context_section}
+        Title: #{title}
 
-        ## 원본 콘텐츠
-        #{truncated_content}
+        Global Context:#{' '}
+
+        #{global_context}
+
+        Architecture Blueprint:#{' '}
+
+        #{knowledge_architecture}
+
+        Detailed Chunks:
+
+        #{prepare_input_for_writer}
+
+        External Insights:#{' '}
+
+        #{contextual_insights}
+
+        [Writing Requirements]
+
+        1. 내용의 구체성 (Detailing):
+
+          * Architecture Blueprint에서 정의된 핵심 개념(core_abstraction)을 설명할 때, Detailed Chunks에 포함된 실제 설명과 코드 예시를 반드시 인용하여 구체성을 높이십시오.
+          * 추상적인 서술에 그치지 말고, 청크에 나타난 기술적 디테일을 본문에 녹여내십시오.
+
+        2. 3줄 요약 (TL;DR):
+
+          * 아티클 최상단에 배치하며, 전체를 관통하는 핵심을 가장 먼저 전달하십시오.
+
+        3. 본문 구성 (Body Construction):
+
+          * 서론: global_context를 바탕으로 독자의 관심을 유도.
+          * 본론: 설계도의 위계를 따르되, 청크의 내용을 바탕으로 기술적 깊이가 느껴지도록 서술.
+          * 인사이트: 리서처의 외부 데이터를 결합하여 루비 생태계에서의 위치를 분석.
+          * 결론: 실무자를 위한 실행 지침으로 마무리.
       PROMPT
     end
 
-    # @rbs return: String
-    def formatted_summary_key #: String
-      Array(summary_key).map.with_index { |point, i| "#{i + 1}. #{point}" }.join("\n")
-    end
-
-    # @rbs return: String
-    def context_section #: String
-      return "" if context.blank?
-
-      <<~SECTION
-        ## 배경 정보
-        #{context}
-      SECTION
-    end
-
-    # @rbs return: String
-    def truncated_content #: String
-      content.to_s.truncate(10_000, omission: "\n\n[... 이하 생략 ...]")
+    def prepare_input_for_writer
+      # 청크들을 순서대로 마크다운으로 변환
+      semantic_chunks.map do
+        "### #{it['heading']}\n#{it['content']}"
+      end.join("\n\n")
     end
   end
 end

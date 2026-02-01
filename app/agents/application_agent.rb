@@ -12,9 +12,9 @@ class ApplicationAgent < RubyLLM::Agents::Base
   # ============================================
   # These settings are inherited by all agents
 
-  model "gemini-2.5-flash" # Default model for all agents
-  temperature 0.5
-  timeout 60 # Default timeout in seconds
+  model "gemini-2.5-flash"   # Default model for all agents
+  temperature 0.0            # Default temperature (0.0 = deterministic)
+  timeout 60                 # Default timeout in seconds
 
   # ============================================
   # Shared Caching
@@ -28,7 +28,7 @@ class ApplicationAgent < RubyLLM::Agents::Base
   # Configure once here, all agents inherit these settings
 
   # Automatic retries for all agents
-  retries max: 2, backoff: :exponential, base: 0.4, max_delay: 3.0
+  # retries max: 2, backoff: :exponential, base: 0.4, max_delay: 3.0
 
   # Shared fallback models
   # fallback_models ["gpt-4o-mini", "claude-3-haiku"]
