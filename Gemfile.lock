@@ -181,7 +181,7 @@ GEM
     herb (0.8.9-x86_64-linux-musl)
     heroicon (1.0.0)
       rails (>= 5.2)
-    honeybadger (6.2.1)
+    honeybadger (6.3.0)
       logger
       ostruct
     i18n (1.14.8)
@@ -616,7 +616,7 @@ DEPENDENCIES
   hairtrigger
   herb
   heroicon
-  honeybadger (~> 6.2.1)
+  honeybadger (~> 6.3.0)
   image_processing (~> 1.2)
   importmap-rails
   jbuilder
