@@ -20,7 +20,7 @@
 # Usage:
 #   ContentPipelineWorkflow.call(content: "...")
 #
-class ApplicationWorkflow < RubyLLM::Agents::Workflow::Orchestrator
+class ApplicationWorkflow < RubyLLM::Agents::Workflow
   # ============================================
   # Shared Workflow Configuration
   # ============================================
@@ -42,7 +42,14 @@ class ApplicationWorkflow < RubyLLM::Agents::Workflow::Orchestrator
   # end
 
   # Example: Common success callback
-  # def on_complete(result)
-  #   Rails.logger.info "Workflow completed successfully"
-  # end
+  def on_complete(result)
+    logger.info "Workflow completed successfully"
+    logger.debug result
+  end
+
+  protected
+
+  def logger
+    Rails.logger
+  end
 end

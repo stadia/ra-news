@@ -2,14 +2,16 @@
 
 # rbs_inline: enabled
 
-class ArticlePipeline < RubyLLM::Agents::Workflow
+class ArticlePipeline < ApplicationWorkflow
   description "Processes content through extraction, classification, and formatting"
 
   input do
     required :raw_content, String
+    required :title, String
+    required :url, String
     optional :content_type, String, default: "html"
   end
 
-  step :data_prepper,  Articles::DataPrepperAgent
-  step :summarizer, Articles::SummarizerAgent
+  step :data_prepper, Articles::DataPrepperAgent
+  step :knowledge, Articles::KnowledgeAgent
 end
