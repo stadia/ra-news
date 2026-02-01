@@ -1,5 +1,7 @@
 {
   "enabledPlugins": {
-    "serena@claude-plugins-official": true
+    "serena@claude-plugins-official": true,
+    "ruby-rbs@stevegeek-marketplace": true,
+    "ruby-skills@ruby-skills": true
   }
 }
