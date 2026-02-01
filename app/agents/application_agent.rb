@@ -99,9 +99,7 @@ class ApplicationAgent < RubyLLM::Agents::Base
   def format_markdown_entry(label, value, depth) #: String
     indent = "  " * depth
     case value
-    when Hash
-      "#{indent}**#{label}:**\n#{format_as_markdown(value, depth + 1)}"
-    when Array
+    when Hash, Array
       "#{indent}**#{label}:**\n#{format_as_markdown(value, depth + 1)}"
     else
       "#{indent}**#{label}:** #{value}"
