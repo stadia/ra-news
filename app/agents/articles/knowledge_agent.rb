@@ -6,6 +6,7 @@ module Articles
   class KnowledgeAgent < ApplicationAgent
     description "기사의 글로벌 맥락과 엔티티를 뽑아내며 설계도를 생성"
     version "1.0"
+    model "gemini-3-flash-preview"
 
     param :cleaned_content, required: true
     param :semantic_chunks, required: true

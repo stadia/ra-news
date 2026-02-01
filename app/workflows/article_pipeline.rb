@@ -5,6 +5,8 @@
 class ArticlePipeline < ApplicationWorkflow
   description "Processes content through extraction, classification, and formatting"
 
+  timeout 180
+
   input do
     required :raw_content, String
     required :title, String

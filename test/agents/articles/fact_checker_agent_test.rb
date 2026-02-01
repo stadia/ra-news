@@ -12,11 +12,11 @@ module Articles
 
     test "content와 title 파라미터가 필수다" do
       assert_raises(ArgumentError) do
-        Articles::FactCheckerAgent.call(title: "Test")
+        Articles::FactCheckerAgent.call(title: "Test", dry_run: true)
       end
 
       assert_raises(ArgumentError) do
-        Articles::FactCheckerAgent.call(content: "Test content")
+        Articles::FactCheckerAgent.call(content: "Test content", dry_run: true)
       end
     end
 
@@ -42,14 +42,13 @@ module Articles
     end
 
     test "긴 콘텐츠는 8000자로 제한된다" do
-      long_content = "Ruby " * 2000  # 10000자 이상
+      long_content = "Ruby " * 2000 # 10000자 이상
       result = Articles::FactCheckerAgent.call(
         content: long_content,
         title: "Test",
         dry_run: true
       )
 
-      # truncate 메시지 확인
       assert_includes result.content[:user_prompt], "이하 생략"
     end
 
@@ -60,10 +59,10 @@ module Articles
         dry_run: true
       )
 
-      assert_includes result.content[:system_prompt], "Ruby"
-      assert_includes result.content[:system_prompt], "Rails"
+      assert_includes result.content[:system_prompt], "Ruby 생태계"
       assert_includes result.content[:system_prompt], "TRUE"
       assert_includes result.content[:system_prompt], "FALSE"
+      assert_includes result.content[:system_prompt], "주요 주제 분류"
     end
 
     test "캐시가 12시간으로 설정되어 있다" do

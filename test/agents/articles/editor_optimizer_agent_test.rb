@@ -15,7 +15,8 @@ module Articles
         Articles::EditorOptimizerAgent.call(
           summary_key: [ "요약" ],
           summary_body: "본론",
-          content: "내용"
+          content: "내용",
+          dry_run: true
         )
       end
 
@@ -23,7 +24,26 @@ module Articles
         Articles::EditorOptimizerAgent.call(
           title: "제목",
           summary_body: "본론",
-          content: "내용"
+          content: "내용",
+          dry_run: true
+        )
+      end
+
+      assert_raises(ArgumentError) do
+        Articles::EditorOptimizerAgent.call(
+          title: "제목",
+          summary_key: [ "요약" ],
+          content: "내용",
+          dry_run: true
+        )
+      end
+
+      assert_raises(ArgumentError) do
+        Articles::EditorOptimizerAgent.call(
+          title: "제목",
+          summary_key: [ "요약" ],
+          summary_body: "본론",
+          dry_run: true
         )
       end
     end
@@ -38,7 +58,7 @@ module Articles
       )
 
       assert_kind_of RubyLLM::Agents::Result, result
-      refute_includes result.content[:user_prompt], "한국어 제목"
+      refute_includes result.content[:user_prompt], "Rails 8 출시"
     end
 
     test "title_ko가 제공되면 프롬프트에 포함된다" do
@@ -51,7 +71,6 @@ module Articles
         dry_run: true
       )
 
-      assert_includes result.content[:user_prompt], "한국어 제목"
       assert_includes result.content[:user_prompt], "Rails 8 출시"
     end
 
@@ -69,7 +88,7 @@ module Articles
     end
 
     test "긴 콘텐츠는 4000자로 제한된다" do
-      long_content = "Ruby " * 1000  # 5000자
+      long_content = "Ruby " * 1000 # 5000자
       result = Articles::EditorOptimizerAgent.call(
         title: "Test",
         summary_key: [ "요약" ],
@@ -81,7 +100,7 @@ module Articles
       assert_includes result.content[:user_prompt], "이하 생략"
     end
 
-    test "system_prompt에 태그 추출 규칙이 포함된다" do
+    test "system_prompt에 품질 평가 및 승인 기준이 포함된다" do
       result = Articles::EditorOptimizerAgent.call(
         title: "Test",
         summary_key: [ "요약" ],
@@ -90,37 +109,12 @@ module Articles
         dry_run: true
       )
 
-      assert_includes result.content[:system_prompt], "태그"
-      assert_includes result.content[:system_prompt], "snake_case"
-      assert_includes result.content[:system_prompt], "최대 3개"
-    end
-
-    test "system_prompt에 품질 평가 기준이 포함된다" do
-      result = Articles::EditorOptimizerAgent.call(
-        title: "Test",
-        summary_key: [ "요약" ],
-        summary_body: "본론",
-        content: "내용",
-        dry_run: true
-      )
-
-      assert_includes result.content[:system_prompt], "품질"
+      assert_includes result.content[:system_prompt], "품질 평가 기준"
       assert_includes result.content[:system_prompt], "relevance"
       assert_includes result.content[:system_prompt], "completeness"
       assert_includes result.content[:system_prompt], "readability"
       assert_includes result.content[:system_prompt], "accuracy"
-    end
-
-    test "system_prompt에 승인 기준이 포함된다" do
-      result = Articles::EditorOptimizerAgent.call(
-        title: "Test",
-        summary_key: [ "요약" ],
-        summary_body: "본론",
-        content: "내용",
-        dry_run: true
-      )
-
-      assert_includes result.content[:system_prompt], "approved"
+      assert_includes result.content[:system_prompt], "approved = true"
       assert_includes result.content[:system_prompt], "quality_score"
     end
 

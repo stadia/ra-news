@@ -3,13 +3,10 @@
 # rbs_inline: enabled
 
 module Articles
-  # DataPrepperAgent - 데이터 전처리 및 노이즈 제거
-  #
-  # HTML/YouTube 콘텐츠에서 불필요한 요소를 제거하고 깨끗한 텍스트를 추출합니다.
-
   class DataPrepperAgent < ApplicationAgent
     description "콘텐츠 노이즈 제거와 논리적 청킹"
     version "1.0"
+    timeout 240
 
     param :raw_content, required: true
     param :title, required: true
@@ -105,10 +102,7 @@ module Articles
           ### YouTube 자막 노이즈 제거
           - 필러 단어: 음, 어, 그, 저, 뭐랄까, 있잖아요
           - 반복 발화: 같은 단어/구절의 연속 반복
-          - 타임스탬프 및 자막 인덱스
-          - 음악/효과음 표시: [음악], [박수], ♪ 등
           - 자동 생성 자막의 인식 오류 (문맥상 명백한 경우)
-          - 인사말/마무리: 구독 좋아요 알림설정, 다음 영상에서 만나요
         INSTRUCTIONS
       else
         <<~INSTRUCTIONS

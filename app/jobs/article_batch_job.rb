@@ -9,7 +9,7 @@ class ArticleBatchJob < ApplicationJob
   def perform(created_at = Time.zone.now.beginning_of_day)
     Article.kept.where(title_ko: nil, created_at: created_at...).find_each do |article|
       begin
-        ArticleLlmService.call(article)
+        ArticleAgentsService.call(article)
       rescue StandardError => e
         logger.error("Error processing article #{article.id}: #{e.message}")
       end
