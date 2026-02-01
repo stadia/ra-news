@@ -18,21 +18,14 @@ module Articles
           string :summary_goal, description: "요약 목적"
           string :lead_paragraph, description: "서론"
           array :entities, of: :string, description: "키워드/엔티티 목록"
+          array :tags, of: :string, description: "핵심 태그 (최대 3개, snake_case)"
         end
-        object :knowledge_architecture, description: "Ruby 생태계 관점의 지식 설계도" do
-          object :technical_design do
-            string :core_abstraction, description: "기술적 추상화"
-            string :performance_impact, description: "성능 영향"
-          end
-          object :ecosystem_map do
-            array :dependency_landscape, of: :string
-            string :philosophical_alignment
-            array :key_debates, of: :string, description: "논쟁 지점"
-          end
-          object :implementation_guide do
-            string :strategic_value, description: "전략적 가치"
-            array :immediate_actions, of: :string
-          end
+        object :knowledge_architecture, description: "기사 핵심 구조" do
+          string :core_message, description: "핵심 메시지 (한 문장)"
+          array :key_points, of: :string, description: "주요 포인트 (3-5개)"
+          string :why_it_matters, description: "왜 중요한가"
+          string :target_audience, description: "대상 독자"
+          array :practical_takeaways, of: :string, description: "실용적 시사점"
         end
       end
     end
@@ -43,17 +36,29 @@ module Articles
       <<~PROMPT
         [Persona]
 
-        당신은 15년 차 Ruby 소프트웨어 아키텍트입니다. 정제된 텍스트 청크를 바탕으로 지식의 위계(Hierarchy)를 세우고 전략적 맥락을 설계합니다.
+        당신은 15년 차 Ruby 소프트웨어 아키텍트이자 기술 콘텐츠 전문가입니다. 기사의 핵심을 파악하고 독자에게 전달할 가치를 설계합니다.
 
         [Mission]
 
-        1. 청크들을 통합 분석하여 문서의 **글로벌 맥락(제목, 유형, 목적, 엔티티)**을 정의하십시오.
-        2. Ruby 생태계 관점에서 기술적/철학적 가치를 추출하여 지식 설계도를 완성하십시오.
+        1. 청크들을 통합 분석하여 문서의 **글로벌 맥락(제목, 유형, 목적, 엔티티, 태그)**을 정의하십시오.
+        2. 기사의 핵심 구조를 추출하여 독자가 빠르게 가치를 파악할 수 있도록 정리하십시오.
 
         [Instructions]
 
         1. 당신은 '기술 콘텐츠 지능화 팀'의 지식 설계자입니다.
-        2. Language Policy: 모든 분석 결과(core_abstraction, impact, debates 등)는 반드시 원문(영어)의 기술 용어와 문장 구조를 유지하여 작성하십시오.
+        2. Language Policy: 모든 분석 결과는 반드시 원문(영어)의 기술 용어와 문장 구조를 유지하여 작성하십시오.
+
+        [Tag Extraction Rules]
+
+        1. 형식: 최대 3개, snake_case (예: solid_queue, rails_8)
+        2. 우선순위:
+           - 핵심 기술/젬 이름 (sidekiq, postgresql, prism)
+           - 구체적 버전 (rails_8, ruby_3_3)
+           - 주요 개념/패턴 (active_record, hotwire, turbo)
+        3. 제외 대상:
+           - 일반적인 키워드: ruby, rails, web_development, programming
+           - 너무 광범위한 용어: code, development, software
+           - 문서에 직접 언급되지 않은 용어
       PROMPT
     end
 

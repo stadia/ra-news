@@ -3,13 +3,12 @@
 # rbs_inline: enabled
 
 module Articles
-  # EditorOptimizerAgent - 태그 추출 및 최종 편집
+  # EditorOptimizerAgent - 최종 품질 검토
   #
-  # 기사의 최종 품질을 검토하고 태그를 추출합니다.
-  # 게시 승인 여부를 결정합니다.
+  # 기사의 최종 품질을 검토하고 게시 승인 여부를 결정합니다.
 
   class EditorOptimizerAgent < ApplicationAgent
-    description "기사 태그 추출 및 최종 품질 검토"
+    description "기사 최종 품질 검토 및 게시 승인"
     version "1.0"
 
     # 결정론적 분석을 위해 낮은 temperature
@@ -23,14 +22,9 @@ module Articles
 
     def schema
       @schema ||= RubyLLM::Schema.create do
-        array :tags, of: :string, description: "핵심 태그 (최대 3개, snake_case)"
-
         integer :quality_score, description: "품질 점수 (0-100)"
-
         boolean :approved, description: "게시 승인 여부"
-
         string :rejection_reason, description: "거부 사유 (거부 시에만)"
-
         object :quality_breakdown, description: "품질 세부 평가" do
           integer :relevance, description: "Ruby 관련성 (0-100)"
           integer :completeness, description: "내용 완성도 (0-100)"
@@ -47,23 +41,6 @@ module Articles
         ## 역할
         당신은 Ruby 뉴스 플랫폼의 수석 에디터입니다.
         기사의 최종 품질을 검토하고 게시 여부를 결정합니다.
-
-        ## 태그 추출 규칙
-
-        ### 형식
-        - 최대 3개
-        - snake_case 사용 (예: solid_queue, rails_8)
-        - 영어 또는 영어화된 기술 용어
-
-        ### 우선순위
-        1. 핵심 기술/젬 이름 (rails, sidekiq, postgresql)
-        2. 구체적 버전 (rails_8, ruby_3_3)
-        3. 주요 개념/패턴 (active_record, hotwire, turbo)
-
-        ### 제외 대상
-        - 일반적인 키워드: ruby, rails, web_development, programming
-        - 너무 광범위한 용어: code, development, software
-        - 문서에 직접 언급되지 않은 용어
 
         ## 품질 평가 기준
 

@@ -19,7 +19,6 @@ module Articles
     param :title, required: true
     param :semantic_chunks, required: true
     param :knowledge_architecture, required: true
-    # param :contextual_insights, required: true
     param :global_context, required: true
 
     def schema
@@ -65,6 +64,10 @@ module Articles
 
         #{format_global_context}
 
+        Key Entities: #{format_entities}
+
+        Tags: #{format_tags}
+
         Architecture Blueprint:
 
         #{format_knowledge_architecture}
@@ -89,6 +92,11 @@ module Articles
           * 서론: global_context를 바탕으로 독자의 관심을 유도.
           * 본론: 설계도의 위계를 따르되, 청크의 내용을 바탕으로 기술적 깊이가 느껴지도록 서술.
           * 결론: 실무자를 위한 실행 지침으로 마무리.
+
+        4. 키워드 활용 (Keyword Integration):
+
+          * Key Entities와 Tags에 나열된 핵심 기술 용어를 본문에서 자연스럽게 언급하십시오.
+          * 이 키워드들이 기사의 핵심 주제임을 독자가 인지할 수 있도록 강조하십시오.
       PROMPT
     end
 
@@ -105,13 +113,28 @@ module Articles
     end
 
     # @rbs return: String
-    def format_contextual_insights #: String
-      format_as_markdown(contextual_insights)
+    def format_global_context #: String
+      format_as_markdown(global_context)
     end
 
     # @rbs return: String
-    def format_global_context #: String
-      format_as_markdown(global_context)
+    def format_entities #: String
+      extract_array_from_context(:entities).join(", ")
+    end
+
+    # @rbs return: String
+    def format_tags #: String
+      extract_array_from_context(:tags).join(", ")
+    end
+
+    # @rbs (Symbol) -> Array[String]
+    def extract_array_from_context(key) #: Array[String]
+      case global_context
+      when Hash
+        Array(global_context[key] || global_context[key.to_s])
+      else
+        []
+      end
     end
   end
 end
