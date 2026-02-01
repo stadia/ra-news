@@ -494,7 +494,7 @@ GEM
       thor (>= 1.3.1)
     sorbet (0.6.12903)
       sorbet-static (= 0.6.12903)
-    sorbet-runtime (0.6.12903)
+    sorbet-runtime (0.6.12908)
     sorbet-static (0.6.12903-aarch64-linux)
     sorbet-static (0.6.12903-universal-darwin)
     sorbet-static (0.6.12903-x86_64-linux)
