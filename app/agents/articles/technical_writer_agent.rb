@@ -63,11 +63,11 @@ module Articles
 
         Global Context:#{' '}
 
-        #{global_context}
+        #{format_global_context}
 
         Architecture Blueprint:#{' '}
 
-        #{knowledge_architecture}
+        #{format_knowledge_architecture}
 
         Detailed Chunks:
 
@@ -75,7 +75,7 @@ module Articles
 
         External Insights:#{' '}
 
-        #{contextual_insights}
+        #{format_contextual_insights}
 
         [Writing Requirements]
 
@@ -102,6 +102,21 @@ module Articles
       semantic_chunks.map do
         "### #{it['heading']}\n#{it['content']}"
       end.join("\n\n")
+    end
+
+    # @rbs return: String
+    def format_knowledge_architecture #: String
+      format_as_markdown(knowledge_architecture)
+    end
+
+    # @rbs return: String
+    def format_contextual_insights #: String
+      format_as_markdown(contextual_insights)
+    end
+
+    # @rbs return: String
+    def format_global_context #: String
+      format_as_markdown(global_context)
     end
   end
 end

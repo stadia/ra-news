@@ -76,4 +76,35 @@ class ApplicationAgent < RubyLLM::Agents::Base
   def logger
     Rails.logger
   end
+
+  # Hash/Array를 구조화된 Markdown으로 변환
+  # @rbs (untyped, ?Integer) -> String
+  def format_as_markdown(data, depth = 0) #: String
+    case data
+    when Hash
+      data.map do |key, value|
+        label = key.to_s.tr("_", " ").capitalize
+        format_markdown_entry(label, value, depth)
+      end.join("\n")
+    when Array
+      data.map { |item| "#{'  ' * depth}- #{item}" }.join("\n")
+    when String
+      data
+    else
+      data.to_s
+    end
+  end
+
+  # @rbs (String, untyped, Integer) -> String
+  def format_markdown_entry(label, value, depth) #: String
+    indent = "  " * depth
+    case value
+    when Hash
+      "#{indent}**#{label}:**\n#{format_as_markdown(value, depth + 1)}"
+    when Array
+      "#{indent}**#{label}:**\n#{format_as_markdown(value, depth + 1)}"
+    else
+      "#{indent}**#{label}:** #{value}"
+    end
+  end
 end

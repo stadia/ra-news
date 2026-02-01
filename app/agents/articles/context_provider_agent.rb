@@ -62,7 +62,7 @@ module Articles
         [Task] Knowledge Architect가 설계한 기술 구조도를 바탕으로, 원문에는 없는 외부 전략 인사이트를 리서치하여 보강하십시오.
 
         [Input]#{' '}
-        #{knowledge_architecture}
+        #{format_knowledge_architecture}
 
         [Research Guidelines]
 
@@ -84,6 +84,11 @@ module Articles
 
           * GitHub Discussions, Reddit, Ruby Weekly 등에서 이 기술에 대해 가장 많이 언급되는 우려 사항이나 기대치를 리서치하여 정리하십시오.
       PROMPT
+    end
+
+    # @rbs return: String
+    def format_knowledge_architecture #: String
+      format_as_markdown(knowledge_architecture)
     end
   end
 end

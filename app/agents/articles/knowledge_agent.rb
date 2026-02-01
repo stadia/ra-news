@@ -59,11 +59,11 @@ module Articles
 
     def user_prompt
       <<~PROMPT
-        [Task]#{' '}
+        [Task]
 
         다음 정제된 기술 콘텐츠를 분석하여 Ruby 생태계 관점의 **지식 설계도(Knowledge Architecture)**를 작성하십시오.
 
-        [Input]#{' '}
+        [Input]
 
         #{prepare_input_for_architect}
 
