@@ -19,7 +19,7 @@ module Articles
     param :title, required: true
     param :semantic_chunks, required: true
     param :knowledge_architecture, required: true
-    param :contextual_insights, required: true
+    # param :contextual_insights, required: true
     param :global_context, required: true
 
     def schema
@@ -53,7 +53,7 @@ module Articles
 
     def user_prompt
       <<~PROMPT
-        [Task]#{' '}
+        [Task]
 
         제공된 지식 설계도를 구조로 삼고, **정제된 본문(Chunks)**의 세부 내용을 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
 
@@ -61,21 +61,17 @@ module Articles
 
         Title: #{title}
 
-        Global Context:#{' '}
+        Global Context:
 
         #{format_global_context}
 
-        Architecture Blueprint:#{' '}
+        Architecture Blueprint:
 
         #{format_knowledge_architecture}
 
         Detailed Chunks:
 
         #{prepare_input_for_writer}
-
-        External Insights:#{' '}
-
-        #{format_contextual_insights}
 
         [Writing Requirements]
 
@@ -92,7 +88,6 @@ module Articles
 
           * 서론: global_context를 바탕으로 독자의 관심을 유도.
           * 본론: 설계도의 위계를 따르되, 청크의 내용을 바탕으로 기술적 깊이가 느껴지도록 서술.
-          * 인사이트: 리서처의 외부 데이터를 결합하여 루비 생태계에서의 위치를 분석.
           * 결론: 실무자를 위한 실행 지침으로 마무리.
       PROMPT
     end

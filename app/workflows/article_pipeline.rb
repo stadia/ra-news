@@ -25,12 +25,12 @@ class ArticlePipeline < ApplicationWorkflow
        }
 
   # Step 3: 외부 컨텍스트 리서치
-  step :context_provider, Articles::ContextProviderAgent,
-       input: -> {
-         {
-           knowledge_architecture: knowledge.knowledge_architecture
-         }
-       }
+  # step :context_provider, Articles::ContextProviderAgent,
+  #      input: -> {
+  #        {
+  #          knowledge_architecture: knowledge.knowledge_architecture
+  #        }
+  #      }
 
   # Step 4: 영문 기술 아티클 작성
   step :technical_writer, Articles::TechnicalWriterAgent,
@@ -39,8 +39,8 @@ class ArticlePipeline < ApplicationWorkflow
            title: input.title,
            semantic_chunks: data_prepper.semantic_chunks,
            global_context: knowledge.global_context,
-           knowledge_architecture: knowledge.knowledge_architecture,
-           contextual_insights: context_provider.contextual_insights
+           knowledge_architecture: knowledge.knowledge_architecture
+           # contextual_insights: context_provider.contextual_insights
          }
        }
 
@@ -52,6 +52,17 @@ class ArticlePipeline < ApplicationWorkflow
            summary_key: technical_writer.summary_key,
            summary_detail: technical_writer.summary_detail,
            summary_body: technical_writer.summary_body
+         }
+       }
+
+  step :editor_optimizer, Articles::EditorOptimizerAgent,
+       input: -> {
+         {
+           title: translator.title_ko,
+           summary_key: translator.summary_key,
+           summary_detail: translator.summary_detail,
+           summary_body: translator.summary_body,
+           content: data_prepper.cleaned_content
          }
        }
 end

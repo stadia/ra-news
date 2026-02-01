@@ -7,17 +7,7 @@ module Articles
   #
   # 기사의 최종 품질을 검토하고 태그를 추출합니다.
   # 게시 승인 여부를 결정합니다.
-  #
-  # @example
-  #   result = Articles::EditorOptimizerAgent.call(
-  #     title: "Rails 8 Released",
-  #     title_ko: "Rails 8 출시",
-  #     summary_key: ["핵심1", "핵심2", "핵심3"],
-  #     summary_body: "본론 마크다운...",
-  #     content: "원본 콘텐츠..."
-  #   )
-  #   result.content[:tags] # ["rails_8", "solid_queue", "kamal"]
-  #
+
   class EditorOptimizerAgent < ApplicationAgent
     description "기사 태그 추출 및 최종 품질 검토"
     version "1.0"
@@ -47,8 +37,6 @@ module Articles
           integer :readability, description: "가독성 (0-100)"
           integer :accuracy, description: "정확성 (0-100)"
         end
-
-        array :suggested_improvements, of: :string, description: "개선 제안 (있는 경우)"
       end
     end
 
@@ -112,11 +100,6 @@ module Articles
         - "내용이 너무 짧거나 불완전합니다"
         - "기술적 정확성 검증이 필요합니다"
         - "요약이 원본 내용을 충분히 반영하지 못합니다"
-
-        ## 개선 제안
-        - 구체적이고 실행 가능한 제안
-        - 최대 3개
-        - 사소한 개선보다 중요한 것만
       PROMPT
     end
 
@@ -127,7 +110,7 @@ module Articles
         ## 원본 제목
         #{title}
 
-        #{title_ko_section}
+        #{title_ko}
 
         ## 핵심 요약
         #{formatted_summary_key}
@@ -138,16 +121,6 @@ module Articles
         ## 원본 콘텐츠 (참고용)
         #{truncated_content}
       PROMPT
-    end
-
-    # @rbs return: String
-    def title_ko_section #: String
-      return "" if title_ko.blank?
-
-      <<~SECTION
-        ## 한국어 제목
-        #{title_ko}
-      SECTION
     end
 
     # @rbs return: String
