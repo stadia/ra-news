@@ -1,0 +1,19 @@
+# Generated from app/agents/application_agent.rb with RBS::Inline
+
+# ApplicationAgent - Base class for all agents in this application
+#
+# All agents inherit from this class. Configure shared settings here
+# that apply to all agents, or override them per-agent as needed.
+class ApplicationAgent < RubyLLM::Agents::Base
+  # Common system prompt prefix
+  def system_prompt_prefix: () -> String
+
+  def logger: () -> untyped
+
+  # Hash/Array를 구조화된 Markdown으로 변환
+  # @rbs (untyped, ?Integer) -> String
+  def format_as_markdown: (untyped, ?Integer) -> String
+
+  # @rbs (String, untyped, Integer) -> String
+  def format_markdown_entry: (String, untyped, Integer) -> String
+end

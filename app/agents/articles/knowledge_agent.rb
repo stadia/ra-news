@@ -4,7 +4,7 @@
 
 module Articles
   class KnowledgeAgent < ApplicationAgent
-    description "기사의 글로벌 맥락과 엔티티를 뽑아내며 설계도를 생성"
+    description "메타데이터 추출 및 지식 구조 설계"
     version "1.0"
     model "gemini-3-flash-preview"
 
@@ -15,16 +15,16 @@ module Articles
       @schema ||= RubyLLM::Schema.create do
         object :global_context do
           string :title, description: "제목"
-          string :source_type, description: "원본 문서 유형 (article, blog, video)"
+          string :source_type, description: "문서 유형: article, blog, video"
           string :summary_goal, description: "요약 목적"
           string :lead_paragraph, description: "서론"
-          array :entities, of: :string, description: "키워드/엔티티 목록"
-          array :tags, of: :string, description: "핵심 태그 (최대 3개, snake_case)"
+          array :entities, of: :string, description: "핵심 키워드 목록"
+          array :tags, of: :string, description: "태그 (최대 3개, snake_case)"
         end
-        object :knowledge_architecture, description: "기사 핵심 구조" do
+        object :knowledge_architecture, description: "지식 구조" do
           string :core_message, description: "핵심 메시지 (한 문장)"
           array :key_points, of: :string, description: "주요 포인트 (3-5개)"
-          string :why_it_matters, description: "왜 중요한가"
+          string :why_it_matters, description: "중요성"
           string :target_audience, description: "대상 독자"
           array :practical_takeaways, of: :string, description: "실용적 시사점"
         end

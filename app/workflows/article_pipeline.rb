@@ -34,7 +34,7 @@ class ArticlePipeline < ApplicationWorkflow
   #        }
   #      }
 
-  # Step 4: 영문 기술 아티클 작성
+  # Step 4: 요약, 번역 작성
   step :technical_writer, Articles::TechnicalWriterAgent,
        input: -> {
          {
@@ -47,15 +47,15 @@ class ArticlePipeline < ApplicationWorkflow
        }
 
   # Step 5: 한국어 번역 (전체 콘텐츠)
-  step :translator, Articles::TranslatorAgent,
-       input: -> {
-         {
-           title: input.title,
-           summary_key: technical_writer.summary_key,
-           summary_detail: technical_writer.summary_detail,
-           summary_body: technical_writer.summary_body
-         }
-       }
+  # step :translator, Articles::TranslatorAgent,
+  #      input: -> {
+  #        {
+  #          title: input.title,
+  #          summary_key: technical_writer.summary_key,
+  #          summary_detail: technical_writer.summary_detail,
+  #          summary_body: technical_writer.summary_body
+  #        }
+  #      }
 
   step :editor_optimizer, Articles::EditorOptimizerAgent,
        input: -> {

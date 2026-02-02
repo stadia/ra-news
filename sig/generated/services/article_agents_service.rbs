@@ -1,0 +1,10 @@
+# Generated from app/services/article_agents_service.rb with RBS::Inline
+
+class ArticleAgentsService < ApplicationService
+  attr_reader article: Article
+
+  # : (Article article) -> ArticleAgentsService
+  def initialize: (Article article) -> ArticleAgentsService
+
+  def call: () -> void
+end

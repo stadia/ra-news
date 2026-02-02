@@ -3,15 +3,10 @@
 # rbs_inline: enabled
 
 module Articles
-  # EditorOptimizerAgent - 최종 품질 검토
-  #
-  # 기사의 최종 품질을 검토하고 게시 승인 여부를 결정합니다.
-
   class EditorOptimizerAgent < ApplicationAgent
-    description "기사 최종 품질 검토 및 게시 승인"
+    description "품질 평가 및 게시 승인 결정"
     version "1.0"
 
-    # 결정론적 분석을 위해 낮은 temperature
     temperature 0.2
 
     param :title, required: true
@@ -25,7 +20,7 @@ module Articles
         integer :quality_score, description: "품질 점수 (0-100)"
         boolean :approved, description: "게시 승인 여부"
         string :rejection_reason, description: "거부 사유 (거부 시에만)"
-        object :quality_breakdown, description: "품질 세부 평가" do
+        object :quality_breakdown, description: "세부 평가" do
           integer :relevance, description: "Ruby 관련성 (0-100)"
           integer :completeness, description: "내용 완성도 (0-100)"
           integer :readability, description: "가독성 (0-100)"

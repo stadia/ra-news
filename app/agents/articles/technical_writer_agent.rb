@@ -4,11 +4,10 @@
 
 module Articles
   class TechnicalWriterAgent < ApplicationAgent
-    description "기사 본론 마크다운 작성"
+    description "지식 설계도 기반 기술 아티클 작성"
     version "1.0"
     model "gemini-3-flash-preview"
 
-    # 더 강력한 모델, 창의적 작문 허용
     temperature 0.6
     timeout 120
 
@@ -19,12 +18,12 @@ module Articles
 
     def schema
       @schema ||= RubyLLM::Schema.create do
-        array :summary_key, of: :string, description: "3줄 요약 키워드"
+        array :summary_key, of: :string, description: "3줄 핵심 요약"
         object :summary_detail do
           string :introduction, description: "서론"
           string :conclusion, description: "결론"
         end
-        string :summary_body, description: "마크다운 형식의 본론"
+        string :summary_body, description: "마크다운 본론"
       end
     end
 

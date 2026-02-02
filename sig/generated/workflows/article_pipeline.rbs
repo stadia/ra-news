@@ -1,0 +1,4 @@
+# Generated from app/workflows/article_pipeline.rb with RBS::Inline
+
+class ArticlePipeline < ApplicationWorkflow
+end

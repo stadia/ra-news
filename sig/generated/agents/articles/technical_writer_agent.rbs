@@ -1,0 +1,30 @@
+# Generated from app/agents/articles/technical_writer_agent.rb with RBS::Inline
+
+module Articles
+  class TechnicalWriterAgent < ApplicationAgent
+    def schema: () -> untyped
+
+    private
+
+    def system_prompt: () -> untyped
+
+    def user_prompt: () -> untyped
+
+    def prepare_input_for_writer: () -> untyped
+
+    # @rbs return: String
+    def format_knowledge_architecture: () -> String
+
+    # @rbs return: String
+    def format_global_context: () -> String
+
+    # @rbs return: String
+    def format_entities: () -> String
+
+    # @rbs return: String
+    def format_tags: () -> String
+
+    # @rbs (Symbol) -> Array[String]
+    def extract_array_from_context: (Symbol) -> Array[String]
+  end
+end

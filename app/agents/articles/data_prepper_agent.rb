@@ -4,7 +4,7 @@
 
 module Articles
   class DataPrepperAgent < ApplicationAgent
-    description "콘텐츠 노이즈 제거와 논리적 청킹"
+    description "Raw 콘텐츠를 정제하고 의미 단위로 청킹"
     version "1.0"
     timeout 240
 
@@ -15,8 +15,8 @@ module Articles
 
     def schema
       @schema ||= RubyLLM::Schema.create do
-        string :cleaned_content, description: "정규화된 텍스트(Normalized Text)"
-        array :semantic_chunks, description: "논리적 청킹 (Semantic Chunking)" do
+        string :cleaned_content, description: "노이즈 제거된 마크다운 텍스트"
+        array :semantic_chunks, description: "의미 단위 청크 배열" do
           object do
             number :id
             string :heading
@@ -89,7 +89,7 @@ module Articles
       case content_type.to_s
       when "html"
         <<~INSTRUCTIONS
-          ### HTML 콘텐츠 노이즈 제거
+          #### HTML 콘텐츠 노이즈 제거
           - 네비게이션, 푸터, 사이드바, 광고 영역 텍스트
           - 쿠키 동의, 뉴스레터 구독 안내 문구
           - 소셜 미디어 공유 버튼 텍스트
@@ -99,14 +99,14 @@ module Articles
         INSTRUCTIONS
       when "youtube"
         <<~INSTRUCTIONS
-          ### YouTube 자막 노이즈 제거
+          #### YouTube 자막 노이즈 제거
           - 필러 단어: 음, 어, 그, 저, 뭐랄까, 있잖아요
           - 반복 발화: 같은 단어/구절의 연속 반복
           - 자동 생성 자막의 인식 오류 (문맥상 명백한 경우)
         INSTRUCTIONS
       else
         <<~INSTRUCTIONS
-          ### 일반 텍스트 노이즈 제거
+          #### 일반 텍스트 노이즈 제거
           - 불필요한 공백 및 줄바꿈 정규화
           - 깨진 인코딩 문자 제거 또는 수정
           - 반복되는 구분선 또는 장식 문자
