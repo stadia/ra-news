@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  mount RubyLLM::Agents::Engine => "/agents"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   draw :madmin
 
@@ -35,5 +34,9 @@ Rails.application.routes.draw do
   get "social/:provider/authorize", to: "social#provider_authorize", as: :social_provider_authorize
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
 
-  mount MissionControl::Jobs::Engine, at: "/jobs"
+  constraints AuthenticatedConstraint.new do
+    mount MissionControl::Jobs::Engine, at: "/jobs"
+    mount RubyLLM::Agents::Engine => "/agents"
+    mount PgReports::Engine, at: "/pg_reports"
+  end
 end

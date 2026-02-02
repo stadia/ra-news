@@ -112,3 +112,5 @@ gem "youtube-transcript-rb", "~> 0.2.0"
 gem "dry-operation"
 
 gem "ruby_llm-agents", "~> 1.3"
+
+gem "pg_reports", "~> 0.4.0"
