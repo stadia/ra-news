@@ -60,10 +60,10 @@ class ArticlePipeline < ApplicationWorkflow
   step :editor_optimizer, Articles::EditorOptimizerAgent,
        input: -> {
          {
-           title: translator.title_ko,
-           summary_key: translator.summary_key,
-           summary_detail: translator.summary_detail,
-           summary_body: translator.summary_body,
+           title: technical_writer.title_ko,
+           summary_key: technical_writer.summary_key,
+           summary_detail: technical_writer.summary_detail,
+           summary_body: technical_writer.summary_body,
            content: data_prepper.cleaned_content
          }
        }

@@ -45,7 +45,7 @@ class ArticleAgentsService < ApplicationService
     # JSON 데이터 저장
     article.tag_list.add(result.steps[:knowledge].content[:global_context]["tags"].map { it.downcase }.uniq) if result.steps[:knowledge].content[:global_context]["tags"].present?
     # summary_detail에서 body 부분을 summary_body로 분리
-    update_attrs = result.steps[:translator].content
+    update_attrs = result.steps[:technical_writer].content
     update_attrs[:is_related] = result.content[:approved] == true
     # Update article attributes in single query
     article.update!(update_attrs)

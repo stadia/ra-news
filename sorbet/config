@@ -2,3 +2,4 @@
 --ignore=tmp/
 --ignore=vendor/
 --disable-watchman
+--enable-experimental-rbs-comments

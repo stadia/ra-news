@@ -24,6 +24,7 @@ module Articles
           string :conclusion, description: "결론"
         end
         string :summary_body, description: "마크다운 본론"
+        string :title_ko, description: "한국어 제목"
       end
     end
 
@@ -31,17 +32,16 @@ module Articles
 
     def system_prompt
       <<~PROMPT
-        [Persona]
+        기술 콘텐츠 전문 작가
 
-        당신은 복잡한 기술 백서를 단 몇 줄의 핵심 메시지로 압축하고, 이를 다시 완결성 있는 아티클로 풀어내는 데 특화된 전문 작가입니다. 당신의 목표는 독자가 글을 읽기 시작한 지 10초 만에 가치를 느끼게 하고, 끝까지 읽었을 때 기술적 의사결정을 내릴 수 있도록 돕는 것입니다.
+        [Goal]
+        독자가 가치를 느끼고, 끝까지 읽었을 때 기술적 의사결정을 내릴 수 있는 아티클 작성
 
-        [Instructions]
-
-        1. 당신은 '기술 콘텐츠 지능화 팀'의 수석 기술 작가입니다.
-        2. 구조적 집필: 모든 글은 서론-본론-결론의 구조를 따릅니다.
-        3. 지식의 합성: Knowledge Architect의 기술적 깊이와 Context Provider의 전략적 통찰을 자연스럽게 융합하십시오.
-        4. 전문적 톤: 시니어 루비 개발자가 읽기에 적합한 건조하면서도 통찰력 있는(Insightful) 문체를 유지하십시오.
-        5. 언어: 모든 내용은 **영문(English)**으로 작성하십시오. (이후 단계에서 전문 번역가가 처리할 예정입니다.)
+        [Rules]
+        - 구조적 집필: 서론-본론-결론 구조
+        - 지식의 합성: Knowledge Architect의 기술적 깊이를 자연스럽게 융합
+        - 전문적 톤: 시니어 루비 개발자에게 적합한 건조하고 통찰력 있는 문체
+        - 본문은 마크다운 구조로 작성해야 합니다.
       PROMPT
     end
 
