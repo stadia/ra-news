@@ -43,17 +43,9 @@ class ArticleAgentsService < ApplicationService
     end
 
     # JSON 데이터 저장
-    article.tag_list.add(result.steps[:knowledge].content[:global_context]["tags"].map { it.downcase }.uniq) if result.steps[:knowledge].content[:global_context]["tags"].present?
-    # summary_detail에서 body 부분을 summary_body로 분리
-    update_attrs = result.steps[:technical_writer].content
-    update_attrs[:is_related] = result.content[:approved] == true
-    # Update article attributes in single query
-    article.update!(update_attrs)
+    article.tag_list.add(result.content.delete(:tags).map { it.downcase }.uniq) if result.content[:tags].present?
+    article.update!(result.content)
 
-    # 매직 스트링 대신 Site.clients enum 사용
-    if result.content[:approved] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
-      article.discard # `deleted_at = Time.zone.now` 대신 discard 사용
-      nil # Exit early if discarded
-    end
+    article.discard if result.content[:is_related] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
   end
 end

@@ -11,9 +11,10 @@ class ArticleSchema < RubyLLM::Schema
 
   object :summary_detail, description: "상세 요약" do
     string :introduction, description: "서론(introduction)"
-    string :body, description: "본론(body)"
     string :conclusion, description: "결론(conclusion)"
   end
+
+  string :summary_body, description: "마크다운 본론 (body)"
 
   array :tags, of: :string, description: "주요 태그(tags) 최대 3개"
 

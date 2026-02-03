@@ -10,7 +10,7 @@ RubyLLM::Agents.configure do |config|
   # ============================================
 
   # Default LLM model for all agents (can be overridden per agent with `model "model-name"`)
-  # config.default_model = "gemini-2.0-flash"
+  config.default_model = "gemini-2.5-flash"
 
   # Default temperature (0.0 = deterministic, 2.0 = creative)
   # config.default_temperature = 0.0
@@ -27,7 +27,7 @@ RubyLLM::Agents.configure do |config|
   # ============================================
 
   # Cache store for agent response caching (defaults to Rails.cache)
-  # config.cache_store = Rails.cache
+  config.cache_store = Rails.cache
   # config.cache_store = ActiveSupport::Cache::MemoryStore.new
 
   # ============================================
@@ -113,18 +113,18 @@ RubyLLM::Agents.configure do |config|
   # - global_daily/global_monthly: Limits across all agents
   # - per_agent_daily/per_agent_monthly: Per-agent limits (Hash of agent name => limit)
   # - enforcement: :none (disabled), :soft (warn only), :hard (block requests)
-  # config.budgets = {
-  #   global_daily: 25.0,
-  #   global_monthly: 500.0,
-  #   per_agent_daily: {
-  #     "ContentGeneratorAgent" => 10.0,
-  #     "SummaryAgent" => 5.0
-  #   },
-  #   per_agent_monthly: {
-  #     "ContentGeneratorAgent" => 200.0
-  #   },
-  #   enforcement: :soft
-  # }
+  config.budgets = {
+    #   global_daily: 25.0,
+    global_monthly: 20.0
+    #   per_agent_daily: {
+    #     "ContentGeneratorAgent" => 10.0,
+    #     "SummaryAgent" => 5.0
+    #   },
+    #   per_agent_monthly: {
+    #     "ContentGeneratorAgent" => 200.0
+    #   },
+    #   enforcement: :soft
+  }
 
   # ============================================
   # Governance - Alerts

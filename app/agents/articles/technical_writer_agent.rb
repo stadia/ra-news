@@ -17,15 +17,7 @@ module Articles
     param :global_context, required: true
 
     def schema
-      @schema ||= RubyLLM::Schema.create do
-        array :summary_key, of: :string, description: "3줄 핵심 요약"
-        object :summary_detail do
-          string :introduction, description: "서론"
-          string :conclusion, description: "결론"
-        end
-        string :summary_body, description: "마크다운 본론"
-        string :title_ko, description: "한국어 제목"
-      end
+      @schema ||= ArticleSchema.new
     end
 
     private
