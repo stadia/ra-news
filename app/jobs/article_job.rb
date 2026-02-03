@@ -15,7 +15,7 @@ class ArticleJob < ApplicationJob
       return nil
     end
 
-    ArticleLlmService.call(article)
+    ArticleAgentsService.call(article)
 
     # Rebuild search index only for kept articles
     PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false) if article.kept?
