@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "comments" do %>
   <% if comments.any? %>
     <% comments.each do |comment| %>
-      <%= render partial: 'comments/comment', locals: { comment: comment } %>
+      <%= render partial: 'comments/comment', locals: { comment: comment, article: article } %>
     <% end %>
   <% else %>
     <div class="text-center py-8">

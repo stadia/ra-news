@@ -1,13 +1,19 @@
-<% if @comments.length == 1 %>
-  <%= turbo_stream.replace "comments", partial: "comments/comments", locals: { article: @article, comments: @comments } %>
+<% if @comment.persisted? %>
+  <% if @comments.length == 1 %>
+    <%= turbo_stream.replace "comments", partial: "comments/comments", locals: { article: @article, comments: @comments } %>
+  <% else %>
+    <%= turbo_stream.prepend "comments", partial: "comments/comment", locals: { comment: @comment, article: @article } %>
+  <% end %>
+
+  <%= turbo_stream.update "comments_header" do %>
+    <%= render partial: 'comments/header', locals: { comments: @comments } %>
+  <% end %>
+
+  <%= turbo_stream.update "comment_form" do %>
+    <%= render partial: "comments/form", locals: { article: @article, comment: Comment.new } %>
+  <% end %>
 <% else %>
-  <%= turbo_stream.prepend "comments", partial: "comments/comment", locals: { comment: @comment } %>
-<% end %>
-
-<%= turbo_stream.update "comments_header" do %>
-  <%= render partial: 'comments/header', locals: { comments: @comments } %>
-<% end %>
-
-<%= turbo_stream.update "comment_form" do %>
-  <%= render partial: "comments/form", locals: { article: @article, comment: Comment.new } %>
+  <%= turbo_stream.update "comment_form" do %>
+    <%= render partial: "comments/form", locals: { article: @article, comment: @comment } %>
+  <% end %>
 <% end %>

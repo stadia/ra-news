@@ -3,10 +3,6 @@
 module RateLimiting
   extend ActiveSupport::Concern
 
-  included do
-    before_action :check_rate_limit, only: [ :create, :update ]
-  end
-
   private
 
   def check_rate_limit

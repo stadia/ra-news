@@ -59,6 +59,43 @@ special_chars_comment:
   parent_id:
   depth: 0
 
+# Guest comments (no user_id, has guest fields)
+guest_comment_with_name:
+  body: "게스트로 작성한 댓글입니다. 이름만 입력했어요."
+  user:
+  article: ruby_article
+  guest_name: "게스트사용자"
+  guest_email:
+  guest_password_digest: <%= BCrypt::Password.create("secret1234", cost: 4) %>
+  lft: 5
+  rgt: 6
+  parent_id:
+  depth: 0
+
+guest_comment_with_email:
+  body: "이메일로만 작성한 게스트 댓글입니다."
+  user:
+  article: youtube_ruby_talk
+  guest_name:
+  guest_email: "guest@example.com"
+  guest_password_digest: <%= BCrypt::Password.create("mypassword", cost: 4) %>
+  lft: 3
+  rgt: 4
+  parent_id:
+  depth: 0
+
+guest_comment_with_both:
+  body: "이름과 이메일 모두 입력한 게스트 댓글입니다."
+  user:
+  article: korean_content_article
+  guest_name: "홍길동"
+  guest_email: "hong@example.com"
+  guest_password_digest: <%= BCrypt::Password.create("test1234", cost: 4) %>
+  lft: 5
+  rgt: 6
+  parent_id:
+  depth: 0
+
 # Legacy fixture names for backwards compatibility
 one:
   body: "This is a test comment."
