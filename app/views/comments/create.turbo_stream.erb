@@ -1,19 +1,23 @@
 <% if @comment.persisted? %>
   <% if @comments.length == 1 %>
-    <%= turbo_stream.replace "comments", partial: "comments/comments", locals: { article: @article, comments: @comments } %>
+    <%= turbo_stream.replace "comments" do %>
+      <%= render(CommentsComponent.new(article: @article, comments: @comments)) %>
+    <% end %>
   <% else %>
-    <%= turbo_stream.prepend "comments", partial: "comments/comment", locals: { comment: @comment, article: @article } %>
+    <%= turbo_stream.prepend "comments" do %>
+      <%= render(CommentComponent.new(comment: @comment, article: @article)) %>
+    <% end %>
   <% end %>
 
   <%= turbo_stream.update "comments_header" do %>
-    <%= render partial: 'comments/header', locals: { comments: @comments } %>
+    <%= render(CommentHeaderComponent.new(comments: @comments)) %>
   <% end %>
 
   <%= turbo_stream.update "comment_form" do %>
-    <%= render partial: "comments/form", locals: { article: @article, comment: Comment.new } %>
+    <%= render(CommentFormComponent.new(article: @article, comment: Comment.new)) %>
   <% end %>
 <% else %>
   <%= turbo_stream.update "comment_form" do %>
-    <%= render partial: "comments/form", locals: { article: @article, comment: @comment } %>
+    <%= render(CommentFormComponent.new(article: @article, comment: Comment.new)) %>
   <% end %>
 <% end %>

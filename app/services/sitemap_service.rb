@@ -2,7 +2,7 @@
 
 # rbs_inline: enabled
 
-class SitemapService < ApplicationService
+class SitemapService < OperationService
   # This service generates a sitemap for the application.
   # It uses the SitemapGenerator gem to create the sitemap XML file.
   # The sitemap will include links to articles that have a slug and are kept (not deleted).
@@ -38,5 +38,6 @@ class SitemapService < ApplicationService
     end
     # Compress set to true will generate an '.xml.gz' file
     SitemapGenerator::Sitemap.compress = true
+    Success(true)
   end
 end

@@ -33,13 +33,13 @@ class CommentTest < ActiveSupport::TestCase
   test "user는 선택적이다 (게스트 댓글 허용)" do
     # Guest comment without user but with guest fields should be valid
     comment = Comment.new(
-      body: "Test comment", 
+      body: "Test comment",
       article: @article,
       guest_name: "게스트",
       guest_password: "secret1234"
     )
     assert comment.valid?, "Guest comment without user should be valid: #{comment.errors.full_messages}"
-    
+
     # Comment without user AND without guest fields should NOT be valid
     comment_without_any = Comment.new(body: "Test comment", article: @article)
     assert_not comment_without_any.valid?
@@ -676,7 +676,7 @@ class CommentTest < ActiveSupport::TestCase
   test "guest? 메서드는 user_id가 nil일 때 true를 반환해야 한다" do
     guest_comment = comments(:guest_comment_with_name)
     assert guest_comment.guest?
-    
+
     regular_comment = comments(:root_comment_1)
     assert_not regular_comment.guest?
   end
@@ -697,7 +697,7 @@ class CommentTest < ActiveSupport::TestCase
       comments(:guest_comment_with_email),
       comments(:guest_comment_with_both)
     ]
-    
+
     guest_comments.each do |comment|
       assert comment.valid?, "Guest comment #{comment.id} should be valid: #{comment.errors.full_messages}"
       assert comment.guest?

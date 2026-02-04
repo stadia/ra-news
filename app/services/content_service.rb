@@ -2,7 +2,7 @@
 
 # rbs_inline: enabled
 
-class ContentService < Dry::Operation
+class ContentService < OperationService
   include LinkHelper
 
   def call(article)
@@ -89,9 +89,5 @@ class ContentService < Dry::Operation
     return nil if tsr.nil? || tsr.empty?
 
     tsr.map { |it| "#{it.dig("transcriptSegmentRenderer", "startTimeText", "simpleText")} - #{it.dig("transcriptSegmentRenderer", "snippet", "runs")&.map { |run| run.dig("text") }&.join(" ")}" }.join("\n") # Use string interpolation for clarity
-  end
-
-  def logger
-    Rails.logger
   end
 end

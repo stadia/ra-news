@@ -8,7 +8,7 @@ class Comment < ApplicationRecord
   MAX_BODY_LENGTH = 1000
 
   belongs_to :user, optional: true
-  belongs_to :article
+  belongs_to :article, counter_cache: true
 
   has_secure_password :guest_password, validations: false
 

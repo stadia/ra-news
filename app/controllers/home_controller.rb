@@ -9,6 +9,9 @@ class HomeController < ApplicationController
     else
       scope.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
     end
+
+    # Load recent comments for sidebar
+    @recent_comments = Comment.includes(:article, :user).order(created_at: :desc).limit(10)
   end
 
   # GET /rss

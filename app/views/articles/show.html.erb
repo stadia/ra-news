@@ -164,7 +164,7 @@
   <section class="bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700">
     <div class="p-4 md:p-6 lg:p-8">
       <h3 id="comments_header" class="text-xl lg:text-2xl font-bold text-gray-100 mb-6 flex items-center">
-        <%= render partial: 'comments/header', locals: { comments: @comments } %>
+        <%= render(CommentHeaderComponent.new(comments: @comments)) %>
       </h3>
 
       <!-- 댓글 작성 폼 -->
@@ -174,7 +174,7 @@
 
       <!-- 댓글 목록 -->
       <div class="space-y-4 pt-6">
-        <%= render partial: 'comments/comments', locals: { article: @article, comments: @comments } %>
+        <%= render(CommentsComponent.new(article: @article, comments: @comments)) %>
       </div>
     </div>
   </section>
