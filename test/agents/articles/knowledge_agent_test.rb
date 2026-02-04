@@ -31,7 +31,7 @@ module Articles
 
       assert_kind_of RubyLLM::Agents::Result, result
       assert_includes result.content[:user_prompt], "Knowledge Architecture"
-      assert_includes result.content[:user_prompt], "global_context"
+      assert_includes result.content[:user_prompt], "### Overview"
     end
 
     test "system_prompt에 역할과 태그 규칙이 포함된다" do
@@ -43,7 +43,7 @@ module Articles
         dry_run: true
       )
 
-      assert_includes result.content[:system_prompt], "Ruby 소프트웨어 아키텍트"
+      assert_includes result.content[:system_prompt], "기술 콘텐츠 분석가"
       assert_includes result.content[:system_prompt], "Tag Extraction Rules"
       assert_includes result.content[:system_prompt], "snake_case"
     end

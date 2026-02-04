@@ -82,7 +82,7 @@ module Articles
         dry_run: true
       )
 
-      assert_includes result.content[:system_prompt], "데이터 정규화 전문가"
+      assert_includes result.content[:system_prompt], "데이터 전처리 전문가"
       assert_includes result.content[:system_prompt], "노이즈"
       assert_includes result.content[:system_prompt], "Semantic Chunks"
     end
