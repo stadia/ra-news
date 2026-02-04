@@ -1,6 +1,6 @@
 <aside class="recent-comments-sidebar">
   <h3 class="text-lg font-semibold text-gray-100 mb-4 flex items-center gap-2">
-    <%= heroicon "chat-bubble-left-right", variant: :outline, options: { class: "w-5 h-5 text-green-400" } %>
+    <%= helpers.heroicon "chat-bubble-left-right", variant: :outline, options: { class: "w-5 h-5 text-green-400" } %>
     최근 댓글
   </h3>
 
@@ -22,17 +22,17 @@
         </div>
 
         <p class="text-sm text-gray-400 mb-2 line-clamp-2">
-          <%= truncate(comment.body, length: 80) %>
+          <%= helpers.truncate(comment.body, length: 80) %>
         </p>
 
         <div class="flex items-center justify-between text-xs text-gray-500">
           <span class="flex items-center gap-1">
-            <%= heroicon "clock", variant: :outline, options: { class: "w-3 h-3" } %>
-            <%= time_ago_in_words_korean(comment.created_at) %> 전
+            <%= helpers.heroicon "clock", variant: :outline, options: { class: "w-3 h-3" } %>
+            <%= helpers.time_ago_in_words_korean(comment.created_at) %> 전
           </span>
           <% if comment.article.present? %>
               <%= link_to article_path(comment.article.slug), class: "text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors" do %>
-                <%= heroicon "arrow-top-right-on-square", variant: :outline, options: { class: "w-3 h-3" } %>
+                <%= helpers.heroicon "arrow-top-right-on-square", variant: :outline, options: { class: "w-3 h-3" } %>
                 원문 보기
               <% end %>
           <% end %>

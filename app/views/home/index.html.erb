@@ -12,6 +12,6 @@
 
   <!-- Sidebar - Recent Comments -->
   <div class="w-full lg:w-72 flex-shrink-0 order-last lg:order-none">
-    <%= render partial: 'shared/recent_comments_sidebar' %>
+    <%= render(RecentCommentsSidebarComponent.new(recent_comments: @recent_comments)) %>
   </div>
 </div>
