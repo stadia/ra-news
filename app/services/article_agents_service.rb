@@ -18,8 +18,8 @@ class ArticleAgentsService < ApplicationService
       article.update(body: body.value!)
     end
 
-    # Articles::OneShotAgent.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
-    result = ArticlePipeline.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
+    result = Articles::OneShotAgent.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
+    # result = ArticlePipeline.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
     logger.info "Response received for article id: #{article.id}"
 
     # Generate embeddings if not present and body exists
