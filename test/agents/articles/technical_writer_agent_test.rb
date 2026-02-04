@@ -91,8 +91,8 @@ module Articles
       )
 
       assert_includes result.content[:system_prompt], "전문 작가"
-      assert_includes result.content[:system_prompt], "3줄 핵심 요약"
-      assert_includes result.content[:system_prompt], "영문(English)"
+      assert_includes result.content[:system_prompt], "서론-본론-결론"
+      assert_includes result.content[:system_prompt], "마크다운"
     end
 
     test "schema가 정의되어 있다" do
