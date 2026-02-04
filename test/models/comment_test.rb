@@ -30,10 +30,12 @@ class CommentTest < ActiveSupport::TestCase
     assert_includes comment.errors[:body], "내용을 입력해 주세요"
   end
 
-  test "user는 필수 항목이어야 한다" do
-    comment = Comment.new(body: "Test comment", article: @article)
-    assert_not comment.valid?
-    assert_includes comment.errors[:user], "값이 반드시 필요합니다"
+  test "user는 선택적이다 (게스트 댓글 허용)" do
+    # A comment without user but with body and article should now be valid (guest comment)
+    guest_comment = Comment.new(body: "Guest comment", article: @article)
+    assert guest_comment.valid?, "Guest comment without user should be valid"
+    assert_nil guest_comment.user
+    assert guest_comment.guest?
   end
 
   test "article은 필수 항목이어야 한다" do

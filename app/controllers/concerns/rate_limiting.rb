@@ -4,7 +4,7 @@ module RateLimiting
   extend ActiveSupport::Concern
 
   included do
-    before_action :check_rate_limit, only: [ :create, :update ]
+    before_action :check_rate_limit, only: [ :create ]
   end
 
   private
