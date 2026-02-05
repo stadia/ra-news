@@ -6,6 +6,7 @@ class Comment < ApplicationRecord
   acts_as_nested_set
 
   MAX_BODY_LENGTH = 1000
+  MAX_GUEST_NAME_LENGTH = 100
 
   belongs_to :user, optional: true
   belongs_to :article, counter_cache: true
@@ -14,6 +15,10 @@ class Comment < ApplicationRecord
 
   validates :body, presence: true, length: { minimum: 1, maximum: MAX_BODY_LENGTH }
   validates :article, presence: true
+  validates :guest_name,
+    length: { maximum: MAX_GUEST_NAME_LENGTH },
+    format: { with: /\A[^<>]*\z/, message: "HTML 태그를 포함할 수 없습니다" },
+    if: :guest?
   validate :validate_user_or_guest
   validate :validate_guest_password_length
 
