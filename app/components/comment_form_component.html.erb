@@ -1,5 +1,5 @@
 <%= helpers.turbo_frame_tag "new_comment" do %>
-  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600" data-controller="character-count" data-character-count-max-length-value="<%= Comment::MAX_BODY_LENGTH %>">
+  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600" data-controller="character-count guest-name" data-character-count-max-length-value="<%= Comment::MAX_BODY_LENGTH %>">
     <h4 class="text-lg font-semibold text-gray-100 mb-4 flex items-center">
       <%= helpers.heroicon "pencil-square", variant: :outline, options: { class: "w-5 h-5 mr-2 text-blue-400" } %>
       댓글 작성
@@ -29,7 +29,8 @@
                 "w-full px-3 py-2 rounded-lg border bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
                 (@comment.errors[:guest_name].none? ? "border-gray-600 hover:border-gray-500" : "border-red-500 focus:ring-red-500")
               ].join(' '),
-              placeholder: "이름이나 이메일을 입력하세요" %>
+              placeholder: "이름이나 이메일을 입력하세요",
+              data: { guest_name_target: "input", action: "change->guest-name#save" } %>
         </div>
 
         <div class="space-y-2">
