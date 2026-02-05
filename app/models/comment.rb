@@ -22,7 +22,7 @@ class Comment < ApplicationRecord
   end
 
   def author_name
-    user&.name || guest_name || guest_email || "익명"
+    user&.name || guest_name || "익명"
   end
 
   def guest?
@@ -33,9 +33,9 @@ class Comment < ApplicationRecord
 
   def validate_user_or_guest
     if user_id.nil?
-      # Guest comment requires (guest_name OR guest_email) AND guest_password
-      if guest_name.blank? && guest_email.blank?
-        errors.add(:base, "이메일 또는 이름을 입력해주세요")
+      # Guest comment requires guest_name AND guest_password
+      if guest_name.blank?
+        errors.add(:guest_name, "이름을 입력해주세요")
       end
 
       # Check if password is set (either as a virtual attribute for new records or digest for existing)

@@ -40,10 +40,10 @@ class CommentTest < ActiveSupport::TestCase
     )
     assert comment.valid?, "Guest comment without user should be valid: #{comment.errors.full_messages}"
 
-    # Comment without user AND without guest fields should NOT be valid
+    # Comment without user AND without guest_name should NOT be valid
     comment_without_any = Comment.new(body: "Test comment", article: @article)
     assert_not comment_without_any.valid?
-    assert_includes comment_without_any.errors[:base], "이메일 또는 이름을 입력해주세요"
+    assert_includes comment_without_any.errors[:guest_name], "이름을 입력해주세요"
   end
 
   test "article은 필수 항목이어야 한다" do
@@ -588,35 +588,24 @@ class CommentTest < ActiveSupport::TestCase
     assert comment.valid?, "게스트 댓글(이름만)은 유효해야 합니다: #{comment.errors.full_messages}"
   end
 
-  test "게스트 댓글은 이메일만 입력해도 유효해야 한다" do
+  test "게스트 댓글은 이메일 형식의 이름도 허용해야 한다" do
     comment = Comment.new(
       body: "게스트 댓글 테스트",
       article: @article,
-      guest_email: "test@example.com",
+      guest_name: "test@example.com",
       guest_password: "mypassword"
     )
-    assert comment.valid?, "게스트 댓글(이메일만)은 유효해야 합니다: #{comment.errors.full_messages}"
+    assert comment.valid?, "게스트 댓글(이메일 형식 이름)은 유효해야 합니다: #{comment.errors.full_messages}"
   end
 
-  test "게스트 댓글은 이름과 이메일 모두 입력하면 유효해야 한다" do
-    comment = Comment.new(
-      body: "게스트 댓글 테스트",
-      article: @article,
-      guest_name: "홍길동",
-      guest_email: "hong@example.com",
-      guest_password: "test1234"
-    )
-    assert comment.valid?, "게스트 댓글(이름+이메일)은 유효해야 합니다: #{comment.errors.full_messages}"
-  end
-
-  test "게스트 댓글은 이름이나 이메일 중 하나는 필요하다" do
+  test "게스트 댓글은 이름이 필수이다" do
     comment = Comment.new(
       body: "게스트 댓글 테스트",
       article: @article,
       guest_password: "secret1234"
     )
     assert_not comment.valid?
-    assert_includes comment.errors[:base], "이메일 또는 이름을 입력해주세요"
+    assert_includes comment.errors[:guest_name], "이름을 입력해주세요"
   end
 
   test "게스트 댓글은 비밀번호가 필수이다" do
@@ -659,8 +648,8 @@ class CommentTest < ActiveSupport::TestCase
     assert_equal "게스트사용자", guest_comment.author_name
   end
 
-  test "author_name은 guest_email을 사용해야 한다 (guest_name이 없을 때)" do
-    guest_comment = comments(:guest_comment_with_email)
+  test "author_name은 이메일 형식의 guest_name도 사용할 수 있다" do
+    guest_comment = comments(:guest_comment_with_email_as_name)
     assert_equal "guest@example.com", guest_comment.author_name
   end
 
@@ -694,8 +683,8 @@ class CommentTest < ActiveSupport::TestCase
   test "fixture의 모든 게스트 댓글은 유효해야 한다" do
     guest_comments = [
       comments(:guest_comment_with_name),
-      comments(:guest_comment_with_email),
-      comments(:guest_comment_with_both)
+      comments(:guest_comment_with_email_as_name),
+      comments(:guest_comment_korean_name)
     ]
 
     guest_comments.each do |comment|
@@ -706,32 +695,28 @@ class CommentTest < ActiveSupport::TestCase
 
   test "fixture 게스트 댓글은 올바른 비밀번호로 인증되어야 한다" do
     assert comments(:guest_comment_with_name).authenticate_guest_password("secret1234")
-    assert comments(:guest_comment_with_email).authenticate_guest_password("mypassword")
-    assert comments(:guest_comment_with_both).authenticate_guest_password("test1234")
+    assert comments(:guest_comment_with_email_as_name).authenticate_guest_password("mypassword")
+    assert comments(:guest_comment_korean_name).authenticate_guest_password("test1234")
   end
 
-  test "name_or_email이 이메일 형식이면 guest_email에 저장되어야 한다" do
+  test "guest_name은 형식에 상관없이 저장되어야 한다" do
     comment = Comment.new(
       body: "테스트 댓글",
       article: @article,
-      guest_email: "test@example.com",
+      guest_name: "test@example.com",
       guest_password: "secret1234"
     )
     assert comment.valid?
-    assert_equal "test@example.com", comment.guest_email
-    assert_nil comment.guest_name
-  end
+    assert_equal "test@example.com", comment.guest_name
 
-  test "name_or_email이 이메일 형식이 아니면 guest_name에 저장되어야 한다" do
-    comment = Comment.new(
+    comment2 = Comment.new(
       body: "테스트 댓글",
       article: @article,
       guest_name: "홍길동",
       guest_password: "secret1234"
     )
-    assert comment.valid?
-    assert_equal "홍길동", comment.guest_name
-    assert_nil comment.guest_email
+    assert comment2.valid?
+    assert_equal "홍길동", comment2.guest_name
   end
 
   test "게스트 댓글도 nested_set으로 작동해야 한다" do

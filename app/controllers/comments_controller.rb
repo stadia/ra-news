@@ -11,22 +11,10 @@ class CommentsController < ApplicationController
   def create
     @comment = @article.comments.build(comment_params)
 
-    # Assign user if authenticated, otherwise handle as guest
     if authenticated?
       @comment.user = Current.user
     else
-      # Guest comment - process name_or_email field
       @comment.user = nil
-      name_or_email = params[:comment][:guest_name]
-      if name_or_email.present?
-        if name_or_email.match?(URI::MailTo::EMAIL_REGEXP)
-          @comment.guest_email = name_or_email
-          @comment.guest_name = nil
-        else
-          @comment.guest_name = name_or_email
-          @comment.guest_email = nil
-        end
-      end
     end
 
     respond_to do |format|
@@ -130,6 +118,6 @@ class CommentsController < ApplicationController
     end
 
     def comment_params
-      params.expect(comment: [ :body, :guest_email, :guest_name, :guest_password ])
+      params.expect(comment: [ :body, :guest_name, :guest_password ])
     end
 end
