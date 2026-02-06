@@ -1,10 +1,15 @@
 <div class="<%= wrapper_classes %>" data-controller="reply-form">
   <% if @depth > 0 %>
     <!-- Connecting line to parent -->
-    <div class="absolute -left-4 top-0 bottom-0 w-px bg-gray-600 hover:bg-gray-500 transition-colors"></div>
+    <div
+      class="
+        absolute -left-4 top-0 bottom-0 w-px bg-gray-600 hover:bg-gray-500
+        transition-colors
+      "
+    ></div>
   <% end %>
-
-  <!-- Main comment card - for parent comments, this wraps everything including replies -->
+  <!-- Main comment card - for parent comments, this wraps everything including
+  replies -->
   <div
     id="comment_<%= @comment.id %>"
     class="
@@ -21,7 +26,7 @@
           <div
             class="
               w-8 h-8 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex
-              items-center justify-center flex-shrink-0
+              items-center justify-center shrink-0
             "
           >
             <span class="text-white text-sm font-bold">
@@ -80,14 +85,19 @@
           <button
             type="button"
             data-action="reply-form#toggle"
-            class="inline-flex items-center text-gray-400 hover:text-blue-400 transition-colors"
+            class="
+              inline-flex items-center text-gray-400 hover:text-blue-400 transition-colors
+            "
           >
-            <%= helpers.heroicon "chat-bubble-left", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
+            <%= helpers.heroicon "chat-bubble-left",
+                             variant: :outline,
+                             options: {
+                               class: "w-4 h-4 mr-1",
+                             } %>
             답글
           </button>
         </div>
       <% end %>
-
       <!-- Password verification modal for guest comments -->
       <% if @comment.persisted? && @comment.guest? %>
         <%= helpers.render partial: "comments/delete_modal",
@@ -101,7 +111,13 @@
     <% if can_reply? %>
       <!-- Reply form section inside the card -->
       <div class="border-t border-gray-600 bg-gray-800/50">
-        <%= render(CommentReplyFormComponent.new(article: @article, comment: Comment.new(parent: @comment), parent_comment: @comment)) %>
+        <%= render(
+          CommentReplyFormComponent.new(
+            article: @article,
+            comment: Comment.new(parent: @comment),
+            parent_comment: @comment,
+          ),
+        ) %>
       </div>
     <% end %>
 
