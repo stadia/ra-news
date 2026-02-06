@@ -219,6 +219,8 @@ class Article < ApplicationRecord
 
   #: (Faraday::Response response) -> void
   def handle_redirection(response, count = 0)
+    return if response.nil?
+
     logger.debug response.status
     logger.debug count
     return unless response.status.between?(300, 399) && response.headers["location"]
