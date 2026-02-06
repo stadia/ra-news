@@ -2,13 +2,11 @@
   <%= turbo_stream.replace "comments" do %>
     <%= render(CommentsComponent.new(article: @article, comments: @comments)) %>
   <% end %>
-
   <%= turbo_stream.update "comments_header" do %>
     <%= render(CommentHeaderComponent.new(comments: @comments)) %>
   <% end %>
-
   <%= turbo_stream.update "comment_form" do %>
-    <%= render(CommentFormComponent.new(article: @article, comment: Comment.new)) %>
+    <%= render(CommentFormComponent.new(article: @article, comment: @comment)) %>
   <% end %>
 <% else %>
   <% if @comment.parent_id.present? && @comment.parent.present? %>
@@ -17,7 +15,7 @@
     <% end %>
   <% else %>
     <%= turbo_stream.update "comment_form" do %>
-      <%= render(CommentFormComponent.new(article: @article, comment: Comment.new)) %>
+      <%= render(CommentFormComponent.new(article: @article, comment: @comment)) %>
     <% end %>
   <% end %>
 <% end %>
