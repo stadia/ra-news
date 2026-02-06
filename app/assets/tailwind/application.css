@@ -1,31 +1,6 @@
 @import "tailwindcss";
 @import "./pagy-tailwind.css";
-
-@theme {
-    --color-foreground: #bab7b6;
-    --color-background: #141414;
-    --color-black: #000000;
-    --color-red: #cf494c;
-    --color-green: #60b442;
-    --color-yellow: #db9c11;
-    --color-blue: #0575d8;
-    --color-magenta: #af5ed2;
-    --color-cyan: #1db6bb;
-    --color-white: #bab7b6;
-    --color-bright-black: #817e7e;
-    --color-bright-red: #ff643b;
-    --color-bright-green: #37e57b;
-    --color-bright-yellow: #fccd1a;
-    --color-bright-blue: #688dfd;
-    --color-bright-magenta: #ed6fe9;
-    --color-bright-cyan: #32e0fb;
-    --color-bright-white: #d3d8d9;
-    --font-sans:
-        "Inter", "ui-sans-serif", "system-ui", "-apple-system", "system-ui",
-        "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans KR",
-        "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
-}
+@plugin "daisyui";
 
 /* Global Styles */
 body {
@@ -37,55 +12,6 @@ body input,
 body textarea,
 body select {
     @apply text-gray-800 rounded-md transition-all duration-200;
-}
-
-/* Line Clamp Utility */
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.line-clamp-4 {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* Responsive Grid Improvements */
-@media (min-width: 768px) and (max-width: 1023px) {
-    .md-grid-cols-auto {
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    }
-}
-
-/* Custom Focus Styles */
-.focus-ring {
-    @apply focus:outline-none focus:ring-4 focus:ring-green-300/50 transition-all duration-200;
-}
-
-/* Enhanced Card Shadows */
-.card-shadow {
-    box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
-}
-
-.card-shadow-hover {
-    box-shadow:
-        0 20px 25px -5px rgba(0, 0, 0, 0.2),
-        0 10px 10px -5px rgba(0, 0, 0, 0.1),
-        0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 /* Pagy Pagination Styles */
@@ -145,73 +71,4 @@ body select {
 .mobile-menu-toggle:focus + label {
     outline: 2px solid theme("colors.green.500");
     outline-offset: 2px;
-}
-
-/* Article Content Styles */
-.article-content h1,
-.article-content h2,
-.article-content h3,
-.article-content h4,
-.article-content h5,
-.article-content h6 {
-    color: #f3f4f6; /* gray-100 */
-}
-
-.article-content p,
-.article-content li,
-.article-content blockquote {
-    color: #d1d5db; /* gray-300 */
-}
-
-.article-content a {
-    color: #60a5fa; /* blue-400 */
-}
-
-.article-content a:hover {
-    color: #93c5fd; /* blue-300 */
-}
-
-.article-content strong {
-    color: #e5e7eb; /* gray-200 */
-}
-
-.article-content code {
-    background-color: #374151; /* gray-700 */
-    color: #e5e7eb; /* gray-200 */
-    padding: 0.2em 0.4em;
-    border-radius: 0.25rem;
-}
-
-.article-content pre {
-    background-color: #1f2937; /* gray-800 */
-    border: 1px solid #4b5563; /* gray-600 */
-    border-radius: 0.375rem;
-    padding: 1em;
-    overflow-x: auto;
-}
-
-.article-content pre code {
-    background-color: transparent;
-    padding: 0;
-}
-
-.article-content ul {
-    list-style-type: disc;
-    margin-left: 1.25rem;
-}
-
-.article-content ol {
-    list-style-type: decimal;
-    margin-left: 1.25rem;
-}
-
-.article-content blockquote {
-    border-left-color: #4b5563; /* gray-600 */
-    padding-left: 1em;
-    font-style: italic;
-    color: #9ca3af; /* gray-400 for better contrast */
-}
-
-#article-detail-body p {
-    margin-bottom: 1.25rem;
 }

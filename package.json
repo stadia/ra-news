@@ -1,0 +1,30 @@
+{
+  "name": "al_news",
+  "version": "1.0.0",
+  "description": "[![CI](https://github.com/stadia/ra-news/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/stadia/ra-news/actions/workflows/ci.yml)",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "test": "test"
+  },
+  "dependencies": {
+    "daisyui": "^5.5.18",
+    "tailwindcss": "^4.1.18",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stadia/ra-news.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stadia/ra-news/issues"
+  },
+  "homepage": "https://github.com/stadia/ra-news#readme"
+}
