@@ -18,7 +18,7 @@
     }
   },
   "context": {
-    "fileName": ["AGENTS.md", "GEMINI.md"],
+    "fileName": ["AGENTS.md"],
     "loadFromIncludeDirectories": true,
     "fileFiltering": {
       "respectGitIgnore": true
