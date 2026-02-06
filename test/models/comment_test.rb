@@ -351,47 +351,53 @@ class CommentTest < ActiveSupport::TestCase
       article: @article
     )
 
-    # Second level children
-    grandchild1 = child1.children.create!(
-      body: "Grandchild 1",
-      user: @user,
-      article: @article
-    )
-
-    grandchild2 = child1.children.create!(
-      body: "Grandchild 2",
-      user: users(:jane),
-      article: @article
-    )
-
     root.reload
     child1.reload
 
-    # Verify structure
+    # Verify structure (max depth 1 - only root and direct children allowed)
     assert_equal 2, root.children.count
     assert_includes root.children, child1
     assert_includes root.children, child2
 
-    assert_equal 2, child1.children.count
-    assert_includes child1.children, grandchild1
-    assert_includes child1.children, grandchild2
-
+    assert_equal 0, child1.children.count
     assert_equal 0, child2.children.count
 
     # Verify depths
     assert_equal 0, root.depth
     assert_equal 1, child1.depth
     assert_equal 1, child2.depth
-    assert_equal 2, grandchild1.depth
-    assert_equal 2, grandchild2.depth
 
     # Verify descendants
     descendants = root.descendants
-    assert_equal 4, descendants.count
+    assert_equal 2, descendants.count
     assert_includes descendants, child1
     assert_includes descendants, child2
-    assert_includes descendants, grandchild1
-    assert_includes descendants, grandchild2
+  end
+
+  test "대댓글의 답글(2단계 깊이) 생성 시도는 실패해야 한다" do
+    # Create root comment
+    root = Comment.create!(
+      body: "Root comment",
+      user: @user,
+      article: @article
+    )
+
+    # Create first level child (reply)
+    child = root.children.create!(
+      body: "First level reply",
+      user: users(:jane),
+      article: @article
+    )
+
+    # Attempting to create a reply to a reply should fail
+    grandchild = child.children.build(
+      body: "Second level reply (should fail)",
+      user: @user,
+      article: @article
+    )
+
+    assert_not grandchild.save
+    assert grandchild.errors[:parent_id].any? { |msg| msg.include?("대댓글에는 답글을 달 수 없습니다") }
   end
 
   test "형제 댓글을 올바르게 찾아야 한다" do

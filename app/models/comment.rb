@@ -20,6 +20,7 @@ class Comment < ApplicationRecord
     format: { with: /\A[^<>]*\z/, message: "HTML 태그를 포함할 수 없습니다" },
     if: :guest?
   validate :validate_user_or_guest
+  validate :validate_parent_comment
   validate :validate_guest_password_length
 
   def content
@@ -48,13 +49,19 @@ class Comment < ApplicationRecord
         errors.add(:guest_password, "비밀번호를 입력해주세요")
       end
     end
+  end
 
-    # Prevent replies to replies (max depth 1)
-    if parent_id.present?
-      parent = Comment.find_by(id: parent_id)
-      if parent&.parent_id.present?
-        errors.add(:parent_id, "대댓글에는 답글을 달 수 없습니다")
-      end
+
+  def validate_parent_comment
+    return unless parent_id.present?
+
+    parent = Comment.find_by(id: parent_id)
+    if parent.nil?
+      errors.add(:parent_id, "원본 댓글을 찾을 수 없습니다.")
+    elsif parent.article_id != article_id
+      errors.add(:parent_id, "원본 댓글이 다른 게시글에 속해 있습니다.")
+    elsif parent.parent_id.present?
+      errors.add(:parent_id, "대댓글에는 답글을 달 수 없습니다.")
     end
   end
 

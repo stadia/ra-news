@@ -11,21 +11,6 @@ class CommentsController < ApplicationController
   def create
     @comment = @article.comments.build(comment_params)
 
-    if @comment.parent_id.present?
-      parent_comment = @article.comments.find_by(id: @comment.parent_id)
-      if parent_comment.nil?
-        @comment.errors.add(:parent_id, "잘못된 댓글입니다.")
-        load_comments
-        respond_to do |format|
-          format.html { redirect_to @article, alert: "댓글 작성에 실패했습니다." }
-          format.turbo_stream { render :create, status: :unprocessable_entity }
-        end
-        return
-      end
-
-      @comment.parent = parent_comment
-    end
-
     if authenticated?
       @comment.user = Current.user
     else
