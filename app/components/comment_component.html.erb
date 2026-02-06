@@ -1,13 +1,4 @@
 <div class="<%= wrapper_classes %>" data-controller="reply-form">
-  <% if @depth > 0 %>
-    <!-- Connecting line to parent -->
-    <div
-      class="
-        absolute -left-4 top-0 bottom-0 w-px bg-gray-600 hover:bg-gray-500
-        transition-colors
-      "
-    ></div>
-  <% end %>
   <!-- Main comment card - for parent comments, this wraps everything including
   replies -->
   <div
@@ -121,10 +112,9 @@
       </div>
     <% end %>
 
-    <% if @children.any? %>
-      <!-- Replies section inside the card -->
-      <div class="border-t border-gray-600 bg-gray-800/30 p-4 lg:p-5 space-y-3">
-        <%= render_children %>
+    <% if can_reply? %>
+      <div id="comment_replies_<%= @comment.id %>" class="mt-3 space-y-3">
+        <%= render_children if @children.any? %>
       </div>
     <% end %>
   </div>

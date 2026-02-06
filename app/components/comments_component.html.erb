@@ -1,6 +1,6 @@
 <%= helpers.turbo_frame_tag "comments" do %>
   <% if @comments.any? %>
-    <div class="space-y-4">
+    <div class="space-y-4" id="comments_list">
       <%= render_tree(@comments_tree) %>
     </div>
   <% else %>
