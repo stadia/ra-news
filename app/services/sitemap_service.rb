@@ -40,4 +40,8 @@ class SitemapService < OperationService
     SitemapGenerator::Sitemap.compress = true
     Success(true)
   end
+
+  def self.call
+    new.call
+  end
 end
