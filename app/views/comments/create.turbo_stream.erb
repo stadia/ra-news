@@ -1,12 +1,34 @@
 <% if @comment.persisted? %>
-  <%= turbo_stream.replace "comments" do %>
-    <%= render(CommentsComponent.new(article: @article, comments: @comments)) %>
+  <% if @comment.parent_id.present? %>
+    <%= turbo_stream.append "comment_replies_#{@comment.parent_id}" do %>
+      <%= render(
+        CommentComponent.new(
+          comment: @comment,
+          article: @article,
+          depth: @comment.depth,
+          children: {},
+        ),
+      ) %>
+    <% end %>
+  <% else %>
+    <%= turbo_stream.prepend "comments_list" do %>
+      <%= render(
+        CommentComponent.new(
+          comment: @comment,
+          article: @article,
+          depth: 0,
+          children: {},
+        ),
+      ) %>
+    <% end %>
   <% end %>
+
   <%= turbo_stream.update "comments_header" do %>
     <%= render(CommentHeaderComponent.new(comments: @comments)) %>
   <% end %>
+
   <%= turbo_stream.update "comment_form" do %>
-    <%= render(CommentFormComponent.new(article: @article, comment: @comment)) %>
+    <%= render(CommentFormComponent.new(article: @article, comment: Comment.new)) %>
   <% end %>
 <% else %>
   <% if @comment.parent_id.present? && @comment.parent.present? %>
