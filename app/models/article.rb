@@ -72,7 +72,7 @@ class Article < ApplicationRecord
     return unless url.is_a?(String)
 
     response = fetch_url_content
-    return unless response
+    return if response.nil?
 
     handle_redirection(response)
 
