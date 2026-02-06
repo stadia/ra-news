@@ -55,7 +55,8 @@ class Comment < ApplicationRecord
   def validate_parent_comment
     return unless parent_id.present?
 
-    parent = Comment.find_by(id: parent_id)
+    # `parent`는 `acts_as_nested_set` gem이 제공하는 association입니다.
+    # 이를 직접 사용하면 코드가 더 명확해지고 Rails의 캐싱 기능을 활용할 수 있습니다.
     if parent.nil?
       errors.add(:parent_id, "원본 댓글을 찾을 수 없습니다.")
     elsif parent.article_id != article_id

@@ -114,7 +114,7 @@
         <%= render(
           CommentReplyFormComponent.new(
             article: @article,
-            comment: Comment.new(parent: @comment),
+            comment: Comment.new,
             parent_comment: @comment,
           ),
         ) %>
