@@ -82,7 +82,7 @@
           <p class="text-gray-800">"<%= truncate(comment.body, length: 100) %>"</p>
           <p class="text-sm text-gray-500 mt-1">
             <% if comment.article.present? %>
-              <strong><%= comment.user.name %></strong> 님이 <strong><%= link_to comment.article.title, madmin_article_path(comment.article), class: "hover:text-blue-600" %></strong> 기사에 댓글을 남겼습니다.
+              <strong><%= comment.author_name %></strong> 님이 <strong><%= link_to comment.article.title, madmin_article_path(comment.article), class: "hover:text-blue-600" %></strong> 기사에 댓글을 남겼습니다.
               (<%= time_ago_in_words(comment.created_at) %> 전)
             <% end %>
           </p>
