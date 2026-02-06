@@ -45,6 +45,10 @@
           <%= render(ArticleUserComponent.new(article: article)) %>
         </span>
         <span class="inline-flex items-center">
+          <%= heroicon "chat-bubble-left", variant: :mini, options: { class: "w-4 h-4 mr-1 text-gray-500" } %>
+          <%= article.comments_count %>
+        </span>
+        <span class="inline-flex items-center">
           <%= heroicon "calendar", variant: :mini, options: { class: "w-4 h-4 mr-1 text-gray-500" } %>
           <%= article.published_at&.strftime("%Y년 %m월 %d일") || 'N/A' %>
         </span>
