@@ -26,17 +26,17 @@ class ArticleAgentsService < OperationService
   end
 
   def run_agents(article)
-    result = Articles::OneShotAgent.call(
-      raw_content: article.body,
-      title: article.title,
-      url: article.url,
-      content_type: article.is_youtube? ? "youtube" : "html"
-    )
-    # result = ArticlePipeline.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
+    # result = Articles::OneShotAgent.call(
+    #   raw_content: article.body,
+    #   title: article.title,
+    #   url: article.url,
+    #   content_type: article.is_youtube? ? "youtube" : "html"
+    # )
+    result = ArticlePipeline.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
     logger.info "Response received for article id: #{article.id}"
 
     logger.info "article id: #{article.id} status: #{result.status}"
-    if result.status.blank? || result.status != :success
+    if result.status.blank? || result.status.to_sym != :success
       article.discard
       return Failure(:invalid_status)
     end

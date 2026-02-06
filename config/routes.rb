@@ -4,7 +4,11 @@ Rails.application.routes.draw do
 
   resources :passwords, param: :token
   resources :articles, only: %i[index show new create] do
-    resources :comments, only: %i[create destroy]
+    resources :comments, only: %i[create destroy] do
+      member do
+        post :verify_password
+      end
+    end
   end
 
   get "others" => "articles#others"

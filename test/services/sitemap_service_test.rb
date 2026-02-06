@@ -33,8 +33,8 @@ class SitemapServiceTest < ActiveSupport::TestCase
     assert compress_value, "compress가 true로 설정되어야 합니다"
   end
 
-  test "서비스는 ApplicationService를 상속한다" do
-    assert_kind_of ApplicationService, @service
+  test "서비스는 OperationService를 상속한다" do
+    assert_kind_of OperationService, @service
   end
 
   test "call 메서드는 블록을 create에 전달한다" do

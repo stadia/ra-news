@@ -32,10 +32,10 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     article.update!(body: nil)
 
     content_service = Object.new
-    content_service.define_singleton_method(:call) { |_| Dry::Monads::Failure(:no_content) }
+    content_service.define_singleton_method(:call) { |_article = nil| Dry::Monads::Failure(:no_content) }
 
     result = nil
-    ContentService.stub(:new, content_service) do
+    ContentService.stub(:new, -> { content_service }) do
       result = ArticleAgentsService.new.call(article)
     end
 

@@ -1,5 +1,5 @@
 <%= helpers.turbo_frame_tag "new_comment" do %>
-  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600" data-controller="character-count" data-character-count-max-length-value="<%= Comment::MAX_BODY_LENGTH %>">
+  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600" data-controller="character-count guest-name" data-character-count-max-length-value="<%= Comment::MAX_BODY_LENGTH %>">
     <h4 class="text-lg font-semibold text-gray-100 mb-4 flex items-center">
       <%= helpers.heroicon "pencil-square", variant: :outline, options: { class: "w-5 h-5 mr-2 text-blue-400" } %>
       댓글 작성
@@ -17,6 +17,40 @@
               <li><%= error.full_message %></li>
             <% end %>
           </ul>
+        </div>
+      <% end %>
+
+      <% unless helpers.authenticated? %>
+        <!-- Guest fields for non-logged-in users -->
+        <div class="space-y-2">
+          <%= f.label :guest_name, "이름 또는 이메일 (필수)", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.text_field :guest_name,
+              class: [
+                "w-full px-3 py-2 rounded-lg border bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
+                (@comment.errors[:guest_name].none? ? "border-gray-600 hover:border-gray-500" : "border-red-500 focus:ring-red-500")
+              ].join(' '),
+              placeholder: "이름이나 이메일을 입력하세요",
+              data: { guest_name_target: "input", action: "change->guest-name#save" } %>
+        </div>
+
+        <div class="space-y-2">
+          <%= f.label :guest_password, "비밀번호 (필수, 삭제 시 필요)", class: "block text-sm font-medium text-gray-300" %>
+          <%= f.password_field :guest_password,
+              class: [
+                "w-full px-3 py-2 rounded-lg border bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200",
+                (@comment.errors[:guest_password].none? ? "border-gray-600 hover:border-gray-500" : "border-red-500 focus:ring-red-500")
+              ].join(' '),
+              placeholder: "최소 4자 이상의 비밀번호를 입력하세요" %>
+          <p class="text-xs text-gray-400">
+            댓글 삭제 시 비밀번호가 필요합니다.
+          </p>
+        </div>
+
+        <div class="border-t border-gray-600 pt-4">
+          <p class="text-sm text-gray-400 mb-4">
+            <%= helpers.heroicon "information-circle", variant: :outline, options: { class: "w-4 h-4 inline mr-1" } %>
+            이미 계정이 있으신가요? <%= helpers.link_to "로그인", helpers.new_session_path, class: "text-blue-400 hover:text-blue-300" %> 후 댓글을 작성하세요.
+          </p>
         </div>
       <% end %>
 
