@@ -43,6 +43,16 @@ class ArticleAgentsService < OperationService
 
     # JSON 데이터 저장
     article.tag_list.add(result.content.delete(:tags).map { it.downcase }.uniq) if result.content[:tags].present?
+
+    if result.content[:summary_body].present?
+      result.content[:summary_body] = result.content[:summary_body]
+        .gsub("\\n", "\n")
+        .gsub("\\t", "\t")
+        .gsub("\\r", "\r")
+        .gsub("\\\\", "\\")
+        .gsub('\"', '"')
+    end
+
     article.update!(result.content)
 
     article.discard if result.content[:is_related] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
