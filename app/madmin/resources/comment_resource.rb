@@ -8,11 +8,12 @@ class CommentResource < Madmin::Resource
   attribute :children_count, form: false
   attribute :created_at, form: false
   attribute :updated_at, form: false
+  attribute :author_name, index: true
+  attribute :user_id, index: true
 
   # Associations
   attribute :parent
   attribute :children
-  attribute :user
   attribute :article, index: true
 
   # Add scopes to easily filter records
