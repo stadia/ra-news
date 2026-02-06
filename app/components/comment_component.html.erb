@@ -101,7 +101,7 @@
 
     <% if can_reply? %>
       <!-- Reply form section inside the card -->
-      <div class="border-t border-gray-600 bg-gray-800/50">
+      <div class="bg-gray-800/50">
         <%= render(
           CommentReplyFormComponent.new(
             article: @article,
@@ -113,7 +113,7 @@
     <% end %>
 
     <% if can_reply? && @children.any? %>
-      <div id="comment_replies_<%= @comment.id %>" class="mt-3 space-y-3">
+      <div id="comment_replies_<%= @comment.id %>" class="mt-2 space-y-2 pb-3">
         <%= render_children %>
       </div>
     <% end %>
