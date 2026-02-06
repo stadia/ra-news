@@ -112,9 +112,9 @@
       </div>
     <% end %>
 
-    <% if can_reply? %>
+    <% if can_reply? && @children.any? %>
       <div id="comment_replies_<%= @comment.id %>" class="mt-3 space-y-3">
-        <%= render_children if @children.any? %>
+        <%= render_children %>
       </div>
     <% end %>
   </div>
