@@ -34,7 +34,7 @@ class ArticlesController < ApplicationController
   end
 
   def show
-    @comments = @article.comments.includes(:user).order(created_at: :desc)
+    @comments = @article.comments.includes(:user)
 
     # Only load similar articles if embedding exists
     @similar_articles = if @article.embedding.present?

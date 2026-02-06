@@ -48,6 +48,14 @@ class Comment < ApplicationRecord
         errors.add(:guest_password, "비밀번호를 입력해주세요")
       end
     end
+
+    # Prevent replies to replies (max depth 1)
+    if parent_id.present?
+      parent = Comment.find_by(id: parent_id)
+      if parent&.parent_id.present?
+        errors.add(:parent_id, "대댓글에는 답글을 달 수 없습니다")
+      end
+    end
   end
 
   def validate_guest_password_length

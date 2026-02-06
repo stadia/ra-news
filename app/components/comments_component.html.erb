@@ -1,8 +1,8 @@
 <%= helpers.turbo_frame_tag "comments" do %>
   <% if @comments.any? %>
-    <% @comments.each do |comment| %>
-      <%= render(CommentComponent.new(comment: comment, article: @article)) %>
-    <% end %>
+    <div class="space-y-4">
+      <%= render_tree(@comments_tree) %>
+    </div>
   <% else %>
     <div class="text-center py-8">
       <%= helpers.heroicon "chat-bubble-oval-left-ellipsis", variant: :outline, options: { class: "w-12 h-12 text-gray-500 mx-auto mb-4" } %>
