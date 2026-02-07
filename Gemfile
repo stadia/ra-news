@@ -112,3 +112,5 @@ gem "pg_reports", "~> 0.4.0"
 gem "ruby_llm", "~> 1.10"
 gem "ruby_llm-schema"
 gem "ruby_llm-agents", "~> 1.3"
+
+gem "phlex-rails", "~> 2.4"
