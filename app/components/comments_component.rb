@@ -22,7 +22,11 @@ class CommentsComponent < ViewComponent::Base
 
   def build_subtree(grouped, parent_id)
     nodes = grouped[parent_id] || []
-    sorted_nodes = parent_id.nil? ? nodes.sort_by(&:created_at).reverse : nodes.sort_by(&:created_at)
+    sorted_nodes = if parent_id.nil?
+      nodes.sort_by(&:created_at).reverse # Top-level: newest first
+    else
+      nodes.sort_by(&:created_at) # Replies: oldest first
+    end
     sorted_nodes.each_with_object({}) do |comment, tree|
       tree[comment] = build_subtree(grouped, comment.id)
     end

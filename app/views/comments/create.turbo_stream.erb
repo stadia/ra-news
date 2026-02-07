@@ -1,31 +1,14 @@
 <% if @comment.persisted? %>
   <% if @comment.parent_id.present? %>
-    <% parent_comment = @comment.parent %>
-    <% if parent_comment.present? && parent_comment.children.count == 1 %>
-      <%= turbo_stream.replace "comment_#{parent_comment.id}" do %>
-        <% children_tree = parent_comment.children.order(:created_at).each_with_object({}) do |child, tree|
-             tree[child] = {}
-           end %>
-        <%= render(
-          CommentComponent.new(
-            comment: parent_comment,
-            article: @article,
-            depth: parent_comment.depth,
-            children: children_tree,
-          ),
-        ) %>
-      <% end %>
-    <% else %>
-      <%= turbo_stream.append "comment_replies_#{@comment.parent_id}" do %>
-        <%= render(
-          CommentComponent.new(
-            comment: @comment,
-            article: @article,
-            depth: @comment.depth,
-            children: {},
-          ),
-        ) %>
-      <% end %>
+    <%= turbo_stream.append "comment_replies_#{@comment.parent_id}" do %>
+      <%= render(
+        CommentComponent.new(
+          comment: @comment,
+          article: @article,
+          depth: @comment.depth,
+          children: {},
+        ),
+      ) %>
     <% end %>
   <% else %>
     <%= turbo_stream.prepend "comments_list" do %>
