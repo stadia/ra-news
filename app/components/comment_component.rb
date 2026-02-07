@@ -11,7 +11,7 @@ class CommentComponent < ViewComponent::Base
   def wrapper_classes
     return "" if @depth.zero?
 
-    "ml-8 mr-3 relative"
+    "relative"
   end
 
   def render_children

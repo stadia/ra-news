@@ -113,7 +113,10 @@
     <% end %>
 
     <% if can_reply? %>
-      <div id="comment_replies_<%= @comment.id %>" class="mt-2 space-y-2 pb-3">
+      <div
+        id="comment_replies_<%= @comment.id %>"
+        class="ml-8 mr-3 mt-2 space-y-2 pb-3"
+      >
         <%= render_children %>
       </div>
     <% end %>
