@@ -30,7 +30,7 @@ FROM base AS build
 
 # Install packages needed to build gems and node modules
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config curl && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install application gems
@@ -41,6 +41,9 @@ RUN bundle install && \
 
 # Copy application code
 COPY . .
+
+RUN curl -sLo app/assets/tailwind/daisyui.mjs https://github.com/saadeghi/daisyui/releases/latest/download/daisyui.mjs && \
+    curl -sLo app/assets/tailwind/daisyui-theme.mjs https://github.com/saadeghi/daisyui/releases/latest/download/daisyui-theme.mjs
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
