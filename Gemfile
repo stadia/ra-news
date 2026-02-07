@@ -80,8 +80,6 @@ group :test do
 end
 
 gem "sorbet-runtime"
-gem "ruby_llm", "~> 1.10"
-gem "ruby_llm-schema"
 gem "pagy", "~> 43.2" # omit patch digit
 gem "honeybadger", "~> 6.3.0"
 gem "google-protobuf", require: false
@@ -106,11 +104,11 @@ gem "view_component", "~> 4.2"
 gem "oauth2", "~> 2.0"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
-gem "shadcn-rails"
 gem "heroicon"
 gem "youtube-transcript-rb", "~> 0.2.0"
 gem "dry-operation"
-
-gem "ruby_llm-agents", "~> 1.3"
-
 gem "pg_reports", "~> 0.4.0"
+
+gem "ruby_llm", "~> 1.10"
+gem "ruby_llm-schema"
+gem "ruby_llm-agents", "~> 1.3"

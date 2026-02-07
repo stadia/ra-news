@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { resetFormWithCounter } from "../utils/form_helpers"
+import { resetFormWithCounter } from "utils/form_helpers"
 
 // Connects to data-controller="reply-form"
 export default class extends Controller {
