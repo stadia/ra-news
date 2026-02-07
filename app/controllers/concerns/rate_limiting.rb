@@ -10,7 +10,9 @@ module RateLimiting
   private
 
   def check_rate_limit
-    return if Current.user&.admin?
+    user = Current.user if authenticated?
+
+    return if user&.admin?
 
     cache_key = "rate_limit:#{request.remote_ip}:#{controller_name}"
     current_count = Rails.cache.read(cache_key) || 0
