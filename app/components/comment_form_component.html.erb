@@ -1,5 +1,5 @@
 <%= helpers.turbo_frame_tag "new_comment" do %>
-  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600" data-controller="character-count guest-name" data-character-count-max-length-value="<%= Comment::MAX_BODY_LENGTH %>">
+  <div class="bg-gray-700 rounded-xl p-6 border border-gray-600" data-controller="character-count guest-name comment-form" data-character-count-max-length-value="<%= Comment::MAX_BODY_LENGTH %>" data-action="turbo:submit-end->comment-form#reset">
     <h4 class="text-lg font-semibold text-gray-100 mb-4 flex items-center">
       <%= helpers.heroicon "pencil-square", variant: :outline, options: { class: "w-5 h-5 mr-2 text-blue-400" } %>
       댓글 작성
