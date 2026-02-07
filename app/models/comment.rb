@@ -20,6 +20,7 @@ class Comment < ApplicationRecord
     format: { with: /\A[^<>]*\z/, message: "HTML 태그를 포함할 수 없습니다" },
     if: :guest?
   validate :validate_user_or_guest
+  validate :validate_parent_comment
   validate :validate_guest_password_length
 
   def content
@@ -47,6 +48,21 @@ class Comment < ApplicationRecord
       unless guest_password_digest.present? || guest_password.present?
         errors.add(:guest_password, "비밀번호를 입력해주세요")
       end
+    end
+  end
+
+
+  def validate_parent_comment
+    return unless parent_id.present?
+
+    # `parent`는 `acts_as_nested_set` gem이 제공하는 association입니다.
+    # 이를 직접 사용하면 코드가 더 명확해지고 Rails의 캐싱 기능을 활용할 수 있습니다.
+    if parent.nil?
+      errors.add(:parent_id, "원본 댓글을 찾을 수 없습니다.")
+    elsif parent.article_id != article_id
+      errors.add(:parent_id, "원본 댓글이 다른 게시글에 속해 있습니다.")
+    elsif parent.parent_id.present?
+      errors.add(:parent_id, "대댓글에는 답글을 달 수 없습니다.")
     end
   end
 

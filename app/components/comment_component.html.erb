@@ -1,78 +1,124 @@
-<div
-  id="comment_<%= @comment.id %>"
-  class="
-    bg-gray-700 rounded-lg p-4 lg:p-6 border border-gray-600 hover:border-gray-500
-    transition-all duration-200 mb-4
-  "
->
-  <!-- 댓글 헤더 -->
-  <div class="flex items-center justify-between mb-3">
-    <div class="flex items-center space-x-3">
-      <!-- 사용자 아바타 -->
-      <div
-        class="
-          w-8 h-8 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex
-          items-center justify-center
-        "
-      >
-        <span class="text-white text-sm font-bold">
-          <%= @comment.author_name.first.upcase %>
-        </span>
-      </div>
-      <!-- 사용자 정보 -->
-      <div>
-        <div class="text-sm font-medium text-gray-200">
-          <%= @comment.author_name %>
-          <% if @comment.guest? %>
-            <span class="ml-2 text-xs text-gray-500">(게스트)</span>
+<div class="<%= wrapper_classes %>" data-controller="reply-form">
+  <!-- Main comment card - for parent comments, this wraps everything including
+  replies -->
+  <div
+    id="comment_<%= @comment.id %>"
+    class="
+      bg-gray-700 rounded-lg border border-gray-600 hover:border-gray-500
+      transition-all duration-200 overflow-hidden
+    "
+  >
+    <!-- Comment content area -->
+    <div class="p-4 lg:p-5">
+      <!-- 댓글 헤더 -->
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center space-x-3">
+          <!-- 사용자 아바타 -->
+          <div
+            class="
+              w-8 h-8 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex
+              items-center justify-center shrink-0
+            "
+          >
+            <span class="text-white text-sm font-bold">
+              <%= @comment.author_name.first.upcase %>
+            </span>
+          </div>
+          <!-- 사용자 정보 -->
+          <div>
+            <div class="text-sm font-medium text-gray-200">
+              <%= @comment.author_name %>
+              <% if @comment.guest? %>
+                <span class="ml-2 text-xs text-gray-500">(게스트)</span>
+              <% end %>
+            </div>
+            <div class="text-xs text-gray-400 flex items-center">
+              <%= helpers.heroicon "clock", variant: :outline, options: { class: "w-3 h-3 mr-1" } %>
+              <%= helpers.time_ago_in_words_korean(@comment.created_at) %>
+              전
+            </div>
+          </div>
+        </div>
+        <!-- 삭제 버튼 -->
+        <% if @comment.guest? %>
+          <button
+            type="button"
+            data-controller="modal"
+            data-action="modal#open"
+            data-modal-id="delete_comment_modal_<%= @comment.id %>"
+            class="
+              inline-flex items-center px-3 py-1 text-xs font-medium text-red-400
+              hover:text-red-300 hover:bg-red-900 hover:bg-opacity-20 rounded-md
+              transition-colors duration-200 cursor-pointer
+            "
+          >
+            <%= helpers.heroicon "trash", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
+            삭제
+          </button>
+        <% elsif helpers.authenticated? && @comment.user == Current.user %>
+          <%= helpers.button_to helpers.article_comment_path(@article.slug, @comment),
+              method: :delete,
+              data: { turbo_confirm: "정말 삭제하시겠습니까?" },
+              form: { data: { turbo_stream: true } },
+              class: "inline-flex items-center px-3 py-1 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-900 hover:bg-opacity-20 rounded-md transition-colors duration-200" do %>
+            <%= helpers.heroicon "trash", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
+            삭제
           <% end %>
-        </div>
-        <div class="text-xs text-gray-400 flex items-center">
-          <%= helpers.heroicon "clock", variant: :outline, options: { class: "w-3 h-3 mr-1" } %>
-          <%= helpers.time_ago_in_words_korean(@comment.created_at) %>
-          전
-        </div>
+        <% end %>
       </div>
-    </div>
-    <!-- 삭제 버튼 -->
-    <% if @comment.guest? %>
-      <!-- Guest comment: Show button to open password modal -->
-      <button
-        type="button"
-        data-controller="modal"
-        data-action="modal#open"
-        data-modal-id="delete_comment_modal_<%= @comment.id %>"
-        class="
-          inline-flex items-center px-3 py-1 text-xs font-medium text-red-400
-          hover:text-red-300 hover:bg-red-900 hover:bg-opacity-20 rounded-md
-          transition-colors duration-200 cursor-pointer
-        "
-      >
-        <%= helpers.heroicon "trash", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
-        삭제
-      </button>
-    <% elsif helpers.authenticated? && @comment.user == Current.user %>
-      <!-- Authenticated user: Regular delete button -->
-      <%= helpers.button_to helpers.article_comment_path(@article.slug, @comment),
-          method: :delete,
-          data: { turbo_confirm: "정말 삭제하시겠습니까?" },
-          form: { data: { turbo_stream: true } },
-          class: "inline-flex items-center px-3 py-1 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-900 hover:bg-opacity-20 rounded-md transition-colors duration-200" do %>
-        <%= helpers.heroicon "trash", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
-        삭제
+      <!-- 댓글 내용 -->
+      <div class="text-gray-300 leading-relaxed">
+        <%= helpers.simple_format(ERB::Util.h(@comment.body), {}, wrapper_tag: "div") %>
+      </div>
+
+      <% if can_reply? %>
+        <div class="mt-3 flex items-center justify-between text-sm">
+          <button
+            type="button"
+            data-action="reply-form#toggle"
+            class="
+              inline-flex items-center text-gray-400 hover:text-blue-400 transition-colors
+            "
+          >
+            <%= helpers.heroicon "chat-bubble-left",
+                             variant: :outline,
+                             options: {
+                               class: "w-4 h-4 mr-1",
+                             } %>
+            답글
+          </button>
+        </div>
       <% end %>
+      <!-- Password verification modal for guest comments -->
+      <% if @comment.persisted? && @comment.guest? %>
+        <%= helpers.render partial: "comments/delete_modal",
+                       locals: {
+                         comment: @comment,
+                         article: @article,
+                       } %>
+      <% end %>
+    </div>
+
+    <% if can_reply? %>
+      <!-- Reply form section inside the card -->
+      <div class="bg-gray-800/50">
+        <%= render(
+          CommentReplyFormComponent.new(
+            article: @article,
+            comment: Comment.new,
+            parent_comment: @comment,
+          ),
+        ) %>
+      </div>
+    <% end %>
+
+    <% if can_reply? %>
+      <div
+        id="comment_replies_<%= @comment.id %>"
+        class="ml-8 mr-3 mt-2 space-y-2 pb-3"
+      >
+        <%= render_children %>
+      </div>
     <% end %>
   </div>
-  <!-- 댓글 내용 -->
-  <div class="text-gray-300 leading-relaxed">
-    <%= helpers.simple_format(ERB::Util.h(@comment.body), {}, wrapper_tag: "div") %>
-  </div>
-  <!-- Password verification modal for guest comments -->
-  <% if @comment.persisted? && @comment.guest? %>
-    <%= helpers.render partial: "comments/delete_modal",
-                   locals: {
-                     comment: @comment,
-                     article: @article,
-                   } %>
-  <% end %>
 </div>

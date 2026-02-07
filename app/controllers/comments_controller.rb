@@ -114,10 +114,10 @@ class CommentsController < ApplicationController
     end
 
     def load_comments
-      @comments = @article.comments.includes(:user).order(created_at: :desc)
+      @comments = @article.comments.includes(:user)
     end
 
     def comment_params
-      params.expect(comment: [ :body, :guest_name, :guest_password ])
+      params.expect(comment: [ :body, :guest_name, :guest_password, :parent_id ])
     end
 end

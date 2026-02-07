@@ -1,11 +1,25 @@
 <% if @comment.persisted? %>
-  <% if @comments.length == 1 %>
-    <%= turbo_stream.replace "comments" do %>
-      <%= render(CommentsComponent.new(article: @article, comments: @comments)) %>
+  <% if @comment.parent_id.present? %>
+    <%= turbo_stream.append "comment_replies_#{@comment.parent_id}" do %>
+      <%= render(
+        CommentComponent.new(
+          comment: @comment,
+          article: @article,
+          depth: @comment.depth,
+          children: {},
+        ),
+      ) %>
     <% end %>
   <% else %>
-    <%= turbo_stream.prepend "comments" do %>
-      <%= render(CommentComponent.new(comment: @comment, article: @article)) %>
+    <%= turbo_stream.prepend "comments_list" do %>
+      <%= render(
+        CommentComponent.new(
+          comment: @comment,
+          article: @article,
+          depth: 0,
+          children: {},
+        ),
+      ) %>
     <% end %>
   <% end %>
 
@@ -17,7 +31,13 @@
     <%= render(CommentFormComponent.new(article: @article, comment: Comment.new)) %>
   <% end %>
 <% else %>
-  <%= turbo_stream.update "comment_form" do %>
-    <%= render(CommentFormComponent.new(article: @article, comment: Comment.new)) %>
+  <% if @comment.parent_id.present? && @comment.parent.present? %>
+    <%= turbo_stream.replace "reply_form_#{@comment.parent_id}" do %>
+      <%= render(CommentReplyFormComponent.new(article: @article, comment: @comment, parent_comment: @comment.parent, visible: true)) %>
+    <% end %>
+  <% else %>
+    <%= turbo_stream.update "comment_form" do %>
+      <%= render(CommentFormComponent.new(article: @article, comment: @comment)) %>
+    <% end %>
   <% end %>
 <% end %>
