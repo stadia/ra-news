@@ -11,7 +11,7 @@ body {
 body input,
 body textarea,
 body select {
-    @apply text-gray-800 rounded-md transition-all duration-200;
+    @apply rounded-md transition-all duration-200;
 }
 
 /* Pagy Pagination Styles */
