@@ -11,24 +11,20 @@
 
   <%= form_with url: session_url, class: "contents" do |form| %>
     <div class="my-5">
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "email 주소", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full bg-white text-gray-900" %>
+      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "email 주소", value: params[:email_address], class: input_class(variant: :primary, extra_classes: "w-full") %>
     </div>
 
     <div class="my-5">
-      <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "비밀번호", maxlength: 72, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full bg-white text-gray-900" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "비밀번호", maxlength: 72, class: input_class(variant: :primary, extra_classes: "w-full") %>
     </div>
 
     <div class="col-span-6 sm:flex sm:items-center sm:gap-4">
       <div class="inline">
-        <%= form.submit "로그인", class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+        <%= form.submit "로그인", class: btn_class(variant: :primary) %>
       </div>
 
-      <!-- div class="mt-4 text-sm text-gray-500 sm:mt-0">
-        <%#= link_to "Forgot password?", new_password_path, class: "text-gray-700 underline hover:no-underline" %>
-      </div -->
-
       <div class="inline">
-        <%= link_to "회원 가입", new_user_path, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-yellow-600 hover:bg-yellow-500 text-white inline-block font-medium cursor-pointer" %>
+        <%= btn_link_to "회원 가입", new_user_path, variant: :secondary %>
       </div>
     </div>
   <% end %>

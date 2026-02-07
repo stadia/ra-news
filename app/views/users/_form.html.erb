@@ -12,26 +12,26 @@
   <% end %>
 
   <div class="my-5">
-    <%= form.label :email_address %>
-    <%= form.text_field :email_address, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-white text-gray-900", {"border-gray-400 focus:outline-blue-600": user.errors[:email_address].none?, "border-red-400 focus:outline-red-600": user.errors[:email_address].any?}] %>
+    <%= form.label :email_address, class: label_class %>
+    <%= form.text_field :email_address, class: input_class(variant: user.errors[:email_address].any? ? :error : :primary, extra_classes: "w-full") %>
   </div>
 
   <div class="my-5">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-white text-gray-900", {"border-gray-400 focus:outline-blue-600": user.errors[:name].none?, "border-red-400 focus:outline-red-600": user.errors[:name].any?}] %>
+    <%= form.label :name, class: label_class %>
+    <%= form.text_field :name, class: input_class(variant: user.errors[:name].any? ? :error : :primary, extra_classes: "w-full") %>
   </div>
 
   <div class="my-5">
-    <%= form.label :password %>
-    <%= form.password_field :password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-white text-gray-900", {"border-gray-400 focus:outline-blue-600": user.errors[:password].none?, "border-red-400 focus:outline-red-600": user.errors[:password].any?}] %>
+    <%= form.label :password, class: label_class %>
+    <%= form.password_field :password, class: input_class(variant: user.errors[:password].any? ? :error : :primary, extra_classes: "w-full") %>
   </div>
 
   <div class="my-5">
-    <%= form.label :password_confirmation %>
-    <%= form.password_field :password_confirmation, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-white text-gray-900", {"border-gray-400 focus:outline-blue-600": user.errors[:password_confirmation].none?, "border-red-400 focus:outline-red-600": user.errors[:password_confirmation].any?}] %>
+    <%= form.label :password_confirmation, class: label_class %>
+    <%= form.password_field :password_confirmation, class: input_class(variant: user.errors[:password_confirmation].any? ? :error : :primary, extra_classes: "w-full") %>
   </div>
 
   <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+    <%= form.submit class: btn_class(variant: :primary) %>
   </div>
 <% end %>
