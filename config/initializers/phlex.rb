@@ -14,3 +14,7 @@ Rails.autoloaders.main.push_dir(
 Rails.autoloaders.main.push_dir(
   Rails.root.join("app/components"), namespace: Components
 )
+
+Rails.autoloaders.main.push_dir(
+  Rails.root.join("app/view_components")
+)
