@@ -17,10 +17,6 @@ class Components::Users::User < Components::Base
         strong(class: "block font-medium mb-1 text-slate-300") { "Name:" }
         span(class: "text-slate-100") { @user.name }
       end
-      div do
-        strong(class: "block font-medium mb-1 text-slate-300") { "Password:" }
-        span(class: "text-slate-100") { @user.password }
-      end
     end
   end
 end
