@@ -11,16 +11,12 @@ export default class extends Controller {
   open() {
     if (this.modal) {
       this.modal.classList.remove("hidden");
-      // Prevent body scrolling when modal is open
-      document.body.style.overflow = "hidden";
     }
   }
 
   close() {
     if (this.modal) {
       this.modal.classList.add("hidden");
-      // Restore body scrolling
-      document.body.style.overflow = "";
     }
   }
 }

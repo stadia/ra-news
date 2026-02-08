@@ -1,0 +1,239 @@
+/*
+ * Design System Tokens
+ *
+ * 프로젝트 전역에서 사용되는 디자인 토큰 정의
+ * 문서: docs/DESIGN_SYSTEM.md
+ */
+
+@layer base {
+  :root {
+    /* ========================================
+       Brand Colors
+       ======================================== */
+    --brand-primary: 34 197 94;        /* green-500 */
+    --brand-primary-hover: 22 163 74;  /* green-600 */
+    --brand-primary-light: 74 222 128; /* green-400 */
+    --brand-primary-dark: 21 128 61;   /* green-700 */
+
+    /* ========================================
+       Neutral Colors (Slate Palette)
+       ======================================== */
+    --neutral-50: 248 250 252;   /* slate-50 */
+    --neutral-100: 241 245 249;  /* slate-100 */
+    --neutral-200: 226 232 240;  /* slate-200 */
+    --neutral-300: 203 213 225;  /* slate-300 */
+    --neutral-400: 148 163 184;  /* slate-400 */
+    --neutral-500: 100 116 139;  /* slate-500 */
+    --neutral-600: 71 85 105;    /* slate-600 */
+    --neutral-700: 51 65 85;     /* slate-700 */
+    --neutral-800: 30 41 59;     /* slate-800 */
+    --neutral-900: 15 23 42;     /* slate-900 */
+    --neutral-950: 2 6 23;       /* slate-950 */
+
+    /* ========================================
+       Semantic Colors
+       ======================================== */
+
+    /* Background */
+    --color-bg-primary: var(--neutral-900);    /* Body 배경 */
+    --color-bg-secondary: var(--neutral-800);  /* 카드, 섹션 배경 */
+    --color-bg-tertiary: var(--neutral-700);   /* 입력 필드, 보조 요소 */
+    --color-bg-elevated: var(--neutral-800);   /* 떠있는 요소 (모달, 드롭다운) */
+
+    /* Text */
+    --color-text-primary: var(--neutral-50);   /* 제목, 중요 텍스트 */
+    --color-text-secondary: var(--neutral-200); /* 본문 텍스트 */
+    --color-text-muted: var(--neutral-400);    /* 보조 텍스트, 메타데이터 */
+    --color-text-disabled: var(--neutral-600);  /* 비활성 텍스트 */
+
+    /* Border */
+    --color-border: var(--neutral-700);        /* 기본 테두리 */
+    --color-border-light: var(--neutral-600);  /* 호버, 포커스 테두리 */
+    --color-border-dark: var(--neutral-800);   /* 미묘한 구분선 */
+
+    /* Status Colors */
+    --color-success: var(--brand-primary);     /* 성공, 완료 */
+    --color-warning: 245 158 11;               /* amber-500 - 경고 */
+    --color-error: 239 68 68;                  /* red-500 - 에러 */
+    --color-info: 59 130 246;                  /* blue-500 - 정보 */
+
+    /* ========================================
+       Spacing Scale
+       ======================================== */
+    --space-xs: 0.25rem;   /* 4px - Tight gaps */
+    --space-sm: 0.5rem;    /* 8px - Icon gaps, inline spacing */
+    --space-md: 1rem;      /* 16px - Standard padding */
+    --space-lg: 1.5rem;    /* 24px - Section padding */
+    --space-xl: 2rem;      /* 32px - Large gaps */
+    --space-2xl: 3rem;     /* 48px - Section margins */
+    --space-3xl: 4rem;     /* 64px - Hero padding */
+    --space-4xl: 6rem;     /* 96px - Major section spacing */
+
+    /* ========================================
+       Border Radius
+       ======================================== */
+    --radius-sm: 0.375rem; /* 6px - Small elements */
+    --radius-md: 0.5rem;   /* 8px - Buttons, inputs */
+    --radius-lg: 0.75rem;  /* 12px - Cards */
+    --radius-xl: 1rem;     /* 16px - Large cards */
+    --radius-2xl: 1.5rem;  /* 24px - Hero sections */
+    --radius-full: 9999px; /* Full rounded - Badges, avatars */
+
+    /* ========================================
+       Shadow Depths
+       ======================================== */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+
+    /* Focus Ring Shadow */
+    --shadow-focus-green: 0 0 0 3px rgb(34 197 94 / 0.5);
+    --shadow-focus-slate: 0 0 0 3px rgb(100 116 139 / 0.5);
+
+    /* ========================================
+       Typography Scale
+       ======================================== */
+
+    /* Font Families */
+    --font-primary: 'Noto Sans KR', sans-serif;
+
+    /* Font Sizes */
+    --text-xs: 0.75rem;    /* 12px */
+    --text-sm: 0.875rem;   /* 14px */
+    --text-base: 1rem;     /* 16px */
+    --text-lg: 1.125rem;   /* 18px */
+    --text-xl: 1.25rem;    /* 20px */
+    --text-2xl: 1.5rem;    /* 24px */
+    --text-3xl: 1.875rem;  /* 30px */
+    --text-4xl: 2.25rem;   /* 36px */
+    --text-5xl: 3rem;      /* 48px */
+
+    /* Font Weights */
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-bold: 700;
+
+    /* Line Heights */
+    --leading-tight: 1.25;    /* 제목용 */
+    --leading-snug: 1.375;    /* 짧은 단락 */
+    --leading-normal: 1.5;    /* 본문 기본 */
+    --leading-relaxed: 1.625; /* 긴 글 */
+    --leading-loose: 2;       /* 매우 넓은 행간 */
+
+    /* ========================================
+       Transitions & Animations
+       ======================================== */
+
+    /* Duration */
+    --transition-fast: 150ms;
+    --transition-base: 200ms;
+    --transition-slow: 300ms;
+
+    /* Easing Functions */
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Common Transitions */
+    --transition-colors: color var(--transition-base) var(--ease-in-out),
+                         background-color var(--transition-base) var(--ease-in-out),
+                         border-color var(--transition-base) var(--ease-in-out);
+
+    --transition-transform: transform var(--transition-base) var(--ease-out);
+
+    --transition-opacity: opacity var(--transition-base) var(--ease-in-out);
+
+    --transition-all: all var(--transition-base) var(--ease-in-out);
+
+    /* ========================================
+       Z-Index Scale
+       ======================================== */
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-notification: 1080;
+    --z-max: 9999;
+
+    /* ========================================
+       Breakpoints (for reference)
+       ======================================== */
+    /*
+    --breakpoint-sm: 640px;   (Tailwind sm)
+    --breakpoint-md: 768px;   (Tailwind md)
+    --breakpoint-lg: 1024px;  (Tailwind lg)
+    --breakpoint-xl: 1280px;  (Tailwind xl)
+    --breakpoint-2xl: 1536px; (Tailwind 2xl)
+    */
+  }
+
+  /* ========================================
+     Accessibility: Motion Preferences
+     ======================================== */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* ========================================
+     Print Styles
+     ======================================== */
+  @media print {
+    * {
+      box-shadow: none !important;
+      text-shadow: none !important;
+    }
+  }
+}
+
+/* ========================================
+   Utility Classes (Optional)
+   ======================================== */
+
+/* Focus Visible (for better keyboard navigation) */
+.focus-visible-ring {
+  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.sr-only-focusable:focus,
+.sr-only-focusable:active {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Smooth Scroll (with motion preference respect) */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

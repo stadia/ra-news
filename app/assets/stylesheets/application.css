@@ -8,3 +8,6 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* Design System Tokens */
+@import "./tokens.css";

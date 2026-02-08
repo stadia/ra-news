@@ -323,6 +323,13 @@ GEM
     pg_search (2.3.7)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
+    phlex (2.4.1)
+      refract (~> 1.0)
+      zeitwerk (~> 2.7)
+    phlex-rails (2.4.0)
+      phlex (~> 2.4.0)
+      railties (>= 7.1, < 9)
+      zeitwerk (~> 2.7)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -395,6 +402,9 @@ GEM
       erb
       psych (>= 4.0.0)
       tsort
+    refract (1.1.0)
+      prism
+      zeitwerk
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
@@ -474,6 +484,7 @@ GEM
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
     sexp_processor (4.17.5)
+    sin_lru_redux (2.5.2)
     sitemap_generator (6.3.0)
       builder (~> 3.0)
     snaky_hash (2.0.3)
@@ -535,6 +546,8 @@ GEM
       railties (>= 6.0.0)
     stringio (3.2.0)
     strscan (3.1.7)
+    tailwind_merge (1.3.3)
+      sin_lru_redux (~> 2.5)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
@@ -634,6 +647,7 @@ DEPENDENCIES
   pg (~> 1.6)
   pg_reports (~> 0.4.0)
   pg_search
+  phlex-rails (~> 2.4)
   propshaft
   puma (>= 5.0)
   rails (~> 8.1.0)
@@ -657,6 +671,7 @@ DEPENDENCIES
   sqlite3 (>= 2.1)
   steep
   stimulus-rails
+  tailwind_merge (~> 1.3)
   tailwindcss-rails (~> 4.2)
   thruster
   turbo-rails

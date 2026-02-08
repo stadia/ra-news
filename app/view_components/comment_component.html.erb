@@ -91,11 +91,10 @@
       <% end %>
       <!-- Password verification modal for guest comments -->
       <% if @comment.persisted? && @comment.guest? %>
-        <%= helpers.render partial: "comments/delete_modal",
-                       locals: {
-                         comment: @comment,
+        <%= helpers.render Components::Comments::DeleteModal.new(
                          article: @article,
-                       } %>
+                         comment: @comment,
+                       ) %>
       <% end %>
     </div>
 
