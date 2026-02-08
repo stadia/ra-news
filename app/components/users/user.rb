@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Components::Users::User < Components::Base
+  include Phlex::Rails::Helpers::DOMID
+
   def initialize(user:)
     @user = user
   end
