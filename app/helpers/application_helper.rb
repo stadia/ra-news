@@ -45,33 +45,4 @@ module ApplicationHelper
     options[:"aria-current"] = "page" if current_page?(path)
     link_to(text, path, options)
   end
-
-  def btn_class(variant: nil, size: nil, outline: false, extra_classes: nil)
-    classes = [ "btn" ]
-    classes << "btn-#{variant}" if variant
-    classes << "btn-outline" if outline
-    classes << "btn-#{size}" if size
-    classes << extra_classes if extra_classes.present?
-    classes.join(" ")
-  end
-
-  def btn_link_to(text = nil, path = nil, variant: nil, size: nil, outline: false, **options, &block)
-    if block_given?
-      path = text
-      options[:class] = [ btn_class(variant: variant, size: size, outline: outline), options[:class] ].compact.join(" ")
-      link_to(path, options, &block)
-    else
-      options[:class] = [ btn_class(variant: variant, size: size, outline: outline), options[:class] ].compact.join(" ")
-      link_to(text, path, options)
-    end
-  end
-
-  def input_class(variant: nil, size: nil, bordered: true, extra_classes: nil)
-    classes = [ "input" ]
-    classes << "input-bordered" if bordered
-    classes << "input-#{variant}" if variant
-    classes << "input-#{size}" if size
-    classes << extra_classes if extra_classes.present?
-    classes.join(" ")
-  end
 end
