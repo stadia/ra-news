@@ -68,17 +68,27 @@ app/views/layouts/application.html.erb:
 .transition-all     /* 카드 호버 */
 ```
 
-### 3. 컴포넌트 중복
+### 3. daisyUI 활용 미비
+
+프로젝트에 daisyUI v5가 설치되어 있으나, 일부에서만 `btn` 클래스를 사용하고 나머지는 Tailwind를 직접 사용하여 일관성이 떨어짐.
+
+#### 현재 상태
+- `ApplicationHelper`에 `btn_class`, `btn_link_to` 헬퍼 존재 (daisyUI `btn` 기반)
+- Madmin 뷰에서 `btn btn-primary`, `btn btn-secondary`, `btn btn-danger` 사용
+- 프론트엔드 뷰에서는 Tailwind 직접 사용이 혼재
+
+### 4. 컴포넌트 중복
 
 #### 버튼 스타일 중복
 ```erb
-<!-- 패턴 1 -->
+<!-- 패턴 1: daisyUI (Madmin) -->
+class="btn btn-primary"
+class="btn btn-danger bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700"
+
+<!-- 패턴 2: Tailwind 직접 사용 -->
 class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg ..."
 
-<!-- 패턴 2 -->
-class="px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg ..."
-
-<!-- 패턴 3 -->
+<!-- 패턴 3: 네비게이션 링크 -->
 class="py-3 px-4 text-gray-100 rounded-sm md:p-0 min-h-11 ..."
 ```
 
@@ -306,11 +316,34 @@ focus:ring-offset-slate-900
 
 ---
 
-### Phase 4: 컴포넌트 추출 (Week 3-4)
+### Phase 4: daisyUI 통합 및 컴포넌트 추출 (Week 3-4)
 
-#### 4.1. Button Component
+#### 4.0. daisyUI 클래스 통일
+
+daisyUI `btn` 클래스를 프로젝트 전반에 일관되게 적용합니다.
+
+**목표:**
+- Madmin 뷰의 `btn btn-danger bg-red-600 ...` 같은 중복 스타일 정리 → `btn btn-error`
+- Tailwind 직접 사용 버튼을 daisyUI `btn` 클래스로 마이그레이션
+- `ApplicationHelper`의 `btn_class`, `btn_link_to` 헬퍼를 Phlex 컴포넌트에서도 활용
+
+**Before (Madmin):**
+```erb
+class="btn btn-danger bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700"
+class="btn btn-success bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700"
+```
+
+**After:**
+```erb
+class="btn btn-error"
+class="btn btn-success"
+```
+
+#### 4.1. Button Component (daisyUI 기반)
 
 **파일:** `app/components/ui/button_component.rb`
+
+daisyUI `btn` 클래스를 기반으로 하되, 프로젝트 디자인 시스템과 일관되게 확장합니다.
 
 ```ruby
 # frozen_string_literal: true
@@ -320,12 +353,14 @@ class Ui::ButtonComponent < Components::Base
     variant: :primary,
     size: :md,
     type: :button,
+    outline: false,
     href: nil,
     **attrs
   )
     @variant = variant
     @size = size
     @type = type
+    @outline = outline
     @href = href
     @attrs = attrs
   end
@@ -345,41 +380,28 @@ class Ui::ButtonComponent < Components::Base
   end
 
   def button_classes
-    classes = [
-      "inline-flex items-center justify-center",
-      "font-medium rounded-lg",
-      "transition-colors duration-200",
-      "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900",
-      "cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed",
-    ]
-
-    classes << variant_classes
-    classes << size_classes
-
+    classes = ["btn"]
+    classes << variant_class
+    classes << "btn-outline" if @outline
+    classes << size_class
     classes.join(" ")
   end
 
-  def variant_classes
+  def variant_class
     case @variant
-    when :primary
-      "bg-green-500 hover:bg-green-600 text-white focus:ring-green-500"
-    when :secondary
-      "bg-slate-700 hover:bg-slate-600 text-slate-100 focus:ring-slate-500"
-    when :ghost
-      "bg-transparent hover:bg-slate-800 text-green-400 hover:text-green-300 focus:ring-green-500"
-    when :danger
-      "bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
+    when :primary   then "btn-primary"
+    when :secondary then "btn-secondary"
+    when :ghost     then "btn-ghost"
+    when :danger    then "btn-error"
+    when :success   then "btn-success"
     end
   end
 
-  def size_classes
+  def size_class
     case @size
-    when :sm
-      "px-3 py-1.5 text-sm"
-    when :md
-      "px-4 py-2 text-base"
-    when :lg
-      "px-6 py-3 text-lg"
+    when :sm then "btn-sm"
+    when :md then nil
+    when :lg then "btn-lg"
     end
   end
 end
@@ -387,18 +409,16 @@ end
 
 **사용 예시:**
 ```erb
-<!-- Primary Button -->
+<!-- daisyUI 기반 컴포넌트 -->
 <%= render Ui::ButtonComponent.new(variant: :primary) do %>
   저장하기
 <% end %>
 
-<!-- Link as Button -->
-<%= render Ui::ButtonComponent.new(variant: :secondary, href: articles_path) do %>
-  모든 기사 보기
-<% end %>
+<!-- 헬퍼 메서드 (기존 호환) -->
+<%= btn_link_to "모든 기사 보기", articles_path, variant: :secondary %>
 
-<!-- Small Ghost Button -->
-<%= render Ui::ButtonComponent.new(variant: :ghost, size: :sm) do %>
+<!-- 아웃라인 스타일 -->
+<%= render Ui::ButtonComponent.new(variant: :primary, outline: true, size: :sm) do %>
   취소
 <% end %>
 ```
@@ -728,6 +748,7 @@ git revert <commit-hash>
 2. **컴포넌트 우선순위**
    - Button, Card, Badge 외 추가 필요 컴포넌트
    - 기존 ViewComponent와 신규 Phlex 컴포넌트 혼용 전략
+   - daisyUI 시맨틱 클래스 활용 범위 (btn, alert, modal 등)
 
 3. **배포 일정**
    - 점진적 배포 vs 한 번에 배포

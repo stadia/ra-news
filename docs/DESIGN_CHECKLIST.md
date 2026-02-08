@@ -44,8 +44,18 @@ text-green-300   /* 일관성 없음, green-400 사용 */
 
 ### 버튼
 
+daisyUI `btn` 클래스를 우선 사용하고, 필요 시 Tailwind로 보완합니다.
+
 ```erb
-<!-- ✅ Good -->
+<!-- ✅ Good: daisyUI 클래스 사용 (권장) -->
+<button class="btn btn-primary">클릭</button>
+<button class="btn btn-secondary btn-sm">작은 버튼</button>
+<%= btn_link_to "링크 버튼", path, variant: :primary %>
+
+<!-- ✅ Good: 헬퍼 메서드 사용 -->
+<%= btn_link_to "텍스트", path, variant: :primary, size: :sm %>
+
+<!-- ✅ Acceptable: Tailwind 직접 사용 (daisyUI로 부족할 때) -->
 <button class="
   px-4 py-2
   bg-green-500 hover:bg-green-600
@@ -59,12 +69,19 @@ text-green-300   /* 일관성 없음, green-400 사용 */
 </button>
 
 <!-- ❌ Bad -->
-<button class="bg-green-700 hover:bg-green-600">
-  클릭
-</button>
+<button class="bg-green-700 hover:bg-green-600">클릭</button>
 ```
 
-**필수 클래스:**
+**daisyUI 버튼 변형:**
+| 클래스 | 용도 |
+|-------|------|
+| `btn btn-primary` | Primary CTA |
+| `btn btn-secondary` | Secondary 액션 |
+| `btn btn-danger` | 삭제/위험 액션 |
+| `btn btn-outline` | 아웃라인 스타일 |
+| `btn btn-sm/md/lg` | 크기 조절 |
+
+**Tailwind 직접 사용 시 필수 클래스:**
 - [ ] `cursor-pointer`
 - [ ] `focus:outline-none focus:ring-2 focus:ring-* focus:ring-offset-2 focus:ring-offset-slate-900`
 - [ ] `transition-colors duration-200` (또는 `transition-all`)
@@ -394,11 +411,12 @@ DevTools (F12) > Toggle Device Toolbar (Ctrl+Shift+M)
 ```
 
 ### Q: Tailwind 클래스가 너무 길어집니다.
-**A:** 컴포넌트로 추출하거나, `@apply`를 사용하세요 (단, 가독성이 좋을 때만):
-```css
-.btn-primary {
-  @apply px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg;
-}
+**A:** daisyUI 시맨틱 클래스를 먼저 확인하세요. `btn btn-primary`처럼 짧은 클래스로 대체 가능한 경우가 많습니다. 그래도 부족하면 컴포넌트로 추출하거나 헬퍼(`btn_link_to`)를 사용하세요.
+
+### Q: daisyUI 클래스와 Tailwind 클래스를 같이 써도 되나요?
+**A:** 네. daisyUI 클래스로 기본 스타일을 잡고, Tailwind로 세부 조정하세요:
+```erb
+<button class="btn btn-primary text-lg px-6">큰 버튼</button>
 ```
 
 ### Q: 다크 모드만 지원하나요?

@@ -151,6 +151,49 @@
 
 ---
 
+## daisyUI Component Library
+
+이 프로젝트는 **daisyUI v5** (Tailwind CSS 4 플러그인)를 사용합니다.
+
+### 설정
+
+- **플러그인:** `app/assets/tailwind/daisyui.mjs`
+- **테마:** `app/assets/tailwind/daisyui-theme.mjs`
+- **로드:** `app/assets/tailwind/application.css`에서 `@plugin "./daisyui.mjs"` 로 임포트
+
+### 사용 중인 daisyUI 컴포넌트
+
+| 컴포넌트 | daisyUI 클래스 | 사용 위치 |
+|----------|---------------|----------|
+| Button | `btn`, `btn-primary`, `btn-secondary`, `btn-danger`, `btn-outline`, `btn-sm/md/lg` | 헬퍼, Madmin, 폼 |
+| Alert | `alert`, `alert-danger` | Flash 메시지, Madmin 폼 |
+| Modal | `modal` 관련 커스텀 구현 | 댓글 삭제 확인 |
+
+### 헬퍼 메서드
+
+`ApplicationHelper`에서 daisyUI 버튼 클래스를 편리하게 사용하는 헬퍼 제공:
+
+```ruby
+# btn_class(variant:, size:, outline:, extra_classes:)
+btn_class(variant: :primary, size: :sm)
+# => "btn btn-primary btn-sm"
+
+# btn_link_to - daisyUI 버튼 스타일 링크
+btn_link_to "텍스트", path, variant: :secondary
+```
+
+### 테마 커스텀
+
+daisyUI의 built-in 테마(dark, night, dim 등)를 기반으로 커스텀 테마를 `daisyui-theme.mjs`에서 정의 가능. 현재 프로젝트의 다크 모드 색상과 조합하여 사용.
+
+### daisyUI + Tailwind 병용 규칙
+
+- daisyUI 시맨틱 클래스 우선 사용 (`btn`, `alert` 등)
+- daisyUI에 없는 세부 스타일은 Tailwind 유틸리티로 보완
+- 색상은 디자인 시스템의 slate/green 팔레트 유지
+
+---
+
 ## Style Guidelines
 
 **Style:** Vibrant & Block-based
@@ -163,14 +206,14 @@
 
 ### Page Pattern
 
-**Pattern Name:** Horizontal Scroll Journey
+**Pattern Name:** News Feed with Bento Grid
 
-- **Conversion Strategy:** Immersive product discovery. High engagement. Keep navigation visible.
-28,Bento Grid Showcase,bento,  grid,  features,  modular,  apple-style,  showcase", 1. Hero, 2. Bento Grid (Key Features), 3. Detail Cards, 4. Tech Specs, 5. CTA, Floating Action Button or Bottom of Grid, Card backgrounds: #F5F5F7 or Glass. Icons: Vibrant brand colors. Text: Dark., Hover card scale (1.02), video inside cards, tilt effect, staggered reveal, Scannable value props. High information density without clutter. Mobile stack.
-29,Interactive 3D Configurator,3d,  configurator,  customizer,  interactive,  product", 1. Hero (Configurator), 2. Feature Highlight (synced), 3. Price/Specs, 4. Purchase, Inside Configurator UI + Sticky Bottom Bar, Neutral studio background. Product: Realistic materials. UI: Minimal overlay., Real-time rendering, material swap animation, camera rotate/zoom, light reflection, Increases ownership feeling. 360 view reduces return rates. Direct add-to-cart.
-30,AI-Driven Dynamic Landing,ai,  dynamic,  personalized,  adaptive,  generative", 1. Prompt/Input Hero, 2. Generated Result Preview, 3. How it Works, 4. Value Prop, Input Field (Hero) + 'Try it' Buttons, Adaptive to user input. Dark mode for compute feel. Neon accents., Typing text effects, shimmering generation loaders, morphing layouts, Immediate value demonstration. 'Show, don't tell'. Low friction start.
-- **CTA Placement:** Floating Sticky CTA or End of Horizontal Track
-- **Section Order:** 1. Intro (Vertical), 2. The Journey (Horizontal Track), 3. Detail Reveal, 4. Vertical Footer
+- **Conversion Strategy:** 정보 밀도 높은 뉴스 피드. 스캔하기 쉬운 카드 기반 레이아웃. 빠른 탐색 유도.
+- **CTA Placement:** 기사 카드 내부 + 페이지네이션 하단
+- **Section Order:** 1. Navigation, 2. Hero/Featured Article, 3. Article Grid (Bento), 4. Pagination, 5. Footer
+- **Color Guidance:** 카드 배경 slate-800, 텍스트 slate-50/slate-200, 액센트 green-500
+- **Effects:** 카드 호버 시 border-slate-600 + shadow-xl + translateY(-2px), 부드러운 전환 200ms
+- **UX Notes:** 높은 정보 밀도를 유지하면서 가독성 확보. 모바일에서는 단일 컬럼 스택.
 
 ---
 
