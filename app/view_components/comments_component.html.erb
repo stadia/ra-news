@@ -1,13 +1,7 @@
 <%= helpers.turbo_frame_tag "comments" do %>
-  <% if @comments.any? %>
-    <div class="space-y-4" id="comments_list">
+  <div class="space-y-4" id="comments_list">
+    <% if @comments.any? %>
       <%= render_tree(@comments_tree) %>
-    </div>
-  <% else %>
-    <div class="text-center py-8">
-      <%= helpers.heroicon "chat-bubble-oval-left-ellipsis", variant: :outline, options: { class: "w-12 h-12 text-gray-500 mx-auto mb-4" } %>
-      <h4 class="text-lg font-medium text-gray-400 mb-2">아직 댓글이 없습니다</h4>
-      <p class="text-gray-500">첫 번째 댓글을 작성해보세요!</p>
-    </div>
-  <% end %>
+    <% end %>
+  </div>
 <% end %>
