@@ -1,13 +1,6 @@
 @import "tailwindcss";
 @import "./pagy-tailwind.css";
 
-@source not "./daisyui{,*}.mjs";
-@plugin "./daisyui.mjs";
-/* Optional for custom themes – Docs: https://daisyui.com/docs/themes/#how-to-add-a-new-custom-theme */
-@plugin "./daisyui-theme.mjs" {
-    /* custom theme here */
-}
-
 /* Global Styles */
 body {
     font-family: "Noto Sans KR", sans-serif;

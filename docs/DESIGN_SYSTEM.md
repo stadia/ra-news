@@ -22,7 +22,7 @@
 
 ### 사용 중인 기술
 - **Frontend Framework:** Rails 8 + Hotwire (Turbo/Stimulus)
-- **CSS Framework:** Tailwind CSS 4.2 + daisyUI v5
+- **CSS Framework:** Tailwind CSS 4.2
 - **Component Library:** ViewComponent + Phlex
 - **Icon Library:** Heroicons
 - **Font:** Noto Sans KR (Google Fonts)
@@ -229,46 +229,6 @@ font-family: 'Noto Sans KR', sans-serif;
   2025년 2월 8일
 </span>
 ```
-
----
-
-## daisyUI 컴포넌트
-
-### 개요
-
-프로젝트는 daisyUI v5를 Tailwind CSS 4 플러그인으로 사용합니다.
-
-- **플러그인:** `app/assets/tailwind/daisyui.mjs`
-- **테마:** `app/assets/tailwind/daisyui-theme.mjs`
-- **로드:** `application.css`에서 `@plugin "./daisyui.mjs"`
-
-### 사용 중인 daisyUI 클래스
-
-| 컴포넌트 | 클래스 | 위치 |
-|----------|-------|------|
-| Button | `btn`, `btn-primary`, `btn-secondary`, `btn-danger`, `btn-outline`, `btn-sm/md/lg` | 헬퍼, Madmin, 폼 |
-| Alert | `alert`, `alert-danger` | Flash 메시지, Madmin 폼 검증 |
-| Modal | 커스텀 Stimulus 컨트롤러 기반 | 댓글 삭제 확인 |
-
-### 헬퍼 메서드
-
-`ApplicationHelper`에서 daisyUI 버튼 헬퍼 제공:
-
-```ruby
-# 버튼 클래스 생성
-btn_class(variant: :primary, size: :sm)         # => "btn btn-primary btn-sm"
-btn_class(variant: :secondary, outline: true)   # => "btn btn-secondary btn-outline"
-
-# daisyUI 스타일 링크
-btn_link_to "텍스트", path, variant: :primary
-btn_link_to "텍스트", path, variant: :danger, size: :sm
-```
-
-### daisyUI + Tailwind 병용 규칙
-
-1. **daisyUI 시맨틱 클래스 우선:** `btn`, `alert` 등 daisyUI 클래스가 있으면 먼저 사용
-2. **Tailwind로 보완:** daisyUI에 없는 세부 조정은 Tailwind 유틸리티 추가
-3. **색상 일관성:** daisyUI 테마 변수보다 프로젝트 디자인 시스템의 slate/green 팔레트 우선
 
 ---
 

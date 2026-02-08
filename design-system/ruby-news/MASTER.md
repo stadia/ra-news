@@ -151,49 +151,6 @@
 
 ---
 
-## daisyUI Component Library
-
-이 프로젝트는 **daisyUI v5** (Tailwind CSS 4 플러그인)를 사용합니다.
-
-### 설정
-
-- **플러그인:** `app/assets/tailwind/daisyui.mjs`
-- **테마:** `app/assets/tailwind/daisyui-theme.mjs`
-- **로드:** `app/assets/tailwind/application.css`에서 `@plugin "./daisyui.mjs"` 로 임포트
-
-### 사용 중인 daisyUI 컴포넌트
-
-| 컴포넌트 | daisyUI 클래스 | 사용 위치 |
-|----------|---------------|----------|
-| Button | `btn`, `btn-primary`, `btn-secondary`, `btn-danger`, `btn-outline`, `btn-sm/md/lg` | 헬퍼, Madmin, 폼 |
-| Alert | `alert`, `alert-danger` | Flash 메시지, Madmin 폼 |
-| Modal | `modal` 관련 커스텀 구현 | 댓글 삭제 확인 |
-
-### 헬퍼 메서드
-
-`ApplicationHelper`에서 daisyUI 버튼 클래스를 편리하게 사용하는 헬퍼 제공:
-
-```ruby
-# btn_class(variant:, size:, outline:, extra_classes:)
-btn_class(variant: :primary, size: :sm)
-# => "btn btn-primary btn-sm"
-
-# btn_link_to - daisyUI 버튼 스타일 링크
-btn_link_to "텍스트", path, variant: :secondary
-```
-
-### 테마 커스텀
-
-daisyUI의 built-in 테마(dark, night, dim 등)를 기반으로 커스텀 테마를 `daisyui-theme.mjs`에서 정의 가능. 현재 프로젝트의 다크 모드 색상과 조합하여 사용.
-
-### daisyUI + Tailwind 병용 규칙
-
-- daisyUI 시맨틱 클래스 우선 사용 (`btn`, `alert` 등)
-- daisyUI에 없는 세부 스타일은 Tailwind 유틸리티로 보완
-- 색상은 디자인 시스템의 slate/green 팔레트 유지
-
----
-
 ## Style Guidelines
 
 **Style:** Vibrant & Block-based
