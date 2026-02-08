@@ -115,6 +115,4 @@ gem "ruby_llm-agents", "~> 1.3"
 
 gem "phlex-rails", "~> 2.4"
 
-gem "ruby_ui", "~> 1.0", group: :development, require: false
-
 gem "tailwind_merge", "~> 1.3"
