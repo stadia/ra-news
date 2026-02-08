@@ -25,7 +25,7 @@
         );
         --opacity: 1;
 
-        @apply flex space-x-[var(--spacing)] font-[var(--font-weight)]
+        @apply flex gap-x-[var(--spacing)] font-[var(--font-weight)]
     text-[length:var(--font-size)] text-[var(--text)]
     leading-[var(--line-height)];
 
@@ -64,6 +64,46 @@
                 @apply text-[var(--text)] text-[length:var(--font-size)] leading-[var(--line-height)] rounded-[calc(var(--rounding)/2)]
         font-[var(--font-weight)] bg-[var(--background-input)] border-[length:var(--border-width)] border-[var(--background-current)];
             }
+        }
+
+        @apply flex font-semibold text-sm text-gray-400;
+        justify-content: center;
+        gap: 0.25rem;
+        max-width: 100%;
+        overflow: hidden;
+
+        @media (max-width: 640px) {
+            gap: 0.125rem;
+            font-size: 0.75rem;
+        }
+
+        a:not(.gap) {
+            @apply block rounded-lg bg-gray-700 text-gray-300;
+            padding: 0.25rem 0.5rem;
+            min-width: 2rem;
+            text-align: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 640px) {
+            a:not(.gap) {
+                padding: 0.25rem 0.75rem;
+                min-width: 2.5rem;
+            }
+        }
+
+        a:not(.gap):hover {
+            @apply bg-gray-600 text-gray-200;
+        }
+
+        a:not(.gap):not([href]) {
+            @apply text-gray-500 bg-gray-800 cursor-default;
+        }
+
+        a:not(.gap).current {
+            @apply text-white bg-green-600;
+            font-weight: 600;
         }
     }
 }

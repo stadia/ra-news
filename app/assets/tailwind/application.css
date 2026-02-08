@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./pagy-tailwind.css";
+@import "./tw-animate.css";
 
 /* Global Styles */
 body {
@@ -11,51 +12,6 @@ body input,
 body textarea,
 body select {
     @apply rounded-md transition-all duration-200;
-}
-
-/* Pagy Pagination Styles */
-.pagy {
-    @apply flex font-semibold text-sm text-gray-400;
-    justify-content: center;
-    gap: 0.25rem;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-@media (max-width: 640px) {
-    .pagy {
-        gap: 0.125rem;
-        font-size: 0.75rem;
-    }
-}
-
-.pagy a:not(.gap) {
-    @apply block rounded-lg bg-gray-700 text-gray-300;
-    padding: 0.25rem 0.5rem;
-    min-width: 2rem;
-    text-align: center;
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-
-@media (min-width: 640px) {
-    .pagy a:not(.gap) {
-        padding: 0.25rem 0.75rem;
-        min-width: 2.5rem;
-    }
-}
-
-.pagy a:not(.gap):hover {
-    @apply bg-gray-600 text-gray-200;
-}
-
-.pagy a:not(.gap):not([href]) {
-    @apply text-gray-500 bg-gray-800 cursor-default;
-}
-
-.pagy a:not(.gap).current {
-    @apply text-white bg-green-600;
-    font-weight: 600;
 }
 
 /* Mobile menu toggle accessibility improvements */
