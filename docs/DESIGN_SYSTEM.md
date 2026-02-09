@@ -108,6 +108,10 @@ Bold, Modern, Clean, Professional, Tech-focused, Korean-friendly
   /* Border Colors */
   --color-border: #334155;        /* slate-700 */
   --color-border-light: #475569;  /* slate-600 */
+
+  /* Prose (Typography Plugin) Accent Colors */
+  --color-prose-heading: #4ADE80; /* green-400 - 헤딩 포인트 */
+  --color-prose-strong: #7DD3FC;  /* sky-300 - 강조 텍스트 포인트 */
 }
 ```
 
@@ -170,6 +174,19 @@ text-slate-200
 /* 보조 텍스트 */
 text-slate-400
 ```
+
+#### Prose (마크다운 콘텐츠)
+```html
+<!-- 어두운 배경에서 마크다운 렌더링 시 필수 클래스 -->
+<div class="prose prose-invert prose-lg max-w-none
+            prose-headings:text-green-400
+            prose-strong:text-sky-300">
+  <%= markdown_content %>
+</div>
+```
+- `prose-invert`: 어두운 배경 대응 (밝은 기본 텍스트)
+- `prose-headings:text-green-400`: 헤딩(h1~h6)에 브랜드 포인트 컬러
+- `prose-strong:text-sky-300`: 강조 텍스트에 보조 포인트 컬러
 
 ---
 
