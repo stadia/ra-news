@@ -107,7 +107,7 @@ gem "sqlite3", ">= 2.1"
 gem "heroicon"
 gem "youtube-transcript-rb", "~> 0.2.0"
 gem "dry-operation"
-gem "pg_reports", "~> 0.4.0"
+gem "pg_reports", "~> 0.5.2"
 
 gem "ruby_llm", "~> 1.10"
 gem "ruby_llm-schema"
