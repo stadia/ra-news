@@ -152,11 +152,8 @@ GEM
     faraday-retry (2.4.0)
       faraday (~> 2.0)
     ffi (1.17.3-aarch64-linux-gnu)
-    ffi (1.17.3-aarch64-linux-musl)
     ffi (1.17.3-arm64-darwin)
-    ffi (1.17.3-x86_64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
-    ffi (1.17.3-x86_64-linux-musl)
     fileutils (1.8.0)
     fugit (1.12.1)
       et-orbi (~> 1.4)
@@ -173,12 +170,9 @@ GEM
       ruby_parser (~> 3.10)
     hashie (5.1.0)
       logger
-    herb (0.8.9-aarch64-linux-gnu)
-    herb (0.8.9-aarch64-linux-musl)
-    herb (0.8.9-arm64-darwin)
-    herb (0.8.9-x86_64-darwin)
-    herb (0.8.9-x86_64-linux-gnu)
-    herb (0.8.9-x86_64-linux-musl)
+    herb (0.8.10-aarch64-linux-gnu)
+    herb (0.8.10-arm64-darwin)
+    herb (0.8.10-x86_64-linux-gnu)
     heroicon (1.0.0)
       rails (>= 5.2)
     honeybadger (6.3.0)
@@ -285,15 +279,9 @@ GEM
     nio4r (2.7.5)
     nokogiri (1.19.0-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.19.0-aarch64-linux-musl)
-      racc (~> 1.4)
     nokogiri (1.19.0-arm64-darwin)
       racc (~> 1.4)
-    nokogiri (1.19.0-x86_64-darwin)
-      racc (~> 1.4)
     nokogiri (1.19.0-x86_64-linux-gnu)
-      racc (~> 1.4)
-    nokogiri (1.19.0-x86_64-linux-musl)
       racc (~> 1.4)
     oauth2 (2.0.18)
       faraday (>= 0.17.3, < 4.0)
@@ -312,11 +300,8 @@ GEM
       ast (~> 2.4.1)
       racc
     pg (1.6.3-aarch64-linux)
-    pg (1.6.3-aarch64-linux-musl)
     pg (1.6.3-arm64-darwin)
-    pg (1.6.3-x86_64-darwin)
     pg (1.6.3-x86_64-linux)
-    pg (1.6.3-x86_64-linux-musl)
     pg_reports (0.5.2)
       actionpack (>= 5.0)
       activerecord (>= 5.0)
@@ -510,18 +495,15 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.12929)
-      sorbet-static (= 0.6.12929)
-    sorbet-runtime (0.6.12929)
-    sorbet-static (0.6.12929-aarch64-linux)
-    sorbet-static (0.6.12929-universal-darwin)
-    sorbet-static (0.6.12929-x86_64-linux)
+    sorbet (0.6.12935)
+      sorbet-static (= 0.6.12935)
+    sorbet-runtime (0.6.12935)
+    sorbet-static (0.6.12935-aarch64-linux)
+    sorbet-static (0.6.12935-universal-darwin)
+    sorbet-static (0.6.12935-x86_64-linux)
     sqlite3 (2.9.0-aarch64-linux-gnu)
-    sqlite3 (2.9.0-aarch64-linux-musl)
     sqlite3 (2.9.0-arm64-darwin)
-    sqlite3 (2.9.0-x86_64-darwin)
     sqlite3 (2.9.0-x86_64-linux-gnu)
-    sqlite3 (2.9.0-x86_64-linux-musl)
     sshkit (1.25.0)
       base64
       logger
@@ -556,17 +538,13 @@ GEM
       railties (>= 7.0.0)
       tailwindcss-ruby (~> 4.0)
     tailwindcss-ruby (4.1.18-aarch64-linux-gnu)
-    tailwindcss-ruby (4.1.18-aarch64-linux-musl)
     tailwindcss-ruby (4.1.18-arm64-darwin)
-    tailwindcss-ruby (4.1.18-x86_64-darwin)
     tailwindcss-ruby (4.1.18-x86_64-linux-gnu)
-    tailwindcss-ruby (4.1.18-x86_64-linux-musl)
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
     thor (1.5.0)
     thruster (0.1.18-aarch64-linux)
     thruster (0.1.18-arm64-darwin)
-    thruster (0.1.18-x86_64-darwin)
     thruster (0.1.18-x86_64-linux)
     timeout (0.6.0)
     tsort (0.2.0)
@@ -609,13 +587,9 @@ GEM
 PLATFORMS
   aarch64-linux
   aarch64-linux-gnu
-  aarch64-linux-musl
-  arm64-darwin-24
   arm64-darwin-25
-  x86_64-darwin-22
   x86_64-linux
   x86_64-linux-gnu
-  x86_64-linux-musl
 
 DEPENDENCIES
   acts-as-taggable-on
