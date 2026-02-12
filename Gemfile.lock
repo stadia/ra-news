@@ -302,7 +302,7 @@ GEM
     pg (1.6.3-aarch64-linux)
     pg (1.6.3-arm64-darwin)
     pg (1.6.3-x86_64-linux)
-    pg_reports (0.5.2)
+    pg_reports (0.5.4)
       actionpack (>= 5.0)
       activerecord (>= 5.0)
       activesupport (>= 5.0)
@@ -623,7 +623,7 @@ DEPENDENCIES
   ostruct
   pagy (~> 43.2)
   pg (~> 1.6)
-  pg_reports (~> 0.5.2)
+  pg_reports (~> 0.5.4)
   pg_search
   phlex-rails (~> 2.4)
   propshaft
