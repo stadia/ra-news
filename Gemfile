@@ -100,7 +100,7 @@ gem "discard"
 gem "awesome_nested_set"
 # gem "awesome_nested_set", git: "https://github.com/caonUlisses/awesome_nested_set.git"
 gem "neighbor"
-gem "view_component", "~> 4.2"
+gem "view_component", "~> 4.3"
 gem "oauth2", "~> 2.0"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
