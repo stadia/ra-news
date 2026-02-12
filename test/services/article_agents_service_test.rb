@@ -47,10 +47,10 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
   test "agent status가 success가 아니면 실패로 처리하고 discard한다" do
     article = articles(:ruby_article)
 
-    agent_result = AgentResult.new("success", build_success_content)
+    agent_result = AgentResult.new("failure", build_success_content)
 
     result = nil
-    Articles::OneShotAgent.stub(:call, agent_result) do
+    ArticlePipeline.stub(:call, agent_result) do
       result = ArticleAgentsService.new.call(article)
     end
 
@@ -66,7 +66,7 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     agent_result = AgentResult.new(:success, build_success_content(tags: [ "RubyConf", "Keynote" ]))
 
     result = nil
-    Articles::OneShotAgent.stub(:call, agent_result) do
+    ArticlePipeline.stub(:call, agent_result) do
       result = ArticleAgentsService.new.call(article)
     end
 
@@ -84,7 +84,7 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     agent_result = AgentResult.new(:success, build_success_content(tags: []))
 
     result = nil
-    Articles::OneShotAgent.stub(:call, agent_result) do
+    ArticlePipeline.stub(:call, agent_result) do
       RubyLLM.stub(:embed, ->(*_args) { raise StandardError, "embed error" }) do
         result = ArticleAgentsService.new.call(article)
       end
