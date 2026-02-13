@@ -59,6 +59,11 @@ class Article < ApplicationRecord
     # 단, LLM 요약 전에는 원본 URL에서 최대한 추출하는 것이 좋으므로,
     # 이 부분은 generate_metadata 내에서 처리되도록 합니다.
     self.published_at ||= Time.zone.now
+
+    # 제목에 "Show HN"이 포함되어 있으면 discard 처리
+    if title.present? && title.match?(/Show HN/i)
+      self.deleted_at = Time.zone.now
+    end
   end
 
   before_validation on: :create do

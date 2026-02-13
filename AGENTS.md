@@ -163,8 +163,6 @@ bin/rails test test/models/article_test.rb      # 단일 파일
 bin/rails test:system BROWSER=headless_firefox  # 시스템 테스트
 ```
 
-**중요:** 마이그레이션에 `unless Rails.env.test?` 조건문 금지.
-
 ---
 
 ## CI/CD

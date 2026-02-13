@@ -214,6 +214,57 @@ class ArticleTest < ActiveSupport::TestCase
       "published_at should not be overridden when already set"
   end
 
+  test "제목에 Show HN이 포함되면 생성 시 자동으로 discard되어야 한다" do
+    article = Article.new(
+      title: "Show HN: My Awesome Project",
+      url: "https://example.com/show-hn-test",
+      origin_url: "https://example.com/show-hn-test-origin",
+      user: @user
+    )
+
+    # Mock generate_metadata to avoid external calls
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
+
+    assert article.discarded?, "Article with 'Show HN' in title should be discarded"
+    assert_not_nil article.deleted_at
+  end
+
+  test "제목에 show hn (소문자)이 포함되면 생성 시 자동으로 discard되어야 한다" do
+    article = Article.new(
+      title: "show hn: my project",
+      url: "https://example.com/show-hn-lowercase-test",
+      origin_url: "https://example.com/show-hn-lowercase-test-origin",
+      user: @user
+    )
+
+    # Mock generate_metadata to avoid external calls
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
+
+    assert article.discarded?, "Article with 'show hn' (lowercase) in title should be discarded"
+    assert_not_nil article.deleted_at
+  end
+
+  test "제목에 Show HN이 없으면 discard되지 않아야 한다" do
+    article = Article.new(
+      title: "Regular Article Title",
+      url: "https://example.com/regular-test",
+      origin_url: "https://example.com/regular-test-origin",
+      user: @user
+    )
+
+    # Mock generate_metadata to avoid external calls
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
+
+    assert_not article.discarded?, "Article without 'Show HN' in title should not be discarded"
+    assert_nil article.deleted_at
+  end
+
   test "생성 전에 메타데이터를 생성해야 한다" do
     article = Article.new(
       title: "Test",
