@@ -3,6 +3,7 @@
 class Components::Comments::DeleteModal < Components::Base
   include Phlex::Rails::Helpers::Truncate
   include Phlex::Rails::Helpers::FormWith
+  include PhlexIcons
 
   def initialize(article:, comment:)
     @article = article
@@ -24,9 +25,8 @@ class Components::Comments::DeleteModal < Components::Base
           # Modal header
           div(class: "bg-slate-800 px-4 py-3 sm:px-6 border-b border-slate-700") do
             h3(class: "text-base font-semibold leading-6 text-slate-100", id: "modal-title") do
-              helpers.heroicon("shield-exclamation", variant: :outline,
-                        options: { class: "w-5 h-5 inline mr-2 text-yellow-400" })
-              "댓글 삭제 확인"
+              Hero::ShieldExclamation(variant: :outline, class: "w-5 h-5 inline mr-2 text-yellow-400")
+              plain "댓글 삭제 확인"
             end
           end
           # Modal body

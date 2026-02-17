@@ -36,7 +36,7 @@
               w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mr-3
             "
           >
-            <%= heroicon "user", variant: :mini, options: { class: "w-4 h-4 text-white" } %>
+            <%= phlex_icon "user", variant: :mini, class: "w-4 h-4 text-white" %>
           </div>
           <div>
             <div class="text-xs text-gray-300">작성자</div>
@@ -47,11 +47,7 @@
         </div>
         <!-- 발행일 -->
         <div class="flex items-center">
-          <%= heroicon "calendar",
-          variant: :outline,
-          options: {
-            class: "w-5 h-5 mr-2 text-gray-500",
-          } %>
+          <%= phlex_icon "calendar", variant: :outline, class: "w-5 h-5 mr-2 text-gray-500" %>
           <div>
             <div class="text-xs text-gray-300">발행일</div>
             <div class="font-medium text-gray-200">
@@ -70,11 +66,9 @@
                 w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3 shrink-0
               "
             >
-              <%= heroicon "arrow-top-right-on-square",
+              <%= phlex_icon "arrow-top-right-on-square",
               variant: :outline,
-              options: {
-                class: "w-5 h-5 text-white",
-              } %>
+              class: "w-5 h-5 text-white" %>
             </div>
             <div class="min-w-0 flex-1">
               <div
@@ -89,12 +83,10 @@
               </div>
             </div>
           </div>
-          <%= heroicon "chevron-right",
+          <%= phlex_icon "chevron-right",
           variant: :outline,
-          options: {
-            class:
-              "w-5 h-5 text-gray-400 group-hover:text-gray-300 transition-colors shrink-0 ml-2",
-          } %>
+          class:
+            "w-5 h-5 text-gray-400 group-hover:text-gray-300 transition-colors shrink-0 ml-2" %>
         <% end %>
       </div>
     </header>
@@ -104,7 +96,7 @@
       <section class="mb-8 lg:mb-12">
         <div class="bg-linear-to-r from-green-600 to-green-700 rounded-lg p-6">
           <h2 class="text-xl lg:text-2xl font-bold text-white mb-4 flex items-center">
-            <%= heroicon "check-circle", variant: :outline, options: { class: "w-6 h-6 mr-2" } %>
+            <%= phlex_icon "check-circle", variant: :outline, class: "w-6 h-6 mr-2" %>
             핵심 요약
           </h2>
           <% if @article.summary_key.is_a?(Array) %>
@@ -178,11 +170,7 @@
     >
       <div class="p-4 md:p-6 lg:p-8">
         <h2 class="text-xl lg:text-2xl font-bold text-gray-100 mb-6 flex items-center">
-          <%= heroicon "newspaper",
-          variant: :outline,
-          options: {
-            class: "w-6 h-6 mr-2 text-green-500",
-          } %>
+          <%= phlex_icon "newspaper", variant: :outline, class: "w-6 h-6 mr-2 text-green-500" %>
           관련 글들
         </h2>
 
@@ -212,7 +200,7 @@
                 </p>
                 <div class="flex items-center justify-between text-xs text-gray-300">
                   <span class="flex items-center">
-                    <%= heroicon "calendar", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
+                    <%= phlex_icon "calendar", variant: :outline, class: "w-4 h-4 mr-1" %>
                     <%= article.published_at&.strftime("%m/%d") %>
                   </span>
                   <span class="group-hover:text-green-400 transition-colors duration-200">읽어보기 →</span>

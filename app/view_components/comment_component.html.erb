@@ -33,7 +33,7 @@
               <% end %>
             </div>
             <div class="text-xs text-gray-400 flex items-center">
-              <%= helpers.heroicon "clock", variant: :outline, options: { class: "w-3 h-3 mr-1" } %>
+              <%= helpers.phlex_icon "hero/clock", variant: :outline, class: "w-3 h-3 mr-1" %>
               <%= helpers.time_ago_in_words_korean(@comment.created_at) %>
               전
             </div>
@@ -52,7 +52,7 @@
               transition-colors duration-200 cursor-pointer
             "
           >
-            <%= helpers.heroicon "trash", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
+            <%= helpers.phlex_icon "hero/trash", variant: :outline, class: "w-4 h-4 mr-1" %>
             삭제
           </button>
         <% elsif helpers.authenticated? && @comment.user == Current.user %>
@@ -61,7 +61,7 @@
               data: { turbo_confirm: "정말 삭제하시겠습니까?" },
               form: { data: { turbo_stream: true } },
               class: "inline-flex items-center px-3 py-1 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-900 hover:bg-opacity-20 rounded-md transition-colors duration-200" do %>
-            <%= helpers.heroicon "trash", variant: :outline, options: { class: "w-4 h-4 mr-1" } %>
+            <%= helpers.phlex_icon "hero/trash", variant: :outline, class: "w-4 h-4 mr-1" %>
             삭제
           <% end %>
         <% end %>
@@ -80,11 +80,9 @@
               inline-flex items-center text-gray-400 hover:text-blue-400 transition-colors
             "
           >
-            <%= helpers.heroicon "chat-bubble-left",
-                             variant: :outline,
-                             options: {
-                               class: "w-4 h-4 mr-1",
-                             } %>
+            <%= helpers.phlex_icon "hero/chat-bubble-left",
+                               variant: :outline,
+                               class: "w-4 h-4 mr-1" %>
             답글
           </button>
         </div>

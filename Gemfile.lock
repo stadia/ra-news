@@ -173,8 +173,6 @@ GEM
     herb (0.8.10-aarch64-linux-gnu)
     herb (0.8.10-arm64-darwin)
     herb (0.8.10-x86_64-linux-gnu)
-    heroicon (1.0.0)
-      rails (>= 5.2)
     honeybadger (6.3.1)
       logger
       ostruct
@@ -318,7 +316,8 @@ GEM
     phlex (2.4.1)
       refract (~> 1.0)
       zeitwerk (~> 2.7)
-    phlex-heroicons (1.1.0)
+    phlex-icons (2.56.0)
+      phlex (>= 1.11)
     phlex-rails (2.4.0)
       phlex (~> 2.4.0)
       railties (>= 7.1, < 9)
@@ -611,7 +610,6 @@ DEPENDENCIES
   google-protobuf
   hairtrigger
   herb
-  heroicon
   honeybadger (~> 6.3.0)
   image_processing (~> 1.2)
   importmap-rails
@@ -630,7 +628,7 @@ DEPENDENCIES
   pg (~> 1.6)
   pg_reports (~> 0.5.4)
   pg_search
-  phlex-heroicons (~> 1.1)
+  phlex-icons
   phlex-rails (~> 2.4)
   propshaft
   puma (>= 5.0)

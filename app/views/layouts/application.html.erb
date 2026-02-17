@@ -138,11 +138,9 @@
           aria-label="메뉴 열기/닫기"
         >
           <span class="sr-only">Open main menu</span>
-          <%= heroicon "bars-3",
+          <%= phlex_icon "bars-3",
           variant: :outline,
-          options: {
-            class: "w-5 h-5 transition-transform duration-200 peer-checked:rotate-45",
-          } %>
+          class: "w-5 h-5 transition-transform duration-200 peer-checked:rotate-45" %>
         </label>
         <!-- Navigation Menu -->
         <div
@@ -283,7 +281,7 @@
               rel="noopener noreferrer"
               class="hover:underline hover:text-white flex items-center gap-1"
             >
-              <%= heroicon "rss", variant: :solid, options: { class: "w-5 h-5" } %>
+              <%= phlex_icon "rss", variant: :solid, class: "w-5 h-5" %>
               RSS 피드
             </a>
           </li>

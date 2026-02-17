@@ -26,7 +26,7 @@
       <div class="mb-4">
         <%= link_to article.url, target: "_blank", class: "inline-flex items-center text-base text-blue-400 hover:text-blue-300 hover:underline font-medium" do %>
           <%= article.url %>
-          <%= heroicon "newspaper", variant: :mini, options: { class: "w-4 h-4 ml-1" } %>
+          <%= phlex_icon "newspaper", variant: :mini, class: "w-4 h-4 ml-1" %>
         <% end %>
       </div>
       <div class="text-gray-300 mb-4 text-sm leading-relaxed grow">
@@ -47,27 +47,17 @@
         "
       >
         <span class="inline-flex items-center">
-          <%= heroicon "user",
-          variant: :mini,
-          options: {
-            class: "w-4 h-4 mr-1 text-gray-500",
-          } %>
+          <%= phlex_icon "user", variant: :mini, class: "w-4 h-4 mr-1 text-gray-500" %>
           <%= render(ArticleUserComponent.new(article: article)) %>
         </span>
         <span class="inline-flex items-center">
-          <%= heroicon "chat-bubble-left",
+          <%= phlex_icon "chat-bubble-left",
           variant: :mini,
-          options: {
-            class: "w-4 h-4 mr-1 text-gray-500",
-          } %>
+          class: "w-4 h-4 mr-1 text-gray-500" %>
           <%= article.comments_count %>
         </span>
         <span class="inline-flex items-center">
-          <%= heroicon "calendar",
-          variant: :mini,
-          options: {
-            class: "w-4 h-4 mr-1 text-gray-500",
-          } %>
+          <%= phlex_icon "calendar", variant: :mini, class: "w-4 h-4 mr-1 text-gray-500" %>
           <%= article.published_at&.strftime("%Y년 %m월 %d일") || "N/A" %>
         </span>
       </div>
