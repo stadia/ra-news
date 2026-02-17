@@ -36,6 +36,10 @@ class ArticlesController < ApplicationController
   def show
     @comments = @article.comments.includes(:user)
 
+    @page_title = @article.title_ko
+    @page_description = @article.summary_key.first
+    @page_keywords = @article.tags.map(&:name).join(",")
+
     # Only load similar articles if embedding exists
     @similar_articles = if @article.embedding.present?
       Article.kept.confirmed.where.not(id: @article.id)

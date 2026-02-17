@@ -294,11 +294,12 @@ GEM
       snaky_hash (~> 2.0, >= 2.0.3)
       version_gem (~> 1.1, >= 1.1.9)
     ostruct (0.6.3)
-    pagy (43.2.9)
+    pagy (43.2.10)
       json
+      uri
       yaml
     parallel (1.27.0)
-    parser (3.3.10.1)
+    parser (3.3.10.2)
       ast (~> 2.4.1)
       racc
     pg (1.6.3-aarch64-linux)
@@ -317,6 +318,7 @@ GEM
     phlex (2.4.1)
       refract (~> 1.0)
       zeitwerk (~> 2.7)
+    phlex-heroicons (1.1.0)
     phlex-rails (2.4.0)
       phlex (~> 2.4.0)
       railties (>= 7.1, < 9)
@@ -628,6 +630,7 @@ DEPENDENCIES
   pg (~> 1.6)
   pg_reports (~> 0.5.4)
   pg_search
+  phlex-heroicons (~> 1.1)
   phlex-rails (~> 2.4)
   propshaft
   puma (>= 5.0)

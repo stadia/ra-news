@@ -101,19 +101,19 @@ gem "discard"
 gem "awesome_nested_set"
 # gem "awesome_nested_set", git: "https://github.com/caonUlisses/awesome_nested_set.git"
 gem "neighbor"
-gem "view_component", "~> 4.3"
 gem "oauth2", "~> 2.0"
 # Use sqlite3 as the database for Active Record
 gem "sqlite3", ">= 2.1"
-gem "heroicon"
 gem "youtube-transcript-rb", "~> 0.2.0"
 gem "dry-operation"
 gem "pg_reports", "~> 0.5.4"
 
+gem "view_component", "~> 4.3"
+gem "phlex-rails", "~> 2.4"
+gem "phlex-heroicons", "~> 1.1"
+gem "heroicon"
+gem "tailwind_merge", "~> 1.3"
+
 gem "ruby_llm", "~> 1.10"
 gem "ruby_llm-schema"
 gem "ruby_llm-agents", "~> 3.1"
-
-gem "phlex-rails", "~> 2.4"
-
-gem "tailwind_merge", "~> 1.3"
