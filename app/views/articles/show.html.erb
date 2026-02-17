@@ -41,7 +41,7 @@
           <div>
             <div class="text-xs text-gray-300">작성자</div>
             <div class="font-medium text-gray-200">
-              <%= render(ArticleUserComponent.new(article: @article)) %>
+              <%= render(Components::Articles::ArticleUser.new(article: @article)) %>
             </div>
           </div>
         </div>
