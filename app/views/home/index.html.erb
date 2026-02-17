@@ -14,6 +14,6 @@
   </div>
   <!-- Sidebar - Recent Comments -->
   <div class="w-full lg:w-72 shrink-0 order-last lg:order-0">
-    <%= render(RecentCommentsSidebarComponent.new(recent_comments: @recent_comments)) %>
+    <%= render(Components::RecentCommentsSidebar.new(recent_comments: @recent_comments)) %>
   </div>
 </div>
