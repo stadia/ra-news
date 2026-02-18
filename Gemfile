@@ -71,6 +71,7 @@ group :development do
   gem "web-console"
   gem "sorbet"
   # gem "bullet"
+  gem "ruby_ui", "~> 1.1", require: false
 end
 
 group :test do
@@ -114,3 +115,5 @@ gem "phlex-icons"
 
 gem "ruby_llm", "~> 1.12"
 gem "ruby_llm-schema"
+
+gem "tailwind_merge", "~> 1.3"
