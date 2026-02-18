@@ -37,8 +37,8 @@ class ArticlesController < ApplicationController
     @comments = @article.comments.includes(:user)
 
     @page_title = @article.title_ko
-    @page_description = @article.summary_key.first
-    @page_keywords = @article.tags.map(&:name).join(",")
+    @page_description = @article.summary_key&.first
+    @page_keywords = @article.tags.map(&:name).join(",") unless @article.tags.empty?
 
     # Only load similar articles if embedding exists
     @similar_articles = if @article.embedding.present?
