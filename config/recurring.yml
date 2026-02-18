@@ -19,7 +19,7 @@ production:
     schedule: "30 * * * 1-5"
   article_batch_job:
     class: "ArticleBatchJob"
-    schedule: "0 */1 * * *"
+    schedule: "*/5 * * * *"
   social_post_job:
     class: "SocialPostJob"
     schedule: "30 */1 * * *"

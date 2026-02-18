@@ -1,0 +1,21 @@
+# Generated from app/models/comment.rb with RBS::Inline
+
+class Comment < ApplicationRecord
+  MAX_BODY_LENGTH: ::Integer
+
+  MAX_GUEST_NAME_LENGTH: ::Integer
+
+  def content: () -> untyped
+
+  def author_name: () -> untyped
+
+  def guest?: () -> untyped
+
+  private
+
+  def validate_user_or_guest: () -> untyped
+
+  def validate_parent_comment: () -> untyped
+
+  def validate_guest_password_length: () -> untyped
+end

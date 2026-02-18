@@ -1,6 +1,8 @@
 # Generated from app/services/sitemap_service.rb with RBS::Inline
 
-class SitemapService < ApplicationService
+class SitemapService < OperationService
   # Call this method to generate the sitemap.
   def call: () -> untyped
+
+  def self.call: () -> untyped
 end

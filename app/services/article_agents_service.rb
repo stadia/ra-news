@@ -23,6 +23,9 @@ class ArticleAgentsService < OperationService
 
     article.update(body: body_result.value!)
     Success(article)
+  rescue StandardError => e
+    article.discard!
+    Failure(e.message)
   end
 
   def run_agents(article)

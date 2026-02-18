@@ -1,6 +1,6 @@
 # Generated from app/services/content_service.rb with RBS::Inline
 
-class ContentService < Dry::Operation
+class ContentService < OperationService
   include LinkHelper
 
   def call: (untyped article) -> untyped
@@ -17,6 +17,4 @@ class ContentService < Dry::Operation
   def handle_redirection: (String url, ?Integer? count) -> Faraday::Response
 
   def format_transcript: (untyped actions) -> untyped
-
-  def logger: () -> untyped
 end

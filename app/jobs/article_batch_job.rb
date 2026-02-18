@@ -7,7 +7,7 @@ class ArticleBatchJob < ApplicationJob
 
   #: (?Time created_at) -> void
   def perform(created_at = Time.zone.now.beginning_of_day)
-    Article.kept.where(title_ko: nil, created_at: created_at...).find_each do |article|
+    Article.kept.where(title_ko: nil, created_at: created_at...).limit(5).each do |article|
       begin
         ArticleAgentsService.new.call(article)
       rescue StandardError => e
