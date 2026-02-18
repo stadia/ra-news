@@ -11,8 +11,8 @@ class Components::Articles::ArticleUser < Components::Base
     if @article.user
       plain @article.user.name
     elsif @article.site
-      if @article.site.base_uri.present?
-        link_to(@article.site.name, @article.site.base_uri, target: "_blank")
+      if (uri = safe_url(@article.site.base_uri))
+        link_to(@article.site.name, uri, target: "_blank", rel: "noopener noreferrer")
       else
         plain @article.site.name
       end

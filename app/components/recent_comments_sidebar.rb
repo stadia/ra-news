@@ -30,7 +30,7 @@ class Components::RecentCommentsSidebar < Components::Base
     div(class: "bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-gray-600 transition-colors") do
       div(class: "flex items-center gap-2 mb-2") do
         div(class: "w-6 h-6 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shrink-0") do
-          span(class: "text-white text-xs font-bold") { comment.author_name.first.upcase }
+          span(class: "text-white text-xs font-bold") { comment.author_name&.first&.upcase }
         end
         span(class: "text-sm font-medium text-gray-300 truncate") { comment.author_name }
         if comment.guest?
