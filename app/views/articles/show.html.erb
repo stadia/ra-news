@@ -225,7 +225,7 @@
           text-xl lg:text-2xl font-bold text-gray-100 mb-6 flex items-center
         "
       >
-        <%= render(CommentHeaderComponent.new(comments: @comments)) %>
+        <%= render(Components::Comments::CommentHeader.new(comments: @comments)) %>
       </h3>
       <!-- 댓글 작성 폼 -->
       <div id="comment_form" class="border-t border-gray-700 mb-4">

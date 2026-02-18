@@ -24,7 +24,7 @@
   <% end %>
 
   <%= turbo_stream.update "comments_header" do %>
-    <%= render(CommentHeaderComponent.new(comments: @comments)) %>
+    <%= render(Components::Comments::CommentHeader.new(comments: @comments)) %>
   <% end %>
 
   <%= turbo_stream.update "comment_form" do %>
