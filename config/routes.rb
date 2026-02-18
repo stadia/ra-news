@@ -40,7 +40,6 @@ Rails.application.routes.draw do
 
   constraints AuthenticatedConstraint.new do
     mount MissionControl::Jobs::Engine, at: "/jobs"
-    mount RubyLLM::Agents::Engine => "/agents"
     mount PgReports::Engine, at: "/pg_reports"
   end
 end

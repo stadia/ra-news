@@ -112,6 +112,5 @@ gem "view_component", "~> 4.3"
 gem "phlex-rails", "~> 2.4"
 gem "phlex-icons"
 
-gem "ruby_llm", "~> 1.10"
+gem "ruby_llm", "~> 1.12"
 gem "ruby_llm-schema"
-gem "ruby_llm-agents", "1.3.4"

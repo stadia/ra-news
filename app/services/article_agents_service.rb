@@ -26,20 +26,19 @@ class ArticleAgentsService < OperationService
   end
 
   def run_agents(article)
-    result = Articles::OneShotAgent.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
+    message = ArticleAgent.new.ask(user_prompt(article.body, article.title, article.url, article.is_youtube? ? "youtube" : "html"))
     logger.info "Response received for article id: #{article.id}"
 
-    logger.info "article id: #{article.id} status: #{result.success?}"
-    unless result.success?
+    if message.content.blank?
       article.discard
-      return Failure(result.finish_reason)
+      return Failure(message.finish_reason)
     end
 
     # JSON 데이터 저장
-    article.tag_list.add(result.content.delete(:tags).map { it.downcase }.uniq) if result.content[:tags].present?
+    article.tag_list.add(message.content.delete("tags").map { it.downcase }.uniq) if message.content["tags"].present?
 
-    if result.content[:summary_body].present?
-      result.content[:summary_body] = result.content[:summary_body]
+    if message.content["summary_body"].present?
+      message.content["summary_body"] = message.content["summary_body"]
         .gsub("\\n", "\n")
         .gsub("\\t", "\t")
         .gsub("\\r", "\r")
@@ -47,10 +46,34 @@ class ArticleAgentsService < OperationService
         .gsub('\"', '"')
     end
 
-    article.update!(result.content)
+    article.update!(message.content)
 
-    article.discard if result.content[:is_related] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
+    article.discard if message.content["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
     Success(article)
+  end
+
+  def user_prompt(raw_content, title, url, content_type)
+    if content_type == "youtube"
+      # YouTube URL인 경우
+      logger.info "YoutubeContent url: #{url}"
+      <<~PROMPT
+      Youtube url과 Transcript를 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
+      url: #{url}
+      title: #{title}
+      transcript:
+      #{raw_content}
+      PROMPT
+    else
+      # YouTube URL이 아닌 경우
+      logger.info "HtmlContent url: #{url})"
+      <<~PROMPT
+      url과 본문을 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
+      url: #{url}
+      title: #{title}
+      content:
+      #{raw_content}
+      PROMPT
+    end
   end
 
   def run_embed(article)
