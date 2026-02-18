@@ -181,7 +181,7 @@ class Article < ApplicationRecord
     if parsed_url.respond_to?(:query) && parsed_url.query
       query_params = URI.decode_www_form(parsed_url.query || "").to_h
       query_params.except!("utm_source", "utm_medium", "utm_campaign", "_bhlid", "ref", "utm_content", "utm_term", "ck_subscriber_id") if query_params.is_a?(Hash)
-      query_params.except!("t", "feature") if parsed_url.host&.match?(/youtube/i)
+      query_params.except!("t", "feature", "si") if parsed_url.host&.match?(/youtube/i)
       self.url = query_params.empty? ? "#{parsed_url.scheme}://#{parsed_url.host}#{parsed_url.path}" : "#{parsed_url.scheme}://#{parsed_url.host}#{parsed_url.path}?#{query_params.map { |k, v| "#{k}=#{v}" }.join('&')}"
     end
     self.host = parsed_url.host
