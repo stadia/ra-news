@@ -11,7 +11,7 @@ class SocialPostJob < ApplicationJob
 
     scope = Article.kept
     scope = if id.nil?
-      scope.confirmed.where("is_posted = ?", false).where(created_at: created_at..).limit(50)
+      scope.confirmed.where("is_posted = ?", false).where(created_at: created_at..).limit(5)
     else
       scope.where("id = ? AND is_posted = ?", id, false)
     end
