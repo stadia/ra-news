@@ -458,7 +458,7 @@ GEM
       marcel (~> 1.0)
       ruby_llm-schema (~> 0.2.1)
       zeitwerk (~> 2)
-    ruby_llm-agents (3.1.0)
+    ruby_llm-agents (3.4.0)
       csv
       ostruct
       rails (>= 7.0)
@@ -638,7 +638,7 @@ DEPENDENCIES
   rubocop-rbs_inline
   ruby-readability
   ruby_llm (~> 1.10)
-  ruby_llm-agents (~> 3.1)
+  ruby_llm-agents (~> 3.4)
   ruby_llm-schema
   selenium-webdriver
   sitemap_generator

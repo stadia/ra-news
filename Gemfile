@@ -114,4 +114,4 @@ gem "phlex-icons"
 
 gem "ruby_llm", "~> 1.10"
 gem "ruby_llm-schema"
-gem "ruby_llm-agents", "~> 3.1"
+gem "ruby_llm-agents", "~> 3.4"
