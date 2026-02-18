@@ -8,12 +8,12 @@
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
     >
       <% @articles.each do |article| %>
-        <%= render(ArticleComponent.new(article: article)) %>
+        <%= render(Components::Articles::Article.new(article: article)) %>
       <% end %>
     </div>
   </div>
   <!-- Sidebar - Recent Comments -->
   <div class="w-full lg:w-72 shrink-0 order-last lg:order-0">
-    <%= render(RecentCommentsSidebarComponent.new(recent_comments: @recent_comments)) %>
+    <%= render(Components::RecentCommentsSidebar.new(recent_comments: @recent_comments)) %>
   </div>
 </div>

@@ -48,7 +48,7 @@
       >
         <span class="inline-flex items-center">
           <%= phlex_icon "user", variant: :mini, class: "w-4 h-4 mr-1 text-gray-500" %>
-          <%= render(ArticleUserComponent.new(article: article)) %>
+          <%= render(Components::Articles::ArticleUser.new(article: article)) %>
         </span>
         <span class="inline-flex items-center">
           <%= phlex_icon "calendar", variant: :mini, class: "w-4 h-4 mr-1 text-gray-500" %>
