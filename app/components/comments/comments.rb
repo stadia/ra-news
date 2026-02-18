@@ -1,19 +1,31 @@
 # frozen_string_literal: true
 
-class CommentsComponent < ViewComponent::Base
+class Components::Comments::Comments < Components::Base
+  include Phlex::Rails::Helpers::TurboFrameTag
+
   def initialize(article:, comments:)
     @article = article
     @comments = comments.to_a
     @comments_tree = build_tree(@comments)
   end
 
+  def view_template
+    turbo_frame_tag("comments") do
+      div(class: "space-y-4", id: "comments_list") do
+        if @comments.any?
+          render_tree(@comments_tree)
+        end
+      end
+    end
+  end
+
+  private
+
   def render_tree(tree, depth: 0)
     helpers.safe_join(tree.map do |comment, children|
       render(CommentComponent.new(comment:, article: @article, depth:, children:))
     end)
   end
-
-  private
 
   def build_tree(comments)
     grouped = comments.group_by(&:parent_id)

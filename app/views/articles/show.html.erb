@@ -233,7 +233,9 @@
       </div>
       <!-- 댓글 목록 -->
       <div class="space-y-4 pt-6">
-        <%= render(CommentsComponent.new(article: @article, comments: @comments)) %>
+        <%= render(
+          Components::Comments::Comments.new(article: @article, comments: @comments),
+        ) %>
       </div>
     </div>
   </section>
