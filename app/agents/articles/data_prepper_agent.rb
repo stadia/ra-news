@@ -5,7 +5,6 @@
 module Articles
   class DataPrepperAgent < ApplicationAgent
     description "Raw 콘텐츠를 정제하고 의미 단위로 청킹"
-    version "1.0"
     timeout 240
 
     param :raw_content, required: true

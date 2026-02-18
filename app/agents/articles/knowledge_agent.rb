@@ -5,7 +5,6 @@
 module Articles
   class KnowledgeAgent < ApplicationAgent
     description "메타데이터 추출 및 지식 구조 설계"
-    version "1.0"
     model "gemini-3-flash-preview"
 
     param :cleaned_content, required: true

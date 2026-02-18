@@ -5,7 +5,6 @@
 module Articles
   class TechnicalWriterAgent < ApplicationAgent
     description "지식 설계도 기반 기술 아티클 작성"
-    version "1.0"
     model "gemini-3-flash-preview"
 
     temperature 0.6

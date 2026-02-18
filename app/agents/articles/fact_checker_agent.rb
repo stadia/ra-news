@@ -18,10 +18,9 @@ module Articles
   #
   class FactCheckerAgent < ApplicationAgent
     description "콘텐츠의 Ruby 관련성 판단"
-    version "1.0"
 
     # 기본 모델 설정 상속 (gemini-2.5-flash, temp 0.5)
-    cache 12.hours
+    cache for: 12.hours
 
     param :content, required: true
     param :title, required: true

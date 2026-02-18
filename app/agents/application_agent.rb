@@ -12,8 +12,8 @@ class ApplicationAgent < RubyLLM::Agents::Base
   # ============================================
   # These settings are inherited by all agents
 
-  model "gemini-2.5-flash"   # Default model for all agents
-  temperature 0.0            # Default temperature (0.0 = deterministic)
+  model "gemini-3.0-flash-preview"   # Default model for all agents
+  # temperature 0.0            # Default temperature (0.0 = deterministic)
   timeout 60                 # Default timeout in seconds
 
   # ============================================
@@ -67,7 +67,7 @@ class ApplicationAgent < RubyLLM::Agents::Base
   end
 
   # Example: Common metadata
-  # def execution_metadata
+  # def metadata
   #   { app_version: Rails.application.config.version }
   # end
 

@@ -26,19 +26,13 @@ class ArticleAgentsService < OperationService
   end
 
   def run_agents(article)
-    # result = Articles::OneShotAgent.call(
-    #   raw_content: article.body,
-    #   title: article.title,
-    #   url: article.url,
-    #   content_type: article.is_youtube? ? "youtube" : "html"
-    # )
-    result = ArticlePipeline.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
+    result = Articles::OneShotAgent.call(raw_content: article.body, title: article.title, url: article.url, content_type: article.is_youtube? ? "youtube" : "html")
     logger.info "Response received for article id: #{article.id}"
 
-    logger.info "article id: #{article.id} status: #{result.status}"
-    if result.status.blank? || result.status.to_sym != :success
+    logger.info "article id: #{article.id} status: #{result.success?}"
+    unless result.success?
       article.discard
-      return Failure(:invalid_status)
+      return Failure(result.finish_reason)
     end
 
     # JSON 데이터 저장

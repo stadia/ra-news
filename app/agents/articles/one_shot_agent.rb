@@ -5,7 +5,6 @@
 module Articles
   class OneShotAgent < ApplicationAgent
     description "원샷으로 모든 내용을 요약하고 정리합니다."
-    version "1.0"
     model "gemini-3-flash-preview"
     temperature 0.6
 

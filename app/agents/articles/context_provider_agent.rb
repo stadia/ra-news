@@ -10,7 +10,6 @@ module Articles
 
   class ContextProviderAgent < ApplicationAgent
     description "기사 배경 정보 및 관련 토픽 제공"
-    version "1.0"
 
     # 창의적인 연결과 배경 정보 제공을 위해 높은 temperature
     temperature 0.6

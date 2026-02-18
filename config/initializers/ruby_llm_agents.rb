@@ -6,11 +6,35 @@
 
 RubyLLM::Agents.configure do |config|
   # ============================================
+  # LLM Provider API Keys
+  # ============================================
+  # Configure at least one provider. Set these in your environment
+  # or replace ENV[] calls with your keys directly.
+
+  # config.openai_api_key = ENV["OPENAI_API_KEY"]
+  # config.anthropic_api_key = ENV["ANTHROPIC_API_KEY"]
+  # config.gemini_api_key = ENV["GOOGLE_API_KEY"]
+
+  # Additional providers:
+  # config.deepseek_api_key = ENV["DEEPSEEK_API_KEY"]
+  # config.openrouter_api_key = ENV["OPENROUTER_API_KEY"]
+  # config.mistral_api_key = ENV["MISTRAL_API_KEY"]
+  # config.xai_api_key = ENV["XAI_API_KEY"]
+
+  # Custom endpoints (e.g., Azure OpenAI, local Ollama):
+  # config.openai_api_base = "https://your-resource.openai.azure.com"
+  # config.ollama_api_base = "http://localhost:11434"
+
+  # Connection settings:
+  # config.request_timeout = 120
+  # config.max_retries = 3
+
+  # ============================================
   # Model Defaults
   # ============================================
 
   # Default LLM model for all agents (can be overridden per agent with `model "model-name"`)
-  config.default_model = "gemini-2.5-flash"
+  config.default_model = "gemini-3.0-flash-preview"
 
   # Default temperature (0.0 = deterministic, 2.0 = creative)
   # config.default_temperature = 0.0
@@ -27,7 +51,7 @@ RubyLLM::Agents.configure do |config|
   # ============================================
 
   # Cache store for agent response caching (defaults to Rails.cache)
-  config.cache_store = Rails.cache
+  # config.cache_store = Rails.cache
   # config.cache_store = ActiveSupport::Cache::MemoryStore.new
 
   # ============================================
@@ -113,39 +137,36 @@ RubyLLM::Agents.configure do |config|
   # - global_daily/global_monthly: Limits across all agents
   # - per_agent_daily/per_agent_monthly: Per-agent limits (Hash of agent name => limit)
   # - enforcement: :none (disabled), :soft (warn only), :hard (block requests)
-  config.budgets = {
-    #   global_daily: 25.0,
-    global_monthly: 20.0
-    #   per_agent_daily: {
-    #     "ContentGeneratorAgent" => 10.0,
-    #     "SummaryAgent" => 5.0
-    #   },
-    #   per_agent_monthly: {
-    #     "ContentGeneratorAgent" => 200.0
-    #   },
-    #   enforcement: :soft
-  }
+  # config.budgets = {
+  #   global_daily: 25.0,
+  #   global_monthly: 500.0,
+  #   per_agent_daily: {
+  #     "ContentGeneratorAgent" => 10.0,
+  #     "SummaryAgent" => 5.0
+  #   },
+  #   per_agent_monthly: {
+  #     "ContentGeneratorAgent" => 200.0
+  #   },
+  #   enforcement: :soft
+  # }
 
   # ============================================
   # Governance - Alerts
   # ============================================
 
-  # Alert notifications for important events
-  # - slack_webhook_url: Slack incoming webhook URL
-  # - webhook_url: Generic webhook URL (receives JSON POST)
-  # - on_events: Events to trigger alerts
+  # Alert handler for governance events
+  # Receives (event, payload) when important events occur:
   #   - :budget_soft_cap - Soft budget limit reached
   #   - :budget_hard_cap - Hard budget limit exceeded
   #   - :breaker_open - Circuit breaker opened
   #   - :agent_anomaly - Cost/duration anomaly detected
-  # - custom: Lambda for custom handling
-  # config.alerts = {
-  #   slack_webhook_url: ENV["SLACK_AGENTS_WEBHOOK"],
-  #   webhook_url: ENV["AGENTS_ALERT_WEBHOOK"],
-  #   on_events: [:budget_soft_cap, :budget_hard_cap, :breaker_open],
-  #   custom: ->(event, payload) {
-  #     Rails.logger.info("[AgentAlert] #{event}: #{payload}")
-  #   }
+  # config.on_alert = ->(event, payload) {
+  #   case event
+  #   when :budget_hard_cap
+  #     Slack::Notifier.new(ENV["SLACK_WEBHOOK"]).ping("Budget exceeded: #{payload[:total_cost]}")
+  #   when :breaker_open
+  #     Rails.logger.error("[Alert] Circuit breaker opened for #{payload[:agent_type]}")
+  #   end
   # }
 
   # ============================================
