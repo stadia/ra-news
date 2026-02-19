@@ -173,7 +173,7 @@ GEM
     herb (0.8.10-aarch64-linux-gnu)
     herb (0.8.10-arm64-darwin)
     herb (0.8.10-x86_64-linux-gnu)
-    honeybadger (6.3.1)
+    honeybadger (6.4.0)
       logger
       ostruct
     i18n (1.14.8)
@@ -602,7 +602,7 @@ DEPENDENCIES
   google-protobuf
   hairtrigger
   herb
-  honeybadger (~> 6.3.0)
+  honeybadger (~> 6.4.0)
   image_processing (~> 1.2)
   importmap-rails
   jbuilder
