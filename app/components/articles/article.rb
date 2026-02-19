@@ -37,7 +37,7 @@ class Components::Articles::Article < Components::Base
       if (url = safe_url(@article.url))
         link_to(url, target: "_blank", rel: "noopener noreferrer", class: "inline-flex items-center text-sm text-blue-300 hover:text-blue-200 hover:underline font-medium") do
           plain @article.host
-          Hero::ArrowTopRightOnSquare(variant: :mini, class: "w-4 h-4 ml-1")
+          Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-4 h-4 ml-1")
         end
       else
         span(class: "inline-flex items-center text-sm text-gray-500") do
@@ -67,15 +67,15 @@ class Components::Articles::Article < Components::Base
   def footer_section
     div(class: "mt-auto pt-4 flex flex-wrap justify-between items-center text-sm text-gray-300 border-t border-gray-600 gap-y-2") do
       span(class: "inline-flex items-center") do
-        Hero::User(variant: :mini, class: "w-4 h-4 mr-1 text-gray-500")
+        Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-gray-500")
         render Components::Articles::ArticleUser.new(article: @article)
       end
       span(class: "inline-flex items-center") do
-        Hero::ChatBubbleLeftEllipsis(variant: :mini, class: "w-4 h-4 mr-1 text-gray-500")
+        Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-gray-500")
         plain @article.comments_count.to_s
       end
       span(class: "inline-flex items-center") do
-        Hero::CalendarDays(variant: :mini, class: "w-4 h-4 mr-1 text-gray-500")
+        Hero::CalendarDays(variant: :outline, class: "w-4 h-4 mr-1 text-gray-500")
         plain(@article.published_at&.strftime("%Y년 %m월 %d일") || "N/A")
       end
     end
