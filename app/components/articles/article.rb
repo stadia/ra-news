@@ -12,7 +12,7 @@ class Components::Articles::Article < Components::Base
   def view_template
     div(id: dom_id(@article), class: "bg-gray-800 rounded-xl border border-gray-600 hover:border-gray-500 shadow-lg hover:shadow-xl transition-all duration-300 p-6 flex flex-col") do
       header_section
-      div(class: "mb-4 inline-flex items-center text-sm text-blue-300 hover:text-blue-200 hover:underline font-medium") do
+      div(class: "mb-4 inline-flex items-center text-sm text-blue-300 hover:text-blue-200 font-medium") do
         plain @article.host
       end
       summary_section
