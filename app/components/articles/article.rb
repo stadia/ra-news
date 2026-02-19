@@ -12,7 +12,9 @@ class Components::Articles::Article < Components::Base
   def view_template
     div(id: dom_id(@article), class: "bg-gray-800 rounded-xl border border-gray-600 hover:border-gray-500 shadow-lg hover:shadow-xl transition-all duration-300 p-6 flex flex-col") do
       header_section
-      source_link_section
+      div(class: "mb-4 inline-flex items-center text-sm text-blue-300 hover:text-blue-200 hover:underline font-medium") do
+        plain @article.host
+      end
       summary_section
       footer_section
     end
@@ -28,21 +30,6 @@ class Components::Articles::Article < Components::Base
       end
       if @article.title_ko.present? && @article.title_ko != @article.title
         h3(class: "text-lg font-medium text-gray-200") { @article.title }
-      end
-    end
-  end
-
-  def source_link_section
-    div(class: "mb-4") do
-      if (url = safe_url(@article.url))
-        link_to(url, target: "_blank", rel: "noopener noreferrer", class: "inline-flex items-center text-sm text-blue-300 hover:text-blue-200 hover:underline font-medium") do
-          plain @article.host
-          Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-4 h-4 ml-1")
-        end
-      else
-        span(class: "inline-flex items-center text-sm text-gray-500") do
-          plain @article.host
-        end
       end
     end
   end
