@@ -526,10 +526,6 @@ app/
       card_component.rb
       badge_component.rb
       input_component.rb
-  view_components/
-    navigation/
-      nav_link_component.rb
-      mobile_menu_component.rb
 ```
 
 **예시:** `app/components/ui/button_component.rb`
@@ -743,7 +739,6 @@ export default class extends Controller {
 - [Tailwind UI Components](https://tailwindui.com/)
 
 ### Ruby on Rails
-- [ViewComponent](https://viewcomponent.org/)
 - [Phlex](https://www.phlex.fun/)
 
 ### 디자인 시스템 예시
