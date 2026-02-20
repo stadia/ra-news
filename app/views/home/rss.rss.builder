@@ -1,8 +1,8 @@
 xml.instruct! :xml, version: "1.0"
 xml.rss version: "2.0" do
   xml.channel do
-    xml.title "RA-News - Ruby & Rails News"
-    xml.description "최신 Ruby와 Rails 관련 뉴스 및 기술 아티클을 제공합니다"
+    xml.title "Ruby-News || 루비 AI 뉴스"
+    xml.description "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요"
     xml.link root_url
     xml.language "ko"
     xml.lastBuildDate @articles.first&.created_at&.rfc822 || Time.current.rfc822

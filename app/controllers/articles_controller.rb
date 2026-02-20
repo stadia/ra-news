@@ -55,6 +55,7 @@ class ArticlesController < ApplicationController
   # GET /articles/new
   def new
     @article = Article.new(user: Current.user)
+    render Views::Articles::New.new(article: @article)
   end
 
   # POST /articles
