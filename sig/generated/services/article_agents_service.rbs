@@ -1,10 +1,16 @@
 # Generated from app/services/article_agents_service.rb with RBS::Inline
 
-class ArticleAgentsService < ApplicationService
-  attr_reader article: Article
+class ArticleAgentsService < OperationService
+  # : (Article article) -> Dry::Monads::Result
+  def call: (Article article) -> Dry::Monads::Result
 
-  # : (Article article) -> ArticleAgentsService
-  def initialize: (Article article) -> ArticleAgentsService
+  private
 
-  def call: () -> void
+  def ensure_body: (untyped article) -> untyped
+
+  def run_agents: (untyped article) -> untyped
+
+  def user_prompt: (untyped raw_content, untyped title, untyped url, untyped content_type) -> untyped
+
+  def run_embed: (untyped article) -> untyped
 end

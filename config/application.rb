@@ -27,8 +27,6 @@ module AlNews
     config.i18n.available_locales = %w[en ko]
     config.i18n.default_locale = :ko
 
-    config.view_component.view_component_path = "app/view_components"
-
     config.mission_control.jobs.base_controller_class = "Madmin::ApplicationController"
     config.mission_control.jobs.http_basic_auth_enabled = false
 

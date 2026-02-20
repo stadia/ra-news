@@ -24,6 +24,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <% set_meta_tags canonical: "https://ruby-news.kr#{request.path}" %>
     <%= display_meta_tags site: "Ruby-News || 루비 AI 뉴스" %>
     <!-- Open Graph Meta Tags -->
     <%= display_meta_tags og: {
@@ -281,7 +282,7 @@
               rel="noopener noreferrer"
               class="hover:underline hover:text-white flex items-center gap-1"
             >
-              <%= phlex_icon "rss", variant: :solid, class: "w-5 h-5" %>
+              <%= phlex_icon "rss", variant: :outline, class: "w-5 h-5" %>
               RSS 피드
             </a>
           </li>

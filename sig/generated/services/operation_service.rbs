@@ -1,0 +1,5 @@
+# Generated from app/services/operation_service.rb with RBS::Inline
+
+class OperationService < Dry::Operation
+  def logger: () -> untyped
+end

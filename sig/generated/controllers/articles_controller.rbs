@@ -23,4 +23,6 @@ class ArticlesController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def article_params: () -> untyped
+
+  def existing_article: () -> untyped
 end

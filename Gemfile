@@ -82,7 +82,7 @@ end
 
 gem "sorbet-runtime"
 gem "pagy", "~> 43.2" # omit patch digit
-gem "honeybadger", "~> 6.3.0"
+gem "honeybadger", "~> 6.4.0"
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
 gem "ostruct"
@@ -109,7 +109,6 @@ gem "youtube-transcript-rb", "~> 0.2.0"
 gem "dry-operation"
 gem "pg_reports", "~> 0.5.4"
 
-gem "view_component", "~> 4.3"
 gem "phlex-rails", "~> 2.4"
 gem "phlex-icons"
 

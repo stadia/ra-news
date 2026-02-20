@@ -1,7 +1,7 @@
 # Generated from app/models/preference.rb with RBS::Inline
 
 class Preference < ApplicationRecord
-  PROTECTED_KEYS: ::Array[untyped]
+  PROTECTED_KEYS: ::Array[::String]
 
   # : (String name) -> Hash[String, untyped] || Array[untyped]
   def self.get_value: (String name) -> Hash[String, untyped]

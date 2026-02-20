@@ -55,6 +55,7 @@ class ArticlesController < ApplicationController
   # GET /articles/new
   def new
     @article = Article.new(user: Current.user)
+    render Views::Articles::New.new(article: @article)
   end
 
   # POST /articles
@@ -68,12 +69,14 @@ class ArticlesController < ApplicationController
         format.html { redirect_to article_path(@article), notice: "Article was successfully created." }
       else
         if @article.errors.details[:origin_url].any? { |e| e[:error] == :taken } && @article.errors.details[:url].any? { |e| e[:error] == :taken }
-          existing_article = Article.where(url: @article.url).or(Article.where(origin_url: @article.origin_url)).first
-          format.html { redirect_to article_path(existing_article), notice: "Article already exists." }
+          format.html { redirect_to article_path(existing_article&.slug), notice: "Article already exists." }
         else
           format.html { render :new, status: :unprocessable_entity }
         end
       end
+    rescue ActiveRecord::RecordNotUnique => e
+      logger.error e
+      format.html { redirect_to article_path(existing_article&.slug), notice: "Article already exists." }
     end
   end
 
@@ -93,5 +96,9 @@ class ArticlesController < ApplicationController
     rescue ActionController::ParameterMissing
       # Return empty parameters if article params are missing
       ActionController::Parameters.new({}).permit!
+    end
+
+    def existing_article
+      Article.where(url: @article.url).or(Article.where(origin_url: @article.origin_url)).first
     end
 end

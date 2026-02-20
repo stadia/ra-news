@@ -12,56 +12,7 @@
 <!-- 아티클 목록 -->
 <div id="articlesList" class="space-y-6 lg:space-y-8 max-w-6xl mx-auto">
   <% @articles.each do |article| %>
-    <div
-      id="<%= dom_id article %>"
-      class="
-        bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow
-        overflow-hidden border border-gray-700 p-3 md:p-6 flex flex-col
-      "
-    >
-      <div class="mb-3">
-        <h2 class="text-xl font-semibold text-gray-100 hover:text-green-400"><%= link_to article.title_ko || article.title, article_path(article.slug) %></h2>
-        <h3 class="text-l text-gray-100"><%= article.title %></h3>
-      </div>
-      <div class="mb-4">
-        <%= link_to article.url, target: "_blank", class: "inline-flex items-center text-base text-blue-400 hover:text-blue-300 hover:underline font-medium" do %>
-          <%= article.url %>
-          <%= phlex_icon "newspaper", variant: :mini, class: "w-4 h-4 ml-1" %>
-        <% end %>
-      </div>
-      <div class="text-gray-300 mb-4 text-sm leading-relaxed grow">
-        <% if article.summary_key.is_a?(Array) && article.summary_key.present? %>
-          <ul class="list-disc pl-5 space-y-1">
-            <% article.summary_key.each do |item| %>
-              <li><%= item %></li>
-            <% end %>
-          </ul>
-        <% elsif article.summary_key.is_a?(String) %>
-          <p><%= article.summary_key %></p>
-        <% end %>
-      </div>
-      <div
-        class="
-          mt-auto pt-4 flex flex-wrap justify-between items-center text-xs text-gray-400
-          border-t border-gray-700 gap-y-2
-        "
-      >
-        <span class="inline-flex items-center">
-          <%= phlex_icon "user", variant: :mini, class: "w-4 h-4 mr-1 text-gray-500" %>
-          <%= render(Components::Articles::ArticleUser.new(article: article)) %>
-        </span>
-        <span class="inline-flex items-center">
-          <%= phlex_icon "chat-bubble-left",
-          variant: :mini,
-          class: "w-4 h-4 mr-1 text-gray-500" %>
-          <%= article.comments_count %>
-        </span>
-        <span class="inline-flex items-center">
-          <%= phlex_icon "calendar", variant: :mini, class: "w-4 h-4 mr-1 text-gray-500" %>
-          <%= article.published_at&.strftime("%Y년 %m월 %d일") || "N/A" %>
-        </span>
-      </div>
-    </div>
+    <%= render(Components::Articles::Article.new(article: article)) %>
   <% end %>
   <!-- 페이지네이션 -->
   <% if @pagy.pages > 1 %>
