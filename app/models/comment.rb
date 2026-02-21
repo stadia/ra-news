@@ -22,6 +22,7 @@ class Comment < ApplicationRecord
   validate :validate_user_or_guest
   validate :validate_parent_comment
   validate :validate_guest_password_length
+  after_commit :enqueue_reply_notification, on: :create
 
   def content
     body
@@ -71,5 +72,13 @@ class Comment < ApplicationRecord
     if guest? && guest_password.present? && guest_password.length < 4
       errors.add(:guest_password, "비밀번호는 최소 4자 이상이어야 합니다")
     end
+  end
+
+  def enqueue_reply_notification
+    return unless parent_id.present?
+    return unless parent&.user_id.present?
+    return if parent.user_id == user_id
+
+    ReplyNotificationJob.perform_later(parent.id, id)
   end
 end

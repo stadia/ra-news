@@ -18,4 +18,6 @@ class Comment < ApplicationRecord
   def validate_parent_comment: () -> untyped
 
   def validate_guest_password_length: () -> untyped
+
+  def enqueue_reply_notification: () -> untyped
 end

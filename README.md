@@ -27,6 +27,7 @@ RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집
   - Hotwire(Turbo/Stimulus) 기반 SPA-like 탐색
   - Tailwind CSS 4.2 기반 반응형 UI
   - 중첩 댓글(쓰레드) 시스템
+  - 대댓글(Web Reply) 브라우저 푸시 알림
   - 태그 기반 필터링 및 탐색
 - **관리/운영**
   - Madmin 기반 관리자 대시보드
@@ -113,6 +114,9 @@ RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집
 - **GmailArticleJob**
   - 이메일 뉴스레터(Gmail)에서 링크 추출
   - 관련 기사 생성 및 처리
+- **ReplyNotificationJob**
+  - 내 댓글에 답글이 달리면 Web Push 알림 발송
+  - 만료/무효 구독 정리 및 키 불일치 구독 재등록 유도
 
 > 모든 Job은 Honeybadger 보고 및 재시도 정책을 고려하여 작성되어 있습니다.
 
@@ -203,6 +207,35 @@ CI 파이프라인은 위 명령들을 기준으로 구성되어 있습니다.
   - 로컬 개발에서는 `.env`를 사용해 DB, 메일, 외부 서비스 설정
 - 메일/Gmail/YouTube/HN
   - 각 클라이언트 별로 필요한 API 키/토큰/계정 정보를 환경 변수로 설정
+
+### 대댓글 푸시 알림(Web Push) 설정
+
+대댓글 푸시 알림 기능을 사용하려면 아래 환경 변수가 반드시 필요합니다.
+
+```bash
+WEB_PUSH_VAPID_PUBLIC_KEY=...
+WEB_PUSH_VAPID_PRIVATE_KEY=...
+WEB_PUSH_VAPID_SUBJECT=mailto:admin@example.com
+
+# 선택: VAPID JWT 만료(초). 기본 600초, 최대 43200초(12시간)
+WEB_PUSH_VAPID_EXPIRATION_SECONDS=600
+```
+
+- `WEB_PUSH_VAPID_PUBLIC_KEY`: 브라우저 구독 시 사용되는 공개 키
+- `WEB_PUSH_VAPID_PRIVATE_KEY`: 서버 발송 서명용 개인 키 (절대 외부 노출 금지)
+- `WEB_PUSH_VAPID_SUBJECT`: `mailto:` 또는 `https:` 형식의 연락처/주체 정보
+
+VAPID 키 생성은 Rails console에서 수행할 수 있습니다.
+
+```ruby
+vapid_key = WebPush.generate_key
+vapid_key.public_key
+vapid_key.private_key
+```
+
+키를 교체하면 기존 브라우저 구독은 무효화될 수 있습니다.
+- 사용자가 사이트를 다시 방문하면 클라이언트가 자동 재구독을 시도합니다.
+- `VAPID public key mismatch` 오류가 발생한 기존 구독은 서버에서 정리됩니다.
 
 ---
 

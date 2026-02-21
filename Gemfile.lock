@@ -291,6 +291,7 @@ GEM
       rack (>= 1.2, < 4)
       snaky_hash (~> 2.0, >= 2.0.3)
       version_gem (~> 1.1, >= 1.1.9)
+    openssl (4.0.1)
     ostruct (0.6.3)
     pagy (43.2.10)
       json
@@ -559,6 +560,9 @@ GEM
       activemodel (>= 6.0.0)
       bindex (>= 0.4.0)
       railties (>= 6.0.0)
+    web-push (3.1.0)
+      jwt (~> 3.0)
+      openssl (>= 3.0)
     websocket (1.2.11)
     websocket-driver (0.8.0)
       base64
@@ -645,6 +649,7 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+  web-push (~> 3.1)
   youtube-transcript-rb (~> 0.2.0)
   yt
 
