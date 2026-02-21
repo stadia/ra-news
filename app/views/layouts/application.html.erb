@@ -197,16 +197,6 @@
       </div>
     </nav>
     <main id="main-content" class="container mx-auto px-4 py-8 grow">
-      <% if authenticated? && WebPushConfig.configured? %>
-        <div
-          class="hidden"
-          data-controller="push-notifications"
-          data-push-notifications-public-key-value="<%= WebPushConfig.public_key %>"
-          data-push-notifications-subscription-url-value="<%= push_subscription_path %>"
-          data-push-notifications-service-worker-path-value="<%= pwa_service_worker_path(format: :js) %>"
-        ></div>
-      <% end %>
-
       <%= yield %>
     </main>
     <footer
