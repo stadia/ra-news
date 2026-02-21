@@ -203,12 +203,11 @@
           data-push-notifications-public-key-value="<%= WebPushConfig.public_key %>"
           data-push-notifications-subscription-url-value="<%= push_subscription_path %>"
           data-push-notifications-service-worker-path-value="<%= pwa_service_worker_path(format: :js) %>"
-          data-push-notifications-cooldown-hours-value="24"
+          data-push-notifications-cooldown-hours-value="1"
         >
           <%= render Components::PushNotifications::PromptModal.new %>
         </div>
       <% end %>
-
       <%= yield %>
     </main>
     <footer
