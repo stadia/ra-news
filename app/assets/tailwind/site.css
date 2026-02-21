@@ -1,0 +1,25 @@
+/* Global Styles */
+body {
+    font-family: "Noto Sans KR", sans-serif;
+    scroll-behavior: smooth;
+}
+
+body input,
+body textarea,
+body select {
+    @apply rounded-md transition-all duration-200;
+}
+
+/* Mobile menu toggle accessibility improvements */
+.mobile-menu-toggle {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.mobile-menu-toggle:focus + label {
+    outline: 2px solid theme("colors.green.500");
+    outline-offset: 2px;
+}
