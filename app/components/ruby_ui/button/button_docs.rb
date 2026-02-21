@@ -106,7 +106,7 @@ class Views::Docs::Button < Views::Base
         RUBY
       end
 
-      render Docs::VisualCodeExample.new(title: "Loading state", context: self) do
+      render Docs::VisualCodeExample.new(title: "With Icon", context: self) do
         <<~RUBY
           Button(variant: :primary, disabled: true) do
             svg(

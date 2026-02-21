@@ -25,9 +25,19 @@ module RubyUI
 
     def size_classes
       if @icon
-        { sm: "h-6 w-6", md: "h-9 w-9", lg: "h-10 w-10", xl: "h-12 w-12" }[@size]
+        case @size
+        when :sm then "h-6 w-6"
+        when :md then "h-9 w-9"
+        when :lg then "h-10 w-10"
+        when :xl then "h-12 w-12"
+        end
       else
-        { sm: "px-3 py-1.5 h-8 text-xs", md: "px-4 py-2 h-9 text-sm", lg: "px-4 py-2 h-10 text-base", xl: "px-6 py-3 h-12 text-base" }[@size]
+        case @size
+        when :sm then "px-3 py-1.5 h-8 text-xs"
+        when :md then "px-4 py-2 h-9 text-sm"
+        when :lg then "px-4 py-2 h-10 text-base"
+        when :xl then "px-6 py-3 h-12 text-base"
+        end
       end
     end
 
@@ -62,18 +72,9 @@ module RubyUI
       [
         BASE_CLASSES,
         size_classes,
-        "bg-destructive text-destructive-foreground shadow-sm",
+        "bg-destructive text-white shadow-sm",
         "[a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20",
         "dark:focus-visible:ring-destructive/40 dark:bg-destructive/60"
-      ]
-    end
-
-    def success_classes
-      [
-        BASE_CLASSES,
-        size_classes,
-        "bg-green-500 text-white shadow",
-        "hover:bg-green-600 focus-visible:ring-green-500/20"
       ]
     end
 
@@ -100,7 +101,6 @@ module RubyUI
       when :link then link_classes
       when :secondary then secondary_classes
       when :destructive then destructive_classes
-      when :success then success_classes
       when :outline then outline_classes
       when :ghost then ghost_classes
       end
