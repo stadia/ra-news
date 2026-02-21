@@ -1,0 +1,4 @@
+# Generated from app/models/push_subscription.rb with RBS::Inline
+
+class PushSubscription < ApplicationRecord
+end

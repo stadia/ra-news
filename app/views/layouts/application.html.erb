@@ -16,7 +16,6 @@
             y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
         })(window, document, "clarity", "script", "u4rt68vefo");
     </script>
-
     <meta
       name="viewport"
       content="width=device-width,initial-scale=1,viewport-fit=cover"
@@ -25,17 +24,14 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <% set_meta_tags canonical: "https://ruby-news.kr#{request.path}" %>
-    <%= display_meta_tags site: "Ruby-News || 루비 AI 뉴스" %>
-    <!-- Open Graph Meta Tags -->
     <%= display_meta_tags og: {
       title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
       description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
       site_name: "Ruby-News || 루비 AI 뉴스",
       image: image_url("og_main.png"),
       type: "website",
-    } %>
-    <!-- Twitter Card Meta Tags -->
-    <%= display_meta_tags twitter: {
+    },
+    twitter: {
       title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
       description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
       site_name: "Ruby-News || 루비 AI 뉴스",
@@ -43,15 +39,11 @@
       type: "website",
     } %>
     <meta name="fediverse:creator" content="@news_kr@ruby.social">
-
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-
     <%= yield :head %>
-
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
@@ -67,12 +59,10 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
     >
-
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-
   <body
     class="bg-slate-900 text-slate-200 min-h-screen flex flex-col"
     data-controller="page-loader"
@@ -209,11 +199,20 @@
         </div>
       </div>
     </nav>
-
     <main id="main-content" class="container mx-auto px-4 py-8 grow">
+      <% if authenticated? && WebPushConfig.configured? %>
+        <div
+          data-controller="push-notifications"
+          data-push-notifications-public-key-value="<%= WebPushConfig.public_key %>"
+          data-push-notifications-subscription-url-value="<%= push_subscription_path %>"
+          data-push-notifications-service-worker-path-value="<%= pwa_service_worker_path(format: :js) %>"
+          data-push-notifications-cooldown-hours-value="1"
+        >
+          <%= render Components::PushNotifications::PromptModal.new %>
+        </div>
+      <% end %>
       <%= yield %>
     </main>
-
     <footer
       class="
         bg-slate-800 text-slate-200 rounded-lg shadow-sm m-4 border border-slate-700

@@ -1,0 +1,14 @@
+# Generated from app/jobs/reply_notification_job.rb with RBS::Inline
+
+class ReplyNotificationJob < ApplicationJob
+  # : (Integer parent_comment_id, Integer reply_comment_id) -> void
+  def perform: (Integer parent_comment_id, Integer reply_comment_id) -> void
+
+  private
+
+  def notify_reply: (parent_comment: untyped, reply_comment: untyped) -> untyped
+
+  def build_body: (untyped reply_comment) -> untyped
+
+  def notification_path: (untyped parent_comment) -> untyped
+end
