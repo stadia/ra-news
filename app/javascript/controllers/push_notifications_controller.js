@@ -1,29 +1,57 @@
 import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
+  static targets = ["modal"]
+
   static values = {
     publicKey: String,
     subscriptionUrl: String,
     serviceWorkerPath: String,
+    cooldownHours: Number,
   }
 
   async connect() {
     if (!this.supported) return
 
-    const registration = await navigator.serviceWorker.register(this.serviceWorkerPathValue)
+    this.registration = await navigator.serviceWorker.register(this.serviceWorkerPathValue)
 
     if (Notification.permission === "denied") {
-      await this.removeSubscription(registration)
+      await this.removeSubscription(this.registration)
       return
     }
+
+    const subscription = await this.registration.pushManager.getSubscription()
+    if (subscription) {
+      await this.saveSubscription(subscription)
+      this.hidePrompt()
+      return
+    }
+
+    if (!this.shouldPrompt()) return
+    this.showPrompt()
+  }
+
+  async enable(event) {
+    event.preventDefault()
 
     const permission = Notification.permission === "granted"
       ? "granted"
       : await Notification.requestPermission()
-    if (permission !== "granted") return
+    if (permission !== "granted") {
+      this.dismiss()
+      return
+    }
 
-    const subscription = await this.ensureSubscription(registration)
-
+    const subscription = await this.ensureSubscription(this.registration)
     await this.saveSubscription(subscription)
+    this.hidePrompt()
+    this.clearDismissedAt()
+  }
+
+  dismiss(event) {
+    if (event) event.preventDefault()
+
+    this.rememberDismissedAt()
+    this.hidePrompt()
   }
 
   get supported() {
@@ -74,6 +102,50 @@ export default class extends Controller {
 
       return registration.pushManager.subscribe(options)
     }
+  }
+
+  shouldPrompt() {
+    const dismissedAt = this.dismissedAt
+    if (!dismissedAt) return true
+
+    const elapsedMs = Date.now() - dismissedAt
+    const cooldownMs = this.cooldownHours * 60 * 60 * 1000
+
+    return elapsedMs > cooldownMs
+  }
+
+  showPrompt() {
+    if (!this.hasModalTarget) return
+    this.modalTarget.classList.remove("hidden")
+  }
+
+  hidePrompt() {
+    if (!this.hasModalTarget) return
+    this.modalTarget.classList.add("hidden")
+  }
+
+  rememberDismissedAt() {
+    localStorage.setItem(this.dismissedAtKey, String(Date.now()))
+  }
+
+  clearDismissedAt() {
+    localStorage.removeItem(this.dismissedAtKey)
+  }
+
+  get dismissedAt() {
+    const raw = localStorage.getItem(this.dismissedAtKey)
+    if (!raw) return null
+
+    const value = Number(raw)
+    return Number.isFinite(value) ? value : null
+  }
+
+  get dismissedAtKey() {
+    return "push_notifications_dismissed_at"
+  }
+
+  get cooldownHours() {
+    return this.hasCooldownHoursValue ? this.cooldownHoursValue : 24
   }
 
   encodeKey(subscription, keyName) {
