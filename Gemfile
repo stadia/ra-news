@@ -66,12 +66,13 @@ group :development, :test do
   gem "minitest-mock"
 end
 
+gem "ruby_ui", "~> 1.1"
+
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
   gem "sorbet"
   # gem "bullet"
-  gem "ruby_ui", "~> 1.1", require: false
 end
 
 group :test do
