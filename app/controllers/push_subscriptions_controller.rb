@@ -27,6 +27,6 @@ class PushSubscriptionsController < ApplicationController
   private
 
   def subscription_params
-    params.require(:push_subscription).permit(:endpoint, :p256dh, :auth, :expiration_time)
+    params.expect(push_subscription: [ :endpoint, :p256dh, :auth, :expiration_time ])
   end
 end
