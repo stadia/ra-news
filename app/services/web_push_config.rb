@@ -2,7 +2,7 @@
 
 class WebPushConfig
   DEFAULT_EXPIRATION_SECONDS = 600
-  MAX_EXPIRATION_SECONDS = 43_200
+  MAX_EXPIRATION_SECONDS = 3_600
 
   class << self
     def public_key
