@@ -113,3 +113,5 @@ gem "phlex-icons"
 
 gem "ruby_llm", "~> 1.12"
 gem "ruby_llm-schema"
+
+gem "web-push", "~> 3.1"

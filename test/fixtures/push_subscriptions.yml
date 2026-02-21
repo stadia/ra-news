@@ -1,0 +1,13 @@
+john_browser:
+  user: john
+  endpoint: "https://fcm.googleapis.com/fcm/send/subscription-1"
+  p256dh: "BEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eEl6eA"
+  auth: "dGVzdGF1dGhLZXk"
+  expiration_time:
+
+jane_browser:
+  user: jane
+  endpoint: "https://updates.push.services.mozilla.com/wpush/v2/subscription-2"
+  p256dh: "BFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eFl5eQ"
+  auth: "amFuZUF1dGhLZXk"
+  expiration_time:

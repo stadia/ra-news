@@ -3,6 +3,8 @@
 require "test_helper"
 
 class CommentTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   # Test fixtures setup
   def setup
     @root_comment = comments(:root_comment_1)
@@ -730,6 +732,28 @@ class CommentTest < ActiveSupport::TestCase
     assert_respond_to guest_comment, :parent
     assert_respond_to guest_comment, :children
     assert_respond_to guest_comment, :depth
+  end
+
+  test "답글 생성 시 알림 잡을 큐에 넣는다" do
+    assert_enqueued_with(job: ReplyNotificationJob) do
+      Comment.create!(
+        body: "알림 잡 테스트",
+        article: @article,
+        user: users(:jane),
+        parent_id: comments(:root_comment_1).id
+      )
+    end
+  end
+
+  test "내 댓글에 내가 답글을 달면 알림 잡을 큐에 넣지 않는다" do
+    assert_no_enqueued_jobs(only: ReplyNotificationJob) do
+      Comment.create!(
+        body: "셀프 답글",
+        article: @article,
+        user: users(:john),
+        parent_id: comments(:root_comment_1).id
+      )
+    end
   end
 
   private
