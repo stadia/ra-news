@@ -33,5 +33,5 @@ class Components::Articles::Form < Components::Base
          form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-green-500 hover:bg-green-600 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900"
        end
      end
-   end
+  end
 end
