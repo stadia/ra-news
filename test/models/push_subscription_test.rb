@@ -10,12 +10,24 @@ class PushSubscriptionTest < ActiveSupport::TestCase
   test "유효한 속성이면 저장된다" do
     subscription = PushSubscription.new(
       user: @user,
-      endpoint: "https://example.com/subscription/123",
+      endpoint: "https://fcm.googleapis.com/fcm/send/new-subscription-123",
       p256dh: "test_p256dh",
       auth: "test_auth"
     )
 
     assert_predicate subscription, :valid?
+  end
+
+  test "신뢰할 수 없는 endpoint는 유효하지 않다" do
+    subscription = PushSubscription.new(
+      user: @user,
+      endpoint: "https://malicious.example.com/subscription",
+      p256dh: "test_p256dh",
+      auth: "test_auth"
+    )
+
+    assert_not subscription.valid?
+    assert_includes subscription.errors[:endpoint], "is not a valid push service endpoint"
   end
 
   test "endpoint가 없으면 유효하지 않다" do

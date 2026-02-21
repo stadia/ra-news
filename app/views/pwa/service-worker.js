@@ -22,6 +22,9 @@ self.addEventListener("notificationclick", (event) => {
         const clientPath = (new URL(client.url)).pathname
 
         if (clientPath === targetPath && "focus" in client) {
+          if (client.url !== new URL(path, self.location.origin).href) {
+            await client.navigate(path)
+          }
           return client.focus()
         }
       }

@@ -152,7 +152,7 @@ export default class extends Controller {
     const key = subscription.getKey(keyName)
     if (!key) return ""
 
-    return btoa(String.fromCharCode(...new Uint8Array(key)))
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(key)))
   }
 
   get headers() {

@@ -2,6 +2,8 @@
 
 class PushSubscriptionsController < ApplicationController
   def create
+    return head :unauthorized if Current.user.nil?
+
     subscription = Current.user.push_subscriptions.find_or_initialize_by(endpoint: subscription_params[:endpoint])
     subscription.assign_attributes(subscription_params.except(:endpoint))
 
@@ -13,6 +15,8 @@ class PushSubscriptionsController < ApplicationController
   end
 
   def destroy
+    return head :unauthorized if Current.user.nil?
+
     endpoint = params[:endpoint].presence || params.dig(:push_subscription, :endpoint)
     return head :bad_request if endpoint.blank?
 
@@ -23,6 +27,6 @@ class PushSubscriptionsController < ApplicationController
   private
 
   def subscription_params
-    params.expect(push_subscription: [ :endpoint, :p256dh, :auth, :expiration_time ])
+    params.require(:push_subscription).permit(:endpoint, :p256dh, :auth, :expiration_time)
   end
 end
