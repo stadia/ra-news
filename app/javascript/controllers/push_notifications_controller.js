@@ -16,17 +16,12 @@ export default class extends Controller {
       return
     }
 
-    let subscription = await registration.pushManager.getSubscription()
+    const permission = Notification.permission === "granted"
+      ? "granted"
+      : await Notification.requestPermission()
+    if (permission !== "granted") return
 
-    if (!subscription) {
-      const permission = await Notification.requestPermission()
-      if (permission !== "granted") return
-
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.publicKeyValue),
-      })
-    }
+    const subscription = await this.ensureSubscription(registration)
 
     await this.saveSubscription(subscription)
   }
@@ -61,6 +56,24 @@ export default class extends Controller {
     })
 
     await subscription.unsubscribe()
+  }
+
+  async ensureSubscription(registration) {
+    const options = {
+      userVisibleOnly: true,
+      applicationServerKey: this.urlBase64ToUint8Array(this.publicKeyValue),
+    }
+
+    try {
+      return await registration.pushManager.subscribe(options)
+    } catch (error) {
+      if (error.name !== "InvalidStateError") throw error
+
+      const current = await registration.pushManager.getSubscription()
+      if (current) await current.unsubscribe()
+
+      return registration.pushManager.subscribe(options)
+    }
   }
 
   encodeKey(subscription, keyName) {

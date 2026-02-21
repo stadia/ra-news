@@ -17,6 +17,10 @@ class PushNotificationServiceTest < ActiveSupport::TestCase
       assert_equal @subscription.endpoint, kwargs[:endpoint]
       assert_equal @subscription.p256dh, kwargs[:p256dh]
       assert_equal @subscription.auth, kwargs[:auth]
+      expiration = kwargs.dig(:vapid, :expiration)
+
+      assert_equal WebPushConfig.expiration_seconds, expiration
+      assert_operator expiration, :<=, WebPushConfig::MAX_EXPIRATION_SECONDS
     end
 
     WebPushConfig.stub(:configured?, true) do
@@ -48,6 +52,25 @@ class PushNotificationServiceTest < ActiveSupport::TestCase
   test "410 응답이면 구독을 삭제한다" do
     response = Struct.new(:code, :body).new("410", "expired")
     error = WebPush::ResponseError.new(response, "example.com")
+
+    WebPushConfig.stub(:configured?, true) do
+      WebPushConfig.stub(:subject, "mailto:admin@example.com") do
+        WebPushConfig.stub(:public_key, "public") do
+          WebPushConfig.stub(:private_key, "private") do
+            WebPush.stub(:payload_send, ->(**_kwargs) { raise error }) do
+              @service.notify_user(user: @user, title: "title", body: "body", path: "/articles/test")
+            end
+          end
+        end
+      end
+    end
+
+    assert_not PushSubscription.exists?(@subscription.id)
+  end
+
+  test "VAPID public key mismatch 401이면 구독을 삭제한다" do
+    response = Struct.new(:code, :body).new("401", "{\"message\":\"VAPID public key mismatch\"}")
+    error = WebPush::Unauthorized.new(response, "updates.push.services.mozilla.com")
 
     WebPushConfig.stub(:configured?, true) do
       WebPushConfig.stub(:subject, "mailto:admin@example.com") do

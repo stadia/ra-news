@@ -20,15 +20,18 @@ class ReplyNotificationJobTest < ActiveSupport::TestCase
     captured = {}
     expected_user = users(:john)
     fake_service = Object.new
-    fake_service.define_singleton_method(:notify_user) do |user:, title:, body:, path:|
+    success_result = Struct.new(:success?, :failure).new(true, nil)
+    fake_service.define_singleton_method(:call) do |**kwargs|
       called = true
-      captured[:user] = user
-      captured[:title] = title
-      captured[:body] = body
-      captured[:path] = path
+      captured[:user] = kwargs[:user]
+      captured[:title] = kwargs[:title]
+      captured[:body] = kwargs[:body]
+      captured[:path] = kwargs[:path]
+
+      success_result
     end
 
-    PushNotificationService.stub(:new, fake_service) do
+    PushNotificationService.stub(:new, -> { fake_service }) do
       ReplyNotificationJob.perform_now(@parent_comment.id, reply_comment.id)
     end
 
@@ -49,12 +52,12 @@ class ReplyNotificationJobTest < ActiveSupport::TestCase
     )
 
     fake_service = Object.new
-    fake_service.define_singleton_method(:notify_user) do |**_args|
+    fake_service.define_singleton_method(:call) do |**_args|
       raise "should not be called"
     end
 
     assert_nothing_raised do
-      PushNotificationService.stub(:new, fake_service) do
+      PushNotificationService.stub(:new, -> { fake_service }) do
         ReplyNotificationJob.perform_now(@parent_comment.id, reply_comment.id)
       end
     end
