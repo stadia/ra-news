@@ -108,8 +108,13 @@ class Components::Comments::CommentForm < Components::Base
         Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1")
         plain "정중하고 건설적인 댓글을 작성해 주세요."
       end
-      f.submit "댓글 작성",
-        class: "inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+      render RubyUI::Button.new(
+        type: "submit",
+        variant: :primary,
+        size: :xl,
+        class:
+          "inline-flex items-center bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800",
+      ) { "댓글 작성" }
     end
   end
 end

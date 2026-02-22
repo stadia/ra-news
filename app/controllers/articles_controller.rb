@@ -71,7 +71,7 @@ class ArticlesController < ApplicationController
         if @article.errors.details[:origin_url].any? { |e| e[:error] == :taken } && @article.errors.details[:url].any? { |e| e[:error] == :taken }
           format.html { redirect_to article_path(existing_article&.slug), notice: "Article already exists." }
         else
-          format.html { render :new, status: :unprocessable_entity }
+          format.html { render Views::Articles::New.new(article: @article), status: :unprocessable_entity }
         end
       end
     rescue ActiveRecord::RecordNotUnique => e

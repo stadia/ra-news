@@ -2,6 +2,7 @@
 
 class Components::Articles::Form < Components::Base
   include Phlex::Rails::Helpers::FormWith
+  include Phlex::Rails::Helpers::Pluralize
 
   attr_reader :article
 
@@ -30,7 +31,13 @@ class Components::Articles::Form < Components::Base
        end
 
        div(class: "inline") do
-         form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-green-500 hover:bg-green-600 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+         render RubyUI::Button.new(
+           type: "submit",
+           variant: :primary,
+           size: :lg,
+           class:
+             "w-full sm:w-auto rounded-md bg-green-500 hover:bg-green-600 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900",
+         ) { "등록" }
        end
      end
   end
