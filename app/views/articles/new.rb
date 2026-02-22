@@ -13,7 +13,7 @@ class Views::Articles::New < Views::Base
   def view_template
     content_for :title, "새 글 등록"
     div(class: "md:w-2/3 w-full") do
-      h1(class: "font-bold text-4xl") { "새 글" }
+      render RubyUI::Heading.new(level: 1, class: "font-bold text-white mb-4") { "새 글" }
       render Components::Articles::Form.new(article: article)
       render RubyUI::Link.new(
                   href: articles_path,

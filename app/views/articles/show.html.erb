@@ -13,16 +13,14 @@
     <!-- 아티클 헤더 -->
     <header class="p-4 md:p-6 lg:p-8 border-b border-gray-700">
       <div class="mb-6">
-        <h1
-          class="
-            text-2xl md:text-3xl lg:text-4xl font-bold text-gray-100 mb-4 leading-tight
-          "
-        >
-          <%= @article.title_ko %>
-        </h1>
-
+        <%= render RubyUI::Heading.new(
+          level: 1,
+          class: "font-bold text-gray-100 mb-4 leading-tight",
+        ) { @article.title_ko } %>
         <% if @article.title_ko != @article.title %>
-          <h3 class="text-lg md:text-l lg:text-xl font-medium text-gray-300 mb-4"><%= @article.title %></h3>
+          <%= render RubyUI::Heading.new(level: 2, class: "font-medium text-gray-300 mb-4") {
+            @article.title
+          } %>
         <% end %>
       </div>
       <!-- 메타데이터 -->
@@ -81,10 +79,13 @@
       <!-- 3줄 요약 -->
       <section class="mb-8 lg:mb-12">
         <div class="bg-linear-to-r from-green-600 to-green-700 rounded-lg p-6">
-          <h2 class="text-xl lg:text-2xl font-bold text-white mb-4 flex items-center">
-            <%= phlex_icon "check-circle", variant: :outline, class: "w-6 h-6 mr-2" %>
-            핵심 요약
-          </h2>
+          <%= render RubyUI::Heading.new(
+            level: 2,
+            class: "font-bold text-white mb-4 flex items-center",
+          ) {
+            "#{phlex_icon("check-circle", variant: :outline, class: "w-6 h-6 mr-2")} 핵심 요약".html_safe
+          } %>
+
           <% if @article.summary_key.is_a?(Array) %>
             <ul class="space-y-3">
               <% @article.summary_key&.each_with_index do |item, index| %>
@@ -115,7 +116,10 @@
           <!-- 도입부 -->
           <% if @article.summary_detail["introduction"].present? %>
             <div class="mb-8 p-6 bg-gray-700 rounded-xl border-l-4 border-blue-500">
-              <h3 class="text-lg font-semibold text-blue-300 mb-3">도입</h3>
+              <%= render RubyUI::Heading.new(
+                level: 3,
+                class: "font-semibold text-blue-300 mb-3",
+              ) { "도입" } %>
               <div class="text-gray-200 leading-relaxed text-base">
                 <%= @article.summary_detail["introduction"] %>
               </div>
@@ -137,7 +141,10 @@
           <!-- 결론 -->
           <% if @article.summary_detail["conclusion"].present? %>
             <div class="p-6 bg-gray-700 rounded-xl border-l-4 border-green-500">
-              <h3 class="text-lg font-semibold text-green-300 mb-3">결론</h3>
+              <%= render RubyUI::Heading.new(
+                level: 3,
+                class: "font-semibold text-green-300 mb-3",
+              ) { "결론" } %>
               <div class="text-gray-200 leading-relaxed text-base">
                 <%= @article.summary_detail["conclusion"] %>
               </div>
@@ -155,10 +162,12 @@
       "
     >
       <div class="p-4 md:p-6 lg:p-8">
-        <h2 class="text-xl lg:text-2xl font-bold text-gray-100 mb-6 flex items-center">
-          <%= phlex_icon "newspaper", variant: :outline, class: "w-6 h-6 mr-2 text-green-500" %>
-          관련 글들
-        </h2>
+        <%= render RubyUI::Heading.new(
+          level: 2,
+          class: "font-bold text-gray-100 mb-6 flex items-center",
+        ) {
+          "#{phlex_icon("newspaper", variant: :outline, class: "w-6 h-6 mr-2 text-green-500")} 관련 글들".html_safe
+        } %>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
           <% @similar_articles.each do |article| %>
@@ -169,14 +178,11 @@
               "
             >
               <%= link_to article_path(article.slug), class: "block p-4 lg:p-6" do %>
-                <h3
-                  class="
-                    text-lg font-semibold text-gray-100 group-hover:text-green-400 transition-colors
-                    duration-200 mb-3 line-clamp-2
-                  "
-                >
-                  <%= article.title_ko || article.title %>
-                </h3>
+                <%= render RubyUI::Heading.new(
+                  level: 3,
+                  class:
+                    "font-semibold text-gray-100 group-hover:text-green-400 transition-colors duration-200 mb-3 line-clamp-2",
+                ) { article.title_ko || article.title } %>
                 <p class="text-gray-200 text-sm leading-relaxed line-clamp-3 mb-4">
                   <%= if article.summary_key.is_a?(String)
                     article.summary_key
@@ -205,14 +211,11 @@
     "
   >
     <div class="p-4 md:p-6 lg:p-8">
-      <h3
-        id="comments_header"
-        class="
-          text-xl lg:text-2xl font-bold text-gray-100 mb-6 flex items-center
-        "
-      >
-        <%= render(Components::Comments::CommentHeader.new(comments: @comments)) %>
-      </h3>
+      <%= render RubyUI::Heading.new(
+        level: 3,
+        class: "font-bold text-gray-100 mb-6 flex items-center",
+        id: :comments_header,
+      ) { render(Components::Comments::CommentHeader.new(comments: @comments)) } %>
       <!-- 댓글 작성 폼 -->
       <div id="comment_form" class="border-t border-gray-700 mb-4">
         <%= render(
