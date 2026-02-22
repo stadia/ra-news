@@ -150,13 +150,28 @@
             "
           >
             <li>
-              <%= nav_link_to "홈", root_path %>
+              <%= render RubyUI::Link.new(
+                href: root_path,
+                size: :lg,
+                class:
+                  "text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-11 flex items-center",
+              ) { "홈" } %>
             </li>
             <li>
-              <%= nav_link_to "지난 글", articles_path %>
+              <%= render RubyUI::Link.new(
+                href: articles_path,
+                size: :lg,
+                class:
+                  "text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-11 flex items-center",
+              ) { "지난 글" } %>
             </li>
             <li>
-              <%= nav_link_to "그 밖의 뉴스", others_path %>
+              <%= render RubyUI::Link.new(
+                href: others_path,
+                size: :lg,
+                class:
+                  "text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-11 flex items-center",
+              ) { "그 밖의 뉴스" } %>
             </li>
             <li class="flex items-center">
               <%= form_with url: articles_path, method: :get, local: true,
@@ -179,7 +194,12 @@
             </li>
             <% if authenticated? %>
               <li>
-                <%= nav_link_to "글 등록", new_article_path %>
+                <%= render RubyUI::Link.new(
+                  href: new_article_path,
+                  size: :lg,
+                  class:
+                    "text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-11 flex items-center",
+                ) { "글 등록" } %>
               </li>
               <li>
                 <span
@@ -191,9 +211,19 @@
             <% end %>
             <li>
               <% if authenticated? %>
-                <%= nav_link_to "로그아웃", logout_path %>
+                <%= render RubyUI::Link.new(
+                  href: logout_path,
+                  size: :lg,
+                  class:
+                    "text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-11 flex items-center",
+                ) { "로그아웃" } %>
               <% else %>
-                <%= nav_link_to "로그인", new_session_path %>
+                <%= render RubyUI::Link.new(
+                  href: new_session_path,
+                  size: :lg,
+                  class:
+                    "text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-11 flex items-center",
+                ) { "로그인" } %>
               <% end %>
             </li>
           </ul>
