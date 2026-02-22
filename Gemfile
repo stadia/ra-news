@@ -66,8 +66,6 @@ group :development, :test do
   gem "minitest-mock"
 end
 
-gem "ruby_ui", "~> 1.1"
-
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
@@ -113,6 +111,7 @@ gem "pg_reports", "~> 0.5.4"
 gem "phlex-rails", "~> 2.4"
 gem "phlex-icons"
 gem "tailwind_merge", "~> 1.3"
+gem "ruby_ui", "~> 1.1"
 
 gem "ruby_llm", "~> 1.12"
 gem "ruby_llm-schema"
