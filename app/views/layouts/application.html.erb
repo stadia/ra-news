@@ -216,6 +216,9 @@
                   size: :lg,
                   class:
                     "text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-11 flex items-center",
+                  data: {
+                    turbo_prefetch: "false",
+                  },
                 ) { "로그아웃" } %>
               <% else %>
                 <%= render RubyUI::Link.new(
