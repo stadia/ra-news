@@ -40,9 +40,10 @@ module ApplicationHelper
   end
 
   # app/helpers/application_helper.rb
-  def nav_link_to(text, path, options = {})
-    options[:class] = "block py-3 px-4 text-gray-100 hover:text-white rounded-sm md:hover:text-white md:p-0 transition-colors duration-150 min-h-[44px] flex items-center".html_safe
-    options[:"aria-current"] = "page" if current_page?(path)
-    link_to(text, path, options)
+  def nav_link_to(text, path, options = { size: :lg, variant: :ghost })
+    options[:class] = "block text-gray-100 hover:text-white rounded-sm transition-colors duration-150 min-h-11 items-center hover:bg-transparent"
+    options["aria-current".to_sym] = "page" if current_page?(path)
+    options[:href] = path
+    render RubyUI::Link.new(**options) { text }
   end
 end
