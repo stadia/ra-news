@@ -1,4 +1,5 @@
 # Generated from app/models/push_subscription.rb with RBS::Inline
 
 class PushSubscription < ApplicationRecord
+  TRUSTED_PUSH_SERVICES: ::Regexp
 end
