@@ -183,11 +183,7 @@
                 <%= nav_link_to "글 등록", new_article_path %>
               </li>
               <li>
-                <span
-                  class="
-                    py-3 px-4 text-slate-100 rounded-sm md:p-0 min-h-11 flex items-center
-                  "
-                ><%= Current.user.name %></span>
+                <%= nav_link_to Current.user.name, users_path %>
               </li>
             <% end %>
             <li>

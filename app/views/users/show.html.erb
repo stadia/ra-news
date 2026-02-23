@@ -1,5 +1,4 @@
 <% content_for :title, "사용자 정보" %>
-
 <div class="md:w-2/3 w-full">
   <% if notice.present? %>
     <p
@@ -10,25 +9,12 @@
       id="notice"
     ><%= notice %></p>
   <% end %>
-
   <%= render RubyUI::Heading.new(level: 1, class: "font-bold mb-6") { "사용자 정보" } %>
-
   <%= render Components::Users::User.new(user: @user) %>
-
   <%= render RubyUI::Link.new(
-    href: edit_user_path(@user),
-    variant: :outline,
+    href: edit_users_path,
     size: :lg,
     class:
       "w-full sm:w-auto text-center rounded-md bg-slate-700 hover:bg-slate-600 text-slate-100 inline-block font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900",
   ) { "수정" } %>
-  <%= button_to "Destroy this user",
-  @user,
-  method: :delete,
-  form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2",
-  class:
-    "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-slate-900",
-  data: {
-    turbo_confirm: "Are you sure?",
-  } %>
 </div>

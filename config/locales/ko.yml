@@ -31,7 +31,7 @@ ko:
   activerecord:
     attributes:
       user:
-        email_address: "이메일 주소"  
+        email_address: "이메일 주소"
         name: "이름"
         password: "비밀번호"
         password_confirmation: "비밀번호 확인"
@@ -64,8 +64,9 @@ ko:
   sign_out: "로그아웃"
   sign_up: "회원가입"
   name: "이름"
-  
+
   # Success messages
   registration_success: "회원가입이 완료되었습니다. 환영합니다!"
+  update_success: "수정되었습니다"
   login_success: "로그인되었습니다"
   logout_success: "로그아웃되었습니다"

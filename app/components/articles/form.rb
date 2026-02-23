@@ -33,7 +33,6 @@ class Components::Articles::Form < Components::Base
        div(class: "inline") do
          render RubyUI::Button.new(
            type: "submit",
-           variant: :primary,
            size: :lg,
            class:
              "w-full sm:w-auto rounded-md bg-green-500 hover:bg-green-600 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900",
