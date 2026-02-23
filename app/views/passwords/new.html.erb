@@ -1,17 +1,35 @@
 <div class="mx-auto md:w-2/3 w-full">
   <% if alert = flash[:alert] %>
-    <p class="py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block" id="alert"><%= alert %></p>
+    <p
+      class="
+        py-2 px-3 bg-red-50 mb-5 text-red-500 font-medium rounded-lg inline-block
+      "
+      id="alert"
+    ><%= alert %></p>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Forgot your password?</h1>
+  <%= render RubyUI::Heading.new(level: 1, class: "font-bold") { "비밀번호를 잊으셨나요?" } %>
 
   <%= form_with url: passwords_path, class: "contents" do |form| %>
     <div class="my-5">
-      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address], class: "block shadow-sm rounded-md border border-gray-400 focus:outline-solid focus:outline-blue-600 px-3 py-2 mt-2 w-full bg-white text-gray-900" %>
+      <%= form.email_field :email_address,
+                       required: true,
+                       autofocus: true,
+                       autocomplete: "username",
+                       placeholder: "이메일 주소를 입력하세요",
+                       value: params[:email_address],
+                       class:
+                         "block shadow-sm rounded-md border border-slate-600 px-3 py-2 mt-2 w-full bg-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors duration-200" %>
     </div>
 
     <div class="inline">
-      <%= form.submit "Email reset instructions", class: "w-full sm:w-auto text-center rounded-lg px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+      <%= render RubyUI::Button.new(
+        type: "submit",
+        variant: :primary,
+        size: :lg,
+        class:
+          "w-full sm:w-auto rounded-md bg-green-500 hover:bg-green-600 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900",
+      ) { "재설정 메일 보내기" } %>
     </div>
   <% end %>
 </div>
