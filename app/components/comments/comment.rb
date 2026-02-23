@@ -46,16 +46,14 @@ class Components::Comments::Comment < Components::Base
   def comment_header
     div(class: "flex items-center justify-between mb-3") do
       div(class: "flex items-center space-x-3") do
-        avatar
+        render RubyUI::Avatar.new(class: "h-8 w-8 shrink-0") do
+          render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-blue-500 to-purple-600 text-white text-sm font-bold") do
+            plain @comment.author_name.to_s.first.to_s.upcase
+          end
+        end
         author_info
       end
       delete_button
-    end
-  end
-
-  def avatar
-    div(class: "w-8 h-8 bg-linear-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center shrink-0") do
-      span(class: "text-white text-sm font-bold") { @comment.author_name.first.upcase }
     end
   end
 
