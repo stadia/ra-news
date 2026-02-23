@@ -1,20 +1,40 @@
 <% content_for :title, "사용자 정보" %>
-<div class="md:w-2/3 w-full">
+
+<div class="max-w-2xl mx-auto py-12 px-4 sm:px-6">
   <% if notice.present? %>
-    <p
+    <div
       class="
-        py-2 px-3 bg-green-500/10 mb-5 text-green-400 font-medium rounded-md
-        inline-block border border-green-500/30
+        mb-8 flex items-center gap-3 py-3 px-4 bg-green-500/10 text-green-400
+        font-medium rounded-xl border border-green-500/20 shadow-sm
       "
       id="notice"
-    ><%= notice %></p>
+    >
+      <%= phlex_icon "check-circle", variant: :outline, class: "w-5 h-5" %>
+      <%= notice %>
+    </div>
   <% end %>
-  <%= render RubyUI::Heading.new(level: 1, class: "font-bold mb-6") { "사용자 정보" } %>
+
+  <div
+    class="
+      flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-2 px-1
+    "
+  >
+    <div>
+      <%= render RubyUI::Heading.new(
+        level: 1,
+        class: "text-3xl font-bold text-white tracking-tight",
+      ) { "사용자 정보" } %>
+      <p class="mt-1 text-slate-400">계정의 개인 정보와 설정을 관리하세요.</p>
+    </div>
+
+    <%= render RubyUI::Link.new(
+      href: edit_users_path,
+      class: "flex items-center justify-center gap-2 py-2 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-sm border border-slate-700 transition-all active:scale-95 shadow-lg shadow-black/20"
+    ) do %>
+      <%= phlex_icon "pencil-square", variant: :outline, class: "w-4 h-4" %>
+      수정
+    <% end %>
+  </div>
+
   <%= render Components::Users::User.new(user: @user) %>
-  <%= render RubyUI::Link.new(
-    href: edit_users_path,
-    size: :lg,
-    class:
-      "w-full sm:w-auto text-center rounded-md bg-slate-700 hover:bg-slate-600 text-slate-100 inline-block font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900",
-  ) { "수정" } %>
 </div>
