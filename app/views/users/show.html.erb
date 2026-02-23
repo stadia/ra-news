@@ -26,15 +26,21 @@
       ) { "사용자 정보" } %>
       <p class="mt-1 text-slate-400">계정의 개인 정보와 설정을 관리하세요.</p>
     </div>
-
-    <%= render RubyUI::Link.new(
-      href: edit_users_path,
-      class: "flex items-center justify-center gap-2 py-2 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-sm border border-slate-700 transition-all active:scale-95 shadow-lg shadow-black/20"
-    ) do %>
-      <%= phlex_icon "pencil-square", variant: :outline, class: "w-4 h-4" %>
-      수정
-    <% end %>
+    <div class="flex items-center gap-2">
+      <%= render RubyUI::Link.new(
+        href: edit_users_path,
+        class: "flex items-center justify-center gap-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-sm border border-slate-700 transition-all active:scale-95 shadow-lg shadow-black/20"
+      ) do %>
+        <%= phlex_icon "pencil-square", variant: :outline, class: "w-4 h-4" %>
+        정보 수정
+      <% end %><%= render RubyUI::Link.new(
+        href: password_users_path,
+        class: "flex items-center justify-center gap-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-sm border border-slate-700 transition-all active:scale-95 shadow-lg shadow-black/20"
+      ) do %>
+        <%= phlex_icon "key", variant: :outline, class: "w-4 h-4" %>
+        비밀번호 변경
+      <% end %>
+    </div>
   </div>
-
   <%= render Components::Users::User.new(user: @user) %>
 </div>

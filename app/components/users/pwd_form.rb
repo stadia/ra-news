@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Components::Users::Form < Components::Base
+class Components::Users::PwdForm < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::Pluralize
   include Phlex::Rails::Helpers::DOMID
@@ -10,7 +10,7 @@ class Components::Users::Form < Components::Base
   end
 
   def view_template
-    form_with(model: @user, class: "contents", url: users_path, method: @user.persisted? ? :put : :post) do |form|
+    form_with(model: @user, class: "contents", url: users_path, method: :put) do |form|
       div(class: "w-full max-w-2xl bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl my-6") do
         # Decorative Header
         div(class: "h-24 bg-linear-to-r from-slate-800 to-slate-700/50 border-b border-slate-800")
@@ -23,10 +23,8 @@ class Components::Users::Form < Components::Base
                 initials
               end
             end
-
             div(class: "text-center sm:text-left pb-1 flex-1") do
-              h2(class: "text-3xl font-bold text-white tracking-tight") { @user.persisted? ? "정보 수정" : "회원 가입" }
-              p(class: "text-slate-400 font-medium text-lg mt-1") { @user.email_address_was || "새로운 시작" }
+              p(class: "text-slate-400 font-medium text-lg mt-1") { @user.email_address }
             end
           end
 
@@ -49,8 +47,8 @@ class Components::Users::Form < Components::Base
 
           # Form Fields Grid
           div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-slate-800/60") do
-            form_field(form, :email_address, "이메일 주소") { form.email_field :email_address, class: input_classes(@user.errors[:email_address]) }
-            form_field(form, :name, "사용자 이름") { form.text_field :name, class: input_classes(@user.errors[:name]) }
+            form_field(form, :password, "비밀번호") { form.password_field :password, class: input_classes(@user.errors[:password]), placeholder: "••••••••" }
+            form_field(form, :password_confirmation, "비밀번호 확인") { form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation]), placeholder: "••••••••" }
           end
 
           # Submit Button
@@ -59,7 +57,7 @@ class Components::Users::Form < Components::Base
               type: "submit",
               class: "group relative flex items-center justify-center gap-2 py-3 px-8 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-lg transition-all active:scale-95 shadow-lg shadow-green-900/20"
             ) do
-              plain @user.persisted? ? "변경사항 저장" : "가입하기"
+              plain "비밀번호 저장"
               svg(xmlns: "http://www.w3.org/2000/svg", width: "20", height: "20", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "2.5", stroke_linecap: "round", stroke_linejoin: "round", class: "transition-transform group-hover:translate-x-1") do |s|
                 s.path(d: "M5 12h14")
                 s.path(d: "m12 5 7 7-7 7")

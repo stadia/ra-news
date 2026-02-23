@@ -5,7 +5,7 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
 
-  before_action :set_user, only: %i[ show edit update destroy ]
+  before_action :set_user
 
   def show
   end
@@ -15,6 +15,9 @@ class UsersController < ApplicationController
   end
 
   def edit
+  end
+
+  def password
   end
 
   def create
@@ -31,11 +34,15 @@ class UsersController < ApplicationController
   end
 
   def update
+    updating_password = password_update_request?
+    permitted_params = updating_password ? password_params : user_params
+    failure_view = updating_password ? :password : :edit
+
     respond_to do |format|
-      if @user.update(user_params)
+      if @user.update(permitted_params)
         format.html { redirect_to users_path, notice: t("update_success") }
       else
-        format.html { render :edit, status: :unprocessable_entity }
+        format.html { render failure_view, status: :unprocessable_entity }
       end
     end
   end
@@ -45,7 +52,6 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to root_path, status: :see_other, notice: "계정이 삭제되었습니다." }
-      format.json { head :no_content }
     end
   end
 
@@ -57,6 +63,18 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.expect(user: [ :email_address, :name, :password, :password_confirmation ])
+      params.expect(user: [ :email_address, :name ])
+    end
+
+    def password_params
+      params.expect(user: [ :password, :password_confirmation ])
+    end
+
+    def password_update_request?
+      user = params[:user]
+      return false unless user.respond_to?(:key?)
+
+      user.key?(:password) || user.key?(:password_confirmation) ||
+        user.key?("password") || user.key?("password_confirmation")
     end
 end
