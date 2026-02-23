@@ -107,12 +107,9 @@ class Components::Comments::CommentReplyForm < Components::Base
 
   def action_buttons(f)
     div(class: "flex items-center justify-end gap-2") do
-      button(
-        type: "button",
-        class: "px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-gray-200 transition-colors",
-        data: { action: "reply-form#toggle" }
-      ) { "취소" }
-
+      render RubyUI::Button.new(variant: :ghost,
+        class: "font-medium text-gray-400 hover:text-gray-200 transition-colors hover:bg-transparent",
+          data: { action: "reply-form#toggle" }) { "취소" }
       f.submit "답글 작성",
         class: "inline-flex items-center px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md transition-colors duration-200"
     end

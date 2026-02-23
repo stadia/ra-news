@@ -74,11 +74,10 @@ class Components::Comments::Comment < Components::Base
 
   def delete_button
     if @comment.guest?
-      button(
-        type: "button",
+      render RubyUI::Button.new(
+        variant: :ghost,
         data: { controller: "modal", action: "modal#open", modal_id: "delete_comment_modal_#{@comment.id}" },
-        class: "inline-flex items-center px-3 py-1 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-900 hover:bg-opacity-20 rounded-md transition-colors duration-200 cursor-pointer"
-      ) do
+        class: "inline-flex items-center px-3 py-1 text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-900 hover:bg-opacity-20 rounded-md transition-colors duration-200 cursor-pointer") do
         Hero::Trash(variant: :outline, class: "w-4 h-4 mr-1")
         plain "삭제"
       end
@@ -104,11 +103,10 @@ class Components::Comments::Comment < Components::Base
 
   def reply_button
     div(class: "mt-3 flex items-center justify-between text-sm") do
-      button(
-        type: "button",
+      render RubyUI::Button.new(
+        variant: :ghost,
         data: { action: "reply-form#toggle" },
-        class: "inline-flex items-center text-gray-400 hover:text-blue-400 transition-colors"
-      ) do
+      class: "inline-flex items-center text-gray-400 hover:text-blue-400 transition-colors hover:bg-transparent") do
         Hero::ChatBubbleLeft(variant: :outline, class: "w-4 h-4 mr-1")
         plain "답글"
       end

@@ -50,11 +50,8 @@ class Components::Comments::DeleteModal < Components::Base
                                                         placeholder: "비밀번호를 입력하세요"
                           end
                           div(class: "flex gap-3 mt-5 sm:mt-6") do
-                            button(type: "button",
-                                  data: { action: "modal#close" },
-                                  class: "flex-1 rounded-md px-3.5 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-100 inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900") do
-                              "취소"
-                            end
+                            render RubyUI::Button.new(variant: :ghost, size: :xl, data: { action: "modal#close" },
+                              class: "flex-1 rounded-md bg-slate-700 hover:bg-slate-600 text-slate-100 inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900") { "취소" }
                             f.submit "삭제", class: "flex-1 rounded-md px-3.5 py-2.5 bg-red-600 hover:bg-red-700 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-slate-900"
                           end
             end

@@ -32,19 +32,15 @@ class Components::PushNotifications::PromptModal < Components::Base
           end
 
           div(class: "border-t border-slate-700/80") do
-            button(
-              type: "button",
-              class: "w-full px-6 py-4 text-sm font-semibold text-green-300 transition hover:bg-slate-800",
-              data: { action: "click->push-notifications#enable" }
-            ) { "설정" }
+            render RubyUI::Button.new(variant: :primary, size: :lg,
+                    data: { action: "click->push-notifications#enable" },
+                    class: "w-full font-semibold text-green-300 transition hover:bg-slate-800") { "설정" }
           end
 
           div(class: "border-t border-slate-700/80") do
-            button(
-              type: "button",
-              class: "w-full px-6 py-4 text-sm font-medium text-slate-300 transition hover:bg-slate-800",
-              data: { action: "click->push-notifications#dismiss" }
-            ) { "나중에 하기" }
+            render RubyUI::Button.new(variant: :ghost, size: :lg,
+                    data: { action: "click->push-notifications#dismiss" },
+                    class: "w-full font-medium text-slate-300 transition hover:bg-slate-800") { "나중에 하기" }
           end
         end
       end
