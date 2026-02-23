@@ -111,7 +111,7 @@ gem "pg_reports", "~> 0.5.4"
 
 gem "phlex-rails", "~> 2.4"
 gem "phlex-icons"
-gem "tailwind_merge", "~> 1.3"
+gem "tailwind_merge", "~> 1.4"
 
 gem "ruby_llm", "~> 1.12"
 gem "ruby_llm-schema"
