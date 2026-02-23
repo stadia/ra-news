@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Components::PushNotifications::PromptModal < Components::Base
+  include PhlexIcons
+
   def view_template
     div(
       data: { push_notifications_target: "modal" },
@@ -18,9 +20,7 @@ class Components::PushNotifications::PromptModal < Components::Base
         div(class: "w-full max-w-md overflow-hidden rounded-3xl border border-slate-700 bg-slate-900/95 shadow-2xl") do
           div(class: "px-6 py-8 text-center") do
             div(class: "mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-500/20 text-green-300") do
-              svg(class: "h-7 w-7", "viewBox": "0 0 24 24", fill: "currentColor", "aria-hidden": "true") do |s|
-                s.path(d: "M12 2a7 7 0 0 0-7 7v3.111l-.894 1.789A1 1 0 0 0 5 15h14a1 1 0 0 0 .894-1.447L19 12.11V9a7 7 0 0 0-7-7Zm0 20a3 3 0 0 0 2.995-2.824L15 19h-6a3 3 0 0 0 2.824 2.995L12 22Z")
-              end
+              Hero::Bell(variant: :solid, class: "h-7 w-7")
             end
 
             h2(id: "push-notification-modal-title", class: "text-2xl font-bold text-white") { "알림 설정" }

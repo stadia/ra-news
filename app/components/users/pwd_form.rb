@@ -4,6 +4,7 @@ class Components::Users::PwdForm < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::Pluralize
   include Phlex::Rails::Helpers::DOMID
+  include PhlexIcons
 
   def initialize(user:)
     @user = user
@@ -32,11 +33,7 @@ class Components::Users::PwdForm < Components::Base
           if @user.errors.any?
             div(id: "error_explanation", class: "mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400") do
               h2(class: "font-bold mb-2 flex items-center gap-2") do
-                svg(xmlns: "http://www.w3.org/2000/svg", width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "2", stroke_linecap: "round", stroke_linejoin: "round") do |s|
-                  s.circle(cx: "12", cy: "12", r: "10")
-                  s.line(x1: "12", y1: "8", x2: "12", y2: "12")
-                  s.line(x1: "12", y1: "16", x2: "12.01", y2: "16")
-                end
+                Hero::ExclamationCircle(variant: :outline, class: "w-[18px] h-[18px]")
                 plain pluralize(@user.errors.count, "error") + " prohibited this user from being saved:"
               end
               ul(class: "list-disc ml-6 space-y-1 text-sm") do
@@ -58,10 +55,7 @@ class Components::Users::PwdForm < Components::Base
               class: "group relative flex items-center justify-center gap-2 py-3 px-8 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-lg transition-all active:scale-95 shadow-lg shadow-green-900/20"
             ) do
               plain "비밀번호 저장"
-              svg(xmlns: "http://www.w3.org/2000/svg", width: "20", height: "20", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", stroke_width: "2.5", stroke_linecap: "round", stroke_linejoin: "round", class: "transition-transform group-hover:translate-x-1") do |s|
-                s.path(d: "M5 12h14")
-                s.path(d: "m12 5 7 7-7 7")
-              end
+              Hero::ArrowLongRight(variant: :outline, class: "w-5 h-5 transition-transform group-hover:translate-x-1")
             end
           end
         end
