@@ -26,11 +26,13 @@ class ArticlesController < ApplicationController
       scope.where.not(id: id)
     end
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
+    render Views::Articles::Index.new(pagy: @pagy, articles: @articles, search: params[:search])
   end
 
   def others
     article = Article.kept.confirmed.unrelated
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
+    render Views::Articles::Others.new(pagy: @pagy, articles: @articles, search: params[:search])
   end
 
   def show

@@ -9,6 +9,8 @@ class SessionsController < ApplicationController
 
   def new
     redirect_to root_url and return if authenticated?
+
+    render Views::Sessions::New.new
   end
 
   def create

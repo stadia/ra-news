@@ -5,19 +5,22 @@
 class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
 
-  before_action :set_user
+  before_action :set_user, except: %i[ new create ]
 
   def show
+    render Views::Users::Show.new(user: @user)
   end
 
   def new
-    @user = User.new
+    render Views::Users::New.new(user: User.new)
   end
 
   def edit
+    render Views::Users::Edit.new(user: @user)
   end
 
   def password
+    render Views::Users::Password.new(user: @user)
   end
 
   def create
@@ -28,7 +31,7 @@ class UsersController < ApplicationController
         start_new_session_for @user
         format.html { redirect_to new_session_path, notice: t("registration_success") }
       else
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { render Views::Users::New.new(user: @user), status: :unprocessable_entity }
       end
     end
   end
@@ -42,7 +45,13 @@ class UsersController < ApplicationController
       if @user.update(permitted_params)
         format.html { redirect_to users_path, notice: t("update_success") }
       else
-        format.html { render failure_view, status: :unprocessable_entity }
+        if failure_view == :edit
+          format.html { render Views::Users::Edit.new(user: @user), status: :unprocessable_entity }
+        elsif failure_view == :password
+          format.html { render Views::Users::Password.new(user: @user), status: :unprocessable_entity }
+        else
+          format.html { render failure_view, status: :unprocessable_entity }
+        end
       end
     end
   end

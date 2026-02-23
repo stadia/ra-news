@@ -12,6 +12,7 @@ class HomeController < ApplicationController
 
     # Load recent comments for sidebar
     @recent_comments = Comment.includes(:article, :user).order(created_at: :desc).limit(10)
+    render Views::Home::Index.new(articles: @articles, recent_comments: @recent_comments)
   end
 
   # GET /rss
