@@ -24,7 +24,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <% set_meta_tags canonical: "https://ruby-news.kr#{request.path}" %>
-    <%= display_meta_tags og: {
+    <%= display_meta_tags title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
+    og: {
       title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
       description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
       site_name: "Ruby-News || 루비 AI 뉴스",
