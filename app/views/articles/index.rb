@@ -25,13 +25,7 @@ class Views::Articles::Index < Views::Base
         render Components::Articles::Article.new(article: article)
       end
 
-      if @pagy.pages > 1
-        div(class: "pagy mt-auto") do
-          div(class: "bg-gray-800 rounded-xl p-2 md:p-3 border border-gray-700") do
-            plain helpers.raw(@pagy.series_nav)
-          end
-        end
-      end
+      render Components::Pagination.new(pagy: @pagy)
     end
   end
 end
