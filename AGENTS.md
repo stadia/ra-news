@@ -107,6 +107,32 @@ GitHub Actions 파이프라인:
 
 ---
 
+## MCP Tools
+
+사용 가능한 MCP 서버와 주요 도구 목록입니다. 작업 유형에 맞는 도구를 선택하세요.
+
+### Serena (코드 시맨틱 분석 & 편집)
+
+코드의 심볼(클래스, 메서드 등)을 의미 기반으로 탐색·편집하는 도구입니다. 파일 전체를 읽는 대신 심볼 단위로 효율적으로 작업합니다.
+
+**프로젝트 활성화:** `activate_project("ruby-news")` 필수 (첫 사용 시)
+
+### Rails MCP Server (Rails 인트로스펙션)
+
+Rails 앱의 모델, 라우트, 스키마 등을 런타임에서 분석합니다. `execute_tool`로 호출합니다.
+
+### Context7 (라이브러리 문서 검색)
+
+최신 라이브러리 문서와 코드 예제를 검색합니다.
+
+**사용 흐름:** `resolve-library-id` → `query-docs` 순서로 호출
+
+### Sequential Thinking (단계적 사고)
+
+복잡한 문제를 단계별로 분석할 때 사용합니다. 가설 생성·검증, 분기, 이전 단계 수정이 가능합니다.
+
+---
+
 ## Related Documentation
 
 | 문서 | 설명 |
