@@ -7,31 +7,6 @@ AI 에이전트를 위한 프로젝트 가이드라인입니다.
 
 ---
 
-## Quick Reference
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  bin/dev                    개발 서버 (Rails + CSS watcher)     │
-│  bin/rails test             테스트 실행                         │
-│  bin/rubocop                린트 검사                           │
-│  bundle exec steep check    타입 검사                           │
-│  bin/brakeman               보안 스캔                           │
-│  bin/jobs                   백그라운드 워커                      │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Technology Stack
-
-| 영역 | 기술 |
-|------|------|
-| **Backend** | Rails 8, Ruby 4.0, Solid Queue/Cache/Cable |
-| **Database** | PostgreSQL + pgvector + textsearch_ko + pg_bigm |
-| **AI** | RubyLLM + Gemini (한국어 요약/임베딩) |
-| **Frontend** | Hotwire (Turbo/Stimulus), Tailwind CSS 4.2 |
-| **Type System** | RBS inline + Steep |
-
 ### PostgreSQL 확장 (필수)
 
 개발 전 설치 필요: `pg_bigm`, `textsearch_ko`, `pgvector`
@@ -51,23 +26,6 @@ AI 에이전트를 위한 프로젝트 가이드라인입니다.
 
 ---
 
-## Background Jobs
-
-Solid Queue 기반 비동기 처리:
-
-| Job | 역할 |
-|-----|------|
-| `ArticleJob` | AI 요약/임베딩 생성 |
-| `RssSiteJob` | RSS 피드 크롤링 |
-| `YoutubeSiteJob` | YouTube 자막 추출 |
-| `GmailArticleJob` | 이메일 뉴스레터 처리 |
-| `SocialPostJob` | X.com/Mastodon 자동 게시 (production only) |
-| `SocialDeleteJob` | soft-delete 시 소셜 포스트 삭제 |
-
-모든 Job은 `rescue_with_honeybadger` 호출, 재시도 정책은 각 클래스의 `retry_on` 설정 우선.
-
----
-
 ## Code Conventions
 
 ### Type Annotations (RBS Inline)
@@ -76,13 +34,6 @@ Solid Queue 기반 비동기 처리:
 # rbs_inline: enabled
 
 def process_content(url) #: (String) -> void
-```
-
-### Soft Delete
-
-```ruby
-include Discard::Model
-Article.kept.find_by_slug(params[:id])  # kept scope 사용
 ```
 
 ### Service Layer Pattern
@@ -108,33 +59,6 @@ result = ContentService.new.call(article)
 result.success? ? result.value! : result.failure
 ```
 
-### Error Handling
-
-- ApplicationJob: `StandardError` rescue + Honeybadger 보고
-- Client 클래스: 표준화된 에러 타입 (`Forbidden`, `RateLimit`, `NotFound`)
-- 컨트롤러: `render turbo_stream:` 또는 명시적 status 코드
-
----
-
-## Search System
-
-```ruby
-# 전문 검색 (한국어 사전 + tsvector)
-Article.full_text_search_for(term)
-
-# 언어별 검색
-Article.title_matching(query)  # Korean dictionary
-Article.body_matching(query)   # English dictionary
-
-# 벡터 유사도
-article.nearest_neighbors(:embedding, distance: "cosine")
-```
-
-- 임베딩: 1536차원 vector 타입
-- 한국어 검색: `textsearch_ko` 확장 + `mecab-ko` 형태소 분석기
-
----
-
 ## Social Media Integration
 
 **지원 플랫폼:**
@@ -156,12 +80,6 @@ article.nearest_neighbors(:embedding, distance: "cosine")
 테스트 환경은 **PostgreSQL** 사용 (SQLite 아님):
 - 이유: pgvector, textsearch_ko, pg_bigm 등 production과 동일한 확장 필요
 - 설정: `TEST_DATABASE_URL` 환경 변수 우선
-
-```bash
-bin/rails test                                  # 전체 테스트
-bin/rails test test/models/article_test.rb      # 단일 파일
-bin/rails test:system BROWSER=headless_firefox  # 시스템 테스트
-```
 
 ---
 
@@ -195,6 +113,3 @@ GitHub Actions 파이프라인:
 |------|------|
 | [개발 워크플로우](docs/CLAUDE_WORKFLOW.md) | Claude Code 작업 패턴, PR 워크플로우, 커밋 전략 |
 | [PostgreSQL 확장](docs/postgresql-extensions.md) | macOS/Linux 설치 가이드 |
-| [RubyLLM Agents](app/agents/AGENTS.md) | Agent DSL 레퍼런스 |
-| [RubyLLM Tools](app/tools/TOOLS.md) | Tool 생성 가이드 |
-| [RubyLLM Workflows](app/workflows/WORKFLOWS.md) | 워크플로우 오케스트레이션 |
