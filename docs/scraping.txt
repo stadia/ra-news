@@ -1,0 +1,13 @@
+https://hub.docker.com/r/browserless/chrome
+
+require 'ferrum'
+browser = Ferrum::Browser.new(ws_url: 'ws://localhost:3000')
+browser.go_to("https://entire.io/blog/hello-entire-world/")
+body_node = browser.at_css("body")
+content = body_node.property("innerHTML")
+# 특정 노드 내부의 HTML을 반환
+content = browser.at_css("body").evaluate("this.innerHTML")
+browser.quit
+
+https://scrapling.readthedocs.io/en/latest/ai/mcp-server.html
+https://github.com/simonx1/ruby-mcp-client
