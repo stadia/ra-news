@@ -18,7 +18,7 @@ class Components::LoginRequired < Components::Base
       h3(class: "text-lg font-medium text-gray-100 mb-2") { @title }
       p(class: "text-gray-400 mb-6") { @message }
 
-      link_to(helpers.new_session_path, class: "inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200", data: { turbo: false }) do
+      link_to(new_session_path, class: "inline-flex items-center px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200", data: { turbo: false }) do
         plain "로그인 하러 가기"
         Hero::ArrowRight(variant: :outline, class: "w-4 h-4 ml-2")
       end

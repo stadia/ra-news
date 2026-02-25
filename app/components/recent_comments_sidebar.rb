@@ -47,10 +47,10 @@ class Components::RecentCommentsSidebar < Components::Base
       div(class: "flex items-center justify-between text-xs text-gray-500") do
         span(class: "flex items-center gap-1") do
           Hero::Clock(variant: :outline, class: "w-3 h-3")
-          plain "#{helpers.time_ago_in_words_korean(comment.created_at)} 전"
+          plain "#{view_context.time_ago_in_words_korean(comment.created_at)} 전"
         end
         if comment.article.present?
-          link_to(helpers.article_path(comment.article.slug), class: "text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors") do
+          link_to(article_path(comment.article.slug), class: "text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors") do
             Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-3 h-3")
             plain "원문 보기"
           end

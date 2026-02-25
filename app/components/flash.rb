@@ -2,7 +2,7 @@
 
 class Components::Flash < Components::Base
   def view_template
-    helpers.flash.each do |type, message|
+    view_context.flash.each do |type, message|
       next if message.blank?
 
       render RubyUI::Alert.new(variant: alert_variant(type), id: type.to_s, class: "mb-5") do

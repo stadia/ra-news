@@ -43,7 +43,7 @@ class Components::Comments::CommentReplyForm < Components::Base
   def reply_form_fields
     form_with(
       model: [ @article, @comment ],
-      url: helpers.article_comments_path(@article.slug),
+      url: article_comments_path(@article.slug),
       local: false,
       class: "space-y-3",
       data: { action: "turbo:submit-end->reply-form#close" }
@@ -51,7 +51,7 @@ class Components::Comments::CommentReplyForm < Components::Base
       f.hidden_field :parent_id, value: @parent_comment.id
 
       error_messages if @comment.errors.any?
-      guest_fields(f) unless helpers.authenticated?
+      guest_fields(f) unless view_context.authenticated?
       body_field(f)
       action_buttons(f)
     end

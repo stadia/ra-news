@@ -37,9 +37,9 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def comment_form_fields
-    form_with(model: [ @article, @comment ], url: helpers.article_comments_path(@article.slug), local: false, class: "space-y-4") do |f|
+    form_with(model: [ @article, @comment ], url: article_comments_path(@article.slug), local: false, class: "space-y-4") do |f|
       error_messages if @comment.errors.any?
-      guest_fields(f) unless helpers.authenticated?
+      guest_fields(f) unless view_context.authenticated?
       body_field(f)
       submit_section(f)
     end
@@ -80,7 +80,7 @@ class Components::Comments::CommentForm < Components::Base
       p(class: "text-sm text-gray-400 mb-4") do
         Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1")
         plain "이미 계정이 있으신가요? "
-        link_to("로그인", helpers.new_session_path, class: "text-blue-400 hover:text-blue-300")
+        link_to("로그인", new_session_path, class: "text-blue-400 hover:text-blue-300")
         plain " 후 댓글을 작성하세요."
       end
     end

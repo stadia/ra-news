@@ -22,7 +22,7 @@ class Components::Comments::Comments < Components::Base
   private
 
   def render_tree(tree, depth: 0)
-    helpers.safe_join(tree.map do |comment, children|
+    view_context.safe_join(tree.map do |comment, children|
       render(Components::Comments::Comment.new(comment:, article: @article, depth:, children:))
     end)
   end

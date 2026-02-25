@@ -67,7 +67,7 @@ class Components::Comments::Comment < Components::Base
       end
       div(class: "text-xs text-gray-400 flex items-center") do
         Hero::Clock(variant: :outline, class: "w-3 h-3 mr-1")
-        plain "#{helpers.time_ago_in_words_korean(@comment.created_at)} 전"
+        plain "#{view_context.time_ago_in_words_korean(@comment.created_at)} 전"
       end
     end
   end
@@ -81,9 +81,9 @@ class Components::Comments::Comment < Components::Base
         Hero::Trash(variant: :outline, class: "w-4 h-4 mr-1")
         plain "삭제"
       end
-    elsif helpers.authenticated? && @comment.user == Current.user
+    elsif view_context.authenticated? && @comment.user == Current.user
       button_to(
-        helpers.article_comment_path(@article.slug, @comment),
+        article_comment_path(@article.slug, @comment),
         method: :delete,
         data: { turbo_confirm: "정말 삭제하시겠습니까?" },
         form: { data: { turbo_stream: true } },
@@ -97,7 +97,7 @@ class Components::Comments::Comment < Components::Base
 
   def comment_body
     div(class: "text-gray-300 leading-relaxed") do
-      helpers.simple_format(ERB::Util.h(@comment.body), {}, wrapper_tag: "div")
+      view_context.simple_format(ERB::Util.h(@comment.body), {}, wrapper_tag: "div")
     end
   end
 
