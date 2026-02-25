@@ -16,7 +16,9 @@ services:
       - MAIL_ADDRESS=${MAIL_ADDRESS}
       - IMAP_ADDRESS=${IMAP_ADDRESS}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
-
+      - WEB_PUSH_VAPID_PUBLIC_KEY=${WEB_PUSH_VAPID_PUBLIC_KEY}
+      - WEB_PUSH_VAPID_PRIVATE_KEY=${WEB_PUSH_VAPID_PRIVATE_KEY}
+      - WEB_PUSH_VAPID_SUBJECT=${WEB_PUSH_VAPID_SUBJECT}
     labels:
       - "traefik.enable=true"
       - "traefik.http.services.news.loadbalancer.server.port=3000"
@@ -50,6 +52,9 @@ services:
       - MAIL_ADDRESS=${MAIL_ADDRESS}
       - IMAP_ADDRESS=${IMAP_ADDRESS}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
+      - WEB_PUSH_VAPID_PUBLIC_KEY=${WEB_PUSH_VAPID_PUBLIC_KEY}
+      - WEB_PUSH_VAPID_PRIVATE_KEY=${WEB_PUSH_VAPID_PRIVATE_KEY}
+      - WEB_PUSH_VAPID_SUBJECT=${WEB_PUSH_VAPID_SUBJECT}
     networks:
       - homeNetwork
     restart: unless-stopped
