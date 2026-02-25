@@ -9,8 +9,15 @@ class ContentService < OperationService
     if article.is_youtube?
       # YouTube URL인 경우
       step execute_youtube(article.url)
+    elsif github_url?(article.url)
+      # GitHub URL인 경우 README.md 가져오기
+      readme_url = github_readme_url(article.url)
+      return Failure(:no_content) unless readme_url
+
+      logger.info "GitHub README URL: #{readme_url}"
+      step execute_html(readme_url)
     else
-      # YouTube URL이 아닌 경우
+      # 일반 URL인 경우
       step execute_html(article.url)
     end
   end
@@ -24,7 +31,7 @@ class ContentService < OperationService
     return Failure(:no_content) if html_content.blank?
 
     # Readability를 사용하여 주요 콘텐츠 HTML 추출. Readability::Document는 전체 HTML 문자열을 인자로 받습니다.
-    Success(Readability::Document.new(html_content).content)
+    github_url?(url) ? Success(Kramdown::Document.new(html_content).to_html) : Success(Readability::Document.new(html_content).content)
   end
 
   #: (url: String) -> String?
@@ -63,6 +70,32 @@ class ContentService < OperationService
   end
 
   private
+
+  #: (String url) -> bool
+  def github_url?(url)
+    URI.parse(url).host&.match?(/\A(github\.com|raw\.githubusercontent\.com)\z/) == true
+  rescue URI::InvalidURIError
+    false
+  end
+
+  #: (String url) -> String?
+  def github_readme_url(url)
+    logger.info "Fetching GitHub README from: #{url}"
+    uri = URI.parse(url)
+    parts = uri.path.split("/").reject(&:blank?)
+    return nil if parts.size < 2
+
+    owner, repo = parts[0], parts[1]
+    repo = repo.delete_suffix(".git")
+
+    # branch가 URL에 명시된 경우: /owner/repo/tree/branch
+    branch = parts[3] if parts[2] == "tree"
+    branch ||= "HEAD"
+
+    "https://raw.githubusercontent.com/#{owner}/#{repo}/#{branch}/README.md"
+  rescue URI::InvalidURIError
+    nil
+  end
 
   #: (String url, ?Integer? count) -> Faraday::Response
   def handle_redirection(url, count = 0)
