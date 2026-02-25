@@ -1,5 +1,3 @@
-version: "3.3"
-
 services:
   rails:
     image: ghcr.io/stadia/ra-news:latest
@@ -61,6 +59,21 @@ services:
     volumes:
       - news_data:/rails/public/sitemaps
       - news_data:/rails/storage
+
+  scrapling:
+    image: pyd4vinci/scrapling:latest
+    container_name: scrapling
+    command: mcp --http
+    networks:
+      - homeNetwork
+    restart: unless-stopped
+
+  chrome:
+    image: browserless/chrome:latest
+    container_name: chrome
+    networks:
+      - homeNetwork
+    restart: unless-stopped
 
 networks:
   homeNetwork:
