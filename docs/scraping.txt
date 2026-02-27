@@ -1,5 +1,4 @@
 https://hub.docker.com/r/browserless/chrome
-
 require 'ferrum'
 browser = Ferrum::Browser.new(ws_url: 'ws://localhost:3000')
 browser.go_to("https://entire.io/blog/hello-entire-world/")
@@ -11,8 +10,8 @@ browser.quit
 
 https://scrapling.readthedocs.io/en/latest/ai/mcp-server.html
 https://github.com/simonx1/ruby-mcp-client
-
 require 'mcp_client'
 client = MCPClient.connect('http://10.42.0.177:8000/mcp')
+client = MCPClient.connect('http://scrapling.default:8000/mcp')
 result = client.call_tool('fetch', { url: 'https://www.phlex.fun/rails/views.html' })
 result = client.call_tool('stealthy_fetch', { url: 'https://www.phlex.fun/rails/views.html' })
