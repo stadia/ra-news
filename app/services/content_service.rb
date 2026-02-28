@@ -27,7 +27,13 @@ class ContentService < OperationService
   #: (url: String) -> String?
   def execute_html(url)
     logger.info "Fetching HTML content from: #{url}"
-    html_content = handle_redirection(url).body
+
+    html_content = if ENV.fetch("SCRAPLING_URL", nil).present?
+                     mcp_fetch_html(url)
+    else
+                     faraday_fetch_html(url)
+    end
+
     return Failure(:no_content) if html_content.blank?
 
     # Readability를 사용하여 주요 콘텐츠 HTML 추출. Readability::Document는 전체 HTML 문자열을 인자로 받습니다.
@@ -98,11 +104,11 @@ class ContentService < OperationService
   end
 
   #: (String url, ?Integer? count) -> Faraday::Response
-  def handle_redirection(url, count = 0)
+  def faraday_fetch_html(url, count = 0)
     response = Faraday.get(url)
     logger.debug "#{response.status} #{url}"
-    return response unless response.status.between?(300, 399) && response.headers["location"]
-    return response if count > 3
+    return response.body unless response.status.between?(300, 399) && response.headers["location"]
+    return response.body if count > 3
 
     logger.debug response.headers["location"]
     # 3xx 응답인 경우 리다이렉트된 URL을 사용
@@ -114,7 +120,16 @@ class ContentService < OperationService
     end
     logger.debug "Redirecting to: #{url}"
 
-    handle_redirection(url, count + 1)
+    faraday_fetch_html(url, count + 1)
+  end
+
+
+  def mcp_fetch_html(url)
+    client = MCPClient.connect(ENV.fetch("SCRAPLING_URL") { "http://localhost::8000/mcp" })
+    result = client.call_tool("fetch", { url: })&.[]("structuredContent")
+    return nil if result["status"] != 200
+
+    result["content"]
   end
 
   def format_transcript(actions)
