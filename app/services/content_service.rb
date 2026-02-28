@@ -2,6 +2,8 @@
 
 # rbs_inline: enabled
 
+require "mcp_client"
+
 class ContentService < OperationService
   include LinkHelper
 
@@ -129,7 +131,7 @@ class ContentService < OperationService
     result = client.call_tool("fetch", { url: })&.[]("structuredContent")
     return nil if result["status"] != 200
 
-    result["content"]
+    result["content"].first
   end
 
   def format_transcript(actions)
