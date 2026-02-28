@@ -129,6 +129,7 @@ class ContentService < OperationService
   def mcp_fetch_html(url)
     client = MCPClient.connect(ENV.fetch("SCRAPLING_URL") { "http://localhost::8000/mcp" })
     result = client.call_tool("fetch", { url: })&.[]("structuredContent")
+    logger.debug result
     return nil if result["status"] != 200
 
     result["content"].first
