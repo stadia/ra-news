@@ -82,7 +82,7 @@ end
 
 gem "sorbet-runtime"
 gem "pagy", "~> 43.3" # omit patch digit
-gem "honeybadger", "~> 6.4.1"
+gem "honeybadger", "~> 6.5.0"
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
 gem "ostruct"
