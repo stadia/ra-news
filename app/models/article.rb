@@ -73,6 +73,12 @@ class Article < ApplicationRecord
   # YouTube URL의 정규화된 호스트를 상수로 정의
   YOUTUBE_NORMALIZED_HOST = "www.youtube.com".freeze
 
+  include Federails::DataEntity
+
+  acts_as_federails_data handles: "Article"
+
+  on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+
   def generate_metadata #: void
     return unless url.is_a?(String)
 

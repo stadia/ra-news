@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: { ie: false }
 
-   before_action do
+  before_action do
     Honeybadger.context({
       user_id: Current.user&.id
     })
