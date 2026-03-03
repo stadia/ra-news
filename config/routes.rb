@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   get "others" => "articles#others"
 
-  resource :users, path: :profile do
+  resource :users, path: :account do
     member do
       get :password
     end
