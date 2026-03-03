@@ -1,0 +1,5 @@
+<%= form_tag federails.lookup_client_actors_url, method: :get do %>
+  <%= label_tag :account %>
+  <%= text_field_tag :account, nil, placeholder: 'user@domain.tld or username', required: true %>
+  <%= submit_tag 'Search' %>
+<% end %>

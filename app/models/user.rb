@@ -27,6 +27,12 @@ class User < ApplicationRecord
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :name, with: ->(n) { n.strip }
 
+  # Include the concern here:
+  include Federails::ActorEntity
+
+  # Configure field names
+  acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_url
+
   # Scopes
   scope :with_role, ->(role_name) do
     where("? = ANY (roles)", role_name.to_s)

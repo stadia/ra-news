@@ -47,4 +47,6 @@ Rails.application.routes.draw do
     mount MissionControl::Jobs::Engine, at: "/jobs"
     mount PgReports::Engine, at: "/pg_reports"
   end
+
+  mount Federails::Engine => "/"
 end

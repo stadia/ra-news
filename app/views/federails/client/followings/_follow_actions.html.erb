@@ -1,0 +1,36 @@
+<%#
+  Displays buttons to follow/revoke following on a given actor.
+  Requires variables:
+    - user (usually user)
+    - actor (target actor)
+%>
+<p>
+  <% if Federails::Client::FollowingPolicy.new(user, Federails::Following).create? %>
+    <% follow = user.federails_actor.follows? actor %>
+    <% if actor.entity == user %>
+      <button type="button" role="button" disabled="disabled">That's you</button>
+    <% elsif follow %>
+      You are already following (<%= follow.status %>)
+      <%= button_to 'Cancel', federails.client_following_path(follow), method: :delete %>
+    <% else %>
+      <%= button_to "Follow #{actor.username}", federails.follow_client_followings_path, params: { account: actor.at_address }, method: :post %>
+    <% end %>
+
+    <% followed = actor.follows? user.federails_actor %>
+    <% if followed %>
+      <% if followed.pending? %>
+        <%= actor.username %> wants to follow you.
+        <%= button_to 'Accept request', federails.accept_client_following_path(followed), method: :put %>
+      <% else %>
+        <%= actor.username %> follows you.
+        <%= button_to 'Revoke', federails.client_following_path(followed), method: :delete %>
+      <% end %>
+    <% end %>
+  <% elsif !user %>
+    Register or login to be able to follow this actor. Alternatively, search for this address on Fediverse server where
+    you already have an account:
+    <input type="text" readonly="readonly" value="<%= actor.at_address(prefix: '') %>">
+  <% else %>
+    <%= user.class.name %> is not configured to follow/be followed, or has no associated actor.
+  <% end %>
+</p>
