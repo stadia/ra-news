@@ -14,5 +14,10 @@ module Federails
       def current_user
         Current.user
       end
+
+      def request_authentication
+        session[:return_to_after_authenticating] = request.url
+        redirect_to main_app.new_session_path
+      end
   end
 end
