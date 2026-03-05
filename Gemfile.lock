@@ -466,7 +466,7 @@ GEM
       logger
     ruby2ruby (2.6.1)
       sexp_processor (~> 4.6)
-    ruby_llm (1.13.0)
+    ruby_llm (1.13.1)
       base64
       event_stream_parser (~> 1)
       faraday (>= 2.0)
