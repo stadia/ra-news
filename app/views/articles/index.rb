@@ -10,7 +10,7 @@ class Views::Articles::Index < Views::Base
   end
 
   def view_template
-    content_for :title, "RA || 루비 AI 뉴스 - 지난 글들"
+    content_for :title, "Ruby·Rails 기술 글 모음 2,400+ | Ruby-News 아카이브"
 
     div(class: "text-center mb-8 lg:mb-12") do
       render RubyUI::Heading.new(level: 1, class: "font-bold text-white mb-4") { "지난 글들" }
