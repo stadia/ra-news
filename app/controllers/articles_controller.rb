@@ -3,6 +3,7 @@
 # rbs_inline: enabled
 
 require "schema_dot_org/news_article"
+require "schema_dot_org/breadcrumb_list"
 
 class ArticlesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show others ]
@@ -57,12 +58,13 @@ class ArticlesController < ApplicationController
       date_modified:  @article.updated_at.iso8601,
       in_language:    "ko-KR",
       is_based_on:    @article.url,
-      publisher:      SchemaDotOrg::Organization.new(
-        name: "Ruby-News",
-        url:  "https://ruby-news.kr",
-        logo: "https://ruby-news.kr/icon.png"
-      )
+      publisher: HomeController::PUBLISHER_SCHEMA
     )
+    @breadcrumbs = SchemaDotOrg.make_breadcrumbs([
+      { name: "홈",  url: root_url },
+      { name: "기사", url: articles_url },
+      { name: @article.title_ko }
+    ])
 
     # Only load similar articles if embedding exists
     @similar_articles = if @article.embedding.present?
