@@ -1,5 +1,16 @@
+require "schema_dot_org/news_media_organization"
+
 class HomeController < ApplicationController
   allow_unauthenticated_access
+
+  # Shared publisher schema — reused in ArticlesController as well
+  PUBLISHER_SCHEMA = SchemaDotOrg::NewsMediaOrganization.new(
+    name:     "Ruby-News",
+    url:      "https://ruby-news.kr",
+    logo:     "https://ruby-news.kr/icon.png",
+    same_as:  [ "https://ruby.social/@news_kr", "https://x.com/rubynewskr" ],
+    masthead: "https://ruby-news.kr/about"
+  )
 
   def index
     scope = Article.includes(:user, :site).kept.confirmed.related
@@ -10,9 +21,13 @@ class HomeController < ApplicationController
       scope.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
     end
 
-    # Load recent comments for sidebar
+    @news_media_organization = PUBLISHER_SCHEMA
     @recent_comments = Comment.includes(:article, :user).order(created_at: :desc).limit(10)
     render Views::Home::Index.new(articles: @articles, recent_comments: @recent_comments)
+  end
+
+  # GET /about
+  def about
   end
 
   # GET /rss
