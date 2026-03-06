@@ -3,7 +3,6 @@
 require "schema_dot_org"
 require "schema_dot_org/organization"
 require "schema_dot_org/person"
-require_relative "web_page"
 
 module SchemaDotOrg
   ##
@@ -21,7 +20,7 @@ module SchemaDotOrg
   #     date_published: article.published_at&.iso8601,
   #     date_modified:  article.updated_at.iso8601,
   #     in_language:    "ko-KR",
-  #     is_based_on:    SchemaDotOrg::WebPage.new(url: article.url),
+  #     is_based_on:    article.url,
   #     publisher:      SchemaDotOrg::Organization.new(
   #                       name: "Ruby-News",
   #                       url:  "https://ruby-news.kr",
@@ -41,7 +40,8 @@ module SchemaDotOrg
     validated_attr :description,    type: String,                      allow_nil: true
     validated_attr :image,          type: String,                      allow_nil: true
     validated_attr :in_language,    type: String,                      allow_nil: true
-    validated_attr :is_based_on,    type: WebPage,                     allow_nil: true
+    # isBasedOn accepts CreativeWork, Product, or URL (schema.org/URL = plain String)
+    validated_attr :is_based_on,    type: String,                      allow_nil: true
     validated_attr :keywords,       type: union(String, [String]),     allow_nil: true
 
     ##

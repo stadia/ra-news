@@ -52,7 +52,7 @@ class ArticlesController < ApplicationController
       date_published: @article.published_at&.iso8601,
       date_modified:  @article.updated_at.iso8601,
       in_language:    "ko-KR",
-      is_based_on:    SchemaDotOrg::WebPage.new(url: @article.url),
+      is_based_on:    @article.url,
       publisher:      SchemaDotOrg::Organization.new(
         name: "Ruby-News",
         url:  "https://ruby-news.kr",
