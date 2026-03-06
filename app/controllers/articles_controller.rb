@@ -14,6 +14,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
+    cacheable_page!
     scope = Article.kept.confirmed
 
     article = if params[:search].present?
@@ -33,6 +34,7 @@ class ArticlesController < ApplicationController
   end
 
   def others
+    cacheable_page!
     article = Article.kept.confirmed.unrelated
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
     render Views::Articles::Others.new(pagy: @pagy, articles: @articles, search: params[:search])

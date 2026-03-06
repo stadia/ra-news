@@ -55,10 +55,10 @@ class Article < ApplicationRecord
   after_commit :clear_rss_cache, on: [ :create, :update, :destroy ]
 
   before_save do
-    # published_at이 없으면 현재 시간으로 설정.
-    # 단, LLM 요약 전에는 원본 URL에서 최대한 추출하는 것이 좋으므로,
-    # 이 부분은 generate_metadata 내에서 처리되도록 합니다.
-    self.published_at ||= Time.zone.now
+    # published_at이 레코드 생성 시각보다 미래이면 URL에서 잘못 추출된 날짜 →
+    # 생성 시각으로 교정 (create 시에는 created_at이 아직 nil이므로 now 사용)
+    ceiling = created_at || Time.zone.now
+    self.published_at = ceiling if published_at > ceiling
 
     # 제목에 "Show HN"이 포함되어 있으면 discard 처리
     if title.present? && title.match?(/Show HN/i)
