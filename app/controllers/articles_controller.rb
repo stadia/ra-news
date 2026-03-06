@@ -44,7 +44,11 @@ class ArticlesController < ApplicationController
     @page_description = @article.summary_key&.first
     @page_keywords = @article.tags.map(&:name).join(",") unless @article.tags.empty?
     @og_type = "article"
-    @og_article = { published_time: @article.published_at&.iso8601 }.compact
+    @og_article = {
+      published_time: @article.published_at&.iso8601,
+      modified_time:  @article.updated_at.iso8601,
+      tag:            @article.tags.map(&:name).presence
+    }.compact
     @news_article = SchemaDotOrg::NewsArticle.new(
       headline:       @article.title_ko,
       description:    @article.summary_key&.first,
