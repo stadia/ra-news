@@ -5,14 +5,12 @@
 #   public/sitemaps/sitemap.xml.gz   <- 사이트맵 인덱스
 #   public/sitemaps/sitemap1.xml.gz  <- 전체 URL
 #
-# 참고: sitemap_generator 6.3.0의 ping_search_engines가 cgi/session을
-# 사용하는데 Ruby 4.0에서 해당 라이브러리가 제거됨.
-# ping 대신 Google Search Console에 직접 사이트맵을 등록한다.
+# ping 없음: Google은 2023년 말 sitemap ping 엔드포인트를 공식 폐기.
+# 사이트맵 등록은 Google Search Console에서 직접 수행한다.
 
 SitemapGenerator::Sitemap.default_host  = "https://ruby-news.kr"
 SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/"
 SitemapGenerator::Sitemap.compress      = true
-SitemapGenerator::Sitemap.include_index = true
 
 SitemapGenerator::Sitemap.create do
   add articles_path, lastmod: Date.today
