@@ -42,7 +42,7 @@ module SchemaDotOrg
     validated_attr :in_language,    type: String,                      allow_nil: true
     # isBasedOn accepts CreativeWork, Product, or URL (schema.org/URL = plain String)
     validated_attr :is_based_on,    type: String,                      allow_nil: true
-    validated_attr :keywords,       type: union(String, [String]),     allow_nil: true
+    validated_attr :keywords,       type: union(String, [ String ]),     allow_nil: true
 
     ##
     # Required by Google for NewsArticle rich results
