@@ -2,6 +2,8 @@
 
 # rbs_inline: enabled
 
+require "schema_dot_org/news_article"
+
 class ArticlesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show others ]
 
@@ -41,6 +43,26 @@ class ArticlesController < ApplicationController
     @page_title = @article.title_ko
     @page_description = @article.summary_key&.first
     @page_keywords = @article.tags.map(&:name).join(",") unless @article.tags.empty?
+    @og_type = "article"
+    @og_article = {
+      published_time: @article.published_at&.iso8601,
+      modified_time:  @article.updated_at.iso8601,
+      tag:            @article.tags.map(&:name).presence
+    }.compact
+    @news_article = SchemaDotOrg::NewsArticle.new(
+      headline:       @article.title_ko,
+      description:    @article.summary_key&.first,
+      url:            article_url(@article.slug),
+      date_published: @article.published_at&.iso8601,
+      date_modified:  @article.updated_at.iso8601,
+      in_language:    "ko-KR",
+      is_based_on:    @article.url,
+      publisher:      SchemaDotOrg::Organization.new(
+        name: "Ruby-News",
+        url:  "https://ruby-news.kr",
+        logo: "https://ruby-news.kr/icon.png"
+      )
+    )
 
     # Only load similar articles if embedding exists
     @similar_articles = if @article.embedding.present?

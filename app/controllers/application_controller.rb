@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
       user_id: Current.user&.id
     })
     @web_site = SchemaDotOrg::WebSite.new(
-      name: " Ruby-News || 루비 AI 뉴스",
+      name: "Ruby-News | 루비 AI 뉴스",
       url:  "https://ruby-news.kr",
       potential_action: SchemaDotOrg::SearchAction.new(
         target: "https://ruby-news.kr/articles?search={search_term_string}",

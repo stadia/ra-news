@@ -9,7 +9,7 @@ class Views::Home::Index < Views::Base
   end
 
   def view_template
-    content_for :title, "RA || 루비 AI 뉴스"
+    content_for :title, "Ruby-News | 루비·Rails 개발자를 위한 AI 뉴스"
 
     div(class: "flex flex-col lg:flex-row gap-6") do
       div(class: "flex-1 min-w-0") do
