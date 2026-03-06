@@ -21,7 +21,6 @@ SitemapGenerator::Sitemap.create do
   # (updated_at은 배경 Job이 건드릴 때마다 갱신되어 Google 오탐 발생)
   Article.kept
          .confirmed
-         .order(published_at: :desc)
          .find_in_batches(batch_size: 500) do |batch|
     batch.each do |article|
       add article_path(article.slug),
