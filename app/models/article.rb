@@ -78,7 +78,7 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Article"
+  acts_as_federails_data handles: "Note"
 
   on_federails_delete_requested -> { logger.info { "Deletion requested" } }
 
