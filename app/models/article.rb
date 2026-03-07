@@ -55,10 +55,10 @@ class Article < ApplicationRecord
   after_commit :clear_rss_cache, on: [ :create, :update, :destroy ]
 
   before_save do
-    # published_at이 레코드 생성 시각보다 미래이면 URL에서 잘못 추출된 날짜 →
-    # 생성 시각으로 교정 (create 시에는 created_at이 아직 nil이므로 now 사용)
-    ceiling = created_at || Time.zone.now
-    self.published_at = ceiling if published_at > ceiling
+    # published_at이 없으면 현재 시간으로 설정.
+    # 단, LLM 요약 전에는 원본 URL에서 최대한 추출하는 것이 좋으므로,
+    # 이 부분은 generate_metadata 내에서 처리되도록 합니다.
+    self.published_at ||= Time.zone.now
 
     # 제목에 "Show HN"이 포함되어 있으면 discard 처리
     if title.present? && title.match?(/Show HN/i)
@@ -128,7 +128,7 @@ class Article < ApplicationRecord
     response = fetch_url_content
     return false unless response
 
-    update(published_at: url_to_published_at || extract_published_at_from_content(response.body) || Time.zone.now)
+    update(published_at: _published_at(response.body))
   end
 
   # slug로 Article을 찾는 메서드
@@ -210,7 +210,7 @@ class Article < ApplicationRecord
     return if deleted_at.present?
 
     self.slug = URI.parse(url)&.path.split("/").last.split(".").first
-    self.published_at = url_to_published_at || extract_published_at_from_content(fetch_body) || Time.zone.now
+    self.published_at = _published_at(fetch_body)
     return if title.present?
 
     doc = Nokogiri::HTML5(fetch_body)
@@ -298,5 +298,11 @@ class Article < ApplicationRecord
 
   def random_slug
     "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
+  end
+
+  def _published_at(body)
+    date_time = url_to_published_at || extract_published_at_from_content(body) || created_at || Time.zone.now
+    date_time = created_at if date_time.future?
+    date_time
   end
 end
