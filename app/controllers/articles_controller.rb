@@ -52,16 +52,18 @@ class ArticlesController < ApplicationController
       modified_time:  @article.updated_at.iso8601,
       tag:            @article.tags.map(&:name).presence
     }.compact
-    @news_article = SchemaDotOrg::NewsArticle.new(
-      headline:       @article.title_ko,
-      description:    @article.summary_key&.first,
-      url:            article_url(@article.slug),
-      date_published: @article.published_at&.iso8601,
-      date_modified:  @article.updated_at.iso8601,
-      in_language:    "ko-KR",
-      is_based_on:    @article.url,
-      publisher: HomeController::PUBLISHER_SCHEMA
-    )
+    if @article.title.present? || @article.title_ko.present?
+      @news_article = SchemaDotOrg::NewsArticle.new(
+        headline:       @article.title_ko.presence || @article.title,
+        description:    @article.summary_key&.first,
+        url:            article_url(@article.slug),
+        date_published: @article.published_at&.iso8601,
+        date_modified:  @article.updated_at.iso8601,
+        in_language:    "ko-KR",
+        is_based_on:    @article.url,
+        publisher: HomeController::PUBLISHER_SCHEMA
+      )
+    end
     @breadcrumbs = SchemaDotOrg.make_breadcrumbs([
       { name: "홈",  url: root_url },
       { name: "기사", url: articles_url },

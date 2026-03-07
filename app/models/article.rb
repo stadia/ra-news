@@ -128,7 +128,7 @@ class Article < ApplicationRecord
     response = fetch_url_content
     return false unless response
 
-    update(published_at: _published_at)
+    update(published_at: _published_at(response.body))
   end
 
   # slug로 Article을 찾는 메서드
@@ -210,7 +210,7 @@ class Article < ApplicationRecord
     return if deleted_at.present?
 
     self.slug = URI.parse(url)&.path.split("/").last.split(".").first
-    self.published_at = _published_at
+    self.published_at = _published_at(fetch_body)
     return if title.present?
 
     doc = Nokogiri::HTML5(fetch_body)
@@ -300,8 +300,8 @@ class Article < ApplicationRecord
     "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
   end
 
-  def _published_at
-    date_time = url_to_published_at || extract_published_at_from_content(response.body) || created_at || Time.zone.now
+  def _published_at(body)
+    date_time = url_to_published_at || extract_published_at_from_content(body) || created_at || Time.zone.now
     date_time = created_at if date_time.future?
     date_time
   end
