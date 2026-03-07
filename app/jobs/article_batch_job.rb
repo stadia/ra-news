@@ -30,7 +30,7 @@ class ArticleBatchJob < ApplicationJob
   #: (Article article) -> String
   def article_public_url(article)
     Rails.application.routes.url_helpers.article_url(
-      article.slug.presence || article.id,
+      article,
       host: "ruby-news.kr",
       protocol: "https"
     )

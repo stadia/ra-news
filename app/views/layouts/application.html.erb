@@ -24,22 +24,27 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <% set_meta_tags canonical: "https://ruby-news.kr#{request.path}" %>
-    <%= display_meta_tags title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
+    <%= display_meta_tags title: content_for(:title) || "Ruby-News | 루비 AI 뉴스",
+    description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
     og: {
-      title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
+      title: content_for(:title) || "Ruby-News | 루비 AI 뉴스",
       description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
-      site_name: "Ruby-News || 루비 AI 뉴스",
+      site_name: "Ruby-News | 루비 AI 뉴스",
       image: image_url("og_main.png"),
-      type: "website",
+      type: @og_type || "website",
+      url: "https://ruby-news.kr#{request.path}",
+      locale: "ko_KR",
     },
+    article: @og_article,
     twitter: {
-      title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
+      card: "summary_large_image",
+      site: "@rubynewskr",
+      title: content_for(:title) || "Ruby-News | 루비 AI 뉴스",
       description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
-      site_name: "Ruby-News || 루비 AI 뉴스",
       image: image_url("og_main.png"),
-      type: "website",
     } %>
     <meta name="fediverse:creator" content="@news_kr@ruby.social">
+    <link rel="alternate" type="application/rss+xml" title="Ruby-News RSS 피드" href="/rss">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
@@ -63,6 +68,8 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%= @web_site %>
+    <%= @news_media_organization %>
   </head>
   <body
     class="bg-slate-900 text-slate-200 min-h-screen flex flex-col"

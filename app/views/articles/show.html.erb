@@ -1,4 +1,8 @@
 <% content_for :title, @article.title_ko %>
+<% content_for :head do %>
+  <%= @news_article %>
+  <%= @breadcrumbs %>
+<% end %>
 
 <div
   class="space-y-6 lg:space-y-8 max-w-6xl mx-auto"
@@ -47,7 +51,9 @@
           <div>
             <div class="text-xs text-gray-300">발행일</div>
             <div class="font-medium text-gray-200">
-              <%= @article.published_at&.strftime("%Y년 %m월 %d일") || "N/A" %>
+              <time datetime="<%= @article.published_at&.iso8601 %>">
+                <%= @article.published_at&.strftime("%Y년 %m월 %d일") || "N/A" %>
+              </time>
             </div>
           </div>
         </div>
@@ -177,7 +183,7 @@
                 transition-all duration-200 overflow-hidden
               "
             >
-              <%= link_to article_path(article.slug), class: "block p-4 lg:p-6" do %>
+              <%= link_to article_path(article), class: "block p-4 lg:p-6" do %>
                 <%= render RubyUI::Heading.new(
                   level: 3,
                   class:

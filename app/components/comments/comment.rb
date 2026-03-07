@@ -83,7 +83,7 @@ class Components::Comments::Comment < Components::Base
       end
     elsif view_context.authenticated? && @comment.user == Current.user
       button_to(
-        article_comment_path(@article.slug, @comment),
+        article_comment_path(@article, @comment),
         method: :delete,
         data: { turbo_confirm: "정말 삭제하시겠습니까?" },
         form: { data: { turbo_stream: true } },

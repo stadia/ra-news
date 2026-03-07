@@ -31,7 +31,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#index"
 
-  get "rss" => "home#rss", as: :rss
+  get "rss"   => "home#rss",   as: :rss
+  get "about" => "home#about", as: :about
 
   get "login" => "sessions#new", as: :new_session
   post "login" => "sessions#create", as: :session

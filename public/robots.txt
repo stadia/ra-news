@@ -1,3 +1,36 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Disallow: /login
+Disallow: /logout
+Disallow: /signup
+Disallow: /account
+Disallow: /madmin
+Disallow: /pg_reports
+Disallow: /articles?search=
+Disallow: /articles?page=
+
 User-agent: SemrushBot
 Disallow: /
+
+# AI 인용 크롤러 (Perplexity 등) - 허용
+User-agent: PerplexityBot
+Allow: /
+
+# AI 학습 데이터 크롤러 - 차단
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+Sitemap: https://ruby-news.kr/sitemaps/sitemap.xml.gz

@@ -2,6 +2,9 @@
 
 # rbs_inline: enabled
 
+require "schema_dot_org/news_article"
+require "schema_dot_org/breadcrumb_list"
+
 class ArticlesController < ApplicationController
   allow_unauthenticated_access only: %i[ index show others ]
 
@@ -11,6 +14,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
+    cacheable_page!
     scope = Article.kept.confirmed
 
     article = if params[:search].present?
@@ -30,6 +34,7 @@ class ArticlesController < ApplicationController
   end
 
   def others
+    cacheable_page!
     article = Article.kept.confirmed.unrelated
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
     render Views::Articles::Others.new(pagy: @pagy, articles: @articles, search: params[:search])
@@ -41,6 +46,29 @@ class ArticlesController < ApplicationController
     @page_title = @article.title_ko
     @page_description = @article.summary_key&.first
     @page_keywords = @article.tags.map(&:name).join(",") unless @article.tags.empty?
+    @og_type = "article"
+    @og_article = {
+      published_time: @article.published_at&.iso8601,
+      modified_time:  @article.updated_at.iso8601,
+      tag:            @article.tags.map(&:name).presence
+    }.compact
+    if @article.title.present? || @article.title_ko.present?
+      @news_article = SchemaDotOrg::NewsArticle.new(
+        headline:       @article.title_ko.presence || @article.title,
+        description:    @article.summary_key&.first,
+        url:            article_url(@article),
+        date_published: @article.published_at&.iso8601,
+        date_modified:  @article.updated_at.iso8601,
+        in_language:    "ko-KR",
+        is_based_on:    @article.url,
+        publisher: HomeController::PUBLISHER_SCHEMA
+      )
+    end
+    @breadcrumbs = SchemaDotOrg.make_breadcrumbs([
+      { name: "홈",  url: root_url },
+      { name: "기사", url: articles_url },
+      { name: @article.title_ko }
+    ])
 
     # Only load similar articles if embedding exists
     @similar_articles = if @article.embedding.present?
@@ -71,14 +99,14 @@ class ArticlesController < ApplicationController
         format.html { redirect_to article_path(@article), notice: "Article was successfully created." }
       else
         if @article.errors.details[:origin_url].any? { |e| e[:error] == :taken } && @article.errors.details[:url].any? { |e| e[:error] == :taken }
-          format.html { redirect_to article_path(existing_article&.slug), notice: "Article already exists." }
+          format.html { redirect_to article_path(existing_article), notice: "Article already exists." }
         else
           format.html { render Views::Articles::New.new(article: @article), status: :unprocessable_entity }
         end
       end
     rescue ActiveRecord::RecordNotUnique => e
       logger.error e
-      format.html { redirect_to article_path(existing_article&.slug), notice: "Article already exists." }
+      format.html { redirect_to article_path(existing_article), notice: "Article already exists." }
     end
   end
 
@@ -88,8 +116,7 @@ class ArticlesController < ApplicationController
       id = params[:id]
       return head :bad_request if id.blank?
 
-      @article = Article.kept.find_by_slug(id) || Article.kept.find_by(id: id)
-      raise ActiveRecord::RecordNotFound if @article.nil?
+      @article = Article.kept.friendly.find(id)
     end
 
     # Only allow a list of trusted parameters through.

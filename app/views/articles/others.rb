@@ -10,7 +10,7 @@ class Views::Articles::Others < Views::Base
   end
 
   def view_template
-    content_for :title, "RA || 루비 AI 뉴스 - 지난 글들"
+    content_for :title, "그 밖의 뉴스 | Ruby-News"
 
     div(class: "text-center mb-8 lg:mb-12") do
       render RubyUI::Heading.new(level: 1, class: "font-bold text-white mb-4") { "그 밖의 뉴스" }

@@ -39,7 +39,7 @@ class Components::Comments::DeleteModal < Components::Base
                 "댓글 내용: #{truncate(@comment.body, length: 50)}"
               end
             end
-            form_with url: verify_password_article_comment_path(@article.slug, @comment),
+            form_with url: verify_password_article_comment_path(@article, @comment),
                         method: :post, local: false, class: "space-y-4" do |f|
                           div(class: "space-y-2") do
                             f.label :password, "비밀번호", class: "block text-sm font-medium text-slate-300"

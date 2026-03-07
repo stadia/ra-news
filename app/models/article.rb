@@ -3,6 +3,9 @@
 # rbs_inline: enabled
 
 class Article < ApplicationRecord
+  extend FriendlyId
+  friendly_id :slug, use: :slugged
+
   include PgSearch::Model
 
   include Discard::Model
@@ -95,7 +98,10 @@ class Article < ApplicationRecord
       set_webpage_metadata(response.body)
     end
 
-    self.slug = random_slug unless slug.present?
+    unless slug.present?
+      base = title.presence
+      self.slug = base ? base.parameterize.presence || random_slug : random_slug
+    end
 
     # slug 중복 처리 (slug가 설정된 후에만 확인)
     self.slug = "#{slug}-#{SecureRandom.hex(4)}" if slug.present? && Article.exists?(slug: self.slug)
@@ -134,7 +140,7 @@ class Article < ApplicationRecord
     response = fetch_url_content
     return false unless response
 
-    update(published_at: url_to_published_at || extract_published_at_from_content(response.body) || Time.zone.now)
+    update(published_at: _published_at(response.body))
   end
 
   # slug로 Article을 찾는 메서드
@@ -200,7 +206,6 @@ class Article < ApplicationRecord
   end
 
   def set_youtube_metadata #: void
-    self.slug = youtube_id
     # self.url = "https://#{YOUTUBE_NORMALIZED_HOST}/watch?v=#{youtube_id}"
     video = Yt::Video.new id: youtube_id
     self.published_at = video.published_at if video&.published_at.is_a?(Time)
@@ -215,8 +220,7 @@ class Article < ApplicationRecord
     logger.debug "Setting webpage metadata for #{url}"
     return if deleted_at.present?
 
-    self.slug = URI.parse(url)&.path.split("/").last.split(".").first
-    self.published_at = url_to_published_at || extract_published_at_from_content(fetch_body) || Time.zone.now
+    self.published_at = _published_at(fetch_body)
     return if title.present?
 
     doc = Nokogiri::HTML5(fetch_body)
@@ -302,7 +306,17 @@ class Article < ApplicationRecord
     Rails.cache.delete("rss_articles")
   end
 
+  def should_generate_new_friendly_id?
+    false
+  end
+
   def random_slug
     "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
+  end
+
+  def _published_at(body)
+    date_time = url_to_published_at || extract_published_at_from_content(body) || created_at || Time.zone.now
+    date_time = created_at if date_time.future?
+    date_time
   end
 end
