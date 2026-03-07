@@ -1,1 +1,1 @@
-json.partial! 'federails/client/actors/actor', actor: @actor
+json.partial! "federails/client/actors/actor", actor: @actor

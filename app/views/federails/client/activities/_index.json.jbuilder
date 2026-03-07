@@ -1,1 +1,1 @@
-json.array! @activities, partial: 'federails/client/activities/activity', as: :activity
+json.array! @activities, partial: "federails/client/activities/activity", as: :activity

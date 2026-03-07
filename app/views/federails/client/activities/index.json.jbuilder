@@ -1,1 +1,1 @@
-json.partial! 'federails/client/activities/index'
+json.partial! "federails/client/activities/index"
