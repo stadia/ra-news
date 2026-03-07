@@ -56,7 +56,7 @@ class ArticlesController < ApplicationController
       @news_article = SchemaDotOrg::NewsArticle.new(
         headline:       @article.title_ko.presence || @article.title,
         description:    @article.summary_key&.first,
-        url:            article_url(@article.slug),
+        url:            article_url(@article),
         date_published: @article.published_at&.iso8601,
         date_modified:  @article.updated_at.iso8601,
         in_language:    "ko-KR",
@@ -99,14 +99,14 @@ class ArticlesController < ApplicationController
         format.html { redirect_to article_path(@article), notice: "Article was successfully created." }
       else
         if @article.errors.details[:origin_url].any? { |e| e[:error] == :taken } && @article.errors.details[:url].any? { |e| e[:error] == :taken }
-          format.html { redirect_to article_path(existing_article&.slug), notice: "Article already exists." }
+          format.html { redirect_to article_path(existing_article), notice: "Article already exists." }
         else
           format.html { render Views::Articles::New.new(article: @article), status: :unprocessable_entity }
         end
       end
     rescue ActiveRecord::RecordNotUnique => e
       logger.error e
-      format.html { redirect_to article_path(existing_article&.slug), notice: "Article already exists." }
+      format.html { redirect_to article_path(existing_article), notice: "Article already exists." }
     end
   end
 
@@ -116,8 +116,7 @@ class ArticlesController < ApplicationController
       id = params[:id]
       return head :bad_request if id.blank?
 
-      @article = Article.kept.find_by_slug(id) || Article.kept.find_by(id: id)
-      raise ActiveRecord::RecordNotFound if @article.nil?
+      @article = Article.kept.friendly.find(id)
     end
 
     # Only allow a list of trusted parameters through.

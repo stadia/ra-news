@@ -3,6 +3,9 @@
 # rbs_inline: enabled
 
 class Article < ApplicationRecord
+  extend FriendlyId
+  friendly_id :slug, use: :slugged
+
   include PgSearch::Model
 
   include Discard::Model
@@ -89,7 +92,10 @@ class Article < ApplicationRecord
       set_webpage_metadata(response.body)
     end
 
-    self.slug = random_slug unless slug.present?
+    unless slug.present?
+      base = title.presence
+      self.slug = base ? base.parameterize.presence || random_slug : random_slug
+    end
 
     # slug 중복 처리 (slug가 설정된 후에만 확인)
     self.slug = "#{slug}-#{SecureRandom.hex(4)}" if slug.present? && Article.exists?(slug: self.slug)
@@ -194,7 +200,6 @@ class Article < ApplicationRecord
   end
 
   def set_youtube_metadata #: void
-    self.slug = youtube_id
     # self.url = "https://#{YOUTUBE_NORMALIZED_HOST}/watch?v=#{youtube_id}"
     video = Yt::Video.new id: youtube_id
     self.published_at = video.published_at if video&.published_at.is_a?(Time)
@@ -209,7 +214,6 @@ class Article < ApplicationRecord
     logger.debug "Setting webpage metadata for #{url}"
     return if deleted_at.present?
 
-    self.slug = URI.parse(url)&.path.split("/").last.split(".").first
     self.published_at = _published_at(fetch_body)
     return if title.present?
 
@@ -294,6 +298,10 @@ class Article < ApplicationRecord
 
   def clear_rss_cache
     Rails.cache.delete("rss_articles")
+  end
+
+  def should_generate_new_friendly_id?
+    false
   end
 
   def random_slug

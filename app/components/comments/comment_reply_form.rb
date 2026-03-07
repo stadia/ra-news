@@ -43,7 +43,7 @@ class Components::Comments::CommentReplyForm < Components::Base
   def reply_form_fields
     form_with(
       model: [ @article, @comment ],
-      url: article_comments_path(@article.slug),
+      url: article_comments_path(@article),
       local: false,
       class: "space-y-3",
       data: { action: "turbo:submit-end->reply-form#close" }

@@ -28,7 +28,7 @@ class Components::Articles::Article < Components::Base
     display_title = @article.title_ko || @article.title
     div(class: "mb-3") do
       h2(class: "text-xl font-semibold text-gray-100 hover:text-green-400") do
-        link_to display_title, article_path(article.slug)
+        link_to display_title, article_path(article)
       end
       if @article.title_ko.present? && @article.title_ko != @article.title
         h3(class: "text-l text-gray-100") { article.title }

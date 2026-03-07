@@ -37,7 +37,7 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def comment_form_fields
-    form_with(model: [ @article, @comment ], url: article_comments_path(@article.slug), local: false, class: "space-y-4") do |f|
+    form_with(model: [ @article, @comment ], url: article_comments_path(@article), local: false, class: "space-y-4") do |f|
       error_messages if @comment.errors.any?
       guest_fields(f) unless view_context.authenticated?
       body_field(f)
