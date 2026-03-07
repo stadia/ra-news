@@ -12,6 +12,11 @@ class ContentServiceTest < ActiveSupport::TestCase
     end
   end
 
+  def setup
+    # SCRAPLING_URL이 설정되어 있으면 mcp_fetch_html이 호출되어 Faraday stub이 무시됨
+    ENV.delete("SCRAPLING_URL")
+  end
+
   # HTML 콘텐츠 가져오기 테스트
   test "execute_html은 HTML 콘텐츠를 성공적으로 가져와 Readability로 파싱한다" do
     article = articles(:ruby_article)
