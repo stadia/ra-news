@@ -4,8 +4,8 @@
 # Special requirements:
 #  * csharp: Requires the presence of a .sln file in the project folder.
 languages:
-  - ruby
-  - typescript
+- ruby
+- typescript
 
 # whether to use project's .gitignore files to ignore files
 ignore_all_files_in_gitignore: true
@@ -103,3 +103,7 @@ symbol_info_budget:
 # Note: the backend is fixed at startup. If a project with a different backend
 # is activated post-init, an error will be returned.
 language_backend: LSP
+
+# list of regex patterns which, when matched, mark a memory entry as read‑only.
+# Extends the list from the global configuration, merging the two lists.
+read_only_memory_patterns: []
