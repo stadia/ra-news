@@ -1,5 +1,4 @@
 <%= form_for following, url: federails.client_following_url do |f| %>
-  <h1>DELETE ME</h1>
   <% if following.errors.any? %>
     <div class="error_explanation">
       <h2><%= pluralize(following.errors.count, 'error') %> prohibited this following from being saved:</h2>
@@ -13,7 +12,7 @@
 
   <div class="field">
     <%= f.label :target_actor %>
-    <%= f.collection_select :target_actor_id, Federails::Actor.all, :id, :name %>
+    <%= f.collection_select :target_actor_id, Federails::Actor.order(:name).limit(100), :id, :name %>
   </div>
 
   <div class="actions">

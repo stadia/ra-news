@@ -90,7 +90,9 @@
             <% if authenticated? %>
               <%= nav_link_to "피드", "/app/feed" %>
               <%= nav_link_to "팔로우 검색", "/app/actors/lookup" %>
-              <%= nav_link_to "내 프로필", "/app/actors/#{Current.user.federails_actor&.uuid}" %>
+              <% if Current.user.federails_actor %>
+                <%= nav_link_to "내 프로필", federails.client_actor_path(Current.user.federails_actor) %>
+              <% end %>
               <%= nav_link_to "로그아웃", main_app.logout_path %>
             <% else %>
               <%= nav_link_to "로그인", main_app.new_session_path %>

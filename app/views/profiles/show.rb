@@ -49,7 +49,7 @@ class Views::Profiles::Show < Views::Base
   end
 
   def fediverse_badge
-    site_host = Federails.configuration.site_host.sub(%r{\Ahttps?://}, "")
+    site_host = URI.parse(Federails.configuration.site_host).host
     handle = "@#{@user.username}@#{site_host}"
 
     div(class: "flex flex-col sm:flex-row sm:items-center gap-3") do
