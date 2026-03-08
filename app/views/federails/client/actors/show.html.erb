@@ -1,0 +1,112 @@
+<h1><%= @actor.name %></h1>
+
+<section>
+  <%= render 'federails/client/followings/follow_actions', user: current_user, actor: @actor %>
+</section>
+
+<section>
+  <% if @actor.local? %>
+    <%= link_to 'All activities', federails.client_actor_activities_path(@actor) %>
+  <% elsif @actor.profile_url %>
+    <%= link_to 'Visit profile', @actor.profile_url %>
+  <% end %>
+</section>
+
+<section>
+  <h2>Actor details</h2>
+
+  <p>
+    <b>Federated url:</b>
+    <%= @actor.federated_url %>
+  </p>
+
+  <p>
+    <b>Username:</b>
+    <%= @actor.username %>
+  </p>
+
+  <p>
+    <b>Inbox URL:</b>
+    <%= @actor.inbox_url %>
+  </p>
+
+  <p>
+    <b>Outbox URL:</b>
+    <%= @actor.outbox_url %>
+  </p>
+
+  <p>
+    <b>Followers URL:</b>
+    <%= @actor.followers_url %>
+  </p>
+
+  <p>
+    <b>Followings URL:</b>
+    <%= @actor.followings_url %>
+  </p>
+
+  <p>
+    <b>Profile url:</b>
+    <% if @actor.profile_url %>
+      <%= link_to 'Profile', @actor.profile_url %>
+    <% end %>
+  </p>
+
+  <p>
+    <b>Federation address:</b>
+    <%= @actor.at_address %>
+  </p>
+
+  <p>
+    <% if @actor.local? && @actor.entity_configuration[:profile_url_method] %>
+      <b>Home page:</b>
+      <%= link_to @actor.entity.send(@actor.entity_configuration[:username_field]),
+                  Rails.application.routes.url_helpers.send(@actor.entity_configuration[:profile_url_method], @actor.entity)
+      %>
+    <% elsif @actor.profile_url %>
+      <b>Federation profile URL (JSON):</b>
+      <%= link_to @actor.name, @actor.profile_url %>
+    <% else %>
+      (No homepage)
+    <% end %>
+  </p>
+</section>
+
+<hr>
+
+<section>
+  <h2>Follows <small>(<em>Who is followed?</em>)</small></h2>
+
+  <% if @actor.following_follows.size.zero? %>
+    <p><%= @actor.username %> follows nothing</p>
+  <% end %>
+
+  <% @actor.following_follows.each do |following| %>
+    <%= render 'federails/client/followings/follow', following: following %>
+  <% end %>
+</section>
+
+<section>
+  <h2>Followers <small>(<em>Who follows?</em>)</small></h2>
+
+  <% if @actor.following_followers.size.zero? %>
+    <p>Nothing follows <%= @actor.username %></p>
+  <% end %>
+
+  <% @actor.following_followers.each do |following| %>
+    <%= render 'federails/client/followings/follower', following: following %>
+  <% end %>
+</section>
+
+<section>
+  <%# FIXME: Fetch distant content somehow  %>
+  <h2>10 last activities</h2>
+
+  <% activities = @actor.activities.last(10) %>
+  <% if activities.size.zero? %>
+    <p>No activity to display</p>
+  <% end %>
+  <% activities.each do |activity| %>
+    <%= render 'federails/client/activities/activity', activity: activity %>
+  <% end %>
+</section>

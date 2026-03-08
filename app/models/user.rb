@@ -6,6 +6,7 @@ class User < ApplicationRecord
   has_secure_password
   has_many :sessions, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+  has_many :articles, dependent: :nullify
 
   # Email validations
   validates :email_address, presence: true,
@@ -26,6 +27,16 @@ class User < ApplicationRecord
   # Email normalization
   normalizes :email_address, with: ->(e) { e.strip.downcase }
   normalizes :name, with: ->(n) { n.strip }
+
+  # Include the concern here:
+  include Federails::ActorEntity
+
+  # Configure field names
+  acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_profile_url
+
+  def to_param
+    username.presence || super
+  end
 
   # Scopes
   scope :with_role, ->(role_name) do

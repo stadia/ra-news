@@ -24,6 +24,12 @@ class Comment < ApplicationRecord
   validate :validate_guest_password_length
   after_commit :enqueue_reply_notification, on: :create
 
+  include Federails::DataEntity
+
+  acts_as_federails_data handles: "Note"
+
+  on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+
   def content
     body
   end

@@ -44,8 +44,13 @@ Rails.application.routes.draw do
   get "social/:provider/authorize", to: "social#provider_authorize", as: :social_provider_authorize
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
 
+  # Public user profiles at /@username (also used as ActivityPub profile_url)
+  get "/@:username", to: "profiles#show", as: :user_profile
+
   constraints AuthenticatedConstraint.new do
     mount MissionControl::Jobs::Engine, at: "/jobs"
     mount PgReports::Engine, at: "/pg_reports"
   end
+
+  mount Federails::Engine => "/"
 end
