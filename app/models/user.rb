@@ -34,10 +34,6 @@ class User < ApplicationRecord
   # Configure field names
   acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_profile_url
 
-  def to_param
-    username.presence || super
-  end
-
   # Scopes
   scope :with_role, ->(role_name) do
     where("? = ANY (roles)", role_name.to_s)
