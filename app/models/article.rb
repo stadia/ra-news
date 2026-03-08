@@ -83,13 +83,12 @@ class Article < ApplicationRecord
   on_federails_delete_requested -> { logger.info { "Deletion requested" } }
 
   def to_activitypub_object
-    Federails::DataTransformer::Note.to_federation self,
-                                                   content: title_ko.presence || title,
-                                                   name: title,
-                                                   custom: {
-                                                     "url" => url,
-                                                     "summary" => summary_key
-                                                   }
+    Federails::DataTransformer::Note.to_federation(
+      self,
+      content: title_ko.presence || title,
+      name: title,
+      custom: { "summary" => summary_key }
+    ).merge("attributedTo" => url)
   end
 
   def self.from_activitypub_object(hash)
