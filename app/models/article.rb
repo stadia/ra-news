@@ -78,7 +78,7 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at
+  acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at, should_federate_method: :ready_to_federate?
 
   on_federails_delete_requested :discard!
 
@@ -218,12 +218,23 @@ class Article < ApplicationRecord
   end
 
   def base_content
-    title = title_ko.presence || title
+    title = title_ko.presence || self.title
     summary = summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
-    { title: title, summary: summary }
+    { title:, summary: }
+  end
+
+  def ready_to_federate?
+    title_ko.present? && user.present?
   end
 
   private
+
+  def create_federails_activity(action)
+    if action == "Update" && !Federails::Activity.exists?(entity: self, action: "Create")
+      action = "Create"
+    end
+    super(action)
+  end
 
   def set_initial_url_and_host #: void
     parsed_url = URI.parse(url)
