@@ -82,6 +82,8 @@ class Article < ApplicationRecord
 
   on_federails_delete_requested :discard!
 
+  on_federails_undelete_requested :undiscard!
+
   def to_activitypub_object
     content_data = base_content
     content = "#{content_data[:title]}\n\n#{content_data[:summary]}"
