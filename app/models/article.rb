@@ -89,8 +89,11 @@ class Article < ApplicationRecord
     Federails::DataTransformer::Note.to_federation(
       self,
       content: content.join("\n\n"),
-      name: title,
-      custom: { "url" => url }
+      custom: {
+        "url" => Rails.application.routes.url_helpers.article_url(self, host: Federails.configuration.site_host, port: Federails.configuration.site_port),
+        "to" => [ "https://www.w3.org/ns/activitystreams#Public" ],
+        "cc" => [ user&.federails_actor&.followers_url ].compact
+      }
     )
   end
 
