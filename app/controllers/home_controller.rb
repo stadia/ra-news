@@ -23,7 +23,7 @@ class HomeController < ApplicationController
     end
 
     @news_media_organization = PUBLISHER_SCHEMA
-    @recent_comments = Comment.includes(:article, :user).order(created_at: :desc).limit(10)
+    @recent_comments = Comment.joins(:article).includes(:article, :user).where(article: { deleted_at: nil }).order(created_at: :desc).limit(10)
     render Views::Home::Index.new(articles: @articles, recent_comments: @recent_comments)
   end
 
