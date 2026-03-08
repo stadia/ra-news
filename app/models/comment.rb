@@ -26,9 +26,20 @@ class Comment < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note"
+  acts_as_federails_data handles: "Note", actor_entity_method: :user
 
   on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+
+  def to_activitypub_object
+    Federails::DataTransformer::Note.to_federation self, content: body
+  end
+
+  def self.from_activitypub_object(hash)
+    {
+      federated_url: hash["id"],
+      body: hash["content"]
+    }
+  end
 
   def content
     body

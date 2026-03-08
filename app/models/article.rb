@@ -78,9 +78,25 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note"
+  acts_as_federails_data handles: "Note", actor_entity_method: :user
 
   on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+
+  def to_activitypub_object
+    Federails::DataTransformer::Note.to_federation self,
+                                                   content: title_ko.presence || title,
+                                                   name: title,
+                                                   custom: { "url" => url }
+  end
+
+  def self.from_activitypub_object(hash)
+    {
+      federated_url: hash["id"],
+      url: hash["url"] || hash["id"],
+      title: hash["name"],
+      title_ko: hash["content"]
+    }
+  end
 
   def generate_metadata #: void
     return unless url.is_a?(String)
