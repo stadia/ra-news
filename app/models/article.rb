@@ -98,6 +98,10 @@ class Article < ApplicationRecord
     }
   end
 
+  def self.handle_federated_object?(hash)
+    hash["inReplyTo"].blank?
+  end
+
   def generate_metadata #: void
     return unless url.is_a?(String)
 

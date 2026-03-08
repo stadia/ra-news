@@ -41,6 +41,10 @@ class Comment < ApplicationRecord
     }
   end
 
+  def self.handle_federated_object?(hash)
+    hash["inReplyTo"].present?
+  end
+
   def content
     body
   end
