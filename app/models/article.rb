@@ -86,7 +86,10 @@ class Article < ApplicationRecord
     Federails::DataTransformer::Note.to_federation self,
                                                    content: title_ko.presence || title,
                                                    name: title,
-                                                   custom: { "url" => url }
+                                                   custom: {
+                                                     "url" => url,
+                                                     "summary" => summary_key
+                                                   }
   end
 
   def self.from_activitypub_object(hash)
