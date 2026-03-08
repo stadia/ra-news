@@ -20,13 +20,6 @@ class SocialMediaService < Dry::Operation
 
   protected
 
-  #: (Article article) -> String
-  def base_content(article)
-    title = article.title_ko.presence || article.title
-    summary = article.summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
-    { title: title, summary: summary }
-  end
-
   def logger
     Rails.logger
   end

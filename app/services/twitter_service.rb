@@ -56,7 +56,7 @@ class TwitterService < SocialMediaService
 
   #: (Article article) -> String
   def build_post_text(article)
-    content_data = base_content(article)
+    content_data = article.base_content
     content = "#{content_data[:title]}\n#{content_data[:summary]}"
 
     # 태그와 링크를 먼저 생성해서 길이 계산 (taggings_count가 가장 높은 태그 하나만)

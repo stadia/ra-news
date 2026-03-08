@@ -56,7 +56,7 @@ class MastodonService < SocialMediaService
 
   #: (Article article) -> String
   def build_post_text(article)
-    content_data = base_content(article)
+    content_data = article.base_content
     content = "#{content_data[:title]}\n\n#{content_data[:summary]}"
 
     # Mastodon은 여러 태그를 지원하므로 상위 3개 태그 사용

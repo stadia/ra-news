@@ -83,15 +83,18 @@ class Article < ApplicationRecord
   on_federails_delete_requested -> { logger.info { "Deletion requested" } }
 
   def to_activitypub_object
-    content = [ title_ko.presence || title ]
-    content.concat(summary_key) if summary_key.is_a?(Array)
+    content_data = base_content
+    content = "#{content_data[:title]}\n\n#{content_data[:summary]}"
+    link = Rails.application.routes.url_helpers.article_url(self)
+
+    # Mastodon은 URL을 실제 길이로 계산하므로 링크 길이도 포함
+    reserved_space = link.length + 2 # 공백과 줄바꿈
+    available_content_length = MastodonService::MASTODON_CONFIG.character_limit - MastodonService::MASTODON_CONFIG.formatting_buffer - reserved_space
+    truncated_content = content.truncate([ available_content_length, 1 ].max, omission: "...")
 
     Federails::DataTransformer::Note.to_federation(
       self,
-      content: content.join("\n\n"),
-      custom: {
-        "url" => Rails.application.routes.url_helpers.article_url(self, host: Federails.configuration.site_host, port: Federails.configuration.site_port)
-      }
+      content: "#{truncated_content}\n\n#{link}"
     )
   end
 
@@ -210,6 +213,12 @@ class Article < ApplicationRecord
     else
       "알 수 없음"
     end
+  end
+
+  def base_content
+    title = title_ko.presence || title
+    summary = summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
+    { title: title, summary: summary }
   end
 
   private
