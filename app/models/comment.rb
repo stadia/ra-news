@@ -45,7 +45,8 @@ class Comment < ApplicationRecord
       federated_url: hash["id"],
       body: ActionController::Base.helpers.strip_tags(hash["content"]).squish,
       article: article,
-      guest_name: hash.dig("attributedTo").to_s.split("/").last || "Fediverse"
+      guest_name: hash.dig("attributedTo").to_s.split("/").last || "Fediverse",
+      password: SecureRandom.hex(15)
     }
   end
 
