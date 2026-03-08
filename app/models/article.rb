@@ -78,9 +78,17 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note"
+  acts_as_federails_data handles: "Note",
+                          actor_entity_method: :user,
+                          should_federate_method: :federails_applicable?
+
+  belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
 
   on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+
+  def federails_applicable?
+    user.present? && user.federails_actor.present?
+  end
 
   def generate_metadata #: void
     return unless url.is_a?(String)
@@ -187,6 +195,12 @@ class Article < ApplicationRecord
   end
 
   private
+
+  def set_federails_actor
+    return if federails_actor.present?
+
+    self.federails_actor = user&.federails_actor
+  end
 
   def set_initial_url_and_host #: void
     parsed_url = URI.parse(url)

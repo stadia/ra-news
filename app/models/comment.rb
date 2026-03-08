@@ -26,9 +26,17 @@ class Comment < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note"
+  acts_as_federails_data handles: "Note",
+                          actor_entity_method: :user,
+                          should_federate_method: :federails_applicable?
+
+  belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
 
   on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+
+  def federails_applicable?
+    user.present? && user.federails_actor.present?
+  end
 
   def content
     body
@@ -43,6 +51,12 @@ class Comment < ApplicationRecord
   end
 
   private
+
+  def set_federails_actor
+    return if federails_actor.present?
+
+    self.federails_actor = user&.federails_actor
+  end
 
   def validate_user_or_guest
     if user_id.nil?
