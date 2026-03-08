@@ -5,7 +5,7 @@ Rails.application.config.after_initialize do
     private
 
     def current_user
-      Current.user
+      nil
     end
   end
 end

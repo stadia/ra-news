@@ -1,17 +1,3 @@
-GIT
-  remote: https://github.com/stadia/federails.git
-  revision: 21e37e85b2238016f3f31afb9e33066847d92a65
-  specs:
-    federails (0.7.0)
-      faraday
-      faraday-follow_redirects
-      jbuilder (~> 2.7)
-      json-ld (>= 3.2.0)
-      json-ld-preloaded (>= 3.2.0)
-      kaminari (>= 1.2.0)
-      pundit (>= 2.3.0)
-      rails (>= 7.0.4)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -166,6 +152,15 @@ GEM
       net-http (~> 0.5)
     faraday-retry (2.4.0)
       faraday (~> 2.0)
+    federails (0.7.0)
+      faraday
+      faraday-follow_redirects
+      jbuilder (~> 2.7)
+      json-ld (>= 3.2.0)
+      json-ld-preloaded (>= 3.2.0)
+      kaminari (>= 1.2.0)
+      pundit (>= 2.3.0)
+      rails (>= 7.0.4)
     ffi (1.17.3-aarch64-linux-gnu)
     ffi (1.17.3-arm64-darwin)
     ffi (1.17.3-x86_64-linux-gnu)
@@ -672,7 +667,7 @@ DEPENDENCIES
   dotenv-rails
   dry-operation
   faker
-  federails!
+  federails
   friendly_id
   google-protobuf
   hairtrigger
