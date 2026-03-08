@@ -52,7 +52,8 @@ class HackerNewsSiteJob < ApplicationJob
         url: item["url"],
         origin_url: item["url"],
         published_at: Time.at(item["time"]),
-        site: site
+        site: site,
+        user: User.find_by(username: "bot")
       )
       sleep 1
     end

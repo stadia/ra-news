@@ -55,7 +55,7 @@ class GmailArticleJob < ApplicationJob
   # Creates an article for a given link.
   #: (String link, Site site) -> void
   def create_article(link, site)
-    Article.create!(url: link, origin_url: link, site: site)
+    Article.create!(url: link, origin_url: link, site: site, user: User.find_by(username: "bot"))
     logger.info "Created article for #{link}"
     sleep 1
   rescue ActiveRecord::RecordInvalid => e

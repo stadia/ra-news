@@ -6,6 +6,7 @@ module RssHelper
     # Double check existence to prevent race conditions
     return if Article.exists?(origin_url: attributes[:origin_url])
 
+    attributes.merge!(user: User.find_by(username: "bot"))
     Article.create!(attributes)
     logger.info "Created article for #{attributes[:url]}"
     sleep 1
