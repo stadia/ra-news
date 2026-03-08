@@ -34,6 +34,8 @@ class User < ApplicationRecord
   # Configure field names
   acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_profile_url
 
+  after_followed :accept_follow
+
   # Scopes
   scope :with_role, ->(role_name) do
     where("? = ANY (roles)", role_name.to_s)
@@ -54,5 +56,9 @@ class User < ApplicationRecord
 
   def roles=(role_names)
     self[:roles] = role_names.is_a?(Array) ? role_names.uniq : role_names.split(" ").uniq
+  end
+
+  def accept_follow(following)
+    following.respond_to?(:accept!) && following.accept!
   end
 end

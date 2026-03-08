@@ -78,9 +78,9 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note", actor_entity_method: :user
+  acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at
 
-  on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+  on_federails_delete_requested :discard!
 
   def to_activitypub_object
     content_data = base_content
