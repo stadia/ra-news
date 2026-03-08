@@ -35,9 +35,17 @@ class Comment < ApplicationRecord
   end
 
   def self.from_activitypub_object(hash)
+    # inReplyTo URL에서 article ID 추출 (예: /federation/published/articles/8686)
+    article = if hash["inReplyTo"].present?
+      article_id = hash["inReplyTo"].to_s[%r{/articles/(\d+)}, 1]
+      Article.find_by(id: article_id)
+    end
+
     {
       federated_url: hash["id"],
-      body: hash["content"]
+      body: ActionController::Base.helpers.strip_tags(hash["content"]).squish,
+      article: article,
+      guest_name: hash.dig("attributedTo").to_s.split("/").last || "Fediverse"
     }
   end
 
@@ -50,11 +58,11 @@ class Comment < ApplicationRecord
   end
 
   def author_name
-    user&.name || guest_name || "익명"
+    user&.name || guest_name || federails_actor&.username || "익명"
   end
 
   def guest?
-    user_id.nil?
+    user_id.nil? && federated_url.blank?
   end
 
   private
