@@ -1,3 +1,5 @@
+require "federails/data_transformer/note"
+
 Federails.config_from "federails"
 
 Rails.application.config.after_initialize do
