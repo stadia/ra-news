@@ -26,41 +26,29 @@ Rails.application.config.after_initialize do
       private
 
       def inboxes_for(activity)
+        Rails.logger.info { "[Federation] Activity##{activity.id} (#{activity.action} #{activity.entity_type}##{activity.entity_id})" }
         return [] unless activity.actor.local?
 
         actor_inbox = activity.actor.inbox_url
-
-        # DB에서 원격 팔로워의 inbox를 직접 조회
-        follower_inboxes = Federails::Following
-          .accepted
-          .where(target_actor: activity.actor)
-          .includes(:actor)
-          .filter_map { |f| f.actor.inbox_url unless f.actor.local? }
-
-        # addressing에서 followers_url을 제외한 직접 언급된 actor 처리
-        followers_urls = [
-          activity.actor.followers_url,
-          (activity.entity.try(:followers_url) if activity.entity.try(:local?))
-        ].compact
-
+        Rails.logger.info "[Federation] actor_inbox #{actor_inbox}"
         addressing = [
-          activity.to, activity.cc, activity.try(:bto), activity.try(:bcc), activity.try(:audience)
-        ].flatten.compact.uniq
-          .reject { |url| url == Fediverse::Collection::PUBLIC }
-          .reject { |url| followers_urls.include?(url) }
+          activity.to,
+          activity.cc,
+          activity.try(:bto),
+          activity.try(:bcc),
+          activity.try(:audience)
+        ].flatten.compact.uniq.reject { |url|
+          Rails.logger.info "[Federation] url #{url}"
+          url == Fediverse::Collection::PUBLIC
+        }
 
-        direct_inboxes = addressing.filter_map do |url|
-          Federails::Actor.find_or_create_by_federation_url(url).inbox_url
+        addressing.flat_map do |url|
+          actor = Federails::Actor.find_or_create_by_federation_url(url)
+          Rails.logger.info "[Federation] actor #{actor}"
+          [ actor.inbox_url ]
         rescue ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid
-          nil
-        end
-
-        resolved = (follower_inboxes + direct_inboxes).compact.uniq.reject { |url| url == actor_inbox }
-
-        Rails.logger.info { "[Federation] Activity##{activity.id} (#{activity.action} #{activity.entity_type}##{activity.entity_id})" }
-        Rails.logger.info { "[Federation] Resolved #{resolved.size} inboxes: #{resolved.inspect}" }
-
-        resolved
+          collection_to_actors(url).map(&:inbox_url)
+        end.compact.uniq.reject { |url| url == actor_inbox }
       end
 
       def post_to_inbox(inbox_url:, message:, from: nil)
