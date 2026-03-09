@@ -100,19 +100,6 @@ class Article < ApplicationRecord
     )
   end
 
-  def self.from_activitypub_object(hash)
-    {
-      federated_url: hash["id"],
-      url: hash["url"] || hash["id"],
-      title: hash["name"],
-      title_ko: hash["content"]
-    }
-  end
-
-  def self.handle_federated_object?(hash)
-    hash["inReplyTo"].blank?
-  end
-
   def generate_metadata #: void
     return unless url.is_a?(String)
 
@@ -172,39 +159,6 @@ class Article < ApplicationRecord
     return false unless response
 
     update(published_at: _published_at(response.body))
-  end
-
-  # slug로 Article을 찾는 메서드
-  def self.find_by_slug(slug)
-    find_by(slug: slug)
-  end
-
-  # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
-  #: (String url) -> bool
-  def self.should_ignore_url?(url)
-    return true if url.blank?
-
-    begin
-      uri = URI.parse(url)
-      host = uri.host&.downcase
-      return true if host.blank?
-
-      # Check for dangerous file extensions
-      return true if %w[.epub .pdf .exe .zip .rar].any? { |ext| uri.path.end_with?(ext) }
-
-      Preference.ignore_hosts.any? do |ignore_host|
-        # 정확한 도메인 매칭
-        host == ignore_host ||
-        host.end_with?(".#{ignore_host}") ||
-        # 추가적으로 www 서브도메인도 고려
-        (host.start_with?("www.") && host[4..] == ignore_host) ||
-        # 서브도메인 매칭
-        host.start_with?("job")
-      end
-    rescue URI::InvalidURIError => e
-      logger.warn "Invalid URI detected: #{url} - #{e.message}"
-      true
-    end
   end
 
   def user_name
@@ -366,5 +320,53 @@ class Article < ApplicationRecord
     date_time = url_to_published_at || extract_published_at_from_content(body) || created_at || Time.zone.now
     date_time = created_at if date_time.future?
     date_time
+  end
+
+  class << self
+    # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
+    #: (String url) -> bool
+    def should_ignore_url?(url)
+      return true if url.blank?
+
+      begin
+        uri = URI.parse(url)
+        host = uri.host&.downcase
+        return true if host.blank?
+
+        # Check for dangerous file extensions
+        return true if %w[.epub .pdf .exe .zip .rar].any? { |ext| uri.path.end_with?(ext) }
+
+        Preference.ignore_hosts.any? do |ignore_host|
+          # 정확한 도메인 매칭
+          host == ignore_host ||
+          host.end_with?(".#{ignore_host}") ||
+          # 추가적으로 www 서브도메인도 고려
+          (host.start_with?("www.") && host[4..] == ignore_host) ||
+          # 서브도메인 매칭
+          host.start_with?("job")
+        end
+      rescue URI::InvalidURIError => e
+        logger.warn "Invalid URI detected: #{url} - #{e.message}"
+        true
+      end
+    end
+
+    def from_activitypub_object(hash)
+      {
+        federated_url: hash["id"],
+        url: hash["url"] || hash["id"],
+        title: hash["name"],
+        title_ko: hash["content"]
+      }
+    end
+
+    def handle_federated_object?(hash)
+      hash["inReplyTo"].blank?
+    end
+
+    # slug로 Article을 찾는 메서드
+    def find_by_slug(slug)
+      find_by(slug: slug)
+    end
   end
 end

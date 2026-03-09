@@ -28,30 +28,10 @@ class Comment < ApplicationRecord
 
   acts_as_federails_data handles: "Note", actor_entity_method: :user
 
-  on_federails_delete_requested -> { logger.info { "Deletion requested" } }
+  on_federails_delete_requested -> { logger.info { "Deletion comment requested #{id}" } }
 
   def to_activitypub_object
     Federails::DataTransformer::Note.to_federation self, content: body
-  end
-
-  def self.from_activitypub_object(hash)
-    # inReplyTo URL에서 article ID 추출 (예: /federation/published/articles/8686)
-    article = if hash["inReplyTo"].present?
-      article_id = hash["inReplyTo"].to_s[%r{/articles/(\d+)}, 1]
-      Article.find_by(id: article_id)
-    end
-
-    {
-      federated_url: hash["id"],
-      body: ActionController::Base.helpers.strip_tags(hash["content"]).squish,
-      article: article,
-      guest_name: hash.dig("attributedTo").to_s.split("/").last || "Fediverse",
-      guest_password: SecureRandom.hex(15)
-    }
-  end
-
-  def self.handle_federated_object?(hash)
-    hash["inReplyTo"].present?
   end
 
   def content
@@ -110,5 +90,27 @@ class Comment < ApplicationRecord
     return if parent.user_id == user_id
 
     ReplyNotificationJob.perform_later(parent.id, id)
+  end
+
+  class << self
+    def from_activitypub_object(hash)
+      # inReplyTo URL에서 article ID 추출 (예: /federation/published/articles/8686)
+      article = if hash["inReplyTo"].present?
+        article_id = hash["inReplyTo"].to_s[%r{/articles/(\d+)}, 1]
+        Article.find_by(id: article_id)
+      end
+
+      {
+        federated_url: hash["id"],
+        body: ActionController::Base.helpers.strip_tags(hash["content"]).squish,
+        article: article,
+        guest_name: hash.dig("attributedTo").to_s.split("/").last || "Fediverse",
+        guest_password: SecureRandom.hex(15)
+      }
+    end
+
+    def handle_federated_object?(hash)
+      hash["inReplyTo"].present?
+    end
   end
 end
