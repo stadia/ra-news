@@ -41,7 +41,7 @@ class SocialMediaServiceTest < ActiveSupport::TestCase
     end
 
     def build_post_text(article)
-      content_data = base_content(article)
+      content_data = article.base_content
       "#{content_data[:title]} - #{content_data[:summary]}"
     end
   end
@@ -88,36 +88,12 @@ class SocialMediaServiceTest < ActiveSupport::TestCase
     assert_equal :not_suitable, result.failure
   end
 
-  # === base_content 테스트 ===
-
-  test "base_content returns title_ko when present" do
-    result = @service.send(:base_content, @article)
-
-    assert_equal @article.title_ko, result[:title]
-  end
-
-  test "base_content falls back to title when title_ko is blank" do
-    @article.title_ko = nil
-
-    result = @service.send(:base_content, @article)
-
-    assert_equal @article.title, result[:title]
-  end
-
-  test "base_content returns summary from summary_key when present" do
+  test "build_post_text uses article base_content" do
     @article.summary_key = [ "첫 번째 요약", "두 번째 요약" ]
 
-    result = @service.send(:base_content, @article)
+    result = @service.send(:build_post_text, @article)
 
-    assert_equal "첫 번째 요약", result[:summary]
-  end
-
-  test "base_content returns default summary when summary_key is blank" do
-    @article.summary_key = nil
-
-    result = @service.send(:base_content, @article)
-
-    assert_equal "새로운 Ruby 관련 글이 올라왔습니다.", result[:summary]
+    assert_equal "#{@article.title_ko} - 첫 번째 요약", result
   end
 
   # === article_link 테스트 ===

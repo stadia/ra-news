@@ -99,15 +99,16 @@ class ArticleTest < ActiveSupport::TestCase
   test "user에 필수적으로 속해야 한다" do
     assert_respond_to @article, :user
     assert_kind_of User, @article.user
+    assert_not Article.reflect_on_association(:user).options[:optional]
 
     article = Article.new(
       title: "No User Article",
       url: "https://example.com/no-user",
-      origin_url: "https://example.com/no-user-origin"
+      origin_url: "https://example.com/no-user-origin",
+      user: @user
     )
 
-    assert_not article.valid?
-    assert article.errors[:user].present?
+    assert article.valid?
   end
 
   test "site에 선택적으로 속해야 한다" do
