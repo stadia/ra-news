@@ -59,6 +59,6 @@ class User < ApplicationRecord
   end
 
   def accept_follow(following)
-    following.respond_to?(:accept!) && following.accept!
+    following.accept! if has_role?(:bot) && following.respond_to?(:accept!)
   end
 end

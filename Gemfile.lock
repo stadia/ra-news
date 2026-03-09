@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: 856cb68e20faf63378ebd7b20600144950a9fb5c
+  revision: 7c29237df9358bd92485e1f16a1dee37a48dce78
   specs:
     federails (0.7.0)
       faraday
@@ -9,6 +9,7 @@ GIT
       json-ld (>= 3.2.0)
       json-ld-preloaded (>= 3.2.0)
       kaminari (>= 1.2.0)
+      ostruct
       pundit (>= 2.3.0)
       rails (>= 7.0.4)
 
