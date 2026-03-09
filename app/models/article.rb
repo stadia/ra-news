@@ -176,7 +176,7 @@ class Article < ApplicationRecord
   end
 
   def ready_to_federate?
-    title_ko.present? && user.present?
+    title_ko.present? && user.present? && deleted_at.nil?
   end
 
   private
