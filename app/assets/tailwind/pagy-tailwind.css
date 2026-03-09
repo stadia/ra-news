@@ -25,14 +25,11 @@
         );
         --opacity: 1;
 
-        @apply flex gap-x-[var(--spacing)] font-[var(--font-weight)]
-    text-[length:var(--font-size)] text-[var(--text)]
-    leading-[var(--line-height)];
+        @apply flex gap-x-[var(--spacing)] font-(--font-weight) text-[length:var(--font-size)] text-[var(--text)] leading-(--line-height);
 
         a:not([role="separator"]) {
             /* all but gaps */
-            @apply block rounded-[var(--rounding)] px-[var(--padding)] py-[calc(var(--padding)/3)] bg-[var(--background)]
-      border-solid  border-[var(--background-current)] border-[length:var(--border-width)] opacity-[var(--opacity)];
+            @apply block rounded-(--rounding) px-(--padding) py-[calc(var(--padding)/3)] bg-[var(--background)] border-solid  border-[var(--background-current)] border-[length:var(--border-width)] opacity-[var(--opacity)];
         }
 
         a[href]:hover {
@@ -56,13 +53,10 @@
         }
 
         label {
-            @apply inline-block whitespace-nowrap rounded-[var(--rounding)] px-[var(--padding)]
-      py-[calc(var(--padding)/3-var(--border-width))]
-      bg-[var(--background)] border-solid border-[length:var(--border-width)] border-[var(--background-current)];
+            @apply inline-block whitespace-nowrap rounded-(--rounding) px-(--padding) py-[calc(var(--padding)/3-var(--border-width))] bg-[var(--background)] border-solid border-[length:var(--border-width)] border-[var(--background-current)];
 
             input {
-                @apply text-[var(--text)] text-[length:var(--font-size)] leading-[var(--line-height)] rounded-[calc(var(--rounding)/2)]
-        font-[var(--font-weight)] bg-[var(--background-input)] border-[length:var(--border-width)] border-[var(--background-current)];
+                @apply text-[var(--text)] text-[length:var(--font-size)] leading-(--line-height) rounded-[calc(var(--rounding)/2)] font-(--font-weight) bg-[var(--background-input)] border-[length:var(--border-width)] border-[var(--background-current)];
             }
         }
 
