@@ -80,7 +80,7 @@ class Article < ApplicationRecord
 
   acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at, should_federate_method: :ready_to_federate?
 
-  on_federails_delete_requested :discard!
+  on_federails_delete_requested -> { logger.info { "Federated article deletion requested #{id}" }; discard! }
 
   on_federails_undelete_requested :undiscard!
 
