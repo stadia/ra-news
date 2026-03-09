@@ -26,7 +26,18 @@ class Comment < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note", actor_entity_method: :user
+  belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
+  federails_actor_presence_validator = _validate_callbacks
+    .map(&:filter)
+    .find do |filter|
+      filter.is_a?(ActiveRecord::Validations::PresenceValidator) &&
+        filter.attributes == [ :federails_actor ]
+    end
+  skip_callback :validate, :before, federails_actor_presence_validator if federails_actor_presence_validator
+
+  acts_as_federails_data handles: "Note",
+    actor_entity_method: :federation_actor_entity,
+    should_federate_method: :should_federate?
 
   on_federails_delete_requested -> { logger.info { "Federated comment deletion requested #{id}" }; destroy! }
 
@@ -46,10 +57,18 @@ class Comment < ApplicationRecord
     user_id.nil? && federated_url.blank?
   end
 
+  def federation_actor_entity
+    user || federails_actor
+  end
+
+  def should_federate?
+    federation_actor_entity.present?
+  end
+
   private
 
   def validate_user_or_guest
-    if user_id.nil?
+    if guest?
       # Guest comment requires guest_name AND guest_password
       if guest_name.blank?
         errors.add(:guest_name, "이름을 입력해주세요")
@@ -60,6 +79,11 @@ class Comment < ApplicationRecord
         errors.add(:guest_password, "비밀번호를 입력해주세요")
       end
     end
+  end
+
+  def set_federails_actor
+    return if guest?
+    super
   end
 
 
