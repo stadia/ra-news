@@ -28,7 +28,7 @@ class Comment < ApplicationRecord
 
   acts_as_federails_data handles: "Note", actor_entity_method: :user
 
-  on_federails_delete_requested -> { logger.info { "Deletion comment requested #{id}" } }
+  on_federails_delete_requested -> { logger.info { "Federated comment deletion requested #{id}" }; destroy! }
 
   def to_activitypub_object
     Federails::DataTransformer::Note.to_federation self, content: body
