@@ -119,5 +119,7 @@ gem "ruby_llm-schema"
 
 gem "web-push", "~> 3.1"
 gem "ruby-mcp-client", "~> 1.0"
+# gem "federails", git: "https://gitlab.com/experimentslabs/federails.git"
 gem "federails", github: "stadia/federails"
+# gem "federails", path: "../federails"
 gem "friendly_id"
