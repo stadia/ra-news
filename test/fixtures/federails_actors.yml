@@ -1,0 +1,57 @@
+# frozen_string_literal: true
+
+john_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:john) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+jane_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:jane) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+admin_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:admin) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+korean_user_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:korean_user) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+user_with_spaces_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:user_with_spaces) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+minimal_user_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:minimal_user) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+one_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>
+
+two_actor:
+  entity_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+  entity_type: User
+  local: true
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

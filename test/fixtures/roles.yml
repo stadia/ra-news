@@ -8,3 +8,6 @@ user:
 
 editor:
   name: editor
+
+bot:
+  name: bot

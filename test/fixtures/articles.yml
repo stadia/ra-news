@@ -51,7 +51,7 @@ korean_content_article:
   user: korean_user
   site: rails_blog
 
-# Article without user (site-based)
+# Article with site and required user
 site_only_article:
   title: "Hacker News에서 본 Ruby 소식"
   url: https://news.ycombinator.com/item?id=123456
@@ -61,6 +61,7 @@ site_only_article:
   published_at: <%= 5.days.ago %>
   is_youtube: false
   is_related: false
+  user: john
   site: hn_site
 
 # Discarded article (soft deleted)

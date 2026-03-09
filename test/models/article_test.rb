@@ -28,7 +28,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "url은 필수 항목이어야 한다" do
-    article = Article.new(title: "Test Article", origin_url: "https://example.com/test")
+    article = Article.new(title: "Test Article", origin_url: "https://example.com/test", user: @user)
     assert_not article.save
     assert_includes article.errors[:url], "내용을 입력해 주세요"
   end
@@ -36,7 +36,8 @@ class ArticleTest < ActiveSupport::TestCase
   test "origin_url이 비어있을 때 url로부터 설정되어야 한다" do
     article = Article.new(
       title: "Test Article",
-      url: "https://example.com/test"
+      url: "https://example.com/test",
+      user: @user
     )
     # Mock generate_metadata to avoid external calls
     article.stub(:generate_metadata, nil) do
@@ -50,7 +51,8 @@ class ArticleTest < ActiveSupport::TestCase
     article = Article.new(
       title: "Another Article",
       url: existing_article.url.upcase,
-      origin_url: "https://different-origin.com/test"
+      origin_url: "https://different-origin.com/test",
+      user: @user
     )
     assert_not article.valid?
     assert_includes article.errors[:url], "이미 존재하는 값입니다"
@@ -61,7 +63,8 @@ class ArticleTest < ActiveSupport::TestCase
     article = Article.new(
       title: "Another Article",
       url: "https://different-url.com/test",
-      origin_url: existing_article.origin_url.upcase
+      origin_url: existing_article.origin_url.upcase,
+      user: @user
     )
     assert_not article.valid?
     assert_includes article.errors[:origin_url], "이미 존재하는 값입니다"
@@ -73,7 +76,8 @@ class ArticleTest < ActiveSupport::TestCase
       title: "Different Article",
       url: "https://different.com/test",
       origin_url: "https://different.com/test-origin",
-      slug: existing_article.slug
+      slug: existing_article.slug,
+      user: @user
     )
     assert_not article.valid?
     assert_includes article.errors[:slug], "이미 존재하는 값입니다"
@@ -84,36 +88,37 @@ class ArticleTest < ActiveSupport::TestCase
       title: "Test Article",
       url: "https://example.com/blank-slug-test",
       origin_url: "https://example.com/blank-slug-test-origin",
-      slug: ""
+      slug: "",
+      user: @user
     )
     assert article.valid?
   end
 
   # ========== Association Tests ==========
 
-  test "user에 선택적으로 속해야 한다" do
+  test "user에 필수적으로 속해야 한다" do
     assert_respond_to @article, :user
     assert_kind_of User, @article.user
 
-    # Test optional association
     article = Article.new(
       title: "No User Article",
       url: "https://example.com/no-user",
       origin_url: "https://example.com/no-user-origin"
     )
-    article.user = nil
-    assert article.valid?
+
+    assert_not article.valid?
+    assert article.errors[:user].present?
   end
 
   test "site에 선택적으로 속해야 한다" do
     assert_respond_to @article, :site
     assert_kind_of Site, @article.site
 
-    # Test optional association
     article = Article.new(
       title: "No Site Article",
       url: "https://example.com/no-site",
-      origin_url: "https://example.com/no-site-origin"
+      origin_url: "https://example.com/no-site-origin",
+      user: @user
     )
     article.site = nil
     assert article.valid?
@@ -190,7 +195,7 @@ class ArticleTest < ActiveSupport::TestCase
   # ========== Callback Tests ==========
 
   test "생성 시 유효성 검사 전에 url로부터 origin_url을 설정해야 한다" do
-    article = Article.new(title: "Test", url: "https://example.com/callback-test")
+    article = Article.new(title: "Test", url: "https://example.com/callback-test", user: @user)
     article.valid?
     assert_equal "https://example.com/callback-test", article.origin_url
   end
@@ -201,7 +206,8 @@ class ArticleTest < ActiveSupport::TestCase
       title: "Test",
       url: "https://example.com/existing-published",
       origin_url: "https://example.com/existing-published-origin",
-      published_at: existing_time
+      published_at: existing_time,
+      user: @user
     )
 
     # generate_metadata 메서드를 직접 stub하여 published_at 덮어쓰기 방지
@@ -310,7 +316,8 @@ class ArticleTest < ActiveSupport::TestCase
       title: "YouTube Test",
       url: "https://www.youtube.com/watch?v=test123",
       origin_url: "https://www.youtube.com/watch?v=test123",
-      is_youtube: true
+      is_youtube: true,
+      user: @user
     )
 
     # Mock generate_metadata to avoid external calls
@@ -327,7 +334,8 @@ class ArticleTest < ActiveSupport::TestCase
     article = Article.new(
       title: "No Path URL",
       url: "https://example.com",
-      origin_url: "https://example.com"
+      origin_url: "https://example.com",
+      user: @user
     )
 
     # Mock generate_metadata to avoid external calls
@@ -346,25 +354,29 @@ class ArticleTest < ActiveSupport::TestCase
     assert_not_nil article.slug
   end
 
-  test "user_name은 user가 존재할 때 사용자 이름을 반환해야 한다" do
-    assert_equal "존 도", @article.user_name
+  test "user_name은 bot 사용자인 경우 site 정보를 반환해야 한다" do
+    assert_equal "Ruby Weekly (https://rubyweekly.com/rss)", @article.user_name
   end
 
-  test "user_name은 user는 없고 site만 있을 때 사이트 정보를 반환해야 한다" do
+  test "user_name은 bot 사용자이면서 site가 있으면 site 정보를 반환해야 한다" do
     site_article = @site_article
     expected = "#{site_article.site.name} (#{site_article.site.base_uri})"
     assert_equal expected, site_article.user_name
   end
 
-  test "user_name은 site는 있지만 base_uri가 없을 때 사이트 이름을 반환해야 한다" do
+  test "user_name은 bot 사용자이고 site의 base_uri가 없으면 사이트 이름을 반환해야 한다" do
     site_article = @site_article
     site_article.site.base_uri = nil
     assert_equal site_article.site.name, site_article.user_name
   end
 
-  test "user_name은 user나 site가 없을 때 '알 수 없음'을 반환해야 한다" do
-    article = Article.new(title: "Test", url: "https://example.com", origin_url: "https://example.com")
-    assert_equal "알 수 없음", article.user_name
+  test "user_name은 user가 없으면 오류가 발생한다" do
+    article = Article.new(title: "Test", url: "https://example.com", origin_url: "https://example.com", user: @user)
+    article.user = nil
+
+    assert_raises(NoMethodError) do
+      article.user_name
+    end
   end
 
   # ========== Class Method Tests ==========
@@ -539,7 +551,8 @@ class ArticleTest < ActiveSupport::TestCase
     youtube_article = Article.new(
       title: "YouTube Test",
       url: "https://youtube.com/watch?v=test123&utm_source=share",
-      origin_url: "https://youtube.com/watch?v=test123&utm_source=share&ref=twitter"
+      origin_url: "https://youtube.com/watch?v=test123&utm_source=share&ref=twitter",
+      user: @user
     )
 
     # Mock generate_metadata to avoid external API calls

@@ -33,7 +33,7 @@ class Article < ApplicationRecord
 
   pg_search_scope :body_matching, against: [ :body, :summary_body ], using: { tsearch: { dictionary: "korean" } }
 
-  belongs_to :user, optional: true
+  belongs_to :user
 
   belongs_to :site, optional: true
 
@@ -162,12 +162,10 @@ class Article < ApplicationRecord
   end
 
   def user_name
-    return user&.name.present? ? user.name : "알 수 없음" if user.present?
-
-    if site.present?
+    if user.has_role?(:bot) && site.present?
       site.base_uri.present? ? "#{site.name} (#{site.base_uri})" : site.name
     else
-      "알 수 없음"
+      user.name
     end
   end
 
