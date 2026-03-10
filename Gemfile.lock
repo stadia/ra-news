@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: b3426a389f6888e3d4759dfaf04d3a20e37b2292
+  revision: 2dd4469a848dbf6f395ee68ae1d85b4e35969d5e
   specs:
     federails (0.7.0)
       faraday
@@ -350,7 +350,7 @@ GEM
       version_gem (~> 1.1, >= 1.1.9)
     openssl (4.0.1)
     ostruct (0.6.3)
-    pagy (43.3.1)
+    pagy (43.3.2)
       json
       uri
       yaml
