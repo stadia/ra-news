@@ -162,10 +162,10 @@ class Article < ApplicationRecord
   end
 
   def user_name
-    if user.nil? || (user&.has_role?(:bot) && site.present?)
+    if site.present?
       site.base_uri.present? ? "#{site.name} (#{site.base_uri})" : site.name
     else
-      user.name
+      host
     end
   end
 

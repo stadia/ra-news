@@ -91,7 +91,7 @@ class ArticlesController < ApplicationController
   # POST /articles
   def create
     url = article_params[:url]&.strip
-    @article = Article.new(url:, origin_url: url, user: Current.user)
+    @article = Article.new(url:, origin_url: url, user: User.first_bot)
 
     respond_to do |format|
       if @article.save
