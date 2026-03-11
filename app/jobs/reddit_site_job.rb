@@ -54,6 +54,7 @@ class RedditSiteJob < ApplicationJob
       end
 
       Article.create!(
+        url: url,
         origin_url: url,
         site: site,
         user: User.first_bot
