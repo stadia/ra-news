@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: 2dd4469a848dbf6f395ee68ae1d85b4e35969d5e
+  revision: 25189da4f1a76d62cfd8629de6c859398567bd3f
   specs:
     federails (0.7.0)
       faraday
