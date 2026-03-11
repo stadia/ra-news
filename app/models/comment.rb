@@ -53,6 +53,14 @@ class Comment < ApplicationRecord
     user&.name || guest_name || federails_actor&.username || "익명"
   end
 
+  def author_host
+    return "(게스트)" if guest?
+
+    return if federails_actor.nil? || federails_actor&.server.blank?
+
+    "(#{federails_actor&.server})"
+  end
+
   def guest?
     user_id.nil? && federated_url.blank?
   end

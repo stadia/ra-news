@@ -35,8 +35,8 @@ class Components::RecentCommentsSidebar < Components::Base
           end
         end
         span(class: "text-sm font-medium text-gray-300 truncate") { comment.author_name }
-        if comment.guest?
-          span(class: "text-xs text-gray-500 shrink-0") { "(게스트)" }
+        if comment.guest? || comment.federated_url.present?
+          span(class: "text-xs text-gray-500 shrink-0") { comment&.author_host }
         end
       end
 

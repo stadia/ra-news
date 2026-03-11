@@ -163,7 +163,7 @@ class Article < ApplicationRecord
 
   def user_name
     if site.present?
-      site.base_uri.present? ? "#{site.name} (#{site.base_uri})" : site.name
+      site.name
     else
       host
     end

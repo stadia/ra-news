@@ -450,10 +450,6 @@ GEM
     rbs-inline (0.13.0)
       prism (>= 0.29)
       rbs (>= 3.8.0)
-    rbs_rails (0.13.0)
-      parser
-      prism
-      rbs (>= 1)
     rdf (3.3.1)
       bcp47_spec (~> 0.2)
       link_header (~> 0.0, >= 0.0.8)
@@ -515,12 +511,6 @@ GEM
       brakeman (>= 7.0)
       ruby-lsp (~> 0.19)
     ruby-lsp-i18n (0.4.2)
-    ruby-lsp-rbs_rails (0.1.0)
-      activerecord
-      language_server-protocol
-      railties
-      rbs_rails
-      ruby-lsp
     ruby-mcp-client (1.0.0)
       faraday (~> 2.0)
       faraday-follow_redirects (~> 0.3)
@@ -727,7 +717,6 @@ DEPENDENCIES
   rubocop-rbs_inline
   ruby-lsp-brakeman
   ruby-lsp-i18n
-  ruby-lsp-rbs_rails
   ruby-mcp-client (~> 1.0)
   ruby-readability
   ruby_llm (~> 1.13)

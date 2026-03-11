@@ -74,7 +74,6 @@ group :development do
   gem "ruby_ui", "~> 1.1"
   gem "ruby-lsp-i18n", require: false
   gem "ruby-lsp-brakeman", require: false
-  gem "ruby-lsp-rbs_rails", require: false
 end
 
 group :test do
