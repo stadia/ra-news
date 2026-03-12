@@ -143,6 +143,12 @@ class Comment < ApplicationRecord
           object[:parent] = parent
           article_id = parent.article_id
         end
+      elsif article_id.nil?
+        parent = Comment.find_by(federated_url: in_reply_to)
+        if parent
+          object[:parent] = parent
+          article_id = parent.article_id
+        end
       end
       object[:article_id] = article_id
 
@@ -150,7 +156,13 @@ class Comment < ApplicationRecord
     end
 
     def handle_federated_object?(hash)
-      hash["inReplyTo"].present?
+      in_reply_to = hash["inReplyTo"].to_s
+      return false if in_reply_to.blank?
+
+      local_host = Rails.application.routes.default_url_options[:host]
+      return true if in_reply_to.include?(local_host)
+
+      Comment.exists?(federated_url: in_reply_to)
     end
   end
 end
