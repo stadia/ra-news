@@ -127,23 +127,25 @@ class Comment < ApplicationRecord
 
   class << self
     def from_activitypub_object(hash)
-      if hash["inReplyTo"].present?
-        # inReplyTo URL에서 article ID 추출 (예: /federation/published/articles/8686)
-        article_id = hash["inReplyTo"].to_s[%r{/articles/(\d+)}, 1]
-        # inReplyTo URL에서 Comment ID 추출 (예: /federation/published/comments/127)
-        comment_id = hash["inReplyTo"].to_s[%r{/comments/(\d+)}, 1]
-      end
+      in_reply_to = hash["inReplyTo"].to_s
+
+      article_id = in_reply_to[%r{/articles/(\d+)}, 1]
+      comment_id = in_reply_to[%r{/comments/(\d+)}, 1]
 
       object = {
         federated_url: hash["id"],
         body: ActionController::Base.helpers.strip_tags(hash["content"]).squish
       }
-      object[:article] = Article.find_by(id: article_id) if article_id.present?
+
       if comment_id.present?
         parent = Comment.find_by(id: comment_id)
-        object[:parent] = parent
-        object[:article_id] = parent.acticle_id
+        if parent
+          object[:parent] = parent
+          article_id = parent.article_id
+        end
       end
+      object[:article_id] = article_id
+
       object
     end
 
