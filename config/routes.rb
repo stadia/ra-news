@@ -45,7 +45,13 @@ Rails.application.routes.draw do
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
 
   # Public user profiles at /@username (also used as ActivityPub profile_url)
-  get "/@:username", to: "profiles#show", as: :user_profile
+  # 1. 실제 요청을 처리할 내부 라우트 (컨트롤러 연결)
+  get "/@:username", to: "users#show", as: :user_profile_base
+  # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
+  direct :user_profile do |user|
+    # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.
+    route_for(:user_profile_base, username: (user.is_a?(Array) ? user.first : user).username)
+  end
 
   constraints AuthenticatedConstraint.new do
     mount MissionControl::Jobs::Engine, at: "/jobs"
