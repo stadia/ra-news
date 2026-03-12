@@ -1,33 +1,18 @@
 {
-  "enabledPlugins": {
-    "serena@claude-plugins-official": true,
-    "ruby-rbs@stevegeek-marketplace": true,
-    "ruby-skills@ruby-skills": true
-  },
   "hooks": {
     "PostToolUse": [
       {
         "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '$ARGUMENTS' | jq -r '.file_path // empty' | while read -r file; do if [[ $file == *.rb ]]; then echo \"🔍 Checking $file...\"; ruby -c \"$file\" 2>&1 | grep -v 'Syntax OK' || true; bin/rubocop --autocorrect-all \"$file\" 2>&1 | tail -5 || true; fi; done",
-            "statusMessage": "Ruby 파일 검증 중...",
-            "timeout": 10
-          }
-        ]
+        "hooks": []
       },
       {
         "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '$ARGUMENTS' | jq -r '.file_path // empty' | while read -r file; do if [[ $file == *.rb ]]; then echo \"🔍 Checking $file...\"; ruby -c \"$file\" 2>&1 | grep -v 'Syntax OK' || true; bin/rubocop --autocorrect-all \"$file\" 2>&1 | tail -5 || true; fi; done",
-            "statusMessage": "Ruby 파일 검증 중...",
-            "timeout": 10
-          }
-        ]
+        "hooks": []
       }
     ]
+  },
+  "enabledPlugins": {
+    "serena@claude-plugins-official": true,
+    "ruby-rbs@stevegeek-marketplace": true
   }
 }
