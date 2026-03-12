@@ -16,7 +16,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    action_text-trix (2.1.16)
+    action_text-trix (2.1.17)
       railties
     actioncable (8.1.2)
       actionpack (= 8.1.2)
@@ -503,7 +503,7 @@ GEM
       lint_roller (~> 1.1)
       rbs-inline
       rubocop (>= 1.72.1, < 2.0)
-    ruby-lsp (0.26.7)
+    ruby-lsp (0.26.8)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 5)
@@ -744,4 +744,4 @@ DEPENDENCIES
   yt
 
 BUNDLED WITH
-  4.0.6
+  4.0.8

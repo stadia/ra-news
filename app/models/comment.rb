@@ -76,21 +76,22 @@ class Comment < ApplicationRecord
   private
 
   def validate_user_or_guest
-    if guest?
-      # Guest comment requires guest_name AND guest_password
-      if guest_name.blank?
-        errors.add(:guest_name, "이름을 입력해주세요")
-      end
+    return unless guest?
 
-      # Check if password is set (either as a virtual attribute for new records or digest for existing)
-      unless guest_password_digest.present? || guest_password.present?
-        errors.add(:guest_password, "비밀번호를 입력해주세요")
-      end
+    # Guest comment requires guest_name AND guest_password
+    if guest_name.blank?
+      errors.add(:guest_name, "이름을 입력해주세요")
+    end
+
+    # Check if password is set (either as a virtual attribute for new records or digest for existing)
+    unless guest_password_digest.present? || guest_password.present?
+      errors.add(:guest_password, "비밀번호를 입력해주세요")
     end
   end
 
   def set_federails_actor
     return if guest?
+
     super
   end
 
@@ -126,19 +127,24 @@ class Comment < ApplicationRecord
 
   class << self
     def from_activitypub_object(hash)
-      # inReplyTo URL에서 article ID 추출 (예: /federation/published/articles/8686)
-      article = if hash["inReplyTo"].present?
+      if hash["inReplyTo"].present?
+        # inReplyTo URL에서 article ID 추출 (예: /federation/published/articles/8686)
         article_id = hash["inReplyTo"].to_s[%r{/articles/(\d+)}, 1]
-        Article.find_by(id: article_id)
+        # inReplyTo URL에서 Comment ID 추출 (예: /federation/published/comments/127)
+        comment_id = hash["inReplyTo"].to_s[%r{/comments/(\d+)}, 1]
       end
 
-      {
+      object = {
         federated_url: hash["id"],
-        body: ActionController::Base.helpers.strip_tags(hash["content"]).squish,
-        article: article,
-        guest_name: hash.dig("attributedTo").to_s.split("/").last || "Fediverse",
-        guest_password: SecureRandom.hex(15)
+        body: ActionController::Base.helpers.strip_tags(hash["content"]).squish
       }
+      object[:article] = Article.find_by(id: article_id) if article_id.present?
+      if comment_id.present?
+        parent = Comment.find_by(id: comment_id)
+        object[:parent] = parent
+        object[:article_id] = parent.acticle_id
+      end
+      object
     end
 
     def handle_federated_object?(hash)
