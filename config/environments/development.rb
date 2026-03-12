@@ -3,15 +3,6 @@ require "active_support/core_ext/integer/time"
 Warning[:deprecated] = true
 
 Rails.application.configure do
-  # config.after_initialize do
-  #   Bullet.enable        = true
-  #   Bullet.alert         = true
-  #   Bullet.bullet_logger = true
-  #   Bullet.console       = true
-  #   Bullet.rails_logger  = true
-  #   Bullet.add_footer    = true
-  # end
-
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Make code changes take effect immediately without server restart.
@@ -84,4 +75,7 @@ Rails.application.configure do
   config.hosts << "ecclesiologically-nondoubtable-ora.ngrok-free.dev"
 
   Rails.application.routes.default_url_options = { host: "localhost", port: 3000 }
+
+  config.colorize_logging = true
+  config.rails_semantic_logger.format = :color
 end

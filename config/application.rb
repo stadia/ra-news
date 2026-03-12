@@ -35,5 +35,12 @@ module AlNews
 
     # Enable query log tags around perform for better debugging
     config.active_job.log_query_tags_around_perform = true
+
+    config.rails_semantic_logger.started = true
+    config.rails_semantic_logger.processing = true
+    config.rails_semantic_logger.rendered = true
+    config.rails_semantic_logger.quiet_assets = true
+    config.colorize_logging = false
+    config.rails_semantic_logger.format = :json
   end
 end

@@ -70,7 +70,6 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
   gem "sorbet"
-  # gem "bullet"
   gem "ruby_ui", "~> 1.1"
   gem "ruby-lsp-i18n", require: false
   gem "ruby-lsp-brakeman", require: false
@@ -123,3 +122,5 @@ gem "ruby-mcp-client", "~> 1.0"
 gem "federails", github: "stadia/federails"
 # gem "federails", path: "../federails"
 gem "friendly_id"
+gem "amazing_print"
+gem "rails_semantic_logger"

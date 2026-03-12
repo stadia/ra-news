@@ -95,6 +95,7 @@ GEM
       zeitwerk (>= 2.4, < 3.0)
     addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
+    amazing_print (2.0.0)
     ast (2.4.3)
     awesome_nested_set (3.9.0)
       activerecord (>= 4.0.0, < 8.2)
@@ -430,6 +431,10 @@ GEM
     rails-i18n (8.1.0)
       i18n (>= 0.7, < 2)
       railties (>= 8.0.0, < 9)
+    rails_semantic_logger (4.19.0)
+      rack
+      railties (>= 5.1)
+      semantic_logger (~> 4.16)
     railties (8.1.2)
       actionpack (= 8.1.2)
       activesupport (= 8.1.2)
@@ -549,6 +554,8 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 4.0)
       websocket (~> 1.0)
+    semantic_logger (4.17.0)
+      concurrent-ruby (~> 1.0)
     sexp_processor (4.17.5)
     sin_lru_redux (2.5.2)
     sitemap_generator (6.3.0)
@@ -670,6 +677,7 @@ PLATFORMS
 
 DEPENDENCIES
   acts-as-taggable-on
+  amazing_print
   awesome_nested_set
   bcrypt (~> 3.1.21)
   bootsnap
@@ -710,6 +718,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.1.0)
   rails-i18n
+  rails_semantic_logger
   rss
   rubocop
   rubocop-minitest
