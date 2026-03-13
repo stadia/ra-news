@@ -60,8 +60,11 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
 
+      - name: Debug
+        run: kubectl config view --minify && kubectl get deployments -A
+
       - name: Rollout restart
         run: |
-          kubectl rollout restart deployment/ruby-news-web deployment/ruby-news-worker
-          kubectl rollout status deployment/ruby-news-web --timeout=300s
-          kubectl rollout status deployment/ruby-news-worker --timeout=300s
+          kubectl rollout restart deployment/ruby-news-web deployment/ruby-news-worker -n default
+          kubectl rollout status deployment/ruby-news-web -n default --timeout=300s
+          kubectl rollout status deployment/ruby-news-worker -n default --timeout=300s
