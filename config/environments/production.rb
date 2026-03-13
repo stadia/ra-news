@@ -49,7 +49,7 @@ Rails.application.configure do
   config.log_tags = { request_id: :request_id, ip: :remote_ip }
   $stdout.sync = true
   config.rails_semantic_logger.add_file_appender = false
-  config.semantic_logger.add_appender(io: $stdout, formatter: OtelJsonFormatter.new)
+  config.semantic_logger.add_appender(io: $stdout, formatter: config.rails_semantic_logger.format)
   # OTel appender is added in config/initializers/opentelemetry.rb
   # after SDK.configure to avoid ProxyLoggerProvider API mismatch
   # Change to "debug" to log everything (including potentially personally-identifiable information!).
