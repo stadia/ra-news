@@ -403,6 +403,13 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-http (0.28.0)
       opentelemetry-instrumentation-base (~> 0.25)
+    opentelemetry-instrumentation-http_client (0.27.0)
+      opentelemetry-instrumentation-base (~> 0.25)
+    opentelemetry-instrumentation-logger (0.3.1)
+      opentelemetry-instrumentation-base (~> 0.25)
+      opentelemetry-logs-api (~> 0.1)
+    opentelemetry-instrumentation-net_http (0.27.0)
+      opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-pg (0.35.0)
       opentelemetry-helpers-sql
       opentelemetry-helpers-sql-processor
@@ -420,6 +427,9 @@ GEM
       opentelemetry-instrumentation-concurrent_ruby (~> 0.23)
     opentelemetry-instrumentation-rake (0.5.0)
       opentelemetry-instrumentation-base (~> 0.25)
+    opentelemetry-instrumentation-ruby_llm (0.2.0)
+      opentelemetry-api (~> 1.0)
+      opentelemetry-instrumentation-base (~> 0.23)
     opentelemetry-logs-api (0.2.0)
       opentelemetry-api (~> 1.0)
     opentelemetry-logs-sdk (0.4.0)
@@ -798,9 +808,13 @@ DEPENDENCIES
   opentelemetry-instrumentation-ethon
   opentelemetry-instrumentation-faraday
   opentelemetry-instrumentation-http
+  opentelemetry-instrumentation-http_client
+  opentelemetry-instrumentation-logger
+  opentelemetry-instrumentation-net_http
   opentelemetry-instrumentation-pg
   opentelemetry-instrumentation-rails
   opentelemetry-instrumentation-rake
+  opentelemetry-instrumentation-ruby_llm
   opentelemetry-sdk (~> 1.10)
   ostruct
   pagy (~> 43.3)
