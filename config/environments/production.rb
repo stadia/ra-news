@@ -50,9 +50,8 @@ Rails.application.configure do
   $stdout.sync = true
   config.rails_semantic_logger.add_file_appender = false
   config.semantic_logger.add_appender(io: $stdout, formatter: OtelJsonFormatter.new)
-  if ENV["OTEL_EXPORTER_OTLP_ENDPOINT"]
-    # config.semantic_logger.add_appender(appender: :open_telemetry)
-  end
+  # OTel appender is added in config/initializers/opentelemetry.rb
+  # after SDK.configure to avoid ProxyLoggerProvider API mismatch
   # Change to "debug" to log everything (including potentially personally-identifiable information!).
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info").downcase.strip.to_sym
 
