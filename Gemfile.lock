@@ -405,9 +405,6 @@ GEM
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-http_client (0.27.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-logger (0.3.1)
-      opentelemetry-instrumentation-base (~> 0.25)
-      opentelemetry-logs-api (~> 0.1)
     opentelemetry-instrumentation-net_http (0.27.0)
       opentelemetry-instrumentation-base (~> 0.25)
     opentelemetry-instrumentation-pg (0.35.0)
@@ -809,7 +806,6 @@ DEPENDENCIES
   opentelemetry-instrumentation-faraday
   opentelemetry-instrumentation-http
   opentelemetry-instrumentation-http_client
-  opentelemetry-instrumentation-logger
   opentelemetry-instrumentation-net_http
   opentelemetry-instrumentation-pg
   opentelemetry-instrumentation-rails
