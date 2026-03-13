@@ -5,10 +5,9 @@ Disallow: /login
 Disallow: /logout
 Disallow: /signup
 Disallow: /account
+Disallow: /admin
 Disallow: /madmin
 Disallow: /pg_reports
-Disallow: /articles?search=
-Disallow: /articles?page=
 
 User-agent: SemrushBot
 Disallow: /
