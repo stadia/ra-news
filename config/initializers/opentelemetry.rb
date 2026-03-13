@@ -1,4 +1,4 @@
-# config/initializers/hyperdx.rb
+# config/initializers/opentelemetry.rb
 
 require "opentelemetry-exporter-otlp"
 require "opentelemetry/instrumentation/rails"
