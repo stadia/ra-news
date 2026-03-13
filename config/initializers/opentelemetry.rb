@@ -1,12 +1,17 @@
 # config/initializers/opentelemetry.rb
-
-require "opentelemetry-exporter-otlp"
-require "opentelemetry/instrumentation/rails"
-require "opentelemetry/instrumentation/pg"
-require "opentelemetry/instrumentation/http"
-require "opentelemetry/instrumentation/logger"
-require "opentelemetry/sdk"
-
+# Configure OpenTelemetry Traces and Logs
 OpenTelemetry::SDK.configure do |c|
-  c.use_all() # enables all trace instrumentation!
+  c.service_name = "ruby-news"
+
+  # Add log record processor for OTLP export
+  logs_exporter = OpenTelemetry::Exporter::OTLP::Logs::LogsExporter.new
+  logs_processor = OpenTelemetry::SDK::Logs::Export::BatchLogRecordProcessor.new(logs_exporter)
+  c.add_log_record_processor(logs_processor)
+
+  # Configure trace instrumentations
+  c.use_all({
+    "OpenTelemetry::Instrumentation::Net::HTTP" => {
+      untraced_hosts: [ /sentry/, /newrelic/ ]
+    }
+  })
 end
