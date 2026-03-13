@@ -49,7 +49,7 @@ Rails.application.configure do
   config.log_tags = { request_id: :request_id, ip: :remote_ip }
   $stdout.sync = true
   config.rails_semantic_logger.add_file_appender = false
-  config.semantic_logger.add_appender(io: $stdout, formatter: config.rails_semantic_logger.format)
+  config.semantic_logger.add_appender(io: $stdout, formatter: OtelJsonFormatter.new)
   if ENV["OTEL_EXPORTER_OTLP_ENDPOINT"]
     # config.semantic_logger.add_appender(appender: :open_telemetry)
   end
