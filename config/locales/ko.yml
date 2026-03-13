@@ -28,6 +28,9 @@
 #       enabled: "ON"
 
 ko:
+  errors:
+    format: "%{attribute} %{message}"
+
   activerecord:
     attributes:
       user:
