@@ -49,10 +49,9 @@ Rails.application.configure do
   config.log_tags = { request_id: :request_id, ip: :remote_ip }
   $stdout.sync = true
   config.rails_semantic_logger.add_file_appender = false
+  config.semantic_logger.add_appender(io: $stdout, formatter: config.rails_semantic_logger.format)
   if ENV["OTEL_EXPORTER_OTLP_ENDPOINT"]
-    config.semantic_logger.add_appender(io: $stdout, formatter: OtelJsonFormatter.new)
-  else
-    config.semantic_logger.add_appender(io: $stdout, formatter: config.rails_semantic_logger.format)
+    config.semantic_logger.add_appender(appender: :open_telemetry, url: "#{ENV["OTEL_EXPORTER_OTLP_ENDPOINT"]}/v1/logs")
   end
   # Change to "debug" to log everything (including potentially personally-identifiable information!).
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info").downcase.strip.to_sym
