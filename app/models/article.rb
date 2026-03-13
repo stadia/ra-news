@@ -269,6 +269,9 @@ class Article < ApplicationRecord
   rescue URI::InvalidURIError
     logger.error "Invalid URI for published_at extraction: #{url}"
     nil
+  rescue ArgumentError => e
+    logger.error e
+    nil
   end
 
   #: (String body) -> DateTime?
