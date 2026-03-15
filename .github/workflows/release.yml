@@ -62,8 +62,8 @@ jobs:
 
       - name: Update deployment images
         run: |
-          kubectl set image deployment/ruby-news-web web=ghcr.io/stadia/ra-news:latest -n default
-          kubectl set image deployment/ruby-news-worker worker=ghcr.io/stadia/ra-news:latest -n default
+          kubectl set image deployment/ruby-news-web ruby-news-web=ghcr.io/stadia/ra-news:latest -n default
+          kubectl set image deployment/ruby-news-worker ruby-news-worker=ghcr.io/stadia/ra-news:latest -n default
 
       - name: Wait for rollout
         run: |
