@@ -60,10 +60,10 @@ jobs:
           echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
 
-      - name: Update deployment images
+      - name: Restart deployments
         run: |
-          kubectl set image deployment/ruby-news-web ruby-news-web=ghcr.io/stadia/ra-news:latest -n default
-          kubectl set image deployment/ruby-news-worker ruby-news-worker=ghcr.io/stadia/ra-news:latest -n default
+          kubectl rollout restart deployment/ruby-news-web -n default
+          kubectl rollout restart deployment/ruby-news-worker -n default
 
       - name: Wait for rollout
         run: |
