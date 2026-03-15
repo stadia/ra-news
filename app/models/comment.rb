@@ -42,7 +42,7 @@ class Comment < ApplicationRecord
   on_federails_delete_requested -> { logger.info { "Federated comment deletion requested #{id}" }; destroy! }
 
   def to_activitypub_object
-    Federails::DataTransformer::Note.to_federation self, content: body
+    Federails::DataTransformer::Note.to_federation self, content: body, custom: { "inReplyTo" => reply.federated_url }
   end
 
   def content
@@ -71,6 +71,10 @@ class Comment < ApplicationRecord
 
   def should_federate?
     federation_actor_entity.present?
+  end
+
+  def reply
+    comment.parent.present? ? comment.parent : comment.article
   end
 
   private

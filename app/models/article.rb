@@ -86,17 +86,29 @@ class Article < ApplicationRecord
 
   def to_activitypub_object
     content_data = base_content
-    content = "#{content_data[:title]}\n\n#{content_data[:summary]}"
-    link = Rails.application.routes.url_helpers.article_url(self)
+    title = content_data[:title]
+    summary = content_data[:summary]
 
-    # Mastodon은 URL을 실제 길이로 계산하므로 링크 길이도 포함
-    reserved_space = link.length + 2 # 공백과 줄바꿈
-    available_content_length = MastodonService::MASTODON_CONFIG.character_limit - MastodonService::MASTODON_CONFIG.formatting_buffer - reserved_space
-    truncated_content = content.truncate([ available_content_length, 1 ].max, omission: "...")
+    # HTML 포맷팅으로 Mastodon에서 더 멋있게 표시
+    article_url = Rails.application.routes.url_helpers.article_url(self)
+    custom = { "url" => article_url }
+
+    # 해시태그 생성 (태그가 있는 경우)
+    custom["tag"] = tag_list.map { |t| { "type" => "Hashtag", "name" => "#{t}" } } if tag_list.present?
+
+    # HTML 콘텐츠 구성
+    content_parts = []
+    content_parts << "<p><strong>#{title}</strong></p>"
+    content_parts << "<p>#{summary}</p>"
+
+    # 링크 추가 (짧은 텍스트로)
+    link_html = "<p><a href=\"#{article_url}\">🔗 원문 보기</a></p>"
+    content_parts << link_html
+
+    full_content = content_parts.join("\n")
 
     Federails::DataTransformer::Note.to_federation(
-      self,
-      content: "#{truncated_content}\n\n#{link}"
+      self, name: title_ko, content: full_content, custom:
     )
   end
 
