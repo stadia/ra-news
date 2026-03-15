@@ -12,7 +12,7 @@ OpenTelemetry::SDK.configure do |c|
   # Configure trace instrumentations
   c.use_all({
     "OpenTelemetry::Instrumentation::Net::HTTP" => {
-      untraced_hosts: [ /sentry/, /newrelic/ ]
+      untraced_hosts: [ /sentry/, /newrelic/, /honeybadger/ ]
     }
   })
 end
