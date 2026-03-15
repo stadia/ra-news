@@ -74,7 +74,7 @@ class Comment < ApplicationRecord
   end
 
   def reply
-    comment.parent.present? ? comment.parent : comment.article
+    parent.present? ? parent : article
   end
 
   private
