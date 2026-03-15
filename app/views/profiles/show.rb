@@ -66,16 +66,6 @@ class Views::Profiles::Show < Views::Base
         end
         span(class: "font-mono text-sm text-slate-300") { handle }
       end
-
-      a(
-        href: "https://#{site_host}/#{handle}",
-        class: "inline-flex items-center gap-1.5 text-xs font-medium text-green-400 hover:text-green-300 transition-colors",
-        target: "_blank",
-        rel: "noopener noreferrer"
-      ) do
-        plain "Mastodon에서 팔로우"
-        Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-3.5 h-3.5")
-      end
     end
   end
 

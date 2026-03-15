@@ -8,7 +8,7 @@ class HomeController < ApplicationController
     name:     "Ruby-News",
     url:      "https://ruby-news.kr",
     logo:     "https://ruby-news.kr/icon.png",
-    same_as:  [ "https://ruby.social/@news_kr", "https://x.com/rubynewskr" ],
+    same_as:  [ "https://ruby-news.kr/@bot", "https://ruby.social/@news_kr", "https://x.com/rubynewskr" ],
     masthead: "https://ruby-news.kr/about"
   )
 
