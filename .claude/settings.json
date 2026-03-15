@@ -13,6 +13,7 @@
   },
   "enabledPlugins": {
     "serena@claude-plugins-official": true,
-    "ruby-rbs@stevegeek-marketplace": true
+    "ruby-rbs@stevegeek-marketplace": true,
+    "ruby-lsp@stevegeek-marketplace": true
   }
 }
