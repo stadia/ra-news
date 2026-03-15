@@ -85,11 +85,11 @@ class Article < ApplicationRecord
   on_federails_undelete_requested :undiscard!
 
   after_discard do
-    create_federails_activity 'Delete'
+    create_federails_activity "Delete"
   end
 
   after_undiscard do
-    create_federails_activity 'Create'
+    create_federails_activity "Create"
   end
 
   def to_activitypub_object
