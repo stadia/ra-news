@@ -78,7 +78,7 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
-  acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at, should_federate_method: :ready_to_federate?
+  acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at, should_federate_method: :should_federate?
 
   on_federails_delete_requested -> { logger.info { "Federated article deletion requested #{id}" }; discard! }
 
@@ -187,8 +187,10 @@ class Article < ApplicationRecord
     { title:, summary: }
   end
 
-  def ready_to_federate?
-    title_ko.present? && user.present? && deleted_at.nil?
+  def should_federate?
+    return false if user.blank?
+
+    title_ko.present?
   end
 
   private
