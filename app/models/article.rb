@@ -23,7 +23,7 @@ class Article < ApplicationRecord
     )
   end
 
-  scope :related, -> { where(is_related: true) }
+  scope :related, -> { kept.where(is_related: true) }
 
   scope :unrelated, -> { where(is_related: false) }
 
@@ -89,7 +89,7 @@ class Article < ApplicationRecord
   end
 
   after_undiscard do
-    create_federails_activity "Create"
+    create_federails_activity "Undo"
   end
 
   def to_activitypub_object
