@@ -25,5 +25,11 @@ module Madmin
     def scoped_resources
       super.includes(:site)
     end
+
+    def resource_params
+      hash = super
+      hash[:user_id] = User.first_bot.id
+      hash
+    end
   end
 end
