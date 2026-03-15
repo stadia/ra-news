@@ -1,0 +1,43 @@
+<% if @comment.persisted? %>
+  <% if @comment.parent_id.present? %>
+    <%= turbo_stream.append "comment_replies_#{@comment.parent_id}" do %>
+      <%= render(
+        Components::Memos::MemoComment.new(
+          comment: @comment,
+          memo: @memo,
+          depth: @comment.depth,
+          children: {},
+        ),
+      ) %>
+    <% end %>
+  <% else %>
+    <%= turbo_stream.prepend "comments_list" do %>
+      <%= render(
+        Components::Memos::MemoComment.new(
+          comment: @comment,
+          memo: @memo,
+          depth: 0,
+          children: {},
+        ),
+      ) %>
+    <% end %>
+  <% end %>
+
+  <%= turbo_stream.update "comments_header" do %>
+    <%= render(Components::Comments::CommentHeader.new(comments: @comments)) %>
+  <% end %>
+
+  <%= turbo_stream.update "comment_form" do %>
+    <%= render(Components::Memos::MemoCommentForm.new(memo: @memo, comment: Comment.new)) %>
+  <% end %>
+<% else %>
+  <% if @comment.parent_id.present? && @comment.parent.present? %>
+    <%= turbo_stream.replace "reply_form_#{@comment.parent_id}" do %>
+      <%= render(Components::Memos::MemoCommentReplyForm.new(memo: @memo, comment: @comment, parent_comment: @comment.parent, visible: true)) %>
+    <% end %>
+  <% else %>
+    <%= turbo_stream.update "comment_form" do %>
+      <%= render(Components::Memos::MemoCommentForm.new(memo: @memo, comment: @comment)) %>
+    <% end %>
+  <% end %>
+<% end %>

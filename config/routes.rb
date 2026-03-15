@@ -12,6 +12,14 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :memos, only: %i[index show new create destroy] do
+    resources :comments, only: %i[create destroy], controller: "memo_comments" do
+      member do
+        post :verify_password
+      end
+    end
+  end
+
   get "others" => "articles#others"
 
   resource :users, path: :account do

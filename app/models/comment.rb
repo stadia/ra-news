@@ -9,12 +9,13 @@ class Comment < ApplicationRecord
   MAX_GUEST_NAME_LENGTH = 100
 
   belongs_to :user, optional: true
-  belongs_to :article, counter_cache: true
+  belongs_to :article, counter_cache: true, optional: true
+  belongs_to :memo, counter_cache: true, optional: true
 
   has_secure_password :guest_password, validations: false
 
   validates :body, presence: true, length: { minimum: 1, maximum: MAX_BODY_LENGTH }
-  validates :article, presence: true
+  validate :validate_commentable_presence
   validates :guest_name,
     length: { maximum: MAX_GUEST_NAME_LENGTH },
     format: { with: /\A[^<>]*\z/, message: "HTML 태그를 포함할 수 없습니다" },
@@ -73,8 +74,12 @@ class Comment < ApplicationRecord
     federation_actor_entity.present?
   end
 
+  def commentable
+    article || memo
+  end
+
   def reply
-    parent.present? ? parent : article
+    parent.present? ? parent : commentable
   end
 
   private
@@ -100,14 +105,18 @@ class Comment < ApplicationRecord
   end
 
 
+  def validate_commentable_presence
+    if article_id.blank? && memo_id.blank?
+      errors.add(:base, "게시글 또는 단문 중 하나가 필요합니다.")
+    end
+  end
+
   def validate_parent_comment
     return unless parent_id.present?
 
-    # `parent`는 `acts_as_nested_set` gem이 제공하는 association입니다.
-    # 이를 직접 사용하면 코드가 더 명확해지고 Rails의 캐싱 기능을 활용할 수 있습니다.
     if parent.nil?
       errors.add(:parent_id, "원본 댓글을 찾을 수 없습니다.")
-    elsif parent.article_id != article_id
+    elsif parent.article_id != article_id || parent.memo_id != memo_id
       errors.add(:parent_id, "원본 댓글이 다른 게시글에 속해 있습니다.")
     elsif parent.parent_id.present?
       errors.add(:parent_id, "대댓글에는 답글을 달 수 없습니다.")
@@ -134,6 +143,7 @@ class Comment < ApplicationRecord
       in_reply_to = hash["inReplyTo"].to_s
 
       article_id = in_reply_to[%r{/articles/(\d+)}, 1]
+      memo_id    = in_reply_to[%r{/memos/(\d+)}, 1]
       comment_id = in_reply_to[%r{/comments/(\d+)}, 1]
 
       object = {
@@ -146,15 +156,18 @@ class Comment < ApplicationRecord
         if parent
           object[:parent] = parent
           article_id = parent.article_id
+          memo_id    = parent.memo_id
         end
-      elsif article_id.nil?
+      elsif article_id.nil? && memo_id.nil?
         parent = Comment.find_by(federated_url: in_reply_to)
         if parent
           object[:parent] = parent
           article_id = parent.article_id
+          memo_id    = parent.memo_id
         end
       end
       object[:article_id] = article_id
+      object[:memo_id]    = memo_id
 
       object
     end
