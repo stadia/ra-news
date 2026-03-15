@@ -33,7 +33,7 @@ class ArticleAgentsService < OperationService
     logger.info "Response received for article id: #{article.id}"
 
     if message.content.blank?
-      article.discard
+      article.discard!
       return Failure(message.finish_reason)
     end
 
@@ -51,7 +51,7 @@ class ArticleAgentsService < OperationService
 
     article.update!(message.content)
 
-    article.discard if message.content["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
+    article.discard! if message.content["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
     Success(article)
   end
 
