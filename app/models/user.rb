@@ -8,6 +8,7 @@ class User < ApplicationRecord
   has_many :push_subscriptions, dependent: :destroy
   has_many :articles, dependent: :nullify
 
+  # Email verification
   generates_token_for :email_verification, expires_in: 24.hours do
     [email_address, email_verified_at]
   end
