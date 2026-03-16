@@ -3,6 +3,10 @@ Rails.application.routes.draw do
   draw :madmin
 
   resources :passwords, param: :token
+  resource :email_verification, only: [:show] do
+    post :resend
+  end
+  get "email_verification/:token", to: "email_verifications#verify", as: :verify_email_verification
   resource :push_subscription, only: %i[ create destroy ]
   resources :articles, only: %i[index show new create] do
     resources :comments, only: %i[create destroy] do
