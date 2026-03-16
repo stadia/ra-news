@@ -2,6 +2,6 @@
 class EmailVerificationMailerPreview < ActionMailer::Preview
   # Preview this email at http://localhost:3000/rails/mailers/email_verification_mailer/verify
   def verify
-    EmailVerificationMailer.verify(User.first)
+    EmailVerificationMailer.verify(User.take)
   end
 end
