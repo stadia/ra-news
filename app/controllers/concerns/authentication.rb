@@ -54,4 +54,10 @@ module Authentication
       Current.session.destroy
       cookies.delete(:session_id)
     end
+
+    def require_verified_email
+      return if Current.user&.email_verified?
+      return if Current.user&.has_role?(:bot)
+      redirect_to email_verification_path, alert: "이메일 인증이 필요합니다."
+    end
 end

@@ -6,6 +6,7 @@ class UsersController < ApplicationController
   allow_unauthenticated_access only: %i[ new create ]
 
   before_action :set_user, except: %i[ new create ]
+  before_action :require_verified_email, except: %i[ new create ]
 
   def show
     render Views::Users::Show.new(user: @user)
