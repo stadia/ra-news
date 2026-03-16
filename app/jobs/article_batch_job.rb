@@ -3,6 +3,8 @@
 # rbs_inline: enabled
 
 class ArticleBatchJob < ApplicationJob
+  include RateLimiting
+
   queue_as :default
 
   #: (?Time created_at) -> void
@@ -10,6 +12,11 @@ class ArticleBatchJob < ApplicationJob
     index_now_urls = []
 
     Article.kept.where(title_ko: nil, created_at: created_at...).limit(5).each do |article|
+      unless check_rate_limit
+        logger.warn("ArticleBatchJob: rate limit reached, stopping batch early")
+        break
+      end
+
       begin
         result = ArticleAgentsService.new.call(article)
         index_now_urls << article_public_url(article) if result.success? && article.title_ko.present?
@@ -26,6 +33,14 @@ class ArticleBatchJob < ApplicationJob
   end
 
   private
+
+  def rate_limit_threshold #: Integer
+    1
+  end
+
+  def rate_limit_window #: ActiveSupport::Duration
+    5.minutes
+  end
 
   #: (Article article) -> String
   def article_public_url(article)

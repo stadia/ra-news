@@ -1,0 +1,7 @@
+# Generated from app/clients/reddit.rb with RBS::Inline
+
+class Reddit < ApplicationClient
+  def initialize: () -> Reddit
+
+  def feed: () -> untyped
+end

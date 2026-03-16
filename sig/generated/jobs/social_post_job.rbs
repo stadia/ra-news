@@ -1,6 +1,12 @@
 # Generated from app/jobs/social_post_job.rb with RBS::Inline
 
 class SocialPostJob < ApplicationJob
+  include RateLimiting
+
   # : (Integer id) -> void
   def perform: (Integer id) -> void
+
+  def rate_limit_threshold: () -> Integer
+
+  def rate_limit_window: () -> ActiveSupport::Duration
 end
