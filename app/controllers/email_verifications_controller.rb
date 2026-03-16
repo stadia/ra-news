@@ -4,6 +4,7 @@
 
 class EmailVerificationsController < ApplicationController
   rate_limit to: 3, within: 10.minutes, only: :resend,
+             by: -> { Current.user&.id },
              with: -> { redirect_to email_verification_path, alert: "잠시 후 다시 시도해주세요." }
 
   def show
