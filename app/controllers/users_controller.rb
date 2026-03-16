@@ -28,8 +28,9 @@ class UsersController < ApplicationController
 
     respond_to do |format|
       if @user.save
+        EmailVerificationMailer.verify(@user).deliver_later
         start_new_session_for @user
-        format.html { redirect_to new_session_path, notice: t("registration_success") }
+        format.html { redirect_to email_verification_path, notice: t("registration_success") }
       else
         format.html { render Views::Users::New.new(user: @user), status: :unprocessable_entity }
       end
@@ -72,7 +73,7 @@ class UsersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.expect(user: [ :email_address, :name ])
+      params.expect(user: [ :email_address, :name, :password, :password_confirmation ])
     end
 
     def password_params
