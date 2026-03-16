@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class SocialPostJob < ApplicationJob
-  include RateLimiting
+  include JobRateLimiting
 
   queue_as :default
 

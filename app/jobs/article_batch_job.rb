@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class ArticleBatchJob < ApplicationJob
-  include RateLimiting
+  include JobRateLimiting
 
   queue_as :default
 
