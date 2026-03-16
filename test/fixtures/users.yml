@@ -12,6 +12,7 @@ john:
     - user
     - editor
     - bot
+  email_verified_at: <%= 1.day.ago %>
 
 jane:
   email_address: jane@example.com
@@ -20,6 +21,7 @@ jane:
   roles:
     - user
     - bot
+  email_verified_at: <%= 1.day.ago %>
 
 # Admin user
 admin:
@@ -29,6 +31,7 @@ admin:
   roles:
     - user
     - admin
+  email_verified_at: <%= 1.day.ago %>
 
 # Test users with Korean names
 korean_user:
@@ -38,6 +41,7 @@ korean_user:
   roles:
     - user
     - bot
+  email_verified_at: <%= 1.day.ago %>
 
 user_with_spaces:
   email_address: spaces@example.com
@@ -45,6 +49,7 @@ user_with_spaces:
   password_digest: <%= password_digest %>
   roles:
     - user
+  email_verified_at: <%= 1.day.ago %>
 
 # User for validation testing
 minimal_user:
@@ -53,6 +58,7 @@ minimal_user:
   password_digest: <%= password_digest %>
   roles:
     - user
+  email_verified_at: <%= 1.day.ago %>
 
 # Legacy fixture names for backwards compatibility
 one:
@@ -61,10 +67,20 @@ one:
   password_digest: <%= password_digest %>
   roles:
     - user
+  email_verified_at: <%= 1.day.ago %>
 
 two:
   email_address: two@example.com
   name: 사용자 이
+  password_digest: <%= password_digest %>
+  roles:
+    - user
+  email_verified_at: <%= 1.day.ago %>
+
+# 미인증 유저 (테스트용)
+unverified_user:
+  email_address: unverified@example.com
+  name: 미인증 사용자
   password_digest: <%= password_digest %>
   roles:
     - user

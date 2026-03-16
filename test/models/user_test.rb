@@ -255,6 +255,69 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
+  # ========== Email Verification Tests ==========
+
+  test "email_verified?는 email_verified_at이 설정된 경우 true를 반환해야 한다" do
+    user = users(:john)
+    assert user.email_verified?
+  end
+
+  test "email_verified?는 email_verified_at이 nil인 경우 false를 반환해야 한다" do
+    user = users(:unverified_user)
+    assert_not user.email_verified?
+  end
+
+  test "이메일 변경 시 email_verified_at이 nil로 초기화되어야 한다" do
+    user = users(:john)
+    assert user.email_verified?
+
+    user.update!(email_address: "newemail@example.com")
+    assert_nil user.email_verified_at
+    assert_not user.email_verified?
+  end
+
+  test "이메일 변경이 없을 경우 email_verified_at이 유지되어야 한다" do
+    user = users(:john)
+    original_verified_at = user.email_verified_at
+
+    user.update!(name: "새로운 이름")
+    assert_equal original_verified_at, user.reload.email_verified_at
+  end
+
+  test "generate_token_for :email_verification은 24시간 유효한 토큰을 생성해야 한다" do
+    user = users(:unverified_user)
+    token = user.generate_token_for(:email_verification)
+    assert_not_nil token
+    assert_equal user, User.find_by_token_for(:email_verification, token)
+  end
+
+  test "이메일 인증 완료 후 토큰은 무효화되어야 한다" do
+    user = users(:unverified_user)
+    token = user.generate_token_for(:email_verification)
+
+    user.update!(email_verified_at: Time.current)
+
+    assert_nil User.find_by_token_for(:email_verification, token)
+  end
+
+  test "이메일 변경 후 기존 토큰은 무효화되어야 한다" do
+    user = users(:unverified_user)
+    old_token = user.generate_token_for(:email_verification)
+
+    user.update!(email_address: "changed@example.com")
+
+    assert_nil User.find_by_token_for(:email_verification, old_token)
+  end
+
+  test "만료된 토큰은 무효화되어야 한다 (24시간 초과)" do
+    user = users(:unverified_user)
+    token = user.generate_token_for(:email_verification)
+
+    travel_to 25.hours.from_now do
+      assert_nil User.find_by_token_for(:email_verification, token)
+    end
+  end
+
   # ========== Edge Cases and Error Handling ==========
 
   test "매우 긴 유효한 이름을 처리해야 한다" do
