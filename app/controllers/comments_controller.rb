@@ -2,10 +2,10 @@ class CommentsController < ApplicationController
   include RateLimiting
 
   before_action :check_rate_limit, only: %i[ create ]
-  before_action :set_comment, only: %i[ destroy verify_password ]
+  before_action :set_comment, only: %i[ destroy ]
   before_action :set_article, only: %i[ create ]
 
-  allow_unauthenticated_access only: %i[ create verify_password ]
+  allow_unauthenticated_access only: %i[ create destroy ]
 
   # POST /comments
   def create
@@ -30,64 +30,29 @@ class CommentsController < ApplicationController
     end
   end
 
-  # POST /comments/:id/verify_password
-  def verify_password
-    @article = @comment.article
-
-    unless @comment.guest?
-      # Not a guest comment - use regular authentication
-      if authenticated? && @comment.user == Current.user
-        @comment.destroy
-        load_comments
-        respond_to do |format|
-          format.turbo_stream { render :destroy }
-        end
-      else
-        render turbo_stream: turbo_stream.replace("delete_comment_modal_#{@comment.id}",
-          html: "<div class='text-red-400 text-sm mt-2'>권한이 없습니다.</div>".html_safe
-        ), status: :unauthorized
-      end
-      return
-    end
-
-    # Guest comment - verify password
-    provided_password = params[:password]
-
-    if @comment.authenticate_guest_password(provided_password)
-      @comment.destroy
-      load_comments
-      respond_to do |format|
-        format.turbo_stream { render :destroy }
-      end
-    else
-      render turbo_stream: turbo_stream.replace("delete_comment_modal_#{@comment.id}",
-        html: "<div class='text-red-400 text-sm mt-2'>비밀번호가 올바르지 않습니다.</div>".html_safe
-      ), status: :unauthorized
-    end
-  end
-
   # DELETE /comments/1
   def destroy
     @article = @comment.article
 
-    # Check if this is a guest comment
     if @comment.guest?
-      # For guest comments, require password verification
-      # This action is not called directly for guest comments
-      # Instead, verify_password is used
-      respond_to do |format|
-        format.html { redirect_to @article, alert: "잘못된 접근입니다." }
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace("delete_comment_modal_#{@comment.id}",
-            html: "<div class='text-red-400 text-sm mt-2'>비밀번호 확인이 필요합니다.</div>".html_safe
-          ), status: :unprocessable_entity
+      if @comment.authenticate_guest_password(params[:password])
+        @comment.destroy
+        load_comments
+        respond_to do |format|
+          format.html { redirect_to @article, notice: "댓글이 삭제되었습니다." }
+          format.turbo_stream
+        end
+      else
+        respond_to do |format|
+          format.html { redirect_to @article, alert: "비밀번호가 올바르지 않습니다." }
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.replace("delete_comment_modal_#{@comment.id}",
+              html: "<div class='text-red-400 text-sm mt-2'>비밀번호가 올바르지 않습니다.</div>".html_safe
+            ), status: :unauthorized
+          end
         end
       end
-      return
-    end
-
-    # Regular comment - check ownership
-    if authenticated? && @comment.user == Current.user
+    elsif authenticated? && @comment.user == Current.user
       @comment.destroy
       load_comments
       respond_to do |format|
