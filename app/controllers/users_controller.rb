@@ -85,7 +85,7 @@ class UsersController < ApplicationController
       user = params[:user]
       return false unless user.respond_to?(:key?)
 
-      user.key?(:password) || user.key?(:password_confirmation) ||
-        user.key?("password") || user.key?("password_confirmation")
+      user[:password].present? || user[:password_confirmation].present? ||
+        user["password"].present? || user["password_confirmation"].present?
     end
 end
