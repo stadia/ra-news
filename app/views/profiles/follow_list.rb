@@ -49,8 +49,13 @@ class Views::Profiles::FollowList < Views::Base
 
     div(class: "flex items-center gap-4 px-4 py-3 bg-slate-900/40 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors") do
       render RubyUI::Avatar.new(size: :md, class: "h-10 w-10 flex-shrink-0") do
-        render RubyUI::AvatarFallback.new(class: "bg-green-700 text-white font-bold") do
-          plain (actor.name.presence || actor.username).first.upcase
+        icon_url = actor.extensions&.dig("icon", "url")
+        if icon_url
+          render RubyUI::AvatarImage.new(src: icon_url, alt: actor.name.presence || actor.username)
+        else
+          render RubyUI::AvatarFallback.new(class: "bg-green-700 text-white font-bold") do
+            plain (actor.name.presence || actor.username).first.upcase
+          end
         end
       end
 
