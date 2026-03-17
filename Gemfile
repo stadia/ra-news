@@ -114,7 +114,7 @@ gem "phlex-rails", "~> 2.4"
 gem "phlex-icons"
 gem "tailwind_merge", "~> 1.4"
 
-gem "ruby_llm", "~> 1.13"
+gem "ruby_llm", "~> 1.14"
 gem "ruby_llm-schema"
 
 gem "web-push", "~> 3.1"
