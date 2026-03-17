@@ -3,13 +3,16 @@
 class Views::Profiles::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::TurboFrameTag
   include PhlexIcons
 
-  def initialize(user:, actor:, followers_count: 0, following_count: 0)
+  def initialize(user:, actor:, followers_count: 0, following_count: 0, follow_actors: nil, follow_type: nil)
     @user = user
     @actor = actor
     @followers_count = followers_count
     @following_count = following_count
+    @follow_actors = follow_actors
+    @follow_type = follow_type
   end
 
   def view_template
@@ -23,6 +26,11 @@ class Views::Profiles::Show < Views::Base
     div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       profile_card
       fediverse_section if @actor
+      turbo_frame_tag("follow-list", class: "mt-2 block") do
+        if @follow_actors
+          render Views::Profiles::FollowList.new(user: @user, actors: @follow_actors, type: @follow_type, embedded: true)
+        end
+      end
     end
   end
 
@@ -44,11 +52,19 @@ class Views::Profiles::Show < Views::Base
             h1(class: "text-3xl font-bold text-white tracking-tight") { @user.name }
             p(class: "text-slate-400 font-mono text-sm mt-1") { "@#{@user.username}" }
             div(class: "flex items-center gap-4 mt-2") do
-              a(href: "/@#{@user.username}/followers", class: "text-sm text-slate-400 hover:text-white transition-colors") do
+              link_to(
+                "/@#{@user.username}/followers",
+                class: "text-sm text-slate-400 hover:text-white transition-colors",
+                data: { turbo_frame: "follow-list", turbo_action: "advance" }
+              ) do
                 span(class: "font-semibold text-white") { @followers_count.to_s }
                 plain " 팔로워"
               end
-              a(href: "/@#{@user.username}/following", class: "text-sm text-slate-400 hover:text-white transition-colors") do
+              link_to(
+                "/@#{@user.username}/following",
+                class: "text-sm text-slate-400 hover:text-white transition-colors",
+                data: { turbo_frame: "follow-list", turbo_action: "advance" }
+              ) do
                 span(class: "font-semibold text-white") { @following_count.to_s }
                 plain " 팔로잉"
               end

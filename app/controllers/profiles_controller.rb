@@ -20,18 +20,33 @@ class ProfilesController < ApplicationController
   def followers
     actor = @user.federails_actor
     actors = actor ? actor.followers.to_a : []
-    render Views::Profiles::FollowList.new(user: @user, actors: actors, type: :followers)
+    render_follow_page(actor, actors, :followers)
   end
 
   def following
     actor = @user.federails_actor
     actors = actor ? actor.follows.to_a : []
-    render Views::Profiles::FollowList.new(user: @user, actors: actors, type: :following)
+    render_follow_page(actor, actors, :following)
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
+
     def set_user
       @user = User.find_by!(username: params[:username])
+    end
+
+    def render_follow_page(actor, actors, type)
+      if turbo_frame_request?
+        render Views::Profiles::FollowList.new(user: @user, actors: actors, type: type)
+      else
+        render Views::Profiles::Show.new(
+          user: @user,
+          actor: actor,
+          followers_count: actor&.followers&.count || 0,
+          following_count: actor&.follows&.count || 0,
+          follow_actors: actors,
+          follow_type: type
+        )
+      end
     end
 end

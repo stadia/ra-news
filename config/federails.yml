@@ -8,13 +8,13 @@ defaults: &defaults
   enable_discovery: true
   open_registrations: true
   app_layout: "layouts/federails/application"
+  client_routes_path: app
   server_routes_path: federation
   #remote_entities_cache_duration: 86400 # 1 day in seconds
   base_client_controller: Federails::ApplicationController
 
 development:
   <<: *defaults
-  client_routes_path: app
 
 test:
   <<: *defaults
@@ -25,4 +25,3 @@ production:
   force_ssl: true
   site_port: 443
   site_host: https://ruby-news.kr
-  client_routes_path: null
