@@ -44,11 +44,11 @@ class Views::Profiles::Show < Views::Base
             h1(class: "text-3xl font-bold text-white tracking-tight") { @user.name }
             p(class: "text-slate-400 font-mono text-sm mt-1") { "@#{@user.username}" }
             div(class: "flex items-center gap-4 mt-2") do
-              span(class: "text-sm text-slate-400") do
+              a(href: "/@#{@user.username}/followers", class: "text-sm text-slate-400 hover:text-white transition-colors") do
                 span(class: "font-semibold text-white") { @followers_count.to_s }
                 plain " 팔로워"
               end
-              span(class: "text-sm text-slate-400") do
+              a(href: "/@#{@user.username}/following", class: "text-sm text-slate-400 hover:text-white transition-colors") do
                 span(class: "font-semibold text-white") { @following_count.to_s }
                 plain " 팔로잉"
               end

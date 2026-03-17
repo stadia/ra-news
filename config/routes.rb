@@ -44,6 +44,8 @@ Rails.application.routes.draw do
   # Public user profiles at /@username (also used as ActivityPub profile_url)
   # 1. 실제 요청을 처리할 내부 라우트 (컨트롤러 연결)
   get "/@:username", to: "profiles#show", as: :user_profile_base
+  get "/@:username/followers", to: "profiles#followers", as: :user_profile_followers
+  get "/@:username/following", to: "profiles#following", as: :user_profile_following
   # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
   direct :user_profile do |user|
     # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.
