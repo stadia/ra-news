@@ -7,6 +7,12 @@ class ProfilesController < ApplicationController
 
   def show
     @user = User.find_by!(username: params[:username])
-    render Views::Profiles::Show.new(user: @user, actor: @user.federails_actor)
+    actor = @user.federails_actor
+    render Views::Profiles::Show.new(
+      user: @user,
+      actor: actor,
+      followers_count: actor&.followers&.count || 0,
+      following_count: actor&.follows&.count || 0
+    )
   end
 end

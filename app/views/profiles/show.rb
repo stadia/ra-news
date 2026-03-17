@@ -5,13 +5,20 @@ class Views::Profiles::Show < Views::Base
   include Phlex::Rails::Helpers::LinkTo
   include PhlexIcons
 
-  def initialize(user:, actor:)
+  def initialize(user:, actor:, followers_count: 0, following_count: 0)
     @user = user
     @actor = actor
+    @followers_count = followers_count
+    @following_count = following_count
   end
 
   def view_template
     content_for :title, "@#{@user.username} — #{@user.name}"
+
+    if @actor
+      site_host = URI.parse(Federails.configuration.site_host).host
+      content_for :head, helpers.tag.meta(name: "fediverse:creator", content: "@#{@user.username}@#{site_host}")
+    end
 
     div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       profile_card
@@ -36,6 +43,16 @@ class Views::Profiles::Show < Views::Base
           div(class: "text-center sm:text-left pb-1") do
             h1(class: "text-3xl font-bold text-white tracking-tight") { @user.name }
             p(class: "text-slate-400 font-mono text-sm mt-1") { "@#{@user.username}" }
+            div(class: "flex items-center gap-4 mt-2") do
+              span(class: "text-sm text-slate-400") do
+                span(class: "font-semibold text-white") { @followers_count.to_s }
+                plain " 팔로워"
+              end
+              span(class: "text-sm text-slate-400") do
+                span(class: "font-semibold text-white") { @following_count.to_s }
+                plain " 팔로잉"
+              end
+            end
           end
         end
 
