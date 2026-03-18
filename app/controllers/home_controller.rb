@@ -30,6 +30,7 @@ class HomeController < ApplicationController
   # GET /about
   def about
     cacheable_page!
+    render Views::Home::About.new
   end
 
   # GET /rss
