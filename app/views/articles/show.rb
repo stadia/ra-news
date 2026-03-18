@@ -53,7 +53,7 @@ class Views::Articles::Show < Views::Base
       div(class: "flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-300") do
         div(class: "flex items-center") do
           div(class: "w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mr-3") do
-            helpers.phlex_icon "user", variant: :outline, class: "w-4 h-4 text-white"
+            Hero::User(variant: :outline, class: "w-4 h-4 text-white")
           end
           div do
             div(class: "text-xs text-gray-300") { "작성자" }
@@ -64,7 +64,7 @@ class Views::Articles::Show < Views::Base
         end
 
         div(class: "flex items-center") do
-          helpers.phlex_icon "calendar", variant: :outline, class: "w-5 h-5 mr-2 text-gray-500"
+          Hero::Calendar(variant: :outline, class: "w-5 h-5 mr-2 text-gray-500")
           div do
             div(class: "text-xs text-gray-300") { "발행일" }
             div(class: "font-medium text-gray-200") do
@@ -79,7 +79,7 @@ class Views::Articles::Show < Views::Base
       div(class: "mt-6 p-4 bg-gray-700 rounded-lg") do
         div(class: "flex items-center flex-1 min-w-0") do
           div(class: "w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3 shrink-0") do
-            helpers.phlex_icon "arrow-top-right-on-square", variant: :outline, class: "w-5 h-5 text-white"
+            Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-5 h-5 text-white")
           end
           div(class: "min-w-0 flex-1") do
             div(class: "text-sm font-medium text-blue-300 group-hover:text-blue-200 transition-colors") do
@@ -99,7 +99,7 @@ class Views::Articles::Show < Views::Base
             level: 2,
             class: "font-bold text-white mb-4 flex items-center"
           ) do
-            helpers.phlex_icon "check-circle", variant: :outline, class: "w-6 h-6 mr-2"
+            Hero::CheckCircle(variant: :outline, class: "w-6 h-6 mr-2")
             plain "핵심 요약"
           end
 
@@ -132,7 +132,7 @@ class Views::Articles::Show < Views::Base
           if @article.summary_body.present?
             div(class: "mb-8 article-content", id: "article-detail-body") do
               div(class: "prose prose-invert max-w-none prose-headings:text-green-400 prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-strong:text-sky-300 text-gray-200 leading-loose") do
-                unsafe_raw sanitize(Kramdown::Document.new(@article.summary_body).to_html)
+                raw sanitize(Kramdown::Document.new(@article.summary_body).to_html)
               end
             end
           end
@@ -154,7 +154,7 @@ class Views::Articles::Show < Views::Base
     section(class: "bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700") do
       div(class: "p-4 md:p-6 lg:p-8") do
         render RubyUI::Heading.new(level: 2, class: "font-bold text-gray-100 mb-6 flex items-center") do
-          helpers.phlex_icon "newspaper", variant: :outline, class: "w-6 h-6 mr-2 text-green-500"
+          Hero::Newspaper(variant: :outline, class: "w-6 h-6 mr-2 text-green-500")
           plain "관련 글들"
         end
 
@@ -177,7 +177,7 @@ class Views::Articles::Show < Views::Base
 
                 div(class: "flex items-center justify-between text-xs text-gray-300") do
                   span(class: "flex items-center") do
-                    helpers.phlex_icon "calendar", variant: :outline, class: "w-4 h-4 mr-1"
+                    Hero::Calendar(variant: :outline, class: "w-4 h-4 mr-1")
                     plain article.published_at&.strftime("%m/%d")
                   end
                   span(class: "group-hover:text-green-400 transition-colors duration-200") { "읽어보기 →" }
