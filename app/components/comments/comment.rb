@@ -14,7 +14,7 @@ class Components::Comments::Comment < Components::Base
 
   def view_template
     div(class: wrapper_classes, data: { controller: "reply-form" }) do
-      div(id: dom_id(@comment), class: "bg-gray-700 rounded-lg border border-gray-600 hover:border-gray-500 transition-all duration-200 overflow-hidden") do
+      render RubyUI::Card.new(id: dom_id(@comment), class: "bg-gray-700 rounded-lg border-gray-600 hover:border-gray-500 transition-all duration-200 overflow-hidden") do
         comment_content
         reply_form_section if can_reply?
         children_section if can_reply?
@@ -62,7 +62,7 @@ class Components::Comments::Comment < Components::Base
       div(class: "text-sm font-medium text-gray-200") do
         plain @comment.author_name
         if @comment.guest?
-          span(class: "ml-2 text-xs text-gray-500") { "(게스트)" }
+          render RubyUI::Badge.new(variant: :slate, size: :sm, class: "ml-2") { "게스트" }
         end
       end
       div(class: "text-xs text-gray-400 flex items-center") do

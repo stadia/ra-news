@@ -1,4 +1,4 @@
-<h1><%= @actor.name %></h1>
+<%= render RubyUI::Heading.new(level: 1) { @actor.name } %>
 
 <section>
   <%= render 'federails/client/followings/follow_actions', user: current_user, actor: @actor %>
@@ -13,7 +13,7 @@
 </section>
 
 <section>
-  <h2>Actor details</h2>
+  <%= render RubyUI::Heading.new(level: 2) { "Actor details" } %>
 
   <p>
     <b>Federated url:</b>
@@ -75,7 +75,7 @@
 <hr>
 
 <section>
-  <h2>Follows <small>(<em>Who is followed?</em>)</small></h2>
+  <%= render RubyUI::Heading.new(level: 2) { "Follows (Who is followed?)" } %>
 
   <% if @actor.following_follows.size.zero? %>
     <p><%= @actor.username %> follows nothing</p>
@@ -87,7 +87,7 @@
 </section>
 
 <section>
-  <h2>Followers <small>(<em>Who follows?</em>)</small></h2>
+  <%= render RubyUI::Heading.new(level: 2) { "Followers (Who follows?)" } %>
 
   <% if @actor.following_followers.size.zero? %>
     <p>Nothing follows <%= @actor.username %></p>
@@ -100,7 +100,7 @@
 
 <section>
   <%# FIXME: Fetch distant content somehow %>
-  <h2>10 last activities</h2>
+  <%= render RubyUI::Heading.new(level: 2) { "10 last activities" } %>
 
   <% activities = @actor.activities.last(10) %>
   <% if activities.size.zero? %>

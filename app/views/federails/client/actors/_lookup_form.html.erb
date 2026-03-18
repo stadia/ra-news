@@ -1,5 +1,5 @@
 <%= form_tag federails.lookup_client_actors_url, method: :get do %>
   <%= label_tag :account %>
-  <%= text_field_tag :account, nil, placeholder: 'user@domain.tld or username', required: true %>
-  <%= submit_tag 'Search' %>
+  <%= render RubyUI::Input.new(type: :text, name: "account", id: "account", placeholder: "user@domain.tld or username", required: true) %>
+  <%= render RubyUI::Button.new(type: "submit") { "Search" } %>
 <% end %>

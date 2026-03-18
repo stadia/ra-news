@@ -12,11 +12,11 @@ class Components::Users::PwdForm < Components::Base
 
   def view_template
     form_with(model: @user, class: "contents", url: users_path, method: :put) do |form|
-      div(class: "w-full max-w-2xl bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl my-6") do
+      render RubyUI::Card.new(class: "w-full max-w-2xl bg-slate-900/40 border-slate-800 rounded-2xl overflow-hidden shadow-2xl my-6") do
         # Decorative Header
         div(class: "h-24 bg-linear-to-r from-slate-800 to-slate-700/50 border-b border-slate-800")
 
-        div(class: "px-6 pb-8 sm:px-10 sm:pb-10") do
+        render RubyUI::CardContent.new(class: "px-6 pb-8 sm:px-10 sm:pb-10 pt-0") do
           # Avatar & Primary Identity Section (Visual only)
           div(class: "flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 mb-10") do
             render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-slate-900 bg-slate-900 shadow-xl") do

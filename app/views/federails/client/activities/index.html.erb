@@ -1,4 +1,4 @@
-<h1>Listing activities</h1>
+<%= render RubyUI::Heading.new(level: 1) { "Listing activities" } %>
 
 <% @activities.each do |activity| %>
   <%= render 'activity', activity: activity %>
