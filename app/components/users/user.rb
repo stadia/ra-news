@@ -8,11 +8,11 @@ class Components::Users::User < Components::Base
   end
 
   def view_template
-    div(id: dom_id(@user), class: "w-full max-w-2xl bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl my-6") do
+    render RubyUI::Card.new(id: dom_id(@user), class: "w-full max-w-2xl bg-slate-900/40 border-slate-800 rounded-2xl overflow-hidden shadow-2xl my-6") do
       # Profile Header/Banner
       div(class: "h-24 bg-linear-to-r from-slate-800 to-slate-700/50 border-b border-slate-800")
 
-      div(class: "px-6 pb-8 sm:px-10 sm:pb-10") do
+      render RubyUI::CardContent.new(class: "px-6 pb-8 sm:px-10 sm:pb-10 pt-0") do
         # Avatar & Primary Identity
         div(class: "flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 mb-10") do
           render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-slate-900 bg-slate-900 shadow-xl") do
@@ -36,6 +36,10 @@ class Components::Users::User < Components::Base
     end
   end
 
+  def badge(text)
+    render RubyUI::Badge.new(variant: :slate, size: :sm) { text }
+  end
+
   private
 
   def detail_field(label, value = nil, &block)
@@ -47,10 +51,6 @@ class Components::Users::User < Components::Base
         p(class: "text-slate-200 font-medium text-lg") { value }
       end
     end
-  end
-
-  def badge(text)
-    span(class: "px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700") { text }
   end
 
   def initials

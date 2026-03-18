@@ -13,8 +13,8 @@ class Components::Comments::CommentForm < Components::Base
 
   def view_template
     turbo_frame_tag("new_comment") do
-      div(
-        class: "bg-gray-700 rounded-xl p-6 border border-gray-600",
+      render RubyUI::Card.new(
+        class: "bg-gray-700 border-gray-600 p-6",
         data: {
           controller: "character-count guest-name comment-form",
           character_count_max_length_value: ::Comment::MAX_BODY_LENGTH.to_s,

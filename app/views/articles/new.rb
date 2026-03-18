@@ -15,12 +15,12 @@ class Views::Articles::New < Views::Base
 
     section(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       div(class: "mb-6 sm:mb-8") do
-        p(class: "text-xs font-semibold tracking-[0.22em] uppercase text-emerald-300/80 mb-2") { "Article Intake" }
+        render RubyUI::Badge.new(variant: :emerald, size: :sm, class: "mb-2 tracking-[0.22em] uppercase") { "Article Intake" }
         render RubyUI::Heading.new(level: 1, class: "font-bold text-white text-3xl sm:text-4xl tracking-tight") { "새 글 등록" }
         p(class: "mt-2 text-slate-300/80 text-sm sm:text-base") { "URL을 입력하면 수집과 요약 처리를 시작합니다." }
       end
 
-      div(class: "relative overflow-hidden rounded-2xl border border-slate-700/70 bg-slate-900/70 shadow-2xl shadow-black/30 p-5 sm:p-7 lg:p-8 backdrop-blur-sm") do
+      render RubyUI::Card.new(class: "relative overflow-hidden rounded-2xl border-slate-700/70 bg-slate-900/70 shadow-2xl shadow-black/30 p-5 sm:p-7 lg:p-8 backdrop-blur-sm") do
         div(class: "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.16),transparent_42%)]")
         div(class: "relative") do
           render Components::Articles::Form.new(article: article)

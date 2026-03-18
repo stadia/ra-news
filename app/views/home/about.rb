@@ -52,11 +52,11 @@ class Views::Home::About < Views::Base
         ul(class: "text-slate-300 space-y-2") do
           li do
             plain "Mastodon: "
-            a(href: "https://ruby.social/@news_kr", rel: "me", target: "_blank", class: "text-green-400 hover:underline") { "@news_kr@ruby.social" }
+            render RubyUI::Link.new(href: "https://ruby.social/@news_kr", rel: "me", target: "_blank", class: "text-green-400 hover:underline") { "@news_kr@ruby.social" }
           end
           li do
             plain "Twitter/X: "
-            a(href: "https://x.com/rubynewskr", target: "_blank", rel: "noopener noreferrer", class: "text-green-400 hover:underline") { "@rubynewskr" }
+            render RubyUI::Link.new(href: "https://x.com/rubynewskr", target: "_blank", rel: "noopener noreferrer", class: "text-green-400 hover:underline") { "@rubynewskr" }
           end
         end
       end

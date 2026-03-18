@@ -27,7 +27,7 @@ class Components::RecentCommentsSidebar < Components::Base
   private
 
   def comment_card(comment)
-    div(class: "bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-gray-600 transition-colors") do
+    render RubyUI::Card.new(class: "bg-gray-800 p-3 border-gray-700 hover:border-gray-600 transition-colors rounded-lg") do
       div(class: "flex items-center gap-2 mb-2") do
         render RubyUI::Avatar.new(size: :sm, class: "shrink-0") do
           render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-blue-500 to-purple-600 text-white font-bold") do

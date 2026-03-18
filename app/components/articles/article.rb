@@ -12,8 +12,8 @@ class Components::Articles::Article < Components::Base
   end
 
   def view_template
-    div(id: (dom_id article), class:
-        "bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-gray-700 p-3 md:p-6 flex flex-col"
+    render RubyUI::Card.new(id: (dom_id article), class:
+        "bg-gray-800 shadow-md hover:shadow-lg transition-shadow overflow-hidden border-gray-700 p-3 md:p-6 flex flex-col"
     ) do
       header_section
       div(class: "mb-4") { article.url }

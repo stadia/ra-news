@@ -151,8 +151,8 @@ class Views::Articles::Show < Views::Base
   end
 
   def render_similar_articles
-    section(class: "bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700") do
-      div(class: "p-4 md:p-6 lg:p-8") do
+    render RubyUI::Card.new(class: "bg-gray-800 shadow-lg overflow-hidden border-gray-700") do
+      render RubyUI::CardContent.new(class: "p-4 md:p-6 lg:p-8") do
         render RubyUI::Heading.new(level: 2, class: "font-bold text-gray-100 mb-6 flex items-center") do
           Hero::Newspaper(variant: :outline, class: "w-6 h-6 mr-2 text-green-500")
           plain "관련 글들"
@@ -191,8 +191,8 @@ class Views::Articles::Show < Views::Base
   end
 
   def render_comments_section
-    section(class: "bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700") do
-      div(class: "p-4 md:p-6 lg:p-8") do
+    render RubyUI::Card.new(class: "bg-gray-800 shadow-lg overflow-hidden border-gray-700") do
+      render RubyUI::CardContent.new(class: "p-4 md:p-6 lg:p-8") do
         render RubyUI::Heading.new(
           level: 3,
           class: "font-bold text-gray-100 mb-6 flex items-center",
