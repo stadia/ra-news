@@ -42,7 +42,7 @@ class Views::Articles::Show < Views::Base
       div(class: "mb-6") do
         render RubyUI::Heading.new(
           level: 1,
-          class: "!text-2xl lg:!text-3xl font-bold text-gray-100 mb-4 leading-tight"
+          class: "text-2xl! lg:text-3xl! font-bold text-gray-100 mb-4 leading-tight"
         ) { @article.title_ko }
 
         if @article.title_ko != @article.title
