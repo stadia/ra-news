@@ -367,7 +367,7 @@ GEM
       opentelemetry-common (~> 0.21)
     opentelemetry-instrumentation-action_mailer (0.6.1)
       opentelemetry-instrumentation-active_support (~> 0.10)
-    opentelemetry-instrumentation-action_pack (0.15.1)
+    opentelemetry-instrumentation-action_pack (0.16.0)
       opentelemetry-instrumentation-rack (~> 0.29)
     opentelemetry-instrumentation-action_view (0.11.2)
       opentelemetry-instrumentation-active_support (~> 0.10)
@@ -399,9 +399,9 @@ GEM
       opentelemetry-helpers-sql
       opentelemetry-helpers-sql-processor
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-rack (0.29.0)
+    opentelemetry-instrumentation-rack (0.30.0)
       opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-rails (0.39.1)
+    opentelemetry-instrumentation-rails (0.40.0)
       opentelemetry-instrumentation-action_mailer (~> 0.6)
       opentelemetry-instrumentation-action_pack (~> 0.15)
       opentelemetry-instrumentation-action_view (~> 0.11)
