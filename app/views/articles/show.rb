@@ -196,7 +196,7 @@ class Views::Articles::Show < Views::Base
         render RubyUI::Heading.new(
           level: 3,
           class: "font-bold text-gray-100 mb-6 flex items-center",
-          id: :comments_header
+          id: "comments_header"
         ) { render(Components::Comments::CommentHeader.new(comments: @comments)) }
 
         div(id: "comment_form", class: "border-t border-gray-700 mb-4") do
