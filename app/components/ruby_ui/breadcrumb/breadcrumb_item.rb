@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 module RubyUI
-  class FormFieldHint < Base
+  class BreadcrumbItem < Base
     def view_template(&)
-      p(**attrs, &)
+      li(**attrs, &)
     end
 
     private
 
     def default_attrs
-      {class: "empty:hidden text-sm text-muted-foreground"}
+      {
+        class: "inline-flex items-center gap-1.5"
+      }
     end
   end
 end

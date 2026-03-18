@@ -1,15 +1,17 @@
 # frozen_string_literal: true
 
 module RubyUI
-  class FormFieldHint < Base
+  class AlertDialogAction < Base
     def view_template(&)
-      p(**attrs, &)
+      render RubyUI::Button.new(**attrs, &)
     end
 
     private
 
     def default_attrs
-      {class: "empty:hidden text-sm text-muted-foreground"}
+      {
+        variant: :primary
+      }
     end
   end
 end
