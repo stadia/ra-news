@@ -4,6 +4,7 @@
 class Views::Actors::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
+  include PhlexIcons
 
   def initialize(actor:)
     @actor = actor
@@ -12,127 +13,61 @@ class Views::Actors::Show < Views::Base
   def view_template
     content_for :title, @actor.name
 
-    render RubyUI::Heading.new(level: 1) { @actor.name }
-
-    section do
-      render Views::Followings::FollowActions.new(actor: @actor)
+    div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
+      profile_card
     end
-
-    section do
-      if @actor.local?
-        link_to "All activities", actor_activities_path(@actor)
-      elsif @actor.profile_url
-        link_to "Visit profile", @actor.profile_url
-      end
-    end
-
-    actor_details
-    follows_section
-    followers_section
-    recent_activities
   end
 
   private
 
-  def actor_details
-    section do
-      render RubyUI::Heading.new(level: 2) { "Actor details" }
+  def profile_card
+    render RubyUI::Card.new(class: "bg-slate-900/40 border-slate-800 rounded-2xl overflow-hidden shadow-2xl") do
+      div(class: "h-24 bg-linear-to-r from-green-900/30 to-slate-800/50 border-b border-slate-800")
 
-      detail("Federated url", @actor.federated_url)
-      detail("Username", @actor.username)
-      detail("Inbox URL", @actor.inbox_url)
-      detail("Outbox URL", @actor.outbox_url)
-      detail("Followers URL", @actor.followers_url)
-      detail("Followings URL", @actor.followings_url)
+      render RubyUI::CardContent.new(class: "px-6 pb-8 sm:px-10 sm:pb-10") do
+        div(class: "flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 mb-8") do
+          render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-slate-900 bg-slate-900 shadow-xl") do
+            render RubyUI::AvatarFallback.new(class: "bg-slate-600 text-white text-3xl font-bold") do
+              plain initials
+            end
+          end
 
-      p do
-        b { "Profile url: " }
-        link_to("Profile", @actor.profile_url) if @actor.profile_url
-      end
+          div(class: "text-center sm:text-left pb-1") do
+            h1(class: "text-3xl font-bold text-white tracking-tight") { @actor.name }
+            p(class: "text-slate-400 font-mono text-sm mt-1") { @actor.at_address }
 
-      p do
-        b { "Federation address: " }
-        plain @actor.at_address
-      end
+            div(class: "flex items-center gap-4 mt-2") do
+              span(class: "text-sm text-slate-400") do
+                span(class: "font-semibold text-white") { @actor.following_followers.size.to_s }
+                plain " 팔로워"
+              end
+              span(class: "text-sm text-slate-400") do
+                span(class: "font-semibold text-white") { @actor.following_follows.size.to_s }
+                plain " 팔로잉"
+              end
+            end
+          end
+        end
 
-      p do
-        if @actor.local? && @actor.entity_configuration[:profile_url_method]
-          b { "Home page: " }
-          link_to @actor.entity.send(@actor.entity_configuration[:username_field]),
-                  Rails.application.routes.url_helpers.send(@actor.entity_configuration[:profile_url_method], @actor.entity)
-        elsif @actor.profile_url
-          b { "Federation profile URL (JSON): " }
-          link_to @actor.name, @actor.profile_url
-        else
-          plain "(No homepage)"
+        render RubyUI::CardFooter.new(class: "px-0 pt-6 pb-0 border-t border-slate-800/60") do
+          div(class: "flex flex-col sm:flex-row sm:items-center gap-4") do
+            render Views::Followings::FollowActions.new(actor: @actor)
+
+            if @actor.local?
+              link_to "활동 보기", actor_activities_path(@actor),
+                class: "text-sm text-slate-400 hover:text-white transition-colors"
+            elsif @actor.profile_url
+              link_to "프로필 방문 →", @actor.profile_url,
+                class: "text-sm text-slate-400 hover:text-white transition-colors",
+                target: "_blank", rel: "noopener noreferrer"
+            end
+          end
         end
       end
     end
   end
 
-  def follows_section
-    hr
-
-    section do
-      render RubyUI::Heading.new(level: 2) { "Follows (Who is followed?)" }
-
-      if @actor.following_follows.empty?
-        p { "#{@actor.username} follows nothing" }
-      end
-
-      @actor.following_follows.each do |following|
-        follow_row(following.target_actor)
-      end
-    end
-  end
-
-  def followers_section
-    section do
-      render RubyUI::Heading.new(level: 2) { "Followers (Who follows?)" }
-
-      if @actor.following_followers.empty?
-        p { "Nothing follows #{@actor.username}" }
-      end
-
-      @actor.following_followers.each do |following|
-        follower_row(following)
-      end
-    end
-  end
-
-  def recent_activities
-    section do
-      render RubyUI::Heading.new(level: 2) { "10 last activities" }
-
-      activities = @actor.activities.last(10)
-      if activities.empty?
-        p { "No activity to display" }
-      end
-
-      activities.each do |activity|
-        render partial("federails/client/activities/activity", activity: activity)
-      end
-    end
-  end
-
-  def follow_row(target_actor)
-    div do
-      b { link_to target_actor.name, actor_url(target_actor) }
-      plain " (#{target_actor.at_address})"
-    end
-  end
-
-  def follower_row(following)
-    div do
-      b { link_to following.actor.name, actor_url(following.actor) }
-      plain " (#{following.actor.at_address}) (#{following.status})"
-    end
-  end
-
-  def detail(label, value)
-    p do
-      b { "#{label}: " }
-      plain value.to_s
-    end
+  def initials
+    (@actor.name.presence || @actor.username.presence || "?").first.upcase
   end
 end
