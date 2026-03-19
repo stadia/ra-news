@@ -33,7 +33,7 @@ class Views::Profiles::FollowList < Views::Base
 
   def list_content(title)
     if @followings.empty?
-      div(class: "text-center py-16 text-slate-500") do
+      div(class: "text-center py-16 text-content-disabled") do
         p { @type == :followers ? "아직 팔로워가 없습니다." : "아직 팔로잉하는 계정이 없습니다." }
       end
     else
@@ -50,13 +50,13 @@ class Views::Profiles::FollowList < Views::Base
     is_local = actor.server.blank? || actor.server == site_host
     handle = is_local ? "@#{actor.username}" : "@#{actor.username}@#{actor.server}"
 
-    div(id: "following_row_#{following.id}", class: "flex items-center gap-4 px-4 py-3 bg-slate-900/40 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors") do
+    div(id: "following_row_#{following.id}", class: "flex items-center gap-4 px-4 py-3 bg-app/40 border border-border-subtle rounded-xl hover:border-border-strong transition-colors") do
       render RubyUI::Avatar.new(size: :md, class: "h-10 w-10 shrink-0") do
         icon_url = actor.extensions&.dig("icon", "url")
         if icon_url
           render RubyUI::AvatarImage.new(src: icon_url, alt: actor.name.presence || actor.username)
         else
-          render RubyUI::AvatarFallback.new(class: "bg-green-700 text-white font-bold") do
+          render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground font-bold") do
             plain (actor.name.presence || actor.username).first.upcase
           end
         end
@@ -64,13 +64,13 @@ class Views::Profiles::FollowList < Views::Base
 
       div(class: "flex-1 min-w-0") do
         if is_local && (local_user = actor.entity)
-          a(href: "/@#{local_user.username}", class: "text-white font-semibold hover:text-green-400 transition-colors block truncate") do
+          a(href: "/@#{local_user.username}", class: "text-content font-semibold hover:text-link-hover transition-colors block truncate") do
             plain actor.name.presence || actor.username
           end
         else
-          p(class: "text-white font-semibold truncate") { actor.name.presence || actor.username }
+          p(class: "text-content font-semibold truncate") { actor.name.presence || actor.username }
         end
-        p(class: "text-slate-400 text-sm font-mono truncate") { handle }
+        p(class: "text-content-muted text-sm font-mono truncate") { handle }
       end
 
       action_buttons(following) if own_profile?

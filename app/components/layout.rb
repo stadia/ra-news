@@ -25,7 +25,7 @@ class Components::Layout < Components::Base
       end
 
       body(
-        class: "bg-slate-900 text-slate-200 min-h-screen flex flex-col",
+        class: "theme-dark bg-app text-content-secondary min-h-screen flex flex-col",
         data: {
           controller: "page-loader",
           action: [
@@ -142,32 +142,32 @@ class Components::Layout < Components::Base
   def render_skip_link
     a(
       href: "#main-content",
-      class: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-green-500 focus:text-white focus:rounded-lg focus:shadow-lg"
+      class: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-solid focus:text-brand-foreground focus:rounded-lg focus:shadow-lg"
     ) { "본문으로 건너뛰기" }
   end
 
   def render_loading_indicator
     div(
       data: { page_loader_target: "loader" },
-      class: "fixed inset-0 bg-slate-900 bg-opacity-75 z-50 hidden items-center justify-center"
+      class: "fixed inset-0 bg-app/75 z-50 hidden items-center justify-center"
     ) do
       div(class: "flex flex-col items-center space-y-4") do
-        div(class: "animate-spin rounded-full h-12 w-12 border-4 border-green-500 border-t-transparent shadow-lg shadow-green-500/50")
-        div(class: "text-white font-medium") { "로딩 중..." }
+        div(class: "animate-spin rounded-full h-12 w-12 border-4 border-brand border-t-transparent shadow-lg shadow-brand/50")
+        div(class: "text-content font-medium") { "로딩 중..." }
       end
     end
   end
 
   def render_navigation
     nav(
-      class: "bg-slate-800 border-b border-slate-700 border-t-4 border-t-green-500",
+      class: "bg-surface border-b border-border-strong border-t-4 border-t-brand",
       aria_label: "주 네비게이션"
     ) do
       div(class: "max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4") do
         link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group" do
-          span(class: "self-center text-2xl font-semibold whitespace-nowrap text-white group-hover:text-green-400 transition-colors duration-200") do
+          span(class: "self-center text-2xl font-semibold whitespace-nowrap text-content group-hover:text-link-hover transition-colors duration-200") do
             plain "Ruby-News || "
-            span(class: "text-green-400") { "루비 AI 뉴스" }
+            span(class: "text-accent-text") { "루비 AI 뉴스" }
           end
         end
 
@@ -181,7 +181,7 @@ class Components::Layout < Components::Base
     input(type: "checkbox", id: "mobile-menu-toggle", class: "mobile-menu-toggle peer")
     label(
       for: "mobile-menu-toggle",
-      class: "inline-flex items-center p-2 w-11 h-11 justify-center text-sm text-slate-100 rounded-lg md:hidden hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-800 cursor-pointer",
+      class: "inline-flex items-center p-2 w-11 h-11 justify-center text-sm text-content rounded-lg md:hidden hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface cursor-pointer",
       aria_label: "메뉴 열기/닫기"
     ) do
       span(class: "sr-only") { "Open main menu" }
@@ -195,7 +195,7 @@ class Components::Layout < Components::Base
       class: "items-center justify-between w-full md:flex md:w-auto md:order-1 hidden peer-checked:block transition-all duration-300 ease-in-out md:transition-none",
       id: "navbar-search"
     ) do
-      ul(class: "flex flex-col p-4 md:p-0 mt-4 font-medium border border-slate-700 rounded-lg bg-slate-700 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-slate-800 animate-in slide-in-from-top-2 fade-in duration-200 md:animate-none") do
+      ul(class: "flex flex-col p-4 md:p-0 mt-4 font-medium border border-border-strong rounded-lg bg-surface-muted md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-surface animate-in slide-in-from-top-2 fade-in duration-200 md:animate-none") do
         li { raw vc.nav_link_to("홈", root_path) }
         li { raw vc.nav_link_to("지난 글", articles_path) }
         li { raw vc.nav_link_to("그 밖의 뉴스", others_path) }
@@ -232,13 +232,13 @@ class Components::Layout < Components::Base
         :search,
         placeholder: "검색...",
         value: view_context.params[:search],
-        class: "px-3 py-2 text-sm text-slate-100 bg-slate-700 border border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent w-40 md:w-48 transition-all duration-200"
+        class: "px-3 py-2 text-sm text-content bg-surface-muted border border-border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent w-40 md:w-48 transition-all duration-200 placeholder:text-content-muted"
       )
       render RubyUI::Button.new(
         type: "submit",
         variant: :primary,
         size: :lg,
-        class: "font-medium bg-green-500 rounded-lg border border-green-500 hover:bg-green-600 focus:ring-2 focus:outline-none focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition-all duration-150 min-h-11 cursor-pointer"
+        class: "font-medium bg-brand-solid rounded-lg border border-brand-solid hover:bg-brand-solid-hover text-brand-foreground focus:ring-2 focus:outline-none focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface transition-all duration-150 min-h-11 cursor-pointer"
       ) { "검색" }
     end
   end
@@ -266,18 +266,18 @@ class Components::Layout < Components::Base
   end
 
   def render_footer
-    footer(class: "bg-slate-800 text-slate-200 rounded-lg shadow-sm m-4 border border-slate-700 border-t-2 border-t-green-500") do
+    footer(class: "bg-surface text-content-secondary rounded-lg shadow-sm m-4 border border-border-strong border-t-2 border-t-brand") do
       div(class: "w-full mx-auto max-w-7xl p-4 md:flex md:items-center md:justify-between") do
-        span(class: "text-sm text-slate-300 sm:text-center") do
+        span(class: "text-sm text-content-secondary sm:text-center") do
           plain "© 2025 "
           a(
             href: "https://ruby-news.kr/",
-            class: "hover:underline hover:text-white transition-colors duration-200"
+            class: "hover:underline hover:text-content transition-colors duration-200"
           ) { "Ruby-News || 루비 AI 뉴스" }
           plain ". All Rights Reserved."
         end
 
-        ul(class: "flex flex-wrap items-center mt-3 text-sm font-medium text-slate-300 sm:mt-0 gap-4") do
+        ul(class: "flex flex-wrap items-center mt-3 text-sm font-medium text-content-secondary sm:mt-0 gap-4") do
           li { render_mastodon_link }
           li { render_twitter_link }
           li { render_rss_footer_link }
@@ -291,7 +291,7 @@ class Components::Layout < Components::Base
       rel: "me",
       href: "https://ruby.social/@news_kr",
       target: "_blank",
-      class: "hover:underline hover:text-white flex items-center gap-1"
+      class: "hover:underline hover:text-content flex items-center gap-1"
     ) do
       svg(class: "w-5 h-5", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg") do |s|
         s.path(
@@ -307,7 +307,7 @@ class Components::Layout < Components::Base
       href: "https://x.com/rubynewskr",
       target: "_blank",
       rel: "noopener noreferrer",
-      class: "hover:underline hover:text-white flex items-center gap-1"
+      class: "hover:underline hover:text-content flex items-center gap-1"
     ) do
       svg(class: "w-5 h-5", fill: "currentColor", viewBox: "0 0 24 24", xmlns: "http://www.w3.org/2000/svg") do |s|
         s.path(
@@ -323,7 +323,7 @@ class Components::Layout < Components::Base
       href: rss_path,
       target: "_blank",
       rel: "noopener noreferrer",
-      class: "hover:underline hover:text-white flex items-center gap-1"
+      class: "hover:underline hover:text-content flex items-center gap-1"
     ) do
       render PhlexIcons::Hero::Rss.new(variant: :outline, class: "w-5 h-5")
       plain " RSS 피드"

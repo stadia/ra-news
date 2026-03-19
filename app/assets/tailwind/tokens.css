@@ -14,6 +14,7 @@
         --brand-primary-hover: 22 163 74; /* green-600 */
         --brand-primary-light: 74 222 128; /* green-400 */
         --brand-primary-dark: 21 128 61; /* green-700 */
+        --brand-primary-deep: 22 101 52; /* green-800 */
 
         /* ========================================
        Neutral Colors (Slate Palette)
@@ -31,36 +32,17 @@
         --neutral-950: 2 6 23; /* slate-950 */
 
         /* ========================================
-       Semantic Colors
+       Status Colors
        ======================================== */
-
-        /* Background */
-        --color-bg-primary: var(--neutral-900); /* Body 배경 */
-        --color-bg-secondary: var(--neutral-800); /* 카드, 섹션 배경 */
-        --color-bg-tertiary: var(--neutral-700); /* 입력 필드, 보조 요소 */
-        --color-bg-elevated: var(
-            --neutral-800
-        ); /* 떠있는 요소 (모달, 드롭다운) */
-
-        /* Text */
-        --color-text-primary: var(--neutral-50); /* 제목, 중요 텍스트 */
-        --color-text-secondary: var(--neutral-200); /* 본문 텍스트 */
-        --color-text-muted: var(--neutral-400); /* 보조 텍스트, 메타데이터 */
-        --color-text-disabled: var(--neutral-600); /* 비활성 텍스트 */
-
-        /* Border */
-        --color-border: var(--neutral-700); /* 기본 테두리 */
-        --color-border-light: var(--neutral-600); /* 호버, 포커스 테두리 */
-        --color-border-dark: var(--neutral-800); /* 미묘한 구분선 */
-
-        /* Status Colors */
         --color-success: var(--brand-primary); /* 성공, 완료 */
         --color-warning: 245 158 11; /* amber-500 - 경고 */
         --color-error: 239 68 68; /* red-500 - 에러 */
         --color-info: 59 130 246; /* blue-500 - 정보 */
 
         /* Prose (Typography Plugin) Accent Colors */
-        --color-prose-heading: 74 222 128; /* green-400 - 헤딩 포인트 */
+        --color-prose-heading: var(
+            --brand-primary-light
+        ); /* green-400 - 헤딩 포인트 */
         --color-prose-strong: 125 211 252; /* sky-300 - 강조 텍스트 포인트 */
 
         /* ========================================
@@ -99,8 +81,8 @@
         --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
 
         /* Focus Ring Shadow */
-        --shadow-focus-green: 0 0 0 3px rgb(34 197 94 / 0.5);
-        --shadow-focus-slate: 0 0 0 3px rgb(100 116 139 / 0.5);
+        --shadow-focus-green: 0 0 0 3px rgb(var(--brand-primary) / 0.5);
+        --shadow-focus-slate: 0 0 0 3px rgb(var(--neutral-500) / 0.5);
 
         /* ========================================
        Typography Scale
@@ -184,6 +166,111 @@
     */
     }
 
+    :root,
+    .theme-dark,
+    .dark {
+        /* ========================================
+       Semantic Colors
+       ======================================== */
+
+        /* Background */
+        --color-bg-primary: var(--neutral-900); /* Body 배경 */
+        --color-bg-secondary: var(--neutral-800); /* 카드, 섹션 배경 */
+        --color-bg-tertiary: var(--neutral-700); /* 입력 필드, 보조 요소 */
+        --color-bg-elevated: var(
+            --color-bg-secondary
+        ); /* 떠있는 요소 (모달, 드롭다운) */
+
+        /* Text */
+        --color-text-primary: var(--neutral-50); /* 제목, 중요 텍스트 */
+        --color-text-secondary: var(--neutral-200); /* 본문 텍스트 */
+        --color-text-muted: var(--neutral-400); /* 보조 텍스트, 메타데이터 */
+        --color-text-disabled: var(--neutral-600); /* 비활성 텍스트 */
+
+        /* Border */
+        --color-border: var(--neutral-700); /* 기본 테두리 */
+        --color-border-light: var(
+            --color-text-disabled
+        ); /* 호버, 포커스 테두리 */
+        --color-border-dark: var(--color-bg-secondary); /* 미묘한 구분선 */
+
+        /* Accent Text */
+        --semantic-link: var(--brand-primary-light); /* 링크 텍스트 */
+        --semantic-link-hover: var(--brand-primary); /* 링크 hover */
+        --semantic-accent-text: var(
+            --brand-primary-light
+        ); /* 섹션 제목, 강조 텍스트 */
+        --semantic-accent-text-hover: var(
+            --brand-primary
+        ); /* 강조 텍스트 hover */
+        --semantic-brand-solid: var(
+            --brand-primary-dark
+        ); /* 단색 브랜드 배경 */
+        --semantic-brand-solid-hover: var(
+            --brand-primary-deep
+        ); /* 단색 브랜드 배경 hover */
+        --semantic-info-solid: 37 99 235; /* blue-600 - 단색 정보 배경 */
+        --semantic-info-solid-hover: 29 78 216; /* blue-700 - 단색 정보 배경 hover */
+        --semantic-info-text: var(--color-info); /* 정보성 텍스트 */
+        --semantic-info-text-hover: var(
+            --semantic-info-solid
+        ); /* 정보성 텍스트 hover */
+        --semantic-danger-solid: 220 38 38; /* red-600 - 단색 위험 배경 */
+        --semantic-danger-solid-hover: 185 28 28; /* red-700 - 단색 위험 배경 hover */
+        --semantic-danger-text: 248 113 113; /* red-400 - 위험 텍스트 */
+        --semantic-danger-text-hover: 239 68 68; /* red-500 - 위험 텍스트 hover */
+    }
+
+    .theme-light,
+    .light {
+        /* Background */
+        --color-bg-primary: var(--neutral-50); /* Body 배경 */
+        --color-bg-secondary: var(--neutral-100); /* 카드, 섹션 배경 */
+        --color-bg-tertiary: var(--neutral-200); /* 입력 필드, 보조 요소 */
+        --color-bg-elevated: 255 255 255; /* 떠있는 요소 (모달, 드롭다운) */
+
+        /* Text */
+        --color-text-primary: var(--neutral-950); /* 제목, 중요 텍스트 */
+        --color-text-secondary: var(--neutral-800); /* 본문 텍스트 */
+        --color-text-muted: var(--neutral-600); /* 보조 텍스트, 메타데이터 */
+        --color-text-disabled: var(--neutral-400); /* 비활성 텍스트 */
+
+        /* Border */
+        --color-border: var(--neutral-300); /* 기본 테두리 */
+        --color-border-light: var(
+            --color-text-disabled
+        ); /* 호버, 포커스 테두리 */
+        --color-border-dark: var(--color-bg-tertiary); /* 미묘한 구분선 */
+
+        /* Accent Text */
+        --semantic-link: var(--brand-primary-dark); /* 링크 텍스트 */
+        --semantic-link-hover: var(--brand-primary-deep); /* 링크 hover */
+        --semantic-accent-text: var(
+            --brand-primary-dark
+        ); /* 섹션 제목, 강조 텍스트 */
+        --semantic-accent-text-hover: var(
+            --brand-primary-deep
+        ); /* 강조 텍스트 hover */
+        --semantic-brand-solid: var(
+            --brand-primary-dark
+        ); /* 단색 브랜드 배경 */
+        --semantic-brand-solid-hover: var(
+            --brand-primary-deep
+        ); /* 단색 브랜드 배경 hover */
+        --semantic-info-solid: 37 99 235; /* blue-600 - 단색 정보 배경 */
+        --semantic-info-solid-hover: 29 78 216; /* blue-700 - 단색 정보 배경 hover */
+        --semantic-info-text: var(--semantic-info-solid); /* 정보성 텍스트 */
+        --semantic-info-text-hover: var(
+            --semantic-info-solid-hover
+        ); /* 정보성 텍스트 hover */
+        --semantic-danger-solid: 220 38 38; /* red-600 - 단색 위험 배경 */
+        --semantic-danger-solid-hover: 185 28 28; /* red-700 - 단색 위험 배경 hover */
+        --semantic-danger-text: var(--semantic-danger-solid); /* 위험 텍스트 */
+        --semantic-danger-text-hover: var(
+            --semantic-danger-solid-hover
+        ); /* 위험 텍스트 hover */
+    }
+
     /* ========================================
      Accessibility: Motion Preferences
      ======================================== */
@@ -215,7 +302,7 @@
 
 /* Focus Visible (for better keyboard navigation) */
 .focus-visible-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-app;
 }
 
 /* Screen Reader Only */

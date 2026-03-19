@@ -16,7 +16,7 @@ class Views::Users::New < Views::Base
       render RubyUI::Link.new(
         href: new_session_path,
         size: :lg,
-        class: "w-full sm:w-auto text-center rounded-md bg-slate-700 hover:bg-slate-600 text-slate-100 inline-block font-medium focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+        class: "w-full sm:w-auto text-center rounded-md bg-surface-muted hover:bg-surface-hover text-content inline-block font-medium focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
       ) { "뒤로" }
     end
   end
