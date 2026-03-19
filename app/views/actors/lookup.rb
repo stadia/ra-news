@@ -3,8 +3,6 @@
 
 class Views::Actors::Lookup < Views::Base
   include Phlex::Rails::Helpers::ContentFor
-  include Phlex::Rails::Helpers::FormTag
-  include Phlex::Rails::Helpers::LabelTag
 
   def view_template
     content_for :title, "팔로우 검색"
@@ -13,9 +11,9 @@ class Views::Actors::Lookup < Views::Base
       render RubyUI::Heading.new(level: 1) { "팔로우 검색" }
       p(class: "text-slate-400 mt-2 mb-6") { "Fediverse 주소로 사용자를 검색하세요." }
 
-      form_tag lookup_actors_url, method: :get, class: "flex gap-2 items-end" do
-        div(class: "flex-1") do
-          label_tag :account, "계정 주소", class: "block text-sm text-slate-400 mb-1"
+      render RubyUI::Form.new(action: lookup_actors_url, method: :get, class: "flex gap-2 items-end") do
+        render RubyUI::FormField.new(class: "flex-1") do
+          render RubyUI::FormFieldLabel.new(for: "account") { "계정 주소" }
           render RubyUI::Input.new(
             type: :text,
             name: "account",
