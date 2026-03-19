@@ -12,7 +12,7 @@ class Components::Home::Article < Components::Base
   end
 
   def view_template
-    render RubyUI::Card.new(id: dom_id(article), class: "bg-gray-800 border-gray-600 hover:border-gray-500 shadow-lg hover:shadow-xl transition-all duration-300 p-6 flex flex-col") do
+    render RubyUI::Card.new(id: dom_id(article), class: "bg-surface border-border-muted hover:border-border-strong shadow-lg hover:shadow-xl transition-all duration-300 p-6 flex flex-col") do
       header_section
       render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
       summary_section
@@ -25,17 +25,17 @@ class Components::Home::Article < Components::Base
   def header_section
     display_title = article.title_ko || article.title
     div(class: "mb-4") do
-      h2(class: "text-xl font-bold text-white mb-2 leading-tight hover:text-green-400 transition-colors duration-200") do
+      h2(class: "text-xl font-bold text-content mb-2 leading-tight hover:text-brand-soft transition-colors duration-200") do
         link_to(display_title, article_path(article))
       end
       if article.title_ko.present? && article.title_ko != article.title
-        h3(class: "text-lg font-medium text-gray-200") { article.title }
+        h3(class: "text-lg font-medium text-content-secondary") { article.title }
       end
     end
   end
 
   def summary_section
-    div(class: "text-gray-200 mb-6 text-base leading-relaxed grow space-y-2") do
+    div(class: "text-content-secondary mb-6 text-base leading-relaxed grow space-y-2") do
       summary = article.summary_key
       if summary.present?
         if summary.is_a?(Array)
@@ -52,17 +52,17 @@ class Components::Home::Article < Components::Base
   end
 
   def footer_section
-    div(class: "mt-auto pt-4 flex flex-wrap justify-between items-center text-sm text-gray-300 border-t border-gray-600 gap-y-2") do
+    div(class: "mt-auto pt-4 flex flex-wrap justify-between items-center text-sm text-content-secondary border-t border-border-muted gap-y-2") do
       span(class: "inline-flex items-center") do
-        Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-gray-500")
+        Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         render Components::Articles::ArticleUser.new(article: article)
       end
       span(class: "inline-flex items-center") do
-        Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-gray-500")
+        Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         plain article.comments_count.to_s
       end
       span(class: "inline-flex items-center") do
-        Hero::CalendarDays(variant: :outline, class: "w-4 h-4 mr-1 text-gray-500")
+        Hero::CalendarDays(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         plain(article.published_at&.strftime("%Y년 %m월 %d일") || "N/A")
       end
     end

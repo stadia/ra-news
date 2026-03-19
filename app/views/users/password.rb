@@ -13,8 +13,8 @@ class Views::Users::Password < Views::Base
 
     div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       div(class: "mb-2 px-1") do
-        render RubyUI::Heading.new(level: 1, class: "text-3xl font-bold text-white tracking-tight") { "비밀번호 수정" }
-        p(class: "mt-1 text-slate-400") { "비밀번호를 변경합니다." }
+        render RubyUI::Heading.new(level: 1, class: "text-3xl font-bold text-content tracking-tight") { "비밀번호 수정" }
+        p(class: "mt-1 text-content-muted") { "비밀번호를 변경합니다." }
       end
 
       render Components::Users::PwdForm.new(user: @user)

@@ -133,6 +133,28 @@
     --color-warning-foreground: var(--warning-foreground);
     --color-success: var(--success);
     --color-success-foreground: var(--success-foreground);
+
+    /* app semantic aliases */
+    --color-app: rgb(var(--color-bg-primary));
+    --color-surface: rgb(var(--color-bg-secondary));
+    --color-surface-muted: rgb(var(--color-bg-tertiary));
+    --color-surface-hover: rgb(var(--color-border-light));
+    --color-surface-elevated: rgb(var(--color-bg-elevated));
+    --color-content: rgb(var(--color-text-primary));
+    --color-content-secondary: rgb(var(--color-text-secondary));
+    --color-content-muted: rgb(var(--color-text-muted));
+    --color-content-disabled: rgb(var(--color-text-disabled));
+    --color-border-strong: rgb(var(--color-border));
+    --color-border-muted: rgb(var(--color-border-light));
+    --color-border-subtle: rgb(var(--color-border-dark));
+    --color-brand: rgb(var(--brand-primary));
+    --color-brand-hover: rgb(var(--brand-primary-hover));
+    --color-brand-soft: rgb(var(--brand-primary-light));
+    --color-brand-strong: rgb(var(--brand-primary-dark));
+    --color-brand-foreground: rgb(255 255 255);
+    --color-state-info: rgb(var(--color-info));
+    --color-prose-heading-accent: rgb(var(--color-prose-heading));
+    --color-prose-strong-accent: rgb(var(--color-prose-strong));
 }
 
 /* Container settings */

@@ -31,43 +31,43 @@ class Views::Articles::Show < Views::Base
   private
 
   def render_article_main
-    article(class: "bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-700") do
+    article(class: "bg-surface rounded-xl shadow-lg overflow-hidden border border-border-strong") do
       render_article_header
       render_article_body
     end
   end
 
   def render_article_header
-    header(class: "p-4 md:p-6 lg:p-8 border-b border-gray-700") do
+    header(class: "p-4 md:p-6 lg:p-8 border-b border-border-strong") do
       div(class: "mb-6") do
         render RubyUI::Heading.new(
           level: 1,
-          class: "text-2xl! lg:text-3xl! font-bold text-gray-100 mb-4 leading-tight"
+          class: "text-2xl! lg:text-3xl! font-bold text-content mb-4 leading-tight"
         ) { @article.title_ko }
 
         if @article.title_ko != @article.title
-          render RubyUI::Heading.new(level: 2, class: "font-medium text-gray-300 mb-4") { @article.title }
+          render RubyUI::Heading.new(level: 2, class: "font-medium text-content-secondary mb-4") { @article.title }
         end
       end
 
-      div(class: "flex flex-wrap items-center gap-4 md:gap-6 text-sm text-gray-300") do
+      div(class: "flex flex-wrap items-center gap-4 md:gap-6 text-sm text-content-secondary") do
         div(class: "flex items-center") do
-          div(class: "w-8 h-8 bg-green-600 rounded-full flex items-center justify-center mr-3") do
-            Hero::User(variant: :outline, class: "w-4 h-4 text-white")
+          div(class: "w-8 h-8 bg-brand rounded-full flex items-center justify-center mr-3") do
+            Hero::User(variant: :outline, class: "w-4 h-4 text-brand-foreground")
           end
           div do
-            div(class: "text-xs text-gray-300") { "작성자" }
-            div(class: "font-medium text-gray-200") do
+            div(class: "text-xs text-content-secondary") { "작성자" }
+            div(class: "font-medium text-content") do
               render(Components::Articles::ArticleUser.new(article: @article))
             end
           end
         end
 
         div(class: "flex items-center") do
-          Hero::Calendar(variant: :outline, class: "w-5 h-5 mr-2 text-gray-500")
+          Hero::Calendar(variant: :outline, class: "w-5 h-5 mr-2 text-content-muted")
           div do
-            div(class: "text-xs text-gray-300") { "발행일" }
-            div(class: "font-medium text-gray-200") do
+            div(class: "text-xs text-content-secondary") { "발행일" }
+            div(class: "font-medium text-content") do
               time(datetime: @article.published_at&.iso8601) do
                 plain @article.published_at&.strftime("%Y년 %m월 %d일") || "N/A"
               end
@@ -76,13 +76,13 @@ class Views::Articles::Show < Views::Base
         end
       end
 
-      div(class: "mt-6 p-4 bg-gray-700 rounded-lg") do
+      div(class: "mt-6 p-4 bg-surface-muted rounded-lg") do
         div(class: "flex items-center flex-1 min-w-0") do
-          div(class: "w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3 shrink-0") do
-            Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-5 h-5 text-white")
+          div(class: "w-10 h-10 bg-state-info rounded-lg flex items-center justify-center mr-3 shrink-0") do
+            Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-5 h-5 text-brand-foreground")
           end
           div(class: "min-w-0 flex-1") do
-            div(class: "text-sm font-medium text-blue-300 group-hover:text-blue-200 transition-colors") do
+            div(class: "text-sm font-medium text-state-info transition-colors") do
               plain @article.url
             end
           end
@@ -94,10 +94,10 @@ class Views::Articles::Show < Views::Base
   def render_article_body
     div(class: "p-4 md:p-6 lg:p-8") do
       section(class: "mb-8 lg:mb-12") do
-        div(class: "bg-linear-to-r from-green-600 to-green-700 rounded-lg p-6") do
+        div(class: "bg-linear-to-r from-brand to-brand-strong rounded-lg p-6") do
           render RubyUI::Heading.new(
             level: 2,
-            class: "font-bold text-white mb-4 flex items-center"
+            class: "font-bold text-brand-foreground mb-4 flex items-center"
           ) do
             Hero::CheckCircle(variant: :outline, class: "w-6 h-6 mr-2")
             plain "핵심 요약"
@@ -107,10 +107,10 @@ class Views::Articles::Show < Views::Base
             ul(class: "space-y-3") do
               @article.summary_key&.each_with_index do |item, index|
                 li(class: "flex items-start") do
-                  span(class: "shrink-0 w-6 h-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center text-xs font-bold text-white mr-3 mt-0.5") do
+                  span(class: "shrink-0 w-6 h-6 bg-brand-foreground/20 rounded-full flex items-center justify-center text-xs font-bold text-brand-foreground mr-3 mt-0.5") do
                     plain (index + 1).to_s
                   end
-                  span(class: "text-green-100 leading-relaxed") { plain item }
+                  span(class: "text-brand-foreground leading-relaxed") { plain item }
                 end
               end
             end
@@ -118,12 +118,12 @@ class Views::Articles::Show < Views::Base
         end
       end
 
-      section(class: "prose prose-invert prose-lg max-w-none prose-headings:text-green-400 prose-strong:text-sky-300") do
+      section(class: "prose prose-invert prose-lg max-w-none prose-headings:text-prose-heading-accent prose-strong:text-prose-strong-accent") do
         if @article.summary_detail.is_a?(Hash)
           if @article.summary_detail["introduction"].present?
-            div(class: "mb-8 p-6 bg-gray-700 rounded-xl border-l-4 border-blue-500") do
-              render RubyUI::Heading.new(level: 3, class: "font-semibold text-blue-300 mb-3") { "도입" }
-              div(class: "text-gray-200 leading-relaxed text-base") do
+            div(class: "mb-8 p-6 bg-surface-muted rounded-xl border-l-4 border-state-info") do
+              render RubyUI::Heading.new(level: 3, class: "font-semibold text-state-info mb-3") { "도입" }
+              div(class: "text-content-secondary leading-relaxed text-base") do
                 plain @article.summary_detail["introduction"]
               end
             end
@@ -131,16 +131,16 @@ class Views::Articles::Show < Views::Base
 
           if @article.summary_body.present?
             div(class: "mb-8 article-content", id: "article-detail-body") do
-              div(class: "prose prose-invert max-w-none prose-headings:text-green-400 prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-strong:text-sky-300 text-gray-200 leading-loose") do
+              div(class: "prose prose-invert max-w-none prose-headings:text-prose-heading-accent prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-strong:text-prose-strong-accent text-content-secondary leading-loose") do
                 raw sanitize(Kramdown::Document.new(@article.summary_body).to_html)
               end
             end
           end
 
           if @article.summary_detail["conclusion"].present?
-            div(class: "p-6 bg-gray-700 rounded-xl border-l-4 border-green-500") do
-              render RubyUI::Heading.new(level: 3, class: "font-semibold text-green-300 mb-3") { "결론" }
-              div(class: "text-gray-200 leading-relaxed text-base") do
+            div(class: "p-6 bg-surface-muted rounded-xl border-l-4 border-brand") do
+              render RubyUI::Heading.new(level: 3, class: "font-semibold text-brand-soft mb-3") { "결론" }
+              div(class: "text-content-secondary leading-relaxed text-base") do
                 plain @article.summary_detail["conclusion"]
               end
             end
@@ -151,23 +151,23 @@ class Views::Articles::Show < Views::Base
   end
 
   def render_similar_articles
-    render RubyUI::Card.new(class: "bg-gray-800 shadow-lg overflow-hidden border-gray-700") do
+    render RubyUI::Card.new(class: "bg-surface shadow-lg overflow-hidden border-border-strong") do
       render RubyUI::CardContent.new(class: "p-4 md:p-6 lg:p-8") do
-        render RubyUI::Heading.new(level: 2, class: "font-bold text-gray-100 mb-6 flex items-center") do
-          Hero::Newspaper(variant: :outline, class: "w-6 h-6 mr-2 text-green-500")
+        render RubyUI::Heading.new(level: 2, class: "font-bold text-content mb-6 flex items-center") do
+          Hero::Newspaper(variant: :outline, class: "w-6 h-6 mr-2 text-brand")
           plain "관련 글들"
         end
 
         div(class: "grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6") do
           @similar_articles.each do |article|
-            div(class: "group bg-gray-700 rounded-lg border border-gray-600 hover:border-gray-500 transition-all duration-200 overflow-hidden") do
+            div(class: "group bg-surface-muted rounded-lg border border-border-muted hover:border-border-strong transition-all duration-200 overflow-hidden") do
               link_to(article_path(article), class: "block p-4 lg:p-6") do
                 render RubyUI::Heading.new(
                   level: 3,
-                  class: "font-semibold text-gray-100 group-hover:text-green-400 transition-colors duration-200 mb-3 line-clamp-2"
+                  class: "font-semibold text-content group-hover:text-brand-soft transition-colors duration-200 mb-3 line-clamp-2"
                 ) { article.title_ko || article.title }
 
-                p(class: "text-gray-200 text-sm leading-relaxed line-clamp-3 mb-4") do
+                p(class: "text-content-secondary text-sm leading-relaxed line-clamp-3 mb-4") do
                   plain(if article.summary_key.is_a?(String)
                     article.summary_key
                   else
@@ -175,12 +175,12 @@ class Views::Articles::Show < Views::Base
                   end)
                 end
 
-                div(class: "flex items-center justify-between text-xs text-gray-300") do
+                div(class: "flex items-center justify-between text-xs text-content-secondary") do
                   span(class: "flex items-center") do
                     Hero::Calendar(variant: :outline, class: "w-4 h-4 mr-1")
                     plain article.published_at&.strftime("%m/%d")
                   end
-                  span(class: "group-hover:text-green-400 transition-colors duration-200") { "읽어보기 →" }
+                  span(class: "group-hover:text-brand-soft transition-colors duration-200") { "읽어보기 →" }
                 end
               end
             end
@@ -191,15 +191,15 @@ class Views::Articles::Show < Views::Base
   end
 
   def render_comments_section
-    render RubyUI::Card.new(class: "bg-gray-800 shadow-lg overflow-hidden border-gray-700") do
+    render RubyUI::Card.new(class: "bg-surface shadow-lg overflow-hidden border-border-strong") do
       render RubyUI::CardContent.new(class: "p-4 md:p-6 lg:p-8") do
         render RubyUI::Heading.new(
           level: 3,
-          class: "font-bold text-gray-100 mb-6 flex items-center",
+          class: "font-bold text-content mb-6 flex items-center",
           id: "comments_header"
         ) { render(Components::Comments::CommentHeader.new(comments: @comments)) }
 
-        div(id: "comment_form", class: "border-t border-gray-700 mb-4") do
+        div(id: "comment_form", class: "border-t border-border-strong mb-4") do
           render(Components::Comments::CommentForm.new(article: @article, comment: @comment))
         end
 
