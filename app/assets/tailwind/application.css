@@ -7,27 +7,45 @@
 
 @custom-variant dark (&:is(.theme-dark *, .dark *));
 
+:root {
+    --radius: 0.625rem;
+    --warning: hsl(38 92% 50%);
+    --warning-foreground: hsl(0 0% 100%);
+    --success-foreground: hsl(0 0% 100%);
+}
+
+:root,
+.theme-dark,
+.dark,
+.theme-light {
+    --card: var(--background);
+    --card-foreground: var(--foreground);
+    --popover: var(--background);
+    --popover-foreground: var(--foreground);
+    --muted: var(--secondary);
+    --accent: var(--secondary);
+    --accent-foreground: var(--secondary-foreground);
+    --input: var(--border);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+}
+
 :root,
 .theme-dark,
 .dark {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
     --primary: oklch(0.985 0 0);
     --primary-foreground: oklch(0.205 0 0);
     --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
+    --secondary-foreground: var(--foreground);
     --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
     --destructive: oklch(0.396 0.141 25.723);
     --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
+    --border: var(--secondary);
     --ring: oklch(0.439 0 0);
     --chart-1: oklch(0.488 0.243 264.376);
     --chart-2: oklch(0.696 0.17 162.48);
@@ -35,61 +53,39 @@
     --chart-4: oklch(0.627 0.265 303.9);
     --chart-5: oklch(0.645 0.246 16.439);
     --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --sidebar-primary: var(--chart-1);
+    --sidebar-primary-foreground: var(--primary);
 
-    /* ruby_ui specific */
-    --warning: hsl(38 92% 50%);
-    --warning-foreground: hsl(0 0% 100%);
     --success: hsl(84 81% 44%);
-    --success-foreground: hsl(0 0% 100%);
 }
 
-.theme-light {
+.theme-light,
+.light {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
+    --card: var(--background);
+    --card-foreground: var(--foreground);
+    --popover: var(--background);
+    --popover-foreground: var(--foreground);
     --primary: oklch(0.205 0 0);
     --primary-foreground: oklch(0.985 0 0);
     --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
+    --secondary-foreground: var(--primary);
     --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
     --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
+    --destructive-foreground: var(--destructive);
     --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
     --chart-1: oklch(0.646 0.222 41.116);
     --chart-2: oklch(0.6 0.118 184.704);
     --chart-3: oklch(0.398 0.07 227.392);
     --chart-4: oklch(0.828 0.189 84.429);
     --chart-5: oklch(0.769 0.188 70.08);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: oklch(0.205 0 0);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.97 0 0);
-    --sidebar-accent-foreground: oklch(0.205 0 0);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.708 0 0);
+    --sidebar: var(--background);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
 
-    /* ruby_ui specific */
-    --warning: hsl(38 92% 50%);
-    --warning-foreground: hsl(0 0% 100%);
     --success: hsl(87 100% 37%);
-    --success-foreground: hsl(0 0% 100%);
 }
 
 @theme inline {
@@ -140,7 +136,7 @@
     --color-app: rgb(var(--color-bg-primary));
     --color-surface: rgb(var(--color-bg-secondary));
     --color-surface-muted: rgb(var(--color-bg-tertiary));
-    --color-surface-hover: rgb(var(--color-border-light));
+    --color-surface-hover: var(--color-border-muted);
     --color-surface-elevated: rgb(var(--color-bg-elevated));
     --color-content: rgb(var(--color-text-primary));
     --color-content-secondary: rgb(var(--color-text-secondary));
@@ -155,7 +151,7 @@
     --color-brand-strong: rgb(var(--brand-primary-dark));
     --color-brand-foreground: rgb(255 255 255);
     --color-state-info: rgb(var(--color-info));
-    --color-prose-heading-accent: rgb(var(--color-prose-heading));
+    --color-prose-heading-accent: var(--color-brand-soft);
     --color-prose-strong-accent: rgb(var(--color-prose-strong));
 }
 
