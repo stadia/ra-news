@@ -38,4 +38,9 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     get lookup_actors_path(account: @actor.at_address)
     assert_response :success
   end
+
+  test "GET lookup returns 404 for unknown account" do
+    get lookup_actors_path(account: "nonexistent@example.com")
+    assert_response :not_found
+  end
 end
