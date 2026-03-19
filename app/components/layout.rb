@@ -25,7 +25,7 @@ class Components::Layout < Components::Base
       end
 
       body(
-        class: "bg-app text-content-secondary min-h-screen flex flex-col",
+        class: "theme-dark bg-app text-content-secondary min-h-screen flex flex-col",
         data: {
           controller: "page-loader",
           action: [
