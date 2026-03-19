@@ -50,7 +50,7 @@ class Views::Profiles::FollowList < Views::Base
     is_local = actor.server.blank? || actor.server == site_host
     handle = is_local ? "@#{actor.username}" : "@#{actor.username}@#{actor.server}"
 
-    div(class: "flex items-center gap-4 px-4 py-3 bg-slate-900/40 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors") do
+    div(id: "following_row_#{following.id}", class: "flex items-center gap-4 px-4 py-3 bg-slate-900/40 border border-slate-800 rounded-xl hover:border-slate-700 transition-colors") do
       render RubyUI::Avatar.new(size: :md, class: "h-10 w-10 shrink-0") do
         icon_url = actor.extensions&.dig("icon", "url")
         if icon_url

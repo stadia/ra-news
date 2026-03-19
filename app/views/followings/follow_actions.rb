@@ -37,15 +37,19 @@ class Views::Followings::FollowActions < Views::Base
   end
 
   def existing_follow(follow)
-    span(class: "text-slate-400 text-sm") { "팔로우 중 (#{follow.status})" }
-    button_to "팔로우 취소",
+    if follow.pending?
+      render RubyUI::Badge.new(variant: :amber) { "요청 중" }
+    else
+      render RubyUI::Badge.new(variant: :green) { "팔로잉" }
+    end
+    button_to follow.pending? ? "요청 취소" : "언팔로우",
       following_path(follow),
       method: :delete,
-      class: "px-4 py-2 text-sm font-medium bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg border border-slate-600 transition-colors cursor-pointer"
+      class: "px-4 py-2 text-sm font-medium bg-slate-700 hover:bg-red-900 text-slate-300 hover:text-red-300 rounded-lg border border-slate-600 transition-colors cursor-pointer"
   end
 
   def new_follow
-    button_to "Follow @#{@actor.username}",
+    button_to "팔로우",
       follow_followings_path,
       params: { account: @actor.at_address },
       method: :post,

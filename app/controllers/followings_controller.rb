@@ -4,8 +4,8 @@ class FollowingsController < ApplicationController
   include Pundit::Authorization
 
   before_action :require_authentication
-  before_action :set_following, only: [:accept, :destroy]
-  after_action :verify_authorized, except: [:new]
+  before_action :set_following, only: [ :accept, :destroy ]
+  after_action :verify_authorized, except: [ :new ]
 
   def new
     actor = Federails::Actor.find_or_create_by_federation_url(params.require(:uri))
@@ -33,7 +33,7 @@ class FollowingsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to root_path, alert: "해당 계정을 찾을 수 없습니다." }
         format.turbo_stream { head :unprocessable_entity }
-        format.json { render json: { target_actor: ["does not exist"] }, status: :unprocessable_entity }
+        format.json { render json: { target_actor: [ "does not exist" ] }, status: :unprocessable_entity }
       end
       return
     end
@@ -42,15 +42,16 @@ class FollowingsController < ApplicationController
   end
 
   def accept
+    following = @following
     respond_to do |format|
-      if @following.accept!
-        format.html { redirect_to actor_path(@following.actor), notice: "팔로우 요청을 수락했습니다." }
-        format.turbo_stream { render_follow_actions_stream(@following.actor) }
-        format.json { render json: { status: @following.status }, status: :ok }
+      if following.accept!
+        format.html { redirect_to actor_path(following.actor), notice: "팔로우 요청을 수락했습니다." }
+        format.turbo_stream { render_follow_actions_stream(following.actor, following: following) }
+        format.json { render json: { status: following.status }, status: :ok }
       else
-        format.html { redirect_to actor_path(@following.actor), alert: "팔로우 요청 수락에 실패했습니다." }
-        format.turbo_stream { render_follow_actions_stream(@following.actor) }
-        format.json { render json: @following.errors, status: :unprocessable_entity }
+        format.html { redirect_to actor_path(following.actor), alert: "팔로우 요청 수락에 실패했습니다." }
+        format.turbo_stream { render_follow_actions_stream(following.actor) }
+        format.json { render json: following.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -58,11 +59,12 @@ class FollowingsController < ApplicationController
   def destroy
     actor = @following.actor
     target_actor = @following.target_actor
+    following = @following
     @following.destroy
 
     respond_to do |format|
       format.html { redirect_to actor_path(actor), notice: "팔로우를 취소했습니다." }
-      format.turbo_stream { render_follow_actions_stream(target_actor) }
+      format.turbo_stream { render_follow_actions_stream(target_actor, following: following) }
       format.json { head :no_content }
     end
   end
@@ -92,11 +94,15 @@ class FollowingsController < ApplicationController
     end
   end
 
-  def render_follow_actions_stream(actor)
-    render turbo_stream: turbo_stream.replace(
-      "follow_actions_#{actor.id}",
-      Views::Followings::FollowActions.new(actor: actor)
-    )
+  def render_follow_actions_stream(actor, following: nil)
+    streams = [
+      turbo_stream.replace(
+        "follow_actions_#{actor.id}",
+        Views::Followings::FollowActions.new(actor: actor)
+      )
+    ]
+    streams << turbo_stream.remove("following_row_#{following.id}") if following
+    render turbo_stream: streams
   end
 
   def pundit_user
