@@ -8,7 +8,7 @@ class Components::Comments::CommentHeader < Components::Base
   end
 
   def view_template
-    Hero::ChatBubbleOvalLeftEllipsis(variant: :outline, class: "w-6 h-6 mr-2 text-blue-500")
+    Hero::ChatBubbleOvalLeftEllipsis(variant: :outline, class: "w-6 h-6 mr-2 text-info-text")
     plain "댓글"
     render RubyUI::Badge.new(variant: :blue, class: "ml-2") { @comments.size.to_s }
   end

@@ -47,7 +47,7 @@ class CommentsController < ApplicationController
           format.html { redirect_to @article, alert: "비밀번호가 올바르지 않습니다." }
           format.turbo_stream do
             render turbo_stream: turbo_stream.replace("delete_comment_modal_#{@comment.id}",
-              html: "<div class='text-red-400 text-sm mt-2'>비밀번호가 올바르지 않습니다.</div>".html_safe
+              html: "<div class='text-danger-text text-sm mt-2'>비밀번호가 올바르지 않습니다.</div>".html_safe
             ), status: :unauthorized
           end
         end

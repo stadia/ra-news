@@ -20,7 +20,7 @@ class Views::Passwords::Edit < Views::Base
             autocomplete: "new-password",
             placeholder: "새 비밀번호를 입력하세요",
             maxlength: 72,
-            class: "block shadow-sm rounded-md border border-slate-600 px-3 py-2 mt-2 w-full bg-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors duration-200"
+            class: "block shadow-sm rounded-md border border-border-muted px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors duration-200"
         end
 
         render RubyUI::FormField.new(class: "my-5") do
@@ -30,7 +30,7 @@ class Views::Passwords::Edit < Views::Base
             autocomplete: "new-password",
             placeholder: "새 비밀번호를 다시 입력하세요",
             maxlength: 72,
-            class: "block shadow-sm rounded-md border border-slate-600 px-3 py-2 mt-2 w-full bg-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors duration-200"
+            class: "block shadow-sm rounded-md border border-border-muted px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors duration-200"
         end
 
         div(class: "inline") do
@@ -38,7 +38,7 @@ class Views::Passwords::Edit < Views::Base
             type: "submit",
             variant: :primary,
             size: :lg,
-            class: "w-full sm:w-auto rounded-md bg-green-500 hover:bg-green-600 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+            class: "w-full sm:w-auto rounded-md bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
           ) { "저장" }
         end
       end

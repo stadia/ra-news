@@ -18,7 +18,7 @@ class Components::Pagination < Components::Base
     start_page, end_page = page_window
 
     render div(class: "pagy mt-auto") do
-      render RubyUI::Pagination.new(class: "bg-gray-800 rounded-xl p-2 md:p-3 border border-gray-700") do
+      render RubyUI::Pagination.new(class: "bg-surface rounded-xl p-2 md:p-3 border border-border-strong") do
         render RubyUI::PaginationContent.new do
           RubyUI::PaginationItem(href: first_url || "#", class: disabled_class(first_url)) do
             Hero::ChevronDoubleLeft(variant: :outline, class: "h-4 w-4 mr-1")
