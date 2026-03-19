@@ -52,7 +52,7 @@ class Components::Comments::DeleteModal < Components::Base
                           div(class: "flex gap-3 mt-5 sm:mt-6") do
                             render RubyUI::Button.new(variant: :ghost, size: :xl, data: { action: "modal#close" },
                               class: "flex-1 rounded-md bg-surface-muted hover:bg-surface-hover text-content inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface") { "취소" }
-                            f.submit "삭제", class: "flex-1 rounded-md px-3.5 py-2.5 bg-destructive hover:bg-destructive/90 text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2 focus:ring-offset-surface"
+                            f.submit "삭제", class: "flex-1 rounded-md px-3.5 py-2.5 bg-danger-solid hover:bg-danger-solid-hover text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-danger-solid focus:ring-offset-2 focus:ring-offset-surface"
                           end
             end
           end

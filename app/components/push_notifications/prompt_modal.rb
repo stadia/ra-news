@@ -19,7 +19,7 @@ class Components::PushNotifications::PromptModal < Components::Base
       div(class: "relative z-10 flex min-h-full items-center justify-center p-4") do
         div(class: "w-full max-w-md overflow-hidden rounded-3xl border border-border-strong bg-app/95 shadow-2xl") do
           div(class: "px-6 py-8 text-center") do
-            div(class: "mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand/20 text-brand-soft") do
+            div(class: "mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-brand/20 text-accent-text") do
               Hero::Bell(variant: :solid, class: "h-7 w-7")
             end
 
@@ -34,7 +34,7 @@ class Components::PushNotifications::PromptModal < Components::Base
           div(class: "border-t border-border-strong/80") do
             render RubyUI::Button.new(variant: :primary, size: :lg,
                     data: { action: "click->push-notifications#enable" },
-                    class: "w-full font-semibold text-brand-soft transition hover:bg-surface") { "설정" }
+                    class: "w-full font-semibold text-link transition hover:bg-surface hover:text-link-hover") { "설정" }
           end
 
           div(class: "border-t border-border-strong/80") do

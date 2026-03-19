@@ -22,7 +22,7 @@ class Views::Users::Show < Views::Base
       div(class: "flex items-center gap-2 mt-4 px-1") do
         render RubyUI::Link.new(
           href: edit_users_path,
-          class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg shadow-black/20"
+          class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
         ) do
           Hero::PencilSquare(variant: :outline, class: "w-4 h-4")
           plain "정보 수정"
@@ -30,7 +30,7 @@ class Views::Users::Show < Views::Base
 
         render RubyUI::Link.new(
           href: password_users_path,
-          class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg shadow-black/20"
+          class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
         ) do
           Hero::Key(variant: :outline, class: "w-4 h-4")
           plain "비밀번호 변경"

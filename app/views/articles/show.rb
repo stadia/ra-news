@@ -52,7 +52,7 @@ class Views::Articles::Show < Views::Base
 
       div(class: "flex flex-wrap items-center gap-4 md:gap-6 text-sm text-content-secondary") do
         div(class: "flex items-center") do
-          div(class: "w-8 h-8 bg-brand rounded-full flex items-center justify-center mr-3") do
+          div(class: "w-8 h-8 bg-brand-solid rounded-full flex items-center justify-center mr-3") do
             Hero::User(variant: :outline, class: "w-4 h-4 text-brand-foreground")
           end
           div do
@@ -78,11 +78,11 @@ class Views::Articles::Show < Views::Base
 
       div(class: "mt-6 p-4 bg-surface-muted rounded-lg") do
         div(class: "flex items-center flex-1 min-w-0") do
-          div(class: "w-10 h-10 bg-state-info rounded-lg flex items-center justify-center mr-3 shrink-0") do
+          div(class: "w-10 h-10 bg-info-solid rounded-lg flex items-center justify-center mr-3 shrink-0") do
             Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-5 h-5 text-brand-foreground")
           end
           div(class: "min-w-0 flex-1") do
-            div(class: "text-sm font-medium text-state-info transition-colors") do
+            div(class: "text-sm font-medium text-info-text transition-colors") do
               plain @article.url
             end
           end
@@ -94,7 +94,7 @@ class Views::Articles::Show < Views::Base
   def render_article_body
     div(class: "p-4 md:p-6 lg:p-8") do
       section(class: "mb-8 lg:mb-12") do
-        div(class: "bg-linear-to-r from-brand to-brand-strong rounded-lg p-6") do
+        div(class: "bg-linear-to-r from-brand-solid to-brand-solid-hover rounded-lg p-6") do
           render RubyUI::Heading.new(
             level: 2,
             class: "font-bold text-brand-foreground mb-4 flex items-center"
@@ -118,11 +118,11 @@ class Views::Articles::Show < Views::Base
         end
       end
 
-      section(class: "prose prose-invert prose-lg max-w-none prose-headings:text-prose-heading-accent prose-strong:text-prose-strong-accent") do
+      section(class: "prose dark:prose-invert prose-lg max-w-none prose-headings:text-prose-heading-accent prose-strong:text-prose-strong-accent") do
         if @article.summary_detail.is_a?(Hash)
           if @article.summary_detail["introduction"].present?
             div(class: "mb-8 p-6 bg-surface-muted rounded-xl border-l-4 border-state-info") do
-              render RubyUI::Heading.new(level: 3, class: "font-semibold text-state-info mb-3") { "도입" }
+              render RubyUI::Heading.new(level: 3, class: "font-semibold text-info-text mb-3") { "도입" }
               div(class: "text-content-secondary leading-relaxed text-base") do
                 plain @article.summary_detail["introduction"]
               end
@@ -131,7 +131,7 @@ class Views::Articles::Show < Views::Base
 
           if @article.summary_body.present?
             div(class: "mb-8 article-content", id: "article-detail-body") do
-              div(class: "prose prose-invert max-w-none prose-headings:text-prose-heading-accent prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-strong:text-prose-strong-accent text-content-secondary leading-loose") do
+              div(class: "prose dark:prose-invert max-w-none prose-headings:text-prose-heading-accent prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-strong:text-prose-strong-accent text-content-secondary leading-loose") do
                 raw sanitize(Kramdown::Document.new(@article.summary_body).to_html)
               end
             end
@@ -139,7 +139,7 @@ class Views::Articles::Show < Views::Base
 
           if @article.summary_detail["conclusion"].present?
             div(class: "p-6 bg-surface-muted rounded-xl border-l-4 border-brand") do
-              render RubyUI::Heading.new(level: 3, class: "font-semibold text-brand-soft mb-3") { "결론" }
+              render RubyUI::Heading.new(level: 3, class: "font-semibold text-accent-text mb-3") { "결론" }
               div(class: "text-content-secondary leading-relaxed text-base") do
                 plain @article.summary_detail["conclusion"]
               end
@@ -164,7 +164,7 @@ class Views::Articles::Show < Views::Base
               link_to(article_path(article), class: "block p-4 lg:p-6") do
                 render RubyUI::Heading.new(
                   level: 3,
-                  class: "font-semibold text-content group-hover:text-brand-soft transition-colors duration-200 mb-3 line-clamp-2"
+                  class: "font-semibold text-content group-hover:text-link-hover transition-colors duration-200 mb-3 line-clamp-2"
                 ) { article.title_ko || article.title }
 
                 p(class: "text-content-secondary text-sm leading-relaxed line-clamp-3 mb-4") do
@@ -180,7 +180,7 @@ class Views::Articles::Show < Views::Base
                     Hero::Calendar(variant: :outline, class: "w-4 h-4 mr-1")
                     plain article.published_at&.strftime("%m/%d")
                   end
-                  span(class: "group-hover:text-brand-soft transition-colors duration-200") { "읽어보기 →" }
+                  span(class: "group-hover:text-link-hover transition-colors duration-200") { "읽어보기 →" }
                 end
               end
             end

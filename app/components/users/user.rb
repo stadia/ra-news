@@ -16,7 +16,7 @@ class Components::Users::User < Components::Base
         # Avatar & Primary Identity
         div(class: "flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 mb-10") do
           render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-app bg-app shadow-xl") do
-            render RubyUI::AvatarFallback.new(class: "bg-brand text-brand-foreground text-3xl font-bold") do
+            render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground text-3xl font-bold") do
               initials
             end
           end

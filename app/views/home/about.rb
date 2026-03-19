@@ -16,7 +16,7 @@ class Views::Home::About < Views::Base
       end
 
       section(class: "space-y-4") do
-        render RubyUI::Heading.new(level: 2, class: "font-semibold text-brand-soft mb-3") { "서비스 소개" }
+        render RubyUI::Heading.new(level: 2, class: "font-semibold text-accent-text mb-3") { "서비스 소개" }
         p(class: "text-content-secondary leading-relaxed") do
           plain "Ruby-News는 전 세계 Ruby 및 Ruby on Rails 커뮤니티에서 발행되는 기술 아티클, 릴리즈 노트, 보안 권고, 컨퍼런스 자료를 매일 수집하여 한국어로 번역·요약합니다. 한국어권 Ruby 개발자가 언어 장벽 없이 최신 생태계 동향을 파악할 수 있도록 만들어졌습니다."
         end
@@ -29,7 +29,7 @@ class Views::Home::About < Views::Base
       end
 
       section(class: "space-y-4") do
-        render RubyUI::Heading.new(level: 2, class: "font-semibold text-brand-soft mb-3") { "콘텐츠 제작 방식" }
+        render RubyUI::Heading.new(level: 2, class: "font-semibold text-accent-text mb-3") { "콘텐츠 제작 방식" }
         p(class: "text-content-secondary leading-relaxed") do
           plain "모든 기사는 "
           strong(class: "text-content") { "AI 보조 번역" }
@@ -41,22 +41,22 @@ class Views::Home::About < Views::Base
       end
 
       section(class: "space-y-4") do
-        render RubyUI::Heading.new(level: 2, class: "font-semibold text-brand-soft mb-3") { "큐레이션 기준" }
+        render RubyUI::Heading.new(level: 2, class: "font-semibold text-accent-text mb-3") { "큐레이션 기준" }
         p(class: "text-content-secondary leading-relaxed") do
           plain "Ruby·Rails 생태계에 직접적으로 관련된 콘텐츠를 중심으로 수집합니다. ruby-lang.org, rubyonrails.org, RubyGems, thoughtbot, Evil Martians, HackerNews, YouTube 기술 채널 등 신뢰할 수 있는 출처를 우선합니다."
         end
       end
 
       section(class: "space-y-4") do
-        render RubyUI::Heading.new(level: 2, class: "font-semibold text-brand-soft mb-3") { "연락처" }
+        render RubyUI::Heading.new(level: 2, class: "font-semibold text-accent-text mb-3") { "연락처" }
         ul(class: "text-content-secondary space-y-2") do
           li do
             plain "Mastodon: "
-            render RubyUI::Link.new(href: "https://ruby.social/@news_kr", rel: "me", target: "_blank", class: "text-brand-soft hover:underline") { "@news_kr@ruby.social" }
+            render RubyUI::Link.new(href: "https://ruby.social/@news_kr", rel: "me", target: "_blank", class: "text-link hover:text-link-hover hover:underline") { "@news_kr@ruby.social" }
           end
           li do
             plain "Twitter/X: "
-            render RubyUI::Link.new(href: "https://x.com/rubynewskr", target: "_blank", rel: "noopener noreferrer", class: "text-brand-soft hover:underline") { "@rubynewskr" }
+            render RubyUI::Link.new(href: "https://x.com/rubynewskr", target: "_blank", rel: "noopener noreferrer", class: "text-link hover:text-link-hover hover:underline") { "@rubynewskr" }
           end
         end
       end

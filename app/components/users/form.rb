@@ -20,7 +20,7 @@ class Components::Users::Form < Components::Base
           # Avatar & Primary Identity Section (Visual only)
           div(class: "flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 mb-10") do
             render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-app bg-app shadow-xl") do
-              render RubyUI::AvatarFallback.new(class: "bg-brand text-brand-foreground text-3xl font-bold") do
+              render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground text-3xl font-bold") do
                 initials
               end
             end
@@ -33,7 +33,7 @@ class Components::Users::Form < Components::Base
 
           # Error Messages
           if @user.errors.any?
-            div(id: "error_explanation", class: "mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400") do
+            div(id: "error_explanation", class: "mb-8 p-4 bg-danger-solid/10 border border-danger-solid/20 rounded-xl text-danger-text") do
               h2(class: "font-bold mb-2 flex items-center gap-2") do
                 Hero::ExclamationCircle(variant: :outline, class: "w-[18px] h-[18px]")
                 plain pluralize(@user.errors.count, "error") + " prohibited this user from being saved:"
@@ -68,7 +68,7 @@ class Components::Users::Form < Components::Base
             if @user.persisted?
               render RubyUI::Link.new(
                 href: helpers.users_path,
-                class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg shadow-black/20"
+                class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
               ) do
                 Hero::ChevronLeft(variant: :outline, class: "w-4 h-4")
                 plain "돌아가기"
@@ -77,7 +77,7 @@ class Components::Users::Form < Components::Base
 
             render RubyUI::Button.new(
               type: "submit",
-              class: "group relative flex items-center justify-center gap-2 rounded-xl bg-brand hover:bg-brand-hover text-brand-foreground font-bold text-sm transition-all active:scale-95 shadow-lg shadow-brand/20"
+              class: "group relative flex items-center justify-center gap-2 rounded-xl bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground font-bold text-sm transition-all active:scale-95 shadow-lg shadow-brand/20"
             ) do
               plain @user.persisted? ? "변경사항 저장" : "가입하기"
               Hero::ArrowLongRight(variant: :outline, class: "w-5 h-5 transition-transform group-hover:translate-x-1")

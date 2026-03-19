@@ -38,7 +38,7 @@ class Views::Passwords::Edit < Views::Base
             type: "submit",
             variant: :primary,
             size: :lg,
-            class: "w-full sm:w-auto rounded-md bg-brand hover:bg-brand-hover text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
+            class: "w-full sm:w-auto rounded-md bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
           ) { "저장" }
         end
       end

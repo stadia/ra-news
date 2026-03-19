@@ -31,7 +31,7 @@ class Components::Comments::CommentForm < Components::Base
 
   def form_header
     h4(class: "text-lg font-semibold text-content mb-4 flex items-center") do
-      Hero::PencilSquare(variant: :outline, class: "w-5 h-5 mr-2 text-state-info")
+      Hero::PencilSquare(variant: :outline, class: "w-5 h-5 mr-2 text-info-text")
       plain "댓글 작성"
     end
   end
@@ -83,7 +83,7 @@ class Components::Comments::CommentForm < Components::Base
       p(class: "text-sm text-content-muted mb-4") do
         Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1")
         plain "이미 계정이 있으신가요? "
-        link_to("로그인", new_session_path, class: "text-state-info hover:text-state-info/80")
+        link_to("로그인", new_session_path, class: "text-info-text hover:text-info-text-hover")
         plain " 후 댓글을 작성하세요."
       end
     end
@@ -118,7 +118,7 @@ class Components::Comments::CommentForm < Components::Base
         type: "submit",
         size: :xl,
         class:
-          "inline-flex items-center bg-state-info hover:bg-state-info/90 focus:bg-state-info/90 text-brand-foreground font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-state-info focus:ring-offset-2 focus:ring-offset-surface",
+          "inline-flex items-center bg-info-solid hover:bg-info-solid-hover focus:bg-info-solid-hover text-brand-foreground font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-state-info focus:ring-offset-2 focus:ring-offset-surface",
       ) { "댓글 작성" }
     end
   end

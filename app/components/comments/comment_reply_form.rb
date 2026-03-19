@@ -35,7 +35,7 @@ class Components::Comments::CommentReplyForm < Components::Base
 
   def reply_header
     h5(class: "text-xs font-semibold text-content-muted mb-3 flex items-center uppercase tracking-wide") do
-      Hero::ArrowUturnLeft(variant: :outline, class: "w-3 h-3 mr-1.5 text-state-info")
+      Hero::ArrowUturnLeft(variant: :outline, class: "w-3 h-3 mr-1.5 text-info-text")
       plain "답글 작성"
     end
   end
@@ -120,7 +120,7 @@ class Components::Comments::CommentReplyForm < Components::Base
         class: "font-medium text-content-muted hover:text-content transition-colors hover:bg-transparent",
           data: { action: "reply-form#toggle" }) { "취소" }
       f.submit "답글 작성",
-        class: "inline-flex items-center px-4 py-1.5 bg-state-info hover:bg-state-info/90 text-brand-foreground text-xs font-medium rounded-md transition-colors duration-200"
+        class: "inline-flex items-center px-4 py-1.5 bg-info-solid hover:bg-info-solid-hover text-brand-foreground text-xs font-medium rounded-md transition-colors duration-200"
     end
   end
 

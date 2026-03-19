@@ -19,7 +19,7 @@ class Components::LoginRequired < Components::Base
 
       render RubyUI::Link.new(
         href: new_session_path,
-        class: "inline-flex items-center px-5 py-2.5 bg-state-info hover:bg-state-info/90 text-brand-foreground font-medium rounded-lg transition-colors duration-200",
+        class: "inline-flex items-center px-5 py-2.5 bg-info-solid hover:bg-info-solid-hover text-brand-foreground font-medium rounded-lg transition-colors duration-200",
         data: { turbo: false }
       ) do
         plain "로그인 하러 가기"

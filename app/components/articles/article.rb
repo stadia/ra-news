@@ -27,7 +27,7 @@ class Components::Articles::Article < Components::Base
   def header_section
     display_title = @article.title_ko || @article.title
     div(class: "mb-3") do
-      h2(class: "text-xl font-semibold text-content hover:text-brand-soft") do
+      h2(class: "text-xl font-semibold text-content hover:text-link-hover") do
         link_to display_title, article_path(article)
       end
       if @article.title_ko.present? && @article.title_ko != @article.title

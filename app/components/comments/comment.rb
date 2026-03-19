@@ -47,7 +47,7 @@ class Components::Comments::Comment < Components::Base
     div(class: "flex items-center justify-between mb-3") do
       div(class: "flex items-center space-x-3") do
         render RubyUI::Avatar.new(class: "h-8 w-8 shrink-0") do
-          render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-state-info to-brand text-brand-foreground text-sm font-bold") do
+          render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-info-solid to-brand-solid text-brand-foreground text-sm font-bold") do
             plain @comment.author_name.to_s.first.to_s.upcase
           end
         end
@@ -77,7 +77,7 @@ class Components::Comments::Comment < Components::Base
       render RubyUI::Button.new(
         variant: :ghost,
         data: { controller: "modal", action: "modal#open", modal_id: "delete_comment_modal_#{@comment.id}" },
-        class: "inline-flex items-center px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/15 rounded-md transition-colors duration-200 cursor-pointer") do
+        class: "inline-flex items-center px-3 py-1 text-xs font-medium text-danger-text hover:text-danger-text-hover hover:bg-destructive/15 rounded-md transition-colors duration-200 cursor-pointer") do
         Hero::Trash(variant: :outline, class: "w-4 h-4 mr-1")
         plain "삭제"
       end
@@ -87,7 +87,7 @@ class Components::Comments::Comment < Components::Base
         method: :delete,
         data: { turbo_confirm: "정말 삭제하시겠습니까?" },
         form: { data: { turbo_stream: true } },
-        class: "inline-flex items-center px-3 py-1 text-xs font-medium text-destructive hover:bg-destructive/15 rounded-md transition-colors duration-200"
+        class: "inline-flex items-center px-3 py-1 text-xs font-medium text-danger-text hover:text-danger-text-hover hover:bg-destructive/15 rounded-md transition-colors duration-200"
       ) do
         Hero::Trash(variant: :outline, class: "w-4 h-4 mr-1")
         plain "삭제"
@@ -106,7 +106,7 @@ class Components::Comments::Comment < Components::Base
       render RubyUI::Button.new(
         variant: :ghost,
         data: { action: "reply-form#toggle" },
-        class: "inline-flex items-center text-content-muted hover:text-state-info transition-colors hover:bg-transparent") do
+        class: "inline-flex items-center text-content-muted hover:text-info-text-hover transition-colors hover:bg-transparent") do
         Hero::ChatBubbleLeft(variant: :outline, class: "w-4 h-4 mr-1")
         plain "답글"
       end

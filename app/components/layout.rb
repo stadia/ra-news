@@ -142,7 +142,7 @@ class Components::Layout < Components::Base
   def render_skip_link
     a(
       href: "#main-content",
-      class: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand focus:text-brand-foreground focus:rounded-lg focus:shadow-lg"
+      class: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-solid focus:text-brand-foreground focus:rounded-lg focus:shadow-lg"
     ) { "본문으로 건너뛰기" }
   end
 
@@ -165,9 +165,9 @@ class Components::Layout < Components::Base
     ) do
       div(class: "max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4") do
         link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group" do
-          span(class: "self-center text-2xl font-semibold whitespace-nowrap text-content group-hover:text-brand-soft transition-colors duration-200") do
+          span(class: "self-center text-2xl font-semibold whitespace-nowrap text-content group-hover:text-link-hover transition-colors duration-200") do
             plain "Ruby-News || "
-            span(class: "text-brand-soft") { "루비 AI 뉴스" }
+            span(class: "text-accent-text") { "루비 AI 뉴스" }
           end
         end
 
@@ -238,7 +238,7 @@ class Components::Layout < Components::Base
         type: "submit",
         variant: :primary,
         size: :lg,
-        class: "font-medium bg-brand rounded-lg border border-brand hover:bg-brand-hover text-brand-foreground focus:ring-2 focus:outline-none focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface transition-all duration-150 min-h-11 cursor-pointer"
+        class: "font-medium bg-brand-solid rounded-lg border border-brand-solid hover:bg-brand-solid-hover text-brand-foreground focus:ring-2 focus:outline-none focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface transition-all duration-150 min-h-11 cursor-pointer"
       ) { "검색" }
     end
   end

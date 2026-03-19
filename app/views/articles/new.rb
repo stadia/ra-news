@@ -20,7 +20,7 @@ class Views::Articles::New < Views::Base
         p(class: "mt-2 text-content-secondary/80 text-sm sm:text-base") { "URL을 입력하면 수집과 요약 처리를 시작합니다." }
       end
 
-      render RubyUI::Card.new(class: "relative overflow-hidden rounded-2xl border-border-strong/70 bg-app/70 shadow-2xl shadow-black/30 p-5 sm:p-7 lg:p-8 backdrop-blur-sm") do
+      render RubyUI::Card.new(class: "relative overflow-hidden rounded-2xl border-border-strong/70 bg-app/70 shadow-2xl p-5 sm:p-7 lg:p-8 backdrop-blur-sm") do
         div(class: "pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.16),transparent_42%)]")
         div(class: "relative") do
           render Components::Articles::Form.new(article: article)

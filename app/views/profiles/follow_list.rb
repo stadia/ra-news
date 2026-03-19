@@ -53,7 +53,7 @@ class Views::Profiles::FollowList < Views::Base
         if icon_url
           render RubyUI::AvatarImage.new(src: icon_url, alt: actor.name.presence || actor.username)
         else
-          render RubyUI::AvatarFallback.new(class: "bg-brand text-brand-foreground font-bold") do
+          render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground font-bold") do
             plain (actor.name.presence || actor.username).first.upcase
           end
         end
@@ -61,7 +61,7 @@ class Views::Profiles::FollowList < Views::Base
 
       div(class: "flex-1 min-w-0") do
         if is_local && (local_user = actor.entity)
-          a(href: "/@#{local_user.username}", class: "text-content font-semibold hover:text-brand-soft transition-colors block truncate") do
+          a(href: "/@#{local_user.username}", class: "text-content font-semibold hover:text-link-hover transition-colors block truncate") do
             plain actor.name.presence || actor.username
           end
         else

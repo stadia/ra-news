@@ -149,9 +149,23 @@
     --color-brand-hover: rgb(var(--brand-primary-hover));
     --color-brand-soft: rgb(var(--brand-primary-light));
     --color-brand-strong: rgb(var(--brand-primary-dark));
+    --color-brand-solid: rgb(var(--semantic-brand-solid));
+    --color-brand-solid-hover: rgb(var(--semantic-brand-solid-hover));
     --color-brand-foreground: rgb(255 255 255);
+    --color-link: rgb(var(--semantic-link));
+    --color-link-hover: rgb(var(--semantic-link-hover));
+    --color-accent-text: rgb(var(--semantic-accent-text));
+    --color-accent-text-hover: rgb(var(--semantic-accent-text-hover));
     --color-state-info: rgb(var(--color-info));
-    --color-prose-heading-accent: var(--color-brand-soft);
+    --color-info-solid: rgb(var(--semantic-info-solid));
+    --color-info-solid-hover: rgb(var(--semantic-info-solid-hover));
+    --color-info-text: rgb(var(--semantic-info-text));
+    --color-info-text-hover: rgb(var(--semantic-info-text-hover));
+    --color-danger-solid: rgb(var(--semantic-danger-solid));
+    --color-danger-solid-hover: rgb(var(--semantic-danger-solid-hover));
+    --color-danger-text: rgb(var(--semantic-danger-text));
+    --color-danger-text-hover: rgb(var(--semantic-danger-text-hover));
+    --color-prose-heading-accent: var(--color-accent-text);
     --color-prose-strong-accent: rgb(var(--color-prose-strong));
 }
 
