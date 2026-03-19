@@ -58,11 +58,6 @@ class Views::Actors::Show < Views::Base
         render RubyUI::CardFooter.new(class: "px-0 pt-6 pb-0 border-t border-slate-800/60") do
           div(class: "flex flex-col sm:flex-row sm:items-center gap-4") do
             render Views::Followings::FollowActions.new(actor: @actor)
-
-            if @actor.local?
-              link_to "활동 보기", actor_activities_path(@actor),
-                class: "text-sm text-slate-400 hover:text-white transition-colors"
-            end
           end
         end
       end

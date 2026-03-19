@@ -71,7 +71,6 @@ Rails.application.routes.draw do
     collection do
       get :lookup
     end
-    resources :activities, only: [ :index ]
   end
 
   resources :activities, only: [ :index ] do
