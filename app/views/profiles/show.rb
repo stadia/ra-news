@@ -52,8 +52,13 @@ class Views::Profiles::Show < Views::Base
             h1(class: "text-3xl font-bold text-white tracking-tight") { @user.name }
             p(class: "text-slate-400 font-mono text-sm mt-1") { "@#{@user.username}" }
             if own_profile?
-              link_to "설정", users_path,
-                class: "inline-flex items-center gap-1 mt-2 text-sm text-slate-400 hover:text-white transition-colors"
+              div(class: "flex items-center gap-3 mt-2") do
+                link_to "설정", users_path,
+                  class: "text-sm text-slate-400 hover:text-white transition-colors"
+                span(class: "text-slate-700") { "·" }
+                link_to "팔로우 검색", lookup_actors_path,
+                  class: "text-sm text-slate-400 hover:text-white transition-colors"
+              end
             end
             div(class: "flex items-center gap-4 mt-2") do
               link_to(
