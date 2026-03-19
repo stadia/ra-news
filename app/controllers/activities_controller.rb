@@ -6,14 +6,6 @@ class ActivitiesController < ApplicationController
 
   after_action :verify_authorized
 
-  private
-
-  def pundit_user
-    Current.user
-  end
-
-  public
-
   def index
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
     @activities = policy_scope(Federails::Activity, policy_scope_class: Federails::Client::ActivityPolicy::Scope).all
@@ -25,5 +17,11 @@ class ActivitiesController < ApplicationController
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
     @activities = Federails::Activity.feed_for(Current.user.federails_actor)
     render template: "federails/client/activities/feed"
+  end
+
+  private
+
+  def pundit_user
+    Current.user
   end
 end

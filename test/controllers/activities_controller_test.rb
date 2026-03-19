@@ -30,6 +30,12 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "GET actor activities requires authentication" do
+    actor = federails_actors(:john_actor)
+    get actor_activities_path(actor)
+    assert_redirected_to new_session_path
+  end
+
   test "GET actor activities returns 200" do
     sign_in_as(@user)
     actor = federails_actors(:john_actor)

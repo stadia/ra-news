@@ -25,8 +25,6 @@ class ActionDispatch::IntegrationTest
   # 인증이 필요한 통합 테스트에서 사용.
   # signed cookie를 설정하여 세션을 시작한다.
   def sign_in_as(user)
-    session = user.sessions.first || user.sessions.create!(user_agent: "test", ip_address: "127.0.0.1")
     post session_path, params: { email_address: user.email_address, password: "password" }
-    session
   end
 end
