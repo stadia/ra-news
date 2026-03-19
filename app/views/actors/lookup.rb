@@ -13,17 +13,18 @@ class Views::Actors::Lookup < Views::Base
 
       render RubyUI::Form.new(action: lookup_actors_url, method: :get, class: "flex gap-2 items-end") do
         render RubyUI::FormField.new(class: "flex-1") do
-          render RubyUI::FormFieldLabel.new(for: "account") { "계정 주소" }
+          render RubyUI::FormFieldLabel.new(for: "account", class: "text-slate-300") { "계정 주소" }
           render RubyUI::Input.new(
             type: :text,
             name: "account",
             id: "account",
             placeholder: "user@domain.tld",
             required: true,
-            autofocus: true
+            autofocus: true,
+            class: "bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400"
           )
         end
-        render RubyUI::Button.new(type: "submit") { "검색" }
+        render RubyUI::Button.new(type: "submit", class: "bg-green-600 hover:bg-green-500 text-white") { "검색" }
       end
     end
   end
