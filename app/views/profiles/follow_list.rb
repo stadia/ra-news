@@ -89,7 +89,11 @@ class Views::Profiles::FollowList < Views::Base
             class: "px-3 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors cursor-pointer"
         end
       else
-        span(class: "text-xs text-slate-500") { following.pending? ? "요청 중" : "팔로잉" }
+        if following.pending?
+          render RubyUI::Badge.new(variant: :amber) { "요청 중" }
+        else
+          render RubyUI::Badge.new(variant: :green) { "팔로잉" }
+        end
         button_to "언팔로우", following_path(following),
           method: :delete,
           class: "px-3 py-1 text-xs font-medium bg-slate-700 hover:bg-red-900 text-slate-300 hover:text-red-300 rounded-lg transition-colors cursor-pointer"
