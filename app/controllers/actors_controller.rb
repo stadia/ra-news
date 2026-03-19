@@ -15,7 +15,14 @@ class ActorsController < ApplicationController
   end
 
   def lookup
-    @actor = Federails::Actor.find_by_account(params.require(:account).strip)
+    account = params[:account]&.strip
+    if account.blank?
+      skip_authorization
+      render Views::Actors::Lookup.new
+      return
+    end
+
+    @actor = Federails::Actor.find_by_account(account)
     raise ActiveRecord::RecordNotFound if @actor.nil?
     authorize @actor, policy_class: Federails::Client::ActorPolicy
     render_show
