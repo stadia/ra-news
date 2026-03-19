@@ -56,11 +56,12 @@ class FollowingsController < ApplicationController
   end
 
   def destroy
+    actor = @following.actor
     target_actor = @following.target_actor
     @following.destroy
 
     respond_to do |format|
-      format.html { redirect_to actor_path(@following.actor), notice: "팔로우를 취소했습니다." }
+      format.html { redirect_to actor_path(actor), notice: "팔로우를 취소했습니다." }
       format.turbo_stream { render_follow_actions_stream(target_actor) }
       format.json { head :no_content }
     end
