@@ -36,6 +36,12 @@ class Views::Actors::Show < Views::Base
             h1(class: "text-3xl font-bold text-white tracking-tight") { @actor.name }
             p(class: "text-slate-400 font-mono text-sm mt-1") { @actor.at_address }
 
+            if @actor.profile_url && !@actor.local?
+              link_to "프로필 방문 →", @actor.profile_url,
+                class: "text-sm text-slate-400 hover:text-white transition-colors mt-1 inline-block",
+                target: "_blank", rel: "noopener noreferrer"
+            end
+
             div(class: "flex items-center gap-4 mt-2") do
               span(class: "text-sm text-slate-400") do
                 span(class: "font-semibold text-white") { @actor.following_followers.size.to_s }
@@ -56,10 +62,6 @@ class Views::Actors::Show < Views::Base
             if @actor.local?
               link_to "활동 보기", actor_activities_path(@actor),
                 class: "text-sm text-slate-400 hover:text-white transition-colors"
-            elsif @actor.profile_url
-              link_to "프로필 방문 →", @actor.profile_url,
-                class: "text-sm text-slate-400 hover:text-white transition-colors",
-                target: "_blank", rel: "noopener noreferrer"
             end
           end
         end
