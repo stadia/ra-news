@@ -57,11 +57,10 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-rbs_inline", require: false
   gem "rubocop-minitest", require: false
-  gem "steep", require: false
+  # gem "steep", require: false
   gem "dotenv-rails"
   gem "faker"
   gem "herb"
-  # gem "rbs_rails", "~> 0.12.1"
   gem "minitest", "~> 6.0"
   gem "minitest-mock"
 end
