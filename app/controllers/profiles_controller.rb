@@ -19,14 +19,14 @@ class ProfilesController < ApplicationController
 
   def followers
     actor = @user.federails_actor
-    actors = actor ? actor.followers.to_a : []
-    render_follow_page(actor, actors, :followers)
+    followings = actor ? actor.following_followers.to_a : []
+    render_follow_page(actor, followings, :followers)
   end
 
   def following
     actor = @user.federails_actor
-    actors = actor ? actor.follows.to_a : []
-    render_follow_page(actor, actors, :following)
+    followings = actor ? actor.following_follows.to_a : []
+    render_follow_page(actor, followings, :following)
   end
 
   private
@@ -35,16 +35,16 @@ class ProfilesController < ApplicationController
       @user = User.find_by!(username: params[:username])
     end
 
-    def render_follow_page(actor, actors, type)
+    def render_follow_page(actor, followings, type)
       if turbo_frame_request?
-        render Views::Profiles::FollowList.new(user: @user, actors: actors, type: type)
+        render Views::Profiles::FollowList.new(user: @user, followings: followings, type: type)
       else
         render Views::Profiles::Show.new(
           user: @user,
           actor: actor,
           followers_count: actor&.followers&.count || 0,
           following_count: actor&.follows&.count || 0,
-          follow_actors: actors,
+          follow_actors: followings,
           follow_type: type
         )
       end

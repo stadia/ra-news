@@ -28,7 +28,7 @@ class Views::Profiles::Show < Views::Base
       fediverse_section if @actor
       turbo_frame_tag("follow-list", class: "mt-2 block") do
         if @follow_actors
-          render Views::Profiles::FollowList.new(user: @user, actors: @follow_actors, type: @follow_type, embedded: true)
+          render Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: @follow_type, embedded: true)
         end
       end
     end
