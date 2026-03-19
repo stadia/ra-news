@@ -83,10 +83,10 @@ class Views::Profiles::FollowList < Views::Base
         if following.pending?
           button_to "수락", accept_following_path(following),
             method: :put,
-            class: "px-3 py-1 text-xs font-medium bg-green-600 hover:bg-green-500 text-white rounded-lg transition-colors cursor-pointer"
+            class: "px-3 py-1 text-xs font-medium bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
           button_to "거절", following_path(following),
             method: :delete,
-            class: "px-3 py-1 text-xs font-medium bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors cursor-pointer"
+            class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-surface text-content-secondary rounded-lg transition-colors cursor-pointer"
         end
       else
         if following.pending?
@@ -96,7 +96,7 @@ class Views::Profiles::FollowList < Views::Base
         end
         button_to "언팔로우", following_path(following),
           method: :delete,
-          class: "px-3 py-1 text-xs font-medium bg-slate-700 hover:bg-red-900 text-slate-300 hover:text-red-300 rounded-lg transition-colors cursor-pointer"
+          class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-danger-solid text-content-secondary hover:text-danger-text rounded-lg transition-colors cursor-pointer"
       end
     end
   end

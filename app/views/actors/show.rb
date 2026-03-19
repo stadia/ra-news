@@ -21,41 +21,41 @@ class Views::Actors::Show < Views::Base
   private
 
   def profile_card
-    render RubyUI::Card.new(class: "bg-slate-900/40 border-slate-800 rounded-2xl overflow-hidden shadow-2xl") do
-      div(class: "h-24 bg-linear-to-r from-green-900/30 to-slate-800/50 border-b border-slate-800")
+    render RubyUI::Card.new(class: "bg-app/40 border-border-subtle rounded-2xl overflow-hidden shadow-2xl") do
+      div(class: "h-24 bg-linear-to-r from-brand-strong/30 to-surface/50 border-b border-border-subtle")
 
       render RubyUI::CardContent.new(class: "px-6 pb-8 sm:px-10 sm:pb-10") do
         div(class: "flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 mb-8") do
-          render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-slate-900 bg-slate-900 shadow-xl") do
-            render RubyUI::AvatarFallback.new(class: "bg-slate-600 text-white text-3xl font-bold") do
+          render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-app bg-app shadow-xl") do
+            render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground text-3xl font-bold") do
               plain initials
             end
           end
 
           div(class: "text-center sm:text-left pb-1") do
-            h1(class: "text-3xl font-bold text-white tracking-tight") { @actor.name }
-            p(class: "text-slate-400 font-mono text-sm mt-1") { @actor.at_address }
+            h1(class: "text-3xl font-bold text-content tracking-tight") { @actor.name }
+            p(class: "text-content-muted font-mono text-sm mt-1") { @actor.at_address }
 
             if @actor.profile_url && !@actor.local?
               link_to "프로필 방문 →", @actor.profile_url,
-                class: "text-sm text-slate-400 hover:text-white transition-colors mt-1 inline-block",
+                class: "text-sm text-content-muted hover:text-content transition-colors mt-1 inline-block",
                 target: "_blank", rel: "noopener noreferrer"
             end
 
             div(class: "flex items-center gap-4 mt-2") do
-              span(class: "text-sm text-slate-400") do
-                span(class: "font-semibold text-white") { @actor.following_followers.size.to_s }
+              span(class: "text-sm text-content-muted") do
+                span(class: "font-semibold text-content") { @actor.following_followers.size.to_s }
                 plain " 팔로워"
               end
-              span(class: "text-sm text-slate-400") do
-                span(class: "font-semibold text-white") { @actor.following_follows.size.to_s }
+              span(class: "text-sm text-content-muted") do
+                span(class: "font-semibold text-content") { @actor.following_follows.size.to_s }
                 plain " 팔로잉"
               end
             end
           end
         end
 
-        render RubyUI::CardFooter.new(class: "px-0 pt-6 pb-0 border-t border-slate-800/60") do
+        render RubyUI::CardFooter.new(class: "px-0 pt-6 pb-0 border-t border-border-subtle/60") do
           div(class: "flex flex-col sm:flex-row sm:items-center gap-4") do
             render Views::Followings::FollowActions.new(actor: @actor)
           end
