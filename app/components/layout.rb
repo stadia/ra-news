@@ -203,7 +203,7 @@ class Components::Layout < Components::Base
 
         if vc.authenticated?
           li { raw vc.nav_link_to("글 등록", new_article_path) }
-          li { raw vc.nav_link_to(Current.user.name, users_path) }
+          li { raw vc.nav_link_to(Current.user.name, user_profile_path(Current.user)) }
         end
 
         li do

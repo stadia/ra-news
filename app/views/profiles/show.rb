@@ -51,6 +51,10 @@ class Views::Profiles::Show < Views::Base
           div(class: "text-center sm:text-left pb-1") do
             h1(class: "text-3xl font-bold text-white tracking-tight") { @user.name }
             p(class: "text-slate-400 font-mono text-sm mt-1") { "@#{@user.username}" }
+            if own_profile?
+              link_to "설정", users_path,
+                class: "inline-flex items-center gap-1 mt-2 text-sm text-slate-400 hover:text-white transition-colors"
+            end
             div(class: "flex items-center gap-4 mt-2") do
               link_to(
                 "/@#{@user.username}/followers",
@@ -88,7 +92,7 @@ class Views::Profiles::Show < Views::Base
     div(class: "flex flex-col sm:flex-row sm:items-center gap-3") do
       div(class: "flex items-center gap-2 text-slate-400") do
         svg(
-          class: "w-5 h-5 flex-shrink-0",
+          class: "w-5 h-5 shrink-0",
           fill: "currentColor",
           viewBox: "0 0 24 24",
           xmlns: "http://www.w3.org/2000/svg"
@@ -104,6 +108,10 @@ class Views::Profiles::Show < Views::Base
 
   def fediverse_section
     nil
+  end
+
+  def own_profile?
+    Current.user && Current.user == @user
   end
 
   def initials

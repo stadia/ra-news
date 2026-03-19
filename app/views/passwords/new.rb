@@ -9,7 +9,8 @@ class Views::Passwords::New < Views::Base
       render RubyUI::Heading.new(level: 1, class: "font-bold") { "비밀번호를 잊으셨나요?" }
 
       form_with(url: helpers.passwords_path, class: "contents") do |f|
-        div(class: "my-5") do
+        render RubyUI::FormField.new(class: "my-5") do
+          render RubyUI::FormFieldLabel.new(for: :email_address) { "이메일" }
           f.email_field :email_address,
             required: true,
             autofocus: true,

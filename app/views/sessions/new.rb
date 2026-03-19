@@ -8,7 +8,8 @@ class Views::Sessions::New < Views::Base
       render RubyUI::Heading.new(level: 1, class: "font-bold") { "로그인" }
 
       form_with(url: session_url, class: "contents") do |form|
-        div(class: "my-5") do
+        render RubyUI::FormField.new(class: "my-5") do
+          render RubyUI::FormFieldLabel.new(for: :email_address) { "이메일" }
           form.email_field :email_address,
                            required: true,
                            autofocus: true,
@@ -18,7 +19,8 @@ class Views::Sessions::New < Views::Base
                            class: "block shadow-sm rounded-md border border-slate-600 px-3 py-2 mt-2 w-full bg-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors duration-200"
         end
 
-        div(class: "my-5") do
+        render RubyUI::FormField.new(class: "my-5") do
+          render RubyUI::FormFieldLabel.new(for: :password) { "비밀번호" }
           form.password_field :password,
                               required: true,
                               autocomplete: "current-password",

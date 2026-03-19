@@ -73,25 +73,31 @@ class Components::Comments::CommentReplyForm < Components::Base
 
   def guest_fields(f)
     div(class: "grid gap-3 sm:grid-cols-2") do
-      div(class: "space-y-2") do
-        f.label :guest_name, "이름 (필수)", class: "block text-xs font-medium text-gray-400"
+      render RubyUI::FormField.new do
+        render RubyUI::FormFieldLabel.new(for: :comment_guest_name) { "이름 (필수)" }
         f.text_field :guest_name,
           class: "w-full px-3 py-2 rounded-lg border bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm #{@comment.errors[:guest_name].none? ? 'border-gray-600 hover:border-gray-500' : 'border-red-500 focus:ring-red-500'}",
           placeholder: "이름을 입력하세요",
           data: { guest_name_target: "input", action: "change->guest-name#save" }
+        @comment.errors[:guest_name].each do |msg|
+          render RubyUI::FormFieldError.new { msg }
+        end
       end
 
-      div(class: "space-y-2") do
-        f.label :guest_password, "비밀번호 (필수)", class: "block text-xs font-medium text-gray-400"
+      render RubyUI::FormField.new do
+        render RubyUI::FormFieldLabel.new(for: :comment_guest_password) { "비밀번호 (필수)" }
         f.password_field :guest_password,
           class: "w-full px-3 py-2 rounded-lg border bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm #{@comment.errors[:guest_password].none? ? 'border-gray-600 hover:border-gray-500' : 'border-red-500 focus:ring-red-500'}",
           placeholder: "최소 4자 이상"
+        @comment.errors[:guest_password].each do |msg|
+          render RubyUI::FormFieldError.new { msg }
+        end
       end
     end
   end
 
   def body_field(f)
-    div(class: "space-y-2") do
+    render RubyUI::FormField.new do
       f.text_area :body,
         rows: 3,
         class: "w-full px-4 py-2 rounded-lg border bg-gray-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none text-sm #{@comment.errors[:body].none? ? 'border-gray-600 hover:border-gray-500' : 'border-red-500 focus:ring-red-500'}",
@@ -101,6 +107,9 @@ class Components::Comments::CommentReplyForm < Components::Base
       div(class: "text-xs text-gray-500 text-right") do
         span(data: { character_count_target: "counter" }) { "0" }
         plain "/#{::Comment::MAX_BODY_LENGTH}"
+      end
+      @comment.errors[:body].each do |msg|
+        render RubyUI::FormFieldError.new { msg }
       end
     end
   end

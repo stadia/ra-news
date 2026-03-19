@@ -46,15 +46,38 @@ class Components::Users::Form < Components::Base
 
           # Form Fields Grid
           div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-slate-800/60") do
-            form_field(form, :email_address, "이메일 주소") { form.email_field :email_address, class: input_classes(@user.errors[:email_address]) }
-            form_field(form, :name, "사용자 이름") { form.text_field :name, class: input_classes(@user.errors[:name]) }
+            render RubyUI::FormField.new do
+              render RubyUI::FormFieldLabel.new(for: :user_email_address) { "이메일 주소" }
+              form.email_field :email_address, class: input_classes(@user.errors[:email_address])
+              @user.errors[:email_address].each do |msg|
+                render RubyUI::FormFieldError.new { msg }
+              end
+            end
+
+            render RubyUI::FormField.new do
+              render RubyUI::FormFieldLabel.new(for: :user_name) { "사용자 이름" }
+              form.text_field :name, class: input_classes(@user.errors[:name])
+              @user.errors[:name].each do |msg|
+                render RubyUI::FormFieldError.new { msg }
+              end
+            end
           end
 
           # Submit Button
-          div(class: "mt-10 pt-8 border-t border-slate-800/60 flex justify-end") do
+          div(class: "mt-10 pt-8 border-t border-slate-800/60 flex items-center justify-end gap-3") do
+            if @user.persisted?
+              render RubyUI::Link.new(
+                href: helpers.users_path,
+                class: "flex items-center justify-center gap-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-sm border border-slate-700 transition-all active:scale-95 shadow-lg shadow-black/20"
+              ) do
+                Hero::ChevronLeft(variant: :outline, class: "w-4 h-4")
+                plain "돌아가기"
+              end
+            end
+
             render RubyUI::Button.new(
               type: "submit",
-              class: "group relative flex items-center justify-center gap-2 py-3 px-8 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-lg transition-all active:scale-95 shadow-lg shadow-green-900/20"
+              class: "group relative flex items-center justify-center gap-2 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-sm transition-all active:scale-95 shadow-lg shadow-green-900/20"
             ) do
               plain @user.persisted? ? "변경사항 저장" : "가입하기"
               Hero::ArrowLongRight(variant: :outline, class: "w-5 h-5 transition-transform group-hover:translate-x-1")
@@ -66,15 +89,6 @@ class Components::Users::Form < Components::Base
   end
 
   private
-
-  def form_field(form, attribute, label, &block)
-    div(class: "space-y-2") do
-      form.label attribute, class: "text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500" do
-        plain label
-      end
-      yield
-    end
-  end
 
   def input_classes(errors)
     base_classes = "block w-full bg-slate-800/50 border rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 transition-all duration-200"

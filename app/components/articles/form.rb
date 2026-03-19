@@ -25,9 +25,12 @@ class Components::Articles::Form < Components::Base
          end
        end
 
-       div(class: "my-5") do
-         form.label :url
+       render RubyUI::FormField.new(class: "my-5") do
+         render RubyUI::FormFieldLabel.new(for: :article_url) { "Url" }
          form.text_field :url, class: [ "block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-colors duration-200", { "border-slate-600 focus:ring-green-500": article.errors[:url].none?, "border-red-500 focus:ring-red-500": article.errors[:url].any? } ]
+         article.errors[:url].each do |msg|
+           render RubyUI::FormFieldError.new { msg }
+         end
        end
 
        div(class: "inline") do

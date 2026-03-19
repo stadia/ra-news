@@ -41,8 +41,8 @@ class Components::Comments::DeleteModal < Components::Base
             end
             form_with url: article_comment_path(@article, @comment),
                         method: :delete, local: false, class: "space-y-4" do |f|
-                          div(class: "space-y-2") do
-                            f.label :password, "비밀번호", class: "block text-sm font-medium text-slate-300"
+                          render RubyUI::FormField.new do
+                            render RubyUI::FormFieldLabel.new(for: :password) { "비밀번호" }
                             f.password_field :password,
                                                         required: true,
                                                         class:

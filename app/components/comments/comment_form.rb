@@ -60,20 +60,23 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def guest_fields(f)
-    div(class: "space-y-2") do
-      f.label :guest_name, "이름 또는 이메일 (필수)", class: "block text-sm font-medium text-gray-300"
+    render RubyUI::FormField.new do
+      render RubyUI::FormFieldLabel.new(for: :comment_guest_name) { "이름 또는 이메일 (필수)" }
       f.text_field :guest_name,
         class: "w-full px-3 py-2 rounded-lg border bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 #{@comment.errors[:guest_name].none? ? 'border-gray-600 hover:border-gray-500' : 'border-red-500 focus:ring-red-500'}",
         placeholder: "이름이나 이메일을 입력하세요",
         data: { guest_name_target: "input", action: "change->guest-name#save" }
+      @comment.errors[:guest_name].each do |msg|
+        render RubyUI::FormFieldError.new { msg }
+      end
     end
 
-    div(class: "space-y-2") do
-      f.label :guest_password, "비밀번호 (필수, 삭제 시 필요)", class: "block text-sm font-medium text-gray-300"
+    render RubyUI::FormField.new do
+      render RubyUI::FormFieldLabel.new(for: :comment_guest_password) { "비밀번호 (필수, 삭제 시 필요)" }
       f.password_field :guest_password,
         class: "w-full px-3 py-2 rounded-lg border bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 #{@comment.errors[:guest_password].none? ? 'border-gray-600 hover:border-gray-500' : 'border-red-500 focus:ring-red-500'}",
         placeholder: "최소 4자 이상의 비밀번호를 입력하세요"
-      p(class: "text-xs text-gray-400") { "댓글 삭제 시 비밀번호가 필요합니다." }
+      render RubyUI::FormFieldHint.new { "댓글 삭제 시 비밀번호가 필요합니다." }
     end
 
     div(class: "border-t border-gray-600 pt-4") do
@@ -87,8 +90,8 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def body_field(f)
-    div(class: "space-y-2") do
-      f.label :body, "댓글 내용", class: "block text-sm font-medium text-gray-300"
+    render RubyUI::FormField.new do
+      render RubyUI::FormFieldLabel.new(for: :comment_body) { "댓글 내용" }
       f.text_area :body,
         rows: 4,
         class: "w-full px-4 py-3 rounded-lg border bg-white text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none #{@comment.errors[:body].none? ? 'border-gray-600 hover:border-gray-500' : 'border-red-500 focus:ring-red-500'}",
@@ -98,6 +101,9 @@ class Components::Comments::CommentForm < Components::Base
       div(class: "text-xs text-gray-400 text-right") do
         span(data: { character_count_target: "counter" }) { "0" }
         plain "/#{::Comment::MAX_BODY_LENGTH}"
+      end
+      @comment.errors[:body].each do |msg|
+        render RubyUI::FormFieldError.new { msg }
       end
     end
   end

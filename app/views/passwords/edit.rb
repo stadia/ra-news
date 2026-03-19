@@ -13,7 +13,8 @@ class Views::Passwords::Edit < Views::Base
       render RubyUI::Heading.new(level: 1, class: "font-bold") { "새 비밀번호 설정" }
 
       form_with(url: helpers.password_path(@token), method: :put, class: "contents") do |f|
-        div(class: "my-5") do
+        render RubyUI::FormField.new(class: "my-5") do
+          render RubyUI::FormFieldLabel.new(for: :password) { "새 비밀번호" }
           f.password_field :password,
             required: true,
             autocomplete: "new-password",
@@ -22,7 +23,8 @@ class Views::Passwords::Edit < Views::Base
             class: "block shadow-sm rounded-md border border-slate-600 px-3 py-2 mt-2 w-full bg-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors duration-200"
         end
 
-        div(class: "my-5") do
+        render RubyUI::FormField.new(class: "my-5") do
+          render RubyUI::FormFieldLabel.new(for: :password_confirmation) { "새 비밀번호 확인" }
           f.password_field :password_confirmation,
             required: true,
             autocomplete: "new-password",
