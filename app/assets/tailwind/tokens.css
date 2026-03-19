@@ -222,7 +222,7 @@
     }
 
     .theme-light,
-    ㅣ.light {
+    .light {
         /* Background */
         --color-bg-primary: var(--neutral-50); /* Body 배경 */
         --color-bg-secondary: var(--neutral-100); /* 카드, 섹션 배경 */
