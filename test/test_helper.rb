@@ -14,6 +14,19 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    # Federails 엔진 픽스처 클래스 매핑 (테이블 이름에서 모델 클래스를 자동 감지할 수 없으므로)
+    set_fixture_class federails_actors: Federails::Actor
+
     # Add more helper methods to be used by all tests here...
+  end
+end
+
+class ActionDispatch::IntegrationTest
+  # 인증이 필요한 통합 테스트에서 사용.
+  # signed cookie를 설정하여 세션을 시작한다.
+  def sign_in_as(user)
+    session = user.sessions.first || user.sessions.create!(user_agent: "test", ip_address: "127.0.0.1")
+    post session_path, params: { email_address: user.email_address, password: "password" }
+    session
   end
 end
