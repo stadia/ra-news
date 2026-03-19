@@ -58,7 +58,7 @@ Rails.application.routes.draw do
   end
 
   # Federails client 대체 라우트
-  resources :followings, only: [:new, :create, :destroy] do
+  resources :followings, only: [ :new, :create, :destroy ] do
     collection do
       post :follow
     end
@@ -67,19 +67,17 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :actors, only: [:show] do
+  resources :actors, only: [ :show ] do
     collection do
       get :lookup
     end
+    resources :activities, only: [ :index ]
   end
 
-  resources :activities, only: [:index] do
+  resources :activities, only: [ :index ] do
     collection do
       get :feed
     end
-  end
-  resources :actors, only: [] do
-    resources :activities, only: [:index]
   end
 
   mount Federails::Engine => "/"

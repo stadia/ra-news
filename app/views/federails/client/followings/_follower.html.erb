@@ -1,7 +1,0 @@
-<div>
-  <b><%= link_to following.actor.name, federails.client_actor_url(following.actor) %></b>
-  (<%= following.actor.at_address %>) (<%= following.status %>)
-  <% if following.pending? && following.target_actor == current_user&.federails_actor %>
-    <%= button_to 'Accept', federails.accept_client_following_path(following), method: :put %>
-  <% end %>
-</div>
