@@ -15,6 +15,7 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
 
   test "POST create requires authentication" do
     post followings_path, params: { following: { target_actor_id: @jane_actor.id } }
+
     assert_redirected_to new_session_path
   end
 
@@ -23,6 +24,7 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
   test "GET new redirects to actor show" do
     sign_in_as(@john)
     get new_following_path(uri: @jane_actor.federated_url)
+
     assert_redirected_to actor_path(@jane_actor)
   end
 
