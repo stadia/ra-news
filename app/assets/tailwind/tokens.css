@@ -282,6 +282,7 @@
         --color-prose-heading: var(
             --brand-primary-dark
         ); /* green-700 - 헤딩 포인트 (light bg에서 높은 대비) */
+        --color-prose-strong: 7 89 133; /* sky-800 - 강조 텍스트 포인트 (light bg에서 높은 대비) */
     }
 
     /* ========================================
