@@ -28,7 +28,7 @@ class Views::Profiles::Show < Views::Base
       fediverse_section if @actor
       turbo_frame_tag("follow-list", class: "mt-2 block") do
         if @follow_actors
-          render Views::Profiles::FollowList.new(user: @user, actors: @follow_actors, type: @follow_type, embedded: true)
+          render Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: @follow_type, embedded: true)
         end
       end
     end
@@ -52,8 +52,13 @@ class Views::Profiles::Show < Views::Base
             h1(class: "text-3xl font-bold text-content tracking-tight") { @user.name }
             p(class: "text-content-muted font-mono text-sm mt-1") { "@#{@user.username}" }
             if own_profile?
-              link_to "설정", users_path,
-                class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
+              div(class: "flex items-center gap-3 mt-2") do
+                link_to "설정", users_path,
+                  class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
+                span(class: "text-content-disabled") { "·" }
+                link_to "팔로우 검색", lookup_actors_path,
+                  class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
+              end
             end
             div(class: "flex items-center gap-4 mt-2") do
               link_to(

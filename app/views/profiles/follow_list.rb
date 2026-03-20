@@ -4,11 +4,12 @@ class Views::Profiles::FollowList < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::TurboFrameTag
+  include Phlex::Rails::Helpers::ButtonTo
   include PhlexIcons
 
-  def initialize(user:, actors:, type:, embedded: false)
+  def initialize(user:, followings:, type:, embedded: false)
     @user = user
-    @actors = actors
+    @followings = followings
     @type = type
     @embedded = embedded
   end
@@ -31,23 +32,25 @@ class Views::Profiles::FollowList < Views::Base
   private
 
   def list_content(title)
-    if @actors.empty?
+    if @followings.empty?
       div(class: "text-center py-16 text-content-disabled") do
         p { @type == :followers ? "아직 팔로워가 없습니다." : "아직 팔로잉하는 계정이 없습니다." }
       end
     else
       div(class: "flex flex-col gap-2") do
-        @actors.each { |actor| actor_row(actor) }
+        @followings.each { |following| following_row(following) }
       end
     end
   end
 
-  def actor_row(actor)
+  def following_row(following)
+    actor = @type == :followers ? following.actor : following.target_actor
+
     site_host = URI.parse(Federails.configuration.site_host).host
     is_local = actor.server.blank? || actor.server == site_host
     handle = is_local ? "@#{actor.username}" : "@#{actor.username}@#{actor.server}"
 
-    div(class: "flex items-center gap-4 px-4 py-3 bg-app/40 border border-border-subtle rounded-xl hover:border-border-strong transition-colors") do
+    div(id: "following_row_#{following.id}", class: "flex items-center gap-4 px-4 py-3 bg-app/40 border border-border-subtle rounded-xl hover:border-border-strong transition-colors") do
       render RubyUI::Avatar.new(size: :md, class: "h-10 w-10 shrink-0") do
         icon_url = actor.extensions&.dig("icon", "url")
         if icon_url
@@ -69,6 +72,36 @@ class Views::Profiles::FollowList < Views::Base
         end
         p(class: "text-content-muted text-sm font-mono truncate") { handle }
       end
+
+      action_buttons(following) if own_profile?
     end
+  end
+
+  def action_buttons(following)
+    div(class: "flex items-center gap-2 shrink-0") do
+      if @type == :followers
+        if following.pending?
+          button_to "수락", accept_following_path(following),
+            method: :put,
+            class: "px-3 py-1 text-xs font-medium bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
+          button_to "거절", following_path(following),
+            method: :delete,
+            class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-surface text-content-secondary rounded-lg transition-colors cursor-pointer"
+        end
+      else
+        if following.pending?
+          render RubyUI::Badge.new(variant: :amber) { "요청 중" }
+        else
+          render RubyUI::Badge.new(variant: :green) { "팔로잉" }
+        end
+        button_to "언팔로우", following_path(following),
+          method: :delete,
+          class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-danger-solid text-content-secondary hover:text-danger-text rounded-lg transition-colors cursor-pointer"
+      end
+    end
+  end
+
+  def own_profile?
+    Current.user && Current.user == @user
   end
 end

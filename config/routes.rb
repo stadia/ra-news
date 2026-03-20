@@ -57,5 +57,23 @@ Rails.application.routes.draw do
     mount PgReports::Engine, at: "/pg_reports"
   end
 
+  # Federails client 대체 라우트
+  resources :followings, only: [ :new, :create, :destroy ] do
+    collection do
+      post :follow
+    end
+    member do
+      put :accept
+    end
+  end
+
+  resources :actors, only: [ :show ] do
+    collection do
+      get :lookup
+    end
+  end
+
+  get "/feed", to: "activities#feed", as: :feed
+
   mount Federails::Engine => "/"
 end
