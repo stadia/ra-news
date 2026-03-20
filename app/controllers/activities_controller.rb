@@ -6,6 +6,8 @@ class ActivitiesController < ApplicationController
 
   after_action :verify_authorized
 
+  before_action :require_authentication, only: [ :feed ]
+
   def index
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
     @activities = policy_scope(Federails::Activity, policy_scope_class: Federails::Client::ActivityPolicy::Scope).all

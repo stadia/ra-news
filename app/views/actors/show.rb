@@ -44,11 +44,11 @@ class Views::Actors::Show < Views::Base
 
             div(class: "flex items-center gap-4 mt-2") do
               span(class: "text-sm text-content-muted") do
-                span(class: "font-semibold text-content") { @actor.following_followers.size.to_s }
+                span(class: "font-semibold text-content") { @actor.following_followers.count.to_s }
                 plain " 팔로워"
               end
               span(class: "text-sm text-content-muted") do
-                span(class: "font-semibold text-content") { @actor.following_follows.size.to_s }
+                span(class: "font-semibold text-content") { @actor.following_follows.count.to_s }
                 plain " 팔로잉"
               end
             end

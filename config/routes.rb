@@ -73,11 +73,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :activities, only: [ :index ] do
-    collection do
-      get :feed
-    end
-  end
+  get "/feed", to: "activities#feed", as: :feed
 
   mount Federails::Engine => "/"
 end
