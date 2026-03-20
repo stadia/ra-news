@@ -213,6 +213,17 @@ class Components::Layout < Components::Base
             raw vc.nav_link_to("로그인", new_session_path)
           end
         end
+
+        li do
+          render ThemeToggle do |toggle|
+            SetLightMode do
+              Button(variant: :primary) { "Light" }
+            end
+            SetDarkMode do
+              Button(variant: :primary) { "Dark" }
+            end
+          end
+        end
       end
     end
   end
@@ -234,7 +245,7 @@ class Components::Layout < Components::Base
         value: view_context.params[:search],
         class: "px-3 py-2 text-sm text-content bg-surface-muted border border-border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent w-40 md:w-48 transition-all duration-200 placeholder:text-content-muted"
       )
-      render RubyUI::Button.new(
+      render Button.new(
         type: "submit",
         variant: :primary,
         size: :lg,
