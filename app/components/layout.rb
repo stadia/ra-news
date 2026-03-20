@@ -126,7 +126,7 @@ class Components::Layout < Components::Base
     link(rel: "manifest", href: pwa_manifest_path(format: :json))
     link(rel: "icon", href: "/icon.png", type: "image/png")
     link(rel: "icon", href: "/icon.svg", type: "image/svg+xml")
-    link(rel: "apple-touch-icon", href: "/icon.png")
+    link(rel: "apple-touch-icon", href: "/apple-touch-icon.png")
   end
 
   def render_google_fonts
