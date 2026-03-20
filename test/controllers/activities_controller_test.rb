@@ -64,4 +64,28 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, john_actor.name
     assert_includes @response.body, jane_actor.name
   end
+
+  test "GET feed renders selected posts as a tree within the feed set" do
+    followed_root = Post.create!(
+      body: "followed root post",
+      user: users(:jane),
+      created_at: 2.hours.ago,
+      updated_at: 2.hours.ago
+    )
+    own_reply = Post.create!(
+      body: "own reply post",
+      user: @user,
+      parent: followed_root,
+      created_at: 1.hour.ago,
+      updated_at: 1.hour.ago
+    )
+
+    sign_in_as(@user)
+    get feed_path
+
+    assert_response :success
+    assert_includes @response.body, "followed root post"
+    assert_includes @response.body, "own reply post"
+    assert_operator @response.body.index("followed root post"), :<, @response.body.index("own reply post")
+  end
 end
