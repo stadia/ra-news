@@ -81,6 +81,8 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "follow_actions_#{@korean_actor.id}"
+    assert_includes response.body, 'target="follow-list"'
+    assert_not_includes response.body, "following_row_#{following.id}"
   end
 
   # --- destroy ---
@@ -96,6 +98,8 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "follow_actions_#{@korean_actor.id}"
+    assert_includes response.body, 'target="follow-list"'
+    assert_includes response.body, "following_row_#{following.id}"
   end
 
   test "DELETE destroy responds with json" do
