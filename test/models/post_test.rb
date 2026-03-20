@@ -14,29 +14,34 @@ class PostTest < ActiveSupport::TestCase
 
   test "user가 있는 post는 유효하다" do
     post = Post.new(body: "테스트 포스트", user: @user)
-    assert post.valid?, post.errors.full_messages.join(", ")
+
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
   end
 
   test "federails_actor가 있는 post는 유효하다" do
     actor = federails_actors(:john_actor)
     post = Post.new(body: "리모트 포스트", federails_actor: actor, federated_url: "https://example.com/notes/1")
-    assert post.valid?, post.errors.full_messages.join(", ")
+
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
   end
 
   test "user도 federails_actor도 없으면 유효하지 않다" do
     post = Post.new(body: "고아 포스트")
+
     assert_not post.valid?
-    assert post.errors[:base].any?
+    assert_predicate post.errors[:base], :any?
   end
 
   test "body는 필수" do
     post = Post.new(user: @user)
+
     assert_not post.valid?
-    assert post.errors[:body].any?
+    assert_predicate post.errors[:body], :any?
   end
 
   test "body가 빈 문자열이면 유효하지 않다" do
     post = Post.new(body: "", user: @user)
+
     assert_not post.valid?
   end
 
@@ -65,29 +70,33 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "should_federate?는 entity가 있으면 true" do
-    assert @root_post.should_federate?
+    assert_predicate @root_post, :should_federate?
   end
 
   # ========== handle_federated_object? Tests ==========
 
   test "inReplyTo가 없는 Note를 수락한다" do
     hash = { "type" => "Note", "content" => "Hello" }
+
     assert Post.handle_federated_object?(hash)
   end
 
   test "inReplyTo가 있는 Note는 거부한다 (Comment가 처리)" do
     hash = { "type" => "Note", "inReplyTo" => "https://example.com/articles/1" }
+
     assert_not Post.handle_federated_object?(hash)
   end
 
   test "inReplyTo가 로컬 post를 가리키면 수락한다" do
     local_host = Rails.application.routes.default_url_options[:host] || "www.example.com"
     hash = { "type" => "Note", "inReplyTo" => "http://#{local_host}/posts/#{@root_post.id}" }
+
     assert Post.handle_federated_object?(hash)
   end
 
   test "inReplyTo가 리모트 post의 federated_url이면 수락한다" do
     hash = { "type" => "Note", "inReplyTo" => @remote_post.federated_url }
+
     assert Post.handle_federated_object?(hash)
   end
 
@@ -96,6 +105,7 @@ class PostTest < ActiveSupport::TestCase
   test "from_activitypub_object는 body를 HTML strip한다" do
     hash = { "id" => "https://remote.example.com/notes/456", "content" => "<p>Hello <b>world</b></p>" }
     result = Post.from_activitypub_object(hash)
+
     assert_equal "Hello world", result[:body]
     assert_equal "https://remote.example.com/notes/456", result[:federated_url]
   end
@@ -107,6 +117,7 @@ class PostTest < ActiveSupport::TestCase
       "inReplyTo" => "http://www.example.com/posts/#{@root_post.id}"
     }
     result = Post.from_activitypub_object(hash)
+
     assert_equal @root_post.id.to_s, result[:parent_id]
   end
 
@@ -117,6 +128,7 @@ class PostTest < ActiveSupport::TestCase
       "inReplyTo" => @remote_post.federated_url
     }
     result = Post.from_activitypub_object(hash)
+
     assert_equal @remote_post.id, result[:parent_id]
   end
 end

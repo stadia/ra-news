@@ -15,7 +15,7 @@ class CreatePosts < ActiveRecord::Migration[8.1]
 
     add_index :posts, :lft
     add_index :posts, :rgt
-    add_index :posts, [:parent_id, :created_at]
+    add_index :posts, [ :parent_id, :created_at ]
     add_index :posts, :federated_url, unique: true
   end
 end
