@@ -226,7 +226,7 @@ class Components::Layout < Components::Base
           end
         end
 
-        li do
+        li(class: "flex items-center") do
           ThemeToggle do |toggle|
             SetLightMode do
               Button(variant: :ghost, icon: true) do
