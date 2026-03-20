@@ -174,7 +174,7 @@ class Comment < ApplicationRecord
       return false if in_reply_to.blank?
 
       local_host = Rails.application.routes.default_url_options[:host]
-      return true if in_reply_to.include?(local_host)
+      return true if in_reply_to.include?(local_host) && !in_reply_to.include?("/posts/")
 
       Comment.exists?(federated_url: in_reply_to)
     end

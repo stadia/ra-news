@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   resources :passwords, param: :token
   resource :push_subscription, only: %i[ create destroy ]
+  resources :posts, only: [:show]
   resources :articles, only: %i[index show new create] do
     resources :comments, only: %i[create destroy] do
     end

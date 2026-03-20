@@ -756,6 +756,13 @@ class CommentTest < ActiveSupport::TestCase
     end
   end
 
+  # ========== handle_federated_object? Tests ==========
+
+  test "inReplyTo가 /posts/를 가리키면 거부한다" do
+    hash = { "inReplyTo" => "http://www.example.com/posts/1" }
+    assert_not Comment.handle_federated_object?(hash)
+  end
+
   private
 
   # Helper method for testing query count
