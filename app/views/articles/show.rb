@@ -83,7 +83,7 @@ class Views::Articles::Show < Views::Base
             Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-5 h-5 text-brand-foreground")
           end
           div(class: "min-w-0 flex-1") do
-            render RubyUI::Link.new(
+            a(
               href: @article.url,
               target: "_blank",
               rel: "noopener noreferrer",
