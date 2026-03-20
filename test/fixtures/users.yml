@@ -7,6 +7,7 @@
 john:
   email_address: john@example.com
   name: 존 도
+  username: john
   password_digest: <%= password_digest %>
   roles:
     - user
@@ -16,6 +17,7 @@ john:
 jane:
   email_address: jane@example.com
   name: 제인 스미스
+  username: jane
   password_digest: <%= password_digest %>
   roles:
     - user
@@ -25,6 +27,7 @@ jane:
 admin:
   email_address: admin@example.com
   name: 관리자
+  username: admin
   password_digest: <%= admin_password_digest %>
   roles:
     - user
@@ -34,6 +37,7 @@ admin:
 korean_user:
   email_address: korean@example.com
   name: 김철수
+  username: korean_user
   password_digest: <%= password_digest %>
   roles:
     - user
@@ -42,6 +46,7 @@ korean_user:
 user_with_spaces:
   email_address: spaces@example.com
   name: 홍 길 동
+  username: user_with_spaces
   password_digest: <%= password_digest %>
   roles:
     - user
@@ -50,6 +55,7 @@ user_with_spaces:
 minimal_user:
   email_address: minimal@example.com
   name: 최소
+  username: minimal_user
   password_digest: <%= password_digest %>
   roles:
     - user
@@ -58,6 +64,7 @@ minimal_user:
 one:
   email_address: one@example.com
   name: 사용자 일
+  username: user_one
   password_digest: <%= password_digest %>
   roles:
     - user
@@ -65,6 +72,7 @@ one:
 two:
   email_address: two@example.com
   name: 사용자 이
+  username: user_two
   password_digest: <%= password_digest %>
   roles:
     - user

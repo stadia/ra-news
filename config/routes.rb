@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   resources :passwords, param: :token
   resource :push_subscription, only: %i[ create destroy ]
+  resources :posts, only: [ :show ]
   resources :articles, only: %i[index show new create] do
     resources :comments, only: %i[create destroy] do
     end
@@ -52,6 +53,8 @@ Rails.application.routes.draw do
   # Public user profiles at /@username (also used as ActivityPub profile_url)
   # 1. 실제 요청을 처리할 내부 라우트 (컨트롤러 연결)
   get "/@:username", to: "profiles#show", as: :user_profile_base
+  get "/@:username/followers", to: "profiles#followers", as: :user_profile_followers
+  get "/@:username/following", to: "profiles#following", as: :user_profile_following
   # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
   direct :user_profile do |user|
     # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.
@@ -62,6 +65,24 @@ Rails.application.routes.draw do
     mount MissionControl::Jobs::Engine, at: "/jobs"
     mount PgReports::Engine, at: "/pg_reports"
   end
+
+  # Federails client 대체 라우트
+  resources :followings, only: [ :new, :create, :destroy ] do
+    collection do
+      post :follow
+    end
+    member do
+      put :accept
+    end
+  end
+
+  resources :actors, only: [ :show ] do
+    collection do
+      get :lookup
+    end
+  end
+
+  get "/feed", to: "activities#feed", as: :feed
 
   mount Federails::Engine => "/"
 end

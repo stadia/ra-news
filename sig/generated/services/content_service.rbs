@@ -13,8 +13,16 @@ class ContentService < OperationService
 
   private
 
+  # : (String url) -> bool
+  def github_url?: (String url) -> bool
+
+  # : (String url) -> String?
+  def github_readme_url: (String url) -> String?
+
   # : (String url, ?Integer? count) -> Faraday::Response
-  def handle_redirection: (String url, ?Integer? count) -> Faraday::Response
+  def faraday_fetch_html: (String url, ?Integer? count) -> Faraday::Response
+
+  def mcp_fetch_html: (untyped url) -> untyped
 
   def format_transcript: (untyped actions) -> untyped
 end

@@ -80,6 +80,12 @@ class ArticlesController < ApplicationController
     end
 
     @comment = Comment.new
+    render Views::Articles::Show.new(
+      article: @article,
+      comments: @comments,
+      comment: @comment,
+      similar_articles: @similar_articles
+    )
   end
 
   # GET /articles/new

@@ -384,7 +384,10 @@ class Article < ApplicationRecord
     end
 
     def handle_federated_object?(hash)
-      hash["inReplyTo"].blank?
+      # 이 메서드는 inbox로 들어온 remote object를 Article이 수신할지 결정합니다.
+      # Article은 로컬 bot user가 발행하는 용도이므로, remote Note는 생성 대상으로 받지 않습니다.
+      # outbound federation 여부는 should_federate?가 따로 결정합니다.
+      false
     end
 
     # slug로 Article을 찾는 메서드

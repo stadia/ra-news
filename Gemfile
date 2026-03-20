@@ -20,7 +20,7 @@ gem "tailwindcss-rails", "~> 4.2"
 gem "jbuilder"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt", "~> 3.1.21"
+gem "bcrypt", "~> 3.1.22"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -34,7 +34,7 @@ gem "solid_cable"
 gem "bootsnap", require: false
 
 # Deploy this application anywhere as a Docker container [https://kamal-deploy.org]
-gem "kamal", require: false
+# gem "kamal", require: false
 
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
@@ -57,11 +57,10 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-rbs_inline", require: false
   gem "rubocop-minitest", require: false
-  gem "steep", require: false
+  # gem "steep", require: false
   gem "dotenv-rails"
   gem "faker"
   gem "herb"
-  # gem "rbs_rails", "~> 0.12.1"
   gem "minitest", "~> 6.0"
   gem "minitest-mock"
 end
@@ -82,7 +81,7 @@ group :test do
 end
 
 gem "sorbet-runtime"
-gem "pagy", "~> 43.3" # omit patch digit
+gem "pagy", "~> 43.4" # omit patch digit
 gem "honeybadger", "~> 6.5.2"
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
@@ -114,7 +113,7 @@ gem "phlex-rails", "~> 2.4"
 gem "phlex-icons"
 gem "tailwind_merge", "~> 1.4"
 
-gem "ruby_llm", "~> 1.13"
+gem "ruby_llm", "~> 1.14"
 gem "ruby_llm-schema"
 
 gem "web-push", "~> 3.1"

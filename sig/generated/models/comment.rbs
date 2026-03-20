@@ -5,19 +5,37 @@ class Comment < ApplicationRecord
 
   MAX_GUEST_NAME_LENGTH: ::Integer
 
+  include Federails::DataEntity
+
+  def to_activitypub_object: () -> untyped
+
   def content: () -> untyped
 
   def author_name: () -> untyped
 
+  def author_host: () -> untyped
+
   def guest?: () -> untyped
+
+  def federation_actor_entity: () -> untyped
+
+  def should_federate?: () -> untyped
+
+  def reply: () -> untyped
 
   private
 
   def validate_user_or_guest: () -> untyped
+
+  def set_federails_actor: () -> untyped
 
   def validate_parent_comment: () -> untyped
 
   def validate_guest_password_length: () -> untyped
 
   def enqueue_reply_notification: () -> untyped
+
+  def self.from_activitypub_object: (untyped hash) -> untyped
+
+  def self.handle_federated_object?: (untyped hash) -> untyped
 end

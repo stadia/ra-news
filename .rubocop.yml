@@ -14,6 +14,8 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 4.0
   TargetRailsVersion: 8.1
+  Exclude:
+    - "app/components/ruby_ui/**/*"
 
 Layout/LeadingCommentSpace:
   Enabled: false

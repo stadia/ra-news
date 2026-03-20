@@ -1,6 +1,8 @@
 # Generated from app/models/user.rb with RBS::Inline
 
 class User < ApplicationRecord
+  include Federails::ActorEntity
+
   def admin?: () -> bool
 
   def full_name: () -> String
@@ -8,4 +10,8 @@ class User < ApplicationRecord
   def has_role?: (untyped role_name) -> bool
 
   def roles=: (untyped role_names) -> untyped
+
+  def accept_follow: (untyped following) -> untyped
+
+  def self.first_bot: () -> untyped
 end
