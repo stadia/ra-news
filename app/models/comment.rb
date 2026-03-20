@@ -122,10 +122,20 @@ class Comment < ApplicationRecord
   end
 
   def enqueue_reply_notification
-    return unless parent_id.present?
-    return unless parent&.user_id.present?
-    return if parent.user_id == user_id
+    unless parent_id.present?
+      logger.debug { "ReplyNotification skip: comment #{id} has no parent" }
+      return
+    end
+    unless parent&.user_id.present?
+      logger.debug { "ReplyNotification skip: parent comment #{parent_id} has no user (guest comment)" }
+      return
+    end
+    if parent.user_id == user_id
+      logger.debug { "ReplyNotification skip: self-reply by user #{user_id}" }
+      return
+    end
 
+    logger.info { "ReplyNotification enqueue: comment #{id} → parent #{parent_id} (user #{parent.user_id})" }
     ReplyNotificationJob.perform_later(parent.id, id)
   end
 
