@@ -31,7 +31,7 @@ class Components::Articles::Article < Components::Base
         link_to display_title, article_path(article)
       end
       if @article.title_ko.present? && @article.title_ko != @article.title
-        h3(class: "text-l text-content") { article.title }
+        h3(class: "text-l text-content wrap-break-word") { article.title }
       end
     end
   end
@@ -54,7 +54,8 @@ class Components::Articles::Article < Components::Base
   end
 
   def footer_section
-    div(class: "mt-auto pt-4 flex flex-wrap justify-between items-center text-xs text-content-muted border-t border-border-strong gap-y-2") do
+    render RubyUI::Separator.new(class: "mt-auto")
+    div(class: "pt-4 flex flex-wrap justify-between items-center text-xs text-content-muted gap-y-2") do
       span(class: "inline-flex items-center") do
         Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         render Components::Articles::ArticleUser.new(article: @article)

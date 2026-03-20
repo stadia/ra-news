@@ -33,12 +33,13 @@ class Views::Articles::Show < Views::Base
   def render_article_main
     article(class: "bg-surface rounded-xl shadow-lg overflow-hidden border border-border-strong") do
       render_article_header
+      render RubyUI::Separator.new
       render_article_body
     end
   end
 
   def render_article_header
-    header(class: "p-4 md:p-6 lg:p-8 border-b border-border-strong") do
+    header(class: "p-4 md:p-6 lg:p-8") do
       div(class: "mb-6") do
         render RubyUI::Heading.new(
           level: 1,
@@ -46,7 +47,7 @@ class Views::Articles::Show < Views::Base
         ) { @article.title_ko }
 
         if @article.title_ko != @article.title
-          render RubyUI::Heading.new(level: 2, class: "font-medium text-content-secondary mb-4") { @article.title }
+          render RubyUI::Heading.new(level: 2, class: "font-medium text-content-secondary mb-4 wrap-break-word") { @article.title }
         end
       end
 
@@ -82,9 +83,12 @@ class Views::Articles::Show < Views::Base
             Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-5 h-5 text-brand-foreground")
           end
           div(class: "min-w-0 flex-1") do
-            div(class: "text-sm font-medium text-info-text transition-colors") do
-              plain @article.url
-            end
+            render RubyUI::Link.new(
+              href: @article.url,
+              target: "_blank",
+              rel: "noopener noreferrer",
+              class: "text-sm font-medium text-info-text hover:text-info-text-hover transition-colors break-all"
+            ) { @article.url }
           end
         end
       end
@@ -107,8 +111,8 @@ class Views::Articles::Show < Views::Base
             ul(class: "space-y-3") do
               @article.summary_key&.each_with_index do |item, index|
                 li(class: "flex items-start") do
-                  span(class: "shrink-0 w-6 h-6 bg-brand-foreground/20 rounded-full flex items-center justify-center text-xs font-bold text-brand-foreground mr-3 mt-0.5") do
-                    plain (index + 1).to_s
+                  span(class: "shrink-0 w-5 text-brand-foreground/60 font-semibold text-sm tabular-nums mt-0.5 mr-2 text-right") do
+                    plain "#{index + 1}."
                   end
                   span(class: "text-brand-foreground leading-relaxed") { plain item }
                 end
@@ -199,7 +203,8 @@ class Views::Articles::Show < Views::Base
           id: "comments_header"
         ) { render(Components::Comments::CommentHeader.new(comments: @comments)) }
 
-        div(id: "comment_form", class: "border-t border-border-strong mb-4") do
+        render RubyUI::Separator.new(class: "mb-4")
+        div(id: "comment_form") do
           render(Components::Comments::CommentForm.new(article: @article, comment: @comment))
         end
 
