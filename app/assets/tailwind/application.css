@@ -138,7 +138,7 @@
     --color-app: rgb(var(--color-bg-primary));
     --color-surface: rgb(var(--color-bg-secondary));
     --color-surface-muted: rgb(var(--color-bg-tertiary));
-    --color-surface-hover: var(--color-border-muted);
+    --color-surface-hover: rgb(var(--color-bg-hover));
     --color-surface-elevated: rgb(var(--color-bg-elevated));
     --color-content: rgb(var(--color-text-primary));
     --color-content-secondary: rgb(var(--color-text-secondary));

@@ -34,15 +34,12 @@
         /* ========================================
        Status Colors
        ======================================== */
-        --color-success: var(--brand-primary); /* 성공, 완료 */
+        --color-success: 101 163 13; /* lime-600 - 성공, 완료 (RubyUI success 기준) */
         --color-warning: 245 158 11; /* amber-500 - 경고 */
         --color-error: 239 68 68; /* red-500 - 에러 */
         --color-info: 59 130 246; /* blue-500 - 정보 */
 
         /* Prose (Typography Plugin) Accent Colors */
-        --color-prose-heading: var(
-            --brand-primary-light
-        ); /* green-400 - 헤딩 포인트 */
         --color-prose-strong: 125 211 252; /* sky-300 - 강조 텍스트 포인트 */
 
         /* ========================================
@@ -194,6 +191,9 @@
         ); /* 호버, 포커스 테두리 */
         --color-border-dark: var(--color-bg-secondary); /* 미묘한 구분선 */
 
+        /* Surface Interaction */
+        --color-bg-hover: var(--neutral-600); /* surface hover 배경 */
+
         /* Accent Text */
         --semantic-link: var(--brand-primary-light); /* 링크 텍스트 */
         --semantic-link-hover: var(--brand-primary); /* 링크 hover */
@@ -211,7 +211,7 @@
         ); /* 단색 브랜드 배경 hover */
         --semantic-info-solid: 37 99 235; /* blue-600 - 단색 정보 배경 */
         --semantic-info-solid-hover: 29 78 216; /* blue-700 - 단색 정보 배경 hover */
-        --semantic-info-text: var(--color-info); /* 정보성 텍스트 */
+        --semantic-info-text: 96 165 250; /* blue-400 - 정보성 텍스트 */
         --semantic-info-text-hover: var(
             --semantic-info-solid
         ); /* 정보성 텍스트 hover */
@@ -219,6 +219,11 @@
         --semantic-danger-solid-hover: 185 28 28; /* red-700 - 단색 위험 배경 hover */
         --semantic-danger-text: 248 113 113; /* red-400 - 위험 텍스트 */
         --semantic-danger-text-hover: 239 68 68; /* red-500 - 위험 텍스트 hover */
+
+        /* Prose */
+        --color-prose-heading: var(
+            --brand-primary-light
+        ); /* green-400 - 헤딩 포인트 (dark bg에서 높은 대비) */
     }
 
     .theme-light,
@@ -241,6 +246,9 @@
             --color-text-disabled
         ); /* 호버, 포커스 테두리 */
         --color-border-dark: var(--color-bg-tertiary); /* 미묘한 구분선 */
+
+        /* Surface Interaction */
+        --color-bg-hover: var(--neutral-300); /* surface hover 배경 */
 
         /* Accent Text */
         --semantic-link: var(--brand-primary-dark); /* 링크 텍스트 */
@@ -269,6 +277,11 @@
         --semantic-danger-text-hover: var(
             --semantic-danger-solid-hover
         ); /* 위험 텍스트 hover */
+
+        /* Prose */
+        --color-prose-heading: var(
+            --brand-primary-dark
+        ); /* green-700 - 헤딩 포인트 (light bg에서 높은 대비) */
     }
 
     /* ========================================

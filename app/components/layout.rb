@@ -175,7 +175,7 @@ class Components::Layout < Components::Base
       class: "bg-surface border-b border-border-strong border-t-4 border-t-brand",
       aria_label: "주 네비게이션"
     ) do
-      div(class: "max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4") do
+      div(class: "max-w-[1400px] flex flex-wrap md:flex-nowrap items-center justify-between mx-auto p-4") do
         link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group" do
           span(class: "self-center text-2xl font-semibold whitespace-nowrap text-content group-hover:text-link-hover transition-colors duration-200") do
             plain "Ruby-News || "
