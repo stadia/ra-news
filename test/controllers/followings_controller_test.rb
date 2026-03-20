@@ -46,7 +46,7 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
       as: :turbo_stream
 
     assert_response :success
-    assert_includes response.body, "follow_actions_#{@korean_actor.id}"
+    assert_includes response.body, Views::Followings::FollowActions.dom_id_for(@korean_actor)
   end
 
   test "POST follow responds with json" do
@@ -80,7 +80,7 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
     put accept_following_path(following), as: :turbo_stream
 
     assert_response :success
-    assert_includes response.body, "follow_actions_#{@korean_actor.id}"
+    assert_includes response.body, Views::Followings::FollowActions.dom_id_for(@korean_actor)
     assert_includes response.body, 'target="follow-list"'
     assert_includes response.body, "following_row_#{following.id}"
   end
@@ -97,7 +97,7 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
     delete following_path(following), as: :turbo_stream
 
     assert_response :success
-    assert_includes response.body, "follow_actions_#{@korean_actor.id}"
+    assert_includes response.body, Views::Followings::FollowActions.dom_id_for(@korean_actor)
     assert_includes response.body, 'target="follow-list"'
     assert_includes response.body, "following_row_#{following.id}"
   end

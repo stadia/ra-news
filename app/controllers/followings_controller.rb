@@ -122,7 +122,7 @@ class FollowingsController < ApplicationController
 
   def follow_actions_stream(actor)
     turbo_stream.replace(
-      "follow_actions_#{actor.id}",
+      Views::Followings::FollowActions.dom_id_for(actor),
       Views::Followings::FollowActions.new(actor: actor)
     )
   end

@@ -3,6 +3,11 @@
 class Views::Followings::FollowActions < Views::Base
   include Phlex::Rails::Helpers::ButtonTo
 
+  def self.dom_id_for(actor)
+    identifier = actor.at_address.presence || actor.federated_url.presence || actor.profile_url.presence || "actor"
+    "follow_actions_#{Digest::SHA256.hexdigest(identifier).first(12)}"
+  end
+
   def initialize(actor:)
     @actor = actor
   end
@@ -11,7 +16,7 @@ class Views::Followings::FollowActions < Views::Base
     current = Current.user
     policy = Federails::Client::FollowingPolicy.new(current, Federails::Following)
 
-    div(id: "follow_actions_#{@actor.id}", class: "flex flex-wrap items-center gap-3 mt-2") do
+    div(id: self.class.dom_id_for(@actor), class: "flex flex-wrap items-center gap-3 mt-2") do
       if policy.create?
         authenticated_actions(current)
       elsif current.nil?
