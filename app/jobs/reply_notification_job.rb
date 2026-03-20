@@ -10,9 +10,16 @@ class ReplyNotificationJob < ApplicationJob
     parent_comment = Comment.includes(:user, :article).find(parent_comment_id)
     reply_comment = Comment.includes(:user).find(reply_comment_id)
 
-    return if parent_comment.user.nil?
-    return if parent_comment.user_id == reply_comment.user_id
+    if parent_comment.user.nil?
+      logger.info "ReplyNotificationJob skip: parent comment #{parent_comment_id} has no user"
+      return
+    end
+    if parent_comment.user_id == reply_comment.user_id
+      logger.info "ReplyNotificationJob skip: self-reply by user #{parent_comment.user_id}"
+      return
+    end
 
+    logger.info "ReplyNotificationJob start: reply #{reply_comment_id} → parent #{parent_comment_id} (notify user #{parent_comment.user_id})"
     notify_reply(parent_comment:, reply_comment:)
   end
 

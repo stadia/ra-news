@@ -62,9 +62,9 @@
 
         @apply flex font-semibold text-sm text-content-muted;
         justify-content: center;
+        flex-wrap: wrap;
         gap: 0.25rem;
         max-width: 100%;
-        overflow: hidden;
 
         @media (max-width: 640px) {
             gap: 0.125rem;
@@ -74,16 +74,16 @@
         a:not(.gap) {
             @apply block rounded-lg bg-surface text-content-secondary;
             padding: 0.25rem 0.5rem;
-            min-width: 2rem;
+            min-width: 1.75rem;
             text-align: center;
             white-space: nowrap;
-            flex-shrink: 0;
         }
 
         @media (min-width: 640px) {
             a:not(.gap) {
                 padding: 0.25rem 0.75rem;
                 min-width: 2.5rem;
+                flex-shrink: 0;
             }
         }
 

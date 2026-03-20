@@ -20,13 +20,13 @@ class Components::Pagination < Components::Base
     render div(class: "pagy mt-auto") do
       render RubyUI::Pagination.new(class: "bg-surface rounded-xl p-2 md:p-3 border border-border-strong") do
         render RubyUI::PaginationContent.new do
-          RubyUI::PaginationItem(href: first_url || "#", class: disabled_class(first_url)) do
+          RubyUI::PaginationItem(href: first_url || "#", class: "hidden sm:inline-flex #{disabled_class(first_url)}") do
             Hero::ChevronDoubleLeft(variant: :outline, class: "h-4 w-4 mr-1")
             plain "First"
           end
           RubyUI::PaginationItem(href: prev_url || "#", class: disabled_class(prev_url)) do
-            Hero::ChevronLeft(variant: :outline, class: "h-4 w-4 mr-1")
-            plain "Prev"
+            Hero::ChevronLeft(variant: :outline, class: "h-4 w-4 sm:mr-1")
+            span(class: "hidden sm:inline") { "Prev" }
           end
 
           RubyUI::PaginationEllipsis if start_page > 1
@@ -36,10 +36,10 @@ class Components::Pagination < Components::Base
           RubyUI::PaginationEllipsis if end_page < last_page
 
           RubyUI::PaginationItem(href: next_url || "#", class: disabled_class(next_url)) do
-            plain "Next"
-            Hero::ChevronRight(variant: :outline, class: "h-4 w-4 ml-1")
+            span(class: "hidden sm:inline") { "Next" }
+            Hero::ChevronRight(variant: :outline, class: "h-4 w-4 sm:ml-1")
           end
-          RubyUI::PaginationItem(href: last_url || "#", class: disabled_class(last_url)) do
+          RubyUI::PaginationItem(href: last_url || "#", class: "hidden sm:inline-flex #{disabled_class(last_url)}") do
             plain "Last"
             Hero::ChevronDoubleRight(variant: :outline, class: "h-4 w-4 ml-1")
           end

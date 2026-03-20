@@ -79,7 +79,8 @@ class Components::Comments::CommentForm < Components::Base
       render RubyUI::FormFieldHint.new { "댓글 삭제 시 비밀번호가 필요합니다." }
     end
 
-    div(class: "border-t border-border-muted pt-4") do
+    render RubyUI::Separator.new
+    div(class: "pt-4") do
       p(class: "text-sm text-content-muted mb-4") do
         Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1")
         plain "이미 계정이 있으신가요? "

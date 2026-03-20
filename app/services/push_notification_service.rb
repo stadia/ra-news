@@ -2,7 +2,10 @@
 
 class PushNotificationService < OperationService
   def call(user:, title:, body:, path:)
-    return Failure(:web_push_not_configured) unless WebPushConfig.configured?
+    unless WebPushConfig.configured?
+      logger.warn "PushNotificationService: VAPID keys not configured"
+      return Failure(:web_push_not_configured)
+    end
 
     payload = build_payload(title: title, body: body, path: path)
     step deliver_to_subscriptions(user:, payload:)
@@ -15,8 +18,17 @@ class PushNotificationService < OperationService
   private
 
   def deliver_to_subscriptions(user:, payload:)
-    user.push_subscriptions.find_each do |subscription|
-      step send_payload(subscription:, payload:)
+    subscriptions = user.push_subscriptions.to_a
+
+    if subscriptions.empty?
+      logger.info "PushNotificationService: user #{user.id} has no push subscriptions"
+      return Failure(:no_subscriptions)
+    end
+
+    logger.info "PushNotificationService: delivering to #{subscriptions.size} subscription(s) for user #{user.id}"
+
+    subscriptions.each do |subscription|
+      send_single(subscription:, payload:)
     end
 
     Success(true)
@@ -34,7 +46,7 @@ class PushNotificationService < OperationService
     }.to_json
   end
 
-  def send_payload(subscription:, payload:)
+  def send_single(subscription:, payload:)
     WebPush.payload_send(
       message: payload,
       endpoint: subscription.endpoint,
@@ -49,24 +61,26 @@ class PushNotificationService < OperationService
     )
 
     subscription.update_columns(last_sent_at: Time.current, last_error_at: nil)
-    Success(subscription)
-  rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
+    logger.info "PushNotificationService: sent to subscription #{subscription.id} (endpoint: #{subscription.endpoint.truncate(60)})"
+  rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription => e
+    logger.info "PushNotificationService: subscription #{subscription.id} expired/invalid (#{e.class}), destroying"
     subscription.destroy!
-    Success(subscription)
   rescue WebPush::Unauthorized => e
     if vapid_key_mismatch?(e)
+      logger.warn "PushNotificationService: VAPID key mismatch for subscription #{subscription.id}, destroying"
       subscription.destroy!
-      Success(subscription)
     else
       subscription.update_columns(last_error_at: Time.current)
+      logger.error "PushNotificationService: unauthorized for subscription #{subscription.id}: #{e.message}"
       raise
     end
   rescue WebPush::ResponseError => e
     if subscription_expired?(e)
+      logger.info "PushNotificationService: subscription #{subscription.id} expired (HTTP #{e.response&.code}), destroying"
       subscription.destroy!
-      Success(subscription)
     else
       subscription.update_columns(last_error_at: Time.current)
+      logger.error "PushNotificationService: response error for subscription #{subscription.id}: #{e.message}"
       raise
     end
   end
