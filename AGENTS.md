@@ -59,6 +59,20 @@ result = ContentService.new.call(article)
 result.success? ? result.value! : result.failure
 ```
 
+### Tailwind CSS v4 클래스명
+
+프로젝트는 **Tailwind CSS 4.2**를 사용하며, linter가 v4 클래스명을 강제합니다. v3 스타일로 작성하면 자동 변환됩니다.
+
+**주요 변경 클래스 (v3 → v4):**
+
+| v3 | v4 | CSS 속성 |
+|----|----|----|
+| `break-words` | `wrap-break-word` | `overflow-wrap: break-word` |
+
+코드 작성 시 항상 v4 클래스명을 사용하세요.
+
+---
+
 ## Social Media Integration
 
 **지원 플랫폼:**

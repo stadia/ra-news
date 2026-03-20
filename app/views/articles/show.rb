@@ -77,8 +77,8 @@ class Views::Articles::Show < Views::Base
         end
       end
 
-      div(class: "mt-6 p-4 bg-surface-muted rounded-lg") do
-        div(class: "flex items-center flex-1 min-w-0") do
+      div(class: "mt-6 p-4 bg-surface-muted rounded-lg overflow-hidden") do
+        div(class: "flex items-center min-w-0") do
           div(class: "w-10 h-10 bg-info-solid rounded-lg flex items-center justify-center mr-3 shrink-0") do
             Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-5 h-5 text-brand-foreground")
           end
@@ -87,7 +87,7 @@ class Views::Articles::Show < Views::Base
               href: @article.url,
               target: "_blank",
               rel: "noopener noreferrer",
-              class: "text-sm font-medium text-info-text hover:text-info-text-hover transition-colors break-all"
+              class: "text-sm font-medium text-info-text hover:text-info-text-hover transition-colors wrap-break-word"
             ) { @article.url }
           end
         end
