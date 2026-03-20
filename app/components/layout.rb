@@ -197,7 +197,7 @@ class Components::Layout < Components::Base
       aria_label: "메뉴 열기/닫기"
     ) do
       span(class: "sr-only") { "Open main menu" }
-      PhlexIcons::Hero::Bars3.new(variant: :outline, class: "w-5 h-5 transition-transform duration-200 peer-checked:rotate-45")
+      render PhlexIcons::Hero::Bars3.new(variant: :outline, class: "w-5 h-5")
     end
   end
 
