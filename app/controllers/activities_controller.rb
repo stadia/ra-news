@@ -17,8 +17,15 @@ class ActivitiesController < ApplicationController
 
   def feed
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
-    @activities = Federails::Activity.feed_for(Current.user.federails_actor)
-    render template: "federails/client/activities/feed"
+    actor = Current.user.federails_actor
+    following_actor_ids = Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
+
+    @posts = Post
+      .where(federails_actor_id: following_actor_ids)
+      .or(Post.where(user_id: Current.user.id))
+      .order(created_at: :desc)
+
+    render Views::Activities::Feed.new(posts: @posts)
   end
 
   private
