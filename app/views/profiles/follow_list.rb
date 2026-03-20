@@ -92,9 +92,9 @@ class Views::Profiles::FollowList < Views::Base
         end
       else
         if following.pending?
-          render RubyUI::Badge.new(variant: :amber) { "요청 중" }
+          follow_status_badge("요청 중", variant: :amber)
         else
-          render RubyUI::Badge.new(variant: :green) { "팔로잉" }
+          follow_status_badge("팔로잉", variant: :green)
         end
         button_to "언팔로우", following_path(following),
           method: :delete,
@@ -106,5 +106,12 @@ class Views::Profiles::FollowList < Views::Base
 
   def own_profile?
     Current.user && Current.user == @user
+  end
+
+  def follow_status_badge(text, variant:)
+    render RubyUI::Badge.new(
+      variant: variant,
+      class: "inline-flex items-center rounded-lg px-3 py-1 text-xs font-medium"
+    ) { text }
   end
 end

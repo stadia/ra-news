@@ -38,9 +38,9 @@ class Views::Followings::FollowActions < Views::Base
 
   def existing_follow(follow)
     if follow.pending?
-      render RubyUI::Badge.new(variant: :amber) { "요청 중" }
+      follow_status_badge("요청 중", variant: :amber)
     else
-      render RubyUI::Badge.new(variant: :green) { "팔로잉" }
+      follow_status_badge("팔로잉", variant: :green)
     end
     button_to follow.pending? ? "요청 취소" : "언팔로우",
       following_path(follow),
@@ -81,5 +81,12 @@ class Views::Followings::FollowActions < Views::Base
         plain @actor.at_address(prefix: "")
       end
     end
+  end
+
+  def follow_status_badge(text, variant:)
+    render RubyUI::Badge.new(
+      variant: variant,
+      class: "inline-flex items-center rounded-lg px-4 py-2 text-sm font-medium"
+    ) { text }
   end
 end
