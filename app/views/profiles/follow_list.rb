@@ -83,9 +83,11 @@ class Views::Profiles::FollowList < Views::Base
         if following.pending?
           button_to "수락", accept_following_path(following),
             method: :put,
+            form: { data: { turbo_stream: true } },
             class: "px-3 py-1 text-xs font-medium bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
           button_to "거절", following_path(following),
             method: :delete,
+            form: { data: { turbo_stream: true } },
             class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-surface text-content-secondary rounded-lg transition-colors cursor-pointer"
         end
       else
@@ -96,6 +98,7 @@ class Views::Profiles::FollowList < Views::Base
         end
         button_to "언팔로우", following_path(following),
           method: :delete,
+          form: { data: { turbo_stream: true } },
           class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-danger-solid text-content-secondary hover:text-danger-text rounded-lg transition-colors cursor-pointer"
       end
     end

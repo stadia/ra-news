@@ -46,6 +46,16 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "GET lookup renders turbo stream-enabled follow form for signed-in user" do
+    sign_in_as(users(:jane))
+
+    get lookup_actors_path(account: @actor.at_address)
+
+    assert_response :success
+    assert_includes response.body, %(action="#{follow_followings_path}")
+    assert_includes response.body, %(data-turbo-stream="true")
+  end
+
   test "GET lookup returns 404 for unknown account" do
     get lookup_actors_path(account: "nonexistent@example.com")
 

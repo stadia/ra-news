@@ -45,6 +45,7 @@ class Views::Followings::FollowActions < Views::Base
     button_to follow.pending? ? "요청 취소" : "언팔로우",
       following_path(follow),
       method: :delete,
+      form: { data: { turbo_stream: true } },
       class: "px-4 py-2 text-sm font-medium bg-surface-muted hover:bg-danger-solid text-content-secondary hover:text-danger-text rounded-lg border border-border-muted transition-colors cursor-pointer"
   end
 
@@ -53,6 +54,7 @@ class Views::Followings::FollowActions < Views::Base
       follow_followings_path,
       params: { account: @actor.at_address },
       method: :post,
+      form: { data: { turbo_stream: true } },
       class: "px-4 py-2 text-sm font-medium bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
   end
 
@@ -65,6 +67,7 @@ class Views::Followings::FollowActions < Views::Base
       button_to "수락",
         accept_following_path(followed),
         method: :put,
+        form: { data: { turbo_stream: true } },
         class: "px-4 py-2 text-sm font-medium bg-info-solid hover:bg-info-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
     else
       span(class: "text-content-muted text-sm") { "#{@actor.username}이(가) 팔로우 중입니다." }
