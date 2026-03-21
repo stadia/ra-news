@@ -37,6 +37,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   test "should require authentication" do
     get logout_url
     post posts_url, params: { post: { body: "test" } }
+
     assert_redirected_to new_session_url
   end
 end
