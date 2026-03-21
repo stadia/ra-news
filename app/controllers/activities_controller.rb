@@ -3,6 +3,7 @@
 
 class ActivitiesController < ApplicationController
   include Pundit::Authorization
+  include Pagy::Method
 
   after_action :verify_authorized
 
@@ -20,12 +21,16 @@ class ActivitiesController < ApplicationController
     actor = Current.user.federails_actor
     following_actor_ids = Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
 
-    @posts = Post
+    posts = Post
+      .includes(:user, :federails_actor)
       .where(federails_actor_id: following_actor_ids)
       .or(Post.where(user_id: Current.user.id))
+      .where(parent_id: nil)
       .order(created_at: :desc)
 
-    render Views::Activities::Feed.new(posts: @posts)
+    @pagy, @posts = pagy(:countless, posts, limit: 20)
+
+    render Views::Activities::Feed.new(posts: @posts, pagy: @pagy)
   end
 
   private
