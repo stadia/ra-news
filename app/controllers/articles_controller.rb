@@ -18,7 +18,7 @@ class ArticlesController < ApplicationController
     scope = Article.kept.confirmed
 
     article = if params[:search].present?
-      scope.full_text_search_for(params[:search])
+      scope.without_toast.full_text_search_for(params[:search])
     else
       scope = scope.related
       article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
@@ -27,7 +27,7 @@ class ArticlesController < ApplicationController
       else
         scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
       end
-      scope.where.not(id: id)
+      scope.where.not(id: id).without_toast
     end
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
     render Views::Articles::Index.new(pagy: @pagy, articles: @articles, search: params[:search])
@@ -35,7 +35,7 @@ class ArticlesController < ApplicationController
 
   def others
     cacheable_page!
-    article = Article.kept.confirmed.unrelated
+    article = Article.kept.confirmed.unrelated.without_toast
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
     render Views::Articles::Others.new(pagy: @pagy, articles: @articles, search: params[:search])
   end
