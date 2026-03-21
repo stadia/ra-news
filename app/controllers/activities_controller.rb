@@ -28,7 +28,7 @@ class ActivitiesController < ApplicationController
       .where(parent_id: nil)
       .order(created_at: :desc)
 
-    @pagy, @posts = pagy_countless(posts, limit: 20)
+    @pagy, @posts = pagy(:countless, posts, limit: 20)
 
     render Views::Activities::Feed.new(posts: @posts, pagy: @pagy)
   end

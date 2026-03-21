@@ -43,7 +43,7 @@ class Views::Activities::Feed < Views::Base
     else
       @posts.each do |post|
         render Components::Posts::PostCard.new(post: post)
-        render_replies(post) if post.children_count.positive?
+        render_replies(post)
       end
     end
   end
