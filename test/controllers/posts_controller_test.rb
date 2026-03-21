@@ -13,6 +13,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
       post posts_url, params: { post: { body: "테스트 포스트입니다." } }, as: :turbo_stream
     end
     assert_response :success
+    assert_includes @response.body, 'target="posts_list"'
+    assert_match(/id="replies_\d+"/, @response.body)
   end
 
   test "should create reply post" do
@@ -21,6 +23,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
       post posts_url, params: { post: { body: "답글입니다.", parent_id: parent.id } }, as: :turbo_stream
     end
     assert_response :success
+    assert_includes @response.body, "target=\"post_#{parent.id}\""
+    assert_includes @response.body, "target=\"replies_#{parent.id}\""
   end
 
   test "should reject empty body" do

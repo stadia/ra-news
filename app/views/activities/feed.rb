@@ -42,16 +42,7 @@ class Views::Activities::Feed < Views::Base
       render_empty_state
     else
       @posts.each do |post|
-        render Components::Posts::PostCard.new(post: post)
-        render_replies(post)
-      end
-    end
-  end
-
-  def render_replies(post)
-    div(id: "replies_#{post.id}", class: "space-y-2") do
-      post.children.includes(:user, :federails_actor).order(:created_at).each do |reply|
-        render Components::Posts::PostCard.new(post: reply, depth: 1)
+        render Components::Posts::PostThread.new(post: post)
       end
     end
   end
