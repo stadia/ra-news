@@ -65,6 +65,8 @@ class Components::Posts::PostCard < Components::Base
 
   def post_actions
     div(class: "flex items-center gap-4 text-sm text-content-muted") do
+      render Components::Likes::Button.new(likeable: @post)
+
       render RubyUI::Button.new(
         variant: :ghost,
         size: :sm,

@@ -4,6 +4,7 @@
 
 class User < ApplicationRecord
   has_secure_password
+  acts_as_liker
   has_many :sessions, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
   has_many :articles, dependent: :nullify

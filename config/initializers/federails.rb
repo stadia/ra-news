@@ -1,3 +1,5 @@
+require "fediverse/inbox"
+
 Federails.config_from "federails"
 
 Federails.configure do |config|
@@ -6,6 +8,10 @@ Federails.configure do |config|
 end
 
 Rails.application.config.after_initialize do
+  Federails::Actor.acts_as_liker unless Federails::Actor.method_defined?(:like!)
+  Fediverse::Inbox.register_handler "Like", "Note", ActivityPub::Handlers::PostLikeHandler, :handle_like
+  Fediverse::Inbox.register_handler "Undo", "Like", ActivityPub::Handlers::PostLikeHandler, :handle_undo_like
+
   Federails::ServerController.class_eval do
     private
 

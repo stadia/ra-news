@@ -4,7 +4,9 @@ Rails.application.routes.draw do
 
   resources :passwords, param: :token
   resource :push_subscription, only: %i[ create destroy ]
-  resources :posts, only: [ :show, :create ]
+  resources :posts, only: [ :show, :create ] do
+    resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
+  end
   resources :articles, only: %i[index show new create] do
     resources :comments, only: %i[create destroy] do
     end
