@@ -29,6 +29,16 @@ class Article < ApplicationRecord
 
   scope :confirmed, -> { where("slug IS NOT NULL AND title_ko IS NOT NULL") }
 
+   # TOAST 컬럼(body, summary_body, embedding) 제외 스코프
+   scope :without_toast, -> {
+     select(column_names - %w[body summary_body embedding])
+   }
+
+   # ID + 필수 컬럼만 선택 (Admin용)
+   scope :for_admin_index, -> {
+     select(:id, :title_ko, :slug, :host, :is_related, :published_at, :created_at, :updated_at)
+   }
+
   pg_search_scope :title_matching, against: [ :title, :title_ko ], using: { tsearch: { dictionary: "korean" } }
 
   pg_search_scope :body_matching, against: [ :body, :summary_body ], using: { tsearch: { dictionary: "korean" } }
