@@ -7,6 +7,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
   has_many :articles, dependent: :nullify
+  has_many :posts, dependent: :destroy
 
   # Email validations
   validates :email_address, presence: true,
