@@ -13,8 +13,9 @@ class Components::Posts::PostForm < Components::Base
       id: "post_form",
       class: "mb-6",
       data: {
-        controller: "character-count",
-        character_count_max_length_value: "500"
+        controller: "character-count post-form",
+        character_count_max_length_value: "500",
+        action: "turbo:submit-end->post-form#reset"
       }
     ) do
       render RubyUI::Card.new(class: "bg-surface border-border-muted shadow-sm") do
@@ -23,7 +24,7 @@ class Components::Posts::PostForm < Components::Base
             model: @post,
             url: view_context.posts_path,
             class: "space-y-3",
-            data: { action: "turbo:submit-end->character-count#reset" }
+            autocomplete: "off"
           ) do |f|
             error_messages if @post.errors.any?
             body_field(f)
@@ -47,6 +48,7 @@ class Components::Posts::PostForm < Components::Base
       rows: 3,
       class: "w-full px-4 py-3 rounded-lg border border-border-muted bg-surface text-content placeholder:text-content-muted hover:border-border-strong focus:border-transparent focus:ring-2 focus:ring-state-info transition-all duration-200 resize-none text-sm",
       placeholder: "무슨 생각을 하고 계신가요?",
+      autocomplete: "off",
       data: { character_count_target: "input", action: "input->character-count#updateCount" }
   end
 
