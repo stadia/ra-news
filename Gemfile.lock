@@ -96,6 +96,9 @@ GEM
     addressable (2.8.9)
       public_suffix (>= 2.0.2, < 8.0)
     amazing_print (2.0.0)
+    appsignal (4.8.4)
+      logger
+      rack (>= 2.0.0)
     ast (2.4.3)
     awesome_nested_set (3.9.0)
       activerecord (>= 4.0.0, < 8.2)
@@ -709,6 +712,7 @@ PLATFORMS
 DEPENDENCIES
   acts-as-taggable-on
   amazing_print
+  appsignal (~> 4.8)
   awesome_nested_set
   bcrypt (~> 3.1.22)
   bootsnap

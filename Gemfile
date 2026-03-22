@@ -140,3 +140,5 @@ gem "opentelemetry-instrumentation-net_http"
 gem "opentelemetry-instrumentation-ruby_llm"
 
 gem "skylight", "~> 7.1"
+
+gem "appsignal", "~> 4.8"
