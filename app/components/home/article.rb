@@ -58,6 +58,7 @@ class Components::Home::Article < Components::Base
         Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         render Components::Articles::ArticleUser.new(article: article)
       end
+      render Components::Likes::Button.new(likeable: article)
       span(class: "inline-flex items-center") do
         Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         plain article.comments_count.to_s

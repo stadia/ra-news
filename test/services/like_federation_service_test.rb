@@ -2,10 +2,11 @@
 
 require "test_helper"
 
-class PostLikeFederationServiceTest < ActiveSupport::TestCase
+class LikeFederationServiceTest < ActiveSupport::TestCase
   setup do
     @user = users(:john)
     @local_post = posts(:root_post)
+    @local_article = articles(:ruby_article)
     @remote_actor = Federails::Actor.create!(
       federated_url: "https://remote.example/@alice",
       username: "alice",
@@ -24,6 +25,19 @@ class PostLikeFederationServiceTest < ActiveSupport::TestCase
       federails_actor: @remote_actor,
       federated_url: "https://remote.example/notes/1"
     )
+    @remote_article = Article.new(
+      title: "원격 아티클",
+      title_ko: "원격 아티클",
+      url: "https://remote.example/articles/1",
+      origin_url: "https://remote.example/articles/1",
+      host: "remote.example",
+      slug: "remote-article-1",
+      published_at: Time.zone.now,
+      user: @user
+    )
+    @remote_article.federails_actor = @remote_actor
+    @remote_article.federated_url = "https://remote.example/articles/1"
+    @remote_article.save!(validate: false)
   end
 
   test "local user like on remote post creates federated Like activity" do
@@ -43,6 +57,32 @@ class PostLikeFederationServiceTest < ActiveSupport::TestCase
 
     assert_difference("Federails::Activity.where(action: 'Undo').count", 1) do
       @user.unlike!(@remote_post)
+    end
+
+    undo_activity = Federails::Activity.where(action: "Undo").order(created_at: :desc).first
+
+    assert_equal @user.federails_actor, undo_activity.actor
+    assert_instance_of Federails::Activity, undo_activity.entity
+    assert_equal "Like", undo_activity.entity.action
+  end
+
+  test "local user like on remote article creates federated Like activity" do
+    assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
+      @user.like!(@remote_article)
+    end
+
+    activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+
+    assert_equal @user.federails_actor, activity.actor
+    assert_equal @remote_article, activity.entity
+    assert_equal [ @remote_actor.federated_url ], activity.to
+  end
+
+  test "local user unlike on remote article creates federated Undo activity" do
+    @user.like!(@remote_article)
+
+    assert_difference("Federails::Activity.where(action: 'Undo').count", 1) do
+      @user.unlike!(@remote_article)
     end
 
     undo_activity = Federails::Activity.where(action: "Undo").order(created_at: :desc).first

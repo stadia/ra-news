@@ -10,7 +10,7 @@ class Components::Likes::Button < Components::Base
   end
 
   def view_template
-    div(id: dom_id(@likeable, :like)) do
+    div(id: dom_id(@likeable, :like), class: "inline-flex items-center") do
       like_button
     end
   end
@@ -21,7 +21,7 @@ class Components::Likes::Button < Components::Base
     button_to(
       button_path,
       method: button_method,
-      form: { data: { turbo_stream: true } },
+      form: { data: { turbo_stream: true }, class: "inline-flex items-center m-0" },
       class: button_classes
     ) do
       heart_icon
@@ -46,7 +46,14 @@ class Components::Likes::Button < Components::Base
   end
 
   def button_path
-    post_like_path(@likeable)
+    case @likeable
+    when Post
+      post_like_path(@likeable)
+    when Article
+      article_like_path(@likeable)
+    else
+      raise ArgumentError, "Unsupported likeable: #{@likeable.class.name}"
+    end
   end
 
   def button_method

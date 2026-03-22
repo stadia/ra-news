@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
   end
   resources :articles, only: %i[index show new create] do
+    resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Article" }
     resources :comments, only: %i[create destroy] do
     end
   end

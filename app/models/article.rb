@@ -10,6 +10,8 @@ class Article < ApplicationRecord
 
   include Discard::Model
 
+  acts_as_likeable
+
   # SQLite는 벡터 임베딩을 지원하지 않으므로 PostgreSQL에서만 활성화
   has_neighbors :embedding, dimensions: 1536
 
@@ -209,6 +211,10 @@ class Article < ApplicationRecord
     return false if user.blank?
 
     title_ko.present?
+  end
+
+  def likes_count
+    likers_count.to_i
   end
 
   private

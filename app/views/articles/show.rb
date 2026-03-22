@@ -76,6 +76,8 @@ class Views::Articles::Show < Views::Base
             end
           end
         end
+
+        render Components::Likes::Button.new(likeable: @article)
       end
 
       div(class: "mt-6 p-4 bg-surface-muted rounded-lg") do

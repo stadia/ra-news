@@ -6,6 +6,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:john)
     @post = posts(:root_post)
+    @article = articles(:ruby_article)
   end
 
   test "POST create likes a post" do
@@ -37,5 +38,30 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
     post post_like_path(@post), params: { likeable_type: "Post" }
 
     assert_redirected_to new_session_path
+  end
+
+  test "POST create likes an article" do
+    sign_in_as(@user)
+
+    assert_difference("Like.count", 1) do
+      post article_like_path(@article), params: { likeable_type: "Article" }, as: :turbo_stream
+    end
+
+    assert_response :success
+    assert @user.likes?(@article)
+    assert_equal 1, @article.reload.likers_count
+    assert_includes response.body, ">1<"
+  end
+
+  test "DELETE destroy updates article count in response immediately" do
+    sign_in_as(@user)
+    @user.like!(@article)
+
+    delete article_like_path(@article), params: { likeable_type: "Article" }, as: :turbo_stream
+
+    assert_response :success
+    assert_not @user.likes?(@article)
+    assert_equal 0, @article.reload.likers_count
+    assert_not_includes response.body, ">1<"
   end
 end

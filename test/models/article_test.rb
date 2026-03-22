@@ -195,6 +195,11 @@ class ArticleTest < ActiveSupport::TestCase
     assert_includes Article.ancestors, Discard::Model
   end
 
+  test "좋아요 가능 모델이어야 한다" do
+    assert_respond_to @article, :likers_count
+    assert_respond_to @user, :like!
+  end
+
   test "kept 스코프는 삭제된 기사를 제외해야 한다" do
     kept_articles = Article.kept
     assert_includes kept_articles, @article

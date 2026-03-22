@@ -2,7 +2,7 @@
 
 # rbs_inline: enabled
 
-class PostLikeFederationService < OperationService
+class LikeFederationService < OperationService
   class << self
     def publish_like(liker:, likeable:)
       new.call(command: :publish_like, liker:, likeable:)
@@ -73,7 +73,7 @@ class PostLikeFederationService < OperationService
   end
 
   def recipient_actor_for(likeable)
-    return unless likeable.is_a?(Post)
+    return unless likeable.is_a?(Post) || likeable.is_a?(Article)
 
     likeable.federails_actor
   end

@@ -6,11 +6,11 @@ class Like < Socialization::ActiveRecordStores::Like
 
   class << self
     def publish_federated_like(liker, likeable)
-      PostLikeFederationService.publish_like(liker:, likeable:)
+      LikeFederationService.publish_like(liker:, likeable:)
     end
 
     def publish_federated_unlike(liker, likeable)
-      PostLikeFederationService.publish_unlike(liker:, likeable:)
+      LikeFederationService.publish_unlike(liker:, likeable:)
     end
   end
 end

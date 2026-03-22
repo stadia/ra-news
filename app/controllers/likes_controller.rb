@@ -5,7 +5,8 @@ class LikesController < ApplicationController
   before_action :set_likeable
 
   LIKEABLE_CLASSES = {
-    "Post" => Post
+    "Post" => Post,
+    "Article" => Article
   }.freeze
 
   def create
@@ -34,10 +35,19 @@ class LikesController < ApplicationController
     likeable_class = LIKEABLE_CLASSES[params.require(:likeable_type)]
     head(:unprocessable_entity) and return unless likeable_class
 
-    @likeable = likeable_class.find(params.require(:"#{likeable_class.model_name.singular}_id"))
+    likeable_id = params.require(:"#{likeable_class.model_name.singular}_id")
+    @likeable = find_likeable(likeable_class, likeable_id)
   end
 
   def fallback_location
     feed_path
+  end
+
+  def find_likeable(likeable_class, likeable_id)
+    if likeable_class.respond_to?(:friendly)
+      likeable_class.friendly.find(likeable_id)
+    else
+      likeable_class.find(likeable_id)
+    end
   end
 end
