@@ -31,7 +31,9 @@ class LikesController < ApplicationController
   private
 
   def set_likeable
-    likeable_class = LIKEABLE_CLASSES.fetch(params.require(:likeable_type))
+    likeable_class = LIKEABLE_CLASSES[params.require(:likeable_type)]
+    head(:unprocessable_entity) and return unless likeable_class
+
     @likeable = likeable_class.find(params.require(:"#{likeable_class.model_name.singular}_id"))
   end
 

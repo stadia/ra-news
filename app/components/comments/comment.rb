@@ -88,9 +88,9 @@ class Components::Comments::Comment < Components::Base
   end
 
   def reply_button
-    div(class: "mt-3 flex items-center justify-between text-sm") do
-      return unless view_context.authenticated?
+    return unless view_context.authenticated?
 
+    div(class: "mt-3 flex items-center justify-between text-sm") do
       render RubyUI::Button.new(
         variant: :ghost,
         data: { action: "reply-form#toggle" },
