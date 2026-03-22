@@ -42,12 +42,12 @@ def process_content(url) #: (String) -> void
 
 | 패턴 | 용도 | 예시 |
 |------|------|------|
-| `ApplicationService` | 단순 비즈니스 로직 | `SitemapService` |
-| `Dry::Operation` | 다단계 워크플로우, 명시적 에러 처리 | `SocialMediaService`, `ContentService` |
+| `OperationService` | 공통 로깅/Result 패턴을 갖는 서비스 베이스 | `SitemapService`, `ArticleAgentsService` |
+| `Dry::Operation` | 다단계 워크플로우, 명시적 에러 처리의 기반 | `SocialMediaService`, `ContentService` |
 
 **Dry::Operation 사용 시:**
 ```ruby
-class ContentService < Dry::Operation
+class ContentService < OperationService
   def call(article)
     step validate(article)
     step process(article)

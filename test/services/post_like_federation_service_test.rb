@@ -69,6 +69,7 @@ class PostLikeFederationServiceTest < ActiveSupport::TestCase
 
     assert @remote_actor.likes?(@local_post)
     assert_equal 1, @local_post.reload.likers_count
+    assert_equal 1, @remote_actor.reload.likees_count
   end
 
   test "incoming undo like decreases local post like count" do
@@ -95,5 +96,6 @@ class PostLikeFederationServiceTest < ActiveSupport::TestCase
 
     assert_not @remote_actor.likes?(@local_post)
     assert_equal 0, @local_post.reload.likers_count
+    assert_equal 0, @remote_actor.reload.likees_count
   end
 end
