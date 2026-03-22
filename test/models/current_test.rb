@@ -21,7 +21,7 @@ class CurrentTest < ActiveSupport::TestCase
   # ========== Inheritance Tests ==========
 
   test "ActiveSupport::CurrentAttributes를 상속해야 한다" do
-    assert Current.ancestors.include?(ActiveSupport::CurrentAttributes)
+    assert_includes Current.ancestors, ActiveSupport::CurrentAttributes
   end
 
   test "ActiveSupport::CurrentAttributes 기능이 있어야 한다" do

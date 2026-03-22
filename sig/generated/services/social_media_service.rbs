@@ -4,9 +4,6 @@ class SocialMediaService < Dry::Operation
   # : (Article article, Symbol command) -> void
   def call: (Article article, Symbol command) -> void
 
-  # : (Article article) -> String
-  def base_content: (Article article) -> String
-
   def logger: () -> untyped
 
   private

@@ -13,7 +13,7 @@ class Components::Articles::Form < Components::Base
   def view_template
      form_with(model: article, class: "contents") do |form|
        if article.errors.any?
-         div(id: "error_explanation", class: "bg-red-500/10 text-red-400 px-3 py-2 font-medium rounded-md mt-3 border border-red-500/30") do
+         div(id: "error_explanation", class: "bg-danger-solid/10 text-danger-text px-3 py-2 font-medium rounded-md mt-3 border border-danger-solid/30") do
            h2 {
              pluralize(article.errors.count, "error") + " prohibited this article from being saved:"
            }
@@ -25,9 +25,12 @@ class Components::Articles::Form < Components::Base
          end
        end
 
-       div(class: "my-5") do
-         form.label :url
-         form.text_field :url, class: [ "block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-slate-700 text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition-colors duration-200", { "border-slate-600 focus:ring-green-500": article.errors[:url].none?, "border-red-500 focus:ring-red-500": article.errors[:url].any? } ]
+       render RubyUI::FormField.new(class: "my-5") do
+         render RubyUI::FormFieldLabel.new(for: :article_url) { "Url" }
+         form.text_field :url, class: [ "block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:border-transparent transition-colors duration-200", { "border-border-muted focus:ring-brand": article.errors[:url].none?, "border-danger-solid focus:ring-danger-solid": article.errors[:url].any? } ]
+         article.errors[:url].each do |msg|
+           render RubyUI::FormFieldError.new { msg }
+         end
        end
 
        div(class: "inline") do
@@ -35,7 +38,7 @@ class Components::Articles::Form < Components::Base
            type: "submit",
            size: :lg,
            class:
-             "w-full sm:w-auto rounded-md bg-green-500 hover:bg-green-600 text-white inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-slate-900",
+             "w-full sm:w-auto rounded-md bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app",
          ) { "등록" }
        end
      end

@@ -1,141 +1,41 @@
 # AGENTS.md
 
-AI 에이전트를 위한 프로젝트 가이드라인입니다.
+AI 에이전트를 위한 프로젝트 룰북입니다.
 
-- 모든 응답은 **한국어**로 작성. 로그/명령어 출력은 원문 유지.
-- 변경 전후 맥락과 테스트 결과를 커밋 메시지 또는 PR 설명에 기록.
+## 절대 규칙
 
----
+- 모든 응답은 한국어로 작성하고, 로그와 명령어 출력은 원문 그대로 유지한다.
+- 코드 변경 전후의 맥락과 테스트 결과를 커밋 메시지 또는 PR 설명에 기록한다.
+- 테스트와 검증은 PostgreSQL 기준으로 수행하며, 필요하면 `TEST_DATABASE_URL`을 우선 사용한다.
+- PostgreSQL 확장이 필요한 이 프로젝트를 SQLite 기준으로 해석하거나 검증하지 않는다.
+- 인증은 Devise가 아니라 현재의 custom auth와 `Current.user` 패턴을 기준으로 다룬다.
+- `Article`의 AI 요약, embedding, soft-delete(`discarded_at`), `social_post_ids` JSONB 구조를 무시하고 수정하지 않는다.
+- 댓글 기능 수정 시 `awesome_nested_set` 구조와 `Comment::MAX_DEPTH` 제한을 깨뜨리지 않는다.
+- Tailwind v4에서 이름이 바뀐 유틸리티는 v4 명칭을 사용한다 (예: `break-words` → `wrap-break-word`).
+- Tailwind CSS 색상 클래스는 직접 쓰지 않고, 항상 시맨틱 토큰을 사용한다.
+- 기본 locale은 한국어로 유지하고, 새 번역 키는 `config/locales/ko.yml`에 추가한다.
+- 날짜와 시간 표시는 `l(Time.current, format: :short)` 규칙을 따른다.
+- PostgreSQL 확장, 한국어 요약, 로컬라이제이션 등 운영 환경 전제를 무시한 채 production과 다른 방향으로 구현하지 않는다.
+- 뷰와 컴포넌트는 Phlex 기반으로 작성하며, ERB 템플릿을 새로 만들지 않는다.
+- UI 요소는 RubyUI 컴포넌트(`RubyUI::Card`, `RubyUI::Avatar` 등)를 우선 사용하고, 해당하는 컴포넌트가 없을 때만 직접 마크업한다.
+- 아이콘은 PhlexIcons의 Hero 아이콘(`Hero::IconName`)을 사용하며, 인라인 SVG를 직접 넣지 않는다.
 
-### PostgreSQL 확장 (필수)
+## 권장 규칙
 
-개발 전 설치 필요: `pg_bigm`, `textsearch_ko`, `pgvector`
-- macOS 설치 가이드: [docs/postgresql-extensions.md](docs/postgresql-extensions.md)
-- 마이그레이션 실패 시 확장 설치 상태부터 확인
+- 변경 작업 전 `Article`, `Site`, `User`, `Comment`의 역할과 제약을 먼저 확인하고 영향 범위를 검토한다.
+- Ruby 코드에 타입 힌트를 추가하거나 수정할 때는 inline RBS 스타일을 사용한다.
+- 서비스 객체를 만들거나 수정할 때는 기존 `OperationService` 을 상속하여 ROP 패턴을 따른다.
+- 소셜 미디어 연동 코드는 `SocialMediaService` 기반 구조와 플랫폼별 서비스 분리를 유지한다.
+- 변경을 마무리하기 전에 테스트 여부와 미실행 사유를 명확히 남긴다.
+- 관련 배경 문서가 필요하면 `docs/CLAUDE_WORKFLOW.md`, `docs/postgresql-extensions.md`를 우선 참고한다.
+- 뷰 클래스는 `Views::Base`를, 컴포넌트 클래스는 `Components::Base`를 상속한다.
 
----
+## 도구 사용 규칙
 
-## Core Models
-
-| 모델 | 역할 | 주요 특징 |
-|------|------|----------|
-| **Article** | 콘텐츠 | AI 요약, embedding, soft-delete(`discarded_at`), `social_post_ids` JSONB |
-| **Site** | 소스 | `kind` enum (RSS/YouTube/Gmail/HN) |
-| **User** | 인증 | Custom auth (not Devise), `Current.user` 패턴 |
-| **Comment** | 댓글 | awesome_nested_set, `MAX_DEPTH` 제한 |
-
----
-
-## Code Conventions
-
-### Type Annotations (RBS Inline)
-
-```ruby
-# rbs_inline: enabled
-
-def process_content(url) #: (String) -> void
-```
-
-### Service Layer Pattern
-
-**두 가지 패턴을 혼용:**
-
-| 패턴 | 용도 | 예시 |
-|------|------|------|
-| `ApplicationService` | 단순 비즈니스 로직 | `SitemapService` |
-| `Dry::Operation` | 다단계 워크플로우, 명시적 에러 처리 | `SocialMediaService`, `ContentService` |
-
-**Dry::Operation 사용 시:**
-```ruby
-class ContentService < Dry::Operation
-  def call(article)
-    step validate(article)
-    step process(article)
-  end
-end
-
-# 호출
-result = ContentService.new.call(article)
-result.success? ? result.value! : result.failure
-```
-
-## Social Media Integration
-
-**지원 플랫폼:**
-- X.com (Twitter): 280자 제한, URL은 23자로 계산
-- Mastodon: 500자 제한 (ruby.social)
-
-**아키텍처:** `Dry::Operation` + 상속 기반 서비스 패턴
-- 기본 클래스: `SocialMediaService`
-- 플랫폼별: `TwitterService`, `MastodonService`
-
-**OAuth 설정:** `Preference.get_object("xcom_oauth")`, `Preference.get_object("mastodon_oauth")`
-
-**Post ID 추적:** `article.twitter_id`, `article.mastodon_id` (store_accessor)
-
----
-
-## Testing
-
-테스트 환경은 **PostgreSQL** 사용 (SQLite 아님):
-- 이유: pgvector, textsearch_ko, pg_bigm 등 production과 동일한 확장 필요
-- 설정: `TEST_DATABASE_URL` 환경 변수 우선
-
----
-
-## CI/CD
-
-GitHub Actions 파이프라인:
-
-| Job | 역할 |
-|-----|------|
-| `scan_ruby` | Brakeman + bundler-audit |
-| `scan_js` | importmap audit |
-| `lint` | RuboCop |
-| `test` | 전체 테스트 (PostgreSQL) |
-
-**CI PostgreSQL:** 커스텀 이미지 `ghcr.io/stadia/ra-pg17:latest` (모든 확장 사전 설치)
-
----
-
-## Korean Localization
-
-- Default locale: `:ko`, timezone: `Asia/Seoul`
-- AI 요약: 한국어 생성
-- 신규 번역 키: `config/locales/ko.yml`
-- 날짜/시간: `l(Time.current, format: :short)`
-
----
-
-## MCP Tools
-
-사용 가능한 MCP 서버와 주요 도구 목록입니다. 작업 유형에 맞는 도구를 선택하세요.
-
-### Serena (코드 시맨틱 분석 & 편집)
-
-코드의 심볼(클래스, 메서드 등)을 의미 기반으로 탐색·편집하는 도구입니다. 파일 전체를 읽는 대신 심볼 단위로 효율적으로 작업합니다.
-
-**프로젝트 활성화:** `activate_project("ruby-news")` 필수 (첫 사용 시)
-
-### Rails MCP Server (Rails 인트로스펙션)
-
-Rails 앱의 모델, 라우트, 스키마 등을 런타임에서 분석합니다. `execute_tool`로 호출합니다.
-
-### Context7 (라이브러리 문서 검색)
-
-최신 라이브러리 문서와 코드 예제를 검색합니다.
-
-**사용 흐름:** `resolve-library-id` → `query-docs` 순서로 호출
-
-### Sequential Thinking (단계적 사고)
-
-복잡한 문제를 단계별로 분석할 때 사용합니다. 가설 생성·검증, 분기, 이전 단계 수정이 가능합니다.
-
----
-
-## Related Documentation
-
-| 문서 | 설명 |
-|------|------|
-| [개발 워크플로우](docs/CLAUDE_WORKFLOW.md) | Claude Code 작업 패턴, PR 워크플로우, 커밋 전략 |
-| [PostgreSQL 확장](docs/postgresql-extensions.md) | macOS/Linux 설치 가이드 |
+- 라이브러리나 런타임 구조를 조사할 때는 가능한 경우 Serena, Rails MCP Server, Context7, Sequential Thinking 같은 제공 도구를 목적에 맞게 사용한다.
+- 제공된 MCP 도구가 더 적합한 작업인데 무조건 파일 전체를 읽거나 비효율적인 방식만 고집하지 않는다.
+- Serena를 처음 사용할 때는 `activate_project("ruby-news")`를 먼저 실행한다.
+- Rails 구조 확인이 필요하면 Rails MCP Server를 우선 고려한다.
+- 최신 라이브러리 문서나 예제가 필요하면 Context7을 사용하고, `resolve-library-id` 후 `query-docs` 순서로 진행한다.
+- 복잡한 문제를 단계적으로 풀어야 할 때는 Sequential Thinking을 사용한다.
+- Ruby 코드의 정의 탐색, 참조 찾기, 심볼 검색 등에는 ruby-lsp를 적극 활용한다.

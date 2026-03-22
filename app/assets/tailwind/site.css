@@ -20,6 +20,6 @@ body select {
 }
 
 .mobile-menu-toggle:focus + label {
-    outline: 2px solid theme("colors.green.500");
+    outline: 2px solid rgb(var(--semantic-brand-solid));
     outline-offset: 2px;
 }

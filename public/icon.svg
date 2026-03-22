@@ -1,3 +1,37 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="84" y1="56" x2="428" y2="456" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B91C1C"/>
+      <stop offset="1" stop-color="#7F1D1D"/>
+    </linearGradient>
+    <linearGradient id="card" x1="156" y1="120" x2="356" y2="392" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF7ED"/>
+      <stop offset="1" stop-color="#FDE7D8"/>
+    </linearGradient>
+    <filter id="shadow" x="94" y="82" width="324" height="348" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="18"/>
+      <feGaussianBlur stdDeviation="20"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.270588 0 0 0 0 0.0392157 0 0 0 0 0.0392157 0 0 0 0.22 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <circle cx="392" cy="120" r="96" fill="#FCA5A5" fill-opacity="0.18"/>
+  <circle cx="118" cy="398" r="120" fill="#450A0A" fill-opacity="0.2"/>
+
+  <g filter="url(#shadow)">
+    <rect x="134" y="102" width="244" height="292" rx="44" fill="url(#card)"/>
+    <rect x="162" y="134" width="88" height="88" rx="24" fill="#B91C1C"/>
+    <path d="M189 202V154H208.6C225.7 154 237 163.4 237 177.8C237 192.4 225.7 202 208.6 202H189ZM207.4 186.2C215.1 186.2 220.1 182.9 220.1 177.8C220.1 172.8 215.1 169.6 207.4 169.6H205.4V186.2H207.4Z" fill="#FFF7ED"/>
+    <rect x="162" y="246" width="188" height="16" rx="8" fill="#D97706"/>
+    <rect x="162" y="278" width="188" height="16" rx="8" fill="#E5B37A"/>
+    <rect x="162" y="310" width="150" height="16" rx="8" fill="#E5B37A"/>
+    <rect x="162" y="342" width="118" height="16" rx="8" fill="#E5B37A"/>
+    <path d="M306 102H334C358.301 102 378 121.699 378 146V174L306 102Z" fill="#FECACA"/>
+    <path d="M306 102V150C306 163.255 316.745 174 330 174H378" fill="#FCA5A5"/>
+  </g>
 </svg>

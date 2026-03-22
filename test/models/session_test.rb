@@ -79,7 +79,7 @@ class SessionTest < ActiveSupport::TestCase
   test "자동 생성된 ID를 가져야 한다" do
     session = Session.create!(user: @user, ip_address: "127.0.0.1", user_agent: "Test")
     assert_not_nil session.id
-    assert session.id > 0
+    assert_operator session.id, :>, 0
   end
 
   test "IP 주소와 사용자 에이전트를 저장해야 한다" do
@@ -212,7 +212,7 @@ class SessionTest < ActiveSupport::TestCase
       session.touch # Update the timestamp
 
       session.reload
-      assert session.updated_at > original_updated_at
+      assert_operator session.updated_at, :>, original_updated_at
     end
   end
 

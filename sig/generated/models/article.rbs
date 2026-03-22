@@ -1,12 +1,18 @@
 # Generated from app/models/article.rb with RBS::Inline
 
 class Article < ApplicationRecord
+  extend FriendlyId
+
   include PgSearch::Model
 
   include Discard::Model
 
   # YouTube URL의 정규화된 호스트를 상수로 정의
   YOUTUBE_NORMALIZED_HOST: untyped
+
+  include Federails::DataEntity
+
+  def to_activitypub_object: () -> untyped
 
   def generate_metadata: () -> void
 
@@ -16,16 +22,15 @@ class Article < ApplicationRecord
 
   def update_published_at: () -> bool
 
-  # slug로 Article을 찾는 메서드
-  def self.find_by_slug: (untyped slug) -> untyped
-
-  # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
-  # : (String url) -> bool
-  def self.should_ignore_url?: (String url) -> bool
-
   def user_name: () -> untyped
 
+  def base_content: () -> untyped
+
+  def should_federate?: () -> untyped
+
   private
+
+  def create_federails_activity: (untyped action) -> untyped
 
   def set_initial_url_and_host: () -> void
 
@@ -46,5 +51,20 @@ class Article < ApplicationRecord
 
   def clear_rss_cache: () -> untyped
 
+  def should_generate_new_friendly_id?: () -> untyped
+
   def random_slug: () -> untyped
+
+  def _published_at: (untyped body) -> untyped
+
+  # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
+  # : (String url) -> bool
+  def self.should_ignore_url?: (String url) -> bool
+
+  def self.from_activitypub_object: (untyped hash) -> untyped
+
+  def self.handle_federated_object?: (untyped hash) -> untyped
+
+  # slug로 Article을 찾는 메서드
+  def self.find_by_slug: (untyped slug) -> untyped
 end

@@ -113,7 +113,7 @@ class ContentServiceTest < ActiveSupport::TestCase
     end
 
     # 최대 5회 호출 (초기 + 최대 4회 리다이렉트 시도)
-    assert call_count <= 5, "리다이렉트 호출 횟수가 예상보다 많음: #{call_count}"
+    assert_operator call_count, :<=, 5, "리다이렉트 호출 횟수가 예상보다 많음: #{call_count}"
   end
 
   # YouTube 콘텐츠 테스트

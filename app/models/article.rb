@@ -10,6 +10,8 @@ class Article < ApplicationRecord
 
   include Discard::Model
 
+  acts_as_likeable
+
   # SQLite는 벡터 임베딩을 지원하지 않으므로 PostgreSQL에서만 활성화
   has_neighbors :embedding, dimensions: 1536
 
@@ -28,6 +30,16 @@ class Article < ApplicationRecord
   scope :unrelated, -> { where(is_related: false) }
 
   scope :confirmed, -> { where("slug IS NOT NULL AND title_ko IS NOT NULL") }
+
+   # TOAST 컬럼(body, summary_body, embedding) 제외 스코프
+   scope :without_toast, -> {
+     select(column_names - %w[body summary_body embedding])
+   }
+
+   # ID + 필수 컬럼만 선택 (Admin용)
+   scope :for_admin_index, -> {
+     select(:id, :title_ko, :slug, :host, :is_related, :published_at, :created_at, :updated_at)
+   }
 
   pg_search_scope :title_matching, against: [ :title, :title_ko ], using: { tsearch: { dictionary: "korean" } }
 
@@ -199,6 +211,10 @@ class Article < ApplicationRecord
     return false if user.blank?
 
     title_ko.present?
+  end
+
+  def likes_count
+    likers_count.to_i
   end
 
   private
@@ -384,7 +400,10 @@ class Article < ApplicationRecord
     end
 
     def handle_federated_object?(hash)
-      hash["inReplyTo"].blank?
+      # 이 메서드는 inbox로 들어온 remote object를 Article이 수신할지 결정합니다.
+      # Article은 로컬 bot user가 발행하는 용도이므로, remote Note는 생성 대상으로 받지 않습니다.
+      # outbound federation 여부는 should_federate?가 따로 결정합니다.
+      false
     end
 
     # slug로 Article을 찾는 메서드

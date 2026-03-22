@@ -1,0 +1,19 @@
+# Generated from app/jobs/reddit_site_job.rb with RBS::Inline
+
+class RedditSiteJob < ApplicationJob
+  # Reddit 내부 도메인 패턴 (이 도메인들은 외부 링크로 취급하지 않음)
+  REDDIT_HOSTS: untyped
+
+  def perform: () -> untyped
+
+  private
+
+  # : (RSS::Atom::Feed::Entry item, Site site) -> void
+  def process_item: (RSS::Atom::Feed::Entry item, Site site) -> void
+
+  # : (RSS::Atom::Feed::Entry item) -> Array[String]
+  def extract_external_links_from_content: (RSS::Atom::Feed::Entry item) -> Array[String]
+
+  # : (String url) -> bool
+  def external_link?: (String url) -> bool
+end

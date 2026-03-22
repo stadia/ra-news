@@ -1,6 +1,20 @@
 # Generated from app/jobs/article_batch_job.rb with RBS::Inline
 
 class ArticleBatchJob < ApplicationJob
+  include RateLimiting
+
   # : (?Time created_at) -> void
   def perform: (?Time created_at) -> void
+
+  private
+
+  def rate_limit_threshold: () -> Integer
+
+  def rate_limit_window: () -> ActiveSupport::Duration
+
+  # : (Article article) -> String
+  def article_public_url: (Article article) -> String
+
+  # : (Array[String] urls) -> void
+  def ping_index_now: (Array[String] urls) -> void
 end

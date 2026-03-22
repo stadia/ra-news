@@ -1,0 +1,24 @@
+# frozen_string_literal: true
+
+root_post:
+  body: "첫 번째 원문 포스트입니다."
+  user: john
+  lft: 1
+  rgt: 4
+  depth: 0
+
+reply_post:
+  body: "원문에 대한 답글입니다."
+  user: jane
+  parent_id: <%= ActiveRecord::FixtureSet.identify(:root_post) %>
+  lft: 2
+  rgt: 3
+  depth: 1
+
+remote_post:
+  body: "리모트에서 온 포스트입니다."
+  federails_actor: john_actor
+  federated_url: "https://remote.example.com/notes/123"
+  lft: 5
+  rgt: 6
+  depth: 0

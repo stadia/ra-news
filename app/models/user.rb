@@ -4,9 +4,11 @@
 
 class User < ApplicationRecord
   has_secure_password
+  acts_as_liker
   has_many :sessions, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
   has_many :articles, dependent: :nullify
+  has_many :posts, dependent: :destroy
 
   # Email verification
   generates_token_for :email_verification, expires_in: 24.hours do

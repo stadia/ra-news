@@ -1,0 +1,5 @@
+# Generated from app/controllers/profiles_controller.rb with RBS::Inline
+
+class ProfilesController < ApplicationController
+  def show: () -> untyped
+end

@@ -59,35 +59,29 @@ special_chars_comment:
   parent_id:
   depth: 0
 
-# Guest comments (no user_id, has guest fields)
+# Legacy comments migrated from guest fixtures
 guest_comment_with_name:
-  body: "게스트로 작성한 댓글입니다."
-  user:
+  body: "기존 게스트 댓글 fixture를 마이그레이션한 댓글입니다."
+  user: john
   article: ruby_article
-  guest_name: "게스트사용자"
-  guest_password_digest: <%= BCrypt::Password.create("secret1234", cost: 4) %>
   lft: 5
   rgt: 6
   parent_id:
   depth: 0
 
 guest_comment_with_email_as_name:
-  body: "이메일을 이름으로 사용한 게스트 댓글입니다."
-  user:
+  body: "이메일 이름 guest fixture를 대체한 댓글입니다."
+  user: jane
   article: youtube_ruby_talk
-  guest_name: "guest@example.com"
-  guest_password_digest: <%= BCrypt::Password.create("mypassword", cost: 4) %>
   lft: 3
   rgt: 4
   parent_id:
   depth: 0
 
 guest_comment_korean_name:
-  body: "한글 이름으로 작성한 게스트 댓글입니다."
-  user:
+  body: "한글 이름 guest fixture를 대체한 댓글입니다."
+  user: korean_user
   article: korean_content_article
-  guest_name: "홍길동"
-  guest_password_digest: <%= BCrypt::Password.create("test1234", cost: 4) %>
   lft: 5
   rgt: 6
   parent_id:

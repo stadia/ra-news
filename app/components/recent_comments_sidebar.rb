@@ -11,8 +11,8 @@ class Components::RecentCommentsSidebar < Components::Base
 
   def view_template
     aside(class: "recent-comments-sidebar") do
-      h3(class: "text-lg font-semibold text-gray-100 mb-4 flex items-center gap-2") do
-        Hero::ChatBubbleLeftRight(variant: :outline, class: "w-5 h-5 text-green-400")
+      h3(class: "text-lg font-semibold text-content mb-4 flex items-center gap-2") do
+        Hero::ChatBubbleLeftRight(variant: :outline, class: "w-5 h-5 text-accent-text")
         plain "최근 댓글"
       end
 
@@ -27,30 +27,30 @@ class Components::RecentCommentsSidebar < Components::Base
   private
 
   def comment_card(comment)
-    div(class: "bg-gray-800 rounded-lg p-3 border border-gray-700 hover:border-gray-600 transition-colors") do
+    render RubyUI::Card.new(class: "bg-surface p-3 border-border-strong hover:border-border-muted transition-colors rounded-lg") do
       div(class: "flex items-center gap-2 mb-2") do
         render RubyUI::Avatar.new(size: :sm, class: "shrink-0") do
-          render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-blue-500 to-purple-600 text-white font-bold") do
+          render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-info-solid to-brand-solid text-brand-foreground font-bold") do
             plain comment.author_name.to_s.first.to_s.upcase
           end
         end
-        span(class: "text-sm font-medium text-gray-300 truncate") { comment.author_name }
-        if comment.guest? || comment.federated_url.present?
-          span(class: "text-xs text-gray-500 shrink-0") { comment&.author_host }
+        span(class: "text-sm font-medium text-content-secondary truncate") { comment.author_name }
+        if comment.author_host.present?
+          span(class: "text-xs text-content-disabled shrink-0") { comment&.author_host }
         end
       end
 
-      p(class: "text-sm text-gray-400 mb-2 line-clamp-2") do
+      p(class: "text-sm text-content-muted mb-2 line-clamp-2") do
         plain truncate(comment.body, length: 80)
       end
 
-      div(class: "flex items-center justify-between text-xs text-gray-500") do
+      div(class: "flex items-center justify-between text-xs text-content-disabled") do
         span(class: "flex items-center gap-1") do
           Hero::Clock(variant: :outline, class: "w-3 h-3")
           plain "#{view_context.time_ago_in_words_korean(comment.created_at)} 전"
         end
         if comment.article.present?
-          link_to(article_path(comment.article), class: "text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors") do
+          link_to(article_path(comment.article), class: "text-link hover:text-link-hover flex items-center gap-1 transition-colors") do
             Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-3 h-3")
             plain "원문 보기"
           end

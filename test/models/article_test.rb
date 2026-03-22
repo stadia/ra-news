@@ -27,6 +27,29 @@ class ArticleTest < ActiveSupport::TestCase
     assert article.valid?
   end
 
+  test "리모트 ActivityPub Note는 Article로 처리하지 않아야 한다" do
+    remote_note = {
+      "id" => "https://remote.example/notes/1",
+      "type" => "Note",
+      "content" => "remote content",
+      "inReplyTo" => nil
+    }
+
+    assert_not Article.handle_federated_object?(remote_note)
+  end
+
+  test "로컬 article은 federation 발행 조건을 만족하면 여전히 federate 가능해야 한다" do
+    article = Article.new(
+      title: "Test Article",
+      title_ko: "테스트 기사",
+      url: "https://example.com/test-federate",
+      origin_url: "https://example.com/test-federate",
+      user: @user
+    )
+
+    assert article.should_federate?
+  end
+
   test "url은 필수 항목이어야 한다" do
     article = Article.new(title: "Test Article", origin_url: "https://example.com/test", user: @user)
     assert_not article.save
@@ -169,7 +192,12 @@ class ArticleTest < ActiveSupport::TestCase
   # ========== Soft Delete Tests ==========
 
   test "Discard::Model을 포함해야 한다" do
-    assert Article.ancestors.include?(Discard::Model)
+    assert_includes Article.ancestors, Discard::Model
+  end
+
+  test "좋아요 가능 모델이어야 한다" do
+    assert_respond_to @article, :likers_count
+    assert_respond_to @user, :like!
   end
 
   test "kept 스코프는 삭제된 기사를 제외해야 한다" do

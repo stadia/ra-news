@@ -41,7 +41,7 @@ module ApplicationHelper
 
   # app/helpers/application_helper.rb
   def nav_link_to(text, path, options = { size: :lg, variant: :ghost })
-    options[:class] = "block text-gray-100 hover:text-white rounded-sm transition-colors duration-150 min-h-11 items-center hover:bg-transparent"
+    options[:class] = "block text-content-secondary hover:text-content aria-[current=page]:text-accent-text rounded-sm transition-colors duration-150 min-h-11 items-center hover:bg-transparent"
     options["aria-current".to_sym] = "page" if current_page?(path)
     options[:href] = path
     render RubyUI::Link.new(**options) { text }
