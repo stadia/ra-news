@@ -192,7 +192,7 @@ class ArticleTest < ActiveSupport::TestCase
   # ========== Soft Delete Tests ==========
 
   test "Discard::Model을 포함해야 한다" do
-    assert Article.ancestors.include?(Discard::Model)
+    assert_includes Article.ancestors, Discard::Model
   end
 
   test "kept 스코프는 삭제된 기사를 제외해야 한다" do

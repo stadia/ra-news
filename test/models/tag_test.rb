@@ -17,7 +17,7 @@ class TagTest < ActiveSupport::TestCase
   # ========== Inheritance Tests ==========
 
   test "ActsAsTaggableOn::Tag를 상속해야 한다" do
-    assert Tag.ancestors.include?(ActsAsTaggableOn::Tag)
+    assert_includes Tag.ancestors, ActsAsTaggableOn::Tag
   end
 
   test "ActsAsTaggableOn 기능이 있어야 한다" do
@@ -190,7 +190,7 @@ class TagTest < ActiveSupport::TestCase
       if tag.taggings_count == initial_count
         assert true, "Counter cache not implemented or not updated yet"
       else
-        assert tag.taggings_count > initial_count, "Taggings count should increase"
+        assert_operator tag.taggings_count, :>, initial_count, "Taggings count should increase"
       end
     else
       assert true, "taggings_count column not available"
@@ -335,7 +335,7 @@ class TagTest < ActiveSupport::TestCase
 
     # Taggings should be cleaned up or nullified
     final_taggings_count = ActsAsTaggableOn::Tagging.count
-    assert final_taggings_count <= initial_taggings_count
+    assert_operator final_taggings_count, :<=, initial_taggings_count
   end
 
   # ========== Korean Content Integration Tests ==========
@@ -449,7 +449,7 @@ class TagTest < ActiveSupport::TestCase
     Tag.all.each do |tag|
       assert_not_nil tag.name
       assert_not tag.name.empty?
-      assert tag.name.length > 0
+      assert_operator tag.name.length, :>, 0
     end
   end
 

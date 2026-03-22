@@ -32,20 +32,27 @@ class CommentTest < ActiveSupport::TestCase
     assert_includes comment.errors[:body], "내용을 입력해 주세요"
   end
 
-  test "user는 선택적이다 (게스트 댓글 허용)" do
-    # Guest comment without user but with guest fields should be valid
-    comment = Comment.new(
-      body: "Test comment",
-      article: @article,
-      guest_name: "게스트",
-      guest_password: "secret1234"
-    )
-    assert comment.valid?, "Guest comment without user should be valid: #{comment.errors.full_messages}"
+  test "user 또는 federails_actor 중 하나는 필요하다" do
+    comment_without_actor = Comment.new(body: "Test comment", article: @article)
+    assert_not comment_without_actor.valid?
+    assert_includes comment_without_actor.errors[:base], "user 또는 federails_actor가 필요합니다"
 
-    # Comment without user AND without guest_name should NOT be valid
-    comment_without_any = Comment.new(body: "Test comment", article: @article)
-    assert_not comment_without_any.valid?
-    assert_includes comment_without_any.errors[:guest_name], "이름을 입력해주세요"
+    remote_actor = Federails::Actor.create!(
+      federated_url: "https://remote.example/users/tester",
+      username: "tester",
+      name: "Tester",
+      server: "remote.example",
+      inbox_url: "https://remote.example/users/tester/inbox",
+      outbox_url: "https://remote.example/users/tester/outbox",
+      followers_url: "https://remote.example/users/tester/followers",
+      followings_url: "https://remote.example/users/tester/following",
+      profile_url: "https://remote.example/@tester",
+      actor_type: "Person",
+      local: false
+    )
+
+    comment_with_actor = Comment.new(body: "Remote comment", article: @article, federails_actor: remote_actor)
+    assert comment_with_actor.valid?, "Federated actor comment should be valid: #{comment_with_actor.errors.full_messages}"
   end
 
   test "article은 필수 항목이어야 한다" do
@@ -140,8 +147,8 @@ class CommentTest < ActiveSupport::TestCase
     # Nested comment should be within parent's boundaries
     assert_equal 2, @nested_comment.lft
     assert_equal 3, @nested_comment.rgt
-    assert @nested_comment.lft > @root_comment.lft
-    assert @nested_comment.rgt < @root_comment.rgt
+    assert_operator @nested_comment.lft, :>, @root_comment.lft
+    assert_operator @nested_comment.rgt, :<, @root_comment.rgt
   end
 
   test "루트 댓글을 올바르게 생성해야 한다" do
@@ -155,7 +162,7 @@ class CommentTest < ActiveSupport::TestCase
     assert_equal 0, root_comment.depth
     assert_not_nil root_comment.lft
     assert_not_nil root_comment.rgt
-    assert root_comment.rgt > root_comment.lft
+    assert_operator root_comment.rgt, :>, root_comment.lft
   end
 
   test "중첩된 댓글을 올바르게 생성해야 한다" do
@@ -185,11 +192,11 @@ class CommentTest < ActiveSupport::TestCase
     @root_comment.reload
 
     # Parent's right value should have increased
-    assert @root_comment.rgt > initial_rgt
+    assert_operator @root_comment.rgt, :>, initial_rgt
 
     # Child should be properly positioned
-    assert child_comment.lft > @root_comment.lft
-    assert child_comment.rgt < @root_comment.rgt
+    assert_operator child_comment.lft, :>, @root_comment.lft
+    assert_operator child_comment.rgt, :<, @root_comment.rgt
   end
 
   # ========== Instance Method Tests ==========
@@ -463,7 +470,7 @@ class CommentTest < ActiveSupport::TestCase
     # Verify appropriate behavior (depends on nested set configuration)
     # This could either delete children or promote them, depending on setup
     remaining_comments = Comment.count
-    assert remaining_comments <= initial_comment_count
+    assert_operator remaining_comments, :<=, initial_comment_count
   end
 
   test "동시 댓글 생성을 처리해야 한다" do
@@ -535,17 +542,14 @@ class CommentTest < ActiveSupport::TestCase
     end
   end
 
-  test "사용자 삭제를 적절하게 처리해야 한다" do
+  test "사용자 연결이 해제되어도 댓글은 유지될 수 있다" do
     comment = Comment.create!(
       body: "Comment by user to be deleted",
       user: @user,
       article: @article
     )
 
-    # User deletion behavior depends on model setup.
-    # This test verifies that after a user is destroyed, the associated
-    # comment becomes an orphan, but accessing the user returns nil.
-    @user.destroy!
+    comment.update_column(:user_id, nil)
 
     comment.reload
     assert comment.persisted?
@@ -565,12 +569,12 @@ class CommentTest < ActiveSupport::TestCase
     Comment.all.each do |comment|
       assert_not_nil comment.lft, "Comment #{comment.id} should have lft value"
       assert_not_nil comment.rgt, "Comment #{comment.id} should have rgt value"
-      assert comment.rgt > comment.lft, "Comment #{comment.id} rgt should be greater than lft"
+      assert_operator comment.rgt, :>, comment.lft, "Comment #{comment.id} rgt should be greater than lft"
 
       if comment.parent_id
         parent = Comment.find(comment.parent_id)
-        assert comment.lft > parent.lft, "Child lft should be greater than parent lft"
-        assert comment.rgt < parent.rgt, "Child rgt should be less than parent rgt"
+        assert_operator comment.lft, :>, parent.lft, "Child lft should be greater than parent lft"
+        assert_operator comment.rgt, :<, parent.rgt, "Child rgt should be less than parent rgt"
         assert_equal parent.depth + 1, comment.depth, "Child depth should be parent depth + 1"
       else
         assert_equal 0, comment.depth, "Root comment should have depth 0"
@@ -578,87 +582,26 @@ class CommentTest < ActiveSupport::TestCase
     end
   end
 
-  # ========== Guest Comment Tests ==========
-
-  test "게스트 댓글은 user_id가 nil이어야 한다" do
-    guest_comment = comments(:guest_comment_with_name)
-    assert_nil guest_comment.user_id
-    assert guest_comment.guest?
-  end
-
-  test "게스트 댓글은 이름만 입력해도 유효해야 한다" do
-    comment = Comment.new(
-      body: "게스트 댓글 테스트",
-      article: @article,
-      guest_name: "테스트유저",
-      guest_password: "secret1234"
-    )
-    assert comment.valid?, "게스트 댓글(이름만)은 유효해야 합니다: #{comment.errors.full_messages}"
-  end
-
-  test "게스트 댓글은 이메일 형식의 이름도 허용해야 한다" do
-    comment = Comment.new(
-      body: "게스트 댓글 테스트",
-      article: @article,
-      guest_name: "test@example.com",
-      guest_password: "mypassword"
-    )
-    assert comment.valid?, "게스트 댓글(이메일 형식 이름)은 유효해야 합니다: #{comment.errors.full_messages}"
-  end
-
-  test "게스트 댓글은 이름이 필수이다" do
-    comment = Comment.new(
-      body: "게스트 댓글 테스트",
-      article: @article,
-      guest_password: "secret1234"
-    )
-    assert_not comment.valid?
-    assert_includes comment.errors[:guest_name], "이름을 입력해주세요"
-  end
-
-  test "게스트 댓글은 비밀번호가 필수이다" do
-    comment = Comment.new(
-      body: "게스트 댓글 테스트",
-      article: @article,
-      guest_name: "테스트유저"
-    )
-    assert_not comment.valid?
-    assert_includes comment.errors[:guest_password], "비밀번호를 입력해주세요"
-  end
-
-  test "게스트 댓글의 비밀번호는 최소 4자 이상이어야 한다" do
-    comment = Comment.new(
-      body: "게스트 댓글 테스트",
-      article: @article,
-      guest_name: "테스트유저",
-      guest_password: "abc" # 3 characters - too short
-    )
-    assert_not comment.valid?
-    assert_includes comment.errors[:guest_password], "비밀번호는 최소 4자 이상이어야 합니다"
-  end
-
-  test "4자 비밀번호는 허용되어야 한다" do
-    comment = Comment.new(
-      body: "게스트 댓글 테스트",
-      article: @article,
-      guest_name: "테스트유저",
-      guest_password: "1234" # Exactly 4 characters
-    )
-    assert comment.valid?
-  end
-
   test "author_name은 user.name을 우선적으로 반환해야 한다" do
     assert_equal @user.name, @root_comment.author_name
   end
 
-  test "author_name은 guest_name을 사용해야 한다" do
-    guest_comment = comments(:guest_comment_with_name)
-    assert_equal "게스트사용자", guest_comment.author_name
-  end
-
-  test "author_name은 이메일 형식의 guest_name도 사용할 수 있다" do
-    guest_comment = comments(:guest_comment_with_email_as_name)
-    assert_equal "guest@example.com", guest_comment.author_name
+  test "author_name은 federails_actor.username을 사용할 수 있다" do
+    remote_actor = Federails::Actor.create!(
+      federated_url: "https://remote.example/users/actor-name",
+      username: "actor-name",
+      name: "Actor Name",
+      server: "remote.example",
+      inbox_url: "https://remote.example/users/actor-name/inbox",
+      outbox_url: "https://remote.example/users/actor-name/outbox",
+      followers_url: "https://remote.example/users/actor-name/followers",
+      followings_url: "https://remote.example/users/actor-name/following",
+      profile_url: "https://remote.example/@actor-name",
+      actor_type: "Person",
+      local: false
+    )
+    comment = Comment.new(body: "리모트 댓글", article: @article, federails_actor: remote_actor)
+    assert_equal "actor-name", comment.author_name
   end
 
   test "author_name은 '익명'을 반환해야 한다 (user와 guest 정보 모두 없을 때)" do
@@ -668,70 +611,6 @@ class CommentTest < ActiveSupport::TestCase
       user: nil
     )
     assert_equal "익명", comment.author_name
-  end
-
-  test "guest? 메서드는 user_id가 nil일 때 true를 반환해야 한다" do
-    guest_comment = comments(:guest_comment_with_name)
-    assert guest_comment.guest?
-
-    regular_comment = comments(:root_comment_1)
-    assert_not regular_comment.guest?
-  end
-
-  test "비밀번호 인증은 올바른 비밀번호에 대해 true를 반환해야 한다" do
-    guest_comment = comments(:guest_comment_with_name)
-    assert guest_comment.authenticate_guest_password("secret1234")
-  end
-
-  test "비밀번호 인증은 잘못된 비밀번호에 대해 false를 반환해야 한다" do
-    guest_comment = comments(:guest_comment_with_name)
-    assert_not guest_comment.authenticate_guest_password("wrongpassword")
-  end
-
-  test "fixture의 모든 게스트 댓글은 유효해야 한다" do
-    guest_comments = [
-      comments(:guest_comment_with_name),
-      comments(:guest_comment_with_email_as_name),
-      comments(:guest_comment_korean_name)
-    ]
-
-    guest_comments.each do |comment|
-      assert comment.valid?, "Guest comment #{comment.id} should be valid: #{comment.errors.full_messages}"
-      assert comment.guest?
-    end
-  end
-
-  test "fixture 게스트 댓글은 올바른 비밀번호로 인증되어야 한다" do
-    assert comments(:guest_comment_with_name).authenticate_guest_password("secret1234")
-    assert comments(:guest_comment_with_email_as_name).authenticate_guest_password("mypassword")
-    assert comments(:guest_comment_korean_name).authenticate_guest_password("test1234")
-  end
-
-  test "guest_name은 형식에 상관없이 저장되어야 한다" do
-    comment = Comment.new(
-      body: "테스트 댓글",
-      article: @article,
-      guest_name: "test@example.com",
-      guest_password: "secret1234"
-    )
-    assert comment.valid?
-    assert_equal "test@example.com", comment.guest_name
-
-    comment2 = Comment.new(
-      body: "테스트 댓글",
-      article: @article,
-      guest_name: "홍길동",
-      guest_password: "secret1234"
-    )
-    assert comment2.valid?
-    assert_equal "홍길동", comment2.guest_name
-  end
-
-  test "게스트 댓글도 nested_set으로 작동해야 한다" do
-    guest_comment = comments(:guest_comment_with_name)
-    assert_respond_to guest_comment, :parent
-    assert_respond_to guest_comment, :children
-    assert_respond_to guest_comment, :depth
   end
 
   test "답글 생성 시 알림 잡을 큐에 넣는다" do

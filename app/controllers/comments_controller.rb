@@ -4,18 +4,12 @@ class CommentsController < ApplicationController
   before_action :check_rate_limit, only: %i[ create ]
   before_action :set_comment, only: %i[ destroy ]
   before_action :set_article, only: %i[ create ]
-
-  allow_unauthenticated_access only: %i[ create destroy ]
+  before_action :require_authentication, only: %i[ create destroy ]
 
   # POST /comments
   def create
     @comment = @article.comments.build(comment_params)
-
-    if authenticated?
-      @comment.user = Current.user
-    else
-      @comment.user = nil
-    end
+    @comment.user = Current.user
 
     respond_to do |format|
       if @comment.save
@@ -34,25 +28,7 @@ class CommentsController < ApplicationController
   def destroy
     @article = @comment.article
 
-    if @comment.guest?
-      if @comment.authenticate_guest_password(params[:password])
-        @comment.destroy
-        load_comments
-        respond_to do |format|
-          format.html { redirect_to @article, notice: "댓글이 삭제되었습니다." }
-          format.turbo_stream
-        end
-      else
-        respond_to do |format|
-          format.html { redirect_to @article, alert: "비밀번호가 올바르지 않습니다." }
-          format.turbo_stream do
-            render turbo_stream: turbo_stream.replace("delete_comment_modal_#{@comment.id}",
-              html: "<div class='text-danger-text text-sm mt-2'>비밀번호가 올바르지 않습니다.</div>".html_safe
-            ), status: :unauthorized
-          end
-        end
-      end
-    elsif authenticated? && @comment.user == Current.user
+    if @comment.user == Current.user
       @comment.destroy
       load_comments
       respond_to do |format|
@@ -83,6 +59,6 @@ class CommentsController < ApplicationController
     end
 
     def comment_params
-      params.expect(comment: [ :body, :guest_name, :guest_password, :parent_id ])
+      params.expect(comment: [ :body, :parent_id ])
     end
 end
