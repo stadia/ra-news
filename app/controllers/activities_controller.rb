@@ -22,15 +22,20 @@ class ActivitiesController < ApplicationController
     following_actor_ids = Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
 
     posts = Post
-      .includes(:user, :federails_actor)
+      .includes(:user, :federails_actor, children: [ :user, :federails_actor ])
       .where(federails_actor_id: following_actor_ids)
       .or(Post.where(user_id: Current.user.id))
       .where(parent_id: nil)
       .order(created_at: :desc)
 
     @pagy, @posts = pagy(:countless, posts, limit: 20)
+    @liked_post_ids = Like.liked_ids_for(
+      liker: Current.user,
+      likeable_type: "Post",
+      likeable_ids: @posts.map(&:id)
+    )
 
-    render Views::Activities::Feed.new(posts: @posts, pagy: @pagy)
+    render Views::Activities::Feed.new(posts: @posts, pagy: @pagy, liked_post_ids: @liked_post_ids)
   end
 
   private

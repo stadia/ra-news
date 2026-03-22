@@ -3,9 +3,10 @@
 class Views::Home::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(articles:, recent_comments:)
+  def initialize(articles:, recent_comments:, liked_article_ids: [])
     @articles = articles
     @recent_comments = recent_comments
+    @liked_article_ids = liked_article_ids
   end
 
   def view_template
@@ -15,7 +16,7 @@ class Views::Home::Index < Views::Base
       div(class: "flex-1 min-w-0") do
         div(id: "articlesList", class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6") do
           @articles.each do |article|
-            render Components::Home::Article.new(article: article)
+            render Components::Home::Article.new(article: article, liked: @liked_article_ids.include?(article.id))
           end
         end
       end

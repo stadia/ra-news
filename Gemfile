@@ -82,7 +82,6 @@ end
 
 gem "sorbet-runtime"
 gem "pagy", "~> 43.4" # omit patch digit
-gem "honeybadger", "~> 6.5.2"
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
 gem "ostruct"
@@ -140,5 +139,7 @@ gem "opentelemetry-instrumentation-net_http"
 gem "opentelemetry-instrumentation-ruby_llm"
 
 gem "skylight", "~> 7.1"
-
+gem "honeybadger", "~> 6.5.2"
 gem "appsignal", "~> 4.8"
+gem "prosopite"
+gem "pg_query"

@@ -7,6 +7,18 @@ class Like < Socialization::ActiveRecordStores::Like
   after_unlike :publish_federated_unlike
 
   class << self
+    #: (User?, String, Array[Integer]) -> Array[Integer]
+    def liked_ids_for(liker:, likeable_type:, likeable_ids:)
+      return [] unless liker
+      return [] if likeable_ids.empty?
+
+      where(
+        liker:,
+        likeable_type:,
+        likeable_id: likeable_ids
+      ).pluck(:likeable_id)
+    end
+
     #: (User, ActiveRecord::Base) -> void
     def publish_federated_like(liker, likeable)
       LikeFederationService.publish_like(liker:, likeable:)

@@ -28,6 +28,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  unless Rails.env.production?
+     around_action :n_plus_one_detection
+
+     def n_plus_one_detection
+       Prosopite.scan
+       yield
+     ensure
+       Prosopite.finish
+     end
+  end
+
   private
 
   # 익명 GET 요청에서 세션 쿠키를 억제하여 CDN 캐싱을 활성화한다.

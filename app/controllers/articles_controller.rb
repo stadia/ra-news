@@ -30,14 +30,24 @@ class ArticlesController < ApplicationController
       scope.where.not(id: id).without_toast
     end
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
-    render Views::Articles::Index.new(pagy: @pagy, articles: @articles, search: params[:search])
+    render Views::Articles::Index.new(
+      pagy: @pagy,
+      articles: @articles,
+      search: params[:search],
+      liked_article_ids: liked_article_ids(@articles)
+    )
   end
 
   def others
     cacheable_page!
     article = Article.kept.confirmed.unrelated.without_toast
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
-    render Views::Articles::Others.new(pagy: @pagy, articles: @articles, search: params[:search])
+    render Views::Articles::Others.new(
+      pagy: @pagy,
+      articles: @articles,
+      search: params[:search],
+      liked_article_ids: liked_article_ids(@articles)
+    )
   end
 
   def show
@@ -135,5 +145,13 @@ class ArticlesController < ApplicationController
 
     def existing_article
       Article.where(url: @article.url).or(Article.where(origin_url: @article.origin_url)).first
+    end
+
+    def liked_article_ids(articles)
+      Like.liked_ids_for(
+        liker: Current.user,
+        likeable_type: "Article",
+        likeable_ids: articles.map(&:id)
+      )
     end
 end

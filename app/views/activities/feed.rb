@@ -4,9 +4,10 @@ class Views::Activities::Feed < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::TurboFrameTag
 
-  def initialize(posts:, pagy:)
+  def initialize(posts:, pagy:, liked_post_ids: [])
     @posts = posts
     @pagy = pagy
+    @liked_post_ids = liked_post_ids
   end
 
   def view_template
@@ -42,7 +43,7 @@ class Views::Activities::Feed < Views::Base
       render_empty_state
     else
       @posts.each do |post|
-        render Components::Posts::PostThread.new(post: post)
+        render Components::Posts::PostThread.new(post: post, liked: @liked_post_ids.include?(post.id))
       end
     end
   end

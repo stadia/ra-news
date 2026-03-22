@@ -78,4 +78,7 @@ Rails.application.configure do
 
   config.colorize_logging = true
   config.rails_semantic_logger.format = :color
+  config.after_initialize do
+    Prosopite.rails_logger = true
+  end
 end

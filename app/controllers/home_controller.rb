@@ -21,10 +21,19 @@ class HomeController < ApplicationController
     else
       scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
     end
+    @liked_article_ids = Like.liked_ids_for(
+      liker: Current.user,
+      likeable_type: "Article",
+      likeable_ids: @articles.map(&:id)
+    )
 
     @news_media_organization = PUBLISHER_SCHEMA
-    @recent_comments = Comment.joins(:article).includes(:article, :user).where(article: { deleted_at: nil }).order(created_at: :desc).limit(10)
-    render Views::Home::Index.new(articles: @articles, recent_comments: @recent_comments)
+    @recent_comments = Comment.joins(:article).includes(:article, :user, :federails_actor).where(article: { deleted_at: nil }).order(created_at: :desc).limit(10)
+    render Views::Home::Index.new(
+      articles: @articles,
+      recent_comments: @recent_comments,
+      liked_article_ids: @liked_article_ids
+    )
   end
 
   # GET /about

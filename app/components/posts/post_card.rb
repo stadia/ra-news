@@ -4,9 +4,10 @@ class Components::Posts::PostCard < Components::Base
   include Phlex::Rails::Helpers::DOMID
   include PhlexIcons
 
-  def initialize(post:, depth: 0)
+  def initialize(post:, depth: 0, liked: nil)
     @post = post
     @depth = depth
+    @liked = liked
   end
 
   def view_template
@@ -65,7 +66,7 @@ class Components::Posts::PostCard < Components::Base
 
   def post_actions
     div(class: "flex items-center gap-4 text-sm text-content-muted") do
-      render Components::Likes::Button.new(likeable: @post)
+      render Components::Likes::Button.new(likeable: @post, liked: @liked)
 
       render RubyUI::Button.new(
         variant: :ghost,

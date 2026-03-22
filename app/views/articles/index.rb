@@ -3,10 +3,11 @@
 class Views::Articles::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(pagy:, articles:, search: nil)
+  def initialize(pagy:, articles:, search: nil, liked_article_ids: [])
     @pagy = pagy
     @articles = articles
     @search = search
+    @liked_article_ids = liked_article_ids
   end
 
   def view_template
@@ -22,7 +23,7 @@ class Views::Articles::Index < Views::Base
 
     div(id: "articlesList", class: "space-y-6 lg:space-y-8 max-w-6xl mx-auto") do
       @articles.each do |article|
-        render Components::Articles::Article.new(article: article)
+        render Components::Articles::Article.new(article: article, liked: @liked_article_ids.include?(article.id))
       end
 
       render Components::Pagination.new(pagy: @pagy)

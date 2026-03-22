@@ -21,6 +21,39 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "GET feed preloads liked posts for authenticated user" do
+    post = Post.create!(body: "liked feed post", user: @user)
+    Like.create!(liker: @user, likeable: post, created_at: Time.current)
+
+    sign_in_as(@user)
+
+    like_queries = capture_like_queries do
+      get feed_path
+    end
+
+    assert_response :success
+    assert_includes @response.body, "liked feed post"
+    assert_equal 1, like_queries.size
+  end
+
+  test "GET feed preloads replies for visible posts" do
+    root_posts = 3.times.map do |index|
+      root = Post.create!(body: "root post #{index}", user: @user, created_at: (index + 1).hours.ago)
+      Post.create!(body: "reply post #{index}", user: users(:jane), parent: root, created_at: index.minutes.ago)
+      root
+    end
+
+    sign_in_as(@user)
+
+    reply_queries = capture_reply_queries do
+      get feed_path
+    end
+
+    assert_response :success
+    assert_includes @response.body, "reply post 0"
+    assert_operator reply_queries.size, :<=, 1
+  end
+
   test "GET feed includes current user and accepted followings in reverse chronological order" do
     john_actor = federails_actors(:john_actor)
     jane_actor = federails_actors(:jane_actor)
@@ -87,5 +120,41 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, "followed root post"
     assert_includes @response.body, "own reply post"
     assert_operator @response.body.index("followed root post"), :<, @response.body.index("own reply post")
+  end
+
+  private
+
+  def capture_like_queries
+    queries = []
+    callback = lambda do |_name, _start, _finish, _id, payload|
+      sql = payload[:sql]
+      next unless sql&.include?('"likes"')
+      next unless payload[:name] != "SCHEMA"
+
+      queries << sql
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      yield
+    end
+
+    queries
+  end
+
+  def capture_reply_queries
+    queries = []
+    callback = lambda do |_name, _start, _finish, _id, payload|
+      sql = payload[:sql]
+      next unless sql&.include?('"posts"."parent_id" =')
+      next unless payload[:name] != "SCHEMA"
+
+      queries << sql
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      yield
+    end
+
+    queries
   end
 end

@@ -421,6 +421,8 @@ GEM
     pg (1.6.3-aarch64-linux)
     pg (1.6.3-arm64-darwin)
     pg (1.6.3-x86_64-linux)
+    pg_query (6.2.2)
+      google-protobuf (>= 3.25.3)
     pg_reports (0.5.4)
       actionpack (>= 5.0)
       activerecord (>= 5.0)
@@ -448,6 +450,7 @@ GEM
       actionpack (>= 7.0.0)
       activesupport (>= 7.0.0)
       rack
+    prosopite (2.1.2)
     psych (5.3.1)
       date
       stringio
@@ -757,11 +760,13 @@ DEPENDENCIES
   ostruct
   pagy (~> 43.4)
   pg (~> 1.6)
+  pg_query
   pg_reports (~> 0.5.4)
   pg_search
   phlex-icons
   phlex-rails (~> 2.4)
   propshaft
+  prosopite
   puma (>= 5.0)
   rails (~> 8.1.0)
   rails-i18n

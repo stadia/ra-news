@@ -5,8 +5,9 @@ class Components::Likes::Button < Components::Base
   include Phlex::Rails::Helpers::DOMID
   include PhlexIcons
 
-  def initialize(likeable:)
+  def initialize(likeable:, liked: nil)
     @likeable = likeable
+    @liked = liked
   end
 
   def view_template
@@ -38,6 +39,8 @@ class Components::Likes::Button < Components::Base
   end
 
   def liked?
+    return @liked unless @liked.nil?
+
     Current.user&.likes?(@likeable) || false
   end
 
