@@ -8,11 +8,11 @@
 # Add your global options below. They will be applied globally.
 # For example:
 #
-Pagy.options[:limit] = 15               # Limit the items per page
-# Pagy.options[:client_max_limit] = 100   # The client can request a limit up to 100
-# Pagy.options[:max_pages] = 200          # Allow only 200 pages
-# Pagy.options[:jsonapi] = true           # Use JSON:API compliant URLs
-Pagy.options[:slots] = 5
+Pagy::OPTIONS[:limit] = 15               # Limit the items per page
+# Pagy::OPTIONS[:client_max_limit] = 100   # The client can request a limit up to 100
+# Pagy::OPTIONS[:max_pages] = 200          # Allow only 200 pages
+# Pagy::OPTIONS[:jsonapi] = true           # Use JSON:API compliant URLs
+Pagy::OPTIONS[:slots] = 5
 
 ############ JavaScript ####################################################################
 # See https://ddnexus.github.io/pagy/resources/javascript/ for details.
