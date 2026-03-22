@@ -138,7 +138,6 @@ gem "opentelemetry-instrumentation-http_client"
 gem "opentelemetry-instrumentation-net_http"
 gem "opentelemetry-instrumentation-ruby_llm"
 
-gem "skylight", "~> 7.1"
 gem "honeybadger", "~> 6.5.2"
 gem "appsignal", "~> 4.8"
 gem "prosopite"
