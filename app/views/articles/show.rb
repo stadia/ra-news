@@ -3,6 +3,7 @@
 class Views::Articles::Show < Views::Base
   include PhlexIcons
   include Phlex::Rails::Helpers::ContentFor
+  include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::Sanitize
 
@@ -18,10 +19,10 @@ class Views::Articles::Show < Views::Base
 
     # @news_article, @breadcrumbs are set as instance variables in ArticlesController#show
     # Insert schema.org JSON-LD into layout's head via content_for(:head)
-    content_for :head, helpers.raw(@news_article.to_s) if @news_article
-    content_for :head, helpers.raw(@breadcrumbs.to_s) if @breadcrumbs
+    content_for :head, raw(@news_article.to_s) if @news_article
+    content_for :head, raw(@breadcrumbs.to_s) if @breadcrumbs
 
-    div(class: "space-y-6 lg:space-y-8 max-w-6xl mx-auto", id: helpers.dom_id(@article)) do
+    div(class: "space-y-6 lg:space-y-8 max-w-6xl mx-auto", id: dom_id(@article)) do
       render_article_main
       render_similar_articles if @similar_articles.present?
       render_comments_section

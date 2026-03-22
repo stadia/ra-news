@@ -3,6 +3,7 @@
 class Views::Profiles::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::Tag
   include Phlex::Rails::Helpers::TurboFrameTag
   include PhlexIcons
 
@@ -20,7 +21,7 @@ class Views::Profiles::Show < Views::Base
 
     if @actor
       site_host = URI.parse(Federails.configuration.site_host).host
-      content_for :head, helpers.tag.meta(name: "fediverse:creator", content: "@#{@user.username}@#{site_host}")
+      content_for :head, tag.meta(name: "fediverse:creator", content: "@#{@user.username}@#{site_host}")
     end
 
     div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do

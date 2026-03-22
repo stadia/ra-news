@@ -2,10 +2,11 @@
 
 class Views::Home::About < Views::Base
   include Phlex::Rails::Helpers::ContentFor
+  include Phlex::Rails::Helpers::Tag
 
   def view_template
     content_for(:title, "소개 | Ruby-News")
-    content_for :head, helpers.tag.meta(name: "description", content: "Ruby-News는 Ruby·Rails 생태계 소식을 AI 보조 번역으로 매일 한국어로 제공하는 기술 뉴스 집약 서비스입니다.")
+    content_for :head, tag.meta(name: "description", content: "Ruby-News는 Ruby·Rails 생태계 소식을 AI 보조 번역으로 매일 한국어로 제공하는 기술 뉴스 집약 서비스입니다.")
 
     div(class: "max-w-3xl mx-auto space-y-10") do
       header(class: "border-b border-border-strong pb-8") do

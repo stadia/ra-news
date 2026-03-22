@@ -64,7 +64,7 @@ class Components::Users::PwdForm < Components::Base
           # Submit Button
           div(class: "mt-10 pt-8 border-t border-border-subtle/60 flex items-center justify-end gap-3") do
             render RubyUI::Link.new(
-              href: helpers.users_path,
+              href: users_path,
               class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
             ) do
               Hero::ChevronLeft(variant: :outline, class: "w-4 h-4")
