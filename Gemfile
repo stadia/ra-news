@@ -138,3 +138,5 @@ gem "opentelemetry-instrumentation-ethon"
 gem "opentelemetry-instrumentation-http_client"
 gem "opentelemetry-instrumentation-net_http"
 gem "opentelemetry-instrumentation-ruby_llm"
+
+gem "skylight", "~> 7.1"
