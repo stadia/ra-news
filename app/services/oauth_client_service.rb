@@ -3,7 +3,9 @@
 # rbs_inline: enabled
 
 # OAuth 클라이언트 생성 및 관리 서비스
-class OauthClientService < ApplicationService
+class OauthClientService
+  include ActiveModel::Model
+
   attr_reader :oauth_preference #: Preference
 
   OAUTH_CONFIG = {
@@ -48,11 +50,19 @@ class OauthClientService < ApplicationService
     client
   end
 
+  def self.call(*args, **kwargs)
+    new(*args, **kwargs).call
+  end
+
   private
 
   #: () -> String
   def extract_provider_from_preference_name
     # "xcom_oauth" -> "xcom", "mastodon_oauth" -> "mastodon"
     oauth_preference.name.gsub(/_oauth$/, "")
+  end
+
+  def logger
+    Rails.logger
   end
 end
