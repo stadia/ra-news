@@ -10,22 +10,25 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - PostgreSQL 확장이 필요한 이 프로젝트를 SQLite 기준으로 해석하거나 검증하지 않는다.
 - 인증은 Devise가 아니라 현재의 custom auth와 `Current.user` 패턴을 기준으로 다룬다.
 - `Article`의 AI 요약, embedding, soft-delete(`discarded_at`), `social_post_ids` JSONB 구조를 무시하고 수정하지 않는다.
-- `Site.kind` enum(RSS/YouTube/Gmail/HN) 제약을 무시하지 않는다.
 - 댓글 기능 수정 시 `awesome_nested_set` 구조와 `Comment::MAX_DEPTH` 제한을 깨뜨리지 않는다.
-- 프론트엔드 클래스명은 Tailwind CSS v4.2 기준으로 작성하며, 새 코드에 v3 클래스명을 그대로 쓰지 않는다.
+- Tailwind v4에서 이름이 바뀐 유틸리티는 v4 명칭을 사용한다 (예: `break-words` → `wrap-break-word`).
 - Tailwind CSS 색상 클래스는 직접 쓰지 않고, 항상 시맨틱 토큰을 사용한다.
 - 기본 locale은 한국어로 유지하고, 새 번역 키는 `config/locales/ko.yml`에 추가한다.
 - 날짜와 시간 표시는 `l(Time.current, format: :short)` 규칙을 따른다.
 - PostgreSQL 확장, 한국어 요약, 로컬라이제이션 등 운영 환경 전제를 무시한 채 production과 다른 방향으로 구현하지 않는다.
+- 뷰와 컴포넌트는 Phlex 기반으로 작성하며, ERB 템플릿을 새로 만들지 않는다.
+- UI 요소는 RubyUI 컴포넌트(`RubyUI::Card`, `RubyUI::Avatar` 등)를 우선 사용하고, 해당하는 컴포넌트가 없을 때만 직접 마크업한다.
+- 아이콘은 PhlexIcons의 Hero 아이콘(`Hero::IconName`)을 사용하며, 인라인 SVG를 직접 넣지 않는다.
 
 ## 권장 규칙
 
 - 변경 작업 전 `Article`, `Site`, `User`, `Comment`의 역할과 제약을 먼저 확인하고 영향 범위를 검토한다.
 - Ruby 코드에 타입 힌트를 추가하거나 수정할 때는 inline RBS 스타일을 사용한다.
-- 서비스 객체를 만들거나 수정할 때는 기존 `OperationService`와 `Dry::Operation` 패턴 중 문맥에 맞는 방식을 따른다.
+- 서비스 객체를 만들거나 수정할 때는 기존 `OperationService` 을 상속하여 ROP 패턴을 따른다.
 - 소셜 미디어 연동 코드는 `SocialMediaService` 기반 구조와 플랫폼별 서비스 분리를 유지한다.
 - 변경을 마무리하기 전에 테스트 여부와 미실행 사유를 명확히 남긴다.
 - 관련 배경 문서가 필요하면 `docs/CLAUDE_WORKFLOW.md`, `docs/postgresql-extensions.md`를 우선 참고한다.
+- 뷰 클래스는 `Views::Base`를, 컴포넌트 클래스는 `Components::Base`를 상속한다.
 
 ## 도구 사용 규칙
 
@@ -35,3 +38,4 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - Rails 구조 확인이 필요하면 Rails MCP Server를 우선 고려한다.
 - 최신 라이브러리 문서나 예제가 필요하면 Context7을 사용하고, `resolve-library-id` 후 `query-docs` 순서로 진행한다.
 - 복잡한 문제를 단계적으로 풀어야 할 때는 Sequential Thinking을 사용한다.
+- Ruby 코드의 정의 탐색, 참조 찾기, 심볼 검색 등에는 ruby-lsp를 적극 활용한다.
