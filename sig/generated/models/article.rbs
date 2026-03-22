@@ -12,7 +12,8 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
-  def to_activitypub_object: () -> untyped
+  # : () -> Hash[String, untyped]
+  def to_activitypub_object: () -> Hash[String, untyped]
 
   def generate_metadata: () -> void
 
@@ -22,15 +23,22 @@ class Article < ApplicationRecord
 
   def update_published_at: () -> bool
 
-  def user_name: () -> untyped
+  # : () -> String?
+  def user_name: () -> String?
 
-  def base_content: () -> untyped
+  # : () -> { title: String?, summary: String }
+  def base_content: () -> { title: String?, summary: String }
 
-  def should_federate?: () -> untyped
+  # : () -> bool
+  def should_federate?: () -> bool
+
+  # : () -> Integer
+  def likes_count: () -> Integer
 
   private
 
-  def create_federails_activity: (untyped action) -> untyped
+  # : (String action) -> void
+  def create_federails_activity: (String action) -> void
 
   def set_initial_url_and_host: () -> void
 
@@ -49,22 +57,29 @@ class Article < ApplicationRecord
   # : (String body) -> DateTime?
   def extract_published_at_from_content: (String body) -> DateTime?
 
-  def clear_rss_cache: () -> untyped
+  # : () -> void
+  def clear_rss_cache: () -> void
 
-  def should_generate_new_friendly_id?: () -> untyped
+  # : () -> bool
+  def should_generate_new_friendly_id?: () -> bool
 
-  def random_slug: () -> untyped
+  # : () -> String
+  def random_slug: () -> String
 
-  def _published_at: (untyped body) -> untyped
+  # : (String body) -> Time
+  def _published_at: (String body) -> Time
 
   # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
   # : (String url) -> bool
   def self.should_ignore_url?: (String url) -> bool
 
-  def self.from_activitypub_object: (untyped hash) -> untyped
+  # : (Hash[String, untyped]) -> Hash[Symbol, untyped]
+  def self.from_activitypub_object: (Hash[String, untyped]) -> Hash[Symbol, untyped]
 
-  def self.handle_federated_object?: (untyped hash) -> untyped
+  # : (Hash[String, untyped]) -> bool
+  def self.handle_federated_object?: (Hash[String, untyped]) -> bool
 
   # slug로 Article을 찾는 메서드
-  def self.find_by_slug: (untyped slug) -> untyped
+  # : (String slug) -> Article?
+  def self.find_by_slug: (String slug) -> Article?
 end

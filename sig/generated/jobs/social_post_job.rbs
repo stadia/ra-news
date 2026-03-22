@@ -1,7 +1,7 @@
 # Generated from app/jobs/social_post_job.rb with RBS::Inline
 
 class SocialPostJob < ApplicationJob
-  include RateLimiting
+  include JobRateLimiting
 
   # : (Integer id) -> void
   def perform: (Integer id) -> void

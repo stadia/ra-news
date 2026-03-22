@@ -17,7 +17,7 @@ class Site < ApplicationRecord
 
   enum :client, [ :rss, :gmail, :youtube, :hacker_news, :rss_page, :reddit ], default: :rss
 
-  def init_client #: Object
+  def init_client #: (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
     case client
     when "rss", "rss_page"
       RssClient.new(base_uri: base_uri)

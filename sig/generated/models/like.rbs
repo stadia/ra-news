@@ -1,0 +1,9 @@
+# Generated from app/models/like.rb with RBS::Inline
+
+class Like < Socialization::ActiveRecordStores::Like
+  # : (User, ActiveRecord::Base) -> void
+  def self.publish_federated_like: (User, ActiveRecord::Base) -> void
+
+  # : (User, ActiveRecord::Base) -> void
+  def self.publish_federated_unlike: (User, ActiveRecord::Base) -> void
+end

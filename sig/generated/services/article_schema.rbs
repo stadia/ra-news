@@ -1,4 +1,0 @@
-# Generated from app/services/article_schema.rb with RBS::Inline
-
-class ArticleSchema < RubyLLM::Schema
-end

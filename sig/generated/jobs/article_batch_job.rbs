@@ -1,7 +1,7 @@
 # Generated from app/jobs/article_batch_job.rb with RBS::Inline
 
 class ArticleBatchJob < ApplicationJob
-  include RateLimiting
+  include JobRateLimiting
 
   # : (?Time created_at) -> void
   def perform: (?Time created_at) -> void

@@ -9,9 +9,12 @@ class User < ApplicationRecord
 
   def has_role?: (untyped role_name) -> bool
 
-  def roles=: (untyped role_names) -> untyped
+  # : (Array[String] | String) -> Array[String]
+  def roles=: (Array[String] | String) -> Array[String]
 
-  def accept_follow: (untyped following) -> untyped
+  # : (Federails::Following) -> void
+  def accept_follow: (Federails::Following) -> void
 
-  def self.first_bot: () -> untyped
+  # : () -> User?
+  def self.first_bot: () -> User?
 end

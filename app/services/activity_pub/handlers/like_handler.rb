@@ -4,7 +4,7 @@
 
 module ActivityPub
   module Handlers
-    class PostLikeHandler < OperationService
+    class LikeHandler < OperationService
       class << self
         def handle_like(activity)
           new.call(command: :handle_like, activity:)
@@ -49,23 +49,28 @@ module ActivityPub
 
       def resolve_likeable(object)
         object_id = object.is_a?(Hash) ? object["id"] : object
-        likeable = Post.find_by(federated_url: object_id)
-        likeable ||= resolve_local_post(object_id)
-        return unless likeable.is_a?(Post) && likeable.local_federails_entity?
+        likeable = Post.find_by(federated_url: object_id) ||
+                   Article.find_by(federated_url: object_id) ||
+                   resolve_local_likeable(object_id)
+        return unless likeable&.local_federails_entity?
 
         likeable
       rescue ActiveRecord::RecordNotFound, URI::InvalidURIError, ActionController::RoutingError
         nil
       end
 
-      def resolve_local_post(object_id)
+      def resolve_local_likeable(object_id)
         route = Federails::Utils::Host.local_route(object_id)
         return unless route.present? &&
           route[:controller] == "federails/server/published" &&
-          route[:action] == "show" &&
-          route[:publishable_type] == "posts"
+          route[:action] == "show"
 
-        Post.find_by(id: route[:id])
+        case route[:publishable_type]
+        when "posts"
+          Post.find_by(id: route[:id])
+        when "articles"
+          Article.find_by(id: route[:id])
+        end
       end
     end
   end

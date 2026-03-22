@@ -104,7 +104,7 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
     }
 
     assert_difference("Like.count", 1) do
-      ActivityPub::Handlers::PostLikeHandler.handle_like(activity)
+      ActivityPub::Handlers::LikeHandler.handle_like(activity)
     end
 
     assert @remote_actor.likes?(@local_post)
@@ -131,7 +131,7 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
     }
 
     assert_difference("Like.count", -1) do
-      ActivityPub::Handlers::PostLikeHandler.handle_undo_like(activity)
+      ActivityPub::Handlers::LikeHandler.handle_undo_like(activity)
     end
 
     assert_not @remote_actor.likes?(@local_post)

@@ -56,14 +56,17 @@ class User < ApplicationRecord
     roles.include? role_name.to_s
   end
 
+  #: (Array[String] | String) -> Array[String]
   def roles=(role_names)
     self[:roles] = role_names.is_a?(Array) ? role_names.uniq : role_names.split(" ").uniq
   end
 
+  #: (Federails::Following) -> void
   def accept_follow(following)
     following.accept! if has_role?(:bot) && following.respond_to?(:accept!)
   end
 
+  #: () -> User?
   def self.first_bot
     with_role("bot").first
   end

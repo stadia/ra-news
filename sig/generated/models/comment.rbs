@@ -3,39 +3,46 @@
 class Comment < ApplicationRecord
   MAX_BODY_LENGTH: ::Integer
 
-  MAX_GUEST_NAME_LENGTH: ::Integer
-
   include Federails::DataEntity
 
-  def to_activitypub_object: () -> untyped
+  # : () -> Hash[String, untyped]
+  def to_activitypub_object: () -> Hash[String, untyped]
 
-  def content: () -> untyped
+  # : () -> String
+  def content: () -> String
 
-  def author_name: () -> untyped
+  # : () -> String
+  def author_name: () -> String
 
-  def author_host: () -> untyped
+  # : () -> String?
+  def author_host: () -> String?
 
-  def guest?: () -> untyped
+  # : () -> (User | Federails::Actor)?
+  def federation_actor_entity: () -> (User | Federails::Actor)?
 
-  def federation_actor_entity: () -> untyped
+  # : () -> bool
+  def should_federate?: () -> bool
 
-  def should_federate?: () -> untyped
-
-  def reply: () -> untyped
+  # : () -> (Comment | Article)
+  def reply: () -> (Comment | Article)
 
   private
 
-  def validate_user_or_guest: () -> untyped
+  # : () -> void
+  def validate_user_or_actor: () -> void
 
-  def set_federails_actor: () -> untyped
+  # : () -> void
+  def set_federails_actor: () -> void
 
-  def validate_parent_comment: () -> untyped
+  # : () -> void
+  def validate_parent_comment: () -> void
 
-  def validate_guest_password_length: () -> untyped
+  # : () -> void
+  def enqueue_reply_notification: () -> void
 
-  def enqueue_reply_notification: () -> untyped
+  # : (Hash[String, untyped]) -> Hash[Symbol, untyped]
+  def self.from_activitypub_object: (Hash[String, untyped]) -> Hash[Symbol, untyped]
 
-  def self.from_activitypub_object: (untyped hash) -> untyped
-
-  def self.handle_federated_object?: (untyped hash) -> untyped
+  # : (Hash[String, untyped]) -> bool
+  def self.handle_federated_object?: (Hash[String, untyped]) -> bool
 end

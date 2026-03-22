@@ -104,6 +104,7 @@ class Article < ApplicationRecord
     create_federails_activity "Undo"
   end
 
+  #: () -> Hash[String, untyped]
   def to_activitypub_object
     content_data = base_content
     title = content_data[:title]
@@ -193,6 +194,7 @@ class Article < ApplicationRecord
     update(published_at: _published_at(response.body))
   end
 
+  #: () -> String?
   def user_name
     if site.present?
       site.name
@@ -201,24 +203,28 @@ class Article < ApplicationRecord
     end
   end
 
+  #: () -> { title: String?, summary: String }
   def base_content
     title = title_ko.presence || self.title
     summary = summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
     { title:, summary: }
   end
 
+  #: () -> bool
   def should_federate?
     return false if user.blank?
 
     title_ko.present?
   end
 
+  #: () -> Integer
   def likes_count
     likers_count.to_i
   end
 
   private
 
+  #: (String action) -> void
   def create_federails_activity(action)
     if action == "Update" && !Federails::Activity.exists?(entity: self, action: "Create")
       action = "Create"
@@ -343,18 +349,22 @@ class Article < ApplicationRecord
     nil
   end
 
+  #: () -> void
   def clear_rss_cache
     Rails.cache.delete("rss_articles")
   end
 
+  #: () -> bool
   def should_generate_new_friendly_id?
     false
   end
 
+  #: () -> String
   def random_slug
     "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
   end
 
+  #: (String body) -> Time
   def _published_at(body)
     date_time = url_to_published_at || extract_published_at_from_content(body) || created_at || Time.zone.now
     date_time = created_at if date_time.future?
@@ -390,6 +400,7 @@ class Article < ApplicationRecord
       end
     end
 
+    #: (Hash[String, untyped]) -> Hash[Symbol, untyped]
     def from_activitypub_object(hash)
       {
         federated_url: hash["id"],
@@ -399,6 +410,7 @@ class Article < ApplicationRecord
       }
     end
 
+    #: (Hash[String, untyped]) -> bool
     def handle_federated_object?(hash)
       # 이 메서드는 inbox로 들어온 remote object를 Article이 수신할지 결정합니다.
       # Article은 로컬 bot user가 발행하는 용도이므로, remote Note는 생성 대상으로 받지 않습니다.
@@ -407,6 +419,7 @@ class Article < ApplicationRecord
     end
 
     # slug로 Article을 찾는 메서드
+    #: (String slug) -> Article?
     def find_by_slug(slug)
       find_by(slug: slug)
     end

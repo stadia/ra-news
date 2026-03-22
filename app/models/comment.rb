@@ -33,50 +33,60 @@ class Comment < ApplicationRecord
 
   on_federails_delete_requested -> { logger.info { "Federated comment deletion requested #{id}" }; destroy! }
 
+  #: () -> Hash[String, untyped]
   def to_activitypub_object
     Federails::DataTransformer::Note.to_federation self, content: body, custom: { "inReplyTo" => reply.federated_url }
   end
 
+  #: () -> String
   def content
     body
   end
 
+  #: () -> String
   def author_name
     user&.name || federails_actor&.username || "익명"
   end
 
+  #: () -> String?
   def author_host
     return if federails_actor.nil? || federails_actor&.server.blank?
 
     "(#{federails_actor&.server})"
   end
 
+  #: () -> (User | Federails::Actor)?
   def federation_actor_entity
     user || federails_actor
   end
 
+  #: () -> bool
   def should_federate?
     federation_actor_entity.present?
   end
 
+  #: () -> (Comment | Article)
   def reply
     parent.present? ? parent : article
   end
 
   private
 
+  #: () -> void
   def validate_user_or_actor
     return if user_id.present? || federails_actor_id.present?
 
     errors.add(:base, "user 또는 federails_actor가 필요합니다")
   end
 
+  #: () -> void
   def set_federails_actor
     return if federation_actor_entity.nil?
 
     super
   end
 
+  #: () -> void
   def validate_parent_comment
     return unless parent_id.present?
 
@@ -91,6 +101,7 @@ class Comment < ApplicationRecord
     end
   end
 
+  #: () -> void
   def enqueue_reply_notification
     unless parent_id.present?
       logger.debug { "ReplyNotification skip: comment #{id} has no parent" }
@@ -110,6 +121,7 @@ class Comment < ApplicationRecord
   end
 
   class << self
+    #: (Hash[String, untyped]) -> Hash[Symbol, untyped]
     def from_activitypub_object(hash)
       in_reply_to = hash["inReplyTo"].to_s
 
@@ -139,6 +151,7 @@ class Comment < ApplicationRecord
       object
     end
 
+    #: (Hash[String, untyped]) -> bool
     def handle_federated_object?(hash)
       in_reply_to = hash["inReplyTo"].to_s
       return false if in_reply_to.blank?

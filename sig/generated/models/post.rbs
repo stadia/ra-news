@@ -1,0 +1,34 @@
+# Generated from app/models/post.rb with RBS::Inline
+
+class Post < ApplicationRecord
+  include Federails::DataEntity
+
+  # : () -> (User | Federails::Actor)?
+  def federation_actor_entity: () -> (User | Federails::Actor)?
+
+  # : () -> bool
+  def should_federate?: () -> bool
+
+  # : () -> Hash[String, untyped]
+  def to_activitypub_object: () -> Hash[String, untyped]
+
+  # : () -> Integer
+  def likes_count: () -> Integer
+
+  private
+
+  # : () -> void
+  def set_federails_actor: () -> void
+
+  # : () -> void
+  def validate_user_or_actor: () -> void
+
+  # : () -> void
+  def validate_parent_post: () -> void
+
+  # : (Hash[String, untyped]) -> Hash[Symbol, untyped]
+  def self.from_activitypub_object: (Hash[String, untyped]) -> Hash[Symbol, untyped]
+
+  # : (Hash[String, untyped]) -> bool
+  def self.handle_federated_object?: (Hash[String, untyped]) -> bool
+end

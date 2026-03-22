@@ -14,6 +14,7 @@ class Preference < ApplicationRecord
     get_object(name)&.value
   end
 
+  #: (String name) -> Preference?
   def self.get_object(name)
     Rails.cache.fetch("preferences_#{name}", expires_in: 2.weeks) do
       Preference.find_by(name:)
@@ -24,12 +25,14 @@ class Preference < ApplicationRecord
     get_value("ignore_hosts") || []
   end
 
+  #: () -> void
   def clear_cache
     Rails.cache.delete("preferences_#{name}")
   end
 
   private
 
+  #: () -> void
   def define_dynamic_accessors
     # This is an example configuration.
     # You should adjust this case statement to your needs.

@@ -1,7 +1,9 @@
 # Generated from app/services/oauth_client_service.rb with RBS::Inline
 
 # OAuth 클라이언트 생성 및 관리 서비스
-class OauthClientService < ApplicationService
+class OauthClientService
+  include ActiveModel::Model
+
   attr_reader oauth_preference: Preference
 
   OAUTH_CONFIG: Hash
@@ -12,8 +14,12 @@ class OauthClientService < ApplicationService
   # OAuth 클라이언트 생성
   def call: () -> OAuth2::Client
 
+  def self.call: (*untyped args, **untyped kwargs) -> untyped
+
   private
 
   # : () -> String
   def extract_provider_from_preference_name: () -> String
+
+  def logger: () -> untyped
 end

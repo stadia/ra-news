@@ -1,0 +1,19 @@
+# Generated from app/services/like_federation_service.rb with RBS::Inline
+
+class LikeFederationService < OperationService
+  def self.publish_like: (liker: untyped, likeable: untyped) -> untyped
+
+  def self.publish_unlike: (liker: untyped, likeable: untyped) -> untyped
+
+  def call: (command: untyped, ?liker: untyped, ?likeable: untyped) -> untyped
+
+  private
+
+  def publish_like_activity: (liker: untyped, likeable: untyped) -> untyped
+
+  def publish_undo_activity: (liker: untyped, likeable: untyped) -> untyped
+
+  def local_actor_for: (untyped liker) -> untyped
+
+  def recipient_actor_for: (untyped likeable) -> untyped
+end

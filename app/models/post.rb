@@ -31,14 +31,17 @@ class Post < ApplicationRecord
 
   on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; destroy! }
 
+  #: () -> (User | Federails::Actor)?
   def federation_actor_entity
     user || federails_actor
   end
 
+  #: () -> bool
   def should_federate?
     federation_actor_entity.present?
   end
 
+  #: () -> Hash[String, untyped]
   def to_activitypub_object
     custom = {}
     if parent.present?
@@ -47,24 +50,28 @@ class Post < ApplicationRecord
     Federails::DataTransformer::Note.to_federation(self, content: body, custom: custom)
   end
 
+  #: () -> Integer
   def likes_count
     likers_count.to_i
   end
 
   private
 
+  #: () -> void
   def set_federails_actor
     return if federation_actor_entity.nil?
 
     super
   end
 
+  #: () -> void
   def validate_user_or_actor
     unless user_id.present? || federails_actor_id.present?
       errors.add(:base, "user 또는 federails_actor가 필요합니다")
     end
   end
 
+  #: () -> void
   def validate_parent_post
     return unless parent_id.present?
 
@@ -74,6 +81,7 @@ class Post < ApplicationRecord
   end
 
   class << self
+    #: (Hash[String, untyped]) -> Hash[Symbol, untyped]
     def from_activitypub_object(hash)
       in_reply_to = hash["inReplyTo"].to_s
 
@@ -95,6 +103,7 @@ class Post < ApplicationRecord
       object
     end
 
+    #: (Hash[String, untyped]) -> bool
     def handle_federated_object?(hash)
       in_reply_to = hash["inReplyTo"].to_s
 

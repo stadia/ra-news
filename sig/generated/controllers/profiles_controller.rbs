@@ -2,4 +2,14 @@
 
 class ProfilesController < ApplicationController
   def show: () -> untyped
+
+  def followers: () -> untyped
+
+  def following: () -> untyped
+
+  private
+
+  def set_user: () -> untyped
+
+  def render_follow_page: (untyped actor, untyped followings, untyped type) -> untyped
 end
