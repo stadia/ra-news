@@ -39,7 +39,6 @@ class Components::Comments::Comment < Components::Base
       comment_header
       comment_body
       reply_button if can_reply?
-      guest_delete_modal if @comment.persisted? && @comment.guest?
     end
   end
 
@@ -59,12 +58,7 @@ class Components::Comments::Comment < Components::Base
 
   def author_info
     div do
-      div(class: "text-sm font-medium text-content") do
-        plain @comment.author_name
-        if @comment.guest?
-          render RubyUI::Badge.new(variant: :slate, size: :sm, class: "ml-2") { "게스트" }
-        end
-      end
+      div(class: "text-sm font-medium text-content") { plain @comment.author_name }
       div(class: "text-xs text-content-muted flex items-center") do
         Hero::Clock(variant: :outline, class: "w-3 h-3 mr-1")
         plain "#{view_context.time_ago_in_words_korean(@comment.created_at)} 전"
@@ -73,15 +67,7 @@ class Components::Comments::Comment < Components::Base
   end
 
   def delete_button
-    if @comment.guest?
-      render RubyUI::Button.new(
-        variant: :ghost,
-        data: { controller: "modal", action: "modal#open", modal_id: "delete_comment_modal_#{@comment.id}" },
-        class: "inline-flex items-center px-3 py-1 text-xs font-medium text-danger-text hover:text-danger-text-hover hover:bg-destructive/15 rounded-md transition-colors duration-200 cursor-pointer") do
-        Hero::Trash(variant: :outline, class: "w-4 h-4 mr-1")
-        plain "삭제"
-      end
-    elsif view_context.authenticated? && @comment.user == Current.user
+    if view_context.authenticated? && @comment.user == Current.user
       button_to(
         article_comment_path(@article, @comment),
         method: :delete,
@@ -102,6 +88,8 @@ class Components::Comments::Comment < Components::Base
   end
 
   def reply_button
+    return unless view_context.authenticated?
+
     div(class: "mt-3 flex items-center justify-between text-sm") do
       render RubyUI::Button.new(
         variant: :ghost,
@@ -111,10 +99,6 @@ class Components::Comments::Comment < Components::Base
         plain "답글"
       end
     end
-  end
-
-  def guest_delete_modal
-    render Components::Comments::DeleteModal.new(article: @article, comment: @comment)
   end
 
   def reply_form_section

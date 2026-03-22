@@ -175,7 +175,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service = MastodonService.new
     post_text = service.send(:build_post_text, @article)
 
-    assert post_text.length <= 500, "포스트 텍스트가 500자를 초과함: #{post_text.length}자"
+    assert_operator post_text.length, :<=, 500, "포스트 텍스트가 500자를 초과함: #{post_text.length}자"
   end
 
   # === 기타 테스트 ===

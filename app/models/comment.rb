@@ -6,22 +6,14 @@ class Comment < ApplicationRecord
   acts_as_nested_set
 
   MAX_BODY_LENGTH = 1000
-  MAX_GUEST_NAME_LENGTH = 100
 
   belongs_to :user, optional: true
   belongs_to :article, counter_cache: true
 
-  has_secure_password :guest_password, validations: false
-
   validates :body, presence: true, length: { minimum: 1, maximum: MAX_BODY_LENGTH }
   validates :article, presence: true
-  validates :guest_name,
-    length: { maximum: MAX_GUEST_NAME_LENGTH },
-    format: { with: /\A[^<>]*\z/, message: "HTML 태그를 포함할 수 없습니다" },
-    if: :guest?
-  validate :validate_user_or_guest
+  validate :validate_user_or_actor
   validate :validate_parent_comment
-  validate :validate_guest_password_length
   after_commit :enqueue_reply_notification, on: :create
 
   include Federails::DataEntity
@@ -50,19 +42,13 @@ class Comment < ApplicationRecord
   end
 
   def author_name
-    user&.name || guest_name || federails_actor&.username || "익명"
+    user&.name || federails_actor&.username || "익명"
   end
 
   def author_host
-    return "(게스트)" if guest?
-
     return if federails_actor.nil? || federails_actor&.server.blank?
 
     "(#{federails_actor&.server})"
-  end
-
-  def guest?
-    user_id.nil? && federated_url.blank?
   end
 
   def federation_actor_entity
@@ -79,26 +65,17 @@ class Comment < ApplicationRecord
 
   private
 
-  def validate_user_or_guest
-    return unless guest?
+  def validate_user_or_actor
+    return if user_id.present? || federails_actor_id.present?
 
-    # Guest comment requires guest_name AND guest_password
-    if guest_name.blank?
-      errors.add(:guest_name, "이름을 입력해주세요")
-    end
-
-    # Check if password is set (either as a virtual attribute for new records or digest for existing)
-    unless guest_password_digest.present? || guest_password.present?
-      errors.add(:guest_password, "비밀번호를 입력해주세요")
-    end
+    errors.add(:base, "user 또는 federails_actor가 필요합니다")
   end
 
   def set_federails_actor
-    return if guest?
+    return if federation_actor_entity.nil?
 
     super
   end
-
 
   def validate_parent_comment
     return unless parent_id.present?
@@ -114,20 +91,13 @@ class Comment < ApplicationRecord
     end
   end
 
-  def validate_guest_password_length
-    # Only validate password length when a new password is being set (not for existing records with digest)
-    if guest? && guest_password.present? && guest_password.length < 4
-      errors.add(:guest_password, "비밀번호는 최소 4자 이상이어야 합니다")
-    end
-  end
-
   def enqueue_reply_notification
     unless parent_id.present?
       logger.debug { "ReplyNotification skip: comment #{id} has no parent" }
       return
     end
     unless parent&.user_id.present?
-      logger.debug { "ReplyNotification skip: parent comment #{parent_id} has no user (guest comment)" }
+      logger.debug { "ReplyNotification skip: parent comment #{parent_id} has no local user" }
       return
     end
     if parent.user_id == user_id

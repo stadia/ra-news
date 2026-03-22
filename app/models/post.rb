@@ -4,6 +4,7 @@
 
 class Post < ApplicationRecord
   acts_as_nested_set
+  acts_as_likeable
 
   belongs_to :user, optional: true
 
@@ -44,6 +45,10 @@ class Post < ApplicationRecord
       custom["inReplyTo"] = parent.federated_url || Rails.application.routes.url_helpers.post_url(parent)
     end
     Federails::DataTransformer::Note.to_federation(self, content: body, custom: custom)
+  end
+
+  def likes_count
+    likers_count.to_i
   end
 
   private

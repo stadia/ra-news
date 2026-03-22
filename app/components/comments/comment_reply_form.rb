@@ -2,6 +2,7 @@
 
 class Components::Comments::CommentReplyForm < Components::Base
   include Phlex::Rails::Helpers::FormWith
+  include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::TurboFrameTag
   include PhlexIcons
 
@@ -21,7 +22,7 @@ class Components::Comments::CommentReplyForm < Components::Base
       div(
         class: "p-4 lg:p-5",
         data: {
-          controller: "character-count guest-name",
+          controller: "character-count",
           character_count_max_length_value: ::Comment::MAX_BODY_LENGTH.to_s
         }
       ) do
@@ -41,6 +42,8 @@ class Components::Comments::CommentReplyForm < Components::Base
   end
 
   def reply_form_fields
+    return login_prompt unless view_context.authenticated?
+
     form_with(
       model: [ @article, @comment ],
       url: article_comments_path(@article),
@@ -51,7 +54,6 @@ class Components::Comments::CommentReplyForm < Components::Base
       f.hidden_field :parent_id, value: @parent_comment.id
 
       error_messages if @comment.errors.any?
-      guest_fields(f) unless view_context.authenticated?
       body_field(f)
       action_buttons(f)
     end
@@ -71,28 +73,12 @@ class Components::Comments::CommentReplyForm < Components::Base
     end
   end
 
-  def guest_fields(f)
-    div(class: "grid gap-3 sm:grid-cols-2") do
-      render RubyUI::FormField.new do
-        render RubyUI::FormFieldLabel.new(for: :comment_guest_name) { "이름 (필수)" }
-        f.text_field :guest_name,
-          class: text_input_classes(@comment.errors[:guest_name]),
-          placeholder: "이름을 입력하세요",
-          data: { guest_name_target: "input", action: "change->guest-name#save" }
-        @comment.errors[:guest_name].each do |msg|
-          render RubyUI::FormFieldError.new { msg }
-        end
-      end
-
-      render RubyUI::FormField.new do
-        render RubyUI::FormFieldLabel.new(for: :comment_guest_password) { "비밀번호 (필수)" }
-        f.password_field :guest_password,
-          class: text_input_classes(@comment.errors[:guest_password]),
-          placeholder: "최소 4자 이상"
-        @comment.errors[:guest_password].each do |msg|
-          render RubyUI::FormFieldError.new { msg }
-        end
-      end
+  def login_prompt
+    div(class: "rounded-lg border border-border-muted bg-surface px-4 py-3 text-sm text-content-secondary") do
+      Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1 text-info-text")
+      plain "답글을 작성하려면 "
+      link_to("로그인", new_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
+      plain " 하세요."
     end
   end
 

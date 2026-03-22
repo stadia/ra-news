@@ -16,7 +16,7 @@ class Components::Comments::CommentForm < Components::Base
       render RubyUI::Card.new(
         class: "bg-surface-muted border-border-muted p-6",
         data: {
-          controller: "character-count guest-name comment-form",
+          controller: "character-count comment-form",
           character_count_max_length_value: ::Comment::MAX_BODY_LENGTH.to_s,
           action: "turbo:submit-end->comment-form#reset"
         }
@@ -37,9 +37,10 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def comment_form_fields
+    return login_prompt unless view_context.authenticated?
+
     form_with(model: [ @article, @comment ], url: article_comments_path(@article), local: false, class: "space-y-4") do |f|
       error_messages if @comment.errors.any?
-      guest_fields(f) unless view_context.authenticated?
       body_field(f)
       submit_section(f)
     end
@@ -59,34 +60,12 @@ class Components::Comments::CommentForm < Components::Base
     end
   end
 
-  def guest_fields(f)
-    render RubyUI::FormField.new do
-      render RubyUI::FormFieldLabel.new(for: :comment_guest_name) { "이름 또는 이메일 (필수)" }
-      f.text_field :guest_name,
-        class: text_input_classes(@comment.errors[:guest_name]),
-        placeholder: "이름이나 이메일을 입력하세요",
-        data: { guest_name_target: "input", action: "change->guest-name#save" }
-      @comment.errors[:guest_name].each do |msg|
-        render RubyUI::FormFieldError.new { msg }
-      end
-    end
-
-    render RubyUI::FormField.new do
-      render RubyUI::FormFieldLabel.new(for: :comment_guest_password) { "비밀번호 (필수, 삭제 시 필요)" }
-      f.password_field :guest_password,
-        class: text_input_classes(@comment.errors[:guest_password]),
-        placeholder: "최소 4자 이상의 비밀번호를 입력하세요"
-      render RubyUI::FormFieldHint.new { "댓글 삭제 시 비밀번호가 필요합니다." }
-    end
-
-    render RubyUI::Separator.new
-    div(class: "pt-4") do
-      p(class: "text-sm text-content-muted mb-4") do
-        Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1")
-        plain "이미 계정이 있으신가요? "
-        link_to("로그인", new_session_path, class: "text-info-text hover:text-info-text-hover")
-        plain " 후 댓글을 작성하세요."
-      end
+  def login_prompt
+    div(class: "rounded-lg border border-border-muted bg-surface px-4 py-5 text-sm text-content-secondary") do
+      Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1 text-info-text")
+      plain "댓글을 작성하려면 "
+      link_to("로그인", new_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
+      plain " 이 필요합니다."
     end
   end
 
