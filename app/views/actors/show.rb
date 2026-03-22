@@ -42,6 +42,11 @@ class Views::Actors::Show < Views::Base
                 target: "_blank", rel: "noopener noreferrer"
             end
 
+            div do
+              link_to "팔로우 검색으로 돌아가기", lookup_actors_path,
+                class: "text-sm text-content-muted hover:text-content transition-colors mt-1 inline-block"
+            end
+
             div(class: "flex items-center gap-4 mt-2") do
               span(class: "text-sm text-content-muted") do
                 span(class: "font-semibold text-content") { @actor.following_followers.count.to_s }

@@ -57,6 +57,9 @@ class Views::Profiles::Show < Views::Base
                 link_to "설정", users_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
                 span(class: "text-content-disabled") { "·" }
+                link_to "Feed", feed_path,
+                  class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
+                span(class: "text-content-disabled") { "·" }
                 link_to "팔로우 검색", lookup_actors_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
               end
