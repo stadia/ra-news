@@ -54,7 +54,7 @@ class Views::Profiles::Show < Views::Base
             p(class: "text-content-muted font-mono text-sm mt-1") { "@#{@user.username}" }
             if own_profile?
               div(class: "flex items-center gap-3 mt-2") do
-                link_to "설정", users_path,
+                link_to "설정", edit_user_registration_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
                 span(class: "text-content-disabled") { "·" }
                 link_to "Feed", feed_path,
