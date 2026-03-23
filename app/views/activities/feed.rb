@@ -19,7 +19,7 @@ class Views::Activities::Feed < Views::Base
         posts_and_pagination
       end
     else
-      turbo_frame_tag("feed_page_#{@pagy.page}") do
+      turbo_frame_tag("feed_page_#{@pagy.page}", class: "block space-y-4") do
         posts_and_pagination
       end
     end
@@ -31,11 +31,12 @@ class Views::Activities::Feed < Views::Base
     if @pagy.page == 1
       div(id: "posts_list", class: "space-y-4") do
         render_posts
+        render_next_page_frame if @pagy.next
       end
     else
       render_posts
+      render_next_page_frame if @pagy.next
     end
-    render_next_page_frame if @pagy.next
   end
 
   def render_posts
@@ -61,6 +62,7 @@ class Views::Activities::Feed < Views::Base
       "feed_page_#{@pagy.next}",
       src: view_context.feed_path(page: @pagy.next),
       loading: :lazy,
+      class: "block space-y-4",
       data: { controller: "infinite-scroll" }
     ) do
       div(class: "py-8 text-center text-content-muted") do

@@ -122,6 +122,40 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_operator @response.body.index("followed root post"), :<, @response.body.index("own reply post")
   end
 
+  test "GET first feed page nests the next page frame inside posts_list" do
+    21.times do |index|
+      Post.create!(
+        body: "paged post #{index}",
+        user: @user,
+        created_at: index.minutes.ago,
+        updated_at: index.minutes.ago
+      )
+    end
+
+    sign_in_as(@user)
+    get feed_path
+
+    assert_response :success
+    assert_select "#posts_list turbo-frame#feed_page_2.block.space-y-4", 1
+  end
+
+  test "GET second feed page uses the turbo frame as the spacing container" do
+    21.times do |index|
+      Post.create!(
+        body: "paged post #{index}",
+        user: @user,
+        created_at: index.minutes.ago,
+        updated_at: index.minutes.ago
+      )
+    end
+
+    sign_in_as(@user)
+    get feed_path(page: 2)
+
+    assert_response :success
+    assert_select "turbo-frame#feed_page_2.block.space-y-4", 1
+  end
+
   private
 
   def capture_like_queries
