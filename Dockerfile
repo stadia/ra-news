@@ -11,6 +11,7 @@
 ARG RUBY_VERSION=4.0
 ARG COMMIT_SHA=unknown
 FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+ARG COMMIT_SHA
 
 # Rails app lives here
 WORKDIR /rails
