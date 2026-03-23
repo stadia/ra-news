@@ -20,7 +20,7 @@ class UserTest < ActiveSupport::TestCase
       name: "테스트 사용자",
       password: "password123"
     )
-    assert user.valid?
+    assert_predicate user, :valid?
   end
 
   test "email_address는 필수 항목이어야 한다" do
@@ -87,7 +87,7 @@ class UserTest < ActiveSupport::TestCase
 
     # Just right
     user = User.new(email_address: "test3@example.com", name: "정적절한길이", password: "password123")
-    assert user.valid?
+    assert_predicate user, :valid?
   end
 
   test "이름 형식을 검증해야 한다" do
@@ -153,7 +153,7 @@ class UserTest < ActiveSupport::TestCase
   # ========== Instance Method Tests ==========
 
   test "admin?은 관리자 사용자에 대해 true를 반환해야 한다" do
-    assert @admin.admin?
+    assert_predicate @admin, :admin?
     assert_not @user.admin?
     assert_not @korean_user.admin?
   end
@@ -231,7 +231,7 @@ class UserTest < ActiveSupport::TestCase
         name: name,
         password: "password123"
       )
-      assert user.valid?, "Korean name #{name} should be valid"
+      assert_predicate user, :valid?, "Korean name #{name} should be valid"
       user.save!
       assert_equal name, user.name
     end
@@ -251,7 +251,7 @@ class UserTest < ActiveSupport::TestCase
       assert_equal "테스트@example.com", user.email_address
     else
       # If Korean email is not supported, verify appropriate validation
-      assert user.errors[:email_address].any?, "Should have email validation error for Korean characters"
+      assert_predicate user.errors[:email_address], :any?, "Should have email validation error for Korean characters"
     end
   end
 
@@ -265,7 +265,7 @@ class UserTest < ActiveSupport::TestCase
       name: long_name,
       password: "password123"
     )
-    assert user.valid?, "Maximum length Korean name should be valid"
+    assert_predicate user, :valid?, "Maximum length Korean name should be valid"
   end
 
   test "혼합 언어 이름을 처리해야 한다" do
@@ -277,7 +277,7 @@ class UserTest < ActiveSupport::TestCase
         name: name,
         password: "password123"
       )
-      assert user.valid?, "Mixed language name #{name} should be valid"
+      assert_predicate user, :valid?, "Mixed language name #{name} should be valid"
     end
   end
 

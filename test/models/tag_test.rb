@@ -141,7 +141,7 @@ class TagTest < ActiveSupport::TestCase
     confirmed_tag = Tag.new(name: "confirmed-test", is_confirmed: true)
     confirmed_tag.save!
 
-    assert confirmed_tag.is_confirmed?
+    assert_predicate confirmed_tag, :is_confirmed?
     assert_includes Tag.confirmed, confirmed_tag
     assert_not_includes Tag.unconfirmed, confirmed_tag
   end
@@ -237,7 +237,7 @@ class TagTest < ActiveSupport::TestCase
     newly_created_tag = Tag.find_or_create_with_like_by_name(new_tag_name)
     assert_not_nil newly_created_tag
     assert_equal new_tag_name, newly_created_tag.name
-    assert newly_created_tag.persisted?
+    assert_predicate newly_created_tag, :persisted?
   end
 
   # ========== Case Sensitivity Tests ==========
@@ -427,7 +427,7 @@ class TagTest < ActiveSupport::TestCase
 
   test "모든 fixture 태그는 유효해야 한다" do
     Tag.all.each do |tag|
-      assert tag.valid?, "Tag #{tag.name} should be valid: #{tag.errors.full_messages.join(', ')}"
+      assert_predicate tag, :valid?, "Tag #{tag.name} should be valid: #{tag.errors.full_messages.join(', ')}"
     end
   end
 
@@ -435,7 +435,7 @@ class TagTest < ActiveSupport::TestCase
     # Confirmed tags
     confirmed_fixture_tags = [ @ruby_tag, @rails_tag, @performance_tag, @special_tag ]
     confirmed_fixture_tags.each do |tag|
-      assert tag.is_confirmed?, "Tag #{tag.name} should be confirmed"
+      assert_predicate tag, :is_confirmed?, "Tag #{tag.name} should be confirmed"
     end
 
     # Unconfirmed tags
@@ -483,7 +483,7 @@ class TagTest < ActiveSupport::TestCase
     # Verify they're all confirmed
     unconfirmed_tags.each do |tag|
       tag.reload
-      assert tag.is_confirmed?
+      assert_predicate tag, :is_confirmed?
       assert_includes Tag.confirmed, tag
     end
   end

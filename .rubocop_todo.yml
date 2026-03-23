@@ -6,22 +6,6 @@
 # Note that changes in the inspected code, or installation of new
 # versions of RuboCop, may require this file to be generated again.
 
-# Offense count: 103
-# This cop supports safe autocorrection (--autocorrect).
-Minitest/AssertPredicate:
-  Exclude:
-    - 'test/models/article_test.rb'
-    - 'test/models/comment_test.rb'
-    - 'test/models/current_test.rb'
-    - 'test/models/session_test.rb'
-    - 'test/models/site_test.rb'
-    - 'test/models/tag_test.rb'
-    - 'test/models/user_test.rb'
-    - 'test/services/content_service_test.rb'
-    - 'test/services/mastodon_service_test.rb'
-    - 'test/services/social_media_service_test.rb'
-    - 'test/services/twitter_service_test.rb'
-
 # Offense count: 172
 # This cop supports safe autocorrection (--autocorrect).
 Minitest/EmptyLineBeforeAssertionMethods:

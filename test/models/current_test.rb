@@ -249,7 +249,7 @@ class CurrentTest < ActiveSupport::TestCase
     Current.session = @admin_session
 
     assert_equal @admin, Current.user
-    assert Current.user.admin?
+    assert_predicate Current.user, :admin?
     assert_equal "admin@example.com", Current.user.email_address
   end
 

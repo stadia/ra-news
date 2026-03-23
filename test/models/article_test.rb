@@ -24,7 +24,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://example.com/test-unique-origin",
       user: @user
     )
-    assert article.valid?
+    assert_predicate article, :valid?
   end
 
   test "리모트 ActivityPub Note는 Article로 처리하지 않아야 한다" do
@@ -47,7 +47,7 @@ class ArticleTest < ActiveSupport::TestCase
       user: @user
     )
 
-    assert article.should_federate?
+    assert_predicate article, :should_federate?
   end
 
   test "url은 필수 항목이어야 한다" do
@@ -114,7 +114,7 @@ class ArticleTest < ActiveSupport::TestCase
       slug: "",
       user: @user
     )
-    assert article.valid?
+    assert_predicate article, :valid?
   end
 
   # ========== Association Tests ==========
@@ -131,7 +131,7 @@ class ArticleTest < ActiveSupport::TestCase
       user: @user
     )
 
-    assert article.valid?
+    assert_predicate article, :valid?
   end
 
   test "site에 선택적으로 속해야 한다" do
@@ -145,7 +145,7 @@ class ArticleTest < ActiveSupport::TestCase
       user: @user
     )
     article.site = nil
-    assert article.valid?
+    assert_predicate article, :valid?
   end
 
   test "comments와 has_many 관계를 가져야 한다" do
@@ -216,7 +216,7 @@ class ArticleTest < ActiveSupport::TestCase
     article = @article
     article.discard!
 
-    assert article.discarded?
+    assert_predicate article, :discarded?
     assert_not_nil article.deleted_at
     assert Article.exists?(article.id)
   end
@@ -262,7 +262,7 @@ class ArticleTest < ActiveSupport::TestCase
       article.save!
     end
 
-    assert article.discarded?, "Article with 'Show HN' in title should be discarded"
+    assert_predicate article, :discarded?, "Article with 'Show HN' in title should be discarded"
     assert_not_nil article.deleted_at
   end
 
@@ -279,7 +279,7 @@ class ArticleTest < ActiveSupport::TestCase
       article.save!
     end
 
-    assert article.discarded?, "Article with 'show hn' (lowercase) in title should be discarded"
+    assert_predicate article, :discarded?, "Article with 'show hn' (lowercase) in title should be discarded"
     assert_not_nil article.deleted_at
   end
 
@@ -572,7 +572,7 @@ class ArticleTest < ActiveSupport::TestCase
   # ========== YouTube Integration Tests ==========
 
   test "YouTube 기사를 정확하게 식별해야 한다" do
-    assert @youtube_article.is_youtube?
+    assert_predicate @youtube_article, :is_youtube?
     assert_not @article.is_youtube?
   end
 

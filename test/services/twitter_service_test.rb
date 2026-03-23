@@ -31,7 +31,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.success?
+      assert_predicate result, :success?
       assert_equal "1234567890", result.value!
     end
 
@@ -52,7 +52,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :already_posted, result.failure
     end
   end
@@ -69,7 +69,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal 403, result.failure
     end
   end
@@ -88,7 +88,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :delete)
 
-      assert result.success?
+      assert_predicate result, :success?
       assert_equal @article.id, result.value!
     end
 
@@ -107,7 +107,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :delete)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :no_social_id, result.failure
     end
   end
@@ -123,7 +123,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :not_suitable, result.failure
     end
   end
@@ -139,7 +139,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :not_suitable, result.failure
     end
   end
@@ -155,7 +155,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :not_suitable, result.failure
     end
   end
@@ -227,7 +227,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal 500, result.failure
     end
   end
@@ -246,7 +246,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :delete)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal 404, result.failure
     end
   end

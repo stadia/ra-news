@@ -33,9 +33,9 @@ class Views::Articles::Show < Views::Base
 
   # Shift markdown headings so that # and ## become ### (minimum h3)
   def downshift_headings(markdown)
-    markdown.gsub(/^(#{1,6})\s/) do |match|
-      level = $1.length
-      new_level = [level + 2, 6].min
+    markdown.gsub(/^(#+)\s/) do
+      level = Regexp.last_match(1).length
+      new_level = [ level + 2, 6 ].min
       "#" * new_level + " "
     end
   end

@@ -23,7 +23,7 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
-    assert comment.valid?
+    assert_predicate comment, :valid?
   end
 
   test "body는 필수 항목이어야 한다" do
@@ -52,7 +52,7 @@ class CommentTest < ActiveSupport::TestCase
     )
 
     comment_with_actor = Comment.new(body: "Remote comment", article: @article, federails_actor: remote_actor)
-    assert comment_with_actor.valid?, "Federated actor comment should be valid: #{comment_with_actor.errors.full_messages}"
+    assert_predicate comment_with_actor, :valid?, "Federated actor comment should be valid: #{comment_with_actor.errors.full_messages}"
   end
 
   test "article은 필수 항목이어야 한다" do
@@ -89,7 +89,7 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
-    assert comment.valid?
+    assert_predicate comment, :valid?
   end
 
   test "최소 길이의 body를 허용해야 한다" do
@@ -98,7 +98,7 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
-    assert comment.valid?
+    assert_predicate comment, :valid?
   end
 
   # ========== Association Tests ==========
@@ -230,7 +230,7 @@ class CommentTest < ActiveSupport::TestCase
         article: @article
       )
 
-      assert comment.valid?, "Korean comment should be valid: #{body}"
+      assert_predicate comment, :valid?, "Korean comment should be valid: #{body}"
       comment.save!
       assert_equal body, comment.body
       assert_equal body, comment.content
@@ -253,7 +253,7 @@ class CommentTest < ActiveSupport::TestCase
         article: @article
       )
 
-      assert comment.valid?, "Mixed language comment should be valid: #{body}"
+      assert_predicate comment, :valid?, "Mixed language comment should be valid: #{body}"
       comment.save!
       assert_equal body, comment.body
     end
@@ -268,7 +268,7 @@ class CommentTest < ActiveSupport::TestCase
       article: @article
     )
 
-    assert comment.valid?
+    assert_predicate comment, :valid?
     assert_equal Comment::MAX_BODY_LENGTH, comment.body.length
   end
 
@@ -304,7 +304,7 @@ class CommentTest < ActiveSupport::TestCase
         article: @article
       )
 
-      assert comment.valid?, "Special character comment should be valid: #{body}"
+      assert_predicate comment, :valid?, "Special character comment should be valid: #{body}"
       comment.save!
       assert_equal body, comment.body
     end
@@ -318,7 +318,7 @@ class CommentTest < ActiveSupport::TestCase
       article: @article
     )
 
-    assert comment.valid?
+    assert_predicate comment, :valid?
     comment.save!
     assert_equal multiline_body, comment.body
   end
@@ -333,7 +333,7 @@ class CommentTest < ActiveSupport::TestCase
         article: @article
       )
 
-      assert comment.valid?
+      assert_predicate comment, :valid?
     end
   end
 
@@ -494,7 +494,7 @@ class CommentTest < ActiveSupport::TestCase
     # All comments should be created successfully
     assert_equal 3, comments.length
     comments.each do |comment|
-      assert comment.persisted?
+      assert_predicate comment, :persisted?
       assert_not_nil comment.lft
       assert_not_nil comment.rgt
     end
@@ -552,7 +552,7 @@ class CommentTest < ActiveSupport::TestCase
     comment.update_column(:user_id, nil)
 
     comment.reload
-    assert comment.persisted?
+    assert_predicate comment, :persisted?
     assert_nil comment.user
   end
 
@@ -560,7 +560,7 @@ class CommentTest < ActiveSupport::TestCase
 
   test "모든 fixture 댓글은 유효해야 한다" do
     Comment.all.each do |comment|
-      assert comment.valid?, "Comment #{comment.id} should be valid: #{comment.errors.full_messages.join(', ')}"
+      assert_predicate comment, :valid?, "Comment #{comment.id} should be valid: #{comment.errors.full_messages.join(', ')}"
     end
   end
 

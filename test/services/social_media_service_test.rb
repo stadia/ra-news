@@ -56,19 +56,19 @@ class SocialMediaServiceTest < ActiveSupport::TestCase
   test "should_post_article? returns Success when article is suitable" do
     # is_related: true, slug 있음, title_ko 있음
     assert @article.is_related
-    assert @article.slug.present?
-    assert @article.title_ko.present?
+    assert_predicate @article.slug, :present?
+    assert_predicate @article.title_ko, :present?
 
     # private 메서드 테스트를 위해 send 사용
     result = @service.send(:should_post_article?, @article)
-    assert result.success?
+    assert_predicate result, :success?
   end
 
   test "should_post_article? returns Failure when article is not related" do
     @article.is_related = false
 
     result = @service.send(:should_post_article?, @article)
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :not_suitable, result.failure
   end
 
@@ -76,7 +76,7 @@ class SocialMediaServiceTest < ActiveSupport::TestCase
     @article.slug = nil
 
     result = @service.send(:should_post_article?, @article)
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :not_suitable, result.failure
   end
 
@@ -84,7 +84,7 @@ class SocialMediaServiceTest < ActiveSupport::TestCase
     @article.title_ko = nil
 
     result = @service.send(:should_post_article?, @article)
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :not_suitable, result.failure
   end
 

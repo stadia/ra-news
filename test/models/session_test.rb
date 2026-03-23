@@ -20,7 +20,7 @@ class SessionTest < ActiveSupport::TestCase
       ip_address: "192.168.1.1",
       user_agent: "Test Browser"
     )
-    assert session.valid?
+    assert_predicate session, :valid?
   end
 
   test "user는 필수 항목이어야 한다" do
@@ -33,8 +33,8 @@ class SessionTest < ActiveSupport::TestCase
     session1 = Session.create!(user: @user, ip_address: "127.0.0.1", user_agent: "Browser 1")
     session2 = Session.create!(user: users(:jane), ip_address: "127.0.0.2", user_agent: "Browser 2")
 
-    assert session1.valid?
-    assert session2.valid?
+    assert_predicate session1, :valid?
+    assert_predicate session2, :valid?
     assert_not_equal session1.id, session2.id
   end
 
@@ -98,7 +98,7 @@ class SessionTest < ActiveSupport::TestCase
 
   test "nil IP 주소와 사용자 에이전트를 허용해야 한다" do
     session = Session.new(user: @user)
-    assert session.valid?
+    assert_predicate session, :valid?
 
     session.save!
     assert_nil session.ip_address
@@ -115,8 +115,8 @@ class SessionTest < ActiveSupport::TestCase
       user_agent: "Admin Browser"
     )
 
-    assert admin_session.valid?
-    assert admin_session.user.admin?
+    assert_predicate admin_session, :valid?
+    assert_predicate admin_session.user, :admin?
     assert_equal admin, admin_session.user
   end
 
@@ -128,7 +128,7 @@ class SessionTest < ActiveSupport::TestCase
       user_agent: "Korean Browser"
     )
 
-    assert korean_session.valid?
+    assert_predicate korean_session, :valid?
     assert_equal korean_user, korean_session.user
     assert_equal "김철수", korean_session.user.name
   end
@@ -141,7 +141,7 @@ class SessionTest < ActiveSupport::TestCase
       user_agent: "Spaces Browser"
     )
 
-    assert session.valid?
+    assert_predicate session, :valid?
     assert_equal "홍 길 동", session.user.name
   end
 
@@ -244,7 +244,7 @@ class SessionTest < ActiveSupport::TestCase
 
     assert_queries(1) do
       sessions = user.sessions.to_a
-      assert sessions.any?
+      assert_predicate sessions, :any?
     end
   end
 
@@ -255,8 +255,8 @@ class SessionTest < ActiveSupport::TestCase
     session1 = Session.create!(user: @user, ip_address: "127.0.0.1", user_agent: "Test1")
     session2 = Session.create!(user: users(:jane), ip_address: "127.0.0.1", user_agent: "Test2")
 
-    assert session1.valid?
-    assert session2.valid?
+    assert_predicate session1, :valid?
+    assert_predicate session2, :valid?
     assert_not_equal session1.id, session2.id
   end
 
@@ -276,7 +276,7 @@ class SessionTest < ActiveSupport::TestCase
       assert_equal long_agent, session.user_agent
     else
       # Should have length validation error if there is one
-      assert session.errors[:user_agent].any?
+      assert_predicate session.errors[:user_agent], :any?
     end
   end
 
@@ -301,7 +301,7 @@ class SessionTest < ActiveSupport::TestCase
     # All sessions should be created successfully
     assert_equal 3, sessions.length
     sessions.each do |session|
-      assert session.persisted?
+      assert_predicate session, :persisted?
       assert_equal user, session.user
     end
   end
@@ -339,7 +339,7 @@ class SessionTest < ActiveSupport::TestCase
 
   test "모든 fixture 세션은 유효해야 한다" do
     Session.all.each do |session|
-      assert session.valid?, "Session #{session.id} should be valid: #{session.errors.full_messages.join(', ')}"
+      assert_predicate session, :valid?, "Session #{session.id} should be valid: #{session.errors.full_messages.join(', ')}"
     end
   end
 
@@ -351,7 +351,7 @@ class SessionTest < ActiveSupport::TestCase
   test "fixture 세션은 유효한 사용자에 속해야 한다" do
     Session.all.each do |session|
       assert_not_nil session.user, "Session #{session.id} should have a user"
-      assert session.user.valid?, "Session #{session.id} should belong to a valid user"
+      assert_predicate session.user, :valid?, "Session #{session.id} should belong to a valid user"
     end
   end
 

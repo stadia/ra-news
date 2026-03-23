@@ -36,7 +36,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       Readability::Document.stub(:new, mock_readability) do
         result = service.call(article)
 
-        assert result.success?
+        assert_predicate result, :success?
         assert_equal expected_content, result.value!
       end
     end
@@ -53,7 +53,7 @@ class ContentServiceTest < ActiveSupport::TestCase
     Faraday.stub(:get, mock_response) do
       result = service.call(article)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :no_content, result.failure
     end
   end
@@ -84,7 +84,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       Readability::Document.stub(:new, mock_readability) do
         result = service.call(article)
 
-        assert result.success?
+        assert_predicate result, :success?
         assert_equal parsed_content, result.value!
       end
     end
@@ -108,7 +108,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       result = service.call(article)
 
       # 리다이렉트 응답 자체는 빈 body이므로 no_content
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :no_content, result.failure
     end
 
@@ -167,7 +167,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       Youtube::Transcript.stub(:get, transcript_response) do
         result = service.call(article)
 
-        assert result.success?
+        assert_predicate result, :success?
         assert_includes result.value!, "Hello everyone"
         assert_includes result.value!, "Welcome to RubyConf"
       end
@@ -186,7 +186,7 @@ class ContentServiceTest < ActiveSupport::TestCase
     service = ContentService.new
     result = service.call(article)
 
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :not_youtube, result.failure
   end
 
@@ -207,7 +207,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       YoutubeRb::Transcript::YouTubeTranscriptApi.stub(:new, mock_api) do
         result = service.call(article)
 
-        assert result.failure?
+        assert_predicate result, :failure?
         assert_equal :no_content, result.failure
       end
     end
@@ -236,7 +236,7 @@ class ContentServiceTest < ActiveSupport::TestCase
         YoutubeRb::Formatters::TextFormatter.stub(:new, mock_formatter) do
           result = service.call(article)
 
-          assert result.success?
+          assert_predicate result, :success?
           assert_equal backup_transcript, result.value!
         end
       end
@@ -266,7 +266,7 @@ class ContentServiceTest < ActiveSupport::TestCase
         YoutubeRb::Formatters::TextFormatter.stub(:new, mock_formatter) do
           result = service.call(article)
 
-          assert result.success?
+          assert_predicate result, :success?
           assert_equal backup_transcript, result.value!
         end
       end
@@ -281,7 +281,7 @@ class ContentServiceTest < ActiveSupport::TestCase
 
     # YouTube 기사
     youtube_article = articles(:youtube_ruby_talk)
-    assert youtube_article.is_youtube?
+    assert_predicate youtube_article, :is_youtube?
   end
 
   test "Youtube::Transcript 응답에 error가 있으면 다음 언어를 시도한다" do
@@ -339,7 +339,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       Youtube::Transcript.stub(:get, transcript_stub) do
         result = service.call(article)
 
-        assert result.success?
+        assert_predicate result, :success?
         assert_includes result.value!, "English transcript"
       end
     end

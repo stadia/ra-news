@@ -20,7 +20,7 @@ class SiteTest < ActiveSupport::TestCase
       client: :rss,
       base_uri: "https://example.com/rss"
     )
-    assert site.valid?
+    assert_predicate site, :valid?
   end
 
   test "name은 필수 항목이어야 한다" do
@@ -39,7 +39,7 @@ class SiteTest < ActiveSupport::TestCase
 
   test "base_uri가 없는 사이트를 허용해야 한다" do
     site = Site.new(name: "No URI Site", client: :gmail)
-    assert site.valid?, "Gmail sites should not require base_uri"
+    assert_predicate site, :valid?, "Gmail sites should not require base_uri"
   end
 
   # ========== Enum Tests ==========
@@ -52,16 +52,16 @@ class SiteTest < ActiveSupport::TestCase
     assert_equal expected_clients, Site.clients.keys
 
     # Test enum methods
-    assert @rss_site.rss?
-    assert @youtube_site.youtube?
-    assert @gmail_site.gmail?
-    assert @hn_site.hacker_news?
-    assert sites(:hacker_news_ruby).rss_page?
+    assert_predicate @rss_site, :rss?
+    assert_predicate @youtube_site, :youtube?
+    assert_predicate @gmail_site, :gmail?
+    assert_predicate @hn_site, :hacker_news?
+    assert_predicate sites(:hacker_news_ruby), :rss_page?
   end
 
   test "기본 client를 rss로 설정해야 한다" do
     site = Site.new(name: "Default Client Test")
-    assert site.rss?, "Default client should be rss"
+    assert_predicate site, :rss?, "Default client should be rss"
     assert_equal "rss", site.client
   end
 
@@ -200,7 +200,7 @@ class SiteTest < ActiveSupport::TestCase
         base_uri: "https://korean#{index}.example.com/rss"
       )
 
-      assert site.valid?, "Korean site name '#{name}' should be valid"
+      assert_predicate site, :valid?, "Korean site name '#{name}' should be valid"
       site.save!
       assert_equal name, site.name
     end
@@ -214,7 +214,7 @@ class SiteTest < ActiveSupport::TestCase
       base_uri: "https://한국.example.com/rss"
     )
 
-    assert site.valid?
+    assert_predicate site, :valid?
     site.save!
     assert_equal "https://한국.example.com/rss", site.base_uri
   end
@@ -247,7 +247,7 @@ class SiteTest < ActiveSupport::TestCase
 
     special_names.each do |name|
       site = Site.new(name: name, client: :rss)
-      assert site.valid?, "Site name '#{name}' should be valid"
+      assert_predicate site, :valid?, "Site name '#{name}' should be valid"
 
       site.save!
       assert_equal name, site.name
@@ -376,16 +376,16 @@ class SiteTest < ActiveSupport::TestCase
 
   test "모든 fixture 사이트는 유효해야 한다" do
     Site.all.each do |site|
-      assert site.valid?, "Site #{site.name} should be valid: #{site.errors.full_messages.join(', ')}"
+      assert_predicate site, :valid?, "Site #{site.name} should be valid: #{site.errors.full_messages.join(', ')}"
     end
   end
 
   test "fixture 사이트는 예상된 클라이언트 유형을 가져야 한다" do
-    assert @rss_site.rss?
-    assert @youtube_site.youtube?
-    assert @gmail_site.gmail?
-    assert @hn_site.hacker_news?
-    assert sites(:hacker_news_ruby).rss_page?
+    assert_predicate @rss_site, :rss?
+    assert_predicate @youtube_site, :youtube?
+    assert_predicate @gmail_site, :gmail?
+    assert_predicate @hn_site, :hacker_news?
+    assert_predicate sites(:hacker_news_ruby), :rss_page?
   end
 
   private

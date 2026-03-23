@@ -24,7 +24,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.success?
+      assert_predicate result, :success?
       assert_equal "123456789", result.value!
       assert_equal "123456789", @article.reload.mastodon_id
     end
@@ -41,7 +41,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal :already_posted, result.failure
     end
   end
@@ -55,7 +55,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :post)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal 500, result.failure
     end
 
@@ -68,7 +68,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service = MastodonService.new
     result = service.call(@article, command: :post)
 
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :not_suitable, result.failure
   end
 
@@ -78,7 +78,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service = MastodonService.new
     result = service.call(@article, command: :post)
 
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :not_suitable, result.failure
   end
 
@@ -88,7 +88,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service = MastodonService.new
     result = service.call(@article, command: :post)
 
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :not_suitable, result.failure
   end
 
@@ -105,7 +105,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :delete)
 
-      assert result.success?
+      assert_predicate result, :success?
       assert_nil @article.reload.mastodon_id
     end
 
@@ -118,7 +118,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service = MastodonService.new
     result = service.call(@article, command: :delete)
 
-    assert result.failure?
+    assert_predicate result, :failure?
     assert_equal :no_social_id, result.failure
   end
 
@@ -133,7 +133,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     service.stub(:platform_client, mock_client) do
       result = service.call(@article, command: :delete)
 
-      assert result.failure?
+      assert_predicate result, :failure?
       assert_equal 404, result.failure
     end
 
