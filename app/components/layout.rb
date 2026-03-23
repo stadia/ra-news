@@ -220,9 +220,9 @@ class Components::Layout < Components::Base
 
         li do
           if vc.user_signed_in?
-            raw vc.nav_link_to("로그아웃", logout_path)
+            raw vc.nav_link_to("로그아웃", destroy_user_session_path)
           else
-            raw vc.nav_link_to("로그인", new_session_path)
+            raw vc.nav_link_to("로그인", new_user_session_path)
           end
         end
 

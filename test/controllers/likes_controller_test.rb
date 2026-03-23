@@ -37,7 +37,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
   test "POST create requires authentication" do
     post post_like_path(@post), params: { likeable_type: "Post" }
 
-    assert_redirected_to new_session_path
+    assert_redirected_to new_user_session_path
   end
 
   test "POST create likes an article" do

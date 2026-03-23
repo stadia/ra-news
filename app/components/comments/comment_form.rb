@@ -64,7 +64,7 @@ class Components::Comments::CommentForm < Components::Base
     div(class: "rounded-lg border border-border-muted bg-surface px-4 py-5 text-sm text-content-secondary") do
       Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1 text-info-text")
       plain "댓글을 작성하려면 "
-      link_to("로그인", new_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
+      link_to("로그인", new_user_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
       plain " 이 필요합니다."
     end
   end

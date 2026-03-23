@@ -16,7 +16,7 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
   test "POST create requires authentication" do
     post followings_path, params: { following: { target_actor_id: @jane_actor.id } }
 
-    assert_redirected_to new_session_path
+    assert_redirected_to new_user_session_path
   end
 
   # --- new (remote follow) ---

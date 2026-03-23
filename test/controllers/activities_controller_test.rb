@@ -11,7 +11,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
   test "GET feed requires authentication" do
     get feed_path
 
-    assert_redirected_to new_session_path
+    assert_redirected_to new_user_session_path
   end
 
   test "GET feed returns 200 for authenticated user" do

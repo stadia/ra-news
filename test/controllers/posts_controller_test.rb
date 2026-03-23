@@ -5,7 +5,7 @@ require "test_helper"
 class PostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:john)
-    post session_url, params: { email_address: @user.email_address, password: "password" }
+    sign_in @user
   end
 
   test "should create post" do
@@ -35,9 +35,9 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should require authentication" do
-    get logout_url
+    sign_out @user
     post posts_url, params: { post: { body: "test" } }
 
-    assert_redirected_to new_session_url
+    assert_redirected_to new_user_session_url
   end
 end

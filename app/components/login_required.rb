@@ -18,7 +18,7 @@ class Components::LoginRequired < Components::Base
       p(class: "text-content-muted mb-6") { @message }
 
       render RubyUI::Link.new(
-        href: new_session_path,
+        href: new_user_session_path,
         class: "inline-flex items-center px-5 py-2.5 bg-info-solid hover:bg-info-solid-hover text-brand-foreground font-medium rounded-lg transition-colors duration-200",
         data: { turbo: false }
       ) do
