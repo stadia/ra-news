@@ -12,7 +12,7 @@ class Views::Passwords::Edit < Views::Base
     div(class: "mx-auto md:w-2/3 w-full") do
       render RubyUI::Heading.new(level: 1, class: "font-bold") { "새 비밀번호 설정" }
 
-      form_with(url: user_password_path, method: :put, class: "contents") do |f|
+      form_with(url: user_password_path, method: :put, scope: :user, class: "contents") do |f|
         f.hidden_field :reset_password_token, value: @token
         render RubyUI::FormField.new(class: "my-5") do
           render RubyUI::FormFieldLabel.new(for: :password) { "새 비밀번호" }

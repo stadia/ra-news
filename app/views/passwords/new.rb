@@ -9,7 +9,7 @@ class Views::Passwords::New < Views::Base
     div(class: "mx-auto md:w-2/3 w-full") do
       render RubyUI::Heading.new(level: 1, class: "font-bold") { "비밀번호를 잊으셨나요?" }
 
-      form_with(url: user_password_path, class: "contents") do |f|
+      form_with(url: user_password_path, scope: :user, class: "contents") do |f|
         render RubyUI::FormField.new(class: "my-5") do
           render RubyUI::FormFieldLabel.new(for: :email) { "이메일" }
           f.email_field :email,

@@ -7,7 +7,7 @@ class Views::Sessions::New < Views::Base
     div(class: "space-y-6 max-w-6xl mx-auto") do
       render RubyUI::Heading.new(level: 1, class: "font-bold") { "로그인" }
 
-      form_with(url: user_session_path, class: "contents") do |form|
+      form_with(url: user_session_path, scope: :user, class: "contents") do |form|
         render RubyUI::FormField.new(class: "my-5") do
           render RubyUI::FormFieldLabel.new(for: :email) { "이메일" }
           form.email_field :email,
