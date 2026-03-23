@@ -576,7 +576,7 @@ GEM
       brakeman (>= 7.0)
       ruby-lsp (~> 0.19)
     ruby-lsp-i18n (0.4.2)
-    ruby-mcp-client (1.0.0)
+    ruby-mcp-client (1.0.1)
       faraday (~> 2.0)
       faraday-follow_redirects (~> 0.3)
       faraday-retry (~> 2.0)

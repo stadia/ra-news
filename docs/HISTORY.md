@@ -1,122 +1,78 @@
 # RA News 프로젝트 개발 히스토리
 
+## 2026년 2월
+
+- **Phlex/RubyUI 기반 UI 전환 가속**:
+  - ERB 뷰를 Phlex 컴포넌트로 본격 전환하고, 댓글/기사/사용자 화면을 재구성
+  - RubyUI `Button`, `Link`, `Card`, Typography 컴포넌트를 도입해 화면 일관성 강화
+  - PhlexIcons, 메타 태그, 대화상자/페이지네이션 컴포넌트 적용으로 UI 기반 정비
+- **기사 처리·댓글·운영 기능 개선**:
+  - AI 에이전트 기반 요약/번역 파이프라인을 `ArticleAgentsService`, `one_shot_agent` 중심으로 재정리
+  - 기사 생성 경쟁 상태 처리, 중복 감지 강화, 요약 길이 기준 조정, 배치 처리 오류 대응
+  - 비회원 댓글 비밀번호 인증, 최근 댓글 사이드바, 댓글 수 표시 등 커뮤니티 기능 확장
+- **스크래핑/문서/개발 환경 확장**:
+  - `ruby-mcp-client`와 MCP 기반 HTML fetch 지원 추가 및 스크래핑 문서 보강
+  - GitHub URL용 README 추출, Scrapling/Chrome 서비스, web push VAPID 환경 변수 추가
+  - `ruby_llm-agents` 제거 후 `ruby_llm` 중심으로 정리하고 의존성 전반 업데이트
+
+## 2026년 1월
+
+- **PostgreSQL 기준 테스트·CI 체계 강화**:
+  - 테스트 환경에서 PostgreSQL 확장과 vector embedding을 활성화하고, DB 생성/마이그레이션 흐름 정비
+  - PostgreSQL 서비스용 Docker 이미지와 GitHub Container Registry 인증을 추가해 CI 재현성 개선
+  - 시스템 테스트 워크플로우와 관련 문서를 보강해 실제 운영 전제와 가까운 검증 체계를 마련
+- **서비스 계층·소셜 연동 리팩토링**:
+  - `ContentService`, `SocialMediaService`를 Dry::Operation 패턴으로 재구성하고 서비스 레이어 테스트 확장
+  - 소셜 게시물 삭제와 `social_post_ids` 추적을 추가하고 Mastodon 응답 파싱 안정성 개선
+  - Article slug 생성, Site 동작, YouTube 자막 예외 처리 등 핵심 도메인 안정성 보완
+- **보안·의존성·운영 설정 정비**:
+  - `bundler-audit`, `minitest`, `minitest-mock`, `youtube-transcript-rb` 등 개발·검증 도구를 도입
+  - Rails 8.1 기준 설정과 RuboCop 구성을 갱신하고 DB 커넥션 풀 기본값을 조정
+  - 의존성 업데이트와 Rails 감사 리포트 추가로 유지보수 기준을 정리
+
+## 2025년 12월
+
+- **런타임·데이터베이스 업그레이드**:
+  - Ruby 4.0 업그레이드를 진행하고 관련 gem 의존성을 조정
+  - PostgreSQL 17로 업그레이드하고 Dockerfile/CMD/포트 노출 설정을 함께 정비
+- **UI 컴포넌트·스타일 체계 조정**:
+  - `shadcn-rails`, Heroicon, ViewComponent를 활용해 로그인 요구 UI와 아이콘 처리 방식을 재구성
+  - Tailwind 구식 유틸리티를 최신 명칭으로 교체하고 비로그인 댓글 렌더링을 개선
+- **검색·권한·운영 워크플로우 개선**:
+  - 검색 인덱스 재생성을 잡 클래스로 이동하고 기본 기사 조회에서 related scope를 제거
+  - 사용자 role 설명, `Current` 참조 정리, JavaScript 지원 추가 등 애플리케이션 동작을 다듬음
+  - 로컬 PostgreSQL Docker 실행 환경과 Claude PR Assistant 워크플로우를 추가해 개발 흐름 보강
+
 ## 2025년 11월
 
-### 2025-11-18
-- **AI 제공자 확장**: OpenAI 지원 추가 및 기본 모델 설정 업데이트
-
-### 2025-11-14
-- **릴리스 정리**:
-  - 원격 main 브랜치와 동기화
-
-### 2025-11-12
-- **검색 품질 개선**:
-  - 기사 유사도 검색 방식을 코사인/기타 지표에서 **유클리드 거리 기반**으로 변경
-
-### 2025-11-08
-- **사이트 소프트 삭제 지원**:
-  - `Site` 모델에 soft delete(discard) 도입 및 관련 잡 스코프 수정 (#374)
-  - Madmin에서 Site에 대한 삭제/복구(discard/restore) 액션 추가
-- **관리 UI 개선**: 사이트 삭제/복구 시 안내 문구 및 알림 메시지 개선
-- **CI/운영 환경 정리**:
-  - Gemini CLI 관련 GitHub 워크플로우 제거
-  - 잠재 버그 탐지 및 수정 (#372)
-- **데이터베이스 인덱스**:
-  - 사이트/기사 관련 인덱스 추가 및 최적화
-
-### 2025-11-03
-- **프레임워크 업그레이드**:
-  - Rails 8.1로 업그레이드 (#351)
-  - 관련 코드 및 설정에서 발생하는 경고 처리(워닝 회피)
-  - 기타 의존성 정리 및 설정값 업데이트
+- **프레임워크·AI 설정 정비**:
+  - Rails 8.1로 업그레이드하고 관련 경고와 설정값을 정리
+  - OpenAI 지원과 기본 모델 설정을 추가해 AI 제공자 구성을 확장
+- **검색·데이터 모델 개선**:
+  - 기사 유사도 검색을 유클리드 거리 기반으로 변경해 검색 품질을 조정
+  - 사이트/기사 관련 인덱스를 추가·최적화해 조회 성능을 보강
+  - `Site` 모델에 soft delete(discard)를 도입하고 관련 잡 스코프를 정비
+- **관리 UI·운영 워크플로우 정리**:
+  - Madmin에 Site 삭제/복구 액션을 추가하고 안내 문구와 알림 메시지를 개선
+  - Gemini CLI 관련 GitHub 워크플로우를 제거하고 릴리스 브랜치 정리를 진행
+  - 잠재 버그 수정과 운영 설정 정리로 배포 안정성을 높임
 
 ---
 
 ## 2025년 10월
 
-### 2025-10-29
-- **성능 및 안정성 개선**:
-  - `Site.last_checked_at` 기본값을 **6개월 전**으로 설정하여 신규 사이트 초기 상태 명확화
-  - 환경설정/Preference 캐싱 및 동적 접근자 리팩토링
-
-### 2025-10-26
-- **데이터베이스 청소**: 사용되지 않는 인덱스 제거로 불필요한 오버헤드 감소
-
-### 2025-10-24
-- **슬로우 쿼리 대응**:
-  - 기사 정렬 및 조회에 필요한 인덱스 추가 (`articles.created_at` 포함)
-  - 기존 인덱스 구조 재검토 및 최적화
-  - 마이그레이션 스크립트 정리 및 재작성
-- **개발 환경 개선**:
-  - PostgreSQL 관련 MCP 설정 추가
-  - 메일 설정 개선 및 `DEFAULT_IMAP_ADDRESS` 상수 도입
-
-### 2025-10-22
-- **URL 처리 강화**:
-  - `mailto:` 링크를 링크 추출 로직에서 무시하도록 처리
-
-### 2025-10-20
-- **환경 변수 및 빌드 도구 정리**:
-  - `ruby2_keywords` 제거
-- **메일 설정 개선**:
-  - 메일 환경 변수를 `MAIL_*` 네이밍으로 통일
-  - IMAP 서버 주소 오버라이드 옵션 추가
-- **유사 기사 검색 향상**:
-  - `summary_body` 인덱싱 및 **확인(confirmed)** 된 아티클만 유사 기사 필터링에 사용하도록 변경
-
-### 2025-10-19
-- **테스트 환경 정리**:
-  - Mocha 제거 및 Minitest 스텁으로 테스트 코드 마이그레이션
-  - SQLite3 설정 공통화
-- **정책 및 문서화**:
-  - 에이전트/개발 지침 문서(AGENTS.md) 업데이트
-  - `rbs_rails` 의존성 제거
-
-### 2025-10-13
-- **외부 연동 개선**:
-  - 테스트용 ngrok 설정 추가
-  - Slack OAuth 클라이언트 설정 추가
-  - MCP 관련 설정 추가
-- **CI 안정화**:
-  - CI 테스트 설정 수정 및 빌드 신뢰성 개선
-  - ignore_hosts fixture 추가
-  - 테스트 환경에서 SQLite 데이터베이스 구성 및 JSON 컬럼 대응
-- **캐시 및 인프라**:
-  - Solid Cache 활성화 및 SQLite DB 설정
-  - Preference 캐시 도입 및 docker-compose 설정 리팩토링
-
-### 2025-10-11
-- **소셜/메타 기능**:
-  - 상단/푸터에 소셜 링크 추가
-  - PWA manifest 활성화
-  - Mastodon OAuth 엔드포인트를 ruby.social로 변경
-  - Mastodon 클라이언트가 Preference 기반 동적 사이트 URL을 사용하도록 수정
-
-### 2025-10-10
-- **UI/로컬라이제이션**:
-  - 뒤로가기 링크 텍스트를 한국어로 로컬라이즈
-  - 폼 배경색을 흰색으로 설정해 가독성 개선
-- **OAuth 구조 개선**:
-  - OAuth 클라이언트 구성을 Preference 기반으로 통합 관리
-  - SocialMediaService 기반 클래스 도입
-  - OAuth URL을 상수(`OAUTH_CONFIG`)로 중앙화
-
-### 2025-10-09
-- **소셜 연동 리팩토링**:
-  - Mastodon, X(Twitter) OAuth 통합 구조 정비
-  - X OAuth 토큰 리프레시 처리 및 서비스 레이어 도입
-
-### 2025-10-07
-- **OAuth 및 설정 리팩토링**:
-  - Preference 캐시 초기 구현 후 제거 및 구조 재조정
-  - X 클라이언트 설정을 Preference 기반으로 변경
-  - 소셜 OAuth 인증 로직을 서비스 객체/공통 모듈로 일반화
-  - Preference 모델에 동적 accessor 추가
-  - Madmin에서 Preference 파라미터 허용 로직 강화
-
-### 2025-10-06
-- **AI 설정 변경**:
-  - AI 구성(모델/지침)을 Claude 중심에서 Gemini 중심으로 마이그레이션
+- **소셜 OAuth·환경설정 구조 재정비**:
+  - Mastodon, X(Twitter) OAuth 흐름을 서비스 객체 중심으로 통합하고 토큰 처리 구조를 개선
+  - Preference 기반 동적 설정, 동적 accessor, 파라미터 허용 로직을 정비해 환경설정 관리 일관성 확보
+  - AI 기본 구성을 Claude 중심에서 Gemini 중심으로 옮기고 메일 환경 변수 체계도 `MAIL_*` 기준으로 정리
+- **검색·성능·데이터베이스 최적화**:
+  - `summary_body` 인덱싱과 confirmed 기사 필터링으로 유사 기사 검색 정확도를 높임
+  - 기사 정렬/조회용 인덱스를 추가하고 사용되지 않는 인덱스를 제거해 슬로우 쿼리를 완화
+  - `Site.last_checked_at` 기본값 조정, URL 추출 시 `mailto:` 제외 등 수집 안정성을 다듬음
+- **외부 연동·개발 환경·문서 정비**:
+  - Slack OAuth, ngrok, PostgreSQL MCP 등 외부 연동과 로컬 개발 설정을 보강
+  - CI 테스트 설정, 캐시 구성, docker-compose를 정리해 개발·검증 환경을 안정화
+  - AGENTS.md 업데이트, `rbs_rails` 제거, PWA/소셜 링크 추가 등 운영·문서·UI 기반을 함께 손봄
 
 ---
 
