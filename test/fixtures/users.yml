@@ -1,78 +1,78 @@
 # frozen_string_literal: true
 
-<% password_digest = BCrypt::Password.create("password") %>
-<% admin_password_digest = BCrypt::Password.create("admin_password") %>
+<% encrypted_password = BCrypt::Password.create("password") %>
+<% admin_encrypted_password = BCrypt::Password.create("admin_password") %>
 
 # Regular users
 john:
-  email_address: john@example.com
+  email: john@example.com
   name: 존 도
   username: john
-  password_digest: <%= password_digest %>
+  encrypted_password: <%= encrypted_password %>
   roles:
     - user
     - editor
     - bot
 
 jane:
-  email_address: jane@example.com
+  email: jane@example.com
   name: 제인 스미스
   username: jane
-  password_digest: <%= password_digest %>
+  encrypted_password: <%= encrypted_password %>
   roles:
     - user
     - bot
 
 # Admin user
 admin:
-  email_address: admin@example.com
+  email: admin@example.com
   name: 관리자
   username: admin
-  password_digest: <%= admin_password_digest %>
+  encrypted_password: <%= admin_encrypted_password %>
   roles:
     - user
     - admin
 
 # Test users with Korean names
 korean_user:
-  email_address: korean@example.com
+  email: korean@example.com
   name: 김철수
   username: korean_user
-  password_digest: <%= password_digest %>
+  encrypted_password: <%= encrypted_password %>
   roles:
     - user
     - bot
 
 user_with_spaces:
-  email_address: spaces@example.com
+  email: spaces@example.com
   name: 홍 길 동
   username: user_with_spaces
-  password_digest: <%= password_digest %>
+  encrypted_password: <%= encrypted_password %>
   roles:
     - user
 
 # User for validation testing
 minimal_user:
-  email_address: minimal@example.com
+  email: minimal@example.com
   name: 최소
   username: minimal_user
-  password_digest: <%= password_digest %>
+  encrypted_password: <%= encrypted_password %>
   roles:
     - user
 
 # Legacy fixture names for backwards compatibility
 one:
-  email_address: one@example.com
+  email: one@example.com
   name: 사용자 일
   username: user_one
-  password_digest: <%= password_digest %>
+  encrypted_password: <%= encrypted_password %>
   roles:
     - user
 
 two:
-  email_address: two@example.com
+  email: two@example.com
   name: 사용자 이
   username: user_two
-  password_digest: <%= password_digest %>
+  encrypted_password: <%= encrypted_password %>
   roles:
     - user

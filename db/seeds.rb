@@ -10,7 +10,7 @@
 Role.create name: 'user'
 Role.create name: 'admin'
 
-admin = User.find_or_initialize_by(email_address: "admin@example.com") do |user|
+admin = User.find_or_initialize_by(email: "admin@example.com") do |user|
   user.password = "admin123"
   user.name = "Admin"
   user.roles = [ 'user', 'admin' ]
