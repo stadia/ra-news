@@ -3,9 +3,10 @@
 class Views::Home::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(articles:, recent_comments:, liked_article_ids: [])
+  def initialize(articles:, recent_comments:, sidebar_tags:, liked_article_ids: [])
     @articles = articles
     @recent_comments = recent_comments
+    @sidebar_tags = sidebar_tags
     @liked_article_ids = liked_article_ids
   end
 
@@ -22,7 +23,10 @@ class Views::Home::Index < Views::Base
       end
 
       div(class: "w-full lg:w-72 shrink-0 order-last lg:order-0") do
-        render Components::RecentCommentsSidebar.new(recent_comments: @recent_comments)
+        div(class: "space-y-6") do
+          render Components::RecentCommentsSidebar.new(recent_comments: @recent_comments)
+          render Components::TagsSidebar.new(tags: @sidebar_tags)
+        end
       end
     end
   end

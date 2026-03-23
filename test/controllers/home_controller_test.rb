@@ -7,6 +7,9 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
+    assert_select "aside.recent-comments-sidebar"
+    assert_select "aside.tags-sidebar"
+    assert_select "a[href='#{tag_path(tags(:ruby_tag).name)}']", text: /#ruby/
   end
 
   test "GET root preloads liked articles for signed in user" do
