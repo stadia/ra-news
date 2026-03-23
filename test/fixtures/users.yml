@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+<% require 'bcrypt' %>
 <% encrypted_password = BCrypt::Password.create("password") %>
 <% admin_encrypted_password = BCrypt::Password.create("admin_password") %>
 
