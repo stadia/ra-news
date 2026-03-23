@@ -2,7 +2,19 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   draw :madmin
 
-  resources :passwords, param: :token
+  devise_for :users, path: '', path_names: {
+    sign_in: 'login', sign_out: 'logout', sign_up: 'signup',
+    password: 'passwords', registration: 'account'
+  }, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    passwords: 'users/passwords'
+  }
+
+  devise_scope :user do
+    get 'account/password', to: 'users/registrations#password', as: :account_password
+  end
+
   resource :push_subscription, only: %i[ create destroy ]
   resources :posts, only: [ :show, :create ] do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
@@ -15,12 +27,6 @@ Rails.application.routes.draw do
 
   get "others" => "articles#others"
   get "tag/:keyword" => "articles#tag", as: :tag, format: false, constraints: { keyword: /[^\/]+/ }
-
-  resource :users, path: :account do
-    member do
-      get :password
-    end
-  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -35,13 +41,6 @@ Rails.application.routes.draw do
 
   get "rss"   => "home#rss",   as: :rss
   get "about" => "home#about", as: :about
-
-  get "login" => "sessions#new", as: :new_session
-  post "login" => "sessions#create", as: :session
-  get "logout" => "sessions#destroy", as: :logout
-
-  get "signup" => "users#new", as: :new_user
-  post "signup" => "users#create", as: :user
 
   get "social/:provider/authorize", to: "social#provider_authorize", as: :social_provider_authorize
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
