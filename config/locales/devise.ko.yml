@@ -1,4 +1,31 @@
 ko:
+  activerecord:
+    attributes:
+      user:
+        email: "이메일"
+        username: "아이디"
+        password: "비밀번호"
+        password_confirmation: "비밀번호 확인"
+        current_password: "현재 비밀번호"
+        name: "이름"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "을(를) 입력해주세요"
+              taken: "은(는) 이미 사용 중입니다"
+              invalid: "형식이 올바르지 않습니다"
+            username:
+              blank: "을(를) 입력해주세요"
+              taken: "은(는) 이미 사용 중입니다"
+              too_short: "은(는) 2자 이상이어야 합니다"
+              too_long: "은(는) 30자 이하여야 합니다"
+            password:
+              blank: "을(를) 입력해주세요"
+              too_short: "은(는) 6자 이상이어야 합니다"
+            password_confirmation:
+              confirmation: "이 일치하지 않습니다"
   errors:
     messages:
       not_found: "을(를) 찾을 수 없습니다"
