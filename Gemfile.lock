@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: f415a958af4567325cdb945bce79131dc5031765
+  revision: c190ca07dcdb0b99a30cfeda6d0efbcdb9f3e14c
   specs:
     federails (0.7.0)
       faraday
@@ -508,7 +508,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.1)
-    rbs (4.0.0)
+    rbs (4.0.1)
       logger
       prism (>= 1.6.0)
       tsort
