@@ -2,17 +2,17 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   draw :madmin
 
-  devise_for :users, path: '', path_names: {
-    sign_in: 'login', sign_out: 'logout', sign_up: 'signup',
-    password: 'passwords', registration: 'account'
+  devise_for :users, path: "", path_names: {
+    sign_in: "login", sign_out: "logout", sign_up: "signup",
+    password: "passwords", registration: "account"
   }, controllers: {
-    sessions: 'users/sessions',
-    registrations: 'users/registrations',
-    passwords: 'users/passwords'
+    sessions: "users/sessions",
+    registrations: "users/registrations",
+    passwords: "users/passwords"
   }
 
   devise_scope :user do
-    get 'account/password', to: 'users/registrations#password', as: :account_password
+    get "account/password", to: "users/registrations#password", as: :account_password
   end
 
   resource :push_subscription, only: %i[ create destroy ]

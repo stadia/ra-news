@@ -51,11 +51,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def sign_up_params
-    params.expect(user: [:email, :name, :username, :password, :password_confirmation])
+    params.expect(user: [ :email, :name, :username, :password, :password_confirmation ])
   end
 
   def account_update_params
-    params.expect(user: [:email, :name, :username])
+    params.expect(user: [ :email, :name, :username ])
   end
 
   private
@@ -68,7 +68,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def update_user_password
-    password_params = params.expect(user: [:current_password, :password, :password_confirmation])
+    password_params = params.expect(user: [ :current_password, :password, :password_confirmation ])
     if resource.update_with_password(password_params)
       bypass_sign_in resource
       redirect_to edit_user_registration_path, notice: t("devise.registrations.updated")
