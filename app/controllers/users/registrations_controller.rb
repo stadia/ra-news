@@ -51,11 +51,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def sign_up_params
-    params.expect(user: [:email, :name, :password, :password_confirmation])
+    params.expect(user: [:email, :name, :username, :password, :password_confirmation])
   end
 
   def account_update_params
-    params.expect(user: [:email, :name])
+    params.expect(user: [:email, :name, :username])
   end
 
   private

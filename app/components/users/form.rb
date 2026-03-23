@@ -61,6 +61,14 @@ class Components::Users::Form < Components::Base
                 render RubyUI::FormFieldError.new { msg }
               end
             end
+
+            render RubyUI::FormField.new do
+              render RubyUI::FormFieldLabel.new(for: :user_username) { "아이디" }
+              form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: "영문, 숫자, 밑줄", autocomplete: "username"
+              @user.errors[:username].each do |msg|
+                render RubyUI::FormFieldError.new { msg }
+              end
+            end
           end
 
           unless @user.persisted?
