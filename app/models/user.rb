@@ -9,12 +9,12 @@ class User < ApplicationRecord
   has_many :articles, dependent: :nullify
   has_many :posts, dependent: :destroy
 
-  validates :name, presence: true,
-                   length: { minimum: 2, maximum: 50 },
+  validates :name, length: { minimum: 2, maximum: 50 },
                    format: {
                      with: /\A[가-힣a-zA-Z\s]+\z/,
                      message: "한글, 영문, 공백만 사용할 수 있습니다"
-                   }
+                   },
+                   allow_blank: true
 
   normalizes :email, with: ->(e) { e.strip.downcase }
   normalizes :name, with: ->(n) { n.strip }

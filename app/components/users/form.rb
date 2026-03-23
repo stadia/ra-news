@@ -47,25 +47,17 @@ class Components::Users::Form < Components::Base
           # Form Fields Grid
           div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-border-subtle/60") do
             render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_email) { "이메일 주소" }
-              form.email_field :email, class: input_classes(@user.errors[:email])
-              @user.errors[:email].each do |msg|
-                render RubyUI::FormFieldError.new { msg }
-              end
-            end
-
-            render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_name) { "사용자 이름" }
-              form.text_field :name, class: input_classes(@user.errors[:name])
-              @user.errors[:name].each do |msg|
-                render RubyUI::FormFieldError.new { msg }
-              end
-            end
-
-            render RubyUI::FormField.new do
               render RubyUI::FormFieldLabel.new(for: :user_username) { "아이디" }
               form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: "영문, 숫자, 밑줄", autocomplete: "username"
               @user.errors[:username].each do |msg|
+                render RubyUI::FormFieldError.new { msg }
+              end
+            end
+
+            render RubyUI::FormField.new do
+              render RubyUI::FormFieldLabel.new(for: :user_email) { "이메일" }
+              form.email_field :email, class: input_classes(@user.errors[:email])
+              @user.errors[:email].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
               end
             end
