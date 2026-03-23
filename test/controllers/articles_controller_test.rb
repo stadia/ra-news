@@ -31,6 +31,8 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes @response.body, article.title_ko
     assert_equal 1, like_queries.size
+    assert_select "aside.tags-sidebar"
+    assert_select "a[href='#{tag_path(tags(:ruby_tag).name)}']", text: /#ruby/
   end
 
   test "GET others preloads liked articles for signed in user" do
@@ -58,6 +60,33 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes @response.body, "Other article"
     assert_equal 1, like_queries.size
+    assert_select "aside.tags-sidebar"
+    assert_select "a[href='#{tag_path(tags(:rails_tag).name)}']", text: /#rails/
+  end
+
+  test "GET tag filters articles by keyword" do
+    article = articles(:ruby_article)
+    article.tag_list.add("ruby")
+    article.save!
+
+    get tag_path("ruby")
+
+    assert_response :success
+    assert_select "h1", text: "#ruby"
+    assert_select "#articlesList", text: /#{Regexp.escape(article.title_ko)}/
+    assert_select "a[href='#{tag_path("ruby")}']", text: /#ruby/
+  end
+
+  test "GET tag supports dotted keywords" do
+    article = articles(:ruby_article)
+    article.tag_list.add("ruby-3.4")
+    article.save!
+
+    get tag_path("ruby-3.4")
+
+    assert_response :success
+    assert_select "h1", text: "#ruby-3.4"
+    assert_select "#articlesList", text: /#{Regexp.escape(article.title_ko)}/
   end
 
   test "GET show returns 200 with article title" do

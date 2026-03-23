@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   end
 
   get "others" => "articles#others"
+  get "tag/:keyword" => "articles#tag", as: :tag, format: false, constraints: { keyword: /[^\/]+/ }
 
   resource :users, path: :account do
     member do

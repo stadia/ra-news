@@ -6,7 +6,7 @@ require "schema_dot_org/news_article"
 require "schema_dot_org/breadcrumb_list"
 
 class ArticlesController < ApplicationController
-  allow_unauthenticated_access only: %i[ index show others ]
+  allow_unauthenticated_access only: %i[ index show others tag ]
 
   before_action :set_article, only: %i[ show ]
 
@@ -33,6 +33,7 @@ class ArticlesController < ApplicationController
     render Views::Articles::Index.new(
       pagy: @pagy,
       articles: @articles,
+      sidebar_tags: sidebar_tags,
       search: params[:search],
       liked_article_ids: liked_article_ids(@articles)
     )
@@ -45,7 +46,23 @@ class ArticlesController < ApplicationController
     render Views::Articles::Others.new(
       pagy: @pagy,
       articles: @articles,
+      sidebar_tags: sidebar_tags,
       search: params[:search],
+      liked_article_ids: liked_article_ids(@articles)
+    )
+  end
+
+  def tag
+    cacheable_page!
+    keyword = params[:keyword].to_s
+    article = Article.kept.confirmed.without_toast.tagged_with(keyword, on: :tags)
+    @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
+
+    render Views::Articles::Tagged.new(
+      pagy: @pagy,
+      articles: @articles,
+      tag: keyword,
+      sidebar_tags: sidebar_tags,
       liked_article_ids: liked_article_ids(@articles)
     )
   end
@@ -153,5 +170,9 @@ class ArticlesController < ApplicationController
         likeable_type: "Article",
         likeable_ids: articles.map(&:id)
       )
+    end
+
+    def sidebar_tags
+      @sidebar_tags ||= Tag.confirmed.order(taggings_count: :desc, name: :asc).limit(20)
     end
 end
