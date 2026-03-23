@@ -11,7 +11,7 @@ class Components::Users::PwdForm < Components::Base
   end
 
   def view_template
-    form_with(model: @user, class: "contents", url: users_path, method: :put) do |form|
+    form_with(model: @user, class: "contents", url: user_registration_path, method: :put) do |form|
       render RubyUI::Card.new(class: "w-full max-w-2xl bg-app/40 border-border-subtle rounded-2xl overflow-hidden shadow-2xl my-6") do
         # Decorative Header
         div(class: "h-24 bg-linear-to-r from-surface to-surface-muted/50 border-b border-border-subtle")
@@ -25,7 +25,7 @@ class Components::Users::PwdForm < Components::Base
               end
             end
             div(class: "text-center sm:text-left pb-1 flex-1") do
-              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email_address }
+              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email }
             end
           end
 
@@ -44,6 +44,14 @@ class Components::Users::PwdForm < Components::Base
 
           # Form Fields Grid
           div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-border-subtle/60") do
+            render RubyUI::FormField.new do
+              render RubyUI::FormFieldLabel.new(for: :user_current_password) { "현재 비밀번호" }
+              form.password_field :current_password, class: input_classes(@user.errors[:current_password]), placeholder: "••••••••"
+              @user.errors[:current_password].each do |msg|
+                render RubyUI::FormFieldError.new { msg }
+              end
+            end
+
             render RubyUI::FormField.new do
               render RubyUI::FormFieldLabel.new(for: :user_password) { "비밀번호" }
               form.password_field :password, class: input_classes(@user.errors[:password]), placeholder: "••••••••"
@@ -64,7 +72,7 @@ class Components::Users::PwdForm < Components::Base
           # Submit Button
           div(class: "mt-10 pt-8 border-t border-border-subtle/60 flex items-center justify-end gap-3") do
             render RubyUI::Link.new(
-              href: users_path,
+              href: edit_user_registration_path,
               class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
             ) do
               Hero::ChevronLeft(variant: :outline, class: "w-4 h-4")
@@ -93,6 +101,6 @@ class Components::Users::PwdForm < Components::Base
   end
 
   def initials
-    (@user.name.presence || @user.email_address.presence || "U").first.upcase
+    (@user.name.presence || @user.email.presence || "U").first.upcase
   end
 end

@@ -14,7 +14,7 @@ class Views::Users::New < Views::Base
       render RubyUI::Heading.new(level: 1, class: "font-bold") { "회원 가입" }
       render Components::Users::Form.new(user: @user)
       render RubyUI::Link.new(
-        href: new_session_path,
+        href: new_user_session_path,
         size: :lg,
         class: "w-full sm:w-auto text-center rounded-md bg-surface-muted hover:bg-surface-hover text-content inline-block font-medium focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
       ) { "뒤로" }
