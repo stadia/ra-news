@@ -1,4 +1,0 @@
-# Generated from app/models/current.rb with RBS::Inline
-
-class Current < ActiveSupport::CurrentAttributes
-end

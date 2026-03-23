@@ -1,4 +1,0 @@
-# Generated from app/models/session.rb with RBS::Inline
-
-class Session < ApplicationRecord
-end
