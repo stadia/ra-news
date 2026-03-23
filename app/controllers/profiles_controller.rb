@@ -3,8 +3,7 @@
 # rbs_inline: enabled
 
 class ProfilesController < ApplicationController
-  allow_unauthenticated_access
-  before_action :resume_session
+  skip_before_action :authenticate_user!
   before_action :set_user
 
   def show

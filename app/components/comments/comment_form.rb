@@ -37,7 +37,7 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def comment_form_fields
-    return login_prompt unless view_context.authenticated?
+    return login_prompt unless view_context.user_signed_in?
 
     form_with(model: [ @article, @comment ], url: article_comments_path(@article), local: false, class: "space-y-4") do |f|
       error_messages if @comment.errors.any?

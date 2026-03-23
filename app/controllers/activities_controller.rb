@@ -7,7 +7,7 @@ class ActivitiesController < ApplicationController
 
   after_action :verify_authorized
 
-  before_action :require_authentication, only: [ :feed ]
+  before_action :authenticate_user!, only: [ :feed ]
 
   def index
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
@@ -18,19 +18,19 @@ class ActivitiesController < ApplicationController
 
   def feed
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
-    actor = Current.user.federails_actor
+    actor = current_user.federails_actor
     following_actor_ids = Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
 
     posts = Post
       .includes(:user, :federails_actor, children: [ :user, :federails_actor ])
       .where(federails_actor_id: following_actor_ids)
-      .or(Post.where(user_id: Current.user.id))
+      .or(Post.where(user_id: current_user.id))
       .where(parent_id: nil)
       .order(created_at: :desc)
 
     @pagy, @posts = pagy(:countless, posts, limit: 20)
     @liked_post_ids = Like.liked_ids_for(
-      liker: Current.user,
+      liker: current_user,
       likeable_type: "Post",
       likeable_ids: @posts.map(&:id)
     )
@@ -41,6 +41,6 @@ class ActivitiesController < ApplicationController
   private
 
   def pundit_user
-    Current.user
+    current_user
   end
 end

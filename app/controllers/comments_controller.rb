@@ -4,12 +4,12 @@ class CommentsController < ApplicationController
   before_action :check_rate_limit, only: %i[ create ]
   before_action :set_comment, only: %i[ destroy ]
   before_action :set_article, only: %i[ create ]
-  before_action :require_authentication, only: %i[ create destroy ]
+  before_action :authenticate_user!, only: %i[ create destroy ]
 
   # POST /comments
   def create
     @comment = @article.comments.build(comment_params)
-    @comment.user = Current.user
+    @comment.user = current_user
 
     respond_to do |format|
       if @comment.save
@@ -28,7 +28,7 @@ class CommentsController < ApplicationController
   def destroy
     @article = @comment.article
 
-    if @comment.user == Current.user
+    if @comment.user == current_user
       @comment.destroy
       load_comments
       respond_to do |format|

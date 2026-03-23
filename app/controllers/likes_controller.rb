@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class LikesController < ApplicationController
-  before_action :require_authentication
+  before_action :authenticate_user!
   before_action :set_likeable
 
   LIKEABLE_CLASSES = {
@@ -10,7 +10,7 @@ class LikesController < ApplicationController
   }.freeze
 
   def create
-    Current.user.like!(@likeable)
+    current_user.like!(@likeable)
     @likeable.reload
 
     respond_to do |format|
@@ -20,7 +20,7 @@ class LikesController < ApplicationController
   end
 
   def destroy
-    Current.user.unlike!(@likeable)
+    current_user.unlike!(@likeable)
     @likeable.reload
 
     respond_to do |format|

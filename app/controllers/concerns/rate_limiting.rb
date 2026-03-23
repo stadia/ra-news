@@ -6,7 +6,7 @@ module RateLimiting
   private
 
   def check_rate_limit
-    user = Current.user if authenticated?
+    user = current_user if respond_to?(:current_user) && current_user
 
     return if user&.admin?
 

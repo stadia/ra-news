@@ -42,7 +42,7 @@ class Components::Comments::CommentReplyForm < Components::Base
   end
 
   def reply_form_fields
-    return login_prompt unless view_context.authenticated?
+    return login_prompt unless view_context.user_signed_in?
 
     form_with(
       model: [ @article, @comment ],

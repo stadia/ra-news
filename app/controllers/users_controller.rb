@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class UsersController < ApplicationController
-  allow_unauthenticated_access only: %i[ new create ]
+  skip_before_action :authenticate_user!, only: %i[ new create ]
 
   before_action :set_user, except: %i[ new create ]
 
@@ -67,7 +67,7 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = Current.user
+      @user = current_user
     end
 
     # Only allow a list of trusted parameters through.

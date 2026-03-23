@@ -213,13 +213,13 @@ class Components::Layout < Components::Base
         li { raw vc.nav_link_to("그 밖의 뉴스", others_path) }
         li(class: "flex items-center") { render_search_form }
 
-        if vc.authenticated?
+        if vc.user_signed_in?
           li { raw vc.nav_link_to("글 등록", new_article_path) }
-          li { raw vc.nav_link_to(Current.user.name, user_profile_path(Current.user)) }
+          li { raw vc.nav_link_to(vc.current_user.name, user_profile_path(vc.current_user)) }
         end
 
         li do
-          if vc.authenticated?
+          if vc.user_signed_in?
             raw vc.nav_link_to("로그아웃", logout_path)
           else
             raw vc.nav_link_to("로그인", new_session_path)
@@ -295,7 +295,7 @@ class Components::Layout < Components::Base
   def render_main
     vc = view_context
     main(id: "main-content", class: "container mx-auto px-4 py-8 grow") do
-      if vc.authenticated? && WebPushConfig.configured?
+      if vc.user_signed_in? && WebPushConfig.configured?
         div(
           data: {
             controller: "push-notifications",

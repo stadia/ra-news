@@ -67,7 +67,7 @@ class Components::Comments::Comment < Components::Base
   end
 
   def delete_button
-    if view_context.authenticated? && @comment.user == Current.user
+    if view_context.user_signed_in? && @comment.user == view_context.current_user
       button_to(
         article_comment_path(@article, @comment),
         method: :delete,
@@ -88,7 +88,7 @@ class Components::Comments::Comment < Components::Base
   end
 
   def reply_button
-    return unless view_context.authenticated?
+    return unless view_context.user_signed_in?
 
     div(class: "mt-3 flex items-center justify-between text-sm") do
       render RubyUI::Button.new(

@@ -1,7 +1,7 @@
 require "schema_dot_org/news_media_organization"
 
 class HomeController < ApplicationController
-  allow_unauthenticated_access
+  skip_before_action :authenticate_user!
 
   # Shared publisher schema — reused in ArticlesController as well
   PUBLISHER_SCHEMA = SchemaDotOrg::NewsMediaOrganization.new(
@@ -22,7 +22,7 @@ class HomeController < ApplicationController
       scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
     end
     @liked_article_ids = Like.liked_ids_for(
-      liker: Current.user,
+      liker: current_user,
       likeable_type: "Article",
       likeable_ids: @articles.map(&:id)
     )
