@@ -18,14 +18,9 @@ class User < ApplicationRecord
                       }
 
   validates :name, length: { minimum: 2, maximum: 50 },
-                   format: {
-                     with: /\A[가-힣a-zA-Z\s]+\z/,
-                     message: "한글, 영문, 공백만 사용할 수 있습니다"
-                   },
                    allow_blank: true
 
   normalizes :email, with: ->(e) { e.strip.downcase }
-  normalizes :name, with: ->(n) { n.strip }
 
   include Federails::ActorEntity
   acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_profile_url

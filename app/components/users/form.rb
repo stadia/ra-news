@@ -4,6 +4,7 @@ class Components::Users::Form < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::Pluralize
   include Phlex::Rails::Helpers::DOMID
+  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(user:)
@@ -36,7 +37,7 @@ class Components::Users::Form < Components::Base
             div(id: "error_explanation", class: "mb-8 p-4 bg-danger-solid/10 border border-danger-solid/20 rounded-xl text-danger-text") do
               h2(class: "font-bold mb-2 flex items-center gap-2") do
                 Hero::ExclamationCircle(variant: :outline, class: "w-[18px] h-[18px]")
-                plain "#{@user.errors.count}건의 오류가 있습니다:"
+                plain t("errors.messages.form_errors", count: @user.errors.count)
               end
               ul(class: "list-disc ml-6 space-y-1 text-sm") do
                 @user.errors.each { |error| li { error.full_message } }
