@@ -727,7 +727,6 @@ DEPENDENCIES
   amazing_print
   appsignal (~> 4.8)
   awesome_nested_set
-  bcrypt (~> 3.1.22)
   bootsnap
   brakeman
   bundler-audit
