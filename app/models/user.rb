@@ -9,6 +9,14 @@ class User < ApplicationRecord
   has_many :articles, dependent: :nullify
   has_many :posts, dependent: :destroy
 
+  validates :username, presence: true,
+                      uniqueness: { case_sensitive: false },
+                      length: { minimum: 2, maximum: 30 },
+                      format: {
+                        with: /\A[a-zA-Z0-9_]+\z/,
+                        message: "영문, 숫자, 밑줄만 사용할 수 있습니다"
+                      }
+
   validates :name, length: { minimum: 2, maximum: 50 },
                    format: {
                      with: /\A[가-힣a-zA-Z\s]+\z/,
