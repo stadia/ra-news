@@ -9,6 +9,7 @@ ko:
       invalid: "이메일 주소나 비밀번호를 다시 확인해 주세요."
       not_found_in_database: "이메일 주소나 비밀번호를 다시 확인해 주세요."
       unauthenticated: "로그인이 필요합니다."
+      already_authenticated: "이미 로그인되어 있습니다."
     sessions:
       signed_in: "로그인되었습니다."
       signed_out: "로그아웃되었습니다."
