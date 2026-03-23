@@ -63,6 +63,26 @@ class Components::Users::Form < Components::Base
             end
           end
 
+          unless @user.persisted?
+            div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-border-subtle/60") do
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_password) { "비밀번호" }
+                form.password_field :password, class: input_classes(@user.errors[:password]), placeholder: "••••••••", autocomplete: "new-password"
+                @user.errors[:password].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
+
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { "비밀번호 확인" }
+                form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation]), placeholder: "••••••••", autocomplete: "new-password"
+                @user.errors[:password_confirmation].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
+            end
+          end
+
           # Submit Button
           div(class: "mt-10 pt-8 border-t border-border-subtle/60 flex items-center justify-end gap-3") do
             if @user.persisted?
