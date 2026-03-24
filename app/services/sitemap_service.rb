@@ -20,7 +20,7 @@ class SitemapService < OperationService
       # find_in_batches는 order: 옵션을 지원하지 않으므로 scope에서 order() 후 적용.
       # lastmod는 updated_at 대신 published_at 사용
       # (updated_at은 배경 Job이 건드릴 때마다 갱신되어 Google 오탐 발생)
-      Article.kept.confirmed.find_in_batches(batch_size: 500) do |group|
+      Article.kept.confirmed.without_toast.find_in_batches(batch_size: 500) do |group|
         group.each do |article|
           add article_path(article), lastmod: article.published_at || article.updated_at
         end

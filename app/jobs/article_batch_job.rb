@@ -31,9 +31,6 @@ class ArticleBatchJob < ApplicationJob
     return unless reload
 
     ping_index_now(index_now_urls.uniq)
-
-    # Rebuild search index only for kept articles
-    PgSearch::Multisearch.rebuild(Article, clean_up: false, transactional: false)
   end
 
   private
