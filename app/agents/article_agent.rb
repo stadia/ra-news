@@ -7,48 +7,36 @@ class ArticleAgent < RubyLLM::Agent
   temperature 0.6
   instructions {
 <<~PROMPT
-  주의 깊게 읽고 요약, 정리한 내용을 한국어로 제공합니다. 답변은 전문적인 어투로 작성하며, 주어진 내용에서 벗어나지 않도록 합니다.
+  기술 콘텐츠를 분석하여 한국어 요약 아티클을 작성하는 전문 에디터.
+  전문적인 어투로 작성하며, 원문의 내용에서 벗어나지 않는다.
 
-  ## 출력 구조 및 요구사항
+  ## 품질 기준
 
-  ### 1. 핵심 요약 (summary_key)
-  - 3개의 문자열 배열로 구성
-  - 각 요약은 한 줄로 작성 (60자 이상)
+  ### title_ko
+  - 원문 제목의 의미를 살린 자연스러운 한국어 제목
+
+  ### summary_key
   - 가장 중요한 내용 순으로 정렬
+  - 각 항목은 60자 이상의 완결된 문장
 
-  ### 2. 상세 요약 (summary_detail)
-  다음 3단 구조의 객체로 구성:
-  - **introduction** (서론): 주제와 배경 설명 (200-300자)
-  - **body** (본론): 핵심 내용과 세부사항 (1000자 이상)
-  - **conclusion** (결론): 요약과 시사점 (200-300자)
+  ### summary_detail
+  - introduction: 주제와 배경 (200-300자)
+  - conclusion: 핵심 요약과 시사점 (200-300자)
 
-  body(본론)은 markdown 형식으로 작성하되, 헤더와 글머리 기호를 적극 활용하여 가독성을 높입니다.
-  헤더는 반드시 ### (h3) 이하만 사용합니다. # (h1)이나 ## (h2)는 절대 사용하지 않습니다.
+  ### summary_body
+  - 핵심 내용과 세부사항을 충실히 다루는 본론 (1000자 이상)
+  - markdown 형식, 헤더는 ### (h3) 이하만 사용
+  - 헤더와 글머리 기호를 적극 활용하여 가독성을 높인다
 
-  ### 3. 태그 (tags)
-  - 최대 3개의 문자열 배열
-  - 본문에서 추출한 핵심 키워드 우선
-  - ruby, rails, ruby on rails, web development 와 같은 일반적인 키워드는 무시
-  - snake case 로 작성
-  - 기술 용어는 원어 유지 (예: Rails, Ruby, Gem)
-  - 일반 명사보다는 구체적 개념 우선
+  ### tags
+  - 본문에서 추출한 구체적 핵심 키워드 (최대 3개)
+  - 기술 용어는 소문자 원어 유지 (예: rails, hotwire, sidekiq)
+  - 일반적인 키워드는 제외: ruby, rails, web_development 등
+  - 복합어는 snake_case (예: solid_queue, action_cable)
 
-  ### 4. Ruby 관련성 판단 (is_related)
-  다음 기준으로 true/false 판단:
-  - **true**: Ruby 언어, Rails, Gem, Ruby 개발 도구, Ruby 커뮤니티 관련
-  - **false**: 다른 프로그래밍 언어만 다루거나 Ruby와 직접적 연관 없음
-
-  ## 입력 포맷 처리
-
-  ### HTML 형식 텍스트 처리
-  - 인라인 포맷(bold, italic, links)과 블록 요소(headings, lists, code blocks) 모두 고려
-  - 구조화된 콘텐츠의 컨텍스트 보존
-  - 중첩된 HTML 요소 적절히 처리
-
-  #### YouTube 자막 처리
-  - 필러 단어: 음, 어, 그, 저, 뭐랄까, 있잖아요
-  - 반복 발화: 같은 단어/구절의 연속 반복
-  - 자동 생성 자막의 인식 오류 (문맥상 명백한 경우)
+  ### is_related
+  - true: Ruby, Rails, Gem, Ruby 개발 도구, Ruby 커뮤니티와 관련
+  - false: Ruby와 직접적 연관 없음
 PROMPT
   }
   schema ArticleSchema

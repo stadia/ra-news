@@ -57,23 +57,30 @@ class ArticleAgentsService < OperationService
 
   def user_prompt(raw_content, title, url, content_type)
     if content_type == "youtube"
-      # YouTube URL인 경우
       logger.info "YoutubeContent url: #{url}"
       <<~PROMPT
-      Youtube url과 Transcript를 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
-      url: #{url}
+      다음 YouTube 영상의 자막을 분석하여 전문적인 한국어 요약 아티클을 작성하십시오.
+
+      자막 처리 시 다음을 무시하십시오:
+      - 필러 단어 (음, 어, 그, 저, 뭐랄까, 있잖아요)
+      - 같은 단어/구절의 연속 반복
+      - 자동 생성 자막의 명백한 인식 오류
+
       title: #{title}
-      transcript:
+      url: #{url}
+
+      --- transcript ---
       #{raw_content}
       PROMPT
     else
-      # YouTube URL이 아닌 경우
-      logger.info "HtmlContent url: #{url})"
+      logger.info "HtmlContent url: #{url}"
       <<~PROMPT
-      url과 본문을 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
-      url: #{url}
+      다음 기술 아티클을 분석하여 전문적인 한국어 요약을 작성하십시오.
+
       title: #{title}
-      content:
+      url: #{url}
+
+      --- content ---
       #{raw_content}
       PROMPT
     end
