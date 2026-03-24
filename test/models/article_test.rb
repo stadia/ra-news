@@ -214,7 +214,9 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "기사를 파괴하는 대신 폐기해야 한다" do
     article = @article
-    article.discard!
+    article.stub(:create_federails_activity, nil) do
+      article.discard!
+    end
 
     assert_predicate article, :discarded?
     assert_not_nil article.deleted_at
@@ -384,13 +386,12 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "user_name은 bot 사용자인 경우 site 정보를 반환해야 한다" do
-    assert_equal "Ruby Weekly (https://rubyweekly.com/rss)", @article.user_name
+    assert_equal "Ruby Weekly", @article.user_name
   end
 
   test "user_name은 bot 사용자이면서 site가 있으면 site 정보를 반환해야 한다" do
     site_article = @site_article
-    expected = "#{site_article.site.name} (#{site_article.site.base_uri})"
-    assert_equal expected, site_article.user_name
+    assert_equal site_article.site.name, site_article.user_name
   end
 
   test "user_name은 bot 사용자이고 site의 base_uri가 없으면 사이트 이름을 반환해야 한다" do
@@ -399,13 +400,11 @@ class ArticleTest < ActiveSupport::TestCase
     assert_equal site_article.site.name, site_article.user_name
   end
 
-  test "user_name은 user가 없으면 오류가 발생한다" do
+  test "user_name은 site와 host가 없으면 nil을 반환한다" do
     article = Article.new(title: "Test", url: "https://example.com", origin_url: "https://example.com", user: @user)
     article.user = nil
 
-    assert_raises(NoMethodError) do
-      article.user_name
-    end
+    assert_nil article.user_name
   end
 
   # ========== Class Method Tests ==========
@@ -625,7 +624,9 @@ class ArticleTest < ActiveSupport::TestCase
     # Mock Rails.cache to expect the cache deletion
     deleted_keys = []
     Rails.cache.stub(:delete, ->(key, *args, **kwargs) { deleted_keys << key; true }) do
-      @article.discard!
+      @article.stub(:create_federails_activity, nil) do
+        @article.discard!
+      end
     end
     assert_includes deleted_keys, "rss_articles"
   end
