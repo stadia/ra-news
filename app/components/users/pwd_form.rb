@@ -43,11 +43,10 @@ class Components::Users::PwdForm < Components::Base
             end
           end
 
-          # Form Fields Grid
-          div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-border-subtle/60") do
+          div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
             render RubyUI::FormField.new do
               render RubyUI::FormFieldLabel.new(for: :user_current_password) { "현재 비밀번호" }
-              form.password_field :current_password, class: input_classes(@user.errors[:current_password]), placeholder: "••••••••"
+              form.password_field :current_password, class: input_classes(@user.errors[:current_password])
               @user.errors[:current_password].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
               end
@@ -55,7 +54,7 @@ class Components::Users::PwdForm < Components::Base
 
             render RubyUI::FormField.new do
               render RubyUI::FormFieldLabel.new(for: :user_password) { "비밀번호" }
-              form.password_field :password, class: input_classes(@user.errors[:password]), placeholder: "••••••••"
+              form.password_field :password, class: input_classes(@user.errors[:password])
               @user.errors[:password].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
               end
@@ -63,7 +62,7 @@ class Components::Users::PwdForm < Components::Base
 
             render RubyUI::FormField.new do
               render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { "비밀번호 확인" }
-              form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation]), placeholder: "••••••••"
+              form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation])
               @user.errors[:password_confirmation].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
               end

@@ -2,6 +2,8 @@
 
 class Users::RegistrationsController < Devise::RegistrationsController
   layout -> { Components::Layout }
+  before_action :authenticate_user!, only: %i[edit password update destroy]
+  before_action :set_current_user_resource, only: %i[edit password update destroy]
 
   def new
     build_resource
@@ -55,10 +57,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def account_update_params
-    params.expect(user: [ :email, :name, :username ])
+    params.expect(user: [ :email, :name ])
   end
 
   private
+
+  def set_current_user_resource
+    self.resource = current_user
+  end
 
   def updating_password?
     user = params[:user]
