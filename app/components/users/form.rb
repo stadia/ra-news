@@ -28,7 +28,7 @@ class Components::Users::Form < Components::Base
 
             div(class: "text-center sm:text-left pb-1 flex-1") do
               h2(class: "text-3xl font-bold text-content tracking-tight") { @user.persisted? ? "정보 수정" : "회원 가입" }
-              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email_was || "새로운 시작" }
+              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email || "새로운 시작" }
             end
           end
 

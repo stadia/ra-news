@@ -7,12 +7,4 @@ class Users::SessionsController < Devise::SessionsController
     redirect_to root_url and return if user_signed_in?
     render Views::Sessions::New.new
   end
-
-  def create
-    super
-  end
-
-  def destroy
-    super
-  end
 end

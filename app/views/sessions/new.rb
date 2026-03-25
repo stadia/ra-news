@@ -47,6 +47,15 @@ class Views::Sessions::New < Views::Base
               class: "w-full sm:w-auto text-center rounded-md bg-surface-muted hover:bg-surface-hover text-content inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
             ) { "회원 가입" }
           end
+
+          div(class: "inline") do
+            render RubyUI::Link.new(
+              href: new_user_password_path,
+              variant: :primary,
+              size: :lg,
+              class: "w-full sm:w-auto text-center rounded-md text-content-muted hover:text-content inline-block font-medium cursor-pointer focus:outline-none"
+            ) { "비밀번호를 잊으셨나요?" }
+          end
         end
       end
     end

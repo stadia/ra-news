@@ -69,8 +69,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def updating_password?
     user = params[:user]
     return false unless user.respond_to?(:key?)
-    user.key?(:password) || user.key?(:password_confirmation) ||
-      user.key?("password") || user.key?("password_confirmation")
+    user.key?(:password) || user.key?(:password_confirmation)
   end
 
   def update_user_password
