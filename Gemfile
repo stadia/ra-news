@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.0"
+gem "rails", "~> 8.1.3"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
@@ -118,6 +118,7 @@ gem "ruby_llm-schema"
 gem "web-push", "~> 3.1"
 gem "ruby-mcp-client", "~> 1.0"
 gem "federails", github: "stadia/federails"
+gem "oj"
 gem "socialization"
 # gem "federails", path: "../federails"
 gem "friendly_id"

@@ -6,8 +6,8 @@ class ArticleAgentsService < OperationService
   #: (Article article) -> Dry::Monads::Result
   def call(article)
     step ensure_body(article)
-    step run_agents(article)
     step run_embed(article)
+    step run_agents(article)
   end
 
   private
@@ -29,7 +29,8 @@ class ArticleAgentsService < OperationService
   end
 
   def run_agents(article)
-    message = ArticleAgent.new.ask(user_prompt(article.body, article.title, article.url, article.is_youtube? ? "youtube" : "html"))
+    related = related_articles(article)
+    message = ArticleAgent.new.ask(user_prompt(article.body, article.title, article.url, article.is_youtube? ? "youtube" : "html", related))
     logger.info "Response received for article id: #{article.id}"
 
     if message.content.blank?
@@ -55,28 +56,60 @@ class ArticleAgentsService < OperationService
     Success(article)
   end
 
-  def user_prompt(raw_content, title, url, content_type)
+  def user_prompt(raw_content, title, url, content_type, related_articles = [])
+    parts = []
+
     if content_type == "youtube"
-      # YouTube URL인 경우
       logger.info "YoutubeContent url: #{url}"
-      <<~PROMPT
-      Youtube url과 Transcript를 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
-      url: #{url}
-      title: #{title}
-      transcript:
-      #{raw_content}
+      parts << <<~PROMPT.strip
+        다음 YouTube 영상의 자막을 분석하여 전문적인 한국어 요약 아티클을 작성하십시오.
+
+        자막 처리 시 다음을 무시하십시오:
+        - 필러 단어 (음, 어, 그, 저, 뭐랄까, 있잖아요)
+        - 같은 단어/구절의 연속 반복
+        - 자동 생성 자막의 명백한 인식 오류
+
+        title: #{title}
+        url: #{url}
+
+        --- transcript ---
+        #{raw_content}
       PROMPT
     else
-      # YouTube URL이 아닌 경우
-      logger.info "HtmlContent url: #{url})"
-      <<~PROMPT
-      url과 본문을 활용하여 전문적인 기술 요약 아티클을 집필하십시오.
-      url: #{url}
-      title: #{title}
-      content:
-      #{raw_content}
+      logger.info "HtmlContent url: #{url}"
+      parts << <<~PROMPT.strip
+        다음 기술 아티클을 분석하여 전문적인 한국어 요약을 작성하십시오.
+
+        title: #{title}
+        url: #{url}
+
+        --- content ---
+        #{raw_content}
       PROMPT
     end
+
+    if related_articles.any?
+      lines = related_articles.map { |a| "- [#{a.title_ko}](/articles/#{a.slug})" }
+      parts << <<~PROMPT.strip
+
+        --- 관련 기사 ---
+        아래 기사와 연관성이 있는 경우에만 본문(summary_body)에서 마크다운 링크로 자연스럽게 언급하십시오.
+        연관성이 없으면 무시하십시오.
+        #{lines.join("\n")}
+      PROMPT
+    end
+
+    parts.join("\n")
+  end
+
+  def related_articles(article)
+    return [] unless article.embedding.present?
+
+    Article.kept.confirmed
+           .where.not(id: article.id)
+           .nearest_neighbors(:embedding, article.embedding, distance: "euclidean")
+           .limit(3)
+           .select(:id, :title_ko, :slug)
   end
 
   def run_embed(article)

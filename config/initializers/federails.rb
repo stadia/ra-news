@@ -1,5 +1,7 @@
 require "fediverse/inbox"
 
+Alba.backend = :oj
+
 Federails.config_from "federails"
 
 Federails.configure do |config|
