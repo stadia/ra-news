@@ -2,9 +2,9 @@
 
 class PushSubscriptionsController < ApplicationController
   def create
-    return head :unauthorized if Current.user.nil?
+    return head :unauthorized if current_user.nil?
 
-    subscription = Current.user.push_subscriptions.find_or_initialize_by(endpoint: subscription_params[:endpoint])
+    subscription = current_user.push_subscriptions.find_or_initialize_by(endpoint: subscription_params[:endpoint])
     subscription.assign_attributes(subscription_params.except(:endpoint))
 
     if subscription.save
@@ -15,12 +15,12 @@ class PushSubscriptionsController < ApplicationController
   end
 
   def destroy
-    return head :unauthorized if Current.user.nil?
+    return head :unauthorized if current_user.nil?
 
     endpoint = params[:endpoint].presence || params.dig(:push_subscription, :endpoint)
     return head :bad_request if endpoint.blank?
 
-    Current.user.push_subscriptions.where(endpoint: endpoint).destroy_all
+    current_user.push_subscriptions.where(endpoint: endpoint).destroy_all
     head :no_content
   end
 

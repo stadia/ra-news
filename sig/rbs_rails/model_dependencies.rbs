@@ -6,8 +6,6 @@ class ActsAsTaggableOn::Tagging::ActiveRecord_Associations_CollectionProxy < ::A
 end
 class ApplicationRecord < ::ActiveRecord::Base
 end
-class Session::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
-end
 class Article::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
 end
 class Comment::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy

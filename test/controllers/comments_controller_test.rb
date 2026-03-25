@@ -14,7 +14,7 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
       post article_comments_path(@article), params: { comment: { body: "비로그인 댓글" } }
     end
 
-    assert_redirected_to new_session_path
+    assert_redirected_to new_user_session_path
   end
 
   test "POST create creates comment for authenticated user" do
@@ -31,6 +31,6 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "DELETE destroy requires authentication" do
     delete article_comment_path(@article, @comment)
 
-    assert_redirected_to new_session_path
+    assert_redirected_to new_user_session_path
   end
 end

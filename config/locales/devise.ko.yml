@@ -1,0 +1,49 @@
+ko:
+  activerecord:
+    attributes:
+      user:
+        email: "이메일"
+        username: "아이디"
+        password: "비밀번호"
+        password_confirmation: "비밀번호 확인"
+        current_password: "현재 비밀번호"
+        name: "이름"
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "을(를) 입력해주세요"
+              taken: "은(는) 이미 사용 중입니다"
+              invalid: "형식이 올바르지 않습니다"
+            username:
+              blank: "을(를) 입력해주세요"
+              taken: "은(는) 이미 사용 중입니다"
+              too_short: "은(는) 2자 이상이어야 합니다"
+              too_long: "은(는) 30자 이하여야 합니다"
+            password:
+              blank: "을(를) 입력해주세요"
+              too_short: "은(는) 6자 이상이어야 합니다"
+            password_confirmation:
+              confirmation: "이 일치하지 않습니다"
+  errors:
+    messages:
+      not_found: "을(를) 찾을 수 없습니다"
+      already_confirmed: "은(는) 이미 인증되었습니다. 로그인해 주세요."
+      not_locked: "은(는) 잠겨있지 않습니다"
+  devise:
+    failure:
+      invalid: "이메일 주소나 비밀번호를 다시 확인해 주세요."
+      not_found_in_database: "이메일 주소나 비밀번호를 다시 확인해 주세요."
+      unauthenticated: "로그인이 필요합니다."
+      already_authenticated: "이미 로그인되어 있습니다."
+    sessions:
+      signed_in: "로그인되었습니다."
+      signed_out: "로그아웃되었습니다."
+    registrations:
+      signed_up: "회원가입이 완료되었습니다."
+      updated: "정보가 업데이트되었습니다."
+      destroyed: "계정이 삭제되었습니다."
+    passwords:
+      send_instructions: "비밀번호 재설정 안내를 이메일로 보냈습니다."
+      updated: "비밀번호가 변경되었습니다."

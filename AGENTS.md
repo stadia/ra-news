@@ -8,7 +8,7 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 코드 변경 전후의 맥락과 테스트 결과를 커밋 메시지 또는 PR 설명에 기록한다.
 - 테스트와 검증은 PostgreSQL 기준으로 수행하며, 필요하면 `TEST_DATABASE_URL`을 우선 사용한다.
 - PostgreSQL 확장이 필요한 이 프로젝트를 SQLite 기준으로 해석하거나 검증하지 않는다.
-- 인증은 Devise가 아니라 현재의 custom auth와 `Current.user` 패턴을 기준으로 다룬다.
+- 인증은 Devise 젬 기반. `current_user` 헬퍼 사용 (not `Current.user`). 모듈: database_authenticatable, registerable, recoverable, validatable, rememberable. 커스텀 컨트롤러(`app/controllers/users/`)에서 Phlex 뷰 렌더링.
 - `Article`의 AI 요약, embedding, soft-delete(`discarded_at`), `social_post_ids` JSONB 구조를 무시하고 수정하지 않는다.
 - 댓글 기능 수정 시 `awesome_nested_set` 구조와 `Comment::MAX_DEPTH` 제한을 깨뜨리지 않는다.
 - Tailwind v4에서 이름이 바뀐 유틸리티는 v4 명칭을 사용한다 (예: `break-words` → `wrap-break-word`).

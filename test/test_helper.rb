@@ -23,9 +23,9 @@ module ActiveSupport
 end
 
 class ActionDispatch::IntegrationTest
-  # 인증이 필요한 통합 테스트에서 사용.
-  # signed cookie를 설정하여 세션을 시작한다.
+  include Devise::Test::IntegrationHelpers
+
   def sign_in_as(user)
-    post session_path, params: { email_address: user.email_address, password: "password" }
+    sign_in user
   end
 end

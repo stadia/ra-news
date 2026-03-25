@@ -4,8 +4,7 @@
 class ActorsController < ApplicationController
   include Pundit::Authorization
 
-  allow_unauthenticated_access
-  before_action :resume_session
+  skip_before_action :authenticate_user!
   after_action :verify_authorized
 
   def show
@@ -57,6 +56,6 @@ class ActorsController < ApplicationController
   end
 
   def pundit_user
-    Current.user
+    current_user
   end
 end

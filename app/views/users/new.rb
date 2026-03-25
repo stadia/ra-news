@@ -10,14 +10,13 @@ class Views::Users::New < Views::Base
   def view_template
     content_for :title, "회원 가입"
 
-    div(class: "space-y-6 max-w-6xl mx-auto") do
-      render RubyUI::Heading.new(level: 1, class: "font-bold") { "회원 가입" }
+    div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
+      div(class: "mb-2 px-1") do
+        render RubyUI::Heading.new(level: 1, class: "text-3xl font-bold text-content tracking-tight") { "회원 가입" }
+        p(class: "mt-1 text-content-muted") { "새 계정을 만듭니다." }
+      end
+
       render Components::Users::Form.new(user: @user)
-      render RubyUI::Link.new(
-        href: new_session_path,
-        size: :lg,
-        class: "w-full sm:w-auto text-center rounded-md bg-surface-muted hover:bg-surface-hover text-content inline-block font-medium focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
-      ) { "뒤로" }
     end
   end
 end

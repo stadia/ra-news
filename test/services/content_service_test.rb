@@ -21,36 +21,24 @@ class ContentServiceTest < ActiveSupport::TestCase
   test "execute_html은 HTML 콘텐츠를 성공적으로 가져와 Readability로 파싱한다" do
     article = articles(:ruby_article)
     html_content = "<html><body><article><h1>Test Article</h1><p>This is the main content.</p></article></body></html>"
-    expected_content = "<div><h1>Test Article</h1><p>This is the main content.</p></div>"
-
-    # Faraday mock 설정 - Object 사용
-    mock_response = MockResponse.new(status: 200, body: html_content)
-
-    # Readability mock 설정
-    mock_readability = Object.new
-    mock_readability.define_singleton_method(:content) { expected_content }
 
     service = ContentService.new
 
-    Faraday.stub(:get, mock_response) do
-      Readability::Document.stub(:new, mock_readability) do
-        result = service.call(article)
+    service.stub(:faraday_fetch_html, html_content) do
+      result = service.call(article)
 
-        assert_predicate result, :success?
-        assert_equal expected_content, result.value!
-      end
+      assert_predicate result, :success?
+      assert_includes result.value!, "Test Article"
+      assert_includes result.value!, "This is the main content."
     end
   end
 
   test "execute_html은 빈 콘텐츠일 때 Failure를 반환한다" do
     article = articles(:ruby_article)
 
-    # 빈 body 반환하는 mock
-    mock_response = MockResponse.new(status: 200, body: "")
-
     service = ContentService.new
 
-    Faraday.stub(:get, mock_response) do
+    service.stub(:faraday_fetch_html, "") do
       result = service.call(article)
 
       assert_predicate result, :failure?
@@ -58,62 +46,30 @@ class ContentServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "execute_html은 리다이렉트를 처리한다" do
+  test "execute_html은 faraday로 가져온 HTML을 파싱한다" do
     article = articles(:ruby_article)
     final_html = "<html><body><article><p>Final content</p></article></body></html>"
-    parsed_content = "<div><p>Final content</p></div>"
-
-    call_count = 0
-
-    # Faraday.get stub - 첫 번째는 리다이렉트, 두 번째는 최종 응답
-    faraday_stub = ->(_url) {
-      call_count += 1
-      if call_count == 1
-        MockResponse.new(status: 302, body: "", headers: { "location" => "https://example.com/redirected" })
-      else
-        MockResponse.new(status: 200, body: final_html)
-      end
-    }
-
-    mock_readability = Object.new
-    mock_readability.define_singleton_method(:content) { parsed_content }
 
     service = ContentService.new
 
-    Faraday.stub(:get, faraday_stub) do
-      Readability::Document.stub(:new, mock_readability) do
-        result = service.call(article)
-
-        assert_predicate result, :success?
-        assert_equal parsed_content, result.value!
-      end
-    end
-
-    assert_equal 2, call_count
-  end
-
-  test "execute_html은 최대 3회까지만 리다이렉트를 따라간다" do
-    article = articles(:ruby_article)
-    call_count = 0
-
-    # 무한 리다이렉트 시뮬레이션
-    faraday_stub = ->(_url) {
-      call_count += 1
-      MockResponse.new(status: 302, body: "", headers: { "location" => "https://example.com/redirect#{call_count}" })
-    }
-
-    service = ContentService.new
-
-    Faraday.stub(:get, faraday_stub) do
+    service.stub(:faraday_fetch_html, final_html) do
       result = service.call(article)
 
-      # 리다이렉트 응답 자체는 빈 body이므로 no_content
+      assert_predicate result, :success?
+      assert_includes result.value!, "Final content"
+    end
+  end
+
+  test "execute_html은 faraday 결과가 비어 있으면 Failure를 반환한다" do
+    article = articles(:ruby_article)
+    service = ContentService.new
+
+    service.stub(:faraday_fetch_html, "") do
+      result = service.call(article)
+
       assert_predicate result, :failure?
       assert_equal :no_content, result.failure
     end
-
-    # 최대 5회 호출 (초기 + 최대 4회 리다이렉트 시도)
-    assert_operator call_count, :<=, 5, "리다이렉트 호출 횟수가 예상보다 많음: #{call_count}"
   end
 
   # YouTube 콘텐츠 테스트

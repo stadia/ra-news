@@ -3,7 +3,6 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-  # Test fixtures setup
   def setup
     @user = users(:john)
     @admin = users(:admin)
@@ -12,153 +11,123 @@ class UserTest < ActiveSupport::TestCase
     @editor_role = roles(:editor)
   end
 
-  # ========== Validation Tests ==========
-
   test "유효한 속성을 가진 경우 유효해야 한다" do
-    user = User.new(
-      email_address: "test@example.com",
-      name: "테스트 사용자",
-      password: "password123"
-    )
-    assert_predicate user, :valid?
+    assert_predicate build_user(email: "test@example.com", username: "test_user", name: "테스트 사용자"), :valid?
   end
 
-  test "email_address는 필수 항목이어야 한다" do
-    user = User.new(name: "Test User", password: "password123")
+  test "email는 필수 항목이어야 한다" do
+    user = build_user(email: nil)
+
     assert_not user.valid?
-    assert_includes user.errors[:email_address], "이메일을 입력해주세요"
+    assert_includes user.errors[:email], "을(를) 입력해주세요"
   end
 
-  test "name은 필수 항목이어야 한다" do
-    user = User.new(email_address: "test@example.com", password: "password123")
+  test "username은 필수 항목이어야 한다" do
+    user = build_user(username: nil)
+
     assert_not user.valid?
-    assert_includes user.errors[:name], "이름을 입력해주세요"
+    assert_includes user.errors[:username], "을(를) 입력해주세요"
+  end
+
+  test "name은 비어 있어도 된다" do
+    assert_predicate build_user(name: nil), :valid?
+    assert_predicate build_user(name: ""), :valid?
   end
 
   test "password는 필수 항목이어야 한다" do
-    user = User.new(email_address: "test@example.com", name: "Test User")
+    user = build_user(password: nil)
+
     assert_not user.valid?
-    assert_includes user.errors[:password], "비밀번호를 입력해주세요"
+    assert_includes user.errors[:password], "을(를) 입력해주세요"
   end
 
   test "이메일 형식을 검증해야 한다" do
-    invalid_emails = [ "invalid", "test@", "@example.com", "test.example.com" ]
+    [ "invalid", "test@", "@example.com", "test.example.com" ].each do |email|
+      user = build_user(email:, username: "invalid_#{email.hash.abs}")
 
-    invalid_emails.each do |email|
-      user = User.new(email_address: email, name: "Test User", password: "password123")
       assert_not user.valid?, "#{email} should be invalid"
-      assert_includes user.errors[:email_address], "이메일 형식이 올바르지 않습니다"
+      assert_includes user.errors[:email], "형식이 올바르지 않습니다"
     end
   end
 
   test "유효한 이메일 형식을 허용해야 한다" do
-    valid_emails = [
-      "test@example.com",
-      "user.name@example.co.kr",
-      "test+tag@example.org"
-    ]
+    [ "test@example.com", "user.name@example.co.kr", "test+tag@example.org", "테스트@example.com" ].each do |email|
+      user = build_user(email:, username: "valid_#{email.hash.abs}")
+      user.valid?
 
-    valid_emails.each do |email|
-      user = User.new(email_address: email, name: "Test User", password: "password123")
-      user.valid? # trigger validation
-      assert_not_includes user.errors[:email_address], "이메일 형식이 올바르지 않습니다",
-                         "#{email} should be valid"
+      assert_empty user.errors[:email], "#{email} should be valid"
     end
   end
 
   test "이메일의 유일성을 대소문자 구분 없이 검증해야 한다" do
-    user1 = User.create!(email_address: "test@example.com", name: "User One", password: "password123")
-    user2 = User.new(email_address: "TEST@EXAMPLE.COM", name: "User Two", password: "password123")
+    User.create!(email: "test@example.com", username: "unique_email_source", name: "User One", password: "password123")
+    user = build_user(email: "TEST@EXAMPLE.COM", username: "user_two")
 
-    assert_not user2.valid?
-    assert_includes user2.errors[:email_address], "이미 사용 중인 이메일입니다"
+    assert_not user.valid?
+    assert_includes user.errors[:email], "은(는) 이미 사용 중입니다"
+  end
+
+  test "username의 유일성을 대소문자 구분 없이 검증해야 한다" do
+    User.create!(email: "case1@example.com", username: "case_user", name: "User One", password: "password123")
+    user = build_user(email: "case2@example.com", username: "CASE_USER")
+
+    assert_not user.valid?
+    assert_includes user.errors[:username], "은(는) 이미 사용 중입니다"
   end
 
   test "이름 길이를 검증해야 한다" do
-    # Too short
-    user = User.new(email_address: "test@example.com", name: "A", password: "password123")
-    assert_not user.valid?
-    assert_includes user.errors[:name], "이름은 최소 2글자 이상이어야 합니다"
+    too_short = build_user(name: "A", username: "short_name", email: "short@example.com")
+    too_long = build_user(name: "A" * 51, username: "long_name", email: "long@example.com")
+    valid = build_user(name: "정적절한길이", username: "valid_name", email: "valid@example.com")
 
-    # Too long
-    user = User.new(email_address: "test2@example.com", name: "A" * 51, password: "password123")
-    assert_not user.valid?
-    assert_includes user.errors[:name], "이름은 50글자를 초과할 수 없습니다"
+    assert_not too_short.valid?
+    assert_includes too_short.errors[:name], "은(는) 2자 이상이어야 합니다"
 
-    # Just right
-    user = User.new(email_address: "test3@example.com", name: "정적절한길이", password: "password123")
-    assert_predicate user, :valid?
+    assert_not too_long.valid?
+    assert_includes too_long.errors[:name], "은(는) 50자 이하여야 합니다"
+
+    assert_predicate valid, :valid?
   end
 
-  test "이름 형식을 검증해야 한다" do
-    invalid_names = [ "123", "test@", "user-name", "user_name", "user123", "테스트123" ]
+  test "username 형식을 검증해야 한다" do
+    invalid_usernames = [ "한글", "test@", "user-name", "user name", "a", "user!" ]
 
-    invalid_names.each do |name|
-      user = User.new(email_address: "test#{name.hash}@example.com", name: name, password: "password123")
-      assert_not user.valid?, "#{name} should be invalid"
-      assert_includes user.errors[:name], "한글, 영문, 공백만 사용할 수 있습니다"
+    invalid_usernames.each do |username|
+      user = build_user(username:, email: "test#{username.hash.abs}@example.com")
+
+      assert_not user.valid?, "#{username} should be invalid"
+      assert user.errors[:username].any? { |message| [ "영문, 숫자, 밑줄만 사용할 수 있습니다", "은(는) 2자 이상이어야 합니다" ].include?(message) }
     end
   end
 
-  test "유효한 이름 형식을 허용해야 한다" do
-    valid_names = [ "John Doe", "김철수", "Jane Smith", "홍 길 동", "Mary Jane Watson", "이 순 신" ]
+  test "유효한 username 형식을 허용해야 한다" do
+    [ "john_doe", "kimchulsoo", "jane123", "ruby_user", "user_01" ].each do |username|
+      user = build_user(username:, email: "test#{username.hash.abs}@example.com")
+      user.valid?
 
-    valid_names.each do |name|
-      user = User.new(email_address: "test#{name.hash}@example.com", name: name, password: "password123")
-      user.valid? # trigger validation
-      assert_not_includes user.errors[:name], "한글, 영문, 공백만 사용할 수 있습니다",
-                         "#{name} should be valid"
+      assert_empty user.errors[:username], "#{username} should be valid"
     end
   end
 
-  # ========== Normalization Tests ==========
-
-  test "email_address를 정규화해야 한다" do
-    user = User.new(
-      email_address: "  TEST@EXAMPLE.COM  ",
-      name: "Test User",
-      password: "password123"
-    )
+  test "email를 정규화해야 한다" do
+    user = build_user(email: "  TEST@EXAMPLE.COM  ", username: "normalized_email")
     user.save!
-    assert_equal "test@example.com", user.email_address
+
+    assert_equal "test@example.com", user.email
   end
 
-  test "name을 정규화해야 한다" do
-    user = User.new(
-      email_address: "test@example.com",
-      name: "  Test User  ",
-      password: "password123"
-    )
+  test "name은 그대로 저장된다" do
+    user = build_user(email: "test@example.com", username: "raw_name", name: "  Test User  ")
     user.save!
-    assert_equal "Test User", user.name
+
+    assert_equal "  Test User  ", user.name
   end
-
-  # ========== Association Tests ==========
-
-  test "여러 세션을 가져야 한다" do
-    assert_respond_to @user, :sessions
-    assert_kind_of ActiveRecord::Associations::CollectionProxy, @user.sessions
-  end
-
-  test "사용자가 삭제될 때 연관된 세션도 삭제되어야 한다" do
-    user_with_sessions = User.create!(email_address: "deleteme@example.com", name: "Delete Me", password: "password")
-    user_with_sessions.sessions.create!
-    user_with_sessions.sessions.create!
-
-    assert_difference "Session.count", -2 do
-      user_with_sessions.destroy!
-    end
-  end
-
-  # ========== Instance Method Tests ==========
 
   test "admin?은 관리자 사용자에 대해 true를 반환해야 한다" do
     assert_predicate @admin, :admin?
     assert_not @user.admin?
     assert_not @korean_user.admin?
   end
-
-  # ========== Role Tests ==========
 
   test "has_role?은 역할 보유 여부를 확인해야 한다" do
     assert @admin.has_role?(:admin)
@@ -168,6 +137,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "사용자는 여러 역할을 가질 수 있어야 한다" do
     @admin.roles << @editor_role.name
+
     assert_includes @admin.roles, "admin"
     assert_includes @admin.roles, "editor"
   end
@@ -178,131 +148,72 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "full_name은 이름이 비어있을 때 이메일 접두사를 반환해야 한다" do
-    user = User.new(email_address: "test@example.com", name: "", password: "password123")
-    user.save!(validate: false) # Skip validation to test blank name scenario
+    user = build_user(email: "test@example.com", username: "blank_full_name", name: "")
+    user.save!(validate: false)
+
     assert_equal "test", user.full_name
   end
 
   test "full_name은 이름이 nil일 때 이메일 접두사를 반환해야 한다" do
-    # Since name has NOT NULL constraint, we simulate the behavior instead
-    user = User.new(email_address: "test@example.com", password: "password123", name: "Test")
+    user = build_user(email: "test@example.com", username: "nil_full_name", name: "Test")
     user.save!
 
-    # Test the full_name logic by temporarily stubbing the name
     user.stub(:name, nil) do
       assert_equal "test", user.full_name
     end
   end
 
-  # ========== Security Tests ==========
-
   test "올바른 비밀번호로 인증해야 한다" do
-    user = User.create!(
-      email_address: "auth@example.com",
-      name: "Auth User",
-      password: "secret123"
-    )
-    assert user.authenticate("secret123")
-    assert_not user.authenticate("wrong_password")
+    user = User.create!(email: "auth@example.com", username: "auth_user", name: "Auth User", password: "secret123")
+
+    assert user.valid_password?("secret123")
+    assert_not user.valid_password?("wrong_password")
   end
 
   test "비밀번호를 안전하게 해시해야 한다" do
     password = "secret123"
-    user = User.new(
-      email_address: "secure@example.com",
-      name: "Secure User",
-      password: password
-    )
+    user = build_user(email: "secure@example.com", username: "secure_user", name: "Secure User", password:)
     user.save!
 
-    assert_not_equal password, user.password_digest
-    assert user.password_digest.start_with?("$2a$")
-    assert user.authenticate(password)
+    assert_not_equal password, user.encrypted_password
+    assert user.encrypted_password.start_with?("$2a$")
+    assert user.valid_password?(password)
   end
 
-  # ========== Korean Localization Tests ==========
-
   test "이름에 있는 한글 문자를 처리해야 한다" do
-    korean_names = [ "김철수", "박영희", "이민수", "정다혜", "최진우" ]
+    [ "김철수", "박영희", "이민수", "정다혜", "최진우" ].each_with_index do |name, index|
+      user = build_user(email: "korean#{index}@example.com", username: "korean_#{index}", name:)
 
-    korean_names.each_with_index do |name, index|
-      user = User.new(
-        email_address: "korean#{index}@example.com",
-        name: name,
-        password: "password123"
-      )
       assert_predicate user, :valid?, "Korean name #{name} should be valid"
       user.save!
       assert_equal name, user.name
     end
   end
 
-  test "이메일 로컬 파트에 있는 한글 문자를 처리해야 한다" do
-    # Note: While technically possible, Korean emails are rare
-    # This tests the system's handling of international characters
-    user = User.new(
-      email_address: "테스트@example.com",
-      name: "테스트 사용자",
-      password: "password123"
-    )
-    # This might fail depending on email validation - that's expected behavior
-    if user.valid?
-      user.save!
-      assert_equal "테스트@example.com", user.email_address
-    else
-      # If Korean email is not supported, verify appropriate validation
-      assert_predicate user.errors[:email_address], :any?, "Should have email validation error for Korean characters"
-    end
-  end
-
-  # ========== Edge Cases and Error Handling ==========
-
   test "매우 긴 유효한 이름을 처리해야 한다" do
-    # Test maximum allowed length
-    long_name = "김" + "철" * 24 + "수" # 26 Korean characters = 26 length
-    user = User.new(
-      email_address: "longname@example.com",
-      name: long_name,
-      password: "password123"
-    )
+    long_name = "김" + ("철" * 24) + "수"
+    user = build_user(email: "longname@example.com", username: "long_name_user", name: long_name)
+
     assert_predicate user, :valid?, "Maximum length Korean name should be valid"
   end
 
   test "혼합 언어 이름을 처리해야 한다" do
-    mixed_names = [ "John 김", "김 Smith", "Mary 박영희", "이민수 Johnson" ]
+    [ "John 김", "김 Smith", "Mary 박영희", "이민수 Johnson" ].each_with_index do |name, index|
+      user = build_user(email: "mixed#{index}@example.com", username: "mixed_#{index}", name:)
 
-    mixed_names.each_with_index do |name, index|
-      user = User.new(
-        email_address: "mixed#{index}@example.com",
-        name: name,
-        password: "password123"
-      )
       assert_predicate user, :valid?, "Mixed language name #{name} should be valid"
     end
   end
 
-  test "숫자가 포함된 이름을 거부해야 한다" do
-    invalid_names = [ "김철수1", "John2", "사용자123", "User1" ]
-
-    invalid_names.each do |name|
-      user = User.new(
-        email_address: "invalid#{name.hash}@example.com",
-        name: name,
-        password: "password123"
-      )
-      assert_not user.valid?, "Name with numbers #{name} should be invalid"
+  test "숫자가 포함된 이름도 현재는 허용한다" do
+    [ "김철수1", "John2", "사용자123", "User1" ].each do |name|
+      assert_predicate build_user(email: "invalid#{name.hash.abs}@example.com", username: "name#{SecureRandom.hex(3)}", name:), :valid?
     end
   end
 
-  # ========== Integration with Korean Timezone ==========
-
   test "created_at에 한국 시간대를 처리해야 한다" do
     Time.zone = "Asia/Seoul"
-    user = User.create!(
-      email_address: "timezone@example.com",
-      name: "시간대 테스트",
-      password: "password123"
-    )
+    user = User.create!(email: "timezone@example.com", username: "timezone_user", name: "시간대 테스트", password: "password123")
 
     assert_equal "Asia/Seoul", Time.zone.name
     assert_kind_of ActiveSupport::TimeWithZone, user.created_at
@@ -310,17 +221,14 @@ class UserTest < ActiveSupport::TestCase
 
   private
 
-  # Helper method for testing query count
-  def assert_queries(expected_count)
-    queries = []
-    ActiveSupport::Notifications.subscribe("sql.active_record") do |name, start, finish, id, payload|
-      queries << payload[:sql] unless payload[:sql] =~ /^(BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE)/
-    end
+  def build_user(attributes = {})
+    defaults = {
+      email: "user#{SecureRandom.hex(4)}@example.com",
+      username: "user_#{SecureRandom.hex(4)}",
+      name: "테스트 사용자",
+      password: "password123"
+    }
 
-    yield
-
-    assert_equal expected_count, queries.size, "Expected #{expected_count} queries, got #{queries.size}: #{queries}"
-  ensure
-    ActiveSupport::Notifications.unsubscribe("sql.active_record")
+    User.new(defaults.merge(attributes))
   end
 end

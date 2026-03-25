@@ -4,6 +4,7 @@ class Components::Users::Form < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::Pluralize
   include Phlex::Rails::Helpers::DOMID
+  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(user:)
@@ -11,7 +12,7 @@ class Components::Users::Form < Components::Base
   end
 
   def view_template
-    form_with(model: @user, class: "contents", url: users_path, method: @user.persisted? ? :put : :post) do |form|
+    form_with(model: @user, class: "contents", url: user_registration_path, method: @user.persisted? ? :put : :post) do |form|
       render RubyUI::Card.new(class: "w-full max-w-2xl bg-app/40 border-border-subtle rounded-2xl overflow-hidden shadow-2xl my-6") do
         # Decorative Header
         div(class: "h-24 bg-linear-to-r from-surface to-surface-muted/50 border-b border-border-subtle")
@@ -27,7 +28,7 @@ class Components::Users::Form < Components::Base
 
             div(class: "text-center sm:text-left pb-1 flex-1") do
               h2(class: "text-3xl font-bold text-content tracking-tight") { @user.persisted? ? "정보 수정" : "회원 가입" }
-              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email_address_was || "새로운 시작" }
+              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email || "새로운 시작" }
             end
           end
 
@@ -36,7 +37,7 @@ class Components::Users::Form < Components::Base
             div(id: "error_explanation", class: "mb-8 p-4 bg-danger-solid/10 border border-danger-solid/20 rounded-xl text-danger-text") do
               h2(class: "font-bold mb-2 flex items-center gap-2") do
                 Hero::ExclamationCircle(variant: :outline, class: "w-[18px] h-[18px]")
-                plain pluralize(@user.errors.count, "error") + " prohibited this user from being saved:"
+                plain t("errors.messages.form_errors", count: @user.errors.count)
               end
               ul(class: "list-disc ml-6 space-y-1 text-sm") do
                 @user.errors.each { |error| li { error.full_message } }
@@ -44,21 +45,68 @@ class Components::Users::Form < Components::Base
             end
           end
 
-          # Form Fields Grid
-          div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-border-subtle/60") do
-            render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_email_address) { "이메일 주소" }
-              form.email_field :email_address, class: input_classes(@user.errors[:email_address])
-              @user.errors[:email_address].each do |msg|
-                render RubyUI::FormFieldError.new { msg }
+          if @user.persisted?
+            div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_name) { "이름" }
+                form.text_field :name, class: input_classes(@user.errors[:name]), autocomplete: "name"
+                @user.errors[:name].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
+
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_email) { "이메일" }
+                form.email_field :email, class: input_classes(@user.errors[:email]), autocomplete: "email"
+                @user.errors[:email].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
               end
             end
+          else
+            div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_username) { "아이디" }
+                form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: "영문, 숫자, 밑줄", autocomplete: "username", required: true
+                @user.errors[:username].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
 
-            render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_name) { "사용자 이름" }
-              form.text_field :name, class: input_classes(@user.errors[:name])
-              @user.errors[:name].each do |msg|
-                render RubyUI::FormFieldError.new { msg }
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_email) { "이메일" }
+                form.email_field :email, class: input_classes(@user.errors[:email]), autocomplete: "email", required: true
+                @user.errors[:email].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
+
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_name) { "이름 (선택)" }
+                form.text_field :name, class: input_classes(@user.errors[:name]), autocomplete: "name"
+                @user.errors[:name].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
+            end
+          end
+
+          unless @user.persisted?
+            div(class: "space-y-8 pt-8") do
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_password) { "비밀번호" }
+                form.password_field :password, class: input_classes(@user.errors[:password]), autocomplete: "new-password"
+                @user.errors[:password].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
+
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { "비밀번호 확인" }
+                form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation]), autocomplete: "new-password"
+                @user.errors[:password_confirmation].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
               end
             end
           end
@@ -67,7 +115,15 @@ class Components::Users::Form < Components::Base
           div(class: "mt-10 pt-8 border-t border-border-subtle/60 flex items-center justify-end gap-3") do
             if @user.persisted?
               render RubyUI::Link.new(
-                href: users_path,
+                href: account_password_path,
+                class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
+              ) do
+                Hero::Key(variant: :outline, class: "w-4 h-4")
+                plain "비밀번호 변경"
+              end
+
+              render RubyUI::Link.new(
+                href: user_profile_path(@user),
                 class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
               ) do
                 Hero::ChevronLeft(variant: :outline, class: "w-4 h-4")
@@ -97,6 +153,6 @@ class Components::Users::Form < Components::Base
   end
 
   def initials
-    (@user.name.presence || @user.email_address.presence || "U").first.upcase
+    (@user.name.presence || @user.email.presence || "U").first.upcase
   end
 end

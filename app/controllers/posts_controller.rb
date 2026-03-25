@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class PostsController < ApplicationController
-  before_action :require_authentication, only: [ :create ]
+  before_action :authenticate_user!, only: [ :create ]
 
   def create
-    @post = Current.user.posts.build(post_params)
+    @post = current_user.posts.build(post_params)
 
     respond_to do |format|
       if @post.save

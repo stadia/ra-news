@@ -23,13 +23,13 @@ class Components::Users::User < Components::Base
 
           div(class: "text-center sm:text-left pb-1 flex-1") do
             h2(class: "text-3xl font-bold text-content tracking-tight") { @user.name }
-            p(class: "text-content-muted font-medium text-lg mt-1") { @user.email_address }
+            p(class: "text-content-muted font-medium text-lg mt-1") { @user.email }
           end
         end
 
         # Details Grid
         div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-border-subtle/60") do
-          detail_field("이메일 주소", @user.email_address)
+          detail_field("이메일 주소", @user.email)
           detail_field("사용자 이름", @user.name)
         end
       end
@@ -54,6 +54,6 @@ class Components::Users::User < Components::Base
   end
 
   def initials
-    (@user.name.presence || @user.email_address).first.upcase
+    (@user.name.presence || @user.email).first.upcase
   end
 end

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: d4ea894d508b6df2e8da031032c173968c29c76a
+  revision: abc5a204ac7934cb9fb70d6068ceea15d9c65f3d
   specs:
     federails (0.7.0)
       alba (~> 3.0)
@@ -133,6 +133,12 @@ GEM
     debug (1.11.1)
       irb (~> 1.10)
       reline (>= 0.3.8)
+    devise (5.0.3)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 7.0)
+      responders
+      warden (~> 1.2.3)
     discard (1.4.0)
       activerecord (>= 4.2, < 9.0)
     dotenv (3.2.0)
@@ -408,6 +414,7 @@ GEM
       opentelemetry-semantic_conventions
     opentelemetry-semantic_conventions (1.36.0)
       opentelemetry-api (~> 1.0)
+    orm_adapter (0.5.0)
     ostruct (0.6.3)
     pagy (43.4.2)
       json
@@ -507,7 +514,7 @@ GEM
       zeitwerk (~> 2.6)
     rainbow (3.1.1)
     rake (13.3.1)
-    rbs (4.0.1)
+    rbs (4.0.2)
       logger
       prism (>= 1.6.0)
       tsort
@@ -527,6 +534,9 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
+    responders (3.2.0)
+      actionpack (>= 7.0)
+      railties (>= 7.0)
     rexml (3.4.4)
     rss (0.3.2)
       rexml
@@ -639,12 +649,12 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13055)
-      sorbet-static (= 0.6.13055)
-    sorbet-runtime (0.6.13055)
-    sorbet-static (0.6.13055-aarch64-linux)
-    sorbet-static (0.6.13055-universal-darwin)
-    sorbet-static (0.6.13055-x86_64-linux)
+    sorbet (0.6.13059)
+      sorbet-static (= 0.6.13059)
+    sorbet-runtime (0.6.13059)
+    sorbet-static (0.6.13059-aarch64-linux)
+    sorbet-static (0.6.13059-universal-darwin)
+    sorbet-static (0.6.13059-x86_64-linux)
     sqlite3 (2.9.2-aarch64-linux-gnu)
     sqlite3 (2.9.2-arm64-darwin)
     sqlite3 (2.9.2-x86_64-linux-gnu)
@@ -678,6 +688,8 @@ GEM
     validated_object (2.3.4)
       activemodel (>= 3.2.21)
     version_gem (1.1.9)
+    warden (1.2.9)
+      rack (>= 2.0.9)
     web-console (4.3.0)
       actionview (>= 8.0.0)
       bindex (>= 0.4.0)
@@ -713,12 +725,12 @@ DEPENDENCIES
   amazing_print
   appsignal (~> 4.8)
   awesome_nested_set
-  bcrypt (~> 3.1.22)
   bootsnap
   brakeman
   bundler-audit
   capybara
   debug
+  devise (~> 5.0)
   discard
   dotenv-rails
   dry-operation

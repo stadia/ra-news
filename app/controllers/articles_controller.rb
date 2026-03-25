@@ -6,7 +6,7 @@ require "schema_dot_org/news_article"
 require "schema_dot_org/breadcrumb_list"
 
 class ArticlesController < ApplicationController
-  allow_unauthenticated_access only: %i[ index show others tag ]
+  skip_before_action :authenticate_user!, only: %i[ index show others tag ]
 
   before_action :set_article, only: %i[ show ]
 
@@ -117,7 +117,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles/new
   def new
-    @article = Article.new(user: Current.user)
+    @article = Article.new(user: current_user)
     render Views::Articles::New.new(article: @article)
   end
 
@@ -166,7 +166,7 @@ class ArticlesController < ApplicationController
 
     def liked_article_ids(articles)
       Like.liked_ids_for(
-        liker: Current.user,
+        liker: current_user,
         likeable_type: "Article",
         likeable_ids: articles.map(&:id)
       )

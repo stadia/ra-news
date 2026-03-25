@@ -3,7 +3,7 @@ class UserResource < Madmin::Resource
   attribute :id, form: false
   attribute :username, form: false, index: true
   attribute :name
-  attribute :email_address, index: true
+  attribute :email, index: true
 
   attribute :created_at, form: false
   attribute :updated_at, form: false

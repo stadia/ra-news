@@ -41,7 +41,7 @@ class Components::Likes::Button < Components::Base
   def liked?
     return @liked unless @liked.nil?
 
-    Current.user&.likes?(@likeable) || false
+    view_context.current_user&.likes?(@likeable) || false
   end
 
   def likes_count

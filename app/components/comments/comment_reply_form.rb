@@ -42,7 +42,7 @@ class Components::Comments::CommentReplyForm < Components::Base
   end
 
   def reply_form_fields
-    return login_prompt unless view_context.authenticated?
+    return login_prompt unless view_context.user_signed_in?
 
     form_with(
       model: [ @article, @comment ],
@@ -77,7 +77,7 @@ class Components::Comments::CommentReplyForm < Components::Base
     div(class: "rounded-lg border border-border-muted bg-surface px-4 py-3 text-sm text-content-secondary") do
       Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1 text-info-text")
       plain "답글을 작성하려면 "
-      link_to("로그인", new_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
+      link_to("로그인", new_user_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
       plain " 하세요."
     end
   end

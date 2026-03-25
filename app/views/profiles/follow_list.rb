@@ -105,7 +105,7 @@ class Views::Profiles::FollowList < Views::Base
   end
 
   def own_profile?
-    Current.user && Current.user == @user
+    view_context.current_user && view_context.current_user == @user
   end
 
   def follow_status_badge(text, variant:)

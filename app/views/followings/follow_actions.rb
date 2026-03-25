@@ -13,7 +13,7 @@ class Views::Followings::FollowActions < Views::Base
   end
 
   def view_template
-    current = Current.user
+    current = view_context.current_user
     policy = Federails::Client::FollowingPolicy.new(current, Federails::Following)
 
     div(id: self.class.dom_id_for(@actor), class: "flex flex-wrap items-center gap-3 mt-2") do

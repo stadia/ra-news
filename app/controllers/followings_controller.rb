@@ -3,7 +3,7 @@
 class FollowingsController < ApplicationController
   include Pundit::Authorization
 
-  before_action :require_authentication
+  before_action :authenticate_user!
   before_action :set_following, only: [ :accept, :destroy ]
   after_action :verify_authorized, except: [ :new ]
 
@@ -15,7 +15,7 @@ class FollowingsController < ApplicationController
 
   def create
     @following = build_following
-    @following.actor = Current.user.federails_actor
+    @following.actor = current_user.federails_actor
     authorize @following, policy_class: Federails::Client::FollowingPolicy
 
     persist_following(@following.target_actor)
@@ -61,7 +61,7 @@ class FollowingsController < ApplicationController
   def build_following_from_account
     Federails::Following.new_from_account(
       params.require(:account),
-      actor: Current.user.federails_actor
+      actor: current_user.federails_actor
     )
   rescue ActiveRecord::RecordNotFound
     nil
@@ -70,11 +70,11 @@ class FollowingsController < ApplicationController
   def persist_following(target_actor)
     respond_to do |format|
       if @following.save
-        format.html { redirect_to actor_path(Current.user.federails_actor), notice: "팔로우했습니다." }
+        format.html { redirect_to actor_path(current_user.federails_actor), notice: "팔로우했습니다." }
         format.turbo_stream { render_follow_actions_stream(target_actor) }
         format.json { render json: { status: @following.status }, status: :created }
       else
-        format.html { redirect_to actor_path(Current.user.federails_actor), alert: "팔로우에 실패했습니다." }
+        format.html { redirect_to actor_path(current_user.federails_actor), alert: "팔로우에 실패했습니다." }
         format.turbo_stream { render_follow_actions_stream(target_actor) }
         format.json { render json: @following.errors, status: :unprocessable_entity }
       end
@@ -138,6 +138,6 @@ class FollowingsController < ApplicationController
   end
 
   def pundit_user
-    Current.user
+    current_user
   end
 end
