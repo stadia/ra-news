@@ -25,13 +25,13 @@ target :app do
 end
 
 # Target for the test suite
-# target :test do
-#   # Where to find test-specific RBS files
-#   signature "sig/test"
+target :test do
+  # Where to find test-specific RBS files
+  signature "sig/test"
 
-#   # Directory to type check
-#   check "test"
+  # Directory to type check
+  check "test"
 
-#   # Use a more relaxed setting for tests
-#   configure_code_diagnostics(D::Ruby.lenient)
-# end
+  # Use a more relaxed setting for tests
+  configure_code_diagnostics(D::Ruby.lenient)
+end
