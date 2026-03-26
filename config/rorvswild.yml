@@ -25,6 +25,7 @@ production:
     # Noisy exceptions such as ActionNotFound, UnknownHttpMethod, etc are ignored by default.
     - <%= ActionDispatch::ExceptionWrapper.rescue_responses.keys.join("\n    - ") %>
     - AnotherNoisyError
+    - ActiveRecord::RecordNotFound
 
   # In case you want less details.
   ignore_plugins:
@@ -50,11 +51,11 @@ production:
   # Deployment tracking is working without any actions from your part if the Rails app
   # is inside a Git repository, or deployed with Capistrano, Kamal, Heroku or Scalingo.
   # In the other cases, you can provide the following details.
-  # deployment:
-  #   revision: <%= "Anything that will return the deployment version" %> # Mandatory
-  #   description: <%= "Eventually if you have a description such as a Git message" %>
-  #   author: <%= "Author's name of the deployment" %>
-  #   email: <%= "emailOf@theAuthor.example" %>
+  deployment:
+    revision: <%= ENV["APP_REVISION"] %> # Mandatory
+    #   description: <%= "Eventually if you have a description such as a Git message" %>
+    #   author: <%= "Author's name of the deployment" %>
+    email: <%= "stadia@gmail.com" %>
 
   # Sampling allows to send a fraction of jobs and requests.
   # If your app is sending hundred of millions of requests per month,
