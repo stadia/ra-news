@@ -35,16 +35,6 @@ class ApplicationJob < ActiveJob::Base
     logger.error "Error: #{exception.class.name} - #{exception.message}"
     logger.error exception.backtrace.join("\n") if Rails.env.development?
 
-    # Report to error tracking service
-    Honeybadger.notify(
-      exception,
-      error_class: exception.class.name,
-      backtrace: exception.backtrace,
-      error_message: exception.message,
-      context: honeybadger_context,
-      tags: [ queue_name, self.class.name.underscore ]
-    )
-
     # Re-raise for proper job failure handling
     raise exception
   end

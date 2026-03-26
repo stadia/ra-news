@@ -44,9 +44,7 @@ jobs:
             COMMIT_SHA=${{ github.sha }}
           tags: ghcr.io/stadia/ra-news:latest
           labels: ${{ steps.meta.outputs.labels }}
-      - uses: honeybadger-io/github-notify-deploy-action@v1
-        with:
-          api_key: ${{ secrets.HONEYBADGER_API_KEY }}
+
 
   deploy:
     runs-on: arc-runner-set

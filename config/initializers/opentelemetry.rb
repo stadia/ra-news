@@ -112,7 +112,7 @@ unless skip_otel
     # Configure trace instrumentations
     c.use_all({
       "OpenTelemetry::Instrumentation::Net::HTTP" => {
-        untraced_hosts: [ /sentry/, /newrelic/, /honeybadger/ ]
+        untraced_hosts: [ /sentry/, /newrelic/ ]
       }
     })
   end

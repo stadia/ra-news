@@ -8,10 +8,6 @@ class ApplicationController < ActionController::Base
   layout -> { request.format.turbo_stream? ? false : Components::Layout }
 
   before_action do
-    Honeybadger.context({
-      user_id: current_user&.id
-    })
-
     if request.path == "/"
       @web_site = SchemaDotOrg::WebSite.new(
         name: "Ruby-News | 루비 AI 뉴스",
