@@ -60,9 +60,9 @@ group :development, :test do
   # gem "steep", require: false
   gem "dotenv-rails"
   gem "faker"
-  gem "herb"
   gem "minitest", "~> 6.0"
   gem "minitest-mock"
+  gem "tapioca", require: false
 end
 
 group :development do
