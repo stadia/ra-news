@@ -60,7 +60,7 @@ class Components::Posts::PostCard < Components::Base
 
   def post_body
     div(class: "text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
-      raw @post.body
+      raw @post.body.html_safe
     end
     post_tags if @post.tag_list.any?
     media_attachments if @post.media_attachments.any?

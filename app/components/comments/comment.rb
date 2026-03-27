@@ -83,7 +83,7 @@ class Components::Comments::Comment < Components::Base
 
   def comment_body
     div(class: "text-content-secondary leading-relaxed prose prose-sm dark:prose-invert max-w-none") do
-      raw @comment.body
+      raw @comment.body.html_safe
     end
   end
 
