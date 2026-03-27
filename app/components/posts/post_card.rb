@@ -62,6 +62,42 @@ class Components::Posts::PostCard < Components::Base
     p(class: "text-content leading-relaxed wrap-break-word whitespace-pre-wrap") do
       plain @post.body
     end
+    media_attachments if @post.media_attachments.any?
+  end
+
+  def media_attachments
+    attachments = @post.media_attachments
+    grid_class = attachments.size == 1 ? "grid-cols-1" : "grid-cols-2"
+
+    div(class: "grid #{grid_class} gap-1 rounded-xl overflow-hidden mt-2") do
+      attachments.each do |attachment|
+        next unless attachment["url"].present?
+
+        render RubyUI::Dialog.new do
+          render RubyUI::DialogTrigger.new do
+            img(
+              src: attachment["url"],
+              alt: attachment["name"].to_s,
+              class: "w-full object-cover max-h-72 bg-surface-muted cursor-pointer hover:opacity-90 transition-opacity",
+              loading: "lazy"
+            )
+          end
+          render RubyUI::DialogContent.new(class: "max-w-3xl") do
+            render RubyUI::DialogHeader.new do
+              render RubyUI::DialogTitle.new { plain attachment["name"].presence || "이미지" }
+            end
+            render RubyUI::DialogMiddle.new do
+              img(
+                src: attachment["url"],
+                alt: attachment["name"].to_s,
+                class: "w-full rounded-md object-contain max-h-[70vh]",
+                loading: "lazy"
+              )
+            end
+          end
+        end
+      end
+    end
   end
 
   def post_actions
