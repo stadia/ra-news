@@ -144,3 +144,5 @@ gem "appsignal", "~> 4.8"
 gem "prosopite"
 gem "pg_query"
 gem "rorvswild"
+
+gem "rails-ai-context", "~> 3.1"
