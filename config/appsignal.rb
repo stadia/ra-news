@@ -13,5 +13,5 @@ Appsignal.configure do |config|
   # Configure errors that should not be recorded by AppSignal.
   # For more information see our docs:
   # https://docs.appsignal.com/ruby/configuration/ignore-errors.html
-  # config.ignore_errors << "MyCustomError"
+  config.ignore_errors += [ "ActiveRecord::RecordNotFound", "ActionController::RoutingError" ]
 end
