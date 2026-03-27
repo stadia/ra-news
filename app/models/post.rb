@@ -29,6 +29,8 @@ class Post < ApplicationRecord
     actor_entity_method: :federation_actor_entity,
     should_federate_method: :should_federate?
 
+  acts_as_taggable_on :tags
+
   on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; destroy! }
 
   #: () -> (User | Federails::Actor)?
@@ -47,6 +49,17 @@ class Post < ApplicationRecord
     if parent.present?
       custom["inReplyTo"] = parent.federated_url || Rails.application.routes.url_helpers.post_url(parent)
     end
+
+    if tag_list.any?
+      custom["tag"] = tag_list.map do |name|
+        { "type" => "Hashtag", "name" => "##{name}", "href" => "#{Rails.application.routes.default_url_options[:host]}/tags/#{name}" }
+      end
+    end
+
+    if media_attachments.any?
+      custom["attachment"] = media_attachments
+    end
+
     Federails::DataTransformer::Note.to_federation(self, content: body, custom: custom)
   end
 
@@ -99,6 +112,16 @@ class Post < ApplicationRecord
           object[:parent_id] = parent.id if parent
         end
       end
+
+      # Mastodon 이미지 첨부 파싱
+      attachments = Array(hash["attachment"]).select { |a| a["type"] == "Document" || a["type"] == "Image" }
+      object[:media_attachments] = attachments.map do |a|
+        { "url" => a["url"], "mediaType" => a["mediaType"], "name" => a["name"] }.compact
+      end
+
+      # Mastodon 해시태그 파싱
+      hashtags = Array(hash["tag"]).select { |t| t["type"] == "Hashtag" }
+      object[:tag_list] = hashtags.map { |t| t["name"].to_s.delete_prefix("#") }.uniq.join(", ") if hashtags.any?
 
       object
     end
