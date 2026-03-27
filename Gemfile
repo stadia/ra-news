@@ -139,7 +139,6 @@ gem "opentelemetry-instrumentation-http_client"
 gem "opentelemetry-instrumentation-net_http"
 gem "opentelemetry-instrumentation-ruby_llm"
 
-
 gem "appsignal", "~> 4.8"
 gem "prosopite"
 gem "pg_query"
