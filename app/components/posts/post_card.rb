@@ -59,10 +59,19 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_body
-    p(class: "text-content leading-relaxed wrap-break-word whitespace-pre-wrap") do
-      plain @post.body
+    div(class: "text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
+      raw @post.body
     end
+    post_tags if @post.tag_list.any?
     media_attachments if @post.media_attachments.any?
+  end
+
+  def post_tags
+    div(class: "flex flex-wrap gap-1 mt-1") do
+      @post.tag_list.each do |tag|
+        span(class: "text-xs text-info-text hover:underline cursor-pointer") { plain "##{tag}" }
+      end
+    end
   end
 
   def media_attachments

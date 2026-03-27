@@ -8,6 +8,8 @@ class Post < ApplicationRecord
 
   belongs_to :user, optional: true
 
+  include HtmlSanitizable
+
   validates :body, presence: true
 
   validate :validate_user_or_actor
@@ -102,7 +104,7 @@ class Post < ApplicationRecord
         federated_url: hash["id"],
         url: hash["url"],
         title: hash["summary"].presence,
-        body: Rails::Html::SafeListSanitizer.new.sanitize(hash["content"], tags: %w[p br a strong em ul ol li blockquote code pre img]).squish
+        body: hash["content"].to_s.squish
       }
 
       if in_reply_to.present?

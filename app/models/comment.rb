@@ -10,6 +10,8 @@ class Comment < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :article, counter_cache: true
 
+  include HtmlSanitizable
+
   validates :body, presence: true, length: { minimum: 1, maximum: MAX_BODY_LENGTH }
   validates :article, presence: true
   validate :validate_user_or_actor
@@ -130,7 +132,7 @@ class Comment < ApplicationRecord
 
       object = {
         federated_url: hash["id"],
-        body: Rails::Html::SafeListSanitizer.new.sanitize(hash["content"], tags: %w[p br a strong em ul ol li blockquote code pre img]).squish
+        body: hash["content"].to_s.squish
       }
 
       if comment_id.present?

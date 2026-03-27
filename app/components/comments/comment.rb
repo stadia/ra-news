@@ -82,8 +82,8 @@ class Components::Comments::Comment < Components::Base
   end
 
   def comment_body
-    div(class: "text-content-secondary leading-relaxed") do
-      view_context.simple_format(ERB::Util.h(@comment.body), {}, wrapper_tag: "div")
+    div(class: "text-content-secondary leading-relaxed prose prose-sm dark:prose-invert max-w-none") do
+      raw @comment.body
     end
   end
 
