@@ -263,6 +263,13 @@ class Article < ApplicationRecord
       false
     end
 
+    # inbox 디스패치 시 Article은 수신 처리를 하지 않음.
+    # handle_federated_object?가 false여도 inbox는 Article에게 디스패치하므로,
+    # Article.from_activitypub_object(title: 등)가 Post에 잘못 assign되는 것을 방지한다.
+    #: (untyped) -> void
+    def handle_incoming_fediverse_data(_activity)
+    end
+
     # slug로 Article을 찾는 메서드
     #: (String slug) -> Article?
     def find_by_slug(slug)
