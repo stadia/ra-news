@@ -7,9 +7,6 @@ class Article < ApplicationRecord
 
   include Discard::Model
 
-  # YouTube URL의 정규화된 호스트를 상수로 정의
-  YOUTUBE_NORMALIZED_HOST: untyped
-
   include Federails::DataEntity
 
   # : () -> Hash[String, untyped]
@@ -20,8 +17,6 @@ class Article < ApplicationRecord
   def youtube_id: () -> String?
 
   def update_slug: () -> bool
-
-  def update_published_at: () -> bool
 
   # : () -> String?
   def user_name: () -> String?
@@ -40,23 +35,6 @@ class Article < ApplicationRecord
   # : (String action) -> void
   def create_federails_activity: (String action) -> void
 
-  def set_initial_url_and_host: () -> void
-
-  def set_youtube_metadata: () -> void
-
-  # : (String body) -> void
-  def set_webpage_metadata: (String body) -> void
-
-  # : (Faraday::Response response) -> void
-  def handle_redirection: (Faraday::Response response) -> void
-
-  def fetch_url_content: () -> Faraday::Response?
-
-  def url_to_published_at: () -> DateTime?
-
-  # : (String body) -> DateTime?
-  def extract_published_at_from_content: (String body) -> DateTime?
-
   # : () -> void
   def clear_rss_cache: () -> void
 
@@ -66,8 +44,7 @@ class Article < ApplicationRecord
   # : () -> String
   def random_slug: () -> String
 
-  # : (String body) -> Time
-  def _published_at: (String body) -> Time
+  def metadata_service: () -> untyped
 
   # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
   # : (String url) -> bool

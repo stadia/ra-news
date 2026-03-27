@@ -8,6 +8,8 @@ class ArticlesController < ApplicationController
 
   def others: () -> untyped
 
+  def tag: () -> untyped
+
   def show: () -> untyped
 
   # GET /articles/new
@@ -25,4 +27,8 @@ class ArticlesController < ApplicationController
   def article_params: () -> untyped
 
   def existing_article: () -> untyped
+
+  def liked_article_ids: (untyped articles) -> untyped
+
+  def sidebar_tags: () -> untyped
 end

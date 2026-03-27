@@ -10,7 +10,9 @@ class ArticleAgentsService < OperationService
 
   def run_agents: (untyped article) -> untyped
 
-  def user_prompt: (untyped raw_content, untyped title, untyped url, untyped content_type) -> untyped
+  def user_prompt: (untyped raw_content, untyped title, untyped url, untyped content_type, ?untyped related_articles) -> untyped
+
+  def related_articles: (untyped article) -> untyped
 
   def run_embed: (untyped article) -> untyped
 end

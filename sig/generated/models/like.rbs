@@ -1,6 +1,9 @@
 # Generated from app/models/like.rb with RBS::Inline
 
 class Like < Socialization::ActiveRecordStores::Like
+  # : (User?, String, Array[Integer]) -> Array[Integer]
+  def self.liked_ids_for: (User?, String, Array[Integer]) -> Array[Integer]
+
   # : (User, ActiveRecord::Base) -> void
   def self.publish_federated_like: (User, ActiveRecord::Base) -> void
 

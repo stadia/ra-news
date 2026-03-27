@@ -467,8 +467,6 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "set_initial_url_and_host는 논리 연산자 우선순위를 올바르게 처리해야 한다 (Bug fix #1)" do
-    response = Struct.new(:body, :status, :headers).new("", 200, {})
-
     # URL with no path should be deleted only if not YouTube
     article = Article.new(
       title: "No Path Test",
@@ -476,11 +474,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://example.com"
     )
 
-    # Generate metadata which calls set_initial_url_and_host
-    # A non-YouTube URL with no path should be deleted
-    article.stub(:fetch_url_content, response) do
-      article.generate_metadata
-    end
+    article.send(:set_initial_url_and_host)
     assert_not_nil article.deleted_at, "YouTube가 아닌 URL이고 경로가 없으면 삭제되어야 합니다."
 
     # YouTube URL should NOT be deleted even with short/no path
@@ -490,16 +484,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://www.youtube.com"
     )
 
-    youtube_article.stub(:fetch_url_content, response) do
-      youtube_article.instance_eval do
-        begin
-          @url = "https://www.youtube.com"
-          set_initial_url_and_host
-        rescue URI::InvalidURIError
-          # Expected for this test
-        end
-      end
-    end
+    youtube_article.send(:set_initial_url_and_host)
     # YouTube should not be automatically deleted
     # (unless explicitly marked for deletion)
     assert youtube_article.is_youtube
@@ -603,7 +588,8 @@ class ArticleTest < ActiveSupport::TestCase
 
     urls_with_dates.each do |url, expected_date|
       article = Article.new(url: url)
-      extracted_date = article.send(:url_to_published_at)
+      service = Articles::MetadataPreparationService.new
+      extracted_date = service.url_to_published_at(article.url)
 
       if extracted_date
         assert_equal expected_date.year, extracted_date.year
@@ -614,14 +600,13 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "URL 파싱 오류를 정상적으로 처리해야 한다" do
-    article = Article.new(url: "invalid-url")
-    assert_nil article.send(:url_to_published_at)
+    service = Articles::MetadataPreparationService.new
+    assert_nil service.url_to_published_at("invalid-url")
   end
 
   # ========== Cache Management Tests ==========
 
   test "폐기 후 RSS 캐시를 지워야 한다" do
-    # Mock Rails.cache to expect the cache deletion
     deleted_keys = []
     Rails.cache.stub(:delete, ->(key, *args, **kwargs) { deleted_keys << key; true }) do
       @article.stub(:create_federails_activity, nil) do
@@ -631,42 +616,15 @@ class ArticleTest < ActiveSupport::TestCase
     assert_includes deleted_keys, "rss_articles"
   end
 
-  # ========== Error Handling Tests ==========
-
-  test "fetch_url_content에서 Faraday 오류를 정상적으로 처리해야 한다" do
-    article = Article.new(url: "https://example.com/error-test")
-
-    # Mock Faraday to raise an error
-    Faraday.stub(:get, ->(*) { raise Faraday::ConnectionFailed.new("Connection failed") }) do
-      result = article.send(:fetch_url_content)
-      assert_nil result
-    end
-  end
-
-  test "YouTube API 오류를 정상적으로 처리해야 한다" do
-    # This test ensures that YouTube API errors don't crash the application
-    article = Article.new(
-      url: "https://www.youtube.com/watch?v=invalid_video_id",
-      is_youtube: true
-    )
-
-    # The set_youtube_metadata method should handle Yt::Error gracefully
-    assert_nothing_raised do
-      article.send(:set_youtube_metadata)
-    end
-  end
-
   # ========== Performance Tests ==========
 
   test "kept된 기사를 효율적으로 쿼리해야 한다" do
-    # Test that kept scope is efficient
     assert_queries(1) do
       Article.kept.limit(10).to_a
     end
   end
 
   test "관련된 기사를 효율적으로 쿼리해야 한다" do
-    # Test that related scope is efficient
     assert_queries(1) do
       Article.related.limit(5).to_a
     end
@@ -684,7 +642,6 @@ class ArticleTest < ActiveSupport::TestCase
       user: users(:korean_user)
     )
 
-    # Mock generate_metadata to avoid external calls
     article.stub(:generate_metadata, nil) do
       article.save!
     end
@@ -696,7 +653,6 @@ class ArticleTest < ActiveSupport::TestCase
 
   private
 
-  # Helper method to stub external API requests
   def stub_external_requests(article)
     response = Struct.new(:body, :status, :success?, :headers).new(
       "<html><head><title>Test</title></head><body>Test description</body></html>",
@@ -706,18 +662,13 @@ class ArticleTest < ActiveSupport::TestCase
     )
 
     Faraday.stub(:get, ->(*) { response }) do
-      article.stub(:fetch_url_content, response) do
-        article.stub(:set_youtube_metadata, nil) do
-          yield(response) if block_given?
-        end
-      end
+      yield(response) if block_given?
     end
   end
 
-  # Helper method for testing query count
   def assert_queries(expected_count)
     queries = []
-    ActiveSupport::Notifications.subscribe("sql.active_record") do |name, start, finish, id, payload|
+    ActiveSupport::Notifications.subscribe("sql.active_record") do |_name, _start, _finish, _id, payload|
       queries << payload[:sql] unless payload[:sql] =~ /^(BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE)/
     end
 

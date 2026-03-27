@@ -1,0 +1,57 @@
+# Generated from app/services/articles/metadata_preparation_service.rb with RBS::Inline
+
+module Articles
+  class MetadataPreparationService < OperationService
+    TRACKING_QUERY_KEYS: untyped
+
+    YOUTUBE_QUERY_KEYS: untyped
+
+    MAX_REDIRECTS: ::Integer
+
+    # : (Article article) -> Dry::Monads::Result
+    def call: (Article article) -> Dry::Monads::Result
+
+    private
+
+    # : (String url) -> Faraday::Response?
+    def fetch_url_content: (String url) -> Faraday::Response?
+
+    # : (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
+    def follow_redirection: (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
+
+    # : (Article article) -> void
+    def normalize_url!: (Article article) -> void
+
+    # : (Article article) -> void
+    def apply_youtube_metadata: (Article article) -> void
+
+    # : (Article article, String body) -> void
+    def apply_webpage_metadata: (Article article, String body) -> void
+
+    # : (String url) -> DateTime?
+    def url_to_published_at: (String url) -> DateTime?
+
+    # : (String body) -> DateTime?
+    def extract_published_at_from_content: (String body) -> DateTime?
+
+    # : (Article article, String body) -> Time
+    def published_at_for: (Article article, String body) -> Time
+
+    # : (Article article) -> void
+    def ensure_slug!: (Article article) -> void
+
+    def resolve_response: () -> untyped
+
+    def normalize_article_url: () -> untyped
+
+    def apply_article_metadata: () -> untyped
+
+    def ensure_article_slug: () -> untyped
+
+    def normalized_url: (untyped parsed_url) -> untyped
+
+    def should_discard_url?: (untyped article, untyped parsed_url) -> untyped
+
+    def random_slug: () -> untyped
+  end
+end
