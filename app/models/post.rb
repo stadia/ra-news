@@ -100,6 +100,8 @@ class Post < ApplicationRecord
 
       object = {
         federated_url: hash["id"],
+        url: hash["url"],
+        title: hash["summary"].presence,
         body: ActionController::Base.helpers.strip_tags(hash["content"]).squish
       }
 
