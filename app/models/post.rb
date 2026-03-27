@@ -114,13 +114,13 @@ class Post < ApplicationRecord
       end
 
       # Mastodon 이미지 첨부 파싱
-      attachments = Array(hash["attachment"]).select { |a| a["type"] == "Document" || a["type"] == "Image" }
+      attachments = Array(hash["attachment"]).select { |a| a.is_a?(Hash) && (a["type"] == "Document" || a["type"] == "Image") }
       object[:media_attachments] = attachments.map do |a|
         { "url" => a["url"], "mediaType" => a["mediaType"], "name" => a["name"] }.compact
       end
 
       # Mastodon 해시태그 파싱
-      hashtags = Array(hash["tag"]).select { |t| t["type"] == "Hashtag" }
+      hashtags = Array(hash["tag"]).select { |t| t.is_a?(Hash) && t["type"] == "Hashtag" }
       object[:tag_list] = hashtags.map { |t| t["name"].to_s.delete_prefix("#") }.uniq.join(", ") if hashtags.any?
 
       object
