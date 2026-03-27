@@ -102,7 +102,7 @@ class Post < ApplicationRecord
         federated_url: hash["id"],
         url: hash["url"],
         title: hash["summary"].presence,
-        body: ActionController::Base.helpers.strip_tags(hash["content"]).squish
+        body: Rails::Html::SafeListSanitizer.new.sanitize(hash["content"], tags: %w[p br a strong em ul ol li blockquote code pre img]).squish
       }
 
       if in_reply_to.present?

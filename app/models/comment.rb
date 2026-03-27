@@ -130,7 +130,7 @@ class Comment < ApplicationRecord
 
       object = {
         federated_url: hash["id"],
-        body: ActionController::Base.helpers.strip_tags(hash["content"]).squish
+        body: Rails::Html::SafeListSanitizer.new.sanitize(hash["content"], tags: %w[p br a strong em ul ol li blockquote code pre img]).squish
       }
 
       if comment_id.present?
