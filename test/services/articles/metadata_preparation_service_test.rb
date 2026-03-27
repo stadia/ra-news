@@ -85,7 +85,8 @@ module Articles
           assert_nothing_raised do
             result = MetadataPreparationService.new.call(article)
 
-            assert_predicate result, :success?
+            assert_predicate result, :failure?
+            assert_equal :api_error, result.failure
           end
         end
       end

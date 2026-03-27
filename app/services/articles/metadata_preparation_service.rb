@@ -290,7 +290,13 @@ module Articles
     def parse_published_at_value(value)
       return if value.blank?
 
-      Time.zone.parse(value.to_s.strip)
+      normalized = value.to_s.strip
+      korean_match = normalized.match(/\A(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일\z/)
+      if korean_match
+        return Time.zone.local(korean_match[1].to_i, korean_match[2].to_i, korean_match[3].to_i)
+      end
+
+      Time.zone.parse(normalized)
     rescue ArgumentError, TypeError
       nil
     end
