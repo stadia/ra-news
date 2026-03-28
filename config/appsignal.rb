@@ -8,10 +8,10 @@ Appsignal.configure do |config|
   # Configure actions that should not be monitored by AppSignal.
   # For more information see our docs:
   # https://docs.appsignal.com/ruby/configuration/ignore-actions.html
-  # config.ignore_actions << "ApplicationController#isup"
+  config.ignore_actions += [ "GET /up" ]
 
   # Configure errors that should not be recorded by AppSignal.
   # For more information see our docs:
   # https://docs.appsignal.com/ruby/configuration/ignore-errors.html
-  config.ignore_errors += [ "ActiveRecord::RecordNotFound", "ActionController::RoutingError" ]
+  config.ignore_errors += [ "ActiveRecord::RecordNotFound", "ActionController::RoutingError", "Faraday::SSLError" ]
 end
