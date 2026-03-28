@@ -206,3 +206,7 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 최신 라이브러리 문서나 예제가 필요하면 Context7을 사용하고, `resolve-library-id` 후 `query-docs` 순서로 진행한다.
 - 복잡한 문제를 단계적으로 풀어야 할 때는 Sequential Thinking을 사용한다.
 - Ruby 코드의 정의 탐색, 참조 찾기, 심볼 검색 등에는 ruby-lsp를 적극 활용한다.
+
+## 외부 프로젝트 경로
+
+- **federails**: `/Users/jeff.dean/projects/federails` — federails 관련 코드 조회·수정 시 반드시 이 로컬 경로를 사용한다. 번들러 캐시(`~/.local/share/mise/.../bundler/gems/federails-*`)는 읽지 않는다.

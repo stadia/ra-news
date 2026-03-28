@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: abc5a204ac7934cb9fb70d6068ceea15d9c65f3d
+  revision: b97c503c5a67a978985eb5382e18b5a16574900a
   specs:
-    federails (0.7.0)
+    federails (0.8.0)
       alba (~> 3.0)
       faraday
       faraday-follow_redirects
