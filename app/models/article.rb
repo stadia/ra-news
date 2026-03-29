@@ -81,6 +81,7 @@ class Article < ApplicationRecord
   end
 
   include Federails::DataEntity
+  include FederailsLikeable
 
   acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at, should_federate_method: :should_federate?
 

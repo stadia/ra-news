@@ -16,6 +16,7 @@ class Post < ApplicationRecord
   validate :validate_parent_post
 
   include Federails::DataEntity
+  include FederailsLikeable
 
   belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
   # Federails::DataEntity가 추가하는 federails_actor presence 검증을 제거

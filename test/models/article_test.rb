@@ -210,6 +210,30 @@ class ArticleTest < ActiveSupport::TestCase
     assert_respond_to @user, :like!
   end
 
+  test "federails 좋아요 콜백으로 좋아요와 취소를 처리한다" do
+    actor = Federails::Actor.create!(
+      federated_url: "https://remote.example/users/article-liker-#{SecureRandom.hex(4)}",
+      username: "article_liker",
+      name: "Article Liker",
+      server: "remote.example",
+      inbox_url: "https://remote.example/users/article-liker/inbox",
+      outbox_url: "https://remote.example/users/article-liker/outbox",
+      followers_url: "https://remote.example/users/article-liker/followers",
+      followings_url: "https://remote.example/users/article-liker/following",
+      profile_url: "https://remote.example/@article-liker",
+      actor_type: "Person",
+      local: false
+    )
+
+    assert_difference -> { Like.where(liker: actor, likeable: @article).count }, 1 do
+      @article.send(:apply_like, actor.federated_url)
+    end
+
+    assert_difference -> { Like.where(liker: actor, likeable: @article).count }, -1 do
+      @article.send(:apply_unlike, actor.federated_url)
+    end
+  end
+
   test "kept 스코프는 삭제된 기사를 제외해야 한다" do
     kept_articles = Article.kept
 

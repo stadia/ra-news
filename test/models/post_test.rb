@@ -73,6 +73,30 @@ class PostTest < ActiveSupport::TestCase
     assert_predicate @root_post, :should_federate?
   end
 
+  test "federails 좋아요 콜백으로 좋아요와 취소를 처리한다" do
+    actor = Federails::Actor.create!(
+      federated_url: "https://remote.example/users/post-liker-#{SecureRandom.hex(4)}",
+      username: "post_liker",
+      name: "Post Liker",
+      server: "remote.example",
+      inbox_url: "https://remote.example/users/post-liker/inbox",
+      outbox_url: "https://remote.example/users/post-liker/outbox",
+      followers_url: "https://remote.example/users/post-liker/followers",
+      followings_url: "https://remote.example/users/post-liker/following",
+      profile_url: "https://remote.example/@post-liker",
+      actor_type: "Person",
+      local: false
+    )
+
+    assert_difference -> { Like.where(liker: actor, likeable: @root_post).count }, 1 do
+      @root_post.send(:apply_like, actor.federated_url)
+    end
+
+    assert_difference -> { Like.where(liker: actor, likeable: @root_post).count }, -1 do
+      @root_post.send(:apply_unlike, actor.federated_url)
+    end
+  end
+
   # ========== handle_federated_object? Tests ==========
 
   test "inReplyTo가 없는 Note를 수락한다" do
