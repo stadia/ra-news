@@ -8,23 +8,30 @@ module FederailsLikeable
     on_federails_undo_like_received :apply_unlike
   end
 
-  private
-
   #: (String actor_url) -> void
-  def apply_like(actor_url)
-    actor = Federails::Actor.find_by(federated_url: actor_url)
+  def apply_like(actor_reference)
+    actor = resolve_federails_actor(actor_reference)
     return unless actor
 
     actor.like!(self)
   end
 
   #: (String actor_url) -> void
-  def apply_unlike(actor_url)
-    actor = Federails::Actor.find_by(federated_url: actor_url)
+  def apply_unlike(actor_reference)
+    actor = resolve_federails_actor(actor_reference)
     return unless actor
 
     actor.unlike!(self)
   end
 
   alias_method :apply_undo_like, :apply_unlike
+
+  private
+
+  def resolve_federails_actor(actor_reference)
+    actor_url = actor_reference.is_a?(Hash) ? actor_reference["id"] : actor_reference
+    return if actor_url.blank?
+
+    Federails::Actor.find_by_federation_url(actor_url)
+  end
 end

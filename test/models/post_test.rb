@@ -88,12 +88,14 @@ class PostTest < ActiveSupport::TestCase
       local: false
     )
 
+    actor_payload = { "id" => actor.federated_url }
+
     assert_difference -> { Like.where(liker: actor, likeable: @root_post).count }, 1 do
-      @root_post.send(:apply_like, actor.federated_url)
+      @root_post.apply_like(actor_payload)
     end
 
     assert_difference -> { Like.where(liker: actor, likeable: @root_post).count }, -1 do
-      @root_post.send(:apply_unlike, actor.federated_url)
+      @root_post.apply_unlike(actor_payload)
     end
   end
 
