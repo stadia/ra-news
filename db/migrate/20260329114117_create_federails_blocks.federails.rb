@@ -6,6 +6,6 @@ class CreateFederailsBlocks < ActiveRecord::Migration[7.0]
       t.references :target_actor, null: false, foreign_key: { to_table: :federails_actors }
       t.timestamps
     end
-    add_index :federails_blocks, [:actor_id, :target_actor_id], unique: true
+    add_index :federails_blocks, [ :actor_id, :target_actor_id ], unique: true
   end
 end
