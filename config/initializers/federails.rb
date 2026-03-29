@@ -11,6 +11,4 @@ end
 
 Rails.application.config.after_initialize do
   Federails::Actor.acts_as_liker unless Federails::Actor.method_defined?(:like!)
-  Fediverse::Inbox.register_handler "Like", "Note", ActivityPub::Handlers::LikeHandler, :handle_like
-  Fediverse::Inbox.register_handler "Undo", "Like", ActivityPub::Handlers::LikeHandler, :handle_undo_like
 end
