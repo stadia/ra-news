@@ -36,6 +36,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     end
 
     @article.reload
+
     assert_equal "1234567890", @article.twitter_id
   end
 
@@ -93,6 +94,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     end
 
     @article.reload
+
     assert_nil @article.twitter_id
   end
 
@@ -206,12 +208,14 @@ class TwitterServiceTest < ActiveSupport::TestCase
     assert_includes post_text, "#ruby"
     # 다른 태그는 포함되지 않아야 함 (Twitter는 하나만 사용)
     tag_count = post_text.scan(/#\w+/).count
+
     assert_equal 1, tag_count, "Twitter 포스트에는 태그가 하나만 있어야 합니다"
   end
 
   # platform_name 테스트
   test "platform_name은 X.com을 반환한다" do
     service = TwitterService.new
+
     assert_equal "X.com", service.send(:platform_name)
   end
 

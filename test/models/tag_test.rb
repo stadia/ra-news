@@ -56,11 +56,13 @@ class TagTest < ActiveSupport::TestCase
 
     # No tag should be in both lists
     overlap = confirmed & unconfirmed
+
     assert_empty overlap, "Tags should not be both confirmed and unconfirmed"
 
     # Together they should cover all tags with is_confirmed values
     total_with_confirmation = Tag.where.not(is_confirmed: nil).pluck(:id)
     combined = (confirmed + unconfirmed).sort
+
     assert_equal total_with_confirmation.sort, combined
   end
 
@@ -111,6 +113,7 @@ class TagTest < ActiveSupport::TestCase
 
       assert_nothing_raised do
         tag.save! if tag.valid?
+
         assert_equal name, tag.name
       end
     end
@@ -130,6 +133,7 @@ class TagTest < ActiveSupport::TestCase
 
       assert_nothing_raised do
         tag.save! if tag.valid?
+
         assert_equal name, tag.name
       end
     end
@@ -222,6 +226,7 @@ class TagTest < ActiveSupport::TestCase
 
     # New tag should be created
     new_tag = Tag.find_by(name: "new-tag")
+
     assert_not_nil new_tag
   end
 
@@ -230,11 +235,13 @@ class TagTest < ActiveSupport::TestCase
     tag_name = "test-tag-" + SecureRandom.hex(4)
     created_tag = Tag.create!(name: tag_name, is_confirmed: true)
     found_tag = Tag.find_or_create_with_like_by_name(tag_name)
+
     assert_equal created_tag, found_tag
 
     # Test new tag creation
     new_tag_name = "brand-new-tag-" + SecureRandom.hex(4)
     newly_created_tag = Tag.find_or_create_with_like_by_name(new_tag_name)
+
     assert_not_nil newly_created_tag
     assert_equal new_tag_name, newly_created_tag.name
     assert_predicate newly_created_tag, :persisted?
@@ -284,6 +291,7 @@ class TagTest < ActiveSupport::TestCase
       # Should handle special characters appropriately
       if tag.valid?
         tag.save!
+
         assert_equal name, tag.name
       else
         # If invalid, should have appropriate validation errors
@@ -311,6 +319,7 @@ class TagTest < ActiveSupport::TestCase
 
     assert_queries(1) do
       found_tag = Tag.find_by(name: tag_name)
+
       assert_equal @ruby_tag, found_tag
     end
   end
@@ -335,6 +344,7 @@ class TagTest < ActiveSupport::TestCase
 
     # Taggings should be cleaned up or nullified
     final_taggings_count = ActsAsTaggableOn::Tagging.count
+
     assert_operator final_taggings_count, :<=, initial_taggings_count
   end
 
@@ -352,6 +362,7 @@ class TagTest < ActiveSupport::TestCase
     korean_tags.each do |tag_name|
       assert_includes korean_article.tag_list, tag_name
       tag = Tag.find_by(name: tag_name)
+
       assert_not_nil tag, "Korean tag '#{tag_name}' should be created"
     end
   end
@@ -367,6 +378,7 @@ class TagTest < ActiveSupport::TestCase
     mixed_tags.each do |tag_name|
       assert_includes article.tag_list, tag_name
       tag = Tag.find_by(name: tag_name)
+
       assert_not_nil tag, "Mixed language tag '#{tag_name}' should be created"
     end
   end
@@ -382,6 +394,7 @@ class TagTest < ActiveSupport::TestCase
     # Should either be valid or have appropriate length validation
     if tag.valid?
       tag.save!
+
       assert_equal long_name, tag.name
     else
       # Should have length validation error
@@ -434,12 +447,14 @@ class TagTest < ActiveSupport::TestCase
   test "fixture 태그는 적절한 확정 상태를 가져야 한다" do
     # Confirmed tags
     confirmed_fixture_tags = [ @ruby_tag, @rails_tag, @performance_tag, @special_tag ]
+
     confirmed_fixture_tags.each do |tag|
       assert_predicate tag, :is_confirmed?, "Tag #{tag.name} should be confirmed"
     end
 
     # Unconfirmed tags
     unconfirmed_fixture_tags = [ @new_feature_tag, @korean_tag ]
+
     unconfirmed_fixture_tags.each do |tag|
       assert_not tag.is_confirmed?, "Tag #{tag.name} should be unconfirmed"
     end
@@ -483,6 +498,7 @@ class TagTest < ActiveSupport::TestCase
     # Verify they're all confirmed
     unconfirmed_tags.each do |tag|
       tag.reload
+
       assert_predicate tag, :is_confirmed?
       assert_includes Tag.confirmed, tag
     end
@@ -501,6 +517,7 @@ class TagTest < ActiveSupport::TestCase
     Tag.where(taggings_count: 0, name: unused_tags.map(&:name)).delete_all
 
     final_count = Tag.count
+
     assert_equal initial_count - 3, final_count
   end
 

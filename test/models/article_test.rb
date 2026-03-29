@@ -24,6 +24,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://example.com/test-unique-origin",
       user: @user
     )
+
     assert_predicate article, :valid?
   end
 
@@ -52,6 +53,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "url은 필수 항목이어야 한다" do
     article = Article.new(title: "Test Article", origin_url: "https://example.com/test", user: @user)
+
     assert_not article.save
     assert_includes article.errors[:url], "내용을 입력해 주세요"
   end
@@ -66,6 +68,7 @@ class ArticleTest < ActiveSupport::TestCase
     article.stub(:generate_metadata, nil) do
       article.save!
     end
+
     assert_equal "https://example.com/test", article.origin_url
   end
 
@@ -77,6 +80,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://different-origin.com/test",
       user: @user
     )
+
     assert_not article.valid?
     assert_includes article.errors[:url], "이미 존재하는 값입니다"
   end
@@ -89,6 +93,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: existing_article.origin_url.upcase,
       user: @user
     )
+
     assert_not article.valid?
     assert_includes article.errors[:origin_url], "이미 존재하는 값입니다"
   end
@@ -102,6 +107,7 @@ class ArticleTest < ActiveSupport::TestCase
       slug: existing_article.slug,
       user: @user
     )
+
     assert_not article.valid?
     assert_includes article.errors[:slug], "이미 존재하는 값입니다"
   end
@@ -114,6 +120,7 @@ class ArticleTest < ActiveSupport::TestCase
       slug: "",
       user: @user
     )
+
     assert_predicate article, :valid?
   end
 
@@ -145,6 +152,7 @@ class ArticleTest < ActiveSupport::TestCase
       user: @user
     )
     article.site = nil
+
     assert_predicate article, :valid?
   end
 
@@ -167,6 +175,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "related 스코프는 관련된 기사를 반환해야 한다" do
     related_articles = Article.related
+
     assert_includes related_articles, @article
     assert_includes related_articles, @korean_article
     assert_not_includes related_articles, @site_article
@@ -174,6 +183,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "unrelated 스코프는 관련 없는 기사를 반환해야 한다" do
     unrelated_articles = Article.unrelated
+
     assert_includes unrelated_articles, @site_article
     assert_not_includes unrelated_articles, @article
     assert_not_includes unrelated_articles, @korean_article
@@ -202,12 +212,14 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "kept 스코프는 삭제된 기사를 제외해야 한다" do
     kept_articles = Article.kept
+
     assert_includes kept_articles, @article
     assert_not_includes kept_articles, @deleted_article
   end
 
   test "discarded 스코프는 삭제된 기사를 포함해야 한다" do
     discarded_articles = Article.discarded
+
     assert_includes discarded_articles, @deleted_article
     assert_not_includes discarded_articles, @article
   end
@@ -228,6 +240,7 @@ class ArticleTest < ActiveSupport::TestCase
   test "생성 시 유효성 검사 전에 url로부터 origin_url을 설정해야 한다" do
     article = Article.new(title: "Test", url: "https://example.com/callback-test", user: @user)
     article.valid?
+
     assert_equal "https://example.com/callback-test", article.origin_url
   end
 
@@ -312,6 +325,7 @@ class ArticleTest < ActiveSupport::TestCase
     stub_external_requests(article) do
       article.save!
     end
+
     assert_not_nil article.slug
     assert_not_nil article.host
   end
@@ -339,6 +353,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "youtube_id는 유효하지 않은 URL을 정상적으로 처리해야 한다" do
     article = Article.new(url: "invalid-url")
+
     assert_nil article.youtube_id
   end
 
@@ -358,6 +373,7 @@ class ArticleTest < ActiveSupport::TestCase
 
     article.update_slug
     article.reload
+
     assert_equal "test123", article.slug
   end
 
@@ -377,6 +393,7 @@ class ArticleTest < ActiveSupport::TestCase
     # Should not raise NoMethodError when path is nil
     assert_nothing_raised do
       result = article.update_slug
+
       assert result
     end
 
@@ -391,12 +408,14 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "user_name은 bot 사용자이면서 site가 있으면 site 정보를 반환해야 한다" do
     site_article = @site_article
+
     assert_equal site_article.site.name, site_article.user_name
   end
 
   test "user_name은 bot 사용자이고 site의 base_uri가 없으면 사이트 이름을 반환해야 한다" do
     site_article = @site_article
     site_article.site.base_uri = nil
+
     assert_equal site_article.site.name, site_article.user_name
   end
 
@@ -411,11 +430,13 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "find_by_slug는 slug로 기사를 찾아야 한다" do
     article = Article.find_by_slug(@article.slug)
+
     assert_equal @article, article
   end
 
   test "find_by_slug는 존재하지 않는 slug에 대해 nil을 반환해야 한다" do
     article = Article.find_by_slug("non-existent-slug")
+
     assert_nil article
   end
 
@@ -475,6 +496,7 @@ class ArticleTest < ActiveSupport::TestCase
     )
 
     article.send(:set_initial_url_and_host)
+
     assert_not_nil article.deleted_at, "YouTube가 아닌 URL이고 경로가 없으면 삭제되어야 합니다."
 
     # YouTube URL should NOT be deleted even with short/no path
@@ -517,6 +539,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "taggable로 작동해야 한다" do
     article = @article
+
     assert_respond_to article, :tag_list
     assert_respond_to article, :tag_list=
 
@@ -601,6 +624,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "URL 파싱 오류를 정상적으로 처리해야 한다" do
     service = Articles::MetadataPreparationService.new
+
     assert_nil service.url_to_published_at("invalid-url")
   end
 
@@ -613,6 +637,7 @@ class ArticleTest < ActiveSupport::TestCase
         @article.discard!
       end
     end
+
     assert_includes deleted_keys, "rss_articles"
   end
 

@@ -233,10 +233,12 @@ class ContentServiceTest < ActiveSupport::TestCase
   test "is_youtube? 확인을 통해 올바른 메서드가 호출된다" do
     # 일반 기사
     regular_article = articles(:ruby_article)
+
     assert_not regular_article.is_youtube?
 
     # YouTube 기사
     youtube_article = articles(:youtube_ruby_talk)
+
     assert_predicate youtube_article, :is_youtube?
   end
 

@@ -23,17 +23,20 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
+
     assert_predicate comment, :valid?
   end
 
   test "body는 필수 항목이어야 한다" do
     comment = Comment.new(user: @user, article: @article)
+
     assert_not comment.valid?
     assert_includes comment.errors[:body], "내용을 입력해 주세요"
   end
 
   test "user 또는 federails_actor 중 하나는 필요하다" do
     comment_without_actor = Comment.new(body: "Test comment", article: @article)
+
     assert_not comment_without_actor.valid?
     assert_includes comment_without_actor.errors[:base], "user 또는 federails_actor가 필요합니다"
 
@@ -52,11 +55,13 @@ class CommentTest < ActiveSupport::TestCase
     )
 
     comment_with_actor = Comment.new(body: "Remote comment", article: @article, federails_actor: remote_actor)
+
     assert_predicate comment_with_actor, :valid?, "Federated actor comment should be valid: #{comment_with_actor.errors.full_messages}"
   end
 
   test "article은 필수 항목이어야 한다" do
     comment = Comment.new(body: "Test comment", user: @user)
+
     assert_not comment.valid?
     assert_includes comment.errors[:article], "값이 반드시 필요합니다"
   end
@@ -67,6 +72,7 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
+
     assert_not comment.valid?
     assert_includes comment.errors[:body], "값은 최소 1자여야 합니다"
   end
@@ -78,6 +84,7 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
+
     assert_not comment.valid?
     assert_includes comment.errors[:body], "값은 #{Comment::MAX_BODY_LENGTH}자를 넘을 수 없습니다"
   end
@@ -89,6 +96,7 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
+
     assert_predicate comment, :valid?
   end
 
@@ -98,6 +106,7 @@ class CommentTest < ActiveSupport::TestCase
       user: @user,
       article: @article
     )
+
     assert_predicate comment, :valid?
   end
 
@@ -209,6 +218,7 @@ class CommentTest < ActiveSupport::TestCase
   test "content 메서드는 body가 nil일 때 정상적으로 처리해야 한다" do
     comment = Comment.new
     comment.body = nil
+
     assert_nil comment.content
   end
 
@@ -232,6 +242,7 @@ class CommentTest < ActiveSupport::TestCase
 
       assert_predicate comment, :valid?, "Korean comment should be valid: #{body}"
       comment.save!
+
       assert_equal body, comment.body
       assert_equal body, comment.content
     end
@@ -255,6 +266,7 @@ class CommentTest < ActiveSupport::TestCase
 
       assert_predicate comment, :valid?, "Mixed language comment should be valid: #{body}"
       comment.save!
+
       assert_equal body, comment.body
     end
   end
@@ -306,6 +318,7 @@ class CommentTest < ActiveSupport::TestCase
 
       assert_predicate comment, :valid?, "Special character comment should be valid: #{body}"
       comment.save!
+
       assert_equal body, comment.body
     end
   end
@@ -320,6 +333,7 @@ class CommentTest < ActiveSupport::TestCase
 
     assert_predicate comment, :valid?
     comment.save!
+
     assert_equal multiline_body, comment.body
   end
 
@@ -378,6 +392,7 @@ class CommentTest < ActiveSupport::TestCase
 
     # Verify descendants
     descendants = root.descendants
+
     assert_equal 2, descendants.count
     assert_includes descendants, child1
     assert_includes descendants, child2
@@ -425,6 +440,7 @@ class CommentTest < ActiveSupport::TestCase
 
     # Test siblings
     siblings = sibling1.siblings
+
     assert_includes siblings, sibling2
     assert_includes siblings, @nested_comment # existing child
     assert_not_includes siblings, sibling1 # self not included in siblings
@@ -470,6 +486,7 @@ class CommentTest < ActiveSupport::TestCase
     # Verify appropriate behavior (depends on nested set configuration)
     # This could either delete children or promote them, depending on setup
     remaining_comments = Comment.count
+
     assert_operator remaining_comments, :<=, initial_comment_count
   end
 
@@ -552,6 +569,7 @@ class CommentTest < ActiveSupport::TestCase
     comment.update_column(:user_id, nil)
 
     comment.reload
+
     assert_predicate comment, :persisted?
     assert_nil comment.user
   end
@@ -573,6 +591,7 @@ class CommentTest < ActiveSupport::TestCase
 
       if comment.parent_id
         parent = Comment.find(comment.parent_id)
+
         assert_operator comment.lft, :>, parent.lft, "Child lft should be greater than parent lft"
         assert_operator comment.rgt, :<, parent.rgt, "Child rgt should be less than parent rgt"
         assert_equal parent.depth + 1, comment.depth, "Child depth should be parent depth + 1"
@@ -601,6 +620,7 @@ class CommentTest < ActiveSupport::TestCase
       local: false
     )
     comment = Comment.new(body: "리모트 댓글", article: @article, federails_actor: remote_actor)
+
     assert_equal "actor-name", comment.author_name
   end
 
@@ -610,6 +630,7 @@ class CommentTest < ActiveSupport::TestCase
       article: @article,
       user: nil
     )
+
     assert_equal "익명", comment.author_name
   end
 
@@ -639,6 +660,7 @@ class CommentTest < ActiveSupport::TestCase
 
   test "inReplyTo가 /posts/를 가리키면 거부한다" do
     hash = { "inReplyTo" => "http://www.example.com/posts/1" }
+
     assert_not Comment.handle_federated_object?(hash)
   end
 

@@ -190,6 +190,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
 
   test "platform_name은 Mastodon을 반환한다" do
     service = MastodonService.new
+
     assert_equal "Mastodon", service.send(:platform_name)
   end
 end

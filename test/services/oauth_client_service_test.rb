@@ -127,6 +127,7 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       site: nil
     )
     client = OauthClientService.call(xcom_preference)
+
     assert_equal "https://api.x.com/2/", client.site
 
     # mastodon_oauth -> mastodon (커스텀 site 사용)
@@ -137,6 +138,7 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       site: "https://ruby.social"
     )
     client = OauthClientService.call(mastodon_preference)
+
     assert_equal "https://ruby.social", client.site
   end
 

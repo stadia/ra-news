@@ -186,6 +186,7 @@ class UserTest < ActiveSupport::TestCase
 
       assert_predicate user, :valid?, "Korean name #{name} should be valid"
       user.save!
+
       assert_equal name, user.name
     end
   end

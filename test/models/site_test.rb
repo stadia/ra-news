@@ -20,12 +20,14 @@ class SiteTest < ActiveSupport::TestCase
       client: :rss,
       base_uri: "https://example.com/rss"
     )
+
     assert_predicate site, :valid?
   end
 
   test "name은 필수 항목이어야 한다" do
     site = Site.new(client: :rss, base_uri: "https://example.com/rss")
     site.client = nil
+
     assert_not site.valid?
     assert_includes site.errors[:name], "내용을 입력해 주세요"
   end
@@ -33,12 +35,14 @@ class SiteTest < ActiveSupport::TestCase
   test "client는 필수 항목이어야 한다" do
     site = Site.new(name: "Test Site", base_uri: "https://example.com/rss")
     site.client = nil
+
     assert_not site.valid?
     assert_includes site.errors[:client], "내용을 입력해 주세요"
   end
 
   test "base_uri가 없는 사이트를 허용해야 한다" do
     site = Site.new(name: "No URI Site", client: :gmail)
+
     assert_predicate site, :valid?, "Gmail sites should not require base_uri"
   end
 
@@ -49,6 +53,7 @@ class SiteTest < ActiveSupport::TestCase
 
     # Test enum values
     expected_clients = %w[rss gmail youtube hacker_news rss_page reddit]
+
     assert_equal expected_clients, Site.clients.keys
 
     # Test enum methods
@@ -61,6 +66,7 @@ class SiteTest < ActiveSupport::TestCase
 
   test "기본 client를 rss로 설정해야 한다" do
     site = Site.new(name: "Default Client Test")
+
     assert_predicate site, :rss?, "Default client should be rss"
     assert_equal "rss", site.client
   end
@@ -70,6 +76,7 @@ class SiteTest < ActiveSupport::TestCase
 
     Site.clients.each do |client_name, _|
       site.client = client_name
+
       assert_equal client_name, site.client
       assert site.public_send("#{client_name}?"), "Site should be #{client_name}"
     end
@@ -83,6 +90,7 @@ class SiteTest < ActiveSupport::TestCase
       site = Site.create!(name: "Callback Test", client: :rss)
 
       expected_time = 6.months.ago
+
       assert_equal expected_time.to_i, site.last_checked_at.to_i
     end
   end
@@ -96,6 +104,7 @@ class SiteTest < ActiveSupport::TestCase
     )
 
     site.save!
+
     assert_equal existing_time.to_i, site.last_checked_at.to_i
   end
 
@@ -106,6 +115,7 @@ class SiteTest < ActiveSupport::TestCase
     travel_to Time.zone.parse("2024-03-20 09:15:00") do
       site.save!
       expected_time = 6.months.ago
+
       assert_equal expected_time, site.last_checked_at
     end
   end
@@ -114,6 +124,7 @@ class SiteTest < ActiveSupport::TestCase
 
   test "init_client는 rss 클라이언트에 대해 RssClient를 반환해야 한다" do
     client = @rss_site.init_client
+
     assert_kind_of RssClient, client
     assert_equal @rss_site.base_uri, client.instance_variable_get(:@base_uri)
   end
@@ -121,22 +132,26 @@ class SiteTest < ActiveSupport::TestCase
   test "init_client는 rss_page 클라이언트에 대해 RssClient를 반환해야 한다" do
     rss_page_site = sites(:hacker_news_ruby)
     client = rss_page_site.init_client
+
     assert_kind_of RssClient, client
   end
 
   test "init_client는 gmail 클라이언트에 대해 Gmail을 반환해야 한다" do
     client = @gmail_site.init_client
+
     assert_kind_of Gmail, client
   end
 
   test "init_client는 hacker_news 클라이언트에 대해 HackerNews를 반환해야 한다" do
     client = @hn_site.init_client
+
     assert_kind_of HackerNews, client
   end
 
   test "init_client는 youtube 클라이언트에 대해 Youtube::Channel을 반환해야 한다" do
     @youtube_site.update!(channel: "UCWnPjmqvljcafA0z2U1fwKQ")
     client = @youtube_site.init_client
+
     assert_kind_of Youtube::Channel, client
     assert_equal @youtube_site.channel, client.channel.id
   end
@@ -157,6 +172,7 @@ class SiteTest < ActiveSupport::TestCase
     # Note: This test assumes channel validation exists in the model
     # If not implemented, this test documents the expected behavior
     youtube_site = @youtube_site
+
     assert_not_nil youtube_site.channel, "YouTube sites should have channel ID"
   end
 
@@ -165,6 +181,7 @@ class SiteTest < ActiveSupport::TestCase
 
     # The init_client method should return nil if channel is missing
     client = youtube_site.init_client
+
     assert_nil client
   end
 
@@ -175,10 +192,12 @@ class SiteTest < ActiveSupport::TestCase
 
     rss_sites.each do |site|
       client = site.init_client
+
       assert_kind_of RssClient, client
 
       # Check that base_uri is passed correctly
       client_base_uri = client.instance_variable_get(:@base_uri)
+
       assert_equal site.base_uri, client_base_uri
     end
   end
@@ -202,6 +221,7 @@ class SiteTest < ActiveSupport::TestCase
 
       assert_predicate site, :valid?, "Korean site name '#{name}' should be valid"
       site.save!
+
       assert_equal name, site.name
     end
   end
@@ -216,6 +236,7 @@ class SiteTest < ActiveSupport::TestCase
 
     assert_predicate site, :valid?
     site.save!
+
     assert_equal "https://한국.example.com/rss", site.base_uri
   end
 
@@ -228,6 +249,7 @@ class SiteTest < ActiveSupport::TestCase
     # Should either be valid or have appropriate validation
     if site.valid?
       site.save!
+
       assert_equal long_name, site.name
     else
       # If there's a length validation, it should be documented
@@ -247,9 +269,11 @@ class SiteTest < ActiveSupport::TestCase
 
     special_names.each do |name|
       site = Site.new(name: name, client: :rss)
+
       assert_predicate site, :valid?, "Site name '#{name}' should be valid"
 
       site.save!
+
       assert_equal name, site.name
     end
   end
@@ -271,6 +295,7 @@ class SiteTest < ActiveSupport::TestCase
         # Client initialization should handle invalid URIs gracefully
         assert_nothing_raised do
           client = site.init_client
+
           assert_kind_of RssClient, client
         end
       end
@@ -303,6 +328,7 @@ class SiteTest < ActiveSupport::TestCase
 
     # Mock missing client class
     error = NameError.new("uninitialized constant")
+
     RssClient.stub(:new, ->(*args, **kwargs) { raise error }) do
       assert_raises(NameError) do
         site.init_client
@@ -319,6 +345,7 @@ class SiteTest < ActiveSupport::TestCase
     rss_client = Object.new
     RssClient.stub(:new, ->(**args) { rss_invocations << args; rss_client }) do
       result = rss_site.init_client
+
       assert_equal rss_client, result
     end
     assert_equal [ { base_uri: rss_site.base_uri } ], rss_invocations
@@ -329,6 +356,7 @@ class SiteTest < ActiveSupport::TestCase
     youtube_client = Object.new
     Youtube::Channel.stub(:new, ->(**args) { youtube_invocations << args; youtube_client }) do
       result = youtube_site.init_client
+
       assert_equal youtube_client, result
     end
     assert_equal [ { id: youtube_site.channel } ], youtube_invocations
@@ -346,6 +374,7 @@ class SiteTest < ActiveSupport::TestCase
       gmail_client
     end) do
       result = gmail_site.init_client
+
       assert_equal gmail_client, result
     end
     assert_equal 1, gmail_invocations
@@ -365,6 +394,7 @@ class SiteTest < ActiveSupport::TestCase
       hacker_news_client
     end) do
       result = hn_site.init_client
+
       assert_equal hacker_news_client, result
     end
     assert_equal 1, hacker_news_invocations
