@@ -11,7 +11,7 @@
 - **Federails::Actor** (table: federails_actors) — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, belongs_to :host [14v]
 - **Federails::Following** (table: federails_followings) — belongs_to :actor, belongs_to :target_actor, has_many :activities [5v]
 - **Like** (table: likes) — belongs_to :liker, belongs_to :likeable
-- **Post** (table: posts) — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :federails_actor [2v]
+- **Post** (table: posts) — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags [2v]
 - **Preference** (table: preferences)
   PROTECTED_KEYS: name, value
 - **PushSubscription** (table: push_subscriptions) — belongs_to :user [6v]

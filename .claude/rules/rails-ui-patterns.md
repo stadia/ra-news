@@ -204,4 +204,4 @@
 - nav_link_to
 
 ## Stimulus controllers
-character_count, comment_form, guest_name, infinite_scroll, modal, page_loader, post_form, push_notifications, reply_form, ruby_ui-alert_dialog, ruby_ui-dialog, ruby_ui-form_field, ruby_ui-select, ruby_ui-select_item, ruby_ui-theme_toggle
+character_count, comment_form, guest_name, infinite_scroll, modal, page_loader, post_form, push_notifications, reply_form, ruby_ui-alert_dialog, ruby_ui-carousel, ruby_ui-dialog, ruby_ui-form_field, ruby_ui-select, ruby_ui-select_item, ruby_ui-theme_toggle

@@ -1,6 +1,6 @@
-## Tools (25) — MANDATORY, Use Before Read
+## Tools (30) — MANDATORY, Use Before Read
 
-This project has 25 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
+This project has 30 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
 **MANDATORY — use these instead of reading files.** They return structured data and save tokens.
 Read files ONLY when you are about to Edit them.
 If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' param=value`
@@ -12,6 +12,8 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 → CLI: `rails 'ai:tool[analyze_feature]' feature=cook`
 → MCP: `rails_get_context(model:"Cook")`
 → CLI: `rails 'ai:tool[context]' model=Cook`
+→ MCP: `rails_get_frontend_stack`
+→ CLI: `rails 'ai:tool[frontend_stack]'`
 
 **Understand a method (who calls it, what it calls):**
 → MCP: `rails_search_code(pattern:"can_cook?", match_type:"trace")`
@@ -22,6 +24,8 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 → CLI: `rails 'ai:tool[schema]' table=cooks`
 → MCP: `rails_get_model_details(model:"Cook")`
 → CLI: `rails 'ai:tool[model_details]' model=Cook`
+→ MCP: `rails_migration_advisor(action:"add_column", table:"cooks", column:"rating", type:"integer")`
+→ CLI: `rails 'ai:tool[migration_advisor]' action=add_column table=cooks column=rating type=integer`
 
 **Fix a controller bug:**
 → MCP: `rails_get_controllers(controller:"CooksController", action:"create")`
@@ -34,6 +38,8 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 → CLI: `rails 'ai:tool[view]' controller=cooks`
 → MCP: `rails_get_partial_interface(partial:"shared/status_badge")`
 → CLI: `rails 'ai:tool[partial_interface]' partial=shared/status_badge`
+→ MCP: `rails_get_component_catalog(component:"Alert")`
+→ CLI: `rails 'ai:tool[component_catalog]' component=Alert`
 
 **Write tests:**
 → MCP: `rails_get_test_info(detail:"standard")`
@@ -46,6 +52,14 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 → CLI: `rails 'ai:tool[search_code]' pattern="has_many"`
 → MCP: `rails_search_code(pattern:"create", match_type:"definition")`
 → CLI: `rails 'ai:tool[search_code]' pattern=create match_type=definition`
+
+**Check performance:**
+→ MCP: `rails_performance_check(model:"Cook")`
+→ CLI: `rails 'ai:tool[performance_check]' model=Cook`
+
+**Understand dependencies:**
+→ MCP: `rails_dependency_graph(model:"Cook", format:"mermaid")`
+→ CLI: `rails 'ai:tool[dependency_graph]' model=Cook format=mermaid`
 
 **After editing (EVERY time):**
 → MCP: `rails_validate(files:["app/models/cook.rb"], level:"rails")`
@@ -60,7 +74,7 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 5. Start with `detail:"summary"` to orient, then drill into specifics
 6. If MCP tools are not connected, use CLI: `rails 'ai:tool[TOOL_NAME]' param=value`
 
-### All 25 Tools
+### All 30 Tools
 
 | MCP | CLI | What it does |
 |-----|-----|-------------|
@@ -90,3 +104,8 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 | `rails_get_gems` | `rails 'ai:tool[gems]'` | Notable gems with versions, categories, config file locations |
 | `rails_get_conventions` | `rails 'ai:tool[conventions]'` | App patterns: auth checks, flash messages, test patterns |
 | `rails_security_scan` | `rails 'ai:tool[security_scan]'` | Brakeman static analysis: SQL injection, XSS, mass assignment |
+| `rails_get_component_catalog(component:"X")` | `rails 'ai:tool[component_catalog]' component=X` | ViewComponent/Phlex: props, slots, previews, usage |
+| `rails_performance_check(model:"X")` | `rails 'ai:tool[performance_check]' model=X` | N+1 risks, missing indexes, Model.all anti-patterns |
+| `rails_dependency_graph(model:"X")` | `rails 'ai:tool[dependency_graph]' model=X` | Model association graph as Mermaid diagram |
+| `rails_migration_advisor(action:"X", table:"Y")` | `rails 'ai:tool[migration_advisor]' action=X table=Y` | Generate migration code, flag irreversible ops |
+| `rails_get_frontend_stack` | `rails 'ai:tool[frontend_stack]'` | React/Vue/Svelte/Angular, Inertia, TypeScript, package manager |
