@@ -40,4 +40,22 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to new_user_session_url
   end
+
+  test "should create article comment" do
+    article = articles(:ruby_article)
+    assert_difference("Post.count") do
+      post article_posts_url(article), params: { post: { body: "테스트 댓글입니다." } }, as: :turbo_stream
+    end
+    assert_response :success
+    assert_includes @response.body, 'target="comments_list"'
+  end
+
+  test "should destroy own article comment" do
+    article = articles(:ruby_article)
+    comment = Post.create!(body: "삭제할 댓글", user: @user, article: article)
+    assert_difference("Post.count", -1) do
+      delete article_post_url(article, comment), as: :turbo_stream
+    end
+    assert_response :success
+  end
 end

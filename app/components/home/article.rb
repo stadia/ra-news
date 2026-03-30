@@ -62,7 +62,7 @@ class Components::Home::Article < Components::Base
       render Components::Likes::Button.new(likeable: article, liked: @liked)
       span(class: "inline-flex items-center") do
         Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
-        plain article.comments_count.to_s
+        plain article.posts_count.to_s
       end
       span(class: "inline-flex items-center") do
         Hero::CalendarDays(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")

@@ -23,7 +23,7 @@ class Components::Comments::CommentReplyForm < Components::Base
         class: "p-4 lg:p-5",
         data: {
           controller: "character-count",
-          character_count_max_length_value: ::Comment::MAX_BODY_LENGTH.to_s
+          character_count_max_length_value: ::Post::MAX_BODY_LENGTH.to_s
         }
       ) do
         reply_header
@@ -46,7 +46,7 @@ class Components::Comments::CommentReplyForm < Components::Base
 
     form_with(
       model: [ @article, @comment ],
-      url: article_comments_path(@article),
+      url: article_posts_path(@article),
       local: false,
       class: "space-y-3",
       data: { action: "turbo:submit-end->reply-form#close" }
@@ -88,11 +88,11 @@ class Components::Comments::CommentReplyForm < Components::Base
         rows: 3,
         class: text_area_classes(@comment.errors[:body]),
         placeholder: "답글을 입력하세요...",
-        maxlength: ::Comment::MAX_BODY_LENGTH,
+        maxlength: ::Post::MAX_BODY_LENGTH,
         data: { character_count_target: "input", action: "input->character-count#updateCount" }
       div(class: "text-xs text-content-muted text-right") do
         span(data: { character_count_target: "counter" }) { "0" }
-        plain "/#{::Comment::MAX_BODY_LENGTH}"
+        plain "/#{::Post::MAX_BODY_LENGTH}"
       end
       @comment.errors[:body].each do |msg|
         render RubyUI::FormFieldError.new { msg }

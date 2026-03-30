@@ -3,6 +3,8 @@
 # rbs_inline: enabled
 
 class Post < ApplicationRecord
+  MAX_BODY_LENGTH = 1000
+
   acts_as_nested_set
   acts_as_likeable
 

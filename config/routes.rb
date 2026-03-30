@@ -21,8 +21,7 @@ Rails.application.routes.draw do
   end
   resources :articles, only: %i[index show new create] do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Article" }
-    resources :comments, only: %i[create destroy] do
-    end
+    resources :posts, only: %i[create destroy]
   end
 
   get "others" => "articles#others"

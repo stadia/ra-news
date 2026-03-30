@@ -1,0 +1,5 @@
+<%= turbo_stream.remove dom_id(@post) %>
+
+<%= turbo_stream.update "comments_header" do %>
+  <%= render(Components::Comments::CommentHeader.new(comments: @comments)) %>
+<% end %>

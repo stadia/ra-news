@@ -17,7 +17,7 @@ class Components::Comments::CommentForm < Components::Base
         class: "bg-surface-muted border-border-muted p-6",
         data: {
           controller: "character-count comment-form",
-          character_count_max_length_value: ::Comment::MAX_BODY_LENGTH.to_s,
+          character_count_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
           action: "turbo:submit-end->comment-form#reset"
         }
       ) do
@@ -39,7 +39,7 @@ class Components::Comments::CommentForm < Components::Base
   def comment_form_fields
     return login_prompt unless view_context.user_signed_in?
 
-    form_with(model: [ @article, @comment ], url: article_comments_path(@article), local: false, class: "space-y-4") do |f|
+    form_with(model: [ @article, @comment ], url: article_posts_path(@article), local: false, class: "space-y-4") do |f|
       error_messages if @comment.errors.any?
       body_field(f)
       submit_section(f)
@@ -76,11 +76,11 @@ class Components::Comments::CommentForm < Components::Base
         rows: 4,
         class: text_area_classes(@comment.errors[:body]),
         placeholder: "댓글을 입력하세요...",
-        maxlength: ::Comment::MAX_BODY_LENGTH,
+        maxlength: ::Post::MAX_BODY_LENGTH,
         data: { character_count_target: "input", action: "input->character-count#updateCount" }
       div(class: "text-xs text-content-muted text-right") do
         span(data: { character_count_target: "counter" }) { "0" }
-        plain "/#{::Comment::MAX_BODY_LENGTH}"
+        plain "/#{::Post::MAX_BODY_LENGTH}"
       end
       @comment.errors[:body].each do |msg|
         render RubyUI::FormFieldError.new { msg }
