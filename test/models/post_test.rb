@@ -8,6 +8,8 @@ class PostTest < ActiveSupport::TestCase
     @root_post = posts(:root_post)
     @reply_post = posts(:reply_post)
     @remote_post = posts(:remote_post)
+    @comment_post = posts(:comment_post)
+    @article = articles(:ruby_article)
   end
 
   # ========== Validation Tests ==========
@@ -97,6 +99,59 @@ class PostTest < ActiveSupport::TestCase
     assert_difference -> { Like.where(liker: actor, likeable: @root_post).count }, -1 do
       @root_post.apply_unlike(actor_payload)
     end
+  end
+
+  # ========== Article Comment Tests ==========
+
+  test "comment?는 article_id가 있으면 true를 반환한다" do
+    assert_predicate @comment_post, :comment?
+  end
+
+  test "comment?는 article_id가 없으면 false를 반환한다" do
+    assert_not @root_post.comment?
+  end
+
+  test "reply는 parent가 있으면 parent를 반환한다" do
+    assert_equal @root_post, @reply_post.reply
+  end
+
+  test "reply는 parent가 없고 article이 있으면 article을 반환한다" do
+    assert_equal @article, @comment_post.reply
+  end
+
+  test "author_name은 user의 full_name을 반환한다" do
+    assert_equal @user.full_name, @root_post.author_name
+  end
+
+  test "author_name은 user가 없으면 federails_actor의 username을 반환한다" do
+    assert_equal @remote_post.federails_actor.username, @remote_post.author_name
+  end
+
+  test "author_name은 user도 actor도 없으면 익명을 반환한다" do
+    post = Post.new(body: "test")
+    assert_equal "익명", post.author_name
+  end
+
+  test "author_host는 federails_actor가 있으면 서버 정보를 반환한다" do
+    assert_equal "(#{@remote_post.federails_actor.server})", @remote_post.author_host
+  end
+
+  test "author_host는 federails_actor가 없으면 nil을 반환한다" do
+    assert_nil @root_post.author_host
+  end
+
+  # ========== Scope Tests ==========
+
+  test "comments 스코프는 article_id가 있는 post만 반환한다" do
+    comments = Post.comments
+    assert_includes comments, @comment_post
+    assert_not_includes comments, @root_post
+  end
+
+  test "standalone 스코프는 article_id가 없는 post만 반환한다" do
+    standalone = Post.standalone
+    assert_includes standalone, @root_post
+    assert_not_includes standalone, @comment_post
   end
 
   # ========== handle_federated_object? Tests ==========

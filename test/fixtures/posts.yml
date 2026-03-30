@@ -22,3 +22,11 @@ remote_post:
   lft: 5
   rgt: 6
   depth: 0
+
+comment_post:
+  body: "기사에 달린 댓글입니다."
+  user: john
+  article: ruby_article
+  lft: 7
+  rgt: 8
+  depth: 0

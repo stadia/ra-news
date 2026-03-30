@@ -7,6 +7,10 @@ class Post < ApplicationRecord
   acts_as_likeable
 
   belongs_to :user, optional: true
+  belongs_to :article, optional: true, counter_cache: :posts_count
+
+  scope :comments, -> { where.not(article_id: nil) }
+  scope :standalone, -> { where(article_id: nil) }
 
   include HtmlSanitizable
 
@@ -69,6 +73,27 @@ class Post < ApplicationRecord
   #: () -> Integer
   def likes_count
     likers_count.to_i
+  end
+
+  #: () -> bool
+  def comment?
+    article_id.present?
+  end
+
+  #: () -> (Post | Article)
+  def reply
+    parent.present? ? parent : article
+  end
+
+  #: () -> String
+  def author_name
+    user&.full_name || federails_actor&.username || "익명"
+  end
+
+  #: () -> String?
+  def author_host
+    return if federails_actor.nil? || federails_actor&.server.blank?
+    "(#{federails_actor&.server})"
   end
 
   private

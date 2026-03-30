@@ -49,7 +49,7 @@ class Article < ApplicationRecord
 
   belongs_to :site, optional: true
 
-  has_many :comments, dependent: :nullify
+  has_many :posts, dependent: :nullify
 
   store_accessor :summary_detail, :introduction, :conclusion, prefix: :summary
 
