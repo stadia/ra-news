@@ -3,6 +3,8 @@
 require "test_helper"
 
 class PostTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   def setup
     @user = users(:john)
     @root_post = posts(:root_post)
@@ -156,16 +158,54 @@ class PostTest < ActiveSupport::TestCase
 
   # ========== handle_federated_object? Tests ==========
 
+  # ========== Reply Notification Tests ==========
+
+  test "답글 생성 시 ReplyNotificationJob이 큐에 추가된다" do
+    other_user = users(:jane)
+    assert_enqueued_with(job: ReplyNotificationJob) do
+      Post.create!(body: "답글입니다", user: other_user, parent: @root_post)
+    end
+  end
+
+  test "루트 post 생성 시 ReplyNotificationJob이 큐에 추가되지 않는다" do
+    assert_no_enqueued_jobs(only: ReplyNotificationJob) do
+      Post.create!(body: "루트 포스트", user: @user)
+    end
+  end
+
+  test "자기 자신에게 답글 달면 알림이 가지 않는다" do
+    assert_no_enqueued_jobs(only: ReplyNotificationJob) do
+      Post.create!(body: "셀프 답글", user: @user, parent: @root_post)
+    end
+  end
+
+  test "parent에 user가 없으면 알림이 가지 않는다" do
+    actor = federails_actors(:john_actor)
+    remote_root = Post.create!(body: "리모트 루트", federails_actor: actor, federated_url: "https://remote.example/notes/rr1")
+    assert_no_enqueued_jobs(only: ReplyNotificationJob) do
+      Post.create!(body: "로컬 답글", user: @user, parent: remote_root)
+    end
+  end
+
+  # ========== handle_federated_object? Tests ==========
+
   test "inReplyTo가 없는 Note를 수락한다" do
     hash = { "type" => "Note", "content" => "Hello" }
 
     assert Post.handle_federated_object?(hash)
   end
 
-  test "inReplyTo가 있는 Note는 거부한다 (Comment가 처리)" do
-    hash = { "type" => "Note", "inReplyTo" => "https://example.com/articles/1" }
+  test "inReplyTo가 외부 URL이면 거부한다" do
+    hash = { "type" => "Note", "inReplyTo" => "https://example.com/some/external/post" }
 
     assert_not Post.handle_federated_object?(hash)
+  end
+
+  test "inReplyTo가 로컬 article URL이면 수락한다" do
+    local_host = Rails.application.routes.default_url_options[:host] || "www.example.com"
+    hash = { "type" => "Note", "inReplyTo" => "http://#{local_host}/articles/#{@article.id}" }
+
+    assert Post.handle_federated_object?(hash)
   end
 
   test "inReplyTo가 로컬 post를 가리키면 수락한다" do
@@ -211,5 +251,17 @@ class PostTest < ActiveSupport::TestCase
     result = Post.from_activitypub_object(hash)
 
     assert_equal @remote_post.id, result[:parent_id]
+  end
+
+  test "from_activitypub_object는 article URL에서 article_id를 추출한다" do
+    hash = {
+      "id" => "https://remote.example.com/notes/art1",
+      "content" => "기사 댓글",
+      "inReplyTo" => "http://www.example.com/articles/#{@article.id}"
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal @article.id.to_s, result[:article_id]
+    assert_nil result[:parent_id]
   end
 end
