@@ -1,7 +1,11 @@
 # Generated from app/models/post.rb with RBS::Inline
 
 class Post < ApplicationRecord
+  include HtmlSanitizable
+
   include Federails::DataEntity
+
+  include FederailsLikeable
 
   # : () -> (User | Federails::Actor)?
   def federation_actor_entity: () -> (User | Federails::Actor)?

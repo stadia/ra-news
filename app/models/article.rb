@@ -76,6 +76,8 @@ class Article < ApplicationRecord
     end
   end
 
+  before_save :log_tracked_attribute_changes, if: :tracked_attribute_changes?
+
   before_validation on: :create do
     self.origin_url = url if origin_url.blank?
   end
@@ -192,8 +194,19 @@ class Article < ApplicationRecord
 
   #: (String action) -> void
   def create_federails_activity(action)
-    if action == "Update" && !Federails::Activity.exists?(entity: self, action: "Create")
-      action = "Create"
+    if action == "Update"
+      unless Federails::Activity.exists?(entity: self, action: "Create")
+        action = "Create"
+      else
+        logger.info do
+          {
+            message: "[Federation] Skipping repeated Article update activity",
+            article_id: id,
+            federated_url: federated_url
+          }.inspect
+        end
+        return
+      end
     end
     super(action)
   end
@@ -201,6 +214,37 @@ class Article < ApplicationRecord
   #: () -> void
   def clear_rss_cache
     Rails.cache.delete("rss_articles")
+  end
+
+  def tracked_attribute_changes?
+    will_save_change_to_url? ||
+      will_save_change_to_origin_url? ||
+      will_save_change_to_title? ||
+      will_save_change_to_title_ko?
+  end
+
+  def log_tracked_attribute_changes
+    changes = {}
+    changes[:url] = url_change_to_be_saved if will_save_change_to_url?
+    changes[:origin_url] = origin_url_change_to_be_saved if will_save_change_to_origin_url?
+    changes[:title] = title_change_to_be_saved if will_save_change_to_title?
+    changes[:title_ko] = title_ko_change_to_be_saved if will_save_change_to_title_ko?
+
+    source_locations = caller_locations(1, 20)
+                       .map(&:path)
+                       .select { |path| path.include?("/app/") || path.include?("/lib/") || path.include?("/config/") }
+                       .uniq
+                       .first(6)
+
+    logger.info do
+      {
+        message: "[Article] tracked attributes changing",
+        article_id: id,
+        persisted: persisted?,
+        changes: changes,
+        sources: source_locations
+      }.inspect
+    end
   end
 
   #: () -> bool
@@ -268,7 +312,17 @@ class Article < ApplicationRecord
     # handle_federated_object?가 false여도 inbox는 Article에게 디스패치하므로,
     # Article.from_activitypub_object(title: 등)가 Post에 잘못 assign되는 것을 방지한다.
     #: (untyped) -> void
-    def handle_incoming_fediverse_data(_activity)
+    def handle_incoming_fediverse_data(activity)
+      logger.info do
+        {
+          message: "[Federation] Article ignored incoming activity",
+          activity_type: activity["type"],
+          activity_id: activity["id"],
+          actor: activity["actor"],
+          object_id: activity["object"].is_a?(Hash) ? activity["object"]["id"] : activity["object"],
+          object_type: activity["object"].is_a?(Hash) ? activity["object"]["type"] : nil
+        }.inspect
+      end
     end
 
     # slug로 Article을 찾는 메서드

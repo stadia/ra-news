@@ -9,7 +9,7 @@ RailsAiContext.configure do |config|
   # Tool invocation mode:
   #   :mcp — MCP primary + CLI fallback (default, requires `rails ai:serve`)
   #   :cli — CLI only (no MCP server needed, uses `rails 'ai:tool[NAME]'`)
-  config.tool_mode = :mcp
+  config.tool_mode = :mcp   # MCP primary + CLI fallback
 
   # ── Introspection ─────────────────────────────────────────────────
   # Introspector preset:
@@ -83,8 +83,13 @@ RailsAiContext.configure do |config|
 
   # ── Search ────────────────────────────────────────────────────────
   # File extensions for fallback search (when ripgrep unavailable)
-  # config.search_extensions = %w[rb js erb yml yaml json ts tsx vue svelte haml slim]
+  config.search_extensions = %w[rb js erb yml yaml json]
 
   # Where to look for concern source files
-  # config.concern_paths = %w[app/models/concerns app/controllers/concerns]
+  config.concern_paths = %w[app/models/concerns app/controllers/concerns app/jobs/concerns]
+
+  # ── Frontend Framework Detection ─────────────────────────────────
+  # Auto-detected from package.json, config/vite.json, etc. Override only if needed.
+  # config.frontend_paths = ["app/frontend", "../web-client"]
+  # config.mobile_paths = ["../mobile-app"]
 end

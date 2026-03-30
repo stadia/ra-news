@@ -9,6 +9,8 @@ class Article < ApplicationRecord
 
   include Federails::DataEntity
 
+  include FederailsLikeable
+
   # : () -> Hash[String, untyped]
   def to_activitypub_object: () -> Hash[String, untyped]
 
@@ -38,6 +40,10 @@ class Article < ApplicationRecord
   # : () -> void
   def clear_rss_cache: () -> void
 
+  def tracked_attribute_changes?: () -> untyped
+
+  def log_tracked_attribute_changes: () -> untyped
+
   # : () -> bool
   def should_generate_new_friendly_id?: () -> bool
 
@@ -55,6 +61,12 @@ class Article < ApplicationRecord
 
   # : (Hash[String, untyped]) -> bool
   def self.handle_federated_object?: (Hash[String, untyped]) -> bool
+
+  # inbox 디스패치 시 Article은 수신 처리를 하지 않음.
+  # handle_federated_object?가 false여도 inbox는 Article에게 디스패치하므로,
+  # Article.from_activitypub_object(title: 등)가 Post에 잘못 assign되는 것을 방지한다.
+  # : (untyped) -> void
+  def self.handle_incoming_fediverse_data: (untyped) -> void
 
   # slug로 Article을 찾는 메서드
   # : (String slug) -> Article?

@@ -6,7 +6,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
   test "GET index preloads liked articles for signed in user" do
     user = users(:john)
     articles = 10.times.map do |index|
-      Article.create!(
+      article = Article.new(
         title: "Indexed article #{index}",
         title_ko: "인덱스 기사 #{index}",
         url: "https://example.com/indexed-article-#{index}",
@@ -19,6 +19,8 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
         user: user,
         site: sites(:ruby_weekly)
       )
+      article.stub(:generate_metadata, nil) { article.save! }
+      article
     end
     article = articles.first
     Like.create!(liker: user, likeable: article, created_at: Time.current)
@@ -37,7 +39,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
 
   test "GET others preloads liked articles for signed in user" do
     user = users(:john)
-    article = Article.create!(
+    article = Article.new(
       title: "Other article",
       title_ko: "기타 기사",
       url: "https://example.com/other-article",
@@ -50,6 +52,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
       user: user,
       site: sites(:hn_site)
     )
+    article.stub(:generate_metadata, nil) { article.save! }
     Like.create!(liker: user, likeable: article, created_at: Time.current)
     sign_in_as(user)
 

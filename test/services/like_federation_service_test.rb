@@ -96,15 +96,12 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
     activity = {
       "id" => "https://remote.example/activities/like-1",
       "type" => "Like",
-      "actor" => { "id" => @remote_actor.federated_url },
-      "object" => {
-        "id" => @local_post.federated_url,
-        "type" => "Note"
-      }
+      "actor" => @remote_actor.federated_url,
+      "object" => @local_post.federated_url
     }
 
     assert_difference("Like.count", 1) do
-      ActivityPub::Handlers::LikeHandler.handle_like(activity)
+      Fediverse::Inbox::LikeHandler.handle_like(activity)
     end
 
     assert @remote_actor.likes?(@local_post)
@@ -118,20 +115,17 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
     activity = {
       "id" => "https://remote.example/activities/undo-like-1",
       "type" => "Undo",
-      "actor" => { "id" => @remote_actor.federated_url },
+      "actor" => @remote_actor.federated_url,
       "object" => {
         "id" => "https://remote.example/activities/like-1",
         "type" => "Like",
         "actor" => @remote_actor.federated_url,
-        "object" => {
-          "id" => @local_post.federated_url,
-          "type" => "Note"
-        }
+        "object" => @local_post.federated_url
       }
     }
 
     assert_difference("Like.count", -1) do
-      ActivityPub::Handlers::LikeHandler.handle_undo_like(activity)
+      Fediverse::Inbox::LikeHandler.handle_undo_like(activity)
     end
 
     assert_not @remote_actor.likes?(@local_post)

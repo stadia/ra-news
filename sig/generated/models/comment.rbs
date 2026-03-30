@@ -3,6 +3,8 @@
 class Comment < ApplicationRecord
   MAX_BODY_LENGTH: ::Integer
 
+  include HtmlSanitizable
+
   include Federails::DataEntity
 
   # : () -> Hash[String, untyped]

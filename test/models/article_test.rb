@@ -512,6 +512,8 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "set_initial_url_and_host는 논리 연산자 우선순위를 올바르게 처리해야 한다 (Bug fix #1)" do
+    service = Articles::MetadataPreparationService.new
+
     # URL with no path should be deleted only if not YouTube
     article = Article.new(
       title: "No Path Test",
@@ -519,7 +521,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://example.com"
     )
 
-    article.send(:set_initial_url_and_host)
+    service.send(:normalize_article_url, article)
 
     assert_not_nil article.deleted_at, "YouTube가 아닌 URL이고 경로가 없으면 삭제되어야 합니다."
 
@@ -530,7 +532,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://www.youtube.com"
     )
 
-    youtube_article.send(:set_initial_url_and_host)
+    service.send(:normalize_article_url, youtube_article)
     # YouTube should not be automatically deleted
     # (unless explicitly marked for deletion)
     assert youtube_article.is_youtube
@@ -634,9 +636,8 @@ class ArticleTest < ActiveSupport::TestCase
     }
 
     urls_with_dates.each do |url, expected_date|
-      article = Article.new(url: url)
       service = Articles::MetadataPreparationService.new
-      extracted_date = service.url_to_published_at(article.url)
+      extracted_date = service.send(:url_to_published_at, url)
 
       if extracted_date
         assert_equal expected_date.year, extracted_date.year
@@ -649,7 +650,7 @@ class ArticleTest < ActiveSupport::TestCase
   test "URL 파싱 오류를 정상적으로 처리해야 한다" do
     service = Articles::MetadataPreparationService.new
 
-    assert_nil service.url_to_published_at("invalid-url")
+    assert_nil service.send(:url_to_published_at, "invalid-url")
   end
 
   # ========== Cache Management Tests ==========
@@ -688,6 +689,7 @@ class ArticleTest < ActiveSupport::TestCase
       title: "시간대 테스트",
       url: "https://example.com/timezone-test",
       origin_url: "https://example.com/timezone-test-origin",
+      published_at: Time.zone.now,
       user: users(:korean_user)
     )
 

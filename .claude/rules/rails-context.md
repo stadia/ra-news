@@ -6,9 +6,9 @@ Rails 8.1.3 | Ruby 4.0.2
 - Models: 15
 - Routes: 147
 - auth: devise, pundit, jwt
-- jobs: solid_queue
-- frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails
-- api: jbuilder, alba
+- jobs: solid_queue, mission_control-jobs
+- frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
+- api: jbuilder, alba, oj
 - database: pg, sqlite3, solid_cache, solid_cable
 - files: activestorage, image_processing, mini_magick
 - hotwire
@@ -16,6 +16,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - view_components
 - phlex
 - stimulus
+- Components: 99 components
 
 **Global before_actions:** authenticate_user!
 

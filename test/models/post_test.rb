@@ -223,11 +223,11 @@ class PostTest < ActiveSupport::TestCase
 
   # ========== from_activitypub_object Tests ==========
 
-  test "from_activitypub_object는 body를 HTML strip한다" do
+  test "from_activitypub_object는 body HTML을 유지한다" do
     hash = { "id" => "https://remote.example.com/notes/456", "content" => "<p>Hello <b>world</b></p>" }
     result = Post.from_activitypub_object(hash)
 
-    assert_equal "Hello world", result[:body]
+    assert_equal "<p>Hello <b>world</b></p>", result[:body]
     assert_equal "https://remote.example.com/notes/456", result[:federated_url]
   end
 
