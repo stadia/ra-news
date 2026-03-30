@@ -166,6 +166,7 @@ class Post < ApplicationRecord
           object[:article_id] = article_id
         elsif post_id.present?
           object[:parent_id] = post_id
+          object[:article_id] = Post.where(id: post_id).pick(:article_id)
         else
           parent = Post.find_by(federated_url: in_reply_to)
           if parent

@@ -245,6 +245,18 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @root_post.id.to_s, result[:parent_id]
   end
 
+  test "from_activitypub_object는 기사 댓글을 가리키는 로컬 post URL에서 article_id도 채운다" do
+    hash = {
+      "id" => "https://remote.example.com/notes/1000",
+      "content" => "기사 댓글에 대한 답글",
+      "inReplyTo" => "http://www.example.com/posts/#{@comment_post.id}"
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal @comment_post.id.to_s, result[:parent_id]
+    assert_equal @article.id, result[:article_id]
+  end
+
   test "from_activitypub_object는 inReplyTo로 parent를 찾는다" do
     hash = {
       "id" => "https://remote.example.com/notes/789",
