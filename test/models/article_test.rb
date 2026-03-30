@@ -156,14 +156,14 @@ class ArticleTest < ActiveSupport::TestCase
     assert_predicate article, :valid?
   end
 
-  test "comments와 has_many 관계를 가져야 한다" do
+  test "posts와 has_many 관계를 가져야 한다" do
     article = @article
-    initial_count = article.comments.count
-    comment = article.comments.create!(body: "Test comment", user: @user)
+    initial_count = article.posts.count
+    post = article.posts.create!(body: "Test comment", user: @user)
 
-    assert_equal initial_count + 1, article.comments.count
-    assert_equal article.id, comment.article_id
-    assert_includes article.comments, comment
+    assert_equal initial_count + 1, article.posts.count
+    assert_equal article.id, post.article_id
+    assert_includes article.posts, post
   end
 
   # ========== Scope Tests ==========
