@@ -69,7 +69,7 @@ class Components::Comments::Comment < Components::Base
   def delete_button
     if view_context.user_signed_in? && @comment.user == view_context.current_user
       button_to(
-        article_comment_path(@article, @comment),
+        article_post_path(@article, @comment),
         method: :delete,
         data: { turbo_confirm: "정말 삭제하시겠습니까?" },
         form: { data: { turbo_stream: true } },
@@ -105,14 +105,14 @@ class Components::Comments::Comment < Components::Base
     div(class: "bg-surface/50") do
       render Components::Comments::CommentReplyForm.new(
         article: @article,
-        comment: ::Comment.new,
+        comment: ::Post.new,
         parent_comment: @comment
       )
     end
   end
 
   def children_section
-    div(id: "comment_replies_#{@comment.id}", class: "ml-8 mr-3 mt-2 space-y-2 pb-3") do
+    div(id: "post_replies_#{@comment.id}", class: "ml-8 mr-3 mt-2 space-y-2 pb-3") do
       @children.each do |child, grandchildren|
         render Components::Comments::Comment.new(
           comment: child,

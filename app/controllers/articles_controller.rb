@@ -68,7 +68,7 @@ class ArticlesController < ApplicationController
   end
 
   def show
-    @comments = @article.comments.includes(:user)
+    @comments = @article.posts.includes(:user)
 
     @page_title = @article.title_ko
     @page_description = @article.summary_key&.first
@@ -106,7 +106,7 @@ class ArticlesController < ApplicationController
       Article.none
     end
 
-    @comment = Comment.new
+    @comment = Post.new
     render Views::Articles::Show.new(
       article: @article,
       comments: @comments,

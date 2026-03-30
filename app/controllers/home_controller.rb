@@ -28,7 +28,7 @@ class HomeController < ApplicationController
     )
 
     @news_media_organization = PUBLISHER_SCHEMA
-    @recent_comments = Comment.joins(:article).includes(:article, :user, :federails_actor).where(article: { deleted_at: nil }).order(created_at: :desc).limit(10)
+    @recent_comments = Post.comments.joins(:article).includes(:article, :user, :federails_actor).where(article: { deleted_at: nil }).order(created_at: :desc).limit(10)
     @sidebar_tags = Tag.confirmed.order(taggings_count: :desc, name: :asc).limit(20)
     render Views::Home::Index.new(
       articles: @articles,

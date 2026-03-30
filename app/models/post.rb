@@ -3,10 +3,16 @@
 # rbs_inline: enabled
 
 class Post < ApplicationRecord
+  MAX_BODY_LENGTH = 1000
+
   acts_as_nested_set
   acts_as_likeable
 
   belongs_to :user, optional: true
+  belongs_to :article, optional: true, counter_cache: :posts_count
+
+  scope :comments, -> { where.not(article_id: nil) }
+  scope :standalone, -> { where(article_id: nil) }
 
   include HtmlSanitizable
 
@@ -36,6 +42,8 @@ class Post < ApplicationRecord
 
   on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; destroy! }
 
+  after_commit :enqueue_reply_notification, on: :create
+
   #: () -> (User | Federails::Actor)?
   def federation_actor_entity
     user || federails_actor
@@ -51,6 +59,8 @@ class Post < ApplicationRecord
     custom = {}
     if parent.present?
       custom["inReplyTo"] = parent.federated_url || Rails.application.routes.url_helpers.post_url(parent)
+    elsif article.present?
+      custom["inReplyTo"] = article.federated_url || Rails.application.routes.url_helpers.article_url(article)
     end
 
     if tag_list.any?
@@ -71,7 +81,47 @@ class Post < ApplicationRecord
     likers_count.to_i
   end
 
+  #: () -> bool
+  def comment?
+    article_id.present?
+  end
+
+  #: () -> (Post | Article)
+  def reply
+    parent.present? ? parent : article
+  end
+
+  #: () -> String
+  def author_name
+    user&.full_name || federails_actor&.username || "익명"
+  end
+
+  #: () -> String?
+  def author_host
+    return if federails_actor.nil? || federails_actor&.server.blank?
+    "(#{federails_actor&.server})"
+  end
+
   private
+
+  #: () -> void
+  def enqueue_reply_notification
+    unless parent_id.present?
+      logger.debug { "ReplyNotification skip: post #{id} has no parent" }
+      return
+    end
+    unless parent&.user_id.present?
+      logger.debug { "ReplyNotification skip: parent post #{parent_id} has no local user" }
+      return
+    end
+    if parent.user_id == user_id
+      logger.debug { "ReplyNotification skip: self-reply by user #{user_id}" }
+      return
+    end
+
+    logger.info { "ReplyNotification enqueue: post #{id} → parent #{parent_id} (user #{parent.user_id})" }
+    ReplyNotificationJob.perform_later(parent.id, id)
+  end
 
   #: () -> void
   def set_federails_actor
@@ -109,12 +159,20 @@ class Post < ApplicationRecord
       }
 
       if in_reply_to.present?
+        article_id = in_reply_to[%r{/articles/(\d+)}, 1]
         post_id = in_reply_to[%r{/posts/(\d+)}, 1]
-        if post_id.present?
+
+        if article_id.present?
+          object[:article_id] = article_id
+        elsif post_id.present?
           object[:parent_id] = post_id
+          object[:article_id] = Post.where(id: post_id).pick(:article_id)
         else
           parent = Post.find_by(federated_url: in_reply_to)
-          object[:parent_id] = parent.id if parent
+          if parent
+            object[:parent_id] = parent.id
+            object[:article_id] = parent.article_id
+          end
         end
       end
 
@@ -138,9 +196,11 @@ class Post < ApplicationRecord
       # inReplyTo가 없으면 원문 → 수락
       return true if in_reply_to.blank?
 
-      # inReplyTo가 로컬 post를 가리키면 수락
+      # inReplyTo가 로컬 post 또는 article을 가리키면 수락
       local_host = Rails.application.routes.default_url_options[:host]
-      return true if local_host.present? && in_reply_to.include?(local_host) && in_reply_to.include?("/posts/")
+      if local_host.present? && in_reply_to.include?(local_host)
+        return true if in_reply_to.include?("/posts/") || in_reply_to.include?("/articles/")
+      end
 
       # inReplyTo가 기존 post의 federated_url이면 수락
       Post.exists?(federated_url: in_reply_to)

@@ -5,47 +5,51 @@
 class ReplyNotificationJob < ApplicationJob
   queue_as :default
 
-  #: (Integer parent_comment_id, Integer reply_comment_id) -> void
-  def perform(parent_comment_id, reply_comment_id)
-    parent_comment = Comment.includes(:user, :article).find(parent_comment_id)
-    reply_comment = Comment.includes(:user).find(reply_comment_id)
+  #: (Integer parent_post_id, Integer reply_post_id) -> void
+  def perform(parent_post_id, reply_post_id)
+    parent_post = Post.includes(:user, :article).find(parent_post_id)
+    reply_post = Post.includes(:user).find(reply_post_id)
 
-    if parent_comment.user.nil?
-      logger.info "ReplyNotificationJob skip: parent comment #{parent_comment_id} has no user"
+    if parent_post.user.nil?
+      logger.info "ReplyNotificationJob skip: parent post #{parent_post_id} has no user"
       return
     end
-    if parent_comment.user_id == reply_comment.user_id
-      logger.info "ReplyNotificationJob skip: self-reply by user #{parent_comment.user_id}"
+    if parent_post.user_id == reply_post.user_id
+      logger.info "ReplyNotificationJob skip: self-reply by user #{parent_post.user_id}"
       return
     end
 
-    logger.info "ReplyNotificationJob start: reply #{reply_comment_id} → parent #{parent_comment_id} (notify user #{parent_comment.user_id})"
-    notify_reply(parent_comment:, reply_comment:)
+    logger.info "ReplyNotificationJob start: reply #{reply_post_id} → parent #{parent_post_id} (notify user #{parent_post.user_id})"
+    notify_reply(parent_post:, reply_post:)
   end
 
   private
 
-  def notify_reply(parent_comment:, reply_comment:)
+  def notify_reply(parent_post:, reply_post:)
     result = PushNotificationService.new.call(
-      user: parent_comment.user,
+      user: parent_post.user,
       title: "내 댓글에 새 답글이 달렸습니다",
-      body: build_body(reply_comment),
-      path: notification_path(parent_comment)
+      body: build_body(reply_post),
+      path: notification_path(parent_post)
     )
 
     return if result.success?
 
-    logger.info "ReplyNotificationJob skipped push delivery for comment #{reply_comment.id}: #{result.failure}"
+    logger.info "ReplyNotificationJob skipped push delivery for post #{reply_post.id}: #{result.failure}"
   end
 
-  def build_body(reply_comment)
-    "#{reply_comment.author_name}: #{reply_comment.body.to_s.truncate(80)}"
+  def build_body(reply_post)
+    "#{reply_post.author_name}: #{reply_post.body.to_s.truncate(80)}"
   end
 
-  def notification_path(parent_comment)
-    Rails.application.routes.url_helpers.article_path(
-      parent_comment.article,
-      anchor: "comment_#{parent_comment.id}"
-    )
+  def notification_path(parent_post)
+    if parent_post.article.present?
+      Rails.application.routes.url_helpers.article_path(
+        parent_post.article,
+        anchor: "post_#{parent_post.id}"
+      )
+    else
+      Rails.application.routes.url_helpers.post_path(parent_post)
+    end
   end
 end
