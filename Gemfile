@@ -144,4 +144,4 @@ gem "prosopite"
 gem "pg_query"
 gem "rorvswild"
 
-gem "rails-ai-context", "~> 3.1"
+gem "rails-ai-context", "~> 4.1"
