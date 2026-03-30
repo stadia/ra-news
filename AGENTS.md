@@ -213,4 +213,5 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 
 ## 외부 프로젝트 경로
 
-- **federails**: `/Users/jeff.dean/projects/federails` — federails 관련 코드 조회·수정 시 반드시 이 로컬 경로를 사용한다. 번들러 캐시(`~/.local/share/mise/.../bundler/gems/federails-*`)는 읽지 않는다.
+- **federails**: `../federails` — federails 관련 코드 조회·수정 시 반드시 이 로컬 경로를 사용한다. 번들러 캐시(`~/.local/share/mise/.../bundler/gems/federails-*`)는 읽지 않는다.
+- federails 수정이 필요하거나 원인이 federails에 있다고 판단되면, 앱에서 임시 우회 패치를 넣기 전에 반드시 `../federails`를 직접 확인하고 그 저장소에서 우선 수정한다.
