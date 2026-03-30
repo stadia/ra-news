@@ -36,22 +36,17 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, like_queries.size
   end
 
-  test "GET feed preloads replies for visible posts" do
-    root_posts = 3.times.map do |index|
-      root = Post.create!(body: "root post #{index}", user: @user, created_at: (index + 1).hours.ago)
-      Post.create!(body: "reply post #{index}", user: users(:jane), parent: root, created_at: index.minutes.ago)
-      root
-    end
+  test "GET feed includes replies as flat posts in reverse chronological order" do
+    root = Post.create!(body: "root post", user: @user, created_at: 2.hours.ago, updated_at: 2.hours.ago)
+    reply = Post.create!(body: "reply post", user: users(:jane), parent: root, created_at: 10.minutes.ago, updated_at: 10.minutes.ago)
 
     sign_in_as(@user)
-
-    reply_queries = capture_reply_queries do
-      get feed_path
-    end
+    get feed_path
 
     assert_response :success
-    assert_includes @response.body, "reply post 0"
-    assert_operator reply_queries.size, :<=, 1
+    assert_includes @response.body, "root post"
+    assert_includes @response.body, "reply post"
+    assert_operator @response.body.index("reply post"), :<, @response.body.index("root post")
   end
 
   test "GET feed includes current user and accepted followings in reverse chronological order" do
@@ -98,17 +93,12 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, jane_actor.name
   end
 
-  test "GET feed renders selected posts as a tree within the feed set" do
-    followed_root = Post.create!(
-      body: "followed root post",
-      user: users(:jane),
-      created_at: 2.hours.ago,
-      updated_at: 2.hours.ago
-    )
-    own_reply = Post.create!(
-      body: "own reply post",
+  test "GET feed renders article preview for posts linked to an article" do
+    article = articles(:one)
+    post = Post.create!(
+      body: "article linked post",
       user: @user,
-      parent: followed_root,
+      article: article,
       created_at: 1.hour.ago,
       updated_at: 1.hour.ago
     )
@@ -117,9 +107,9 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     get feed_path
 
     assert_response :success
-    assert_includes @response.body, "followed root post"
-    assert_includes @response.body, "own reply post"
-    assert_operator @response.body.index("followed root post"), :<, @response.body.index("own reply post")
+    assert_includes @response.body, post.body
+    assert_includes @response.body, "연결된 기사"
+    assert_includes @response.body, article.title_ko || article.title
   end
 
   test "GET first feed page nests the next page frame inside posts_list" do
@@ -163,23 +153,6 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     callback = lambda do |_name, _start, _finish, _id, payload|
       sql = payload[:sql]
       next unless sql&.include?('"likes"')
-      next unless payload[:name] != "SCHEMA"
-
-      queries << sql
-    end
-
-    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
-      yield
-    end
-
-    queries
-  end
-
-  def capture_reply_queries
-    queries = []
-    callback = lambda do |_name, _start, _finish, _id, payload|
-      sql = payload[:sql]
-      next unless sql&.include?('"posts"."parent_id" =')
       next unless payload[:name] != "SCHEMA"
 
       queries << sql

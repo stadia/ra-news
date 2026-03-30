@@ -2,6 +2,7 @@
 
 class Components::Posts::PostCard < Components::Base
   include Phlex::Rails::Helpers::DOMID
+  include Phlex::Rails::Helpers::LinkTo
   include PhlexIcons
 
   def initialize(post:, depth: 0, liked: nil)
@@ -64,6 +65,7 @@ class Components::Posts::PostCard < Components::Base
     end
     post_tags if @post.tag_list.any?
     media_attachments if @post.media_attachments.any?
+    article_preview if @post.article.present?
   end
 
   def post_tags
@@ -141,7 +143,67 @@ class Components::Posts::PostCard < Components::Base
     end
   end
 
+  def article_preview
+    article = @post.article
+
+    render RubyUI::Card.new(class: "bg-surface-muted border-border-muted shadow-none overflow-hidden") do
+      render RubyUI::CardContent.new(class: "p-4 space-y-3") do
+        div(class: "flex items-center gap-2 text-xs text-content-muted") do
+          Hero::Newspaper(variant: :outline, class: "w-4 h-4")
+          plain "연결된 기사"
+        end
+
+        div(class: "space-y-1") do
+          h3(class: "text-sm font-semibold text-content leading-snug") do
+            link_to(article_preview_title(article), article_path(article), class: "hover:text-link-hover")
+          end
+
+          if show_original_title?(article)
+            p(class: "text-xs text-content-secondary wrap-break-word") { article.title }
+          end
+        end
+
+        if article_preview_summary(article).present?
+          p(class: "text-sm text-content-secondary leading-relaxed") { article_preview_summary(article) }
+        end
+
+        div(class: "flex flex-wrap items-center gap-3 text-xs text-content-muted") do
+          if article.host.present?
+            span(class: "inline-flex items-center gap-1") do
+              Hero::GlobeAlt(variant: :outline, class: "w-3 h-3")
+              plain article.host
+            end
+          end
+
+          if article.published_at.present?
+            span(class: "inline-flex items-center gap-1") do
+              Hero::CalendarDays(variant: :outline, class: "w-3 h-3")
+              plain I18n.l(article.published_at, format: :short)
+            end
+          end
+        end
+      end
+    end
+  end
+
   def author_name
     @post.user&.name || @post.federails_actor&.name || "알 수 없음"
+  end
+
+  def article_preview_title(article)
+    article.title_ko.presence || article.title.presence || "기사 보기"
+  end
+
+  def show_original_title?(article)
+    article.title_ko.present? && article.title.present? && article.title_ko != article.title
+  end
+
+  def article_preview_summary(article)
+    case article.summary_key
+    when Array
+      article.summary_key.first
+    when String
+      article.summary_key
+    end
   end
 end

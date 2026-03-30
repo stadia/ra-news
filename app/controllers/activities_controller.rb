@@ -22,10 +22,9 @@ class ActivitiesController < ApplicationController
     following_actor_ids = Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
 
     posts = Post
-      .includes(:user, :federails_actor, children: [ :user, :federails_actor ])
+      .includes(:user, :federails_actor, :article)
       .where(federails_actor_id: following_actor_ids)
       .or(Post.where(user_id: current_user.id))
-      .where(parent_id: nil)
       .order(created_at: :desc)
 
     @pagy, @posts = pagy(:countless, posts, limit: 20)

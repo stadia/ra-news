@@ -44,7 +44,7 @@ class Views::Activities::Feed < Views::Base
       render_empty_state
     else
       @posts.each do |post|
-        render Components::Posts::PostThread.new(post: post, liked: @liked_post_ids.include?(post.id))
+        render Components::Posts::PostCard.new(post: post, liked: @liked_post_ids.include?(post.id))
       end
     end
   end
