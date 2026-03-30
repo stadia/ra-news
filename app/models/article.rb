@@ -76,6 +76,8 @@ class Article < ApplicationRecord
     end
   end
 
+  before_save :log_tracked_attribute_changes, if: :tracked_attribute_changes?
+
   before_validation on: :create do
     self.origin_url = url if origin_url.blank?
   end
@@ -201,6 +203,37 @@ class Article < ApplicationRecord
   #: () -> void
   def clear_rss_cache
     Rails.cache.delete("rss_articles")
+  end
+
+  def tracked_attribute_changes?
+    will_save_change_to_url? ||
+      will_save_change_to_origin_url? ||
+      will_save_change_to_title? ||
+      will_save_change_to_title_ko?
+  end
+
+  def log_tracked_attribute_changes
+    changes = {}
+    changes[:url] = url_change_to_be_saved if will_save_change_to_url?
+    changes[:origin_url] = origin_url_change_to_be_saved if will_save_change_to_origin_url?
+    changes[:title] = title_change_to_be_saved if will_save_change_to_title?
+    changes[:title_ko] = title_ko_change_to_be_saved if will_save_change_to_title_ko?
+
+    source_locations = caller_locations(1, 20)
+                       .map(&:path)
+                       .select { |path| path.include?("/app/") || path.include?("/lib/") || path.include?("/config/") }
+                       .uniq
+                       .first(6)
+
+    logger.info do
+      {
+        message: "[Article] tracked attributes changing",
+        article_id: id,
+        persisted: persisted?,
+        changes: changes,
+        sources: source_locations
+      }.inspect
+    end
   end
 
   #: () -> bool
