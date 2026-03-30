@@ -268,7 +268,17 @@ class Article < ApplicationRecord
     # handle_federated_object?가 false여도 inbox는 Article에게 디스패치하므로,
     # Article.from_activitypub_object(title: 등)가 Post에 잘못 assign되는 것을 방지한다.
     #: (untyped) -> void
-    def handle_incoming_fediverse_data(_activity)
+    def handle_incoming_fediverse_data(activity)
+      logger.info do
+        {
+          message: "[Federation] Article ignored incoming activity",
+          activity_type: activity["type"],
+          activity_id: activity["id"],
+          actor: activity["actor"],
+          object_id: activity["object"].is_a?(Hash) ? activity["object"]["id"] : activity["object"],
+          object_type: activity["object"].is_a?(Hash) ? activity["object"]["type"] : nil
+        }.inspect
+      end
     end
 
     # slug로 Article을 찾는 메서드
