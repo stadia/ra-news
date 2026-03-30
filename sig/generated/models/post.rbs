@@ -1,6 +1,8 @@
 # Generated from app/models/post.rb with RBS::Inline
 
 class Post < ApplicationRecord
+  MAX_BODY_LENGTH: ::Integer
+
   include HtmlSanitizable
 
   include Federails::DataEntity
@@ -19,7 +21,22 @@ class Post < ApplicationRecord
   # : () -> Integer
   def likes_count: () -> Integer
 
+  # : () -> bool
+  def comment?: () -> bool
+
+  # : () -> (Post | Article)
+  def reply: () -> (Post | Article)
+
+  # : () -> String
+  def author_name: () -> String
+
+  # : () -> String?
+  def author_host: () -> String?
+
   private
+
+  # : () -> void
+  def enqueue_reply_notification: () -> void
 
   # : () -> void
   def set_federails_actor: () -> void
