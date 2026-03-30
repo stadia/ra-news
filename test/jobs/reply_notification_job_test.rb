@@ -44,6 +44,7 @@ class ReplyNotificationJobTest < ActiveSupport::TestCase
     assert_equal "내 댓글에 새 답글이 달렸습니다", captured[:title]
     assert_includes captured[:body], "테스트 답글"
     assert_includes captured[:path], "/articles/"
+    assert_includes captured[:path], "#post_#{@parent_post.id}"
   ensure
     reply_post&.destroy
   end

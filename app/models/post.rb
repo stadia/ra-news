@@ -161,18 +161,11 @@ class Post < ApplicationRecord
       if in_reply_to.present?
         article_id = in_reply_to[%r{/articles/(\d+)}, 1]
         post_id = in_reply_to[%r{/posts/(\d+)}, 1]
-        comment_id = in_reply_to[%r{/comments/(\d+)}, 1]
 
         if article_id.present?
           object[:article_id] = article_id
         elsif post_id.present?
           object[:parent_id] = post_id
-        elsif comment_id.present?
-          parent = Post.find_by(id: comment_id)
-          if parent
-            object[:parent] = parent
-            object[:article_id] = parent.article_id
-          end
         else
           parent = Post.find_by(federated_url: in_reply_to)
           if parent
