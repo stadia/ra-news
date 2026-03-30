@@ -4,10 +4,10 @@ module Madmin
       @articles_count = Article.kept.count
       @sites_count = Site.count
       @users_count = User.count
-      @comments_count = Comment.count
+      @comments_count = Post.comments.count
 
       @recent_articles = Article.kept.includes(:site).order(created_at: :desc).limit(5)
-      @recent_comments = Comment.includes(:article, :user).order(created_at: :desc).limit(5)
+      @recent_comments = Post.comments.includes(:article, :user).order(created_at: :desc).limit(5)
 
       @popular_tags = ActsAsTaggableOn::Tag.most_used(10)
 
