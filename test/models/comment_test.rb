@@ -319,7 +319,8 @@ class CommentTest < ActiveSupport::TestCase
       assert_predicate comment, :valid?, "Special character comment should be valid: #{body}"
       comment.save!
 
-      assert_equal body, comment.body
+      expected_body = Rails::Html::SafeListSanitizer.new.sanitize(body, tags: HtmlSanitizable::ALLOWED_TAGS)
+      assert_equal expected_body, comment.body
     end
   end
 
