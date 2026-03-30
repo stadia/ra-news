@@ -11,7 +11,7 @@ module FederailsLikeable
   #: (String actor_url) -> void
   def apply_like(actor_reference)
     actor = resolve_federails_actor(actor_reference)
-    return unless actor
+    return unless actor && persisted?
 
     actor.like!(self)
   end
@@ -19,7 +19,7 @@ module FederailsLikeable
   #: (String actor_url) -> void
   def apply_unlike(actor_reference)
     actor = resolve_federails_actor(actor_reference)
-    return unless actor
+    return unless actor && persisted?
 
     actor.unlike!(self)
   end
