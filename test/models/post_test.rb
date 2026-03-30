@@ -131,6 +131,7 @@ class PostTest < ActiveSupport::TestCase
 
   test "author_name은 user도 actor도 없으면 익명을 반환한다" do
     post = Post.new(body: "test")
+
     assert_equal "익명", post.author_name
   end
 
@@ -146,12 +147,14 @@ class PostTest < ActiveSupport::TestCase
 
   test "comments 스코프는 article_id가 있는 post만 반환한다" do
     comments = Post.comments
+
     assert_includes comments, @comment_post
     assert_not_includes comments, @root_post
   end
 
   test "standalone 스코프는 article_id가 없는 post만 반환한다" do
     standalone = Post.standalone
+
     assert_includes standalone, @root_post
     assert_not_includes standalone, @comment_post
   end
