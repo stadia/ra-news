@@ -1,7 +1,6 @@
 # Below are the routes for madmin
 namespace :madmin do
   resources :preferences
-  resources :comments
   resources :tags
   resources :articles do
     member do
