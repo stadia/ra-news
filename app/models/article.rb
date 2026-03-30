@@ -194,8 +194,19 @@ class Article < ApplicationRecord
 
   #: (String action) -> void
   def create_federails_activity(action)
-    if action == "Update" && !Federails::Activity.exists?(entity: self, action: "Create")
-      action = "Create"
+    if action == "Update"
+      unless Federails::Activity.exists?(entity: self, action: "Create")
+        action = "Create"
+      else
+        logger.info do
+          {
+            message: "[Federation] Skipping repeated Article update activity",
+            article_id: id,
+            federated_url: federated_url
+          }.inspect
+        end
+        return
+      end
     end
     super(action)
   end
