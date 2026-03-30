@@ -320,6 +320,7 @@ class CommentTest < ActiveSupport::TestCase
       comment.save!
 
       expected_body = Rails::Html::SafeListSanitizer.new.sanitize(body, tags: HtmlSanitizable::ALLOWED_TAGS)
+
       assert_equal expected_body, comment.body
     end
   end
