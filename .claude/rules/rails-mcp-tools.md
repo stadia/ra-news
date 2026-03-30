@@ -1,6 +1,6 @@
-## Tools (30) — MANDATORY, Use Before Read
+## Tools (33) — MANDATORY, Use Before Read
 
-This project has 30 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
+This project has 33 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
 **MANDATORY — use these instead of reading files.** They return structured data and save tokens.
 Read files ONLY when you are about to Edit them.
 If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' param=value`
@@ -61,6 +61,18 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 → MCP: `rails_dependency_graph(model:"Cook", format:"mermaid")`
 → CLI: `rails 'ai:tool[dependency_graph]' model=Cook format=mermaid`
 
+**Query the database:**
+→ MCP: `rails_query(sql:"SELECT COUNT(*) FROM users WHERE created_at > '2024-01-01'")`
+→ CLI: `rails 'ai:tool[query]' sql="SELECT COUNT(*) FROM users WHERE created_at > '2024-01-01'"`
+
+**Debug errors:**
+→ MCP: `rails_read_logs(level:"error", lines:100)`
+→ CLI: `rails 'ai:tool[read_logs]' level=error lines=100`
+
+**Search docs:**
+→ MCP: `rails_search_docs(query:"active_record_queries")`
+→ CLI: `rails 'ai:tool[search_docs]' query=active_record_queries`
+
 **After editing (EVERY time):**
 → MCP: `rails_validate(files:["app/models/cook.rb"], level:"rails")`
 → CLI: `rails 'ai:tool[validate]' files=app/models/cook.rb level=rails`
@@ -74,7 +86,7 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 5. Start with `detail:"summary"` to orient, then drill into specifics
 6. If MCP tools are not connected, use CLI: `rails 'ai:tool[TOOL_NAME]' param=value`
 
-### All 30 Tools
+### All 33 Tools
 
 | MCP | CLI | What it does |
 |-----|-----|-------------|
@@ -109,3 +121,6 @@ If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' pa
 | `rails_dependency_graph(model:"X")` | `rails 'ai:tool[dependency_graph]' model=X` | Model association graph as Mermaid diagram |
 | `rails_migration_advisor(action:"X", table:"Y")` | `rails 'ai:tool[migration_advisor]' action=X table=Y` | Generate migration code, flag irreversible ops |
 | `rails_get_frontend_stack` | `rails 'ai:tool[frontend_stack]'` | React/Vue/Svelte/Angular, Inertia, TypeScript, package manager |
+| `rails_search_docs(query:"X")` | `rails 'ai:tool[search_docs]' query=X` | Bundled topic index with weighted keyword search, on-demand GitHub fetch |
+| `rails_query(sql:"X")` | `rails 'ai:tool[query]' sql=X` | Safe read-only SQL queries with timeout, row limit, column redaction |
+| `rails_read_logs(level:"X")` | `rails 'ai:tool[read_logs]' level=X` | Reverse file tail with level filtering and sensitive data redaction |
