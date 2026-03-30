@@ -16,9 +16,9 @@ class Components::Comments::CommentForm < Components::Base
       render RubyUI::Card.new(
         class: "bg-surface-muted border-border-muted p-6",
         data: {
-          controller: "character-count comment-form",
+          controller: "character-count post-form",
           character_count_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
-          action: "turbo:submit-end->comment-form#reset"
+          action: "turbo:submit-end->post-form#reset"
         }
       ) do
         form_header
