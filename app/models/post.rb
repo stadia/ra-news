@@ -150,12 +150,13 @@ class Post < ApplicationRecord
     #: (Hash[String, untyped]) -> Hash[Symbol, untyped]
     def from_activitypub_object(hash)
       in_reply_to = hash["inReplyTo"].to_s
+      attachments = Array(hash["attachment"]).select { |a| a.is_a?(Hash) && (a["type"] == "Document" || a["type"] == "Image") }
 
       object = {
         federated_url: hash["id"],
         url: hash["url"],
         title: hash["summary"].presence,
-        body: hash["content"].to_s.squish
+        body: extract_body_from_activitypub_object(hash, attachments:)
       }
 
       if in_reply_to.present?
@@ -177,7 +178,6 @@ class Post < ApplicationRecord
       end
 
       # Mastodon 이미지 첨부 파싱
-      attachments = Array(hash["attachment"]).select { |a| a.is_a?(Hash) && (a["type"] == "Document" || a["type"] == "Image") }
       object[:media_attachments] = attachments.map do |a|
         { "url" => a["url"], "mediaType" => a["mediaType"], "name" => a["name"] }.compact
       end
@@ -187,6 +187,22 @@ class Post < ApplicationRecord
       object[:tag_list] = hashtags.map { |t| t["name"].to_s.delete_prefix("#") }.uniq.join(", ") if hashtags.any?
 
       object
+    end
+
+    private
+
+    #: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
+    def extract_body_from_activitypub_object(hash, attachments:)
+      localized_content = hash["contentMap"]
+        .then { |content_map| content_map.is_a?(Hash) ? content_map.values : [] }
+        .filter_map { |value| value.to_s.squish.presence }
+        .first
+
+      body = localized_content || hash["content"].to_s.squish.presence || hash["summary"].to_s.squish.presence
+      return body if body.present?
+
+      attachment_names = attachments.filter_map { |attachment| attachment["name"].to_s.squish.presence }
+      attachment_names.join(" · ").presence || I18n.t("posts.remote_attachment_only_body")
     end
 
     #: (Hash[String, untyped]) -> bool

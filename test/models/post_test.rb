@@ -279,4 +279,33 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @article.id.to_s, result[:article_id]
     assert_nil result[:parent_id]
   end
+
+  test "from_activitypub_object는 contentMap 본문을 우선 사용한다" do
+    hash = {
+      "id" => "https://remote.example.com/notes/with-content-map",
+      "content" => "",
+      "contentMap" => { "ko" => "  로컬라이즈된 본문  " }
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal "로컬라이즈된 본문", result[:body]
+  end
+
+  test "from_activitypub_object는 첨부만 있는 노트에 폴백 본문을 채운다" do
+    hash = {
+      "id" => "https://remote.example.com/notes/media-only",
+      "content" => "",
+      "attachment" => [
+        {
+          "type" => "Document",
+          "url" => "https://remote.example.com/media/image.png",
+          "mediaType" => "image/png"
+        }
+      ]
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal I18n.t("posts.remote_attachment_only_body"), result[:body]
+    assert_equal 1, result[:media_attachments].size
+  end
 end

@@ -49,3 +49,5 @@ ko:
   sign_in: "로그인"
   sign_out: "로그아웃"
   sign_up: "회원가입"
+  posts:
+    remote_attachment_only_body: "첨부된 미디어"
