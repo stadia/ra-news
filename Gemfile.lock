@@ -623,6 +623,9 @@ GEM
       racc (~> 1.5)
       sexp_processor (~> 4.16)
     ruby_ui (1.1.0)
+    rubydex (0.1.0.beta11)
+    rubydex (0.1.0.beta11-arm64-darwin)
+    rubydex (0.1.0.beta11-x86_64-linux)
     rubyzip (3.2.2)
     schema_dot_org (2.5.3)
       validated_object (~> 2.3.4)
@@ -691,18 +694,18 @@ GEM
     tailwindcss-ruby (4.2.1-aarch64-linux-gnu)
     tailwindcss-ruby (4.2.1-arm64-darwin)
     tailwindcss-ruby (4.2.1-x86_64-linux-gnu)
-    tapioca (0.18.0)
+    tapioca (0.19.0)
       benchmark
       bundler (>= 2.2.25)
       netrc (>= 0.11.0)
       parallel (>= 1.21.0)
       rbi (>= 0.3.7)
       require-hooks (>= 0.2.2)
+      rubydex (>= 0.1.0.beta10)
       sorbet-static-and-runtime (>= 0.5.11087)
       spoom (>= 1.7.9)
       thor (>= 1.2.0)
       tsort
-      yard-sorbet
     thor (1.5.0)
     thruster (0.1.20-aarch64-linux)
     thruster (0.1.20-arm64-darwin)
@@ -739,10 +742,6 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     yaml (0.4.0)
-    yard (0.9.38)
-    yard-sorbet (0.9.0)
-      sorbet-runtime
-      yard
     youtube-transcript-rb (0.2.4)
       faraday (~> 2.0)
       faraday-follow_redirects (~> 0.3)
