@@ -228,6 +228,20 @@ render RubyUI::Input.new(
 
 Inputs should feel soft, dark, and clearly focusable. The Spotify-style search pill can be used for search-heavy contexts, but standard form inputs should stay aligned with the broader system.
 
+### Menus & Popovers
+
+- Use `RubyUI::DropdownMenu` for compact action groups such as overflow menus, per-item actions, and mobile/secondary navigation clusters
+- Use `RubyUI::Popover` for lightweight contextual UI such as inline help, metadata reveals, or compact filter panels
+- Prefer these components over ad-hoc absolute-positioned menus or custom Stimulus-only overlays
+- Keep menu surfaces on `bg-surface-elevated` semantics and avoid decorative color treatment
+
+### Switch & Checkbox
+
+- Use `RubyUI::Switch` for single boolean preferences such as theme, notifications, or feature toggles
+- Use `RubyUI::Checkbox` for multi-select filters, consent, bulk actions, and settings lists
+- Prefer `Switch` for immediate on/off state and `Checkbox` for selection state; do not interchange them casually
+- Labels, descriptions, and disabled states should remain explicit and readable without depending on color alone
+
 ### Navigation
 
 ```ruby

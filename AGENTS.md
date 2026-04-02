@@ -175,8 +175,9 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 날짜와 시간 표시는 `l(Time.current, format: :short)` 규칙을 따른다.
 - PostgreSQL 확장, 한국어 요약, 로컬라이제이션 등 운영 환경 전제를 무시한 채 production과 다른 방향으로 구현하지 않는다.
 - 뷰와 컴포넌트는 Phlex 기반으로 작성하며, ERB 템플릿을 새로 만들지 않는다.
-- UI 요소는 RubyUI 컴포넌트(`RubyUI::Card`, `RubyUI::Avatar` 등)를 우선 사용하고, 해당하는 컴포넌트가 없을 때만 직접 마크업한다.
+- UI 요소는 RubyUI 컴포넌트(`RubyUI::Card`, `RubyUI::Avatar`, `RubyUI::DropdownMenu`, `RubyUI::Popover`, `RubyUI::Switch`, `RubyUI::Checkbox` 등)를 우선 사용하고, 해당하는 컴포넌트가 없을 때만 직접 마크업한다.
 - RubyUI 컴포넌트 수정은 프로젝트 전반에 영향을 주는 공통 규칙 변경이 꼭 필요한 경우에만 한다. 화면 단위 요구사항은 호출부의 class 조정이나 별도 앱 컴포넌트로 해결하는 것을 우선한다.
+- 보조 액션 묶음은 `RubyUI::DropdownMenu` 또는 `RubyUI::Popover`를 우선 검토하고, 설정형 on/off 값은 `RubyUI::Switch`, 다중 선택과 동의/필터 항목은 `RubyUI::Checkbox`를 우선 사용한다.
 - 아이콘은 PhlexIcons의 Hero 아이콘(`Hero::IconName`)을 사용하며, 인라인 SVG를 직접 넣지 않는다.
 - 디자인 및 UI 작업은 `DESIGN.md`의 지침(시맨틱 토큰, 컴포넌트 규칙, 색상 전략, 접근성 기준 등)을 따른다.
 

@@ -63,17 +63,21 @@ class Components::Posts::PostCard < Components::Base
     div(class: "text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
       raw @post.body.html_safe
     end
-    post_tags if @post.tag_list.any?
+    post_tags if post_tag_names.any?
     media_attachments if @post.media_attachments.any?
     article_preview if @post.article.present?
   end
 
   def post_tags
     div(class: "flex flex-wrap gap-1 mt-1") do
-      @post.tag_list.each do |tag|
+      post_tag_names.each do |tag|
         span(class: "text-xs text-link hover:text-link-hover hover:underline cursor-pointer transition-colors") { plain "##{tag}" }
       end
     end
+  end
+
+  def post_tag_names
+    @post_tag_names ||= @post.tags.map(&:name)
   end
 
   def media_attachments

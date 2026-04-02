@@ -6,6 +6,7 @@ class Components::Layout < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ImageURL
+  include PhlexIcons
 
   def view_template
     doctype
@@ -216,15 +217,10 @@ class Components::Layout < Components::Base
 
         if vc.user_signed_in?
           li { raw vc.nav_link_to("글 등록", new_article_path) }
-          li { raw vc.nav_link_to(vc.current_user.username ||vc.current_user.name, user_profile_path(vc.current_user)) }
-        end
-
-        li do
-          if vc.user_signed_in?
-            raw vc.nav_link_to("로그아웃", destroy_user_session_path)
-          else
-            raw vc.nav_link_to("로그인", new_user_session_path)
-          end
+          li { raw vc.nav_link_to("Feed", feed_path) }
+          li(class: "flex items-center") { render_account_menu }
+        else
+          li { raw vc.nav_link_to("로그인", new_user_session_path) }
         end
 
         li(class: "flex items-center") do
@@ -290,6 +286,60 @@ class Components::Layout < Components::Base
         size: :lg,
         class: "font-medium bg-brand-solid rounded-lg border border-brand-solid hover:bg-brand-solid-hover text-brand-foreground focus:ring-2 focus:outline-none focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface transition-all duration-150 min-h-11 cursor-pointer"
       ) { "검색" }
+    end
+  end
+
+  def render_account_menu
+    vc = view_context
+    label = vc.current_user.username.presence || vc.current_user.name.presence || "내 계정"
+
+    render RubyUI::DropdownMenu.new do
+      render RubyUI::DropdownMenuTrigger.new(class: "w-full") do
+        button(
+          type: "button",
+          class: "inline-flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-content-secondary transition-colors hover:bg-surface-muted hover:text-content",
+          aria: { label: "계정 메뉴 열기", haspopup: "menu", expanded: "false" }
+        ) do
+          span(class: "truncate max-w-32") { label }
+          Hero::ChevronDown(variant: :outline, class: "h-4 w-4 shrink-0")
+        end
+      end
+
+      render RubyUI::DropdownMenuContent.new(
+        class: "w-56 border-border-strong bg-surface-elevated text-content shadow-xl"
+      ) do
+        render RubyUI::DropdownMenuLabel.new(class: "px-2 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-content-disabled") do
+          "내 계정"
+        end
+        account_dropdown_item("내 프로필", user_profile_path(vc.current_user), icon: :user_circle)
+        account_dropdown_item("설정", edit_user_registration_path, icon: :cog_6_tooth)
+        account_dropdown_item("팔로우 검색", lookup_actors_path, icon: :magnifying_glass)
+        render RubyUI::DropdownMenuSeparator.new(class: "-mx-1 my-1 h-px bg-border-subtle")
+        account_dropdown_item("로그아웃", destroy_user_session_path, icon: :arrow_left_start_on_rectangle)
+      end
+    end
+  end
+
+  def account_dropdown_item(label, href, icon:)
+    render RubyUI::DropdownMenuItem.new(
+      href: href,
+      class: "gap-2 rounded-md px-2.5 py-2 text-content-secondary hover:bg-surface-muted hover:text-content focus:bg-surface-muted focus:text-content"
+    ) do
+      render account_dropdown_icon(icon)
+      span { label }
+    end
+  end
+
+  def account_dropdown_icon(icon)
+    case icon
+    when :user_circle
+      Hero::UserCircle(variant: :outline, class: "h-4 w-4")
+    when :cog_6_tooth
+      Hero::Cog6Tooth(variant: :outline, class: "h-4 w-4")
+    when :magnifying_glass
+      Hero::MagnifyingGlass(variant: :outline, class: "h-4 w-4")
+    when :arrow_left_start_on_rectangle
+      Hero::ArrowLeftStartOnRectangle(variant: :outline, class: "h-4 w-4")
     end
   end
 
