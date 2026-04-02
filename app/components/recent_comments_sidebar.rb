@@ -30,7 +30,7 @@ class Components::RecentCommentsSidebar < Components::Base
     render RubyUI::Card.new(class: "bg-surface p-3 border-border-strong hover:border-border-muted transition-colors rounded-lg") do
       div(class: "flex items-center gap-2 mb-2") do
         render RubyUI::Avatar.new(size: :sm, class: "shrink-0") do
-          render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-info-solid to-brand-solid text-brand-foreground font-bold") do
+          render RubyUI::AvatarFallback.new(class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted font-bold") do
             plain comment.author_name.to_s.first.to_s.upcase
           end
         end

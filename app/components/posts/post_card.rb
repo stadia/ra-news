@@ -41,7 +41,7 @@ class Components::Posts::PostCard < Components::Base
   def post_header
     div(class: "flex items-center gap-3") do
       render RubyUI::Avatar.new(class: "h-8 w-8 sm:h-10 sm:w-10 shrink-0") do
-        render RubyUI::AvatarFallback.new(class: "bg-linear-to-r from-info-solid to-brand-solid text-brand-foreground text-sm font-bold") do
+        render RubyUI::AvatarFallback.new(class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold") do
           plain author_name.first.to_s.upcase
         end
       end
@@ -71,7 +71,7 @@ class Components::Posts::PostCard < Components::Base
   def post_tags
     div(class: "flex flex-wrap gap-1 mt-1") do
       @post.tag_list.each do |tag|
-        span(class: "text-xs text-info-text hover:underline cursor-pointer") { plain "##{tag}" }
+        span(class: "text-xs text-link hover:text-link-hover hover:underline cursor-pointer transition-colors") { plain "##{tag}" }
       end
     end
   end
