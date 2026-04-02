@@ -1,0 +1,5 @@
+<%= lexxy_rich_textarea_tag(
+  "#{form.object_name}[#{field.attribute_name}]",
+  form.object.public_send(field.attribute_name),
+  class: "lexxy-content min-h-[300px]"
+) %>

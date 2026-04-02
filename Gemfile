@@ -145,3 +145,5 @@ gem "pg_query"
 gem "rorvswild"
 
 gem "rails-ai-context", "~> 4.3"
+
+gem "lexxy", "~> 0.9.2.beta"

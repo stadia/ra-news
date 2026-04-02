@@ -16,7 +16,7 @@ class ArticleResource < Madmin::Resource
   attribute :origin_url, index: false, new: false
   attribute :tag_list, index: false, new: false
   attribute :is_youtube, index: false, new: false
-  attribute :body, index: false, form: true, field: TrixEditorField
+  attribute :body, index: false, form: true, field: LexxyEditorField
   attribute :is_posted, index: false, form: true
 
   attribute :summary_key, index: false, form: false
