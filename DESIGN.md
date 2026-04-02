@@ -1,246 +1,405 @@
-# Design System: Spotify
+# Design System: Spotify Base for Ruby-News
 
-## 1. Visual Theme & Atmosphere
+> Base theme: Spotify-inspired dark interface
+> Product adaptation: Ruby-News design tokens, Phlex, RubyUI, Tailwind v4
+> Last updated: 2026-04-02
 
-Spotify's web interface is a dark, immersive music player that wraps listeners in a near-black cocoon (`#121212`, `#181818`, `#1f1f1f`) where album art and content become the primary source of color. The design philosophy is "content-first darkness" — the UI recedes into shadow so that music, podcasts, and playlists can glow. Every surface is a shade of charcoal, creating a theater-like environment where the only true color comes from the iconic Spotify Green (`#1ed760`) and the album artwork itself.
+## 1. Design Direction
 
-The typography uses SpotifyMixUI and SpotifyMixUITitle — proprietary fonts from the CircularSp family (Circular by Lineto, customized for Spotify) with an extensive fallback stack that includes Arabic, Hebrew, Cyrillic, Greek, Devanagari, and CJK fonts, reflecting Spotify's global reach. The type system is compact and functional: 700 (bold) for emphasis and navigation, 600 (semibold) for secondary emphasis, and 400 (regular) for body. Buttons use uppercase with positive letter-spacing (1.4px–2px) for a systematic, label-like quality.
+This document keeps the newly added Spotify-based design file as the visual foundation, then upgrades it with the actual rules, tokens, component usage, and accessibility conventions already established in Ruby-News.
 
-What distinguishes Spotify is its pill-and-circle geometry. Primary buttons use 500px–9999px radius (full pill), circular play buttons use 50% radius, and search inputs are 500px pills. Combined with heavy shadows (`rgba(0,0,0,0.5) 0px 8px 24px`) on elevated elements and a unique inset border-shadow combo (`rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset`), the result is an interface that feels like a premium audio device — tactile, rounded, and built for touch.
+The result is not a literal Spotify clone. It is a Ruby-News design system that borrows Spotify's strongest traits:
 
-**Key Characteristics:**
-- Near-black immersive dark theme (`#121212`–`#1f1f1f`) — UI disappears behind content
-- Spotify Green (`#1ed760`) as singular brand accent — never decorative, always functional
-- SpotifyMixUI/CircularSp font family with global script support
-- Pill buttons (500px–9999px) and circular controls (50%) — rounded, touch-optimized
-- Uppercase button labels with wide letter-spacing (1.4px–2px)
-- Heavy shadows on elevated elements (`rgba(0,0,0,0.5) 0px 8px 24px`)
-- Semantic colors: negative red (`#f3727f`), warning orange (`#ffa42b`), announcement blue (`#539df5`)
-- Album art as the primary color source — the UI is achromatic by design
+- immersive near-black depth
+- compact, scan-friendly information density
+- restrained accent usage
+- rounded tactile controls
+- content-first hierarchy
 
-## 2. Color Palette & Roles
+For this project, those traits must always be expressed through the existing semantic token architecture, Phlex views, RubyUI components, and Tailwind v4 utilities.
 
-### Primary Brand
-- **Spotify Green** (`#1ed760`): Primary brand accent — play buttons, active states, CTAs
-- **Near Black** (`#121212`): Deepest background surface
-- **Dark Surface** (`#181818`): Cards, containers, elevated surfaces
-- **Mid Dark** (`#1f1f1f`): Button backgrounds, interactive surfaces
+## 2. Visual Theme & Product Interpretation
 
-### Text
-- **White** (`#ffffff`): `--text-base`, primary text
-- **Silver** (`#b3b3b3`): Secondary text, muted labels, inactive nav
-- **Near White** (`#cbcbcb`): Slightly brighter secondary text
-- **Light** (`#fdfdfd`): Near-pure white for maximum emphasis
+Ruby-News should feel bold, modern, and dark-first. The interface lives in a near-black range similar to Spotify (`#121212`, `#181818`, `#1f1f1f`), but unlike a music player, the primary content is article metadata, summaries, tags, author identity, and discussion.
 
-### Semantic
-- **Negative Red** (`#f3727f`): `--text-negative`, error states
-- **Warning Orange** (`#ffa42b`): `--text-warning`, warning states
-- **Announcement Blue** (`#539df5`): `--text-announcement`, info states
+That means the system should preserve Spotify's immersive darkness while adjusting the source of emphasis:
 
-### Surface & Border
-- **Dark Card** (`#252525`): Elevated card surface
-- **Mid Card** (`#272727`): Alternate card surface
-- **Border Gray** (`#4d4d4d`): Button borders on dark
-- **Light Border** (`#7c7c7c`): Outlined button borders, muted links
-- **Separator** (`#b3b3b3`): Divider lines
-- **Light Surface** (`#eeeeee`): Light-mode buttons (rare)
-- **Spotify Green Border** (`#1db954`): Green accent border variant
+- Spotify uses album art as the dominant color source
+- Ruby-News uses typography, semantic accents, badges, and card hierarchy as the dominant source of emphasis
 
-### Shadows
-- **Heavy** (`rgba(0,0,0,0.5) 0px 8px 24px`): Dialogs, menus, elevated panels
-- **Medium** (`rgba(0,0,0,0.3) 0px 8px 8px`): Cards, dropdowns
-- **Inset Border** (`rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset`): Input border-shadow combo
+The atmosphere should be:
 
-## 3. Typography Rules
+- professional, not playful
+- dense, but still readable in Korean
+- modern and tech-focused
+- dark by default, with light theme compatibility maintained through semantic tokens
 
-### Font Families
-- **Title**: `SpotifyMixUITitle`, fallbacks: `CircularSp-Arab, CircularSp-Hebr, CircularSp-Cyrl, CircularSp-Grek, CircularSp-Deva, Helvetica Neue, helvetica, arial, Hiragino Sans, Hiragino Kaku Gothic ProN, Meiryo, MS Gothic`
-- **UI / Body**: `SpotifyMixUI`, same fallback stack
+## 3. Core Principles
 
-### Hierarchy
+### Do
 
-| Role | Font | Size | Weight | Line Height | Letter Spacing | Notes |
-|------|------|------|--------|-------------|----------------|-------|
-| Section Title | SpotifyMixUITitle | 24px (1.50rem) | 700 | normal | normal | Bold title weight |
-| Feature Heading | SpotifyMixUI | 18px (1.13rem) | 600 | 1.30 (tight) | normal | Semibold section heads |
-| Body Bold | SpotifyMixUI | 16px (1.00rem) | 700 | normal | normal | Emphasized text |
-| Body | SpotifyMixUI | 16px (1.00rem) | 400 | normal | normal | Standard body |
-| Button Uppercase | SpotifyMixUI | 14px (0.88rem) | 600–700 | 1.00 (tight) | 1.4px–2px | `text-transform: uppercase` |
-| Button | SpotifyMixUI | 14px (0.88rem) | 700 | normal | 0.14px | Standard button |
-| Nav Link Bold | SpotifyMixUI | 14px (0.88rem) | 700 | normal | normal | Navigation |
-| Nav Link | SpotifyMixUI | 14px (0.88rem) | 400 | normal | normal | Inactive nav |
-| Caption Bold | SpotifyMixUI | 14px (0.88rem) | 700 | 1.50–1.54 | normal | Bold metadata |
-| Caption | SpotifyMixUI | 14px (0.88rem) | 400 | normal | normal | Metadata |
-| Small Bold | SpotifyMixUI | 12px (0.75rem) | 700 | 1.50 | normal | Tags, counts |
-| Small | SpotifyMixUI | 12px (0.75rem) | 400 | normal | normal | Fine print |
-| Badge | SpotifyMixUI | 10.5px (0.66rem) | 600 | 1.33 | normal | `text-transform: capitalize` |
-| Micro | SpotifyMixUI | 10px (0.63rem) | 400 | normal | normal | Smallest text |
+- Start from a near-black canvas and build depth through shade differences
+- Prefer semantic tokens over raw palette classes in all UI code
+- Keep information dense enough for fast scanning
+- Use accent color functionally, not decoratively
+- Favor rounded controls and soft panels over sharp, rigid blocks
+- Use Phlex and RubyUI as the primary expression layer
+- Maintain Korean-friendly typography and spacing
+- Preserve dark/light compatibility through token mapping
 
-### Principles
-- **Bold/regular binary**: Most text is either 700 (bold) or 400 (regular), with 600 used sparingly. This creates a clear visual hierarchy through weight contrast rather than size variation.
-- **Uppercase buttons as system**: Button labels use uppercase + wide letter-spacing (1.4px–2px), creating a systematic "label" voice distinct from content text.
-- **Compact sizing**: The range is 10px–24px — narrower than most systems. Spotify's type is compact and functional, designed for scanning playlists, not reading articles.
-- **Global script support**: The extensive fallback stack (Arabic, Hebrew, Cyrillic, Greek, Devanagari, CJK) reflects Spotify's 180+ market reach.
+### Do Not
 
-## 4. Component Stylings
+- Do not hardcode Tailwind palette colors like `bg-slate-800` or `text-white`
+- Do not add decorative accent colors outside the token system
+- Do not introduce ERB for new UI work when Phlex is the project standard
+- Do not bypass RubyUI if an equivalent component already exists
+- Do not make the layout airy like a marketing site; this is a content product
+- Do not rely on color alone to communicate state
+
+## 4. Color Strategy
+
+### Brand & Theme Roles
+
+- **Near Black** (`#121212`): deepest page background
+- **Dark Surface** (`#181818`): cards, panels, sections
+- **Interactive Surface** (`#1f1f1f`): inputs, buttons, elevated UI
+- **Accent Green** (`#1ed760`): conceptual base accent from the Spotify direction
+
+In implementation, Ruby-News should not reference those raw values directly in component code. Use the project token system instead.
+
+### Ruby-News Token Model
+
+Ruby-News already uses a 3-tier token architecture:
+
+1. Primitive tokens: absolute base values in `app/assets/tailwind/tokens.css`
+2. Semantic tokens: theme-aware usage tokens in `.theme-dark` and `.theme-light`
+3. Component aliases: Tailwind-facing aliases in `app/assets/tailwind/application.css`
+
+This is the required bridge between the visual direction and the production UI.
+
+### Required Semantic Classes
+
+#### Background
+
+- `bg-app`: page background
+- `bg-surface`: standard cards and sections
+- `bg-surface-muted`: inputs and subdued surfaces
+- `bg-surface-elevated`: modals, overlays, dropdowns
+- `bg-brand-solid`: primary brand action
+- `bg-danger-solid`: destructive action
+- `bg-info-solid`: informational action
+
+#### Text
+
+- `text-content`: primary text
+- `text-content-secondary`: body text
+- `text-content-muted`: metadata and helper copy
+- `text-content-disabled`: disabled or de-emphasized text
+- `text-accent-text`: branded emphasis
+- `text-danger-text`: destructive emphasis
+- `text-info-text`: informational emphasis
+- `text-brand-foreground`: text on solid brand backgrounds
+
+#### Border & Focus
+
+- `border-border-strong`: standard border
+- `border-border-muted`: hover or active border
+- `border-border-subtle`: separators and quiet divisions
+- `ring-brand`: focus ring
+- `ring-offset-app`
+- `ring-offset-surface`
+
+## 5. Typography
+
+### Typeface Direction
+
+The visual reference uses SpotifyMixUI-like compact hierarchy. Ruby-News should translate that feel into a Korean-friendly system built on `Noto Sans KR`, with strong weight contrast and modest size variation.
+
+### Typography Principles
+
+- Use bold headings and regular body copy as the primary contrast system
+- Keep sizes compact and functional
+- Optimize for scan speed over editorial flourish
+- Allow slightly more breathing room than Spotify for Korean readability
+
+### Recommended Hierarchy
+
+| Role | Class Direction | Notes |
+|------|-----------------|-------|
+| Page title | `text-3xl md:text-4xl font-bold text-content leading-tight` | Top-level article/page headings |
+| Section heading | `text-lg font-semibold text-content` | Section grouping |
+| Body | `text-base text-content-secondary leading-relaxed` | Default readable content |
+| Meta | `text-sm text-content-muted` | Timestamps, attribution, counts |
+| Small UI | `text-sm font-medium` | Buttons, labels, controls |
+| Fine print | `text-xs text-content-muted` | Hints, secondary metadata |
+
+### Button Voice
+
+Spotify's uppercase, wide-tracking button language is a useful reference for system controls, but it should be applied selectively in Ruby-News.
+
+- Use stronger tracking and firmer weight for clear system actions
+- Avoid excessive uppercase for long Korean labels
+- Prefer clarity and rhythm over mimicry
+
+## 6. Shape, Spacing, and Elevation
+
+### Border Radius
+
+Ruby-News should keep Spotify's rounded/tactile feel, but translate it into the project's existing card and control patterns:
+
+- `rounded-lg`: default action and card radius
+- `rounded-xl` to `rounded-2xl`: profile cards, prominent containers
+- pill shapes: only where the interaction pattern benefits from it
+- full circles: avatars, icon-only buttons, compact toggles
+
+Avoid forcing pill geometry onto every control. That is a visual influence, not a hard rule.
+
+### Spacing
+
+- Base spacing should remain anchored to the existing 8px rhythm
+- Dense lists and metadata blocks can use tighter spacing
+- Long-form reading areas should loosen spacing slightly
+
+### Elevation
+
+Dark interfaces need visible separation. Use elevation through:
+
+- surface contrast first
+- border subtlety second
+- shadow third
+
+Heavy shadows are acceptable for overlays and important floating UI, but not every card should feel like a modal.
+
+## 7. Component Rules
+
+### Component Priority
+
+1. RubyUI component
+2. Phlex composition around RubyUI
+3. Custom markup only when no suitable RubyUI component exists
 
 ### Buttons
 
-**Dark Pill**
-- Background: `#1f1f1f`
-- Text: `#ffffff` or `#b3b3b3`
-- Padding: 8px 16px
-- Radius: 9999px (full pill)
-- Use: Navigation pills, secondary actions
+#### Primary
 
-**Dark Large Pill**
-- Background: `#181818`
-- Text: `#ffffff`
-- Padding: 0px 43px
-- Radius: 500px
-- Use: Primary app navigation buttons
+```ruby
+class: "px-4 py-2 text-sm font-medium bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
+```
 
-**Light Pill**
-- Background: `#eeeeee`
-- Text: `#181818`
-- Radius: 500px
-- Use: Light-mode CTAs (cookie consent, marketing)
+#### Secondary
 
-**Outlined Pill**
-- Background: transparent
-- Text: `#ffffff`
-- Border: `1px solid #7c7c7c`
-- Padding: 4px 16px 4px 36px (asymmetric for icon)
-- Radius: 9999px
-- Use: Follow buttons, secondary actions
+```ruby
+class: "px-4 py-2 text-sm font-medium bg-surface-muted hover:bg-surface text-content-secondary rounded-lg transition-colors cursor-pointer"
+```
 
-**Circular Play**
-- Background: `#1f1f1f`
-- Text: `#ffffff`
-- Padding: 12px
-- Radius: 50% (circle)
-- Use: Play/pause controls
+#### Danger
 
-### Cards & Containers
-- Background: `#181818` or `#1f1f1f`
-- Radius: 6px–8px
-- No visible borders on most cards
-- Hover: slight background lightening
-- Shadow: `rgba(0,0,0,0.3) 0px 8px 8px` on elevated
+```ruby
+class: "px-4 py-2 text-sm font-medium bg-surface-muted hover:bg-danger-solid text-content-secondary hover:text-danger-text rounded-lg transition-colors cursor-pointer"
+```
+
+#### Info
+
+```ruby
+class: "px-4 py-2 text-sm font-medium bg-info-solid hover:bg-info-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
+```
+
+### Cards
+
+#### Standard
+
+```ruby
+render RubyUI::Card.new(class: "bg-surface shadow-md hover:shadow-lg transition-shadow overflow-hidden border border-border-strong p-3 md:p-6")
+```
+
+#### Transparent / Profile
+
+```ruby
+render RubyUI::Card.new(class: "bg-app/40 border border-border-subtle rounded-2xl overflow-hidden shadow-2xl")
+```
 
 ### Inputs
-- Search input: `#1f1f1f` background, `#ffffff` text
-- Radius: 500px (pill)
-- Padding: 12px 96px 12px 48px (icon-aware)
-- Focus: border becomes `#000000`, outline `1px solid`
+
+```ruby
+render RubyUI::Input.new(
+  class: "bg-surface-muted border-border-muted text-content placeholder:text-content-muted"
+)
+```
+
+Inputs should feel soft, dark, and clearly focusable. The Spotify-style search pill can be used for search-heavy contexts, but standard form inputs should stay aligned with the broader system.
 
 ### Navigation
-- Dark sidebar with SpotifyMixUI 14px weight 700 for active, 400 for inactive
-- `#b3b3b3` muted color for inactive items, `#ffffff` for active
-- Circular icon buttons (50% radius)
-- Spotify logo top-left in green
 
-## 5. Layout Principles
+```ruby
+nav(class: "bg-surface border-b border-border-strong border-t-4 border-t-brand")
+```
 
-### Spacing System
-- Base unit: 8px
-- Scale: 1px, 2px, 3px, 4px, 5px, 6px, 8px, 10px, 12px, 14px, 15px, 16px, 20px
+Navigation should be strong, high-contrast, and easy to scan. Active state emphasis should come from type weight, contrast, and semantic accent usage rather than decorative effects.
 
-### Grid & Container
-- Sidebar (fixed) + main content area
-- Grid-based album/playlist cards
-- Full-width now-playing bar at bottom
-- Responsive content area fills remaining space
+### Avatar
 
-### Whitespace Philosophy
-- **Dark compression**: Spotify packs content densely — playlist grids, track lists, and navigation are all tightly spaced. The dark background provides visual rest between elements without needing large gaps.
-- **Content density over breathing room**: This is an app, not a marketing site. Every pixel serves the listening experience.
+```ruby
+render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-app bg-app shadow-xl") do
+  render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground font-bold") do
+    plain initials
+  end
+end
+```
 
-### Border Radius Scale
-- Minimal (2px): Badges, explicit tags
-- Subtle (4px): Inputs, small elements
-- Standard (6px): Album art containers, cards
-- Comfortable (8px): Sections, dialogs
-- Medium (10px–20px): Panels, overlay elements
-- Large (100px): Large pill buttons
-- Pill (500px): Primary buttons, search input
-- Full Pill (9999px): Navigation pills, search
-- Circle (50%): Play buttons, avatars, icons
+### Badge
 
-## 6. Depth & Elevation
+```ruby
+render RubyUI::Badge.new(variant: :green) { "팔로잉" }
+render RubyUI::Badge.new(variant: :amber) { "요청 중" }
+```
 
-| Level | Treatment | Use |
-|-------|-----------|-----|
-| Base (Level 0) | `#121212` background | Deepest layer, page background |
-| Surface (Level 1) | `#181818` or `#1f1f1f` | Cards, sidebar, containers |
-| Elevated (Level 2) | `rgba(0,0,0,0.3) 0px 8px 8px` | Dropdown menus, hover cards |
-| Dialog (Level 3) | `rgba(0,0,0,0.5) 0px 8px 24px` | Modals, overlays, menus |
-| Inset (Border) | `rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset` | Input borders |
+## 8. Accessibility Baseline
 
-**Shadow Philosophy**: Spotify uses notably heavy shadows for a dark-themed app. The 0.5 opacity shadow at 24px blur creates a dramatic "floating in darkness" effect for dialogs and menus, while the 0.3 opacity at 8px blur provides a more subtle card lift. The unique inset border-shadow combination on inputs creates a recessed, tactile quality.
+Accessibility is not optional. The current design system work already established several baseline requirements, and `DESIGN.md` should treat them as part of the default design language.
 
-## 7. Do's and Don'ts
+### Required
 
-### Do
-- Use near-black backgrounds (`#121212`–`#1f1f1f`) — depth through shade variation
-- Apply Spotify Green (`#1ed760`) only for play controls, active states, and primary CTAs
-- Use pill shape (500px–9999px) for all buttons — circular (50%) for play controls
-- Apply uppercase + wide letter-spacing (1.4px–2px) on button labels
-- Keep typography compact (10px–24px range) — this is an app, not a magazine
-- Use heavy shadows (`0.3–0.5 opacity`) for elevated elements on dark backgrounds
-- Let album art provide color — the UI itself is achromatic
+- keyboard navigable controls
+- visible focus styles
+- skip link support
+- ARIA labels on meaningful navigation and toggles
+- reduced motion support
+- acceptable contrast in dark mode
 
-### Don't
-- Don't use Spotify Green decoratively or on backgrounds — it's functional only
-- Don't use light backgrounds for primary surfaces — the dark immersion is core
-- Don't skip the pill/circle geometry on buttons — square buttons break the identity
-- Don't use thin/subtle shadows — on dark backgrounds, shadows need to be heavy to be visible
-- Don't add additional brand colors — green + achromatic grays is the complete palette
-- Don't use relaxed line-heights — Spotify's typography is compact and dense
-- Don't expose raw gray borders — use shadow-based or inset borders instead
+### Focus Utility
 
-## 8. Responsive Behavior
+```css
+.focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-brand focus-visible:ring-offset-2
+           focus-visible:ring-offset-app;
+}
+```
 
-### Breakpoints
-| Name | Width | Key Changes |
-|------|-------|-------------|
-| Mobile Small | <425px | Compact mobile layout |
-| Mobile | 425–576px | Standard mobile |
-| Tablet | 576–768px | 2-column grid |
-| Tablet Large | 768–896px | Expanded layout |
-| Desktop Small | 896–1024px | Sidebar visible |
-| Desktop | 1024–1280px | Full desktop layout |
-| Large Desktop | >1280px | Expanded grid |
+### Skip Link Pattern
 
-### Collapsing Strategy
-- Sidebar: full → collapsed → hidden
-- Album grid: 5 columns → 3 → 2 → 1
-- Now-playing bar: maintained at all sizes
-- Search: pill input maintained, width adjusts
-- Navigation: sidebar → bottom bar on mobile
+```ruby
+a(
+  href: "#main-content",
+  class: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-solid focus:text-brand-foreground focus:rounded-lg focus:shadow-lg"
+) { "본문으로 건너뛰기" }
+```
 
-## 9. Agent Prompt Guide
+### Reduced Motion
 
-### Quick Color Reference
-- Background: Near Black (`#121212`)
-- Surface: Dark Card (`#181818`)
-- Text: White (`#ffffff`)
-- Secondary text: Silver (`#b3b3b3`)
-- Accent: Spotify Green (`#1ed760`)
-- Border: `#4d4d4d`
-- Error: Negative Red (`#f3727f`)
+```css
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+```
 
-### Example Component Prompts
-- "Create a dark card: #181818 background, 8px radius. Title at 16px SpotifyMixUI weight 700, white text. Subtitle at 14px weight 400, #b3b3b3. Shadow rgba(0,0,0,0.3) 0px 8px 8px on hover."
-- "Design a pill button: #1f1f1f background, white text, 9999px radius, 8px 16px padding. 14px SpotifyMixUI weight 700, uppercase, letter-spacing 1.4px."
-- "Build a circular play button: Spotify Green (#1ed760) background, #000000 icon, 50% radius, 12px padding."
-- "Create search input: #1f1f1f background, white text, 500px radius, 12px 48px padding. Inset border: rgb(124,124,124) 0px 0px 0px 1px inset."
-- "Design navigation sidebar: #121212 background. Active items: 14px weight 700, white. Inactive: 14px weight 400, #b3b3b3."
+### Contrast Baseline
 
-### Iteration Guide
-1. Start with #121212 — everything lives in near-black darkness
-2. Spotify Green for functional highlights only (play, active, CTA)
-3. Pill everything — 500px for large, 9999px for small, 50% for circular
-4. Uppercase + wide tracking on buttons — the systematic label voice
-5. Heavy shadows (0.3–0.5 opacity) for elevation — light shadows are invisible on dark
-6. Album art provides all the color — the UI stays achromatic
+Dark theme contrast should continue meeting the existing targets already validated in the previous system documentation:
+
+- `text-content` on `bg-app`
+- `text-content-secondary` on `bg-app`
+- `text-content-muted` on `bg-app`
+- `text-accent-text` on `bg-app`
+
+## 9. Responsive Behavior
+
+The Spotify reference helps define dark density and control shape, but Ruby-News layout behavior should stay content-driven.
+
+### Responsive Intent
+
+- article cards and metadata must remain scannable
+- navigation should simplify cleanly on smaller screens
+- reading views must preserve line length and hierarchy
+- touch targets must remain comfortable on mobile
+
+### Practical Rules
+
+- dense grids on desktop
+- simplified stacking on tablet
+- single-column reading and action flow on mobile
+- no decorative complexity that harms content retrieval
+
+## 10. Migration Rules
+
+When updating old UI, treat the following as mandatory replacements:
+
+| Before | After |
+|---|---|
+| `bg-gray-800`, `bg-slate-800` | `bg-surface` |
+| `bg-slate-900` | `bg-app` |
+| `text-white`, `text-slate-50` | `text-content` |
+| `text-gray-300`, `text-slate-200` | `text-content-secondary` |
+| `text-gray-400`, `text-slate-400` | `text-content-muted` |
+| `text-gray-500`, `text-slate-600` | `text-content-disabled` |
+| `border-gray-700`, `border-slate-700` | `border-border-strong` |
+| `border-slate-600` | `border-border-muted` |
+| `border-slate-800` | `border-border-subtle` |
+| `text-green-400` | `text-accent-text` |
+| `bg-green-600 hover:bg-green-500` | `bg-brand-solid hover:bg-brand-solid-hover` |
+| `bg-blue-600 hover:bg-blue-500` | `bg-info-solid hover:bg-info-solid-hover` |
+| `ring-green-500` | `ring-brand` |
+| `ring-offset-slate-900` | `ring-offset-app` |
+
+## 11. Implementation Notes
+
+### Source of Truth
+
+Use these files as the implementation source of truth:
+
+- `app/assets/tailwind/tokens.css`
+- `app/assets/tailwind/application.css`
+- `app/assets/tailwind/site.css`
+- `app/assets/tailwind/pagy-tailwind.css`
+
+This document defines design intent and usage guidance. Token values and theme wiring belong in the CSS token files.
+
+### Theme Status
+
+Already established:
+
+- dark theme foundation
+- light theme token mapping
+- semantic token migration across major views/components
+- accessibility utilities such as skip link and reduced motion support
+
+Still future-facing:
+
+- explicit theme switcher UI
+- persisted theme preference
+- more complete admin-side semantic token migration
+- automated accessibility verification
+
+## 12. Quick Prompt Guide for Future Design Work
+
+When generating or reviewing UI, use prompts like:
+
+- "Use a dark, Spotify-inspired content surface, but implement it strictly with Ruby-News semantic tokens."
+- "Prioritize scan-friendly metadata hierarchy with `bg-app`, `bg-surface`, `text-content`, and `text-content-muted`."
+- "Use RubyUI first, then wrap with Phlex. Avoid hardcoded Tailwind palette colors."
+- "Keep the interface compact, rounded, and dark-first, with accent color reserved for important actions."
+
+## 13. Summary
+
+The base identity of this design system remains the newly added Spotify-inspired document:
+
+- near-black immersion
+- compact hierarchy
+- restrained accent usage
+- rounded controls
+- content-first rhythm
+
+What this upgrade adds is the missing production layer:
+
+- Ruby-News token architecture
+- semantic Tailwind class mapping
+- Phlex and RubyUI component rules
+- accessibility baseline
+- migration conventions
+- theme-aware implementation guidance
+
+Use Spotify as the visual north star, and Ruby-News tokens as the implementation contract.
