@@ -4,7 +4,7 @@ RailsAiContext.configure do |config|
   # ── AI Tools ──────────────────────────────────────────────────────
   # Which AI tools to generate context files for (selected during install)
   # Run `rails generate rails_ai_context:install` to change selection
-  config.ai_tools = %i[claude opencode]
+  config.ai_tools = %i[claude opencode copilot]
 
   # Tool invocation mode:
   #   :mcp — MCP primary + CLI fallback (default, requires `rails ai:serve`)

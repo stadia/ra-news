@@ -1,3 +1,111 @@
+<!-- BEGIN rails-ai-context -->
+# AlNews — Copilot Context
+
+Rails 8.1.3 | Ruby 4.0.2
+
+## Stack
+- Database: static_parse — 18 tables
+- Models: 16
+- Routes: 140 across 42 controllers
+- Auth: Devise
+- I18n: 2 locales (en, ko)
+- Components: 99 components, 99 Phlex
+- Accessibility: minimal
+- Performance: 2 issues detected
+- auth: devise, pundit, jwt
+- jobs: solid_queue, mission_control-jobs
+- frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
+- api: jbuilder, alba, oj
+- database: pg, sqlite3, solid_cache, solid_cable
+- files: activestorage, image_processing, mini_magick
+- testing: minitest, faker, capybara
+- deploy: thruster
+- admin: madmin
+- pagination: pagy
+- search: pg_search
+- server: puma
+- validation: dry-monads
+- utilities: nokogiri, faraday
+
+## Models (16)
+- **ActsAsTaggableOn::Tag** — has_many :taggings
+- **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
+- **Article** — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
+- **Federails::Actor** — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
+- **Federails::Following** — belongs_to :actor, belongs_to :target_actor, has_many :activities
+- **Like** — belongs_to :liker, belongs_to :likeable
+- **Post** — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :article, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags
+- **Preference**
+- **PushSubscription** — belongs_to :user
+- **Role**
+- **Site** — has_many :articles
+- **Socialization::ActiveRecordStores::Follow** — belongs_to :follower, belongs_to :followable
+- **Socialization::ActiveRecordStores::Like** — belongs_to :liker, belongs_to :likeable
+- **Socialization::ActiveRecordStores::Mention** — belongs_to :mentioner, belongs_to :mentionable
+- **Tag** — has_many :taggings
+- **User** — has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor
+
+## Architecture
+- Hotwire (Turbo + Stimulus)
+- Service objects pattern (app/services/)
+- ViewComponent (app/components/)
+- phlex
+- Stimulus controllers (app/javascript/controllers/)
+- Import maps (no JS bundler)
+- concerns_models
+- concerns_controllers
+- pwa
+- Dockerized
+- Kamal deployment
+- GitHub Actions CI
+- solid_queue
+- solid_cache
+- solid_cable
+- dry_rb
+- Soft deletes (paranoia/discard)
+- Full-text search (Searchkick/pg_search/Ransack)
+- Tagging
+- Friendly URLs/slugs
+- Tree/nested set structures
+- normalizations
+- view_components
+- phlex
+
+## Design System
+
+### Colors
+- **Success:** green — confirmations, positive feedback
+- **Text:** gray-900/gray-700/gray-500
+- **Backgrounds:** gray-50, gray-800, gray-700, green-100, green-900
+- --color-red-300: `oklch(80.8% .114 19.571)`
+- --color-red-400: `oklch(70.4% .191 22.216)`
+- --color-red-500: `oklch(63.7% .237 25.331)`
+- --color-red-600: `oklch(57.7% .245 27.325)`
+- --color-red-700: `oklch(50.5% .213 27.518)`
+
+### Components — Copy These Patterns
+- **Alert:** `alert alert-danger`
+- **Navigation:** `nav-group`
+- **Card:** `bg-white p-6 rounded-lg shadow`
+- **Link:** `hover:underline hover:text-content flex items-center gap-1`
+- **Heading (page):** `text-3xl font-bold mb-6`
+- **Heading (section):** `text-lg font-semibold text-gray-600`
+- **Heading (sub):** `text-sm font-medium text-gray-900 dark:text-white mb-3`
+- **Modal overlay:** `fixed inset-0 bg-app/75 z-50 hidden items-center justify-center`
+
+### Typography
+- **h1:** `text-3xl font-bold mb-6`
+- **h2:** `text-lg font-semibold text-gray-600`
+- **h3:** `text-sm font-medium text-gray-900 dark:text-white mb-3`
+- Sizes: text-sm, text-3xl, text-lg, text-xs, text-base
+- Weights: font-bold, font-medium, font-semibold
+
+### Layout & Spacing
+- Container: max-w-2xl, max-w-6xl
+- Grid: grid-cols-1, grid-cols-2, grid-cols-3
+- Spacing: px-4, p-6, mt-2, px-6, py-2, p-4
+- Form spacing: space-y-4
+
 ## Tools (39) — MANDATORY, Use Before Read
 
 This project has 39 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
@@ -134,3 +242,9 @@ Use individual tools only when you need deeper detail on a specific layer.
 | `rails_onboard(detail:"standard")` | `rails 'ai:tool[onboard]' detail=standard` | Narrative app walkthrough for new developers or AI agents |
 | `rails_runtime_info(detail:"standard")` | `rails 'ai:tool[runtime_info]' detail=standard` | Live runtime: DB pool, table sizes, cache stats, job queues, pending migrations |
 | `rails_session_context(action:"status")` | `rails 'ai:tool[session_context]' action=status` | Track what you've already queried, avoid redundant calls |
+## Conventions
+- Follow existing patterns and naming conventions
+- Use the introspection tools to check schema before writing migrations
+- Run `rails test` after changes
+
+<!-- END rails-ai-context -->

@@ -1,3 +1,8 @@
+---
+applyTo: "**/*"
+excludeAgent: "code-review"
+---
+
 ## Tools (39) — MANDATORY, Use Before Read
 
 This project has 39 MCP tools via `rails ai:serve` (configured in `.mcp.json`).

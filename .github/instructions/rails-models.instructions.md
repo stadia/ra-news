@@ -1,0 +1,30 @@
+---
+applyTo: "app/models/**/*.rb"
+---
+
+# ActiveRecord Models (16)
+
+Check here first for scopes, constants, associations. Read model files for business logic/methods.
+
+- ActsAsTaggableOn::Tag (1 associations)
+- ActsAsTaggableOn::Tagging (3 associations)
+- Article (9 associations)
+  scopes: related, unrelated, confirmed, without_toast, for_admin_index
+- Federails::Actor (10 associations)
+- Federails::Following (3 associations)
+- Like (2 associations)
+- Post (9 associations)
+  scopes: comments, standalone
+- Preference (0 associations)
+  PROTECTED_KEYS: name, value
+- PushSubscription (1 associations)
+- Role (0 associations)
+  scopes: named
+- Site (1 associations)
+- Socialization::ActiveRecordStores::Follow (2 associations)
+- Socialization::ActiveRecordStores::Like (2 associations)
+- Socialization::ActiveRecordStores::Mention (2 associations)
+- Tag (1 associations)
+  scopes: confirmed, unconfirmed
+- User (4 associations)
+  scopes: admins

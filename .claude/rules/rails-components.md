@@ -3,143 +3,144 @@
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
 
-- **Alert** (unknown)
+- **Alert** (phlex)
   props: variant:nil
-- **AlertDescription** (unknown)
-- **AlertDialog** (unknown)
+- **AlertDescription** (phlex)
+- **AlertDialog** (phlex)
   props: open:false
-- **AlertDialogAction** (unknown)
-- **AlertDialogCancel** (unknown)
-- **AlertDialogContent** (unknown)
-- **AlertDialogDescription** (unknown)
-- **AlertDialogFooter** (unknown)
-- **AlertDialogHeader** (unknown)
-- **AlertDialogTitle** (unknown)
-- **AlertDialogTrigger** (unknown)
-- **AlertTitle** (unknown)
-- **Avatar** (unknown)
+- **AlertDialogAction** (phlex)
+- **AlertDialogCancel** (phlex)
+- **AlertDialogContent** (phlex)
+  slots: container
+- **AlertDialogDescription** (phlex)
+- **AlertDialogFooter** (phlex)
+- **AlertDialogHeader** (phlex)
+- **AlertDialogTitle** (phlex)
+- **AlertDialogTrigger** (phlex)
+- **AlertTitle** (phlex)
+- **Articles::Article** (phlex)
+  props: article, liked:nil
+- **Articles::ArticleUser** (phlex)
+  props: article
+- **Articles::Form** (phlex)
+  props: article
+- **Avatar** (phlex)
   props: size::md
-- **AvatarFallback** (unknown)
-- **AvatarImage** (unknown)
+- **AvatarFallback** (phlex)
+- **AvatarImage** (phlex)
   props: src, alt:""
-- **Badge** (unknown)
+- **Badge** (phlex)
   props: variant::primary, size::md
-- **Base** (unknown)
-- **Breadcrumb** (unknown)
-- **BreadcrumbEllipsis** (unknown)
-- **BreadcrumbItem** (unknown)
-- **BreadcrumbLink** (unknown)
+- **Base** (phlex)
+- **Base** (phlex)
+- **Breadcrumb** (phlex)
+- **BreadcrumbEllipsis** (phlex)
+- **BreadcrumbItem** (phlex)
+- **BreadcrumbLink** (phlex)
   props: href:"#"
-- **BreadcrumbList** (unknown)
-- **BreadcrumbPage** (unknown)
-- **BreadcrumbSeparator** (unknown)
-- **Button** (unknown)
+- **BreadcrumbList** (phlex)
+- **BreadcrumbPage** (phlex)
+- **BreadcrumbSeparator** (phlex)
+- **Button** (phlex)
   props: type::button, variant::primary, size::md, icon:false
-- **Card** (unknown)
-- **CardContent** (unknown)
-- **CardDescription** (unknown)
-- **CardFooter** (unknown)
-- **CardHeader** (unknown)
-- **CardTitle** (unknown)
-- **Carousel** (unknown)
+- **Card** (phlex)
+- **CardContent** (phlex)
+- **CardDescription** (phlex)
+- **CardFooter** (phlex)
+- **CardHeader** (phlex)
+- **CardTitle** (phlex)
+- **Carousel** (phlex)
   props: orientation::horizontal, options:{}
-- **CarouselContent** (unknown)
-- **CarouselItem** (unknown)
-- **CarouselNext** (unknown)
-- **CarouselPrevious** (unknown)
-- **Components** (unknown)
-  props: likeable, liked:nil
-- **Components** (unknown)
-  props: article
-- **Components** (unknown)
-  props: article
-- **Components** (unknown)
-- **Components** (unknown)
+- **CarouselContent** (phlex)
+- **CarouselItem** (phlex)
+- **CarouselNext** (phlex)
+- **CarouselPrevious** (phlex)
+- **Comments::Comment** (phlex)
   props: comment, article, depth:0, children:{}
-- **Components** (unknown)
+- **Comments::CommentForm** (phlex)
   props: article, comment
-- **Components** (unknown)
+- **Comments::CommentHeader** (phlex)
   props: comments
-- **Components** (unknown)
+- **Comments::CommentReplyForm** (phlex)
   props: article, comment, parent_comment, visible:false
-- **Components** (unknown)
+- **Comments::Comments** (phlex)
   props: article, comments
-- **Components** (unknown)
-- **Components** (unknown)
-  props: article, liked:nil
-- **Components** (unknown)
-- **Components** (unknown)
-  props: article, liked:nil
-- **Components** (unknown)
-  props: title:"로그인이 필요합니다", message:"댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다."
-- **Components** (unknown)
-  props: pagy
-- **Components** (unknown)
-  props: post, depth:0, liked:nil
-- **Components** (unknown)
-  props: post:Post.new
-- **Components** (unknown)
-  props: post, liked:nil
-- **Components** (unknown)
-  props: parent_post
-- **Components** (unknown)
-- **Components** (unknown)
-  props: recent_comments
-- **Components** (unknown)
-  props: tags, current_tag:nil
-- **Components** (unknown)
-  props: user
-- **Components** (unknown)
-  props: user
-- **Components** (unknown)
-  props: user
-- **Dialog** (unknown)
+- **Dialog** (phlex)
   props: open:false
-- **DialogContent** (unknown)
+- **DialogContent** (phlex)
   props: size::md
-- **DialogDescription** (unknown)
-- **DialogFooter** (unknown)
-- **DialogHeader** (unknown)
-- **DialogMiddle** (unknown)
-- **DialogTitle** (unknown)
-- **DialogTrigger** (unknown)
-- **Form** (unknown)
-- **FormField** (unknown)
-- **FormFieldError** (unknown)
-- **FormFieldHint** (unknown)
-- **FormFieldLabel** (unknown)
-- **Heading** (unknown)
+- **DialogDescription** (phlex)
+- **DialogFooter** (phlex)
+- **DialogHeader** (phlex)
+- **DialogMiddle** (phlex)
+- **DialogTitle** (phlex)
+- **DialogTrigger** (phlex)
+- **Flash** (phlex)
+- **Form** (phlex)
+- **FormField** (phlex)
+- **FormFieldError** (phlex)
+- **FormFieldHint** (phlex)
+- **FormFieldLabel** (phlex)
+- **Heading** (phlex)
   props: level:nil, as:nil, size:nil
-- **InlineCode** (unknown)
-- **InlineLink** (unknown)
+- **Home::Article** (phlex)
+  props: article, liked:nil
+- **InlineCode** (phlex)
+- **InlineLink** (phlex)
   props: href
-- **Input** (unknown)
+- **Input** (phlex)
   props: type::string
-- **Link** (unknown)
+- **Layout** (phlex)
+- **Likes::Button** (phlex)
+  props: likeable, liked:nil
+- **Link** (phlex)
   props: href:"#", variant::link, size::md, icon:false
-- **Pagination** (unknown)
-- **PaginationContent** (unknown)
-- **PaginationEllipsis** (unknown)
-- **PaginationItem** (unknown)
+- **LoginRequired** (phlex)
+  props: title:"로그인이 필요합니다", message:"댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다."
+- **Pagination** (phlex)
+- **Pagination** (phlex)
+  props: pagy
+- **PaginationContent** (phlex)
+- **PaginationEllipsis** (phlex)
+- **PaginationItem** (phlex)
   props: href:"#", active:false
-- **RadioButton** (unknown)
-- **Select** (unknown)
-- **SelectContent** (unknown)
-- **SelectGroup** (unknown)
-- **SelectInput** (unknown)
-- **SelectItem** (unknown)
+- **Posts::PostCard** (phlex)
+  props: post, depth:0, liked:nil
+- **Posts::PostForm** (phlex)
+  props: post:Post.new
+- **Posts::PostThread** (phlex)
+  props: post, liked:nil
+- **Posts::ReplyForm** (phlex)
+  props: parent_post
+- **PushNotifications::PromptModal** (phlex)
+- **RadioButton** (phlex)
+- **RecentCommentsSidebar** (phlex)
+  props: recent_comments
+- **Select** (phlex)
+- **SelectContent** (phlex)
+- **SelectGroup** (phlex)
+- **SelectInput** (phlex)
+- **SelectItem** (phlex)
   props: value:nil
-- **SelectLabel** (unknown)
-- **SelectTrigger** (unknown)
-- **SelectValue** (unknown)
+- **SelectLabel** (phlex)
+- **SelectTrigger** (phlex)
+- **SelectValue** (phlex)
   props: placeholder:nil
-- **Separator** (unknown)
+- **Separator** (phlex)
   props: as::div, orientation::horizontal, decorative:true
-- **SetDarkMode** (unknown)
-- **SetLightMode** (unknown)
-- **Text** (unknown)
+- **SetDarkMode** (phlex)
+- **SetLightMode** (phlex)
+- **TagsSidebar** (phlex)
+  props: tags, current_tag:nil
+- **Text** (phlex)
   props: as:"p", size:"3", weight:"regular"
-- **Textarea** (unknown)
+- **Textarea** (phlex)
   props: rows:4
-- **ThemeToggle** (unknown)
-- **TypographyBlockquote** (unknown)
+- **ThemeToggle** (phlex)
+- **TypographyBlockquote** (phlex)
+- **Users::Form** (phlex)
+  props: user
+- **Users::PwdForm** (phlex)
+  props: user
+- **Users::User** (phlex)
+  props: user

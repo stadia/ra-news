@@ -1,4 +1,6 @@
-# Design System
+---
+applyTo: "app/views/**/*.erb"
+---
 
 ## Design System
 
@@ -197,12 +199,6 @@
 - **md:** p-6, grid-cols-2, w-2, flex
 - **lg:** p-8, flex-row, space-y-8, w-72
 
-
-## Helpers (ApplicationHelper)
-- time_ago_in_words_korean
-- responsive_image_tag
-- truncate_smart
-- nav_link_to
 
 ## Stimulus controllers
 character_count, guest_name, infinite_scroll, modal, page_loader, post_form, push_notifications, reply_form, ruby_ui-alert_dialog, ruby_ui-carousel, ruby_ui-dialog, ruby_ui-form_field, ruby_ui-select, ruby_ui-select_item, ruby_ui-theme_toggle
