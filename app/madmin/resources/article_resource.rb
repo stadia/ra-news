@@ -40,13 +40,22 @@ class ArticleResource < Madmin::Resource
 
   # Add actions to the resource's show page
   member_action do |record|
+    actions = []
+
     if record.is_a?(Article) && record.deleted_at.nil?
-      button_to "Discard", discard_madmin_article_path(record), method: :put, data: { turbo_confirm: "Are you sure you want to discard this article?" },
-    class: "btn btn-danger bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700"
+      actions << button_to("Discard", discard_madmin_article_path(record), method: :put, data: { turbo_confirm: "이 기사를 폐기하시겠습니까?" },
+        class: "btn btn-danger bg-red-600 text-white rounded px-4 py-2 hover:bg-red-700")
     else
-      button_to "Restore", restore_madmin_article_path(record), method: :put, data: { turbo_confirm: "Are you sure you want to restore this article?" },
-    class: "btn btn-success bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700"
+      actions << button_to("Restore", restore_madmin_article_path(record), method: :put, data: { turbo_confirm: "이 기사를 복원하시겠습니까?" },
+        class: "btn btn-success bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700")
     end
+
+    if record.is_a?(Article) && record.is_related?
+      actions << button_to("Mark Unrelated", mark_unrelated_madmin_article_path(record), method: :put, data: { turbo_confirm: "이 기사를 관련 없음으로 표시하시겠습니까?" },
+        class: "btn btn-warning bg-yellow-600 text-white rounded px-4 py-2 hover:bg-yellow-700")
+    end
+
+    safe_join(actions, " ")
   end
 
   # Customize the display name of records in the admin area.

@@ -6,6 +6,7 @@ namespace :madmin do
     member do
       put :discard
       put :restore
+      put :mark_unrelated
     end
   end
   resources :sites do
