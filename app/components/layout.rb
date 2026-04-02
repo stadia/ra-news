@@ -21,6 +21,7 @@ class Components::Layout < Components::Base
         render_pwa_and_icons
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
+        stylesheet_link_tag "lexxy", data_turbo_track: "reload"
         javascript_importmap_tags
         render_schema_org
       end

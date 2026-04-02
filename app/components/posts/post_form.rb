@@ -14,7 +14,7 @@ class Components::Posts::PostForm < Components::Base
       class: "mb-6",
       data: {
         controller: "character-count post-form",
-        character_count_max_length_value: "500",
+        character_count_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
         action: "turbo:submit-end->post-form#reset"
       }
     ) do
@@ -44,19 +44,27 @@ class Components::Posts::PostForm < Components::Base
   end
 
   def body_field(f)
-    f.text_area :body,
-      rows: 3,
-      class: "w-full px-4 py-3 rounded-lg border border-border-muted bg-surface text-content placeholder:text-content-muted hover:border-border-strong focus:border-transparent focus:ring-2 focus:ring-state-info transition-all duration-200 resize-none text-sm",
-      placeholder: "무슨 생각을 하고 계신가요?",
-      autocomplete: "off",
-      data: { character_count_target: "input", action: "input->character-count#updateCount" }
+    raw(
+      f.lexxy_rich_textarea(
+        :body,
+        class: "post-composer-editor w-full text-content",
+        rows: 3,
+        toolbar: false,
+        placeholder: "무슨 생각을 하고 계신가요?",
+        autocomplete: "off",
+        data: {
+          character_count_target: "input",
+          action: "lexxy:change->character-count#updateCount lexxy:initialize->character-count#updateCount"
+        }
+      )
+    )
   end
 
   def form_footer(f)
     div(class: "flex items-center justify-between") do
       div(class: "text-xs text-content-muted") do
         span(data: { character_count_target: "counter" }) { "0" }
-        plain " 자"
+        plain "/#{::Post::MAX_BODY_LENGTH}"
       end
       f.submit "게시",
         class: "inline-flex items-center px-5 py-2 bg-info-solid hover:bg-info-solid-hover text-brand-foreground text-sm font-medium rounded-lg transition-colors duration-200 cursor-pointer"

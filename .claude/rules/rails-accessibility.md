@@ -1,7 +1,7 @@
 # Accessibility Patterns
 
 Score: **minimal** (2/5)
-Files scanned: 23
+Files scanned: 22
 
 ## Semantic HTML
 - `<nav>`: 3

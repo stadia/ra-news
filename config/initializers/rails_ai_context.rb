@@ -92,4 +92,5 @@ RailsAiContext.configure do |config|
   # Auto-detected from package.json, config/vite.json, etc. Override only if needed.
   # config.frontend_paths = ["app/frontend", "../web-client"]
   # config.mobile_paths = ["../mobile-app"]
+  config.introspectors += %i[views]
 end

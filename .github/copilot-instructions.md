@@ -4,14 +4,14 @@
 Rails 8.1.3 | Ruby 4.0.2
 
 ## Stack
-- Database: static_parse — 18 tables
+- Database: static_parse — 17 tables
 - Models: 16
 - Routes: 140 across 42 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Components: 99 components, 99 Phlex
 - Accessibility: minimal
-- Performance: 2 issues detected
+- Performance: 1 issues detected
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails

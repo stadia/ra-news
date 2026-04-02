@@ -23,3 +23,34 @@ body select {
     outline: 2px solid rgb(var(--semantic-brand-solid));
     outline-offset: 2px;
 }
+
+lexxy-editor.post-composer-editor {
+    --lexxy-color-canvas: rgb(var(--color-bg-secondary));
+    --lexxy-color-text: rgb(var(--color-text-primary));
+    --lexxy-color-text-subtle: rgb(var(--color-text-muted));
+    --lexxy-color-ink-lighter: rgb(var(--color-border-light));
+    --lexxy-color-ink-lightest: rgb(var(--color-bg-secondary));
+    --lexxy-color-selected: rgb(var(--color-bg-secondary));
+    --lexxy-color-selected-hover: rgb(var(--color-bg-hover));
+    --lexxy-color-selected-dark: rgb(var(--color-info));
+    --lexxy-color-link: rgb(var(--semantic-link));
+    --lexxy-focus-ring-color: rgb(var(--color-info));
+    --lexxy-editor-padding: 0;
+    --lexxy-editor-rows: 5lh;
+    --lexxy-radius: 0.75rem;
+
+    @apply overflow-hidden rounded-lg border border-border-muted bg-surface text-content shadow-none transition-colors duration-200;
+}
+
+lexxy-editor.post-composer-editor:focus-within {
+    @apply border-border-strong ring-0;
+}
+
+lexxy-editor.post-composer-editor .lexxy-editor__content {
+    @apply px-3.5 py-3 text-sm leading-6;
+}
+
+lexxy-editor.post-composer-editor.lexxy-editor--empty .lexxy-editor__content::before {
+    @apply text-content-muted;
+    opacity: 0.82;
+}
