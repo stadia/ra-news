@@ -1,5 +1,7 @@
---ignore=bin/
+--dir
+.
+--disable-watchman
 --ignore=tmp/
 --ignore=vendor/
---disable-watchman
+--ignore=bin/
 --enable-experimental-rbs-comments
