@@ -10,8 +10,8 @@ class ArticleSchema < RubyLLM::Schema
   array :summary_key, of: :string, description: "가장 중요한 내용 순으로 정렬된 핵심 요약 3개 (각 60자 이상)"
 
   object :summary_detail, description: "상세 요약 (서론/결론)" do
-    string :introduction, description: "주제와 배경 (200-300자)"
-    string :conclusion, description: "핵심 요약과 시사점 (200-300자)"
+    string :introduction, description: "배경과 맥락을 바로 전달 (200-300자)"
+    string :conclusion, description: "실질적 시사점 또는 핵심 takeaway (200-300자)"
   end
 
   string :summary_body, description: "핵심 내용과 세부사항을 다루는 마크다운 본론 (1000자 이상, h3 이하 헤더만 사용)"
