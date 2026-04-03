@@ -94,6 +94,7 @@ class ArticleAgentsService < OperationService
 
         --- 관련 기사 ---
         아래 기사와 연관성이 있는 경우에만 본문(summary_body)에서 마크다운 링크로 자연스럽게 언급하십시오.
+        마크다운 링크는 본문(summary_body)에서만 써야 합니다. 다른 곳에서는 링크가 표현되지 않습니다.
         연관성이 없으면 무시하십시오.
         #{lines.join("\n")}
       PROMPT
