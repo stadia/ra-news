@@ -81,11 +81,12 @@ Rails.application.configure do
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   config.action_mailer.smtp_settings = {
-    user_name: ENV["MAIL_ADDRESS"] || Rails.application.credentials.dig(:smtp, :user_name),
-    password: ENV["MAIL_PASSWORD"] || Rails.application.credentials.dig(:smtp, :password),
-    address: "smtp.naver.com",
+    address: "smtp.sendgrid.net",
     port: 587,
+    user_name: "apikey",
+    password: Rails.application.credentials.dig(:smtp, :password),
     authentication: :plain,
+    enable_starttls_auto: true,
     enable_starttls: true,
     domain: "ruby-news.kr"
   }
