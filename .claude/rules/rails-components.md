@@ -1,13 +1,13 @@
-# Components (99)
+# Components (111)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
 
 - **Alert** (phlex)
-  props: variant:nil
+  props: variant:nil, attrs
 - **AlertDescription** (phlex)
 - **AlertDialog** (phlex)
-  props: open:false
+  props: open:false, attrs
 - **AlertDialogAction** (phlex)
 - **AlertDialogCancel** (phlex)
 - **AlertDialogContent** (phlex)
@@ -25,24 +25,25 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Articles::Form** (phlex)
   props: article
 - **Avatar** (phlex)
-  props: size::md
+  props: size::md, attrs
 - **AvatarFallback** (phlex)
 - **AvatarImage** (phlex)
-  props: src, alt:""
+  props: src, alt:"", attrs
 - **Badge** (phlex)
-  props: variant::primary, size::md
+  props: variant::primary, size::md, args
 - **Base** (phlex)
+  props: user_attrs
 - **Base** (phlex)
 - **Breadcrumb** (phlex)
 - **BreadcrumbEllipsis** (phlex)
 - **BreadcrumbItem** (phlex)
 - **BreadcrumbLink** (phlex)
-  props: href:"#"
+  props: href:"#", attrs
 - **BreadcrumbList** (phlex)
 - **BreadcrumbPage** (phlex)
 - **BreadcrumbSeparator** (phlex)
 - **Button** (phlex)
-  props: type::button, variant::primary, size::md, icon:false
+  props: type::button, variant::primary, size::md, icon:false, attrs
 - **Card** (phlex)
 - **CardContent** (phlex)
 - **CardDescription** (phlex)
@@ -50,11 +51,13 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **CardHeader** (phlex)
 - **CardTitle** (phlex)
 - **Carousel** (phlex)
-  props: orientation::horizontal, options:{}
+  props: orientation::horizontal, options:{}, user_attrs
 - **CarouselContent** (phlex)
 - **CarouselItem** (phlex)
 - **CarouselNext** (phlex)
 - **CarouselPrevious** (phlex)
+- **Checkbox** (phlex)
+- **CheckboxGroup** (phlex)
 - **Comments::Comment** (phlex)
   props: comment, article, depth:0, children:{}
 - **Comments::CommentForm** (phlex)
@@ -66,15 +69,23 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Comments::Comments** (phlex)
   props: article, comments
 - **Dialog** (phlex)
-  props: open:false
+  props: open:false, attrs
 - **DialogContent** (phlex)
-  props: size::md
+  props: size::md, attrs
 - **DialogDescription** (phlex)
 - **DialogFooter** (phlex)
 - **DialogHeader** (phlex)
 - **DialogMiddle** (phlex)
 - **DialogTitle** (phlex)
 - **DialogTrigger** (phlex)
+- **DropdownMenu** (phlex)
+  props: options:{}, attrs
+- **DropdownMenuContent** (phlex)
+- **DropdownMenuItem** (phlex)
+  props: href:"#", attrs
+- **DropdownMenuLabel** (phlex)
+- **DropdownMenuSeparator** (phlex)
+- **DropdownMenuTrigger** (phlex)
 - **Flash** (phlex)
 - **Form** (phlex)
 - **FormField** (phlex)
@@ -82,19 +93,19 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **FormFieldHint** (phlex)
 - **FormFieldLabel** (phlex)
 - **Heading** (phlex)
-  props: level:nil, as:nil, size:nil
+  props: level:nil, as:nil, size:nil, attrs
 - **Home::Article** (phlex)
   props: article, liked:nil
 - **InlineCode** (phlex)
 - **InlineLink** (phlex)
-  props: href
+  props: href, attrs
 - **Input** (phlex)
-  props: type::string
+  props: type::string, attrs
 - **Layout** (phlex)
 - **Likes::Button** (phlex)
   props: likeable, liked:nil
 - **Link** (phlex)
-  props: href:"#", variant::link, size::md, icon:false
+  props: href:"#", variant::link, size::md, icon:false, attrs
 - **LoginRequired** (phlex)
   props: title:"로그인이 필요합니다", message:"댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다."
 - **Pagination** (phlex)
@@ -103,7 +114,11 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **PaginationContent** (phlex)
 - **PaginationEllipsis** (phlex)
 - **PaginationItem** (phlex)
-  props: href:"#", active:false
+  props: href:"#", active:false, attrs
+- **Popover** (phlex)
+  props: options:{}, attrs
+- **PopoverContent** (phlex)
+- **PopoverTrigger** (phlex)
 - **Posts::PostCard** (phlex)
   props: post, depth:0, liked:nil
 - **Posts::PostForm** (phlex)
@@ -118,24 +133,27 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: recent_comments
 - **Select** (phlex)
 - **SelectContent** (phlex)
+  props: attrs
 - **SelectGroup** (phlex)
 - **SelectInput** (phlex)
 - **SelectItem** (phlex)
-  props: value:nil
+  props: value:nil, attrs
 - **SelectLabel** (phlex)
 - **SelectTrigger** (phlex)
 - **SelectValue** (phlex)
-  props: placeholder:nil
+  props: placeholder:nil, attrs
 - **Separator** (phlex)
-  props: as::div, orientation::horizontal, decorative:true
+  props: as::div, orientation::horizontal, decorative:true, attrs
 - **SetDarkMode** (phlex)
 - **SetLightMode** (phlex)
+- **Switch** (phlex)
+  props: include_hidden:true, checked_value:"1", unchecked_value:"0", attrs
 - **TagsSidebar** (phlex)
   props: tags, current_tag:nil
 - **Text** (phlex)
-  props: as:"p", size:"3", weight:"regular"
+  props: as:"p", size:"3", weight:"regular", attrs
 - **Textarea** (phlex)
-  props: rows:4
+  props: rows:4, attrs
 - **ThemeToggle** (phlex)
 - **TypographyBlockquote** (phlex)
 - **Users::Form** (phlex)

@@ -19,4 +19,4 @@ _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")
 - **sessions** (5 cols) — ip_address:string, user_agent:string
 - **sites** (10 cols) — name:string, base_uri:string, client:integer, last_checked_at:datetime, email:string, path:string, channel:string, deleted_at:datetime | Idx: client+last_checked_at
   client: rss, gmail, youtube, hacker_news, rss_page, reddit
-- **users** (8 cols) — email_address:string, password_digest:string, name:string, roles:json, username:string, likees_count:integer(=0) | Idx: email_address(unique), email_address(unique), username(unique), email(unique), reset_password_token(unique)
+- **users** (7 cols) — email_address:string, name:string, roles:json, username:string, likees_count:integer(=0) | Idx: email_address(unique), email_address(unique), username(unique), email(unique), reset_password_token(unique)

@@ -1,0 +1,6 @@
+---
+ai_tools:
+- claude
+- opencode
+- copilot
+tool_mode: mcp

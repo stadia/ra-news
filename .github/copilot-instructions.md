@@ -9,9 +9,9 @@ Rails 8.1.3 | Ruby 4.0.2
 - Routes: 140 across 42 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
-- Components: 99 components, 99 Phlex
+- Components: 111 components, 111 Phlex
 - Accessibility: minimal
-- Performance: 1 issues detected
+- Performance: 9 issues detected
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -62,6 +62,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - solid_cache
 - solid_cable
 - dry_rb
+- zeitwerk
 - Soft deletes (paranoia/discard)
 - Full-text search (Searchkick/pg_search/Ransack)
 - Tagging
