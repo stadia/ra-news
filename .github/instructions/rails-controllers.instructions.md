@@ -31,3 +31,4 @@ Use `rails_get_controllers` MCP tool for full details.
 - PostsController (3 actions)
 - ProfilesController (3 actions)
 - PushSubscriptionsController (2 actions)
+- ...4 more

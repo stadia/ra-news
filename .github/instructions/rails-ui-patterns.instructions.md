@@ -201,4 +201,4 @@ applyTo: "app/views/**/*.erb"
 
 
 ## Stimulus controllers
-character_count, guest_name, infinite_scroll, modal, page_loader, post_form, push_notifications, reply_form, ruby_ui-alert_dialog, ruby_ui-carousel, ruby_ui-checkbox_group, ruby_ui-dialog, ruby_ui-dropdown_menu, ruby_ui-form_field, ruby_ui-popover, ruby_ui-select, ruby_ui-select_item, ruby_ui-theme_toggle
+character_count, feed_reply, guest_name, infinite_scroll, modal, page_loader, post_form, push_notifications, reply_form, ruby_ui-alert_dialog, ruby_ui-carousel, ruby_ui-checkbox_group, ruby_ui-dialog, ruby_ui-dropdown_menu, ruby_ui-form_field, ruby_ui-popover, ruby_ui-select, ruby_ui-select_item, ruby_ui-theme_toggle
