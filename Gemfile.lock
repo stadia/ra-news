@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: bb63e587553b9b1612013439bd4aa9717d09eab4
+  revision: 3d6939cd95422359a7685ddc82c5a5ccad3294bb
   specs:
     federails (0.8.0)
       alba (~> 3.0)
@@ -93,7 +93,7 @@ GEM
     acts-as-taggable-on (13.0.0)
       activerecord (>= 7.1, < 8.2)
       zeitwerk (>= 2.4, < 3.0)
-    addressable (2.8.10)
+    addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
     alba (3.10.0)
     amazing_print (2.0.0)
