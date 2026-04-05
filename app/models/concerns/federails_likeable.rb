@@ -2,6 +2,7 @@
 
 module FederailsLikeable
   extend ActiveSupport::Concern
+  include Federails::HandlesSocialActivities
 
   included do
     on_federails_like_received :apply_like
