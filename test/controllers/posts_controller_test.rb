@@ -18,13 +18,43 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create reply post" do
-    parent = Post.create!(body: "부모 포스트", user: @user)
+    parent = Post.create!(body: "부모 포스트", user: users(:jane))
     assert_difference("Post.count") do
       post posts_url, params: { post: { body: "답글입니다.", parent_id: parent.id } }, as: :turbo_stream
     end
     assert_response :success
     assert_includes @response.body, "target=\"post_#{parent.id}\""
     assert_includes @response.body, "target=\"replies_#{parent.id}\""
+    created_post = Post.order(:id).last
+
+    assert_includes created_post.body, %(href="#{Rails.application.routes.url_helpers.user_profile_url(parent.user)}")
+    assert_includes created_post.body, "@jane"
+  end
+
+  test "should replace existing remote mention text with profile link in reply body" do
+    actor = Federails::Actor.create!(
+      federated_url: "https://remote.example/users/alice",
+      username: "alice",
+      name: "Alice",
+      server: "remote.example",
+      inbox_url: "https://remote.example/users/alice/inbox",
+      outbox_url: "https://remote.example/users/alice/outbox",
+      followers_url: "https://remote.example/users/alice/followers",
+      followings_url: "https://remote.example/users/alice/following",
+      profile_url: "https://remote.example/@alice",
+      actor_type: "Person",
+      local: false
+    )
+    parent = Post.create!(body: "리모트 부모 포스트", federails_actor: actor, federated_url: "https://remote.example/notes/1")
+
+    assert_difference("Post.count") do
+      post posts_url, params: { post: { body: "@alice@remote.example 집에 가서 해볼게", parent_id: parent.id } }, as: :turbo_stream
+    end
+
+    created_post = Post.order(:id).last
+
+    assert_includes created_post.body, %(href="https://remote.example/@alice")
+    assert_includes created_post.body, %(<a href="https://remote.example/@alice">@alice@remote.example</a> 집에 가서 해볼게)
   end
 
   test "should reject empty body" do

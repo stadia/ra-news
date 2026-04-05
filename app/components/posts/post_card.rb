@@ -15,7 +15,12 @@ class Components::Posts::PostCard < Components::Base
     div(
       id: dom_id(@post),
       class: wrapper_classes,
-      data: { controller: "reply-form" }
+      data: {
+        controller: "feed-reply",
+        feed_reply_parent_id_value: @post.id,
+        feed_reply_author_name_value: author_name,
+        feed_reply_body_preview_value: body_preview
+      }
     ) do
       render RubyUI::Card.new(class: "bg-surface border-border-muted shadow-sm hover:border-border-strong transition-all duration-200") do
         render RubyUI::CardContent.new(class: "p-4 sm:p-5 space-y-3") do
@@ -24,7 +29,6 @@ class Components::Posts::PostCard < Components::Base
           post_actions if @depth.zero?
         end
       end
-      reply_form_section if @depth.zero?
     end
   end
 
@@ -130,7 +134,7 @@ class Components::Posts::PostCard < Components::Base
       render RubyUI::Button.new(
         variant: :ghost,
         size: :sm,
-        data: { action: "reply-form#toggle" },
+        data: { action: "feed-reply#activate" },
         class: "inline-flex items-center gap-1 text-content-muted hover:text-info-text transition-colors hover:bg-transparent p-0"
       ) do
         Hero::ChatBubbleLeft(variant: :outline, class: "w-4 h-4")
@@ -138,12 +142,6 @@ class Components::Posts::PostCard < Components::Base
           span { @post.children_count.to_s }
         end
       end
-    end
-  end
-
-  def reply_form_section
-    div(data: { reply_form_target: "form" }, class: "hidden mt-2") do
-      render Components::Posts::ReplyForm.new(parent_post: @post)
     end
   end
 
@@ -192,6 +190,10 @@ class Components::Posts::PostCard < Components::Base
 
   def author_name
     @post.user&.name || @post.federails_actor&.name || "알 수 없음"
+  end
+
+  def body_preview
+    view_context.truncate(view_context.strip_tags(@post.body.to_s).squish, length: 120)
   end
 
   def article_preview_title(article)

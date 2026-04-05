@@ -66,7 +66,7 @@ class PostsController < ApplicationController
   end
 
   def create_standalone_post
-    @post = current_user.posts.build(post_params)
+    @post = current_user.posts.build(normalized_post_params)
 
     respond_to do |format|
       if @post.save
@@ -98,5 +98,39 @@ class PostsController < ApplicationController
 
   def post_params
     params.expect(post: [ :body, :parent_id, :tag_list ])
+  end
+
+  def normalized_post_params
+    attributes = post_params.to_h.symbolize_keys
+    attributes[:body] = reply_body_with_mention(body: attributes[:body], parent_id: attributes[:parent_id])
+    attributes
+  end
+
+  def reply_body_with_mention(body:, parent_id:)
+    return body if parent_id.blank?
+
+    parent = Post.includes(:user, :federails_actor).find_by(id: parent_id)
+    actor = parent&.user&.federails_actor || parent&.federails_actor
+    return body if actor.nil? || actor.profile_url.blank?
+
+    return body if body.to_s.include?(actor.profile_url)
+
+    mention_candidates = [ actor.short_at_address, actor.at_address ].compact.uniq
+
+    mention_candidates.each do |mention_text|
+      next unless body.to_s.include?(mention_text)
+
+      return body.to_s.sub(mention_text, mention_link_for(actor, mention_text))
+    end
+
+    "#{mention_link_for(actor, default_mention_text_for(actor))} #{body}".strip
+  end
+
+  def mention_link_for(actor, text)
+    helpers.link_to(text, actor.profile_url).to_s
+  end
+
+  def default_mention_text_for(actor)
+    actor.local? ? actor.short_at_address : actor.at_address
   end
 end

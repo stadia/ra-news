@@ -146,6 +146,19 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#feed_page_2.block.space-y-4", 1
   end
 
+  test "GET feed reply button targets the shared post form" do
+    post = Post.create!(body: "reply target post", user: @user)
+
+    sign_in_as(@user)
+    get feed_path
+
+    assert_response :success
+    assert_includes @response.body, 'data-controller="feed-reply"'
+    assert_includes @response.body, 'data-action="feed-reply#activate"'
+    assert_includes @response.body, 'post-form:reply@window-&gt;post-form#activateReply'
+    assert_includes @response.body, %(feed-reply-parent-id-value="#{post.id}")
+  end
+
   private
 
   def capture_like_queries
