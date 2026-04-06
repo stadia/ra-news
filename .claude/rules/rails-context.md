@@ -8,7 +8,6 @@ Rails 8.1.3 | Ruby 4.0.2
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Components: 111 components, 111 Phlex
-- Accessibility: minimal
 - Performance: 9 issues detected
 
 **Global before_actions:** authenticate_user!

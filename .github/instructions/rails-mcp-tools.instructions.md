@@ -3,9 +3,9 @@ applyTo: "**/*"
 excludeAgent: "code-review"
 ---
 
-## Tools (39) — MANDATORY, Use Before Read
+## Tools (38) — MANDATORY, Use Before Read
 
-This project has 39 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
+This project has 38 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
 **MANDATORY — use these instead of reading files.** They return ground truth from the running app:
 real schema, real associations, real filters — not guesses from file reads.
 Read files ONLY when you are about to Edit them.
@@ -68,9 +68,9 @@ Use individual tools only when you need deeper detail on a specific layer.
 3. `rails_validate(files:["app/controllers/cooks_controller.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/controllers/cooks_controller.rb level=rails`
 
 **Build or modify a view:**
-1. `rails_get_design_system(detail:"standard")` or `rails 'ai:tool[design_system]' detail=standard` — get copy-paste HTML/ERB patterns
-2. `rails_get_view(controller:"cooks")` or `rails 'ai:tool[view]' controller=cooks` — existing templates, partials, Stimulus refs
-3. `rails_get_partial_interface(partial:"shared/status_badge")` or `rails 'ai:tool[partial_interface]' partial=shared/status_badge` — partial locals contract
+1. `rails_get_view(controller:"cooks")` or `rails 'ai:tool[view]' controller=cooks` — existing templates, partials, Stimulus refs
+2. `rails_get_partial_interface(partial:"shared/status_badge")` or `rails 'ai:tool[partial_interface]' partial=shared/status_badge` — partial locals contract
+3. `rails_get_component_catalog(component:"Button")` or `rails 'ai:tool[component_catalog]' component=Button` — ViewComponent/Phlex props, slots, previews
 4. Read the view file, make your edit
 5. `rails_validate(files:["app/views/cooks/index.html.erb"])` or `rails 'ai:tool[validate]' files=app/views/cooks/index.html.erb`
 
@@ -110,7 +110,7 @@ Use individual tools only when you need deeper detail on a specific layer.
 6. **Follow _Next:_ hints** — tool responses suggest the best follow-up call
 7. If MCP tools are not connected, use CLI: `rails 'ai:tool[TOOL_NAME]' param=value`
 
-### All 39 Tools
+### All 38 Tools
 
 | MCP | CLI | What it does |
 |-----|-----|-------------|
@@ -123,7 +123,6 @@ Use individual tools only when you need deeper detail on a specific layer.
 | `rails_get_model_details(model:"X")` | `rails 'ai:tool[model_details]' model=X` | Associations, validations, scopes, enums, macros, delegations |
 | `rails_get_routes(controller:"X")` | `rails 'ai:tool[routes]' controller=X` | Routes with code-ready helpers and controller filters inline |
 | `rails_get_view(controller:"X")` | `rails 'ai:tool[view]' controller=X` | Templates with ivars, Turbo wiring, Stimulus refs, partial locals |
-| `rails_get_design_system` | `rails 'ai:tool[design_system]'` | Canonical HTML/ERB copy-paste patterns for buttons, inputs, cards |
 | `rails_get_stimulus(controller:"X")` | `rails 'ai:tool[stimulus]' controller=X` | Targets, values, actions + HTML data-attributes + view lookup |
 | `rails_get_test_info(model:"X")` | `rails 'ai:tool[test_info]' model=X` | Tests + fixture contents + test template |
 | `rails_get_concern(name:"X", detail:"full")` | `rails 'ai:tool[concern]' name=X detail=full` | Concern methods with source + which models include it |

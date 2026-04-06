@@ -10,7 +10,6 @@ Rails 8.1.3 | Ruby 4.0.2
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Components: 111 components, 111 Phlex
-- Accessibility: minimal
 - Performance: 9 issues detected
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
@@ -72,44 +71,9 @@ Rails 8.1.3 | Ruby 4.0.2
 - view_components
 - phlex
 
-## Design System
+## Tools (38) — MANDATORY, Use Before Read
 
-### Colors
-- **Success:** green — confirmations, positive feedback
-- **Text:** gray-900/gray-700/gray-500
-- **Backgrounds:** gray-50, gray-800, gray-700, green-100, green-900
-- --color-red-300: `oklch(80.8% .114 19.571)`
-- --color-red-400: `oklch(70.4% .191 22.216)`
-- --color-red-500: `oklch(63.7% .237 25.331)`
-- --color-red-600: `oklch(57.7% .245 27.325)`
-- --color-red-700: `oklch(50.5% .213 27.518)`
-
-### Components — Copy These Patterns
-- **Alert:** `alert alert-danger`
-- **Navigation:** `nav-group`
-- **Card:** `bg-white p-6 rounded-lg shadow`
-- **Link:** `hover:underline hover:text-content flex items-center gap-1`
-- **Heading (page):** `text-3xl font-bold mb-6`
-- **Heading (section):** `text-lg font-semibold text-gray-600`
-- **Heading (sub):** `text-sm font-medium text-gray-900 dark:text-white mb-3`
-- **Modal overlay:** `fixed inset-0 bg-app/75 z-50 hidden items-center justify-center`
-
-### Typography
-- **h1:** `text-3xl font-bold mb-6`
-- **h2:** `text-lg font-semibold text-gray-600`
-- **h3:** `text-sm font-medium text-gray-900 dark:text-white mb-3`
-- Sizes: text-sm, text-3xl, text-lg, text-xs, text-base
-- Weights: font-bold, font-medium, font-semibold
-
-### Layout & Spacing
-- Container: max-w-2xl, max-w-6xl
-- Grid: grid-cols-1, grid-cols-2, grid-cols-3
-- Spacing: px-4, p-6, mt-2, px-6, py-2, p-4
-- Form spacing: space-y-4
-
-## Tools (39) — MANDATORY, Use Before Read
-
-This project has 39 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
+This project has 38 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
 **MANDATORY — use these instead of reading files.** They return ground truth from the running app:
 real schema, real associations, real filters — not guesses from file reads.
 Read files ONLY when you are about to Edit them.
@@ -172,9 +136,9 @@ Use individual tools only when you need deeper detail on a specific layer.
 3. `rails_validate(files:["app/controllers/cooks_controller.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/controllers/cooks_controller.rb level=rails`
 
 **Build or modify a view:**
-1. `rails_get_design_system(detail:"standard")` or `rails 'ai:tool[design_system]' detail=standard` — get copy-paste HTML/ERB patterns
-2. `rails_get_view(controller:"cooks")` or `rails 'ai:tool[view]' controller=cooks` — existing templates, partials, Stimulus refs
-3. `rails_get_partial_interface(partial:"shared/status_badge")` or `rails 'ai:tool[partial_interface]' partial=shared/status_badge` — partial locals contract
+1. `rails_get_view(controller:"cooks")` or `rails 'ai:tool[view]' controller=cooks` — existing templates, partials, Stimulus refs
+2. `rails_get_partial_interface(partial:"shared/status_badge")` or `rails 'ai:tool[partial_interface]' partial=shared/status_badge` — partial locals contract
+3. `rails_get_component_catalog(component:"Button")` or `rails 'ai:tool[component_catalog]' component=Button` — ViewComponent/Phlex props, slots, previews
 4. Read the view file, make your edit
 5. `rails_validate(files:["app/views/cooks/index.html.erb"])` or `rails 'ai:tool[validate]' files=app/views/cooks/index.html.erb`
 
@@ -214,7 +178,7 @@ Use individual tools only when you need deeper detail on a specific layer.
 6. **Follow _Next:_ hints** — tool responses suggest the best follow-up call
 7. If MCP tools are not connected, use CLI: `rails 'ai:tool[TOOL_NAME]' param=value`
 
-### All 39 Tools
+### All 38 Tools
 
 | MCP | CLI | What it does |
 |-----|-----|-------------|
@@ -227,7 +191,6 @@ Use individual tools only when you need deeper detail on a specific layer.
 | `rails_get_model_details(model:"X")` | `rails 'ai:tool[model_details]' model=X` | Associations, validations, scopes, enums, macros, delegations |
 | `rails_get_routes(controller:"X")` | `rails 'ai:tool[routes]' controller=X` | Routes with code-ready helpers and controller filters inline |
 | `rails_get_view(controller:"X")` | `rails 'ai:tool[view]' controller=X` | Templates with ivars, Turbo wiring, Stimulus refs, partial locals |
-| `rails_get_design_system` | `rails 'ai:tool[design_system]'` | Canonical HTML/ERB copy-paste patterns for buttons, inputs, cards |
 | `rails_get_stimulus(controller:"X")` | `rails 'ai:tool[stimulus]' controller=X` | Targets, values, actions + HTML data-attributes + view lookup |
 | `rails_get_test_info(model:"X")` | `rails 'ai:tool[test_info]' model=X` | Tests + fixture contents + test template |
 | `rails_get_concern(name:"X", detail:"full")` | `rails 'ai:tool[concern]' name=X detail=full` | Concern methods with source + which models include it |
