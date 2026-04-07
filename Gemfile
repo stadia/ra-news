@@ -72,6 +72,7 @@ group :development do
   gem "ruby_ui", "~> 1.1"
   gem "ruby-lsp-i18n", require: false
   gem "ruby-lsp-brakeman", require: false
+  gem "letter_opener"
 end
 
 group :test do
