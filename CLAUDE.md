@@ -7,12 +7,12 @@
 ## Stack
 - Database: static_parse — 20 tables
 - Models: 14
-- Routes: 140 across 21 controllers
+- Routes: 143 across 22 controllers
 - Async: 11 jobs
-- Migrations: 96 total, 1 pending
+- Migrations: 97 total, 0 pending
 - Auth: Devise
 - I18n: 2 locales (en, ko)
-- Components: 111 components, 111 Phlex
+- Components: 112 components, 112 Phlex
 - Performance: 9 issues detected
 
 ## Key models (14 total)

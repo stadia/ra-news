@@ -37,4 +37,4 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
   methods: count, taggings, validates_name_uniqueness?
 - User (table: users) — 4 assocs, 11 validations
   scopes: admins
-  methods: admin?, full_name, has_role?, roles, accept_follow, articles, devise_saved_change_to_email?, devise_saved_change_to_encrypted_password?, devise_unconfirmed_email_will_change!, devise_will_save_change_to_email?, downcase_keys, extend_remember_period, federails_actor, like!, likeables, likeables_relation, likees, likees_relation, likes?, password
+  methods: admin?, full_name, has_role?, roles, accept_follow, after_confirmation, articles, confirm, confirmation_period_expired?, confirmed?, devise_saved_change_to_email?, devise_saved_change_to_encrypted_password?, devise_unconfirmed_email_will_change!, devise_will_save_change_to_email?, downcase_keys, extend_remember_period, federails_actor, generate_confirmation_token, generate_confirmation_token!, like!
