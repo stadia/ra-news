@@ -38,6 +38,10 @@ ko:
       already_confirmed: "이메일 은(는) 이미 인증되었습니다."
       send_instructions: "몇 분 안에 확인 이메일을 받으실 것입니다."
       send_paranoid_instructions: "이메일이 등록되어 있다면, 몇 분 안에 확인 이메일을 받으실 것입니다."
+      new:
+        title: "이메일 확인"
+        submit: "확인 메일 재발송"
+        email_placeholder: "이메일 주소를 입력하세요"
     failure:
       invalid: "이메일 주소나 비밀번호를 다시 확인해 주세요."
       not_found_in_database: "이메일 주소나 비밀번호를 다시 확인해 주세요."

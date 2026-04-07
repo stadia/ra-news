@@ -4,7 +4,18 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   layout -> { Components::Layout }
 
   def new
-    render Views::Confirmations::New.new
+    self.resource = resource_class.new
+    render Views::Confirmations::New.new(user: resource)
+  end
+
+  def create
+    self.resource = resource_class.send_confirmation_instructions(resource_params)
+
+    if successfully_sent?(resource)
+      redirect_to after_resending_confirmation_instructions_path_for(resource_name), notice: flash[:notice]
+    else
+      render Views::Confirmations::New.new(user: resource), status: :unprocessable_entity
+    end
   end
 
   def show
@@ -16,13 +27,13 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     elsif resource.errors.empty?
       redirect_to after_confirmation_path_for(resource_name, resource)
     else
-      render Views::Confirmations::New.new, status: :unprocessable_entity
+      render Views::Confirmations::New.new(user: resource), status: :unprocessable_entity
     end
   end
 
   protected
 
-  def after_resend_confirmation_instructions_path_for(_resource_name)
+  def after_resending_confirmation_instructions_path_for(_resource_name)
     root_path
   end
 end

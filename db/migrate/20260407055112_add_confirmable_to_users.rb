@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class AddConfirmableToUsers < ActiveRecord::Migration[8.0]
+  class MigrationUser < ActiveRecord::Base
+    self.table_name = "users"
+  end
+
   def change
     add_column :users, :confirmation_token, :string
     add_column :users, :confirmed_at, :datetime
@@ -11,7 +15,7 @@ class AddConfirmableToUsers < ActiveRecord::Migration[8.0]
 
     reversible do |dir|
       dir.up do
-        User.update_all(confirmed_at: Time.now.utc)
+        MigrationUser.update_all(confirmed_at: Time.current)
       end
     end
   end
