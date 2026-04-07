@@ -11,7 +11,7 @@ class DeviseMailerTest < ActionMailer::TestCase
 
     mail = DeviseMailer.confirmation_instructions(user, token)
 
-    assert_equal [user.email], mail.to
+    assert_equal [ user.email ], mail.to
     assert_equal I18n.t("devise.mailer.confirmation_instructions.subject"), mail.subject
 
     html_part = mail.html_part
