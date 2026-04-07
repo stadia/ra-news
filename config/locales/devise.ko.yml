@@ -63,3 +63,7 @@ ko:
     mailer:
       confirmation_instructions:
         subject: "이메일 확인 안내"
+        title: "이메일 확인이 필요합니다"
+        greeting: "안녕하세요, %{name}님!"
+        message: "아래 링크를 클릭하여 이메일을 확인해주세요:"
+        action: "이메일 확인하기"
