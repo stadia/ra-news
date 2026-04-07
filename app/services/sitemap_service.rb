@@ -15,14 +15,14 @@ class SitemapService < OperationService
       default_host: "https://ruby-news.kr",
       sitemaps_path: "sitemaps/"
     ) do
-      add articles_path, lastmod: Date.today
+      add articles_path, lastmod: Date.current.iso8601
 
       # find_in_batches는 order: 옵션을 지원하지 않으므로 scope에서 order() 후 적용.
       # lastmod는 updated_at 대신 published_at 사용
       # (updated_at은 배경 Job이 건드릴 때마다 갱신되어 Google 오탐 발생)
       Article.kept.confirmed.without_toast.find_in_batches(batch_size: 500) do |group|
         group.each do |article|
-          add article_path(article), lastmod: article.published_at || article.updated_at
+          add article_path(article), lastmod: (article.published_at || article.updated_at)&.iso8601
         end
       end
     end

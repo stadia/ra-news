@@ -13,8 +13,8 @@ SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/"
 SitemapGenerator::Sitemap.compress      = true
 
 SitemapGenerator::Sitemap.create do
-  add articles_path, lastmod: Date.today
-  add others_path, lastmod: Date.today
+  add articles_path, lastmod: Date.current.iso8601
+  add others_path, lastmod: Date.current.iso8601
 
   # 참고: find_in_batches는 order: 옵션을 지원하지 않으므로
   # scope에서 먼저 order()를 호출한 후 find_in_batches 적용.
@@ -25,7 +25,7 @@ SitemapGenerator::Sitemap.create do
          .find_in_batches(batch_size: 500) do |batch|
     batch.each do |article|
       add article_path(article.slug),
-          lastmod: article.published_at || article.updated_at
+          lastmod: (article.published_at || article.updated_at)&.iso8601
     end
   end
 end
