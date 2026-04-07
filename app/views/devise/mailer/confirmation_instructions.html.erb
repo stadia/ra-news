@@ -1,0 +1,5 @@
+<p>안녕하세요, <%= @resource.name.presence || @resource.email %>님!</p>
+
+<p>아래 링크를 클릭하여 이메일을 확인해주세요:</p>
+
+<p><%= link_to '이메일 확인하기', confirmation_url(@resource, confirmation_token: @token) %></p>

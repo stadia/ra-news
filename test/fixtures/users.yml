@@ -10,6 +10,7 @@ john:
   name: 존 도
   username: john
   encrypted_password: <%= encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
     - editor
@@ -20,6 +21,7 @@ jane:
   name: 제인 스미스
   username: jane
   encrypted_password: <%= encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
     - bot
@@ -30,6 +32,7 @@ admin:
   name: 관리자
   username: admin
   encrypted_password: <%= admin_encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
     - admin
@@ -40,6 +43,7 @@ korean_user:
   name: 김철수
   username: korean_user
   encrypted_password: <%= encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
     - bot
@@ -49,6 +53,7 @@ user_with_spaces:
   name: 홍 길 동
   username: user_with_spaces
   encrypted_password: <%= encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
 
@@ -58,6 +63,7 @@ minimal_user:
   name: 최소
   username: minimal_user
   encrypted_password: <%= encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
 
@@ -67,6 +73,7 @@ one:
   name: 사용자 일
   username: user_one
   encrypted_password: <%= encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
 
@@ -75,5 +82,6 @@ two:
   name: 사용자 이
   username: user_two
   encrypted_password: <%= encrypted_password %>
+  confirmed_at: <%= Time.now.utc %>
   roles:
     - user
