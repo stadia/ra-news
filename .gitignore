@@ -51,3 +51,4 @@ claude-swarm.log
 
 # rails-ai-context (JSON cache — markdown files should be committed)
 .ai-context.json
+.omx

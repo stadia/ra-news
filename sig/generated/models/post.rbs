@@ -50,6 +50,9 @@ class Post < ApplicationRecord
   # : (Hash[String, untyped]) -> Hash[Symbol, untyped]
   def self.from_activitypub_object: (Hash[String, untyped]) -> Hash[Symbol, untyped]
 
+  # : (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
+  private def self.extract_body_from_activitypub_object: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
+
   # : (Hash[String, untyped]) -> bool
-  def self.handle_federated_object?: (Hash[String, untyped]) -> bool
+  private def self.handle_federated_object?: (Hash[String, untyped]) -> bool
 end

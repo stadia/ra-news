@@ -2,7 +2,7 @@
 
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
-         :recoverable, :validatable, :rememberable, :timeoutable
+         :recoverable, :validatable, :rememberable, :timeoutable, :confirmable
 
   acts_as_liker
   has_many :push_subscriptions, dependent: :destroy

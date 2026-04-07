@@ -46,8 +46,33 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     user.reload
 
     assert_equal "수정된 이름", user.name
-    assert_equal "updated-john@example.com", user.email
+    assert_equal "john@example.com", user.email
+    assert_equal "updated-john@example.com", user.unconfirmed_email
     assert_equal "john", user.username
+  end
+
+  test "PATCH update with email change shows reconfirmation notice" do
+    user = users(:john)
+    sign_in_as(user)
+
+    patch user_registration_path, params: {
+      user: { email: "new-john@example.com" }
+    }
+
+    assert_redirected_to edit_user_registration_path
+    assert_equal I18n.t("devise.registrations.update_needs_confirmation"), flash[:notice]
+  end
+
+  test "PATCH update with name only shows updated notice" do
+    user = users(:john)
+    sign_in_as(user)
+
+    patch user_registration_path, params: {
+      user: { name: "새 이름" }
+    }
+
+    assert_redirected_to edit_user_registration_path
+    assert_equal I18n.t("devise.registrations.updated"), flash[:notice]
   end
 
   test "GET password shows password form for signed in user" do

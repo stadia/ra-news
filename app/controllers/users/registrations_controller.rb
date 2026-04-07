@@ -15,9 +15,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
     resource.save
     if resource.persisted?
-      set_flash_message! :notice, :signed_up
-      sign_up(resource_name, resource)
-      respond_with resource, location: after_sign_up_path_for(resource)
+      if resource.active_for_authentication?
+        set_flash_message! :notice, :signed_up
+        sign_up(resource_name, resource)
+        respond_with resource, location: after_sign_up_path_for(resource)
+      else
+        set_flash_message! :notice, :"signed_up_but_#{resource.inactive_message}"
+        expire_data_after_sign_in!
+        respond_with resource, location: after_inactive_sign_up_path_for(resource)
+      end
     else
       clean_up_passwords resource
       render Views::Users::New.new(user: resource), status: :unprocessable_entity
@@ -49,6 +55,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   protected
 
   def after_sign_up_path_for(_resource)
+    root_path
+  end
+
+  def after_inactive_sign_up_path_for(_resource)
     root_path
   end
 
@@ -84,7 +94,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def update_without_password
     if resource.update(account_update_params)
-      redirect_to edit_user_registration_path, notice: t("devise.registrations.updated")
+      flash_key = if resource.pending_reconfirmation?
+        "devise.registrations.update_needs_confirmation"
+      else
+        "devise.registrations.updated"
+      end
+      redirect_to edit_user_registration_path, notice: t(flash_key)
     else
       render Views::Users::Edit.new(user: resource), status: :unprocessable_entity
     end
