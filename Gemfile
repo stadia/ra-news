@@ -126,7 +126,7 @@ gem "friendly_id"
 gem "amazing_print"
 gem "rails_semantic_logger"
 
-gem "opentelemetry-sdk", "~> 1.10"
+gem "opentelemetry-sdk", "~> 1.11"
 gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-exporter-otlp-logs"
 gem "opentelemetry-instrumentation-rails"
