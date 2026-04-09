@@ -1,5 +1,7 @@
 ---
 applyTo: "**/*"
+name: "Rails Project Overview"
+description: "Rails version, database, models, routes, gems, architecture patterns"
 ---
 
 # AlNews — Overview

@@ -1,3 +1,9 @@
+---
+paths:
+  - "app/components/**/*.rb"
+  - "app/views/components/**"
+---
+
 # Components (112)
 
 ViewComponent and Phlex components available for reuse.

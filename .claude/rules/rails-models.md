@@ -1,3 +1,8 @@
+---
+paths:
+  - "app/models/**/*.rb"
+---
+
 # ActiveRecord Models (14)
 
 _Quick reference — use `rails_get_model_details(model:"Name")` for live data with resolved concerns and callbacks._

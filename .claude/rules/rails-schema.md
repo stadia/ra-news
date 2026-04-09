@@ -1,3 +1,9 @@
+---
+paths:
+  - "db/schema.rb"
+  - "db/migrate/**"
+---
+
 # Database Tables (20)
 
 _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")` for live data._

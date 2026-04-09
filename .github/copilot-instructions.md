@@ -73,7 +73,7 @@ Rails 8.1.3 | Ruby 4.0.2
 
 ## Tools (38) — MANDATORY, Use Before Read
 
-This project has 38 MCP tools via `rails ai:serve` (configured in `.mcp.json`).
+This project has 38 MCP tools via `rails ai:serve`.
 **MANDATORY — use these instead of reading files.** They return ground truth from the running app:
 real schema, real associations, real filters — not guesses from file reads.
 Read files ONLY when you are about to Edit them.

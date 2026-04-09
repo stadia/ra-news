@@ -1,5 +1,7 @@
 ---
 applyTo: "app/controllers/**/*.rb"
+name: "Rails Controllers Reference"
+description: "Controllers — actions, filters, strong parameters"
 ---
 
 # Controllers (31)

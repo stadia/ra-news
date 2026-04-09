@@ -1,5 +1,7 @@
 ---
 applyTo: "app/models/**/*.rb"
+name: "Rails Models Reference"
+description: "ActiveRecord models — associations, validations, scopes, enums"
 ---
 
 # ActiveRecord Models (16)
