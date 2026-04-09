@@ -82,7 +82,7 @@ group :test do
 end
 
 gem "sorbet-runtime"
-gem "pagy", "~> 43.4" # omit patch digit
+gem "pagy", "~> 43.5" # omit patch digit
 gem "google-protobuf", require: false
 # silence Ruby 3.4 warnings
 gem "ostruct"
