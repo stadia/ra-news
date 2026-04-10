@@ -145,6 +145,6 @@ gem "prosopite"
 gem "pg_query"
 gem "rorvswild"
 
-gem "rails-ai-context", "~> 5.4"
+gem "rails-ai-context", "~> 5.7"
 
 gem "lexxy", "~> 0.9.2.beta"
