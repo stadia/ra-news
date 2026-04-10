@@ -20,21 +20,21 @@ body select {
 }
 
 .mobile-menu-toggle:focus + label {
-    outline: 2px solid rgb(var(--semantic-brand-solid));
+    outline: 2px solid var(--semantic-brand-solid);
     outline-offset: 2px;
 }
 
 lexxy-editor.post-composer-editor {
-    --lexxy-color-canvas: rgb(var(--color-bg-secondary));
-    --lexxy-color-text: rgb(var(--color-text-primary));
-    --lexxy-color-text-subtle: rgb(var(--color-text-muted));
-    --lexxy-color-ink-lighter: rgb(var(--color-border-light));
-    --lexxy-color-ink-lightest: rgb(var(--color-bg-secondary));
-    --lexxy-color-selected: rgb(var(--color-bg-secondary));
-    --lexxy-color-selected-hover: rgb(var(--color-bg-hover));
-    --lexxy-color-selected-dark: rgb(var(--color-info));
-    --lexxy-color-link: rgb(var(--semantic-link));
-    --lexxy-focus-ring-color: rgb(var(--color-info));
+    --lexxy-color-canvas: var(--color-bg-secondary);
+    --lexxy-color-text: var(--color-text-primary);
+    --lexxy-color-text-subtle: var(--color-text-muted);
+    --lexxy-color-ink-lighter: var(--color-border-light);
+    --lexxy-color-ink-lightest: var(--color-bg-secondary);
+    --lexxy-color-selected: var(--color-bg-secondary);
+    --lexxy-color-selected-hover: var(--color-bg-hover);
+    --lexxy-color-selected-dark: var(--color-info);
+    --lexxy-color-link: var(--semantic-link);
+    --lexxy-focus-ring-color: var(--color-info);
     --lexxy-editor-padding: 0;
     --lexxy-editor-rows: 5lh;
     --lexxy-radius: 0.75rem;

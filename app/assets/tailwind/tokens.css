@@ -1,85 +1,86 @@
 /*
- * Design System Tokens
+ * Design System Tokens — OKLCH Native
  *
- * 프로젝트 전역에서 사용되는 디자인 토큰 정의
- * 문서: docs/DESIGN_SYSTEM.md
+ * All color values use OKLCH for perceptual uniformity.
+ * Migrated from RGB triplets to full OKLCH values.
+ * Token names preserved for backward compatibility.
  */
 
 @layer base {
     :root {
         /* ========================================
-       Brand Colors
+       Brand Colors (OKLCH)
        ======================================== */
-        --brand-primary: 34 197 94; /* green-500 */
-        --brand-primary-hover: 22 163 74; /* green-600 */
-        --brand-primary-light: 74 222 128; /* green-400 */
-        --brand-primary-dark: 21 128 61; /* green-700 */
-        --brand-primary-deep: 22 101 52; /* green-800 */
+        --brand-primary: oklch(0.723 0.192 150); /* green-500 */
+        --brand-primary-hover: oklch(0.627 0.170 149); /* green-600 */
+        --brand-primary-light: oklch(0.800 0.182 152); /* green-400 */
+        --brand-primary-dark: oklch(0.527 0.137 150); /* green-700 */
+        --brand-primary-deep: oklch(0.448 0.108 151); /* green-800 */
 
         /* ========================================
-       Neutral Colors (Slate Palette)
+       Neutral Colors (Slate Palette, OKLCH)
        ======================================== */
-        --neutral-50: 248 250 252; /* slate-50 */
-        --neutral-100: 241 245 249; /* slate-100 */
-        --neutral-200: 226 232 240; /* slate-200 */
-        --neutral-300: 203 213 225; /* slate-300 */
-        --neutral-400: 148 163 184; /* slate-400 */
-        --neutral-500: 100 116 139; /* slate-500 */
-        --neutral-600: 71 85 105; /* slate-600 */
-        --neutral-700: 51 65 85; /* slate-700 */
-        --neutral-800: 30 41 59; /* slate-800 */
-        --neutral-900: 15 23 42; /* slate-900 */
-        --neutral-950: 2 6 23; /* slate-950 */
+        --neutral-50: oklch(0.984 0.003 248);
+        --neutral-100: oklch(0.968 0.007 248);
+        --neutral-200: oklch(0.929 0.013 256);
+        --neutral-300: oklch(0.869 0.020 253);
+        --neutral-400: oklch(0.711 0.035 257);
+        --neutral-500: oklch(0.554 0.041 257);
+        --neutral-600: oklch(0.446 0.037 257);
+        --neutral-700: oklch(0.372 0.039 257);
+        --neutral-800: oklch(0.280 0.037 260);
+        --neutral-900: oklch(0.208 0.040 266);
+        --neutral-950: oklch(0.129 0.041 265);
 
         /* ========================================
-       Status Colors
+       Status Colors (OKLCH)
        ======================================== */
-        --color-success: 101 163 13; /* lime-600 - 성공, 완료 (RubyUI success 기준) */
-        --color-warning: 245 158 11; /* amber-500 - 경고 */
-        --color-error: 239 68 68; /* red-500 - 에러 */
-        --color-info: 59 130 246; /* blue-500 - 정보 */
+        --color-success: oklch(0.648 0.175 132); /* lime-600 */
+        --color-warning: oklch(0.769 0.165 70); /* amber-500 */
+        --color-error: oklch(0.637 0.208 25); /* red-500 */
+        --color-info: oklch(0.623 0.188 260); /* blue-500 */
 
         /* Prose (Typography Plugin) Accent Colors */
-        --color-prose-strong: 125 211 252; /* sky-300 - 강조 텍스트 포인트 */
+        --color-prose-strong: oklch(0.828 0.101 230); /* sky-300 */
 
         /* ========================================
        Spacing Scale
        ======================================== */
-        --space-xs: 0.25rem; /* 4px - Tight gaps */
-        --space-sm: 0.5rem; /* 8px - Icon gaps, inline spacing */
-        --space-md: 1rem; /* 16px - Standard padding */
-        --space-lg: 1.5rem; /* 24px - Section padding */
-        --space-xl: 2rem; /* 32px - Large gaps */
-        --space-2xl: 3rem; /* 48px - Section margins */
-        --space-3xl: 4rem; /* 64px - Hero padding */
-        --space-4xl: 6rem; /* 96px - Major section spacing */
+        --space-xs: 0.25rem; /* 4px */
+        --space-sm: 0.5rem; /* 8px */
+        --space-md: 1rem; /* 16px */
+        --space-lg: 1.5rem; /* 24px */
+        --space-xl: 2rem; /* 32px */
+        --space-2xl: 3rem; /* 48px */
+        --space-3xl: 4rem; /* 64px */
+        --space-4xl: 6rem; /* 96px */
 
         /* ========================================
        Border Radius
        ======================================== */
-        --radius-sm: 0.375rem; /* 6px - Small elements */
-        --radius-md: 0.5rem; /* 8px - Buttons, inputs */
-        --radius-lg: 0.75rem; /* 12px - Cards */
-        --radius-xl: 1rem; /* 16px - Large cards */
-        --radius-2xl: 1.5rem; /* 24px - Hero sections */
-        --radius-full: 9999px; /* Full rounded - Badges, avatars */
+        --radius-sm: 0.375rem; /* 6px */
+        --radius-md: 0.5rem; /* 8px */
+        --radius-lg: 0.75rem; /* 12px */
+        --radius-xl: 1rem; /* 16px */
+        --radius-2xl: 1.5rem; /* 24px */
+        --radius-full: 9999px;
 
         /* ========================================
-       Shadow Depths
+       Shadow Depths (OKLCH alpha)
        ======================================== */
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
         --shadow-md:
-            0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
         --shadow-lg:
-            0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
         --shadow-xl:
-            0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-        --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-        --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+            0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0 0 0 / 0.1);
+        --shadow-2xl: 0 25px 50px -12px oklch(0 0 0 / 0.25);
+        --shadow-inner: inset 0 2px 4px 0 oklch(0 0 0 / 0.05);
 
-        /* Focus Ring Shadow */
-        --shadow-focus-green: 0 0 0 3px rgb(var(--brand-primary) / 0.5);
-        --shadow-focus-slate: 0 0 0 3px rgb(var(--neutral-500) / 0.5);
+        /* Focus Ring Shadows (OKLCH alpha) */
+        --shadow-focus-green: 0 0 0 3px oklch(0.723 0.192 150 / 0.5);
+        --shadow-focus-slate: 0 0 0 3px oklch(0.554 0.041 257 / 0.5);
 
         /* ========================================
        Typography Scale
@@ -105,11 +106,11 @@
         --font-bold: 700;
 
         /* Line Heights */
-        --leading-tight: 1.25; /* 제목용 */
-        --leading-snug: 1.375; /* 짧은 단락 */
-        --leading-normal: 1.5; /* 본문 기본 */
-        --leading-relaxed: 1.625; /* 긴 글 */
-        --leading-loose: 2; /* 매우 넓은 행간 */
+        --leading-tight: 1.25;
+        --leading-snug: 1.375;
+        --leading-normal: 1.5;
+        --leading-relaxed: 1.625;
+        --leading-loose: 2;
 
         /* ========================================
        Transitions & Animations
@@ -150,139 +151,96 @@
         --z-tooltip: 1070;
         --z-notification: 1080;
         --z-max: 9999;
-
-        /* ========================================
-       Breakpoints (for reference)
-       ======================================== */
-        /*
-    --breakpoint-sm: 640px;   (Tailwind sm)
-    --breakpoint-md: 768px;   (Tailwind md)
-    --breakpoint-lg: 1024px;  (Tailwind lg)
-    --breakpoint-xl: 1280px;  (Tailwind xl)
-    --breakpoint-2xl: 1536px; (Tailwind 2xl)
-    */
     }
 
     :root,
     .theme-dark,
     .dark {
         /* ========================================
-       Semantic Colors
+       Semantic Colors (Dark Theme, OKLCH)
        ======================================== */
 
         /* Background */
-        --color-bg-primary: var(--neutral-900); /* Body 배경 */
-        --color-bg-secondary: var(--neutral-800); /* 카드, 섹션 배경 */
-        --color-bg-tertiary: var(--neutral-700); /* 입력 필드, 보조 요소 */
-        --color-bg-elevated: var(
-            --color-bg-secondary
-        ); /* 떠있는 요소 (모달, 드롭다운) */
+        --color-bg-primary: var(--neutral-900);
+        --color-bg-secondary: var(--neutral-800);
+        --color-bg-tertiary: var(--neutral-700);
+        --color-bg-elevated: var(--color-bg-secondary);
 
         /* Text */
-        --color-text-primary: var(--neutral-50); /* 제목, 중요 텍스트 */
-        --color-text-secondary: var(--neutral-200); /* 본문 텍스트 */
-        --color-text-muted: var(--neutral-400); /* 보조 텍스트, 메타데이터 */
-        --color-text-disabled: var(--neutral-600); /* 비활성 텍스트 */
+        --color-text-primary: var(--neutral-50);
+        --color-text-secondary: var(--neutral-200);
+        --color-text-muted: var(--neutral-400);
+        --color-text-disabled: var(--neutral-600);
 
         /* Border */
-        --color-border: var(--neutral-700); /* 기본 테두리 */
-        --color-border-light: var(
-            --color-text-disabled
-        ); /* 호버, 포커스 테두리 */
-        --color-border-dark: var(--color-bg-secondary); /* 미묘한 구분선 */
+        --color-border: var(--neutral-700);
+        --color-border-light: var(--color-text-disabled);
+        --color-border-dark: var(--color-bg-secondary);
 
         /* Surface Interaction */
-        --color-bg-hover: var(--neutral-600); /* surface hover 배경 */
+        --color-bg-hover: var(--neutral-600);
 
         /* Accent Text */
-        --semantic-link: var(--brand-primary-light); /* 링크 텍스트 */
-        --semantic-link-hover: var(--brand-primary); /* 링크 hover */
-        --semantic-accent-text: var(
-            --brand-primary-light
-        ); /* 섹션 제목, 강조 텍스트 */
-        --semantic-accent-text-hover: var(
-            --brand-primary
-        ); /* 강조 텍스트 hover */
-        --semantic-brand-solid: var(
-            --brand-primary-dark
-        ); /* 단색 브랜드 배경 */
-        --semantic-brand-solid-hover: var(
-            --brand-primary-deep
-        ); /* 단색 브랜드 배경 hover */
-        --semantic-info-solid: 37 99 235; /* blue-600 - 단색 정보 배경 */
-        --semantic-info-solid-hover: 29 78 216; /* blue-700 - 단색 정보 배경 hover */
-        --semantic-info-text: 96 165 250; /* blue-400 - 정보성 텍스트 */
-        --semantic-info-text-hover: var(
-            --semantic-info-solid
-        ); /* 정보성 텍스트 hover */
-        --semantic-danger-solid: 220 38 38; /* red-600 - 단색 위험 배경 */
-        --semantic-danger-solid-hover: 185 28 28; /* red-700 - 단색 위험 배경 hover */
-        --semantic-danger-text: 248 113 113; /* red-400 - 위험 텍스트 */
-        --semantic-danger-text-hover: 239 68 68; /* red-500 - 위험 텍스트 hover */
+        --semantic-link: var(--brand-primary-light);
+        --semantic-link-hover: var(--brand-primary);
+        --semantic-accent-text: var(--brand-primary-light);
+        --semantic-accent-text-hover: var(--brand-primary);
+        --semantic-brand-solid: var(--brand-primary-dark);
+        --semantic-brand-solid-hover: var(--brand-primary-deep);
+        --semantic-info-solid: oklch(0.546 0.215 263); /* blue-600 */
+        --semantic-info-solid-hover: oklch(0.488 0.217 264); /* blue-700 */
+        --semantic-info-text: oklch(0.714 0.143 255); /* blue-400 */
+        --semantic-info-text-hover: var(--semantic-info-solid);
+        --semantic-danger-solid: oklch(0.577 0.215 27); /* red-600 */
+        --semantic-danger-solid-hover: oklch(0.505 0.191 28); /* red-700 */
+        --semantic-danger-text: oklch(0.711 0.166 22); /* red-400 */
+        --semantic-danger-text-hover: oklch(0.637 0.208 25); /* red-500 */
 
         /* Prose */
-        --color-prose-heading: var(
-            --brand-primary-light
-        ); /* green-400 - 헤딩 포인트 (dark bg에서 높은 대비) */
+        --color-prose-heading: var(--brand-primary-light);
     }
 
     .theme-light,
     .light {
         /* Background */
-        --color-bg-primary: var(--neutral-50); /* Body 배경 */
-        --color-bg-secondary: var(--neutral-100); /* 카드, 섹션 배경 */
-        --color-bg-tertiary: var(--neutral-200); /* 입력 필드, 보조 요소 */
-        --color-bg-elevated: 255 255 255; /* 떠있는 요소 (모달, 드롭다운) */
+        --color-bg-primary: var(--neutral-50);
+        --color-bg-secondary: var(--neutral-100);
+        --color-bg-tertiary: var(--neutral-200);
+        --color-bg-elevated: oklch(1 0 0); /* white */
 
         /* Text */
-        --color-text-primary: var(--neutral-950); /* 제목, 중요 텍스트 */
-        --color-text-secondary: var(--neutral-800); /* 본문 텍스트 */
-        --color-text-muted: var(--neutral-600); /* 보조 텍스트, 메타데이터 */
-        --color-text-disabled: var(--neutral-400); /* 비활성 텍스트 */
+        --color-text-primary: var(--neutral-950);
+        --color-text-secondary: var(--neutral-800);
+        --color-text-muted: var(--neutral-600);
+        --color-text-disabled: var(--neutral-400);
 
         /* Border */
-        --color-border: var(--neutral-300); /* 기본 테두리 */
-        --color-border-light: var(
-            --color-text-disabled
-        ); /* 호버, 포커스 테두리 */
-        --color-border-dark: var(--color-bg-tertiary); /* 미묘한 구분선 */
+        --color-border: var(--neutral-300);
+        --color-border-light: var(--color-text-disabled);
+        --color-border-dark: var(--color-bg-tertiary);
 
         /* Surface Interaction */
-        --color-bg-hover: var(--neutral-300); /* surface hover 배경 */
+        --color-bg-hover: var(--neutral-300);
 
         /* Accent Text */
-        --semantic-link: var(--brand-primary-dark); /* 링크 텍스트 */
-        --semantic-link-hover: var(--brand-primary-deep); /* 링크 hover */
-        --semantic-accent-text: var(
-            --brand-primary-dark
-        ); /* 섹션 제목, 강조 텍스트 */
-        --semantic-accent-text-hover: var(
-            --brand-primary-deep
-        ); /* 강조 텍스트 hover */
-        --semantic-brand-solid: var(
-            --brand-primary-dark
-        ); /* 단색 브랜드 배경 */
-        --semantic-brand-solid-hover: var(
-            --brand-primary-deep
-        ); /* 단색 브랜드 배경 hover */
-        --semantic-info-solid: 37 99 235; /* blue-600 - 단색 정보 배경 */
-        --semantic-info-solid-hover: 29 78 216; /* blue-700 - 단색 정보 배경 hover */
-        --semantic-info-text: var(--semantic-info-solid); /* 정보성 텍스트 */
-        --semantic-info-text-hover: var(
-            --semantic-info-solid-hover
-        ); /* 정보성 텍스트 hover */
-        --semantic-danger-solid: 220 38 38; /* red-600 - 단색 위험 배경 */
-        --semantic-danger-solid-hover: 185 28 28; /* red-700 - 단색 위험 배경 hover */
-        --semantic-danger-text: var(--semantic-danger-solid); /* 위험 텍스트 */
-        --semantic-danger-text-hover: var(
-            --semantic-danger-solid-hover
-        ); /* 위험 텍스트 hover */
+        --semantic-link: var(--brand-primary-dark);
+        --semantic-link-hover: var(--brand-primary-deep);
+        --semantic-accent-text: var(--brand-primary-dark);
+        --semantic-accent-text-hover: var(--brand-primary-deep);
+        --semantic-brand-solid: var(--brand-primary-dark);
+        --semantic-brand-solid-hover: var(--brand-primary-deep);
+        --semantic-info-solid: oklch(0.546 0.215 263); /* blue-600 */
+        --semantic-info-solid-hover: oklch(0.488 0.217 264); /* blue-700 */
+        --semantic-info-text: var(--semantic-info-solid);
+        --semantic-info-text-hover: var(--semantic-info-solid-hover);
+        --semantic-danger-solid: oklch(0.577 0.215 27); /* red-600 */
+        --semantic-danger-solid-hover: oklch(0.505 0.191 28); /* red-700 */
+        --semantic-danger-text: var(--semantic-danger-solid);
+        --semantic-danger-text-hover: var(--semantic-danger-solid-hover);
 
         /* Prose */
-        --color-prose-heading: var(
-            --brand-primary-dark
-        ); /* green-700 - 헤딩 포인트 (light bg에서 높은 대비) */
-        --color-prose-strong: 7 89 133; /* sky-800 - 강조 텍스트 포인트 (light bg에서 높은 대비) */
+        --color-prose-heading: var(--brand-primary-dark);
+        --color-prose-strong: oklch(0.449 0.104 240); /* sky-800 */
     }
 
     /* ========================================
@@ -311,7 +269,7 @@
 }
 
 /* ========================================
-   Utility Classes (Optional)
+   Utility Classes
    ======================================== */
 
 /* Focus Visible (for better keyboard navigation) */
