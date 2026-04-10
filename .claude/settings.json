@@ -23,7 +23,6 @@
     ]
   },
   "enabledPlugins": {
-    "serena@claude-plugins-official": true,
     "ruby-rbs@stevegeek-marketplace": true
   }
 }
