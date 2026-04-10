@@ -10,20 +10,6 @@
       ],
       "enabled": true
     },
-    "serena": {
-      "enabled": true,
-      "type": "local",
-      "command": [
-        "uvx",
-        "--from",
-        "git+https://github.com/oraios/serena",
-        "serena",
-        "start-mcp-server",
-        "--context",
-        "ide",
-        "--project-from-cwd"
-      ]
-    },
     "rails-ai-context": {
       "type": "local",
       "command": [
