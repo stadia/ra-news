@@ -19,3 +19,6 @@ AllCops:
 
 Layout/LeadingCommentSpace:
   Enabled: false
+
+Bundler/OrderedGems:
+  Enabled: true

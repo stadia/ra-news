@@ -26,9 +26,9 @@ gem "devise", "~> 5.0"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
+gem "solid_cable"
 gem "solid_cache"
 gem "solid_queue"
-gem "solid_cable"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
@@ -54,9 +54,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop", require: false
+  gem "rubocop-minitest", require: false
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-rbs_inline", require: false
-  gem "rubocop-minitest", require: false
   # gem "steep", require: false
   gem "dotenv-rails"
   gem "faker"
@@ -67,12 +67,12 @@ end
 
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-  gem "sorbet"
-  gem "ruby_ui", "~> 1.1"
-  gem "ruby-lsp-i18n", require: false
-  gem "ruby-lsp-brakeman", require: false
   gem "letter_opener"
+  gem "ruby-lsp-brakeman", require: false
+  gem "ruby-lsp-i18n", require: false
+  gem "ruby_ui", "~> 1.1"
+  gem "sorbet"
+  gem "web-console"
 end
 
 group :test do
@@ -81,68 +81,65 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "sorbet-runtime"
-gem "pagy", "~> 43.5" # omit patch digit
 gem "google-protobuf", require: false
+gem "pagy", "~> 43.5" # omit patch digit
+gem "sorbet-runtime"
 # silence Ruby 3.4 warnings
-gem "ostruct"
-gem "mission_control-jobs"
-gem "rss"
-gem "kramdown"
-gem "sitemap_generator"
-gem "meta-tags"
-gem "schema_dot_org"
-gem "ruby-readability"
 gem "acts-as-taggable-on"
-gem "rails-i18n"
-gem "yt"
-gem "pg_search"
-gem "hairtrigger"
-gem "madmin", "~> 2.3"
-gem "discard"
 gem "awesome_nested_set"
+gem "discard"
+gem "hairtrigger"
+gem "kramdown"
+gem "madmin", "~> 2.3"
+gem "meta-tags"
+gem "mission_control-jobs"
 gem "neighbor"
 gem "oauth2", "~> 2.0"
+gem "ostruct"
+gem "pg_search"
+gem "rails-i18n"
+gem "rss"
+gem "ruby-readability"
+gem "schema_dot_org"
+gem "sitemap_generator"
+gem "yt"
 # Use sqlite3 as the database for Active Record
-gem "sqlite3", ">= 2.1"
-gem "youtube-transcript-rb", "~> 0.2.0"
 gem "dry-operation"
 gem "pg_reports", "~> 0.5.4"
+gem "sqlite3", ">= 2.1"
+gem "youtube-transcript-rb", "~> 0.2.0"
 
-gem "phlex-rails", "~> 2.4"
-gem "phlex-icons"
-gem "tailwind_merge", "~> 1.4"
-
-gem "ruby_llm", "~> 1.14"
-gem "ruby_llm-schema"
-
-gem "web-push", "~> 3.1"
-gem "ruby-mcp-client", "~> 1.0"
+gem "amazing_print"
+gem "appsignal"
 gem "federails", github: "stadia/federails"
 # gem "federails", path: "../federails"
-gem "oj"
-gem "socialization"
 gem "friendly_id"
-gem "amazing_print"
+gem "lexxy", "~> 0.9.5.beta"
+gem "oj"
+gem "pg_query"
+gem "phlex-icons"
+gem "phlex-rails", "~> 2.4"
+gem "prosopite"
+gem "rails-ai-context"
 gem "rails_semantic_logger"
+gem "rorvswild"
+gem "ruby_llm", "~> 1.14"
+gem "ruby_llm-schema"
+gem "ruby-mcp-client", "~> 1.0"
+gem "socialization"
+gem "tailwind_merge", "~> 1.4"
+gem "web-push", "~> 3.1"
 
-gem "opentelemetry-sdk", "~> 1.10"
 gem "opentelemetry-exporter-otlp"
 gem "opentelemetry-exporter-otlp-logs"
-gem "opentelemetry-instrumentation-rails"
-gem "opentelemetry-instrumentation-pg"
-gem "opentelemetry-instrumentation-http"
 gem "opentelemetry-instrumentation-concurrent_ruby"
-gem "opentelemetry-instrumentation-faraday"
-gem "opentelemetry-instrumentation-rake"
 gem "opentelemetry-instrumentation-ethon"
+gem "opentelemetry-instrumentation-faraday"
+gem "opentelemetry-instrumentation-http"
 gem "opentelemetry-instrumentation-http_client"
 gem "opentelemetry-instrumentation-net_http"
+gem "opentelemetry-instrumentation-pg"
+gem "opentelemetry-instrumentation-rails"
+gem "opentelemetry-instrumentation-rake"
 gem "opentelemetry-instrumentation-ruby_llm"
-
-gem "appsignal"
-gem "prosopite"
-gem "pg_query"
-gem "rorvswild"
-gem "rails-ai-context"
-gem "lexxy", "~> 0.9.5.beta"
+gem "opentelemetry-sdk", "~> 1.10"
