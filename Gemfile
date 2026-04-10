@@ -140,11 +140,9 @@ gem "opentelemetry-instrumentation-http_client"
 gem "opentelemetry-instrumentation-net_http"
 gem "opentelemetry-instrumentation-ruby_llm"
 
-gem "appsignal", "~> 4.8"
+gem "appsignal"
 gem "prosopite"
 gem "pg_query"
 gem "rorvswild"
-
-gem "rails-ai-context", "~> 5.7"
-
+gem "rails-ai-context"
 gem "lexxy", "~> 0.9.5.beta"
