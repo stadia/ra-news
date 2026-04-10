@@ -11,7 +11,9 @@ class HackerNewsSiteJob < ApplicationJob
     client = site.init_client
     top_story_ids = client.new_stories
 
-    tags = Tag.where(is_confirmed: true, taggings_count: 2...).map(&:name)
+    tag_terms = Tag.where(taggings_count: 2..).order(taggings_count: :desc).limit(50).pluck(:name)
+                   .map { |n| Regexp.escape(n.downcase.gsub(/[-_]/, " ")) }
+    tag_pattern = Regexp.new("\\b(#{tag_terms.join("|")})\\b")
 
     # Process each story ID
     top_story_ids.each do |id|
@@ -22,7 +24,7 @@ class HackerNewsSiteJob < ApplicationJob
       url = item["url"]
       begin
         parsed_url = URI.parse(url)
-      rescue StandardError => e
+      rescue => e
         logger.error "Failed to parse URL #{url}: #{e.message}"
         next
       end
@@ -31,9 +33,8 @@ class HackerNewsSiteJob < ApplicationJob
 
       break if site.last_checked_at > Time.at(item["time"])
 
-      # Check if title or text contains any of the tags
-      title_text = "#{item['title']} #{item['text']}".downcase
-      has_matching_tag = tags.any? { |tag| title_text.include?(tag.downcase) }
+      title_text = "#{item["title"]} #{item["text"]}".downcase
+      has_matching_tag = tag_pattern.match?(title_text)
       # Skip if no matching tags found
       next unless has_matching_tag
 
