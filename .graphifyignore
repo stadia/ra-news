@@ -1,0 +1,6 @@
+lib/
+vendor/
+node_modules/
+public/
+app/components/
+*.generated.py

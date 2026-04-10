@@ -33,5 +33,8 @@
         "ai:serve"
       ]
     }
-  }
+  },
+  "plugin": [
+    ".opencode/plugins/graphify.js"
+  ]
 }

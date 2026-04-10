@@ -207,3 +207,12 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 
 - **federails**: `../federails` — federails 관련 코드 조회·수정 시 반드시 이 로컬 경로를 사용한다. 번들러 캐시(`~/.local/share/mise/.../bundler/gems/federails-*`)는 읽지 않는다.
 - federails 수정이 필요하거나 원인이 federails에 있다고 판단되면, 앱에서 임시 우회 패치를 넣기 전에 반드시 `../federails`를 직접 확인하고 그 저장소에서 우선 수정한다.
+
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current
