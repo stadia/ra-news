@@ -1,12 +1,18 @@
-# PostgreSQL 17 + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
+# PostgreSQL + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
 
-# 베이스 이미지: pgvector 17
-FROM pgvector/pgvector:pg17
+# 빌드 아규먼트: PostgreSQL 버전 (기본값 18)
+ARG PG_VERSION=18
+
+# 베이스 이미지: pgvector (동적 버전)
+FROM pgvector/pgvector:pg${PG_VERSION}
+
+# FROM 이후에 ARG 재선언 필요
+ARG PG_VERSION
 
 COPY mecab-ko-dic-2.1.1-20180720.tar.gz /tmp/mecab-ko-dic-2.1.1.tar.gz
 
 # 필수 패키지 설치, 확장 빌드 및 정리
-RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-17 postgresql-contrib-17 automake1.11" \
+RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-${PG_VERSION} postgresql-contrib-${PG_VERSION} automake1.11" \
     && apt-get update \
     && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates mecab \
     \
