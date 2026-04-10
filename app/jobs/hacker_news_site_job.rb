@@ -11,7 +11,8 @@ class HackerNewsSiteJob < ApplicationJob
     client = site.init_client
     top_story_ids = client.new_stories
 
-    tag_terms = Tag.where(taggings_count: 2..).order(taggings_count: :desc).limit(50).pluck(:name)
+    tag_terms = %w[ruby rails]
+    tag_terms += Tag.where(is_confirmed: true, taggings_count: 2..).order(taggings_count: :desc).limit(50).pluck(:name)
                    .map { |n| Regexp.escape(n.downcase.gsub(/[-_]/, " ")) }
     tag_pattern = Regexp.new("\\b(#{tag_terms.join("|")})\\b")
 
