@@ -147,4 +147,4 @@ gem "rorvswild"
 
 gem "rails-ai-context", "~> 5.4"
 
-gem "lexxy", "~> 0.9.2.beta"
+gem "lexxy", "~> 0.9.5.beta"
