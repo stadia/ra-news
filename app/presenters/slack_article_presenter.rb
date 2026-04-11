@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SlackMessageBuilder
+class SlackArticlePresenter
   include Rails.application.routes.url_helpers
 
   def initialize(article)

@@ -9,7 +9,7 @@ class SlackArticleDeliveryJob < ApplicationJob
     return unless article && workspace
 
     delivery = find_or_create_delivery(article, workspace, channel_id, channel_name)
-    message = SlackMessageBuilder.new(article)
+    message = SlackArticlePresenter.new(article)
 
     delivery.with_lock do
       return if delivery.sent?
