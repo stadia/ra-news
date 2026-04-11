@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+acme:
+  team_id: T123ACME
+  team_name: Acme Workspace
+  bot_access_token: xoxb-acme-token
+  bot_user_id: UACMEBOT
+  status: active
+  last_verified_at: <%= 1.hour.ago %>
+
+globex:
+  team_id: T456GLOBEX
+  team_name: Globex Workspace
+  bot_access_token: xoxb-globex-token
+  bot_user_id: UGLOBEXBOT
+  status: active
+  last_verified_at: <%= 2.hours.ago %>

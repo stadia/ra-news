@@ -18,6 +18,7 @@ class Views::Users::Edit < Views::Base
       end
 
       render Components::Users::Form.new(user: @user)
+      render Components::Users::SlackWorkspaceSubscriptions.new(user: @user)
     end
   end
 end

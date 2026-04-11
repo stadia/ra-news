@@ -1,0 +1,25 @@
+# frozen_string_literal: true
+
+john_acme:
+  user: john
+  slack_workspace: acme
+  slack_user_id: UJOHN1
+  channel_id: CNEWS1
+  channel_name: ruby-news
+  active: true
+
+jane_acme_same_channel:
+  user: jane
+  slack_workspace: acme
+  slack_user_id: UJANE1
+  channel_id: CNEWS1
+  channel_name: ruby-news
+  active: true
+
+jane_globex:
+  user: jane
+  slack_workspace: globex
+  slack_user_id: UJANE2
+  channel_id: CNEWS2
+  channel_name: team-ruby
+  active: true

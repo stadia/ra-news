@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+existing_delivery:
+  article: ruby_article
+  slack_workspace: acme
+  channel_id: CDELIVERED
+  channel_name: delivered
+  status: sent
+  sent_at: <%= 30.minutes.ago %>

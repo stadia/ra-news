@@ -8,6 +8,8 @@ class User < ApplicationRecord
   has_many :push_subscriptions, dependent: :destroy
   has_many :articles, dependent: :nullify
   has_many :posts, dependent: :destroy
+  has_many :user_workspace_subscriptions, dependent: :destroy
+  has_many :slack_workspaces, through: :user_workspace_subscriptions
 
   validates :username, presence: true,
                       uniqueness: { case_sensitive: false },

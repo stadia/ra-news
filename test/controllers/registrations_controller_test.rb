@@ -27,6 +27,8 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select 'input[name="user[username]"]', 0
     assert_select "a[href='#{account_password_path}']", text: "비밀번호 변경"
     assert_select "a[href='#{user_profile_path(user)}']", text: "돌아가기"
+    assert_select "h2", text: "Slack 채널 구독"
+    assert_select "a[href='#{slack_install_path}']", text: "워크스페이스 연결"
   end
 
   test "PATCH update changes name and email but not username" do

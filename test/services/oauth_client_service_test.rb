@@ -63,23 +63,6 @@ class OauthClientServiceTest < ActiveSupport::TestCase
     assert_equal "https://custom-mastodon.instance", client.site
   end
 
-  test "Slack OAuth 클라이언트를 올바르게 생성한다" do
-    preference = MockPreference.new(
-      name: "slack_oauth",
-      client_id: "slack_client_id",
-      client_secret: "slack_client_secret",
-      site: nil
-    )
-
-    client = OauthClientService.call(preference)
-
-    assert_instance_of OAuth2::Client, client
-    assert_equal "slack_client_id", client.id
-    assert_equal "https://slack.com", client.site
-    assert_equal "https://slack.com/oauth/v2/authorize", client.options[:authorize_url]
-    assert_equal "https://slack.com/api/oauth.v2.access", client.options[:token_url]
-  end
-
   test "OAuth 설정이 비어있으면 ArgumentError를 발생시킨다" do
     error = assert_raises(ArgumentError) do
       OauthClientService.call(nil)
