@@ -38,7 +38,15 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
             workspaces.each do |workspace|
               subscription = subscriptions_by_workspace_id[workspace.id]
 
-              div(class: "rounded-xl border border-border-strong bg-surface p-5 space-y-4") do
+              div(
+                class: "rounded-xl border border-border-strong bg-surface p-5 space-y-4",
+                data: {
+                  controller: "workspace-subscription-channels",
+                  workspace_subscription_channels_url_value: channels_slack_workspace_subscription_path(workspace, format: :json),
+                  workspace_subscription_channels_selected_id_value: subscription&.channel_id.to_s,
+                  workspace_subscription_channels_selected_name_value: subscription&.channel_name.to_s
+                }
+              ) do
                 div(class: "flex items-center justify-between gap-4") do
                   div do
                     h3(class: "font-semibold text-content") { workspace.team_name }
@@ -48,16 +56,6 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
                   status_badge(workspace, subscription)
                 end
 
-                p(class: "text-xs text-content-muted") do
-                  plain "채널 목록 JSON: "
-                  a(
-                    href: channels_slack_workspace_subscription_path(workspace, format: :json),
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                    class: "text-link hover:text-link-hover underline"
-                  ) { "조회" }
-                end
-
                 form_with(
                   url: slack_workspace_subscription_path(workspace),
                   method: subscription&.persisted? ? :patch : :post,
@@ -65,23 +63,43 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
                 ) do |form|
                   render RubyUI::FormField.new do
                     render RubyUI::FormFieldLabel.new(for: "channel_id_#{workspace.id}") { "채널 ID" }
-                    form.text_field :channel_id,
+                    select(
                       name: "workspace_subscription[channel_id]",
                       id: "channel_id_#{workspace.id}",
-                      value: subscription&.channel_id,
-                      class: input_classes,
-                      placeholder: "C0123456789"
+                      data: {
+                        workspace_subscription_channels_target: "channelSelect",
+                        action: "focus->workspace-subscription-channels#load mousedown->workspace-subscription-channels#load change->workspace-subscription-channels#syncSelection"
+                      },
+                      class: input_classes
+                    ) do
+                      option(
+                        value: subscription&.channel_id.to_s,
+                        selected: true,
+                        data: { channel_name: subscription&.channel_name.to_s }
+                      ) do
+                        plain(subscription&.channel_name.present? ? "##{subscription.channel_name}" : "채널을 선택하려면 클릭하세요")
+                      end
+                    end
                   end
 
-                  render RubyUI::FormField.new do
-                    render RubyUI::FormFieldLabel.new(for: "channel_name_#{workspace.id}") { "채널 이름" }
-                    form.text_field :channel_name,
-                      name: "workspace_subscription[channel_name]",
-                      id: "channel_name_#{workspace.id}",
-                      value: subscription&.channel_name,
-                      class: input_classes,
-                      placeholder: "ruby-news"
+                  p(
+                    class: "text-xs text-content-muted"
+                  ) do
+                    plain(subscription&.channel_name.present? ? "현재 저장된 채널: ##{subscription.channel_name}" : "현재 저장된 채널이 없습니다.")
                   end
+
+                  p(
+                    class: "text-xs text-content-muted",
+                    data: { workspace_subscription_channels_target: "feedback" }
+                  ) do
+                    plain "채널 선택 박스를 클릭하면 목록을 자동으로 불러옵니다."
+                  end
+
+                  form.hidden_field :channel_name,
+                    name: "workspace_subscription[channel_name]",
+                    id: "channel_name_#{workspace.id}",
+                    value: subscription&.channel_name,
+                    data: { workspace_subscription_channels_target: "channelName" }
 
                   div(class: "flex items-center justify-end gap-3") do
                     render RubyUI::Button.new(
