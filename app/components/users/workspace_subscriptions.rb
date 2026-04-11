@@ -51,7 +51,7 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
                 p(class: "text-xs text-content-muted") do
                   plain "채널 목록 JSON: "
                   a(
-                    href: slack_workspace_channels_path(workspace, format: :json),
+                    href: channels_slack_workspace_subscription_path(workspace, format: :json),
                     target: "_blank",
                     rel: "noopener noreferrer",
                     class: "text-link hover:text-link-hover underline"

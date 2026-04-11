@@ -44,13 +44,18 @@ Rails.application.routes.draw do
 
   get "social/:provider/authorize", to: "social#provider_authorize", as: :social_provider_authorize
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
+
   get "slack/install", to: "slack#install", as: :slack_install
   get "slack/oauth/callback", to: "slack#callback", as: :slack_oauth_callback
   post "slack/events", to: "slack#events", as: :slack_events
-  get "account/slack/workspaces/:slack_workspace_id/channels", to: "workspace_subscriptions#channels", as: :slack_workspace_channels
-  post "account/slack/workspaces/:slack_workspace_id/subscription", to: "workspace_subscriptions#create", as: :slack_workspace_subscription
-  patch "account/slack/workspaces/:slack_workspace_id/subscription", to: "workspace_subscriptions#update"
-  delete "account/slack/workspaces/:slack_workspace_id/subscription", to: "workspace_subscriptions#destroy"
+
+  scope "account/slack" do
+    resources :slack_workspaces, path: "workspaces", only: [] do
+      resource :subscription, only: %i[create update destroy], controller: :workspace_subscriptions do
+        get :channels, on: :member
+      end
+    end
+  end
 
   # Public user profiles at /@username (also used as ActivityPub profile_url)
   # 1. 실제 요청을 처리할 내부 라우트 (컨트롤러 연결)
