@@ -7,10 +7,10 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
 
   setup do
     @article = articles(:ruby_article)
-    UserWorkspaceSubscription.delete_all
+    WorkspaceSubscription.delete_all
     SlackArticleDelivery.where(article: @article).delete_all
 
-    UserWorkspaceSubscription.create!(
+    WorkspaceSubscription.create!(
       user: users(:john),
       slack_workspace: slack_workspaces(:acme),
       slack_user_id: "UJOHN1",
@@ -18,7 +18,7 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
       channel_name: "ruby-news",
       active: true
     )
-    UserWorkspaceSubscription.create!(
+    WorkspaceSubscription.create!(
       user: users(:jane),
       slack_workspace: slack_workspaces(:acme),
       slack_user_id: "UJANE1",
@@ -26,7 +26,7 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
       channel_name: "ruby-news",
       active: true
     )
-    UserWorkspaceSubscription.create!(
+    WorkspaceSubscription.create!(
       user: users(:jane),
       slack_workspace: slack_workspaces(:globex),
       slack_user_id: "UJANE2",
@@ -43,6 +43,7 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
 
     enqueued = enqueued_jobs.select { |j| j[:job] == SlackArticleDeliveryJob }
     channel_ids = enqueued.map { |j| j[:args][2] }.sort
+
     assert_equal %w[CNEWS1 CNEWS2], channel_ids
   end
 

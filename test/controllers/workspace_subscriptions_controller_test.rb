@@ -2,13 +2,19 @@
 
 require "test_helper"
 
-class UserWorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
+class WorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
   test "POST create_or_update stores workspace channel selection for current user" do
     sign_in_as(users(:john))
+    WorkspaceSubscription.create!(
+      user: users(:john),
+      slack_workspace: slack_workspaces(:globex),
+      slack_user_id: "UJOHN2",
+      active: false
+    )
 
-    assert_difference("UserWorkspaceSubscription.count", 1) do
+    assert_no_difference("WorkspaceSubscription.count") do
       post slack_workspace_subscription_path(slack_workspaces(:globex)), params: {
-        user_workspace_subscription: {
+        workspace_subscription: {
           channel_id: "CNEW123",
           channel_name: "alerts"
         }
@@ -17,7 +23,7 @@ class UserWorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to edit_user_registration_path
 
-    subscription = UserWorkspaceSubscription.find_by!(user: users(:john), slack_workspace: slack_workspaces(:globex))
+    subscription = WorkspaceSubscription.find_by!(user: users(:john), slack_workspace: slack_workspaces(:globex))
 
     assert_equal "CNEW123", subscription.channel_id
     assert_equal "alerts", subscription.channel_name
@@ -26,8 +32,8 @@ class UserWorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
   test "PATCH create_or_update updates existing subscription" do
     sign_in_as(users(:john))
 
-    patch slack_workspace_subscription_path(slack_workspaces(:acme)), params: {
-      user_workspace_subscription: {
+      patch slack_workspace_subscription_path(slack_workspaces(:acme)), params: {
+      workspace_subscription: {
         channel_id: "CUPDATED",
         channel_name: "updated-news"
       }

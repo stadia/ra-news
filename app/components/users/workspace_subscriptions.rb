@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Components::Users::SlackWorkspaceSubscriptions < Components::Base
+class Components::Users::WorkspaceSubscriptions < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::ButtonTo
   include PhlexIcons
@@ -66,7 +66,7 @@ class Components::Users::SlackWorkspaceSubscriptions < Components::Base
                   render RubyUI::FormField.new do
                     render RubyUI::FormFieldLabel.new(for: "channel_id_#{workspace.id}") { "채널 ID" }
                     form.text_field :channel_id,
-                      name: "user_workspace_subscription[channel_id]",
+                      name: "workspace_subscription[channel_id]",
                       id: "channel_id_#{workspace.id}",
                       value: subscription&.channel_id,
                       class: input_classes,
@@ -76,7 +76,7 @@ class Components::Users::SlackWorkspaceSubscriptions < Components::Base
                   render RubyUI::FormField.new do
                     render RubyUI::FormFieldLabel.new(for: "channel_name_#{workspace.id}") { "채널 이름" }
                     form.text_field :channel_name,
-                      name: "user_workspace_subscription[channel_name]",
+                      name: "workspace_subscription[channel_name]",
                       id: "channel_name_#{workspace.id}",
                       value: subscription&.channel_name,
                       class: input_classes,
@@ -123,7 +123,7 @@ class Components::Users::SlackWorkspaceSubscriptions < Components::Base
   end
 
   def subscriptions_by_workspace_id
-    @subscriptions_by_workspace_id ||= user.user_workspace_subscriptions.index_by(&:slack_workspace_id)
+    @subscriptions_by_workspace_id ||= user.workspace_subscriptions.index_by(&:slack_workspace_id)
   end
 
   def status_badge(workspace, subscription)

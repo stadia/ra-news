@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class UserWorkspaceSubscriptionsController < ApplicationController
+class WorkspaceSubscriptionsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_workspace
 
@@ -13,14 +13,14 @@ class UserWorkspaceSubscriptionsController < ApplicationController
   end
 
   def destroy
-    subscription = current_user.user_workspace_subscriptions.find_by!(slack_workspace: @workspace)
+    subscription = current_user.workspace_subscriptions.find_by!(slack_workspace: @workspace)
     subscription.update!(active: false)
 
     redirect_to edit_user_registration_path, notice: "Slack 채널 구독을 비활성화했습니다."
   end
 
   def channels
-    unless current_user.user_workspace_subscriptions.exists?(slack_workspace: @workspace)
+    unless current_user.workspace_subscriptions.exists?(slack_workspace: @workspace)
       render json: { error: "접근 권한이 없습니다." }, status: :forbidden
       return
     end
@@ -40,7 +40,7 @@ class UserWorkspaceSubscriptionsController < ApplicationController
   end
 
   def upsert_subscription
-    subscription = current_user.user_workspace_subscriptions.find_by(slack_workspace: @workspace)
+    subscription = current_user.workspace_subscriptions.find_by(slack_workspace: @workspace)
 
     unless subscription
       redirect_to edit_user_registration_path, alert: "해당 워크스페이스에 연결되어 있지 않습니다."
@@ -57,6 +57,6 @@ class UserWorkspaceSubscriptionsController < ApplicationController
   end
 
   def subscription_params
-    params.expect(user_workspace_subscription: [ :channel_id, :channel_name ])
+    params.expect(workspace_subscription: [ :channel_id, :channel_name ])
   end
 end

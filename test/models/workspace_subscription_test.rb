@@ -2,9 +2,9 @@
 
 require "test_helper"
 
-class UserWorkspaceSubscriptionTest < ActiveSupport::TestCase
+class WorkspaceSubscriptionTest < ActiveSupport::TestCase
   test "사용자와 워크스페이스 조합은 유일해야 한다" do
-    duplicate = UserWorkspaceSubscription.new(
+    duplicate = WorkspaceSubscription.new(
       user: users(:john),
       slack_workspace: slack_workspaces(:acme),
       slack_user_id: "UOTHER",
@@ -18,7 +18,7 @@ class UserWorkspaceSubscriptionTest < ActiveSupport::TestCase
   end
 
   test "활성 구독은 채널 정보가 필요하다" do
-    subscription = UserWorkspaceSubscription.new(
+    subscription = WorkspaceSubscription.new(
       user: users(:john),
       slack_workspace: slack_workspaces(:globex),
       slack_user_id: "UJOHN2",

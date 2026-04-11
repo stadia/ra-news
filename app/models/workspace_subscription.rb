@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-class UserWorkspaceSubscription < ApplicationRecord
+class WorkspaceSubscription < ApplicationRecord
+  self.table_name = "user_workspace_subscriptions"
+
   belongs_to :user
   belongs_to :slack_workspace
 

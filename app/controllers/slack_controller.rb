@@ -42,7 +42,7 @@ class SlackController < ApplicationController
     )
     workspace.save!
 
-    current_user.user_workspace_subscriptions.find_or_initialize_by(slack_workspace: workspace).tap do |subscription|
+    current_user.workspace_subscriptions.find_or_initialize_by(slack_workspace: workspace).tap do |subscription|
       subscription.slack_user_id ||= oauth.dig("authed_user", "id")
       subscription.save! if subscription.changed?
     end

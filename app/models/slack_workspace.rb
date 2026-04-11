@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class SlackWorkspace < ApplicationRecord
-  has_many :user_workspace_subscriptions, dependent: :destroy
-  has_many :users, through: :user_workspace_subscriptions
+  has_many :workspace_subscriptions, class_name: "WorkspaceSubscription", dependent: :destroy
+  has_many :users, through: :workspace_subscriptions
   has_many :slack_article_deliveries, dependent: :destroy
 
   enum :status, {

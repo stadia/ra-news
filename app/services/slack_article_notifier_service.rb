@@ -20,7 +20,7 @@ class SlackArticleNotifierService < OperationService
   private
 
   def targets(_article)
-    UserWorkspaceSubscription.active
+    WorkspaceSubscription.active
       .joins(:slack_workspace)
       .merge(SlackWorkspace.active)
       .includes(:slack_workspace)

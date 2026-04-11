@@ -19,16 +19,16 @@
   scopes: named
 - **Site** (table: sites) — has_many :articles [1v]
 - **SlackArticleDelivery** (table: slack_article_deliveries) — belongs_to :article, belongs_to :slack_workspace [5v]
-- **SlackWorkspace** (table: slack_workspaces) — has_many :user_workspace_subscriptions, has_many :users, has_many :slack_article_deliveries [3v]
+- **SlackWorkspace** (table: slack_workspaces) — has_many :workspace_subscriptions, has_many :users, has_many :slack_article_deliveries [3v]
   scopes: active
 - **Socialization::ActiveRecordStores::Follow** (table: follows) — belongs_to :follower, belongs_to :followable
 - **Socialization::ActiveRecordStores::Like** (table: likes) — belongs_to :liker, belongs_to :likeable
 - **Socialization::ActiveRecordStores::Mention** (table: mentions) — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** (table: tags) — has_many :taggings [3v]
   scopes: confirmed, unconfirmed
-- **User** (table: users) — has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :user_workspace_subscriptions, has_many :slack_workspaces, has_one :federails_actor [11v]
+- **User** (table: users) — has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :workspace_subscriptions, has_many :slack_workspaces, has_one :federails_actor [11v]
   scopes: with_role, admins
-- **UserWorkspaceSubscription** (table: user_workspace_subscriptions) — belongs_to :user, belongs_to :slack_workspace [4v]
+- **WorkspaceSubscription** (table: user_workspace_subscriptions) — belongs_to :user, belongs_to :slack_workspace [4v]
   scopes: active
 
 Use `rails_get_model_details(model:"Name")` for associations, validations, scopes, enums.
