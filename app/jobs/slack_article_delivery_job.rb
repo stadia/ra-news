@@ -20,19 +20,30 @@ class SlackArticleDeliveryJob < ApplicationJob
         blocks: message.blocks
       )
 
-      delivery.update!(
-        channel_name:,
-        status: :sent,
-        sent_at: Time.current,
-        error_message: nil,
-        slack_message_ts: response["ts"]
+      return if persist_delivery_success(delivery, channel_name, response["ts"])
+
+      Rails.logger.error(
+        "SlackArticleDeliveryJob failed to persist sent delivery " \
+        "delivery_id=#{delivery.id} article_id=#{article.id} workspace_id=#{workspace.id} " \
+        "channel_id=#{channel_id} errors=#{delivery.errors.full_messages.join(', ')}"
       )
+      raise ActiveRecord::RecordInvalid, delivery
     end
   rescue SlackClient::ApiError => e
     delivery&.update!(channel_name:, status: :failed, error_message: e.message)
   end
 
   private
+
+  def persist_delivery_success(delivery, channel_name, message_ts)
+    delivery.update(
+        channel_name:,
+        status: :sent,
+        sent_at: Time.current,
+        error_message: nil,
+        slack_message_ts: message_ts
+      )
+  end
 
   def find_or_create_delivery(article, workspace, channel_id, channel_name)
     SlackArticleDelivery.create!(

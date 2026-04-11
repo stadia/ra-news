@@ -65,12 +65,14 @@ class SlackController < ApplicationController
   def verify_slack_signature
     timestamp = request.headers["X-Slack-Request-Timestamp"]
     signature = request.headers["X-Slack-Signature"]
+    signing_secret = SlackConfig.signing_secret
 
     return head :unauthorized if timestamp.blank? || signature.blank?
+    return head :unauthorized if signing_secret.blank?
     return head :unauthorized if (Time.now.to_i - timestamp.to_i).abs > 300
 
     sig_basestring = "v0:#{timestamp}:#{request.raw_post}"
-    my_signature = "v0=" + OpenSSL::HMAC.hexdigest("SHA256", SlackConfig.signing_secret.to_s, sig_basestring)
+    my_signature = "v0=" + OpenSSL::HMAC.hexdigest("SHA256", signing_secret, sig_basestring)
 
     head :unauthorized unless ActiveSupport::SecurityUtils.secure_compare(my_signature, signature)
   end
