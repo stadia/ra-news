@@ -3,6 +3,8 @@
 require "test_helper"
 
 class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   setup do
     @article = articles(:ruby_article)
     UserWorkspaceSubscription.delete_all
@@ -34,51 +36,30 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
     )
   end
 
-  test "채널 기준으로 중복 없이 기사 알림을 발송한다" do
-    sent_messages = []
-    fake_client = Object.new
-    fake_client.define_singleton_method(:post_message) do |channel:, text:, blocks:|
-      sent_messages << { channel:, text:, blocks: }
-      { "ok" => true, "ts" => "123.456" }
-    end
-
-    SlackClient.stub(:new, fake_client) do
+  test "채널 기준으로 중복 없이 기사 알림 잡을 enqueue한다" do
+    assert_enqueued_jobs 2, only: SlackArticleDeliveryJob do
       SlackArticleNotifierService.new.call(@article)
     end
 
-    assert_equal %w[CNEWS1 CNEWS2], sent_messages.map { |message| message[:channel] }.sort
-    assert_equal 2, SlackArticleDelivery.where(article: @article).count
+    enqueued = enqueued_jobs.select { |j| j[:job] == SlackArticleDeliveryJob }
+    channel_ids = enqueued.map { |j| j[:args][2] }.sort
+    assert_equal %w[CNEWS1 CNEWS2], channel_ids
   end
 
-  test "이미 발송된 채널에는 다시 보내지 않는다" do
-    sent_messages = []
-    fake_client = Object.new
-    fake_client.define_singleton_method(:post_message) do |channel:, text:, blocks:|
-      sent_messages << { channel:, text:, blocks: }
-      { "ok" => true, "ts" => "123.456" }
-    end
-
-    SlackClient.stub(:new, fake_client) do
+  test "같은 기사에 대해 두 번 호출해도 각 채널마다 잡이 enqueue된다" do
+    # 중복 방지는 SlackArticleDeliveryJob 내부의 with_lock으로 처리됨
+    assert_enqueued_jobs 4, only: SlackArticleDeliveryJob do
       service = SlackArticleNotifierService.new
       service.call(@article)
       service.call(@article)
     end
-
-    assert_equal 2, sent_messages.size
-    assert_equal 2, SlackArticleDelivery.where(article: @article).count
   end
 
   test "confirmed 되지 않은 기사는 발송하지 않는다" do
     article = articles(:site_only_article)
-    fake_client = Object.new
-    fake_client.define_singleton_method(:post_message) do |**_kwargs|
-      raise "should not post"
-    end
 
-    SlackClient.stub(:new, fake_client) do
+    assert_no_enqueued_jobs only: SlackArticleDeliveryJob do
       SlackArticleNotifierService.new.call(article)
     end
-
-    assert_equal 0, SlackArticleDelivery.where(article: article).count
   end
 end

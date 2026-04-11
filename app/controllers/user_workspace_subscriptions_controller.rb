@@ -20,7 +20,14 @@ class UserWorkspaceSubscriptionsController < ApplicationController
   end
 
   def channels
-    channels = SlackClient.new(@workspace).list_channels
+    unless current_user.user_workspace_subscriptions.exists?(slack_workspace: @workspace)
+      render json: { error: "접근 권한이 없습니다." }, status: :forbidden
+      return
+    end
+
+    channels = Rails.cache.fetch("slack_channels/#{@workspace.id}", expires_in: 10.minutes) do
+      SlackClient.new(@workspace).list_channels
+    end
     render json: { channels: channels }
   rescue SlackClient::ApiError => e
     render json: { error: e.message }, status: :unprocessable_entity
@@ -33,7 +40,13 @@ class UserWorkspaceSubscriptionsController < ApplicationController
   end
 
   def upsert_subscription
-    subscription = current_user.user_workspace_subscriptions.find_or_initialize_by(slack_workspace: @workspace)
+    subscription = current_user.user_workspace_subscriptions.find_by(slack_workspace: @workspace)
+
+    unless subscription
+      redirect_to edit_user_registration_path, alert: "해당 워크스페이스에 연결되어 있지 않습니다."
+      return
+    end
+
     subscription.assign_attributes(subscription_params.merge(active: true))
 
     if subscription.save
@@ -44,6 +57,6 @@ class UserWorkspaceSubscriptionsController < ApplicationController
   end
 
   def subscription_params
-    params.expect(user_workspace_subscription: [ :slack_user_id, :channel_id, :channel_name ])
+    params.expect(user_workspace_subscription: [ :channel_id, :channel_name ])
   end
 end

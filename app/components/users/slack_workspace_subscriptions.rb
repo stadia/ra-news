@@ -20,12 +20,14 @@ class Components::Users::SlackWorkspaceSubscriptions < Components::Base
             end
           end
 
-          render RubyUI::Link.new(
-            href: slack_install_path,
-            class: "inline-flex items-center justify-center gap-2 rounded-xl bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground font-bold text-sm transition-all active:scale-95 shadow-lg"
-          ) do
-            Hero::Plus(variant: :outline, class: "w-4 h-4")
-            plain "워크스페이스 연결"
+          if SlackConfig.configured?
+            render RubyUI::Link.new(
+              href: slack_install_path,
+              class: "inline-flex items-center justify-center gap-2 rounded-xl bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground font-bold text-sm transition-all active:scale-95 shadow-lg"
+            ) do
+              Hero::Plus(variant: :outline, class: "w-4 h-4")
+              plain "워크스페이스 연결"
+            end
           end
         end
 
@@ -61,8 +63,6 @@ class Components::Users::SlackWorkspaceSubscriptions < Components::Base
                   method: subscription&.persisted? ? :patch : :post,
                   class: "space-y-4"
                 ) do |form|
-                  form.hidden_field :slack_user_id, name: "user_workspace_subscription[slack_user_id]", value: subscription&.slack_user_id
-
                   render RubyUI::FormField.new do
                     render RubyUI::FormFieldLabel.new(for: "channel_id_#{workspace.id}") { "채널 ID" }
                     form.text_field :channel_id,
@@ -128,11 +128,11 @@ class Components::Users::SlackWorkspaceSubscriptions < Components::Base
 
   def status_badge(workspace, subscription)
     text, classes = if subscription&.active?
-      [ "채널 설정됨", "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" ]
+      [ "채널 설정됨", "text-success bg-success/10 ring-1 ring-success/20" ]
     elsif workspace.active?
-      [ "워크스페이스 연결됨", "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300" ]
+      [ "워크스페이스 연결됨", "text-content-muted bg-surface ring-1 ring-border" ]
     else
-      [ "확인 필요", "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" ]
+      [ "확인 필요", "text-warning bg-warning/10 ring-1 ring-warning/20" ]
     end
 
     span(class: "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium #{classes}") { text }

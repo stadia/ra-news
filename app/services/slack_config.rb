@@ -1,17 +1,20 @@
 # frozen_string_literal: true
 
 class SlackConfig
+  PREFERENCE_KEY = "slack_oauth"
+  INSTALL_SCOPE = "channels:read,groups:read,chat:write"
+
   class << self
     def client_id
-      read(:client_id, "SLACK_CLIENT_ID")
+      preference&.client_id
     end
 
     def client_secret
-      read(:client_secret, "SLACK_CLIENT_SECRET")
+      preference&.client_secret
     end
 
     def signing_secret
-      read(:signing_secret, "SLACK_SIGNING_SECRET")
+      preference&.signing_secret
     end
 
     def configured?
@@ -19,13 +22,13 @@ class SlackConfig
     end
 
     def install_scope
-      "channels:read,groups:read,chat:write"
+      INSTALL_SCOPE
     end
 
     private
 
-    def read(credential_key, env_key)
-      Rails.application.credentials.dig(:slack, credential_key).presence || ENV[env_key].presence
+    def preference
+      Preference.get_object(PREFERENCE_KEY)
     end
   end
 end

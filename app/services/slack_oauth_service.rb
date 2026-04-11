@@ -2,7 +2,6 @@
 
 class SlackOauthService
   AUTHORIZE_URL = "https://slack.com/oauth/v2/authorize"
-  TOKEN_URL = "https://slack.com/api/oauth.v2.access"
 
   def authorize_url(redirect_uri:, state:)
     query = {
@@ -16,28 +15,27 @@ class SlackOauthService
   end
 
   def exchange_code(code, redirect_uri:)
-    response = connection.post do |request|
-      request.url TOKEN_URL
-      request.body = {
-        client_id: SlackConfig.client_id,
-        client_secret: SlackConfig.client_secret,
-        code:,
-        redirect_uri:
-      }
-    end
+    response = client.oauth_v2_access(
+      client_id: SlackConfig.client_id,
+      client_secret: SlackConfig.client_secret,
+      code:,
+      redirect_uri:
+    )
 
-    body = response.body
-    raise SlackClient::ApiError, body["error"] unless body["ok"]
-
-    body
+    response.to_h.with_indifferent_access
+  rescue Slack::Web::Api::Errors::SlackError => e
+    raise SlackClient::ApiError, e.message
+  rescue Faraday::Error => e
+    raise SlackClient::ApiError, "oauth_exchange_failed: #{e.class}"
   end
 
   private
 
-  def connection
-    Faraday.new do |faraday|
-      faraday.request :url_encoded
-      faraday.response :json
-    end
+  def client
+    @client ||= Slack::Web::Client.new(
+      token: nil,
+      open_timeout: 3,
+      timeout: 5
+    )
   end
 end

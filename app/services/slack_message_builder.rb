@@ -46,8 +46,7 @@ class SlackMessageBuilder
   end
 
   def article_url
-    article_url_options = { host: "ruby-news.kr", protocol: "https" }
-    Rails.application.routes.url_helpers.article_url(article, **article_url_options)
+    Rails.application.routes.url_helpers.article_url(article)
   end
 
   def published_label

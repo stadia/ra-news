@@ -9,7 +9,6 @@ class UserWorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_difference("UserWorkspaceSubscription.count", 1) do
       post slack_workspace_subscription_path(slack_workspaces(:globex)), params: {
         user_workspace_subscription: {
-          slack_user_id: "UJOHN-GLOBEX",
           channel_id: "CNEW123",
           channel_name: "alerts"
         }
@@ -19,9 +18,9 @@ class UserWorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_user_registration_path
 
     subscription = UserWorkspaceSubscription.find_by!(user: users(:john), slack_workspace: slack_workspaces(:globex))
+
     assert_equal "CNEW123", subscription.channel_id
     assert_equal "alerts", subscription.channel_name
-    assert_equal "UJOHN-GLOBEX", subscription.slack_user_id
   end
 
   test "PATCH create_or_update updates existing subscription" do
@@ -29,7 +28,6 @@ class UserWorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
 
     patch slack_workspace_subscription_path(slack_workspaces(:acme)), params: {
       user_workspace_subscription: {
-        slack_user_id: "UJOHN1",
         channel_id: "CUPDATED",
         channel_name: "updated-news"
       }
@@ -38,6 +36,7 @@ class UserWorkspaceSubscriptionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_user_registration_path
 
     subscription = user_workspace_subscriptions(:john_acme).reload
+
     assert_equal "CUPDATED", subscription.channel_id
     assert_equal "updated-news", subscription.channel_name
   end
