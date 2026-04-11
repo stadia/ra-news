@@ -71,13 +71,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
       "authed_user" => { "id" => "UJOHNCALLBACK" }
     }
 
-    oauth_stub = Struct.new(:response) do
-      def exchange_code(_code, redirect_uri:)
-        response
-      end
-    end
-
-    SlackOauthService.stub(:new, -> { oauth_stub.new(oauth_response) }) do
+    SlackOauth.stub(:exchange_code, oauth_response) do
       get slack_oauth_callback_path, params: { code: "oauth-code", state: state }
     end
 

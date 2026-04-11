@@ -4,9 +4,9 @@
 
 require "test_helper"
 
-# OauthClientService 테스트
+# OauthClient 테스트
 # Preference 모델은 value 컬럼에 JSON 데이터를 저장하고 동적 accessor를 사용합니다.
-class OauthClientServiceTest < ActiveSupport::TestCase
+class OauthClientTest < ActiveSupport::TestCase
   # 테스트용 Struct 기반 Preference 대체 객체
   MockPreference = Struct.new(:name, :client_id, :client_secret, :site, keyword_init: true) do
     def blank?
@@ -22,7 +22,7 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       site: nil
     )
 
-    client = OauthClientService.call(preference)
+    client = OauthClient.build(preference)
 
     assert_instance_of OAuth2::Client, client
     assert_equal "test_client_id", client.id
@@ -40,7 +40,7 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       site: "https://ruby.social"
     )
 
-    client = OauthClientService.call(preference)
+    client = OauthClient.build(preference)
 
     assert_instance_of OAuth2::Client, client
     assert_equal "mastodon_client_id", client.id
@@ -58,14 +58,14 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       site: "https://custom-mastodon.instance"
     )
 
-    client = OauthClientService.call(preference)
+    client = OauthClient.build(preference)
 
     assert_equal "https://custom-mastodon.instance", client.site
   end
 
   test "OAuth 설정이 비어있으면 ArgumentError를 발생시킨다" do
     error = assert_raises(ArgumentError) do
-      OauthClientService.call(nil)
+      OauthClient.build(nil)
     end
 
     assert_equal "OAuth 설정이 비어있습니다", error.message
@@ -80,25 +80,10 @@ class OauthClientServiceTest < ActiveSupport::TestCase
     )
 
     error = assert_raises(ArgumentError) do
-      OauthClientService.call(preference)
+      OauthClient.build(preference)
     end
 
     assert_match(/지원하지 않는 provider입니다/, error.message)
-  end
-
-  test "인스턴스를 직접 생성하고 call을 호출할 수 있다" do
-    preference = MockPreference.new(
-      name: "xcom_oauth",
-      client_id: "test_client_id",
-      client_secret: "test_client_secret",
-      site: nil
-    )
-
-    service = OauthClientService.new(preference)
-    client = service.call
-
-    assert_instance_of OAuth2::Client, client
-    assert_equal "test_client_id", client.id
   end
 
   test "provider 이름을 preference name에서 올바르게 추출한다" do
@@ -109,7 +94,7 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       client_secret: "test_secret",
       site: nil
     )
-    client = OauthClientService.call(xcom_preference)
+    client = OauthClient.build(xcom_preference)
 
     assert_equal "https://api.x.com/2/", client.site
 
@@ -120,7 +105,7 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       client_secret: "test_secret",
       site: "https://ruby.social"
     )
-    client = OauthClientService.call(mastodon_preference)
+    client = OauthClient.build(mastodon_preference)
 
     assert_equal "https://ruby.social", client.site
   end
@@ -133,7 +118,7 @@ class OauthClientServiceTest < ActiveSupport::TestCase
       site: nil
     )
 
-    client = OauthClientService.call(preference)
+    client = OauthClient.build(preference)
 
     # Mastodon 기본 site
     assert_equal "https://ruby.social", client.site

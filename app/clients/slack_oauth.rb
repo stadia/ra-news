@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-class SlackOauthService
+module SlackOauth
   AUTHORIZE_URL = "https://slack.com/oauth/v2/authorize"
+  module_function
 
   def authorize_url(redirect_uri:, state:)
     query = {
@@ -29,8 +30,6 @@ class SlackOauthService
     raise SlackClient::ApiError, "oauth_exchange_failed: #{e.class}"
   end
 
-  private
-
   def client
     @client ||= Slack::Web::Client.new(
       token: nil,
@@ -38,4 +37,5 @@ class SlackOauthService
       timeout: 5
     )
   end
+  private_class_method :client
 end

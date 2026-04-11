@@ -32,7 +32,7 @@
 - **PushSubscriptionsController** — create, destroy
 - _...7 more_
 
-**Services:** ArticleAgentsService, ContentService, LikeFederationService, MastodonService, OauthClientService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SlackConfig, SlackMessageBuilder, SlackOauthService, SocialMediaService, TwitterService, WebPushConfig
+**Services:** ArticleAgentsService, ContentService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SlackConfig, SocialMediaService, TwitterService, WebPushConfig
 **Jobs:** ArticleBatchJob, ArticleJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleNotificationJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
 Use `rails_get_controllers(controller:"Name", action:"index")` for one action's source code.
