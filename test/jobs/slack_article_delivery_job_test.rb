@@ -15,7 +15,7 @@ class SlackArticleDeliveryJobTest < ActiveJob::TestCase
     )
     logger = Minitest::Mock.new
 
-    logger.expect(:error, nil, [String])
+    logger.expect(:error, nil, [ String ])
 
     SlackClient.stub(:new, Struct.new(:response) {
       def post_message(channel:, text:, blocks:)
