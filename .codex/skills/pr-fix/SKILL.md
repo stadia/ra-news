@@ -13,8 +13,10 @@ description: PR 리뷰 코멘트를 가져와 모든 요청 사항을 자동으�
 현재 브랜치의 PR에 달린 모든 리뷰 코멘트를 가져옵니다.
 
 ```bash
-gh pr view --comments
+gh pr view --json comments
 ```
+
+AI 에이전트가 사람이 읽기 좋은 출력이 필요하면 `gh pr view --comments`도 사용할 수 있지만, 기본 예시는 파싱 안정성을 위해 JSON 형식을 우선 사용합니다.
 
 **예외 처리:**
 - PR이 없는 경우: 사용자에게 PR을 먼저 생성하라고 안내
@@ -31,7 +33,7 @@ gh pr view --comments
 - **액션 아이템 추출**: 각 코멘트를 구체적인 작업으로 변환
 
 **출력 형식:**
-```
+```text
 === PR Review Feedback Summary ===
 
 📁 app/models/article.rb
@@ -53,11 +55,14 @@ gh pr view --comments
 2. Edit 도구로 정확한 변경 적용 (Write는 신규 파일에만 사용)
 3. 변경 후 해당 파일의 영향을 받는 테스트 파악
 4. 우선순위 높은 것부터 처리 (🔴 → 🟡 → 🟢)
+5. 새로운 동작이나 버그 수정이 필요한 경우 테스트를 먼저 작성/수정하고 실패를 확인한 뒤(RED), 구현 변경 후 다시 테스트를 통과시킨다(GREEN).
 
 **주의사항:**
 - 여러 코멘트가 같은 코드 블록에 대한 것이면 한 번에 처리
 - 변경이 다른 파일에 영향을 주는 경우 연쇄 수정
 - RBS 타입 시그니처가 있는 경우 함께 업데이트
+- `--priority critical` 사용 시 🔴 필수 변경만 선택하고 그 외 우선순위는 건너뛴다.
+- `--dry-run` 사용 시 실제 파일 수정 없이 적용 예정 변경과 영향 범위만 출력한다.
 
 ### 4단계: 테스트 실행 및 검증
 모든 변경 사항 적용 후 검증을 수행합니다.
@@ -84,6 +89,9 @@ bundle exec steep check
 ### 5단계: 변경 사항 커밋
 모든 검증이 통과하면 커밋을 생성합니다.
 
+- `--priority critical` 사용 시 커밋에는 필수 변경만 포함한다.
+- `--dry-run` 사용 시 커밋을 생성하지 않는다.
+
 ```bash
 # 변경된 파일만 스테이징
 git add <modified_files>
@@ -106,7 +114,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ### 6단계: 결과 요약 및 확인 요청
 사용자에게 다음 정보를 제공합니다:
 
-```
+```text
 === PR Fix 완료 ===
 
 ✅ 적용 완료: 4개 액션 아이템
@@ -138,7 +146,7 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ## 에러 핸들링
 
 ### PR이 없는 경우
-```
+```text
 ❌ 현재 브랜치에 연결된 PR이 없습니다.
 
 다음 명령어로 PR을 먼저 생성해주세요:
@@ -148,12 +156,12 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ```
 
 ### 리뷰 코멘트가 없는 경우
-```
+```text
 ✅ 리뷰 코멘트가 없습니다. PR이 승인된 상태이거나 아직 리뷰가 시작되지 않았습니다.
 ```
 
 ### 테스트 실패 시
-```
+```text
 ❌ 테스트 실패: test/models/article_test.rb
 
 실패 원인 분석 중...
@@ -169,18 +177,18 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 ## 사용 예시
 
 ### 기본 사용
-```
+```bash
 /pr-fix
 ```
 
 ### 특정 우선순위만 처리
-```
+```bash
 /pr-fix --priority critical
 → 🔴 필수 변경 사항만 적용
 ```
 
 ### Dry-run 모드 (실제 변경 없이 계획만 확인)
-```
+```bash
 /pr-fix --dry-run
 → 어떤 변경이 적용될지 미리 확인
 ```

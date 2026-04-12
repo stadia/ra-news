@@ -40,26 +40,44 @@ class SlackArticleDeliveryJobTest < ActiveJob::TestCase
   test "전송 실패 처리 중 이미 sent 상태면 failed로 되돌리지 않는다" do
     article = articles(:ruby_article)
     workspace = slack_workspaces(:acme)
-    delivery = SlackArticleDelivery.create!(
-      article:,
-      slack_workspace: workspace,
-      channel_id: "CSENT1",
-      channel_name: "ruby-news",
-      status: :sent,
-      sent_at: Time.current,
-      slack_message_ts: "123.456"
-    )
+    delivery = Class.new do
+      attr_reader :update_called
+
+      def initialize
+        @sent = false
+        @update_called = false
+      end
+
+      def with_lock
+        yield
+      end
+
+      def sent?
+        @sent
+      end
+
+      def reload
+        @sent = true
+      end
+
+      def update!(**)
+        @update_called = true
+      end
+    end.new
 
     SlackClient.stub(:new, Struct.new(:error) {
       def post_message(channel:, text:, blocks:)
         raise error
       end
     }.new(SlackClient::ApiError.new("timeout"))) do
-      SlackArticleDeliveryJob.perform_now(article.id, workspace.id, delivery.channel_id, delivery.channel_name)
+      job = SlackArticleDeliveryJob.new
+      job.stub(:find_or_create_delivery, delivery) do
+        job.perform(article.id, workspace.id, "CSENT1", "ruby-news")
+      end
     end
 
-    assert_predicate delivery.reload, :sent?
-    assert_nil delivery.error_message
+    assert_predicate delivery, :sent?
+    assert_equal false, delivery.update_called
   end
 
   test "신규 delivery의 기본 상태는 failed다" do

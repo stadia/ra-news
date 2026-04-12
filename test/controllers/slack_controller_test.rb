@@ -5,12 +5,14 @@ require "uri"
 
 class SlackControllerTest < ActionDispatch::IntegrationTest
   test "POST events rejects when signing secret is blank" do
-    post slack_events_path,
-      params: { type: "url_verification", challenge: "challenge-token" },
-      headers: {
-        "X-Slack-Request-Timestamp" => Time.now.to_i.to_s,
-        "X-Slack-Signature" => "v0=test"
-      }
+    SlackConfig.stub(:signing_secret, "") do
+      post slack_events_path,
+        params: { type: "url_verification", challenge: "challenge-token" },
+        headers: {
+          "X-Slack-Request-Timestamp" => Time.now.to_i.to_s,
+          "X-Slack-Signature" => "v0=test"
+        }
+    end
 
     assert_response :unauthorized
   end
