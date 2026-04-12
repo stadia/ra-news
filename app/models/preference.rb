@@ -5,6 +5,8 @@
 class Preference < ApplicationRecord
   PROTECTED_KEYS = %w[name value]
 
+  validates :name, presence: true
+
   after_initialize :define_dynamic_accessors, if: -> { persisted? && name.present? }
 
   after_commit :clear_cache, on: %i[create update destroy]
@@ -42,7 +44,7 @@ class Preference < ApplicationRecord
     # Add other cases for other preference names
     when /_oauth$/
       # Common keys for OAuth preferences
-      [ :site, :client_id, :client_secret, :access_token, :refresh_token, :expires_at, :token_created_at ]
+      [ :site, :client_id, :client_secret, :signing_secret, :access_token, :refresh_token, :expires_at, :token_created_at ]
     else
                   []
     end

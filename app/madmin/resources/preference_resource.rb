@@ -6,6 +6,7 @@ class PreferenceResource < Madmin::Resource
   attribute :site
   attribute :client_id
   attribute :client_secret
+  attribute :signing_secret
   attribute :value, form: false
   attribute :created_at, form: false
   attribute :updated_at, form: false

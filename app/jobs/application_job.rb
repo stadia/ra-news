@@ -15,7 +15,7 @@ class ApplicationJob < ActiveJob::Base
 
   # Provides default URL options for URL helpers in jobs.
   def default_url_options
-    { host: "ruby-news.kr" }
+    Rails.application.routes.default_url_options
   end
 
   rescue_from(StandardError) do |exception|
