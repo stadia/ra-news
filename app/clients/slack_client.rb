@@ -89,8 +89,6 @@ class SlackClient
       raise ApiError, "#{e.class}: #{e.message}"
     end
 
-    private
-
     #: (?String? token) -> Slack::Web::Client
     def oauth_client(token = nil)
       Slack::Web::Client.new(
@@ -99,5 +97,6 @@ class SlackClient
         timeout: 5
       )
     end
+
   end
 end

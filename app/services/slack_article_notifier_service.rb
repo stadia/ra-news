@@ -9,11 +9,11 @@ class SlackArticleNotifierService < OperationService
 
     delivery_jobs = generate_jobs(article, targets)
 
-    return Success(nil) if delivery_jobs.empty?
+    return nil if delivery_jobs.empty?
 
     ActiveJob.perform_all_later(delivery_jobs)
 
-    Success(true)
+    true
   end
 
   private
@@ -21,7 +21,7 @@ class SlackArticleNotifierService < OperationService
   #: (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
   def generate_jobs(article, subscriptions)
     subscriptions.map do |target|
-      SlackArticleDeliveryJob.new(
+      SlackArticleDeliveryJob.perform_now(
         article.id,
         target[:workspace].id,
         target[:channel_id],
