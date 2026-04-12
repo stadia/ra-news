@@ -3,7 +3,7 @@ paths:
   - "app/models/**/*.rb"
 ---
 
-# ActiveRecord Models (17)
+# ActiveRecord Models (16)
 
 _Quick reference — use `rails_get_model_details(model:"Name")` for live data with resolved concerns and callbacks._
 
@@ -34,9 +34,9 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - SlackArticleDelivery (table: slack_article_deliveries) — 2 assocs, 5 validations
   methods: article, failed!, failed?, sent!, sent?, slack_workspace
   status: sent, failed
-- SlackWorkspace (table: slack_workspaces) — 3 assocs, 3 validations
-  scopes: active
-  methods: active!, active?, error!, error?, inactive!, inactive?, slack_article_deliveries, users, workspace_subscriptions
+- SlackWorkspace (table: slack_workspaces) — 1 assocs, 3 validations
+  scopes: active, delivery_ready
+  methods: active!, active?, error!, error?, inactive!, inactive?, slack_article_deliveries
   status: active, inactive, error
 - Socialization::ActiveRecordStores::Follow (table: follows) — 2 assocs, 0 validations
   methods: followable, follower
@@ -47,9 +47,6 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - Tag (table: tags) — 1 assocs, 3 validations
   scopes: confirmed, unconfirmed
   methods: count, taggings, validates_name_uniqueness?
-- User (table: users) — 6 assocs, 11 validations
+- User (table: users) — 4 assocs, 11 validations
   scopes: with_role, admins
   methods: admin?, full_name, has_role?, accept_follow, after_confirmation, articles, confirm, confirmation_period_expired?, confirmed?, devise_saved_change_to_email?, devise_saved_change_to_encrypted_password?, devise_unconfirmed_email_will_change!, devise_will_save_change_to_email?, downcase_keys, extend_remember_period, federails_actor, generate_confirmation_token, generate_confirmation_token!, like!
-- WorkspaceSubscription (table: user_workspace_subscriptions) — 2 assocs, 4 validations
-  scopes: active
-  methods: slack_workspace, user

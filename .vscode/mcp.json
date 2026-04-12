@@ -1,11 +1,9 @@
 {
   "servers": {
     "rails-ai-context": {
-      "command": "bundle",
+      "command": "rails-ai-context",
       "args": [
-        "exec",
-        "rails",
-        "ai:serve"
+        "serve"
       ]
     }
   }

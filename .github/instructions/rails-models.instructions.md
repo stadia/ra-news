@@ -4,7 +4,7 @@ name: "Rails Models Reference"
 description: "ActiveRecord models — associations, validations, scopes, enums"
 ---
 
-# ActiveRecord Models (19)
+# ActiveRecord Models (18)
 
 Check here first for scopes, constants, associations. Read model files for business logic/methods.
 
@@ -24,14 +24,12 @@ Check here first for scopes, constants, associations. Read model files for busin
   scopes: named
 - Site (1 associations)
 - SlackArticleDelivery (2 associations)
-- SlackWorkspace (3 associations)
-  scopes: active
+- SlackWorkspace (1 associations)
+  scopes: active, delivery_ready
 - Socialization::ActiveRecordStores::Follow (2 associations)
 - Socialization::ActiveRecordStores::Like (2 associations)
 - Socialization::ActiveRecordStores::Mention (2 associations)
 - Tag (1 associations)
   scopes: confirmed, unconfirmed
-- User (6 associations)
+- User (4 associations)
   scopes: with_role, admins
-- WorkspaceSubscription (2 associations)
-  scopes: active

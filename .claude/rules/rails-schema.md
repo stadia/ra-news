@@ -27,7 +27,7 @@ _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")
   client: rss, gmail, youtube, hacker_news, rss_page, reddit
 - **slack_article_deliveries** (10 cols) — channel_id:string, channel_name:string, status:string(=failed), sent_at:datetime, error_message:text, slack_message_ts:string
   status: sent, failed
-- **slack_workspaces** (8 cols) — team_id:string, team_name:string, bot_access_token:string, bot_user_id:string, status:string(=active), last_verified_at:datetime | Idx: team_id(unique)
+- **slack_workspaces** (11 cols) — team_id:string, team_name:string, bot_access_token:string, bot_user_id:string, status:string(=active), last_verified_at:datetime, incoming_webhook_url:string, channel_id:string, channel_name:string | Idx: team_id(unique)
   status: active, inactive, error
 - **user_workspace_subscriptions** (8 cols) — slack_user_id:string, channel_id:string, channel_name:string, active:boolean(=false)
 - **users** (11 cols) — email_address:string, name:string, roles:json, username:string, likees_count:integer(=0), confirmation_token:string, confirmed_at:datetime, confirmation_sent_at:datetime, unconfirmed_email:string | Idx: email_address(unique), email_address(unique), username(unique), email(unique), reset_password_token(unique), confirmation_token(unique)

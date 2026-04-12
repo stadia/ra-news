@@ -9,8 +9,8 @@ description: "Rails version, database, models, routes, gems, architecture patter
 Rails 8.1.3 | Ruby 4.0.2
 
 - Database: static_parse — 20 tables
-- Models: 19
-- Routes: 151
+- Models: 18
+- Routes: 146
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -22,12 +22,12 @@ Rails 8.1.3 | Ruby 4.0.2
 - Presenters/Decorators
 - ViewComponent (app/components/)
 - phlex
-- Auth: Devise + Pundit
+- Auth: Devise
 - I18n: 2 locales (en, ko)
-- Components: 113 components, 113 Phlex
-- Performance: 11 issues detected
+- Components: 112 components, 112 Phlex
+- Performance: 10 issues detected
 - Services: ArticleAgentsService, ContentService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SocialMediaService, TwitterService
-- Jobs: ArticleBatchJob, ArticleJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SlackArticleNotificationJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
+- Jobs: ArticleBatchJob, ArticleJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
 **Global before_actions:** authenticate_user!
 

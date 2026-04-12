@@ -6,16 +6,16 @@
 
 ## Stack
 - Database: static_parse — 20 tables
-- Models: 19
-- Routes: 151 across 24 controllers
-- Async: 13 jobs
-- Migrations: 98 total, 0 pending
-- Auth: Devise + Pundit
+- Models: 18
+- Routes: 146 across 23 controllers
+- Async: 12 jobs
+- Migrations: 99 total, 0 pending
+- Auth: Devise
 - I18n: 2 locales (en, ko)
-- Components: 113 components, 113 Phlex
-- Performance: 11 issues detected
+- Components: 112 components, 112 Phlex
+- Performance: 10 issues detected
 
-## Key models (19 total)
+## Key models (18 total)
 - **ActsAsTaggableOn::Tag** (1a, 3v) — has_many :taggings
 - **ActsAsTaggableOn::Tagging** (3a, 5v) — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
 - **Article** (10a, 6v) — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :slack_article_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
@@ -32,11 +32,11 @@
   scopes: named
 - **Site** (1a, 1v) — has_many :articles
 - **SlackArticleDelivery** (2a, 5v) — belongs_to :article, belongs_to :slack_workspace
-- **SlackWorkspace** (3a, 3v) — has_many :workspace_subscriptions, has_many :users, has_many :slack_article_deliveries
-  scopes: active
+- **SlackWorkspace** (1a, 3v) — has_many :slack_article_deliveries
+  scopes: active, delivery_ready
 - **Socialization::ActiveRecordStores::Follow** (2a, 0v) — belongs_to :follower, belongs_to :followable
 - **Socialization::ActiveRecordStores::Like** (2a, 0v) — belongs_to :liker, belongs_to :likeable
-- _...4 more (use `rails_get_model_details` tool)_
+- _...3 more (use `rails_get_model_details` tool)_
 
 ## Gems
 - **auth**: devise, pundit, jwt

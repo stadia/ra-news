@@ -5,12 +5,12 @@ Rails 8.1.3 | Ruby 4.0.2
 
 ## Stack
 - Database: static_parse — 20 tables
-- Models: 19
-- Routes: 151 across 45 controllers
-- Auth: Devise + Pundit
+- Models: 18
+- Routes: 146 across 44 controllers
+- Auth: Devise
 - I18n: 2 locales (en, ko)
-- Components: 113 components, 113 Phlex
-- Performance: 11 issues detected
+- Components: 112 components, 112 Phlex
+- Performance: 10 issues detected
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -26,7 +26,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - validation: dry-monads
 - utilities: nokogiri, faraday
 
-## Models (19)
+## Models (18)
 - **ActsAsTaggableOn::Tag** — has_many :taggings
 - **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
 - **Article** — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :slack_article_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
@@ -39,13 +39,12 @@ Rails 8.1.3 | Ruby 4.0.2
 - **Role**
 - **Site** — has_many :articles
 - **SlackArticleDelivery** — belongs_to :article, belongs_to :slack_workspace
-- **SlackWorkspace** — has_many :workspace_subscriptions, has_many :users, has_many :slack_article_deliveries
+- **SlackWorkspace** — has_many :slack_article_deliveries
 - **Socialization::ActiveRecordStores::Follow** — belongs_to :follower, belongs_to :followable
 - **Socialization::ActiveRecordStores::Like** — belongs_to :liker, belongs_to :likeable
 - **Socialization::ActiveRecordStores::Mention** — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** — has_many :taggings
-- **User** — has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :workspace_subscriptions, has_many :slack_workspaces, has_one :federails_actor
-- **WorkspaceSubscription** — belongs_to :user, belongs_to :slack_workspace
+- **User** — has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor
 
 ## Architecture
 - Hotwire (Turbo + Stimulus)
