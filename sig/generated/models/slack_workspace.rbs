@@ -1,0 +1,4 @@
+# Generated from app/models/slack_workspace.rb with RBS::Inline
+
+class SlackWorkspace < ApplicationRecord
+end

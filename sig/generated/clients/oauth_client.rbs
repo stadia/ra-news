@@ -1,0 +1,9 @@
+# Generated from app/clients/oauth_client.rb with RBS::Inline
+
+module OauthClient
+  OAUTH_CONFIG: Hash[Symbol, Hash[Symbol, String]]
+
+  def self?.build: (untyped oauth_preference) -> untyped
+
+  def self?.extract_provider_from_preference_name: (untyped name) -> untyped
+end

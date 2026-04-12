@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class SlackConfig
   PREFERENCE_KEY = "slack_oauth"

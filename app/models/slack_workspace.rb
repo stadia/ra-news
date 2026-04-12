@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class SlackWorkspace < ApplicationRecord
   has_many :workspace_subscriptions, class_name: "WorkspaceSubscription", dependent: :destroy

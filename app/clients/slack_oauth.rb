@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 module SlackOauth
   AUTHORIZE_URL = "https://slack.com/oauth/v2/authorize"

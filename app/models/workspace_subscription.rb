@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class WorkspaceSubscription < ApplicationRecord
   self.table_name = "user_workspace_subscriptions"

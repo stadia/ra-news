@@ -1,0 +1,20 @@
+# Generated from app/clients/slack_client.rb with RBS::Inline
+
+class SlackClient
+  class ApiError < StandardError
+  end
+
+  def initialize: (untyped workspace) -> untyped
+
+  def list_channels: () -> untyped
+
+  def post_message: (channel: untyped, text: untyped, blocks: untyped) -> untyped
+
+  private
+
+  attr_reader workspace: untyped
+
+  def client: () -> untyped
+
+  def raise_api_error: (untyped error) -> untyped
+end

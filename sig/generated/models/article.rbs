@@ -40,6 +40,12 @@ class Article < ApplicationRecord
   # : () -> void
   def clear_rss_cache: () -> void
 
+  def should_enqueue_slack_notification?: () -> untyped
+
+  def previously_slack_notifiable?: () -> untyped
+
+  def enqueue_slack_notification: () -> untyped
+
   def tracked_attribute_changes?: () -> untyped
 
   def log_tracked_attribute_changes: () -> untyped
