@@ -6,7 +6,19 @@ class SlackArticleNotifierService < OperationService
     return Failure(:deleted) unless article.deleted_at.nil?
     return Failure(:not_confirmed) unless article.slug.present? && article.title_ko.present?
 
-    delivery_jobs = targets.each do |target|
+    subscriptions = step targets
+
+    delivery_jobs = step generate_jobs(subscriptions)
+
+    ActiveJob.perform_all_later(delivery_jobs)
+
+    Success(true)
+  end
+
+  private
+
+  def generate_jobs(subscriptions)
+    subscriptions.map do |target|
       SlackArticleDeliveryJob.new(
         article.id,
         target[:workspace].id,
@@ -14,12 +26,7 @@ class SlackArticleNotifierService < OperationService
         target[:channel_name]
       )
     end
-    ActiveJob.perform_all_later(delivery_jobs)
-
-    Success(true)
   end
-
-  private
 
   def targets
     WorkspaceSubscription.active

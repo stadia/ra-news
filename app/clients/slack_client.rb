@@ -80,6 +80,8 @@ class SlackClient
       raise ApiError, "oauth_exchange_failed: #{e.class}"
     end
 
+    private
+
     def oauth_client(token = nil)
       Slack::Web::Client.new(
         token:,
@@ -87,7 +89,5 @@ class SlackClient
         timeout: 5
       )
     end
-
-    private_class_method :oauth_client
   end
 end
