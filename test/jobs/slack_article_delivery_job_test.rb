@@ -77,7 +77,7 @@ class SlackArticleDeliveryJobTest < ActiveJob::TestCase
     end
 
     assert_predicate delivery, :sent?
-    assert_equal false, delivery.update_called
+    refute delivery.update_called
   end
 
   test "신규 delivery의 기본 상태는 failed다" do

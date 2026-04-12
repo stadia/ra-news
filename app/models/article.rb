@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # rbs_inline: enabled
 
 class Article < ApplicationRecord
@@ -69,7 +68,6 @@ class Article < ApplicationRecord
   end
 
   after_commit :clear_rss_cache, on: [ :create, :update, :destroy ]
-  after_commit :enqueue_slack_notification, on: %i[create update], if: :should_enqueue_slack_notification?
 
   before_save do
     # 제목에 "Show HN"이 포함되어 있으면 discard 처리
@@ -218,25 +216,6 @@ class Article < ApplicationRecord
     Rails.cache.delete("rss_articles")
   end
 
-  def should_enqueue_slack_notification?
-    return false unless deleted_at.nil? && is_related? && slug.present? && title_ko.present?
-
-    !previously_slack_notifiable?
-  end
-
-  def previously_slack_notifiable?
-    previous_slug = previous_changes.key?("slug") ? previous_changes["slug"].first : slug
-    previous_title_ko = previous_changes.key?("title_ko") ? previous_changes["title_ko"].first : title_ko
-    previous_deleted_at = previous_changes.key?("deleted_at") ? previous_changes["deleted_at"].first : deleted_at
-    previous_is_related = previous_changes.key?("is_related") ? previous_changes["is_related"].first : is_related
-
-    previous_deleted_at.nil? && previous_is_related && previous_slug.present? && previous_title_ko.present?
-  end
-
-  def enqueue_slack_notification
-    SlackArticleNotificationJob.perform_later(id)
-  end
-
   def tracked_attribute_changes?
     will_save_change_to_url? ||
       will_save_change_to_origin_url? ||
@@ -268,17 +247,15 @@ class Article < ApplicationRecord
     end
   end
 
-  #: () -> bool
-  def should_generate_new_friendly_id?
+  def should_generate_new_friendly_id? #: bool
     false
   end
 
-  #: () -> String
-  def random_slug
+  def random_slug #: String
     "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
   end
 
-  def metadata_service
+  def metadata_service #: Articles::MetadataPreparationService
     @metadata_service ||= Articles::MetadataPreparationService.new
   end
 

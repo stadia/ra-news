@@ -4,6 +4,8 @@ class SlackClient
   class ApiError < StandardError
   end
 
+  AUTHORIZE_URL: ::String
+
   def initialize: (untyped workspace) -> untyped
 
   def list_channels: () -> untyped
@@ -17,4 +19,10 @@ class SlackClient
   def client: () -> untyped
 
   def raise_api_error: (untyped error) -> untyped
+
+  def self.authorize_url: (redirect_uri: untyped, state: untyped) -> untyped
+
+  def self.exchange_code: (untyped code, redirect_uri: untyped) -> untyped
+
+  def self.oauth_client: (?untyped token) -> untyped
 end

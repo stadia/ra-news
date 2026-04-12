@@ -40,23 +40,15 @@ class Article < ApplicationRecord
   # : () -> void
   def clear_rss_cache: () -> void
 
-  def should_enqueue_slack_notification?: () -> untyped
-
-  def previously_slack_notifiable?: () -> untyped
-
-  def enqueue_slack_notification: () -> untyped
-
   def tracked_attribute_changes?: () -> untyped
 
   def log_tracked_attribute_changes: () -> untyped
 
-  # : () -> bool
   def should_generate_new_friendly_id?: () -> bool
 
-  # : () -> String
   def random_slug: () -> String
 
-  def metadata_service: () -> untyped
+  def metadata_service: () -> Articles::MetadataPreparationService
 
   # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
   # : (String url) -> bool

@@ -4,23 +4,24 @@
 class SlackArticleNotifierService < OperationService
   def call(article)
     return Failure(:deleted) unless article.deleted_at.nil?
-    return Failure(:not_confirmed) unless article.is_related? && article.slug.present? && article.title_ko.present?
+    return Failure(:not_confirmed) unless article.slug.present? && article.title_ko.present?
 
-    targets(article).each do |target|
-      SlackArticleDeliveryJob.perform_later(
+    delivery_jobs = targets.each do |target|
+      SlackArticleDeliveryJob.new(
         article.id,
         target[:workspace].id,
         target[:channel_id],
         target[:channel_name]
       )
     end
+    ActiveJob.perform_all_later(delivery_jobs)
 
     Success(true)
   end
 
   private
 
-  def targets(_article)
+  def targets
     WorkspaceSubscription.active
       .joins(:slack_workspace)
       .merge(SlackWorkspace.active)

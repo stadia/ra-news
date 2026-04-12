@@ -5,5 +5,5 @@ class SlackArticleNotifierService < OperationService
 
   private
 
-  def targets: (untyped _article) -> untyped
+  def targets: () -> untyped
 end
