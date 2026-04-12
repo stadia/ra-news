@@ -1,0 +1,14 @@
+# Generated from app/jobs/slack_article_delivery_job.rb with RBS::Inline
+
+class SlackArticleDeliveryJob < ApplicationJob
+  # : (Integer article_id, Integer workspace_id, String channel_id, String channel_name) -> void
+  def perform: (Integer article_id, Integer workspace_id, String channel_id, String channel_name) -> void
+
+  private
+
+  # : (SlackArticleDelivery delivery, String channel_name, String message_ts) -> void
+  def persist_delivery_success: (SlackArticleDelivery delivery, String channel_name, String message_ts) -> void
+
+  # : (Article article, SlackWorkspace workspace, String channel_id, String channel_name) -> SlackArticleDelivery
+  def find_or_create_delivery: (Article article, SlackWorkspace workspace, String channel_id, String channel_name) -> SlackArticleDelivery
+end

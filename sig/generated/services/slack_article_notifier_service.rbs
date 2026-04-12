@@ -1,9 +1,14 @@
 # Generated from app/services/slack_article_notifier_service.rb with RBS::Inline
 
 class SlackArticleNotifierService < OperationService
-  def call: (untyped article) -> untyped
+  # : (Article article) -> Dry::Monads::Result
+  def call: (Article article) -> Dry::Monads::Result
 
   private
 
-  def targets: () -> untyped
+  # : (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
+  def generate_jobs: (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
+
+  # : () -> Array[Hash[Symbol, untyped]]
+  def targets: () -> Array[Hash[Symbol, untyped]]
 end

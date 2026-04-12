@@ -1,19 +1,25 @@
 # Generated from app/models/slack_config.rb with RBS::Inline
 
 class SlackConfig
-  PREFERENCE_KEY: ::String
+  PREFERENCE_KEY: String
 
-  INSTALL_SCOPE: ::String
+  INSTALL_SCOPE: String
 
-  def self.client_id: () -> untyped
+  # : () -> String?
+  def self.client_id: () -> String?
 
-  def self.client_secret: () -> untyped
+  # : () -> String?
+  def self.client_secret: () -> String?
 
-  def self.signing_secret: () -> untyped
+  # : () -> String?
+  def self.signing_secret: () -> String?
 
-  def self.configured?: () -> untyped
+  # : () -> bool
+  def self.configured?: () -> bool
 
-  def self.install_scope: () -> untyped
+  # : () -> String
+  def self.install_scope: () -> String
 
-  private def self.preference: () -> untyped
+  # : () -> Preference?
+  private def self.preference: () -> Preference?
 end

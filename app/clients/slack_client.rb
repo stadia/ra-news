@@ -4,14 +4,16 @@
 class SlackClient
   class ApiError < StandardError; end
 
-  AUTHORIZE_URL = "https://slack.com/oauth/v2/authorize"
+  AUTHORIZE_URL = "https://slack.com/oauth/v2/authorize" #: String
 
   # ── Instance methods ────────────────────────────────────
 
+  #: (SlackWorkspace workspace) -> void
   def initialize(workspace)
     @workspace = workspace
   end
 
+  #: () -> Array[Hash[String, String]]
   def list_channels
     channels = []
 
@@ -30,6 +32,7 @@ class SlackClient
     raise_api_error(e)
   end
 
+  #: (channel: String, text: String, blocks: Array[untyped]) -> Hash[String, String]
   def post_message(channel:, text:, blocks:)
     response = client.chat_postMessage(channel:, text:, blocks:)
     { "ts" => response.ts }
@@ -41,12 +44,16 @@ class SlackClient
 
   private
 
-  attr_reader :workspace
+  attr_reader :workspace #: SlackWorkspace
 
+  # @rbs @client: Slack::Web::Client?
+
+  #: () -> Slack::Web::Client
   def client
     @client ||= SlackClient.oauth_client(workspace.bot_access_token)
   end
 
+  #: (Exception error) -> bot
   def raise_api_error(error)
     raise ApiError, "#{error.class}: #{error.message}"
   end
@@ -54,6 +61,7 @@ class SlackClient
   class << self
     # ── OAuth (class methods) ──────────────────────────────
 
+    #: (redirect_uri: String, state: String) -> String
     def authorize_url(redirect_uri:, state:)
       query = {
         client_id: SlackConfig.client_id,
@@ -65,6 +73,7 @@ class SlackClient
       "#{AUTHORIZE_URL}?#{query}"
     end
 
+    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
     def exchange_code(code, redirect_uri:)
       response = oauth_client.oauth_v2_access(
         client_id: SlackConfig.client_id,
@@ -82,6 +91,7 @@ class SlackClient
 
     private
 
+    #: (?String? token) -> Slack::Web::Client
     def oauth_client(token = nil)
       Slack::Web::Client.new(
         token:,

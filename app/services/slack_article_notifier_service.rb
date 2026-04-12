@@ -2,6 +2,7 @@
 # rbs_inline: enabled
 
 class SlackArticleNotifierService < OperationService
+  #: (Article article) -> Dry::Monads::Result
   def call(article)
     return Failure(:deleted) unless article.deleted_at.nil?
     return Failure(:not_confirmed) unless article.slug.present? && article.title_ko.present?
@@ -17,6 +18,7 @@ class SlackArticleNotifierService < OperationService
 
   private
 
+  #: (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
   def generate_jobs(article, subscriptions)
     subscriptions.map do |target|
       SlackArticleDeliveryJob.new(
@@ -28,6 +30,7 @@ class SlackArticleNotifierService < OperationService
     end
   end
 
+  #: () -> Array[Hash[Symbol, untyped]]
   def targets
     WorkspaceSubscription.active
       .joins(:slack_workspace)

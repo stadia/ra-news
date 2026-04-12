@@ -1,8 +1,10 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class SlackArticleDeliveryJob < ApplicationJob
   queue_as :default
 
+  #: (Integer article_id, Integer workspace_id, String channel_id, String channel_name) -> void
   def perform(article_id, workspace_id, channel_id, channel_name)
     article = Article.find_by(id: article_id)
     workspace = SlackWorkspace.find_by(id: workspace_id)
@@ -33,6 +35,7 @@ class SlackArticleDeliveryJob < ApplicationJob
 
   private
 
+  #: (SlackArticleDelivery delivery, String channel_name, String message_ts) -> void
   def persist_delivery_success(delivery, channel_name, message_ts)
     delivery.update!(
         channel_name:,
@@ -43,6 +46,7 @@ class SlackArticleDeliveryJob < ApplicationJob
       )
   end
 
+  #: (Article article, SlackWorkspace workspace, String channel_id, String channel_name) -> SlackArticleDelivery
   def find_or_create_delivery(article, workspace, channel_id, channel_name)
     existing_delivery = SlackArticleDelivery.find_by(
       article:,

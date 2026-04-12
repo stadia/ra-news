@@ -4,25 +4,35 @@ class SlackClient
   class ApiError < StandardError
   end
 
-  AUTHORIZE_URL: ::String
+  AUTHORIZE_URL: String
 
-  def initialize: (untyped workspace) -> untyped
+  # : (SlackWorkspace workspace) -> void
+  def initialize: (SlackWorkspace workspace) -> void
 
-  def list_channels: () -> untyped
+  # : () -> Array[Hash[String, String]]
+  def list_channels: () -> Array[Hash[String, String]]
 
-  def post_message: (channel: untyped, text: untyped, blocks: untyped) -> untyped
+  # : (channel: String, text: String, blocks: Array[untyped]) -> Hash[String, String]
+  def post_message: (channel: String, text: String, blocks: Array[untyped]) -> Hash[String, String]
 
   private
 
-  attr_reader workspace: untyped
+  attr_reader workspace: SlackWorkspace
 
-  def client: () -> untyped
+  @client: Slack::Web::Client?
 
-  def raise_api_error: (untyped error) -> untyped
+  # : () -> Slack::Web::Client
+  def client: () -> Slack::Web::Client
 
-  def self.authorize_url: (redirect_uri: untyped, state: untyped) -> untyped
+  # : (Exception error) -> bot
+  def raise_api_error: (Exception error) -> bot
 
-  def self.exchange_code: (untyped code, redirect_uri: untyped) -> untyped
+  # : (redirect_uri: String, state: String) -> String
+  def self.authorize_url: (redirect_uri: String, state: String) -> String
 
-  def self.oauth_client: (?untyped token) -> untyped
+  # : (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
+  def self.exchange_code: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
+
+  # : (?String? token) -> Slack::Web::Client
+  private def self.oauth_client: (?String? token) -> Slack::Web::Client
 end
