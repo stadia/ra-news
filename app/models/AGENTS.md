@@ -12,7 +12,7 @@
 - **Like** (table: likes) — belongs_to :liker, belongs_to :likeable
 - **Post** (table: posts) — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :article, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags [2v]
   scopes: comments, standalone
-- **Preference** (table: preferences)
+- **Preference** (table: preferences) [1v]
   PROTECTED_KEYS: name, value
 - **PushSubscription** (table: push_subscriptions) — belongs_to :user [6v]
 - **Role** (table: roles) [2v]

@@ -8,9 +8,9 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 Rails 8.1.3 | Ruby 4.0.2
 
-- Database: static_parse — 17 tables
-- Models: 16
-- Routes: 143
+- Database: static_parse — 20 tables
+- Models: 19
+- Routes: 151
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -19,15 +19,15 @@ Rails 8.1.3 | Ruby 4.0.2
 - files: activestorage, image_processing, mini_magick
 - Hotwire (Turbo + Stimulus)
 - Service objects pattern (app/services/)
+- Presenters/Decorators
 - ViewComponent (app/components/)
 - phlex
-- Stimulus controllers (app/javascript/controllers/)
-- Auth: Devise
+- Auth: Devise + Pundit
 - I18n: 2 locales (en, ko)
-- Components: 112 components, 112 Phlex
-- Performance: 9 issues detected
-- Services: ArticleAgentsService, ContentService, LikeFederationService, MastodonService, OauthClientService, OperationService, PushNotificationService, SitemapService, SocialMediaService, TwitterService, WebPushConfig
-- Jobs: ArticleBatchJob, ArticleJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
+- Components: 113 components, 113 Phlex
+- Performance: 11 issues detected
+- Services: ArticleAgentsService, ContentService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SocialMediaService, TwitterService
+- Jobs: ArticleBatchJob, ArticleJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SlackArticleNotificationJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
 **Global before_actions:** authenticate_user!
 

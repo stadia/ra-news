@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (112)
+# Components (113)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -169,4 +169,6 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Users::PwdForm** (phlex)
   props: user
 - **Users::User** (phlex)
+  props: user
+- **Users::WorkspaceSubscriptions** (phlex)
   props: user

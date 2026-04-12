@@ -14,7 +14,7 @@ class SlackController < ApplicationController
     state = SecureRandom.hex(16)
     session[:slack_oauth_state] = state
 
-    redirect_to SlackOauth.authorize_url(
+    redirect_to SlackClient.authorize_url(
       redirect_uri: slack_oauth_callback_url,
       state:
     ), allow_other_host: true
@@ -29,7 +29,7 @@ class SlackController < ApplicationController
       return
     end
 
-    oauth = SlackOauth.exchange_code(params[:code], redirect_uri: slack_oauth_callback_url)
+    oauth = SlackClient.exchange_code(params[:code], redirect_uri: slack_oauth_callback_url)
     team = oauth.fetch("team")
 
     SlackWorkspace.transaction do
