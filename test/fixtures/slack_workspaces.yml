@@ -5,6 +5,9 @@ acme:
   team_name: Acme Workspace
   bot_access_token: xoxb-acme-token
   bot_user_id: UACMEBOT
+  incoming_webhook_url: https://hooks.slack.com/services/T123ACME/B123/ACME
+  channel_id: CNEWS1
+  channel_name: ruby-news
   status: active
   last_verified_at: <%= 1.hour.ago %>
 
@@ -13,5 +16,8 @@ globex:
   team_name: Globex Workspace
   bot_access_token: xoxb-globex-token
   bot_user_id: UGLOBEXBOT
+  incoming_webhook_url: https://hooks.slack.com/services/T456GLOBEX/B456/GLOBEX
+  channel_id: CNEWS2
+  channel_name: team-ruby
   status: active
   last_verified_at: <%= 2.hours.ago %>

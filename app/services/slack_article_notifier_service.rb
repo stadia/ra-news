@@ -7,44 +7,14 @@ class SlackArticleNotifierService < OperationService
     return Failure(:deleted) unless article.deleted_at.nil?
     return Failure(:not_confirmed) unless article.slug.present? && article.title_ko.present?
 
-    delivery_jobs = generate_jobs(article, targets)
+    delivery_jobs = SlackWorkspace.delivery_ready.order(:id).to_a.map do |workspace|
+      SlackArticleDeliveryJob.new(article.id, workspace.id)
+    end
 
     return nil if delivery_jobs.empty?
 
     ActiveJob.perform_all_later(delivery_jobs)
 
     true
-  end
-
-  private
-
-  #: (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
-  def generate_jobs(article, subscriptions)
-    subscriptions.map do |target|
-      SlackArticleDeliveryJob.new(
-        article.id,
-        target[:workspace].id,
-        target[:channel_id],
-        target[:channel_name]
-      )
-    end
-  end
-
-  #: () -> Array[Hash[Symbol, untyped]]
-  def targets
-    WorkspaceSubscription.active
-      .joins(:slack_workspace)
-      .merge(SlackWorkspace.active)
-      .includes(:slack_workspace)
-      .group_by { |sub| [ sub.slack_workspace_id, sub.channel_id ] }
-      .values
-      .map(&:first)
-      .map do |subscription|
-        {
-          workspace: subscription.slack_workspace,
-          channel_id: subscription.channel_id,
-          channel_name: subscription.channel_name
-        }
-      end
   end
 end

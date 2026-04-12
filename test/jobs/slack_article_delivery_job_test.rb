@@ -15,14 +15,14 @@ class SlackArticleDeliveryJobTest < ActiveJob::TestCase
     )
 
     SlackClient.stub(:new, Struct.new(:response) {
-      def post_message(channel:, text:, blocks:)
+      def post_message(text:, blocks:)
         response
       end
     }.new({ "ts" => "123.456" })) do
       job = SlackArticleDeliveryJob.new
       job.stub(:persist_delivery_success, ->(_d, _c, _t) { delivery.errors.add(:base, "test"); raise ActiveRecord::RecordInvalid, delivery }) do
         error = assert_raises(ActiveRecord::RecordInvalid) do
-          job.perform(article.id, workspace.id, delivery.channel_id, delivery.channel_name)
+          job.perform(article.id, workspace.id)
         end
 
         assert_equal delivery.id, error.record.id
@@ -59,13 +59,13 @@ class SlackArticleDeliveryJobTest < ActiveJob::TestCase
     end.new
 
     SlackClient.stub(:new, Struct.new(:error) {
-      def post_message(channel:, text:, blocks:)
+      def post_message(text:, blocks:)
         raise error
       end
     }.new(SlackClient::ApiError.new("timeout"))) do
       job = SlackArticleDeliveryJob.new
       job.stub(:find_or_create_delivery, delivery) do
-        job.perform(article.id, workspace.id, "CSENT1", "ruby-news")
+        job.perform(article.id, workspace.id)
       end
     end
 

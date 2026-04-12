@@ -17,7 +17,6 @@ module ActiveSupport
     # Federails 엔진 픽스처 클래스 매핑 (테이블 이름에서 모델 클래스를 자동 감지할 수 없으므로)
     set_fixture_class federails_actors: Federails::Actor
     set_fixture_class federails_followings: Federails::Following
-    set_fixture_class user_workspace_subscriptions: WorkspaceSubscription
 
     # Add more helper methods to be used by all tests here...
   end

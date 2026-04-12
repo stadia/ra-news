@@ -32,14 +32,20 @@ class SlackClient
     raise_api_error(e)
   end
 
-  #: (channel: String, text: String, blocks: Array[untyped]) -> Hash[String, String]
-  def post_message(channel:, text:, blocks:)
-    response = client.chat_postMessage(channel:, text:, blocks:)
-    { "ts" => response.ts }
-  rescue Slack::Web::Api::Errors::NotInChannel => e
-    raise ApiError, not_in_channel_guidance(e.message)
-  rescue Slack::Web::Api::Errors::SlackError => e
-    raise ApiError, e.message
+  #: (text: String, blocks: Array[untyped]) -> Hash[String, String]
+  def post_message(text:, blocks:)
+    response = webhook_client.post do |request|
+      request.body = {
+        text:,
+        blocks:
+      }
+    end
+
+    unless response.success?
+      raise ApiError, "Slack webhook 전송에 실패했습니다. HTTP #{response.status}"
+    end
+
+    {}
   rescue Faraday::Error => e
     raise_api_error(e)
   end
@@ -49,23 +55,20 @@ class SlackClient
   attr_reader :workspace #: SlackWorkspace
 
   # @rbs @client: Slack::Web::Client?
+  # @rbs @webhook_client: Faraday::Connection?
 
   #: () -> Slack::Web::Client
   def client
     @client ||= SlackClient.oauth_client(workspace.bot_access_token)
   end
 
-  #: (?String api_error_message) -> String
-  def not_in_channel_guidance(api_error_message = nil)
-    message = [
-      "Slack 봇이 채널에 참여하지 않아 메시지 전송에 실패했습니다.",
-      "이 앱은 최소 권한 원칙에 따라 `chat:write.public`를 사용하지 않습니다.",
-      "공개 채널과 비공개 채널 모두 Slack에서 앱을 해당 채널에 직접 초대해야 합니다."
-    ].join(" ")
-
-    return message if api_error_message.blank?
-
-    "#{message} Slack 응답: #{api_error_message}"
+  #: () -> Faraday::Connection
+  def webhook_client
+    @webhook_client ||= Faraday.new(url: workspace.incoming_webhook_url) do |faraday|
+      faraday.request :json
+      faraday.response :raise_error
+      faraday.adapter Faraday.default_adapter
+    end
   end
 
   #: (Exception error) -> bot

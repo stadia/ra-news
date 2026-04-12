@@ -3,7 +3,7 @@
 
 class SlackConfig
   PREFERENCE_KEY = "slack_oauth" #: String
-  INSTALL_SCOPE = "channels:read,groups:read,chat:write" #: String
+  INSTALL_SCOPE = "incoming-webhook" #: String
 
   class << self
     #: () -> String?
@@ -23,7 +23,7 @@ class SlackConfig
 
     #: () -> bool
     def configured?
-      client_id.present? && client_secret.present? && signing_secret.present?
+      client_id.present? && client_secret.present?
     end
 
     #: () -> String

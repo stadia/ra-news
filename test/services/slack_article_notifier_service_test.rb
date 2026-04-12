@@ -7,48 +7,21 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
 
   setup do
     @article = articles(:ruby_article)
-    WorkspaceSubscription.delete_all
     SlackArticleDelivery.where(article: @article).delete_all
-
-    WorkspaceSubscription.create!(
-      user: users(:john),
-      slack_workspace: slack_workspaces(:acme),
-      slack_user_id: "UJOHN1",
-      channel_id: "CNEWS1",
-      channel_name: "ruby-news",
-      active: true
-    )
-    WorkspaceSubscription.create!(
-      user: users(:jane),
-      slack_workspace: slack_workspaces(:acme),
-      slack_user_id: "UJANE1",
-      channel_id: "CNEWS1",
-      channel_name: "ruby-news",
-      active: true
-    )
-    WorkspaceSubscription.create!(
-      user: users(:jane),
-      slack_workspace: slack_workspaces(:globex),
-      slack_user_id: "UJANE2",
-      channel_id: "CNEWS2",
-      channel_name: "team-ruby",
-      active: true
-    )
   end
 
-  test "채널 기준으로 중복 없이 기사 알림 잡을 enqueue한다" do
+  test "workspace 기준으로 기사 알림 잡을 enqueue한다" do
     assert_enqueued_jobs 2, only: SlackArticleDeliveryJob do
       SlackArticleNotifierService.new.call(@article)
     end
 
     enqueued = enqueued_jobs.select { |j| j[:job] == SlackArticleDeliveryJob }
-    channel_ids = enqueued.map { |j| j[:args][2] }.sort
+    workspace_ids = enqueued.map { |j| j[:args][1] }.sort
 
-    assert_equal %w[CNEWS1 CNEWS2], channel_ids
+    assert_equal SlackWorkspace.delivery_ready.order(:id).pluck(:id), workspace_ids
   end
 
-  test "같은 기사에 대해 두 번 호출해도 각 채널마다 잡이 enqueue된다" do
-    # 중복 방지는 SlackArticleDeliveryJob 내부의 with_lock으로 처리됨
+  test "같은 기사에 대해 두 번 호출해도 각 workspace마다 잡이 enqueue된다" do
     assert_enqueued_jobs 4, only: SlackArticleDeliveryJob do
       service = SlackArticleNotifierService.new
       service.call(@article)

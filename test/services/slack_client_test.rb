@@ -3,27 +3,24 @@
 require "test_helper"
 
 class SlackClientTest < ActiveSupport::TestCase
-  test "not_in_channel 이면 운영 가이드가 포함된 ApiError를 발생시킨다" do
+  test "incoming webhook으로 메시지를 전송한다" do
     workspace = slack_workspaces(:acme)
     client = SlackClient.new(workspace)
-    api_client = Struct.new(:calls) do
-      def chat_postMessage(channel:, text:, blocks:)
-        calls << [ :post, channel, text, blocks ]
-        raise Slack::Web::Api::Errors::NotInChannel, "not_in_channel"
+    response = Struct.new(:success?, :status).new(true, 200)
+    webhook_client = Struct.new(:calls, :response) do
+      def post
+        request = Struct.new(:body).new
+        yield request
+        calls << request.body
+        response
       end
-    end.new([])
+    end.new([], response)
 
-    error = assert_raises(SlackClient::ApiError) do
-      client.stub(:client, api_client) do
-        client.post_message(channel: "CPUBLIC1", text: "hello", blocks: [])
-      end
+    client.stub(:webhook_client, webhook_client) do
+      assert_equal({}, client.post_message(text: "hello", blocks: []))
     end
 
-    assert_includes error.message, "Slack 봇이 채널에 참여하지 않아 메시지 전송에 실패했습니다."
-    assert_includes error.message, "최소 권한 원칙"
-    assert_includes error.message, "공개 채널과 비공개 채널 모두 Slack에서 앱을 해당 채널에 직접 초대"
-    assert_includes error.message, "not_in_channel"
-    assert_equal [ [ :post, "CPUBLIC1", "hello", [] ] ], api_client.calls
+    assert_equal [ { text: "hello", blocks: [] } ], webhook_client.calls
   end
 
   test "Faraday 오류를 ApiError로 래핑한다" do
@@ -31,12 +28,12 @@ class SlackClientTest < ActiveSupport::TestCase
     client = SlackClient.new(workspace)
 
     error = assert_raises(SlackClient::ApiError) do
-      client.stub(:client, Struct.new(:exception) {
-        def conversations_list(**)
+      client.stub(:webhook_client, Struct.new(:exception) {
+        def post
           raise exception
         end
       }.new(Faraday::TimeoutError.new("execution expired"))) do
-        client.list_channels
+        client.post_message(text: "hello", blocks: [])
       end
     end
 

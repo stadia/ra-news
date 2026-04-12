@@ -19,7 +19,9 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     user = users(:john)
     sign_in_as(user)
 
-    get edit_user_registration_path
+    SlackConfig.stub(:configured?, true) do
+      get edit_user_registration_path
+    end
 
     assert_response :success
     assert_select 'input[name="user[name]"]'
@@ -29,6 +31,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{user_profile_path(user)}']", text: "돌아가기"
     assert_select "h2", text: "Slack 채널 구독"
     assert_select "a[href='#{slack_install_path}']", text: "워크스페이스 연결"
+    assert_select "div", text: /#ruby-news/
   end
 
   test "PATCH update changes name and email but not username" do

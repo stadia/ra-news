@@ -16,7 +16,7 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
           div do
             render RubyUI::Heading.new(level: 2, class: "text-xl font-bold text-content") { "Slack 채널 구독" }
             p(class: "mt-1 text-sm text-content-muted") do
-              plain "워크스페이스를 연결하고, 각 워크스페이스마다 기사 알림을 보낼 채널 하나를 선택합니다."
+              plain "워크스페이스를 연결하면 Slack이 설치 시점에 선택한 채널로 기사 알림을 보냅니다."
             end
           end
 
@@ -36,93 +36,25 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
         else
           div(class: "mt-6 space-y-5") do
             workspaces.each do |workspace|
-              subscription = subscriptions_by_workspace_id[workspace.id]
-
-              div(
-                class: "rounded-xl border border-border-strong bg-surface p-5 space-y-4",
-                data: {
-                  controller: "workspace-subscription-channels",
-                  workspace_subscription_channels_url_value: channels_slack_workspace_subscription_path(workspace, format: :json),
-                  workspace_subscription_channels_selected_id_value: subscription&.channel_id.to_s,
-                  workspace_subscription_channels_selected_name_value: subscription&.channel_name.to_s
-                }
-              ) do
+              div(class: "rounded-xl border border-border-strong bg-surface p-5 space-y-4") do
                 div(class: "flex items-center justify-between gap-4") do
                   div do
                     h3(class: "font-semibold text-content") { workspace.team_name }
                     p(class: "text-xs text-content-muted mt-1") { workspace.team_id }
                   end
 
-                  status_badge(workspace, subscription)
+                  status_badge(workspace)
                 end
 
-                form_with(
-                  url: slack_workspace_subscription_path(workspace),
-                  method: subscription&.persisted? ? :patch : :post,
-                  class: "space-y-4"
-                ) do |form|
-                  render RubyUI::FormField.new do
-                    render RubyUI::FormFieldLabel.new(for: "channel_id_#{workspace.id}") { "채널 ID" }
-                    select(
-                      name: "workspace_subscription[channel_id]",
-                      id: "channel_id_#{workspace.id}",
-                      data: {
-                        workspace_subscription_channels_target: "channelSelect",
-                        action: "focus->workspace-subscription-channels#load mousedown->workspace-subscription-channels#load change->workspace-subscription-channels#syncSelection"
-                      },
-                      class: input_classes
-                    ) do
-                      option(
-                        value: subscription&.channel_id.to_s,
-                        selected: true,
-                        data: { channel_name: subscription&.channel_name.to_s }
-                      ) do
-                        plain(subscription&.channel_name.present? ? "##{subscription.channel_name}" : "채널을 선택하려면 클릭하세요")
-                      end
-                    end
-                  end
-
-                  p(
-                    class: "text-xs text-content-muted"
-                  ) do
-                    plain(subscription&.channel_name.present? ? "현재 저장된 채널: ##{subscription.channel_name}" : "현재 저장된 채널이 없습니다.")
-                  end
-
-                  p(
-                    class: "text-xs text-content-muted",
-                    data: { workspace_subscription_channels_target: "feedback" }
-                  ) do
-                    plain "채널 선택 박스를 클릭하면 목록을 자동으로 불러옵니다."
-                  end
-
-                  form.hidden_field :channel_name,
-                    name: "workspace_subscription[channel_name]",
-                    id: "channel_name_#{workspace.id}",
-                    value: subscription&.channel_name,
-                    data: { workspace_subscription_channels_target: "channelName" }
-
-                  div(class: "flex items-center justify-end gap-3") do
-                    render RubyUI::Button.new(
-                      type: "submit",
-                      class: "inline-flex items-center justify-center gap-2 rounded-xl bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground font-bold text-sm transition-all active:scale-95 shadow-lg px-4 py-2"
-                    ) do
-                      Hero::Check(variant: :outline, class: "w-4 h-4")
-                      plain "채널 저장"
-                    end
+                render RubyUI::FormField.new do
+                  render RubyUI::FormFieldLabel.new { "연결된 채널" }
+                  div(class: input_classes) do
+                    plain "##{workspace.channel_name}"
                   end
                 end
 
-                if subscription&.persisted?
-                  div(class: "flex justify-end") do
-                    button_to(
-                      slack_workspace_subscription_path(workspace),
-                      method: :delete,
-                      class: "inline-flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg px-4 py-2"
-                    ) do
-                      Hero::Trash(variant: :outline, class: "w-4 h-4")
-                      plain "비활성화"
-                    end
-                  end
+                p(class: "text-xs text-content-muted") do
+                  plain "설치 시 Slack에서 선택한 채널이 고정됩니다. 채널을 바꾸려면 Slack 앱을 다시 설치하거나 워크스페이스 설정을 갱신해야 합니다."
                 end
               end
             end
@@ -137,17 +69,11 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
   attr_reader :user
 
   def workspaces
-    @workspaces ||= user.slack_workspaces.active.order(:team_name)
+    @workspaces ||= SlackWorkspace.delivery_ready.order(:team_name)
   end
 
-  def subscriptions_by_workspace_id
-    @subscriptions_by_workspace_id ||= user.workspace_subscriptions.index_by(&:slack_workspace_id)
-  end
-
-  def status_badge(workspace, subscription)
-    text, classes = if subscription&.active?
-      [ "채널 설정됨", "text-success bg-success/10 ring-1 ring-success/20" ]
-    elsif workspace.active?
+  def status_badge(workspace)
+    text, classes = if workspace.active?
       [ "워크스페이스 연결됨", "text-content-muted bg-surface ring-1 ring-border" ]
     else
       [ "확인 필요", "text-warning bg-warning/10 ring-1 ring-warning/20" ]
