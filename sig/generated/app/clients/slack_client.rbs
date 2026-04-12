@@ -24,8 +24,14 @@ class SlackClient
   # : () -> Slack::Web::Client
   def client: () -> Slack::Web::Client
 
-  # : (?String api_error_message) -> String
-  def not_in_channel_guidance: (?String api_error_message) -> String
+  # : (channel: String, text: String, blocks: Array[untyped]) -> untyped
+  def post_message_request: (channel: String, text: String, blocks: Array[untyped]) -> untyped
+
+  # : (channel: String, text: String, blocks: Array[untyped]) -> untyped
+  def retry_public_channel_post: (channel: String, text: String, blocks: Array[untyped]) -> untyped
+
+  # : (?String join_error_message) -> String
+  def not_in_channel_guidance: (?String join_error_message) -> String
 
   # : (Exception error) -> bot
   def raise_api_error: (Exception error) -> bot

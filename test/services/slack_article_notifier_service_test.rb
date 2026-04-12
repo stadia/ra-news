@@ -63,5 +63,4 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
       SlackArticleNotifierService.new.call(article)
     end
   end
-
 end

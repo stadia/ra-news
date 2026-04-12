@@ -29,6 +29,9 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
     assert_response :redirect
     assert_includes response.location, "https://slack.com/oauth/v2/authorize"
     assert_includes response.location, "client_id=client-123"
+    scopes = URI.decode_www_form(URI.parse(response.location).query).to_h.fetch("scope")
+
+    assert_equal "channels:read,groups:read,chat:write", scopes
   end
 
   test "GET install redirects with alert when not configured" do
