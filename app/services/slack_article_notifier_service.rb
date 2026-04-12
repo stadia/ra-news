@@ -3,7 +3,7 @@
 class SlackArticleNotifierService < OperationService
   def call(article)
     return Failure(:deleted) unless article.deleted_at.nil?
-    return Failure(:not_confirmed) unless article.slug.present? && article.title_ko.present?
+    return Failure(:not_confirmed) unless article.is_related? && article.slug.present? && article.title_ko.present?
 
     targets(article).each do |target|
       SlackArticleDeliveryJob.perform_later(

@@ -7,7 +7,7 @@ class SlackArticleDelivery < ApplicationRecord
   enum :status, {
     sent: "sent",
     failed: "failed"
-  }, default: :sent, validate: true
+  }, default: :failed, validate: true
 
   validates :channel_id, :channel_name, presence: true
   validates :article_id, uniqueness: { scope: [ :slack_workspace_id, :channel_id ] }

@@ -69,7 +69,7 @@ class SlackController < ApplicationController
 
     return head :unauthorized if timestamp.blank? || signature.blank?
     return head :unauthorized if signing_secret.blank?
-    return head :unauthorized if (Time.now.to_i - timestamp.to_i).abs > 300
+    return head :unauthorized if (Time.zone.now.to_i - timestamp.to_i).abs > 300
 
     sig_basestring = "v0:#{timestamp}:#{request.raw_post}"
     my_signature = "v0=" + OpenSSL::HMAC.hexdigest("SHA256", signing_secret, sig_basestring)

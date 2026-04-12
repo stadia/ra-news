@@ -36,7 +36,7 @@ class CreateSlackDeliveryTables < ActiveRecord::Migration[8.1]
       t.references :slack_workspace, null: false, foreign_key: true
       t.string :channel_id, null: false
       t.string :channel_name, null: false
-      t.string :status, null: false, default: "sent"
+      t.string :status, null: false, default: "failed"
       t.datetime :sent_at
       t.text :error_message
       t.string :slack_message_ts

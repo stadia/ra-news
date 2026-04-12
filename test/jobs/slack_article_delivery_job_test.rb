@@ -61,4 +61,15 @@ class SlackArticleDeliveryJobTest < ActiveJob::TestCase
     assert_predicate delivery.reload, :sent?
     assert_nil delivery.error_message
   end
+
+  test "신규 delivery의 기본 상태는 failed다" do
+    delivery = SlackArticleDelivery.create!(
+      article: articles(:ruby_article),
+      slack_workspace: slack_workspaces(:acme),
+      channel_id: "CDEFAULT1",
+      channel_name: "ruby-news"
+    )
+
+    assert_predicate delivery, :failed?
+  end
 end

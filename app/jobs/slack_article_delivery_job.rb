@@ -51,6 +51,13 @@ class SlackArticleDeliveryJob < ApplicationJob
   end
 
   def find_or_create_delivery(article, workspace, channel_id, channel_name)
+    existing_delivery = SlackArticleDelivery.find_by(
+      article:,
+      slack_workspace: workspace,
+      channel_id:
+    )
+    return existing_delivery if existing_delivery
+
     SlackArticleDelivery.create!(
       article:,
       slack_workspace: workspace,
@@ -58,7 +65,7 @@ class SlackArticleDeliveryJob < ApplicationJob
       channel_name:,
       status: :failed
     )
-  rescue ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique
+  rescue ActiveRecord::RecordNotUnique
     SlackArticleDelivery.find_by!(
       article:,
       slack_workspace: workspace,

@@ -19,6 +19,14 @@ end
 admin.confirmed_at ||= Time.current
 admin.save!
 
-Preference.find_or_create_by!(name: "ignore_hosts", value: [])
-Preference.find_or_create_by!(name: "slack_oauth", value: { client_id: '', client_secret: '', signing_secret: '' })
-Preference.find_or_create_by!(name: "web_push", value: { public_key: '', private_key: '', subject: '' })
+Preference.find_or_create_by!(name: "ignore_hosts") do |preference|
+  preference.value = []
+end
+
+Preference.find_or_create_by!(name: "slack_oauth") do |preference|
+  preference.value = { client_id: "", client_secret: "", signing_secret: "" }
+end
+
+Preference.find_or_create_by!(name: "web_push") do |preference|
+  preference.value = { public_key: "", private_key: "", subject: "" }
+end

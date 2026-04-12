@@ -219,7 +219,7 @@ class Article < ApplicationRecord
   end
 
   def should_enqueue_slack_notification?
-    return false unless deleted_at.nil? && slug.present? && title_ko.present?
+    return false unless deleted_at.nil? && is_related? && slug.present? && title_ko.present?
 
     !previously_slack_notifiable?
   end
@@ -228,8 +228,9 @@ class Article < ApplicationRecord
     previous_slug = previous_changes.key?("slug") ? previous_changes["slug"].first : slug
     previous_title_ko = previous_changes.key?("title_ko") ? previous_changes["title_ko"].first : title_ko
     previous_deleted_at = previous_changes.key?("deleted_at") ? previous_changes["deleted_at"].first : deleted_at
+    previous_is_related = previous_changes.key?("is_related") ? previous_changes["is_related"].first : is_related
 
-    previous_deleted_at.nil? && previous_slug.present? && previous_title_ko.present?
+    previous_deleted_at.nil? && previous_is_related && previous_slug.present? && previous_title_ko.present?
   end
 
   def enqueue_slack_notification
