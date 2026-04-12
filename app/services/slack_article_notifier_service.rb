@@ -21,7 +21,7 @@ class SlackArticleNotifierService < OperationService
   #: (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
   def generate_jobs(article, subscriptions)
     subscriptions.map do |target|
-      SlackArticleDeliveryJob.perform_now(
+      SlackArticleDeliveryJob.new(
         article.id,
         target[:workspace].id,
         target[:channel_id],
