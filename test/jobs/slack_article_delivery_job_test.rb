@@ -13,28 +13,21 @@ class SlackArticleDeliveryJobTest < ActiveJob::TestCase
       channel_name: "ruby-news",
       status: :failed
     )
-    logger = Minitest::Mock.new
-
-    logger.expect(:error, nil, [ String ])
 
     SlackClient.stub(:new, Struct.new(:response) {
       def post_message(channel:, text:, blocks:)
         response
       end
     }.new({ "ts" => "123.456" })) do
-      Rails.stub(:logger, logger) do
-        job = SlackArticleDeliveryJob.new
-        job.stub(:persist_delivery_success, false) do
-          error = assert_raises(ActiveRecord::RecordInvalid) do
-            job.perform(article.id, workspace.id, delivery.channel_id, delivery.channel_name)
-          end
-
-          assert_equal delivery.id, error.record.id
+      job = SlackArticleDeliveryJob.new
+      job.stub(:persist_delivery_success, ->(_d, _c, _t) { delivery.errors.add(:base, "test"); raise ActiveRecord::RecordInvalid, delivery }) do
+        error = assert_raises(ActiveRecord::RecordInvalid) do
+          job.perform(article.id, workspace.id, delivery.channel_id, delivery.channel_name)
         end
+
+        assert_equal delivery.id, error.record.id
       end
     end
-
-    logger.verify
   end
 
   test "전송 실패 처리 중 이미 sent 상태면 failed로 되돌리지 않는다" do

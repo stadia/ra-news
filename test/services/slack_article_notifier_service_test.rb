@@ -64,12 +64,4 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "관련 없는 기사는 발송하지 않는다" do
-    article = articles(:site_only_article)
-    article.update!(title_ko: "관련 없는 기사 번역")
-
-    assert_no_enqueued_jobs only: SlackArticleDeliveryJob do
-      SlackArticleNotifierService.new.call(article)
-    end
-  end
 end

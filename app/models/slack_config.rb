@@ -19,7 +19,7 @@ class SlackConfig
     end
 
     def configured?
-      client_id.present? && client_secret.present?
+      client_id.present? && client_secret.present? && signing_secret.present?
     end
 
     def install_scope

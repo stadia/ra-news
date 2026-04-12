@@ -77,7 +77,7 @@ class SlackClient
     rescue Slack::Web::Api::Errors::SlackError => e
       raise ApiError, e.message
     rescue Faraday::Error => e
-      raise ApiError, "oauth_exchange_failed: #{e.class}"
+      raise ApiError, "#{e.class}: #{e.message}"
     end
 
     private

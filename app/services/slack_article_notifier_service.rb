@@ -6,9 +6,9 @@ class SlackArticleNotifierService < OperationService
     return Failure(:deleted) unless article.deleted_at.nil?
     return Failure(:not_confirmed) unless article.slug.present? && article.title_ko.present?
 
-    subscriptions = step targets
+    delivery_jobs = generate_jobs(article, targets)
 
-    delivery_jobs = step generate_jobs(subscriptions)
+    return Success(nil) if delivery_jobs.empty?
 
     ActiveJob.perform_all_later(delivery_jobs)
 
@@ -17,7 +17,7 @@ class SlackArticleNotifierService < OperationService
 
   private
 
-  def generate_jobs(subscriptions)
+  def generate_jobs(article, subscriptions)
     subscriptions.map do |target|
       SlackArticleDeliveryJob.new(
         article.id,
