@@ -14,12 +14,13 @@ module OauthClient
       authorize_url: "https://ruby.social/oauth/authorize",
       token_url: "https://ruby.social/oauth/token"
     }
-  }.freeze #: Hash<String, Hash<String, String>>
+  }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
   module_function
 
   def build(oauth_preference) #: (Preference oauth_preference) -> OAuth2::Client
     raise ArgumentError, "OAuth 설정이 비어있습니다" if oauth_preference.blank?
+    raise ArgumentError, "OAuth 설정 이름이 비어있습니다" if oauth_preference.name.blank?
 
     provider = extract_provider_from_preference_name(oauth_preference.name)
     config = OAUTH_CONFIG[provider.to_sym]

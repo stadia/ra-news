@@ -42,7 +42,8 @@ class SlackArticlePresenter
 
   def summary
     value = article.summary_key
-    value.is_a?(Array) ? value.first.to_s : value.to_s
+    summary_text = value.is_a?(Array) ? value.first : value
+    summary_text.presence || "요약이 없습니다."
   end
 
   def article_url

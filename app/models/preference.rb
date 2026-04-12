@@ -5,6 +5,8 @@
 class Preference < ApplicationRecord
   PROTECTED_KEYS = %w[name value]
 
+  validates :name, presence: true
+
   after_initialize :define_dynamic_accessors, if: -> { persisted? && name.present? }
 
   after_commit :clear_cache, on: %i[create update destroy]

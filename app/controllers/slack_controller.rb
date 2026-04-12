@@ -2,7 +2,7 @@
 
 class SlackController < ApplicationController
   protect_from_forgery except: :events
-  before_action :authenticate_user!, except: :events
+  skip_before_action :authenticate_user!, only: :events
   before_action :verify_slack_signature, only: :events
 
   def install

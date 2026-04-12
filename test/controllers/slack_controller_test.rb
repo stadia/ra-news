@@ -89,9 +89,33 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_user_registration_path
 
     workspace = SlackWorkspace.find_by!(team_id: "TCALLBACK")
+    subscription = WorkspaceSubscription.find_by!(user: users(:john), slack_workspace: workspace)
 
     assert_equal "Callback Team", workspace.team_name
     assert_equal "xoxb-callback", workspace.bot_access_token
     assert_equal "UBOTCALLBACK", workspace.bot_user_id
+    assert_equal users(:john).id, subscription.user_id
+    assert_equal workspace.id, subscription.slack_workspace_id
+    assert_equal "UJOHNCALLBACK", subscription.slack_user_id
+  end
+
+  test "POST events accepts url verification without login when signature is valid" do
+    timestamp = Time.now.to_i.to_s
+    payload = { type: "url_verification", challenge: "challenge-token" }
+    raw_body = payload.to_json
+    signature = "v0=" + OpenSSL::HMAC.hexdigest("SHA256", "signing-secret", "v0:#{timestamp}:#{raw_body}")
+
+    SlackConfig.stub(:signing_secret, "signing-secret") do
+      post slack_events_path,
+        params: raw_body,
+        headers: {
+          "CONTENT_TYPE" => "application/json",
+          "X-Slack-Request-Timestamp" => timestamp,
+          "X-Slack-Signature" => signature
+        }
+    end
+
+    assert_response :success
+    assert_equal "challenge-token", response.parsed_body["challenge"]
   end
 end

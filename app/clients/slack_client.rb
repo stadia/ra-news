@@ -21,6 +21,8 @@ class SlackClient
     channels
   rescue Slack::Web::Api::Errors::SlackError => e
     raise ApiError, e.message
+  rescue Faraday::Error => e
+    raise_api_error(e)
   end
 
   def post_message(channel:, text:, blocks:)
@@ -28,6 +30,8 @@ class SlackClient
     { "ts" => response.ts }
   rescue Slack::Web::Api::Errors::SlackError => e
     raise ApiError, e.message
+  rescue Faraday::Error => e
+    raise_api_error(e)
   end
 
   private
@@ -40,5 +44,9 @@ class SlackClient
       open_timeout: 3,
       timeout: 5
     )
+  end
+
+  def raise_api_error(error)
+    raise ApiError, "#{error.class}: #{error.message}"
   end
 end

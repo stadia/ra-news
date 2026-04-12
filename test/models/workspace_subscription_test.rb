@@ -14,7 +14,7 @@ class WorkspaceSubscriptionTest < ActiveSupport::TestCase
     )
 
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:user_id], "이미 존재하는 값입니다"
+    assert duplicate.errors.of_kind?(:user_id, :taken)
   end
 
   test "활성 구독은 채널 정보가 필요하다" do
@@ -28,7 +28,7 @@ class WorkspaceSubscriptionTest < ActiveSupport::TestCase
     )
 
     assert_not subscription.valid?
-    assert_includes subscription.errors[:channel_id], "내용을 입력해 주세요"
-    assert_includes subscription.errors[:channel_name], "내용을 입력해 주세요"
+    assert subscription.errors.of_kind?(:channel_id, :blank)
+    assert subscription.errors.of_kind?(:channel_name, :blank)
   end
 end

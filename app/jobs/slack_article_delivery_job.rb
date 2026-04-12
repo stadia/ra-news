@@ -30,7 +30,12 @@ class SlackArticleDeliveryJob < ApplicationJob
       raise ActiveRecord::RecordInvalid, delivery
     end
   rescue SlackClient::ApiError => e
-    delivery&.update!(channel_name:, status: :failed, error_message: e.message)
+    delivery&.with_lock do
+      delivery.reload
+      return if delivery.sent?
+
+      delivery.update!(channel_name:, status: :failed, error_message: e.message)
+    end
   end
 
   private

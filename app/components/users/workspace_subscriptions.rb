@@ -137,7 +137,7 @@ class Components::Users::WorkspaceSubscriptions < Components::Base
   attr_reader :user
 
   def workspaces
-    @workspaces ||= SlackWorkspace.active.order(:team_name)
+    @workspaces ||= user.slack_workspaces.active.order(:team_name)
   end
 
   def subscriptions_by_workspace_id

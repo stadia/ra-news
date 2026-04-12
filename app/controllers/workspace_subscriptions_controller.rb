@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
 class WorkspaceSubscriptionsController < ApplicationController
+  include Pundit::Authorization
+
   before_action :authenticate_user!
   before_action :set_workspace
+  before_action :authorize_workspace!
+  after_action :verify_authorized
+
+  rescue_from Pundit::NotAuthorizedError, with: :handle_not_authorized
 
   def create
     upsert_subscription
@@ -20,11 +26,6 @@ class WorkspaceSubscriptionsController < ApplicationController
   end
 
   def channels
-    unless current_user.workspace_subscriptions.exists?(slack_workspace: @workspace)
-      render json: { error: "접근 권한이 없습니다." }, status: :forbidden
-      return
-    end
-
     channels = Rails.cache.fetch("slack_channels/#{@workspace.id}", expires_in: 10.minutes) do
       SlackClient.new(@workspace).list_channels
     end
@@ -37,6 +38,10 @@ class WorkspaceSubscriptionsController < ApplicationController
 
   def set_workspace
     @workspace = SlackWorkspace.find(params[:slack_workspace_id])
+  end
+
+  def authorize_workspace!
+    authorize @workspace, :"#{action_name}?", policy_class: SlackWorkspacePolicy
   end
 
   def upsert_subscription
@@ -58,5 +63,12 @@ class WorkspaceSubscriptionsController < ApplicationController
 
   def subscription_params
     params.expect(workspace_subscription: [ :channel_id, :channel_name ])
+  end
+
+  def handle_not_authorized
+    respond_to do |format|
+      format.json { render json: { error: "접근 권한이 없습니다." }, status: :forbidden }
+      format.any { redirect_to edit_user_registration_path, alert: "접근 권한이 없습니다." }
+    end
   end
 end

@@ -71,6 +71,21 @@ class OauthClientTest < ActiveSupport::TestCase
     assert_equal "OAuth 설정이 비어있습니다", error.message
   end
 
+  test "preference 이름이 비어있으면 ArgumentError를 발생시킨다" do
+    preference = MockPreference.new(
+      name: nil,
+      client_id: "test_id",
+      client_secret: "test_secret",
+      site: nil
+    )
+
+    error = assert_raises(ArgumentError) do
+      OauthClient.build(preference)
+    end
+
+    assert_equal "OAuth 설정 이름이 비어있습니다", error.message
+  end
+
   test "지원하지 않는 provider면 ArgumentError를 발생시킨다" do
     preference = MockPreference.new(
       name: "unsupported_oauth",
