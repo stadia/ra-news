@@ -10,6 +10,17 @@ Add Discord notification support using the same incoming webhook pattern as Slac
 
 AlNews already sends articles to Twitter, Mastodon, and Slack via `SocialPostJob`. Slack uses an OAuth2 + incoming webhook flow (`SlackWorkspace` → `SlackArticleDelivery`). We want to add Discord as a fourth channel and unify the data model so future platforms require minimal new infrastructure.
 
+## Dependencies
+
+| Gem                  | Purpose                                      |
+| -------------------- | -------------------------------------------- |
+| `discordrb-webhooks` | Discord webhook message posting (Embed support) |
+
+Notes:
+- `discordrb-webhooks` is the lightweight subset of `discordrb` — no opus-ruby, websocket-client-simple, or ffi dependencies.
+- OAuth2 code exchange uses existing `faraday` gem (already in project). Only 2 HTTP calls needed (token exchange + webhook creation).
+- Full `discordrb` gem is NOT needed since we only post via incoming webhooks, not via Gateway/Bot events.
+
 ## Schema
 
 ### `notification_channels` (replaces `slack_workspaces`)
@@ -65,7 +76,7 @@ No extra fields. Uses `webhook_url` to post Slack Block Kit messages.
 
 ### DiscordChannel < NotificationChannel
 
-No extra fields. Uses `webhook_url` (Discord webhook format: `https://discord.com/api/webhooks/{id}/{token}`) to post Discord Embed messages.
+No extra fields. Uses `webhook_url` (Discord webhook format: `https://discord.com/api/webhooks/{id}/{token}`) with `discordrb-webhooks` gem to post Discord Embed messages.
 
 ### NotificationDelivery (base)
 
@@ -110,7 +121,7 @@ Same flow as current but creates `SlackChannel` instead of `SlackWorkspace`.
 | `app/models/slack_delivery.rb`                  | STI subclass                      |
 | `app/models/discord_delivery.rb`                | STI subclass                      |
 | `app/models/discord_config.rb`                  | Discord credentials (Preference)  |
-| `app/clients/discord_client.rb`                 | OAuth + webhook posting           |
+| `app/clients/discord_client.rb`                 | OAuth (Faraday) + webhook posting (discordrb-webhooks) |
 | `app/controllers/discord_controller.rb`         | install / callback actions        |
 | `app/presenters/discord_article_presenter.rb`   | Discord Embed format              |
 | `app/services/discord_article_notifier_service.rb` |Notifier (NotifierService pattern) |
@@ -135,21 +146,25 @@ Same flow as current but creates `SlackChannel` instead of `SlackWorkspace`.
 
 ## Discord Message Format
 
-Discord Embed payload from `DiscordArticlePresenter`:
+Discord Embed payload posted via `discordrb-webhooks`:
 
-```json
-{
-  "embeds": [{
-    "title": "Article Title",
-    "url": "https://alnews.app/articles/slug",
-    "description": "First 200 chars of content...",
-    "color": 3447003,
-    "image": { "url": "https://..." },
-    "footer": { "text": "AlNews" },
-    "timestamp": "2026-04-13T12:00:00Z"
-  }]
-}
+```ruby
+# DiscordClient uses discordrb-webhooks internally
+client = Discordrb::Webhook.new(url: webhook_url)
+client.execute do |builder|
+  builder.add_embed do |embed|
+    embed.title = article.title
+    embed.url = article_url(article)
+    embed.description = article.content&.truncate(200)
+    embed.colour = 3447003  # AlNews blue
+    embed.image = Discordrb::Webhooks::EmbedImage.new(url: article.image_url) if article.image_url
+    embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: "AlNews")
+    embed.timestamp = article.created_at
+  end
+end
 ```
+
+The `DiscordArticlePresenter` converts an Article into embed parameters (hash), and `DiscordClient` applies them via `discordrb-webhooks`.
 
 ## Migration Strategy
 
@@ -235,9 +250,10 @@ end
 
 ## Error Handling
 
-- `DiscordClient::ApiError` wraps all Discord API errors (HTTP errors, rate limits).
+- `DiscordClient::ApiError` wraps all Discord API errors (HTTP errors, rate limits from Faraday OAuth calls and discordrb-webhooks exceptions).
 - `DiscordArticleDeliveryJob` catches `DiscordClient::ApiError`, marks delivery as failed with error message.
 - Channel status set to `error` on persistent failures (e.g., invalid webhook).
+- `discordrb-webhooks` raises `Discordrb::Errors::Code` on API errors — caught and re-wrapped in `DiscordClient::ApiError`.
 - Same pattern as existing `SlackArticleDeliveryJob`.
 
 ## Testing
