@@ -648,7 +648,7 @@ GEM
     sin_lru_redux (2.5.2)
     sitemap_generator (6.3.0)
       builder (~> 3.0)
-    slack-ruby-client (2.7.0)
+    slack-ruby-client (3.1.0)
       faraday (>= 2.0.1)
       faraday-mashify
       faraday-multipart
@@ -846,7 +846,7 @@ DEPENDENCIES
   schema_dot_org
   selenium-webdriver
   sitemap_generator
-  slack-ruby-client (~> 2.4)
+  slack-ruby-client (~> 3.1)
   socialization
   solid_cable
   solid_cache
