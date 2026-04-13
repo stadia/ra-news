@@ -85,6 +85,7 @@ class Components::Layout < Components::Base
     meta(name: "apple-mobile-web-app-capable", content: "yes")
     meta(name: "mobile-web-app-capable", content: "yes")
     meta(name: "apple-mobile-web-app-status-bar-style", content: "black-translucent")
+    meta(name: "slack-app-id", content: "A0AS9BX8B7U")
 
     vc = view_context
     vc.set_meta_tags canonical: "https://ruby-news.kr#{vc.request.path}"
