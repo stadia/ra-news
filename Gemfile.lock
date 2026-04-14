@@ -258,7 +258,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
-    lexxy (0.9.7.beta)
+    lexxy (0.9.8.beta)
       rails (>= 8.0.2)
     link_header (0.0.8)
     lint_roller (1.1.0)
@@ -806,7 +806,7 @@ DEPENDENCIES
   jbuilder
   kramdown
   letter_opener
-  lexxy (~> 0.9.5.beta)
+  lexxy (~> 0.9.8.beta)
   madmin (~> 2.3)
   meta-tags
   minitest (~> 6.0)
