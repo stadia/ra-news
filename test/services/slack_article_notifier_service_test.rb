@@ -7,21 +7,21 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
 
   setup do
     @article = articles(:ruby_article)
-    SlackArticleDelivery.where(article: @article).delete_all
+    SlackDelivery.where(article: @article).delete_all
   end
 
-  test "workspace 기준으로 기사 알림 잡을 enqueue한다" do
+  test "channel 기준으로 기사 알림 잡을 enqueue한다" do
     assert_enqueued_jobs 2, only: SlackArticleDeliveryJob do
       SlackArticleNotifierService.new.call(@article)
     end
 
     enqueued = enqueued_jobs.select { |j| j[:job] == SlackArticleDeliveryJob }
-    workspace_ids = enqueued.map { |j| j[:args][1] }.sort
+    channel_ids = enqueued.map { |j| j[:args][1] }.sort
 
-    assert_equal SlackWorkspace.delivery_ready.order(:id).pluck(:id), workspace_ids
+    assert_equal SlackChannel.delivery_ready.order(:id).pluck(:id), channel_ids
   end
 
-  test "같은 기사에 대해 두 번 호출해도 각 workspace마다 잡이 enqueue된다" do
+  test "같은 기사에 대해 두 번 호출해도 각 channel마다 잡이 enqueue된다" do
     assert_enqueued_jobs 4, only: SlackArticleDeliveryJob do
       service = SlackArticleNotifierService.new
       service.call(@article)

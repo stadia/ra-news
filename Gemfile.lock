@@ -144,6 +144,9 @@ GEM
       warden (~> 1.2.3)
     discard (1.4.0)
       activerecord (>= 4.2, < 9.0)
+    discordrb-webhooks (3.7.2)
+      rest-client (>= 2.0.0)
+    domain_name (0.6.20240107)
     dotenv (3.2.0)
     dotenv-rails (3.2.0)
       dotenv (= 3.2.0)
@@ -213,6 +216,9 @@ GEM
     hashie (5.1.0)
       logger
     htmlentities (4.4.2)
+    http-accept (1.7.0)
+    http-cookie (1.1.4)
+      domain_name (~> 0.5)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     image_processing (1.14.0)
@@ -285,6 +291,10 @@ GEM
       json-schema (>= 4.1)
     meta-tags (2.23.0)
       actionpack (>= 6.0.0)
+    mime-types (3.7.0)
+      logger
+      mime-types-data (~> 3.2025, >= 3.2025.0507)
+    mime-types-data (3.2026.0407)
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
@@ -565,6 +575,11 @@ GEM
     responders (3.2.0)
       actionpack (>= 7.0)
       railties (>= 7.0)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rexml (3.4.4)
     rorvswild (1.11.1)
     rss (0.3.2)
@@ -794,6 +809,7 @@ DEPENDENCIES
   debug
   devise (~> 5.0)
   discard
+  discordrb-webhooks
   dotenv-rails
   dry-operation
   faker

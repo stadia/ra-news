@@ -1,0 +1,29 @@
+acme_slack:
+  type: SlackChannel
+  remote_id: T123ACME
+  name: Acme Workspace
+  webhook_url: https://hooks.slack.com/services/T123ACME/B123/ACME
+  channel_id: CNEWS1
+  channel_name: ruby-news
+  status: active
+  last_verified_at: <%= 1.hour.ago %>
+
+globex_slack:
+  type: SlackChannel
+  remote_id: T456GLOBEX
+  name: Globex Workspace
+  webhook_url: https://hooks.slack.com/services/T456GLOBEX/B456/GLOBEX
+  channel_id: CNEWS2
+  channel_name: team-ruby
+  status: active
+  last_verified_at: <%= 2.hours.ago %>
+
+acme_discord:
+  type: DiscordChannel
+  remote_id: D789ACME
+  name: Acme Discord
+  webhook_url: https://discord.com/api/webhooks/123/abc
+  channel_id: DCNEWS1
+  channel_name: al-news
+  status: active
+  last_verified_at: <%= 30.minutes.ago %>

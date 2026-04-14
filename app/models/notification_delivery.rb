@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class SlackArticleDelivery < ApplicationRecord
+class NotificationDelivery < ApplicationRecord
   belongs_to :article
-  belongs_to :slack_workspace
+  belongs_to :notification_channel
 
   enum :status, {
     sent: "sent",
@@ -11,5 +11,5 @@ class SlackArticleDelivery < ApplicationRecord
   }, default: :failed, validate: true
 
   validates :channel_id, :channel_name, presence: true
-  validates :article_id, uniqueness: { scope: [ :slack_workspace_id, :channel_id ] }
+  validates :article_id, uniqueness: { scope: [ :notification_channel_id, :channel_id ] }
 end

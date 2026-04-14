@@ -97,14 +97,12 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to edit_user_registration_path
 
-    workspace = SlackWorkspace.find_by!(team_id: "TCALLBACK")
+    channel = SlackChannel.find_by!(remote_id: "TCALLBACK")
 
-    assert_equal "Callback Team", workspace.team_name
-    assert_equal "xoxb-callback", workspace.bot_access_token
-    assert_equal "UBOTCALLBACK", workspace.bot_user_id
-    assert_equal "https://hooks.slack.com/services/TCALLBACK/B123/abc", workspace.incoming_webhook_url
-    assert_equal "CCALLBACK", workspace.channel_id
-    assert_equal "hada-news", workspace.channel_name
+    assert_equal "Callback Team", channel.name
+    assert_equal "https://hooks.slack.com/services/TCALLBACK/B123/abc", channel.webhook_url
+    assert_equal "CCALLBACK", channel.channel_id
+    assert_equal "hada-news", channel.channel_name
   end
 
   test "POST events accepts url verification without login when signature is valid" do

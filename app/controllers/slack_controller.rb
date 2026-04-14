@@ -34,19 +34,17 @@ class SlackController < ApplicationController
     team = oauth.fetch("team")
     incoming_webhook = oauth.fetch("incoming_webhook")
 
-    SlackWorkspace.transaction do
-      workspace = SlackWorkspace.find_or_initialize_by(team_id: team.fetch("id"))
-      workspace.assign_attributes(
-        team_name: team.fetch("name"),
-        bot_access_token: oauth["access_token"].to_s,
-        bot_user_id: oauth["bot_user_id"].to_s,
-        incoming_webhook_url: incoming_webhook.fetch("url"),
+    SlackChannel.transaction do
+      channel = SlackChannel.find_or_initialize_by(remote_id: team.fetch("id"))
+      channel.assign_attributes(
+        name: team.fetch("name"),
+        webhook_url: incoming_webhook.fetch("url"),
         channel_id: incoming_webhook.fetch("channel_id"),
         channel_name: incoming_webhook.fetch("channel"),
         status: :active,
         last_verified_at: Time.current
       )
-      workspace.save!
+      channel.save!
     end
 
     redirect_to edit_user_registration_path, notice: "Slack 워크스페이스가 연결되었습니다."
