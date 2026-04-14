@@ -2,9 +2,9 @@
 # rbs_inline: enabled
 
 class SlackController < ApplicationController
-  protect_from_forgery except: :events
-  skip_before_action :authenticate_user!, only: :events
-  before_action :verify_slack_signature, only: :events
+  protect_from_forgery except: [ :events, :callback ]
+  skip_before_action :authenticate_user!
+  before_action :verify_slack_signature, only: [ :events ]
 
   def install
     unless SlackConfig.configured?
@@ -26,7 +26,15 @@ class SlackController < ApplicationController
     incoming_state = params[:state]
 
     if stored_state.blank? || incoming_state.blank? || !ActiveSupport::SecurityUtils.secure_compare(stored_state, incoming_state)
-      redirect_to edit_user_registration_path, alert: "Slack 인증 상태가 일치하지 않습니다."
+      # redirect_to edit_user_registration_path, alert: "Slack 인증 상태가 일치하지 않습니다."
+      render json: {
+        error: "Slack 인증 상태가 일치하지 않습니다.",
+        stored_state: stored_state&.to_s,
+        incoming_state: incoming_state&.to_s,
+        stored_state_blank: stored_state.blank?,
+        incoming_state_blank: incoming_state.blank?,
+        match: stored_state.present? && incoming_state.present? ? ActiveSupport::SecurityUtils.secure_compare(stored_state, incoming_state) : false
+      }, status: :forbidden
       return
     end
 
