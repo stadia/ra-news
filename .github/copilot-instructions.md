@@ -4,13 +4,13 @@
 Rails 8.1.3 | Ruby 4.0.2
 
 ## Stack
-- Database: static_parse — 20 tables
+- Database: static_parse — 23 tables
 - Models: 18
 - Routes: 146 across 44 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Components: 112 components, 112 Phlex
-- Performance: 10 issues detected
+- Performance: 13 issues detected
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -56,7 +56,6 @@ Rails 8.1.3 | Ruby 4.0.2
 - Import maps (no JS bundler)
 - concerns_models
 - concerns_controllers
-- policies
 - pwa
 - Dockerized
 - Kamal deployment
@@ -98,12 +97,14 @@ verification at the exact moments hallucination is most likely.
 
 ### detail parameter — ALWAYS start with summary
 
-Most tools accept `detail:"summary"`. Use the right level:
+Individual lookup tools accept `detail:"summary"`. Use the right level:
 - **summary** — first call, orient yourself (table list, model names, route overview)
 - **standard** — working detail (columns with types, associations, action source) — DEFAULT
 - **full** — only when you need indexes, foreign keys, code snippets, or complete content
 
 Pattern: summary to find the target → standard to understand it → full only if needed.
+
+**Do NOT pass `detail` to composite tools** — `rails_get_context` and `rails_analyze_feature` do not accept it and will return an error.
 
 ### Start here — composite tools save multiple calls
 

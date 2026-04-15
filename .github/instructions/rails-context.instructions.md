@@ -8,7 +8,7 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 Rails 8.1.3 | Ruby 4.0.2
 
-- Database: static_parse — 20 tables
+- Database: static_parse — 23 tables
 - Models: 18
 - Routes: 146
 - auth: devise, pundit, jwt
@@ -25,7 +25,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Components: 112 components, 112 Phlex
-- Performance: 10 issues detected
+- Performance: 13 issues detected
 - Services: ArticleAgentsService, ContentService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SocialMediaService, TwitterService
 - Jobs: ArticleBatchJob, ArticleJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
