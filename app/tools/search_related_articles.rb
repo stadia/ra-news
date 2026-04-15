@@ -52,19 +52,19 @@ class SearchRelatedArticles < RubyLLM::Tool
            .where.not(id: article.id)
            .nearest_neighbors(:embedding, article.embedding, distance: "euclidean")
            .limit(limit)
-           .select(:id, :title_ko, :slug)
-           .map { format_result(_1) }
+           .select(:id, :title_ko, :slug, :summary_key)
+           .map { format_result(it) }
   end
 
   def search_by_text(query, limit)
     Article.kept.confirmed
            .title_matching(query)
            .limit(limit)
-           .select(:id, :title_ko, :slug)
-           .map { format_result(_1) }
+           .select(:id, :title_ko, :slug, :summary_key)
+           .map { format_result(it) }
   end
 
   def format_result(article)
-    { title_ko: article.title_ko, slug: article.slug, path: "/articles/#{article.slug}" }
+    { title_ko: article.title_ko, slug: article.slug, path: "/articles/#{article.slug}", summary_key: article.summary_key }
   end
 end
