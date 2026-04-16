@@ -13,8 +13,8 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
   concerns: FederailsLikeable
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
   methods: to_activitypub_object, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, likes_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, apply_like, apply_undo_like, apply_unlike, base_tags, cached_owned_tag_list_on, cached_tag_list_on, create_or_update_pg_search_document, current_federails_activity_actor
-- Federails::Actor (table: federails_actors) — 10 assocs, 14 validations
-  methods: acct_uri, activities, activities_as_entity, actor_type, at_address, distant?, entity, entity_configuration, feature, featured_items, featured_tags, federated_url, followed_by?, followers, followers_url, following_followers, following_follows, followings_url, follows, follows?
+- Federails::Actor (table: federails_actors) — 14 assocs, 14 validations
+  methods: accepted_followers, accepted_following_followers, accepted_following_follows, accepted_follows, acct_uri, activities, activities_as_entity, actor_type, at_address, distant?, entity, entity_configuration, feature, featured_items, featured_tags, federated_url, followed_by?, followers, followers_url, following_followers
 - Like (table: likes) — 2 assocs, 0 validations
   methods: likeable, liker
 - Post (table: posts) — 9 assocs, 2 validations

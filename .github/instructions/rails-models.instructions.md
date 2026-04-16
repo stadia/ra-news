@@ -12,7 +12,7 @@ Check here first for scopes, constants, associations. Read model files for busin
 - ActsAsTaggableOn::Tagging (3 associations)
 - Article (10 associations)
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
-- Federails::Actor (10 associations)
+- Federails::Actor (14 associations)
 - Federails::Following (3 associations)
 - Like (2 associations)
 - Post (9 associations)

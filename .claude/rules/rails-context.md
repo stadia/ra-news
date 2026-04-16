@@ -2,13 +2,13 @@
 
 Rails 8.1.3 | Ruby 4.0.2
 
-- Database: static_parse — 23 tables
+- Database: static_parse — 20 tables
 - Models: 16
 - Routes: 146
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Components: 112 components, 112 Phlex
-- Performance: 13 issues detected
+- Performance: 10 issues detected
 
 **Global before_actions:** authenticate_user!
 
