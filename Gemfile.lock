@@ -566,7 +566,6 @@ GEM
       actionpack (>= 7.0)
       railties (>= 7.0)
     rexml (3.4.4)
-    rorvswild (1.11.1)
     rss (0.3.2)
       rexml
     rubocop (1.86.1)
@@ -843,7 +842,6 @@ DEPENDENCIES
   rails-ai-context
   rails-i18n
   rails_semantic_logger
-  rorvswild
   rss
   rubocop
   rubocop-minitest
