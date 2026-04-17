@@ -48,8 +48,10 @@ class User < ApplicationRecord
     self[:roles] = role_names.is_a?(Array) ? role_names.uniq : role_names.split(" ").uniq
   end
 
-  def accept_follow(following)
-    following.accept! if has_role?(:bot) && following.respond_to?(:accept!)
+  def accept_follow(following, follow_activity:)
+    return unless has_role?(:bot)
+
+    following.accept!(follow_activity: follow_activity)
   end
 
   def self.first_bot
