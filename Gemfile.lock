@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: 709ba4f62d99dcc93358004013d1cea2264d1529
+  revision: aa6d3df2d0c0ddb6dbc3d16026c8674dd4139fad
   specs:
     federails (0.8.0)
       alba (~> 3.0)
@@ -258,7 +258,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
-    lexxy (0.9.8.beta)
+    lexxy (0.9.9.beta)
       rails (>= 8.0.2)
     link_header (0.0.8)
     lint_roller (1.1.0)
