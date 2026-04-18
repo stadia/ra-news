@@ -1,12 +1,16 @@
+# frozen_string_literal: true
+
+require "active_storage/service/s3_service"
+
 module ActiveStorageR2CdnPatch
-  def url(key, **)
-    return super unless public?
-    "#{ENV['ACTIVE_STORAGE_CDN_HOST']}/#{key}"
+  def public_url(key, **client_opts)
+    cdn_host = ENV["ACTIVE_STORAGE_CDN_HOST"].presence
+
+    return super unless cdn_host && name.to_s == "cloudflare"
+
+    "#{cdn_host.delete_suffix('/')}/#{key}"
   end
 end
 
-Rails.application.config.after_initialize do
-  if ENV["ACTIVE_STORAGE_CDN_HOST"].present?
-    ActiveStorage::Service::S3Service.prepend(ActiveStorageR2CdnPatch)
-  end
-end
+ActiveStorage::Service::S3Service.prepend(ActiveStorageR2CdnPatch) unless
+  ActiveStorage::Service::S3Service < ActiveStorageR2CdnPatch
