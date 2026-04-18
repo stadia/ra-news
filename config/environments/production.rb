@@ -35,7 +35,6 @@ Rails.application.configure do
 
   # Store uploaded files on Cloudflare R2 (S3-compatible; see config/storage.yml).
   config.active_storage.service = :cloudflare
-  config.active_storage.cdn_host = "https://assets.ruby-news.kr"
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
