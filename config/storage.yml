@@ -39,7 +39,6 @@ cloudflare:
   request_checksum_calculation: when_required
   response_checksum_validation: when_required
   public: true
-  custom_domain: assets.ruby-news.kr
 
 # mirror:
 #   service: Mirror
