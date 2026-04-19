@@ -31,5 +31,5 @@ Check here first for scopes, constants, associations. Read model files for busin
 - Socialization::ActiveRecordStores::Mention (2 associations)
 - Tag (1 associations)
   scopes: confirmed, unconfirmed
-- User (4 associations)
+- User (6 associations)
   scopes: with_role, admins

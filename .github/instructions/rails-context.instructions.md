@@ -8,7 +8,7 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 Rails 8.1.3 | Ruby 4.0.2
 
-- Database: static_parse — 20 tables
+- Database: static_parse — 22 tables
 - Models: 18
 - Routes: 146
 - auth: devise, pundit, jwt
@@ -16,7 +16,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
 - api: jbuilder, alba, oj
 - database: pg, sqlite3, solid_cache, solid_cable
-- files: activestorage, image_processing, mini_magick
+- files: activestorage, image_processing, mini_magick, aws-sdk-s3
 - Hotwire (Turbo + Stimulus)
 - Service objects pattern (app/services/)
 - Presenters/Decorators

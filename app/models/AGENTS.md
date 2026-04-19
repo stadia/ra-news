@@ -26,7 +26,7 @@
 - **Socialization::ActiveRecordStores::Mention** (table: mentions) — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** (table: tags) — has_many :taggings [3v]
   scopes: confirmed, unconfirmed
-- **User** (table: users) — has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor [11v]
+- **User** (table: users) — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor [11v]
   scopes: with_role, admins
 
 Use `rails_get_model_details(model:"Name")` for associations, validations, scopes, enums.

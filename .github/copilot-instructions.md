@@ -4,7 +4,7 @@
 Rails 8.1.3 | Ruby 4.0.2
 
 ## Stack
-- Database: static_parse — 20 tables
+- Database: static_parse — 22 tables
 - Models: 18
 - Routes: 146 across 44 controllers
 - Auth: Devise
@@ -16,7 +16,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
 - api: jbuilder, alba, oj
 - database: pg, sqlite3, solid_cache, solid_cable
-- files: activestorage, image_processing, mini_magick
+- files: activestorage, image_processing, mini_magick, aws-sdk-s3
 - testing: minitest, faker, capybara
 - deploy: thruster
 - admin: madmin
@@ -44,7 +44,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - **Socialization::ActiveRecordStores::Like** — belongs_to :liker, belongs_to :likeable
 - **Socialization::ActiveRecordStores::Mention** — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** — has_many :taggings
-- **User** — has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor
+- **User** — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor
 
 ## Architecture
 - Hotwire (Turbo + Stimulus)

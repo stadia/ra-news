@@ -4,11 +4,13 @@ paths:
   - "db/migrate/**"
 ---
 
-# Database Tables (20)
+# Database Tables (22)
 
 _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")` for live data._
 
-- **active_storage_variant_records** (3 cols) — blob_id:bigint, variation_digest:string, active_storage_blobs:foreign_key
+- **active_storage_attachments** (5 cols) — name:string, record_id:bigint, blob_id:bigint
+- **active_storage_blobs** (9 cols) — key:string, filename:string, content_type:string, metadata:text, service_name:string, byte_size:bigint, checksum:string
+- **active_storage_variant_records** (6 cols) — blob_id:bigint, variation_digest:string, active_storage_blobs:foreign_key, blob_id:bigint, variation_digest:string, active_storage_blobs:foreign_key | Idx: blob_id+variation_digest(unique)
 - **articles** (22 cols) — title:string, url:string, summary_key:jsonb, summary_detail:jsonb, title_ko:string, published_at:datetime, deleted_at:datetime, origin_url:string(=""), host:string, slug:string, is_youtube:boolean(=false), is_related:boolean(=false), body:text, is_posted:boolean(=false), social_post_ids:jsonb, federated_url:string, likers_count:integer(=0) | Idx: url(unique), origin_url(unique), slug(unique), slug(unique), slug(unique), deleted_at+published_at+created_at, deleted_at+id, site_id+published_at, is_related+published_at
 - **federails_activities** (11 cols) — entity_id:bigint, action:string, actor_id:bigint, to:string, cc:string, federated_url:string, bto:string, bcc:string, audience:string | Idx: federated_url(unique)
 - **federails_actors** (19 cols) — name:string, federated_url:string, username:string, server:string, inbox_url:string, outbox_url:string, followers_url:string, followings_url:string, profile_url:string, entity_id:integer, entity_type:string, extensions:json, local:boolean(=false), actor_type:string, tombstoned_at:datetime, likees_count:integer(=0), shared_inbox_url:string | Idx: entity_type+entity_id(unique)
