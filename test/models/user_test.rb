@@ -268,6 +268,23 @@ class UserTest < ActiveSupport::TestCase
     assert_nil @user.avatar_url
   end
 
+  test "프로필 아바타를 제거하면 federails_actor extensions에서도 icon이 제거되어야 한다" do
+    actor = federails_actors(:john_actor)
+
+    @user.avatar.attach(
+      io: File.open(Rails.root.join("public/icon.png")),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+    actor.reload
+
+    assert actor.extensions.key?("icon")
+
+    @user.remove_avatar!
+
+    assert_equal({}, actor.reload.extensions)
+  end
+
   private
 
   def build_user(attributes = {})

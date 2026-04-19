@@ -7,9 +7,13 @@ class User < ApplicationRecord
          :recoverable, :validatable, :rememberable, :timeoutable, :confirmable
 
   acts_as_liker
+
   has_one_attached :avatar
+
   has_many :push_subscriptions, dependent: :destroy
+
   has_many :articles, dependent: :nullify
+
   has_many :posts, dependent: :destroy
 
   validates :username, presence: true,
@@ -31,9 +35,12 @@ class User < ApplicationRecord
 
   after_followed :accept_follow
 
+  after_commit :sync_federails_actor_extensions
+
   scope :with_role, ->(role_name) do
     where("? = ANY (roles)", role_name.to_s)
   end
+
   scope :admins, -> { with_role(:admin) }
 
   def admin?
@@ -67,10 +74,19 @@ class User < ApplicationRecord
 
     ActiveStorage::Current.url_options ||= Rails.application.routes.default_url_options.symbolize_keys
     avatar_variant.processed.url
+  rescue StandardError
+    nil
   end
 
   def remove_avatar!
-    avatar.purge if avatar_attached?
+    return unless avatar_attached?
+
+    avatar.purge
+    sync_federails_actor_extensions
+  end
+
+  def sync_federails_actor_extensions
+    federails_actor&.update(extensions: to_activitypub_object)
   end
 
   def to_activitypub_object
