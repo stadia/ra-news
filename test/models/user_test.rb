@@ -220,6 +220,54 @@ class UserTest < ActiveSupport::TestCase
     assert_kind_of ActiveSupport::TimeWithZone, user.created_at
   end
 
+  test "프로필 아바타 대표 이미지 URL을 반환해야 한다" do
+    @user.avatar.attach(
+      io: File.open(Rails.root.join("public/icon.png")),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+
+    assert_predicate @user, :avatar_attached?
+    assert_match %r{\Ahttp://example\.com/rails/active_storage/representations/}, @user.avatar_url
+  end
+
+  test "프로필 아바타가 없으면 대표 이미지 URL은 nil이어야 한다" do
+    assert_nil @user.avatar_url
+  end
+
+  test "프로필 아바타가 있으면 activitypub object에 icon을 포함해야 한다" do
+    @user.avatar.attach(
+      io: File.open(Rails.root.join("public/icon.png")),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+
+    object = @user.to_activitypub_object
+
+    assert_equal "Image", object[:icon][:type]
+    assert_equal "image/png", object[:icon][:mediaType]
+    assert_equal @user.avatar_url, object[:icon][:url]
+  end
+
+  test "프로필 아바타가 없으면 activitypub object에 icon을 포함하지 않아야 한다" do
+    object = @user.to_activitypub_object
+
+    assert_not object.key?(:icon)
+  end
+
+  test "프로필 아바타를 제거할 수 있어야 한다" do
+    @user.avatar.attach(
+      io: File.open(Rails.root.join("public/icon.png")),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+
+    @user.remove_avatar!
+
+    assert_not @user.avatar.attached?
+    assert_nil @user.avatar_url
+  end
+
   private
 
   def build_user(attributes = {})

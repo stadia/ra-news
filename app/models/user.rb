@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  AVATAR_SIZE = [ 400, 400 ].freeze
+
   devise :database_authenticatable, :registerable,
          :recoverable, :validatable, :rememberable, :timeoutable, :confirmable
 
   acts_as_liker
+  has_one_attached :avatar
   has_many :push_subscriptions, dependent: :destroy
   has_many :articles, dependent: :nullify
   has_many :posts, dependent: :destroy
@@ -19,6 +22,7 @@ class User < ApplicationRecord
 
   validates :name, length: { minimum: 2, maximum: 50 },
                    allow_blank: true
+  validate :avatar_must_be_an_image
 
   normalizes :email, with: ->(e) { e.strip.downcase }
 
@@ -54,7 +58,49 @@ class User < ApplicationRecord
     following.accept!(follow_activity: follow_activity)
   end
 
+  def avatar_attached?
+    avatar.attached?
+  end
+
+  def avatar_url
+    return unless avatar_attached?
+
+    Rails.application.routes.url_helpers.rails_representation_url(
+      avatar_variant.processed,
+      **Rails.application.routes.default_url_options.symbolize_keys
+    )
+  end
+
+  def remove_avatar!
+    avatar.purge if avatar_attached?
+  end
+
+  def to_activitypub_object
+    return {} unless avatar_attached?
+
+    {
+      icon: {
+        type: "Image",
+        mediaType: avatar.blob.content_type,
+        url: avatar_url
+      }
+    }
+  end
+
   def self.first_bot
     with_role("bot").first
+  end
+
+  private
+
+  def avatar_variant
+    avatar.variant(resize_to_fill: AVATAR_SIZE)
+  end
+
+  def avatar_must_be_an_image
+    return unless avatar_attached?
+    return if avatar.blob.content_type.start_with?("image/")
+
+    errors.add(:avatar, "이미지 파일만 업로드할 수 있습니다")
   end
 end
