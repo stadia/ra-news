@@ -26,13 +26,8 @@ class SlackController < ApplicationController
     incoming_state = params[:state]
 
     if stored_state.blank? || incoming_state.blank? || !ActiveSupport::SecurityUtils.secure_compare(stored_state, incoming_state)
-      # redirect_to edit_user_registration_path, alert: "Slack 인증 상태가 일치하지 않습니다."
-      logger.info error: "Slack 인증 상태가 일치하지 않습니다.",
-        stored_state: stored_state&.to_s,
-        incoming_state: incoming_state&.to_s,
-        stored_state_blank: stored_state.blank?,
-        incoming_state_blank: incoming_state.blank?,
-        match: stored_state.present? && incoming_state.present? ? ActiveSupport::SecurityUtils.secure_compare(stored_state, incoming_state) : false
+      redirect_to edit_user_registration_path, alert: "Slack 인증 상태가 일치하지 않습니다."
+      return
     end
 
     oauth = SlackClient.exchange_code(params[:code], redirect_uri: slack_oauth_callback_url)
