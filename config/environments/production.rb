@@ -31,10 +31,10 @@ Rails.application.configure do
   }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
+  config.asset_host = "https://assets.ruby-news.kr"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Store uploaded files on Cloudflare R2 (S3-compatible; see config/storage.yml).
+  config.active_storage.service = :cloudflare
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = true
@@ -109,4 +109,11 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  config.middleware.insert_before 0, Rack::Cors do
+    allow do
+      origins "https://ruby-news.kr" # 실제 앱 도메인
+      resource "/assets/*", headers: :any, methods: [ :get, :head, :options ]
+    end
+  end
 end

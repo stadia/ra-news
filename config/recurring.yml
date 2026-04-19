@@ -22,4 +22,4 @@ production:
     schedule: "*/5 * * * *"
   social_post_job:
     class: "SocialPostJob"
-    schedule: "*/5 * * * *"
+    schedule: "*/10 * * * *"

@@ -2,9 +2,9 @@
 # rbs_inline: enabled
 
 class SlackController < ApplicationController
-  protect_from_forgery except: :events
-  skip_before_action :authenticate_user!, only: :events
-  before_action :verify_slack_signature, only: :events
+  protect_from_forgery except: [ :events, :callback ]
+  skip_before_action :authenticate_user!
+  before_action :verify_slack_signature, only: [ :events ]
 
   def install
     unless SlackConfig.configured?

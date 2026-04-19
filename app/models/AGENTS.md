@@ -7,7 +7,7 @@
 - **ActsAsTaggableOn::Tagging** (table: taggings) — belongs_to :tag, belongs_to :taggable, belongs_to :tagger [5v]
 - **Article** (table: articles) — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :slack_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor [6v]
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
-- **Federails::Actor** (table: federails_actors) — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :featured_items, has_many :featured_tags, belongs_to :host [14v]
+- **Federails::Actor** (table: federails_actors) — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host [14v]
 - **Federails::Following** (table: federails_followings) — belongs_to :actor, belongs_to :target_actor, has_many :activities [5v]
 - **Like** (table: likes) — belongs_to :liker, belongs_to :likeable
 - **Post** (table: posts) — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :article, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags [2v]
@@ -26,7 +26,7 @@
 - **Socialization::ActiveRecordStores::Mention** (table: mentions) — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** (table: tags) — has_many :taggings [3v]
   scopes: confirmed, unconfirmed
-- **User** (table: users) — has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor [11v]
+- **User** (table: users) — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor [11v]
   scopes: with_role, admins
 
 Use `rails_get_model_details(model:"Name")` for associations, validations, scopes, enums.

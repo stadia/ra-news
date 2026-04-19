@@ -21,12 +21,14 @@ verification at the exact moments hallucination is most likely.
 
 ### detail parameter — ALWAYS start with summary
 
-Most tools accept `detail:"summary"`. Use the right level:
+Individual lookup tools accept `detail:"summary"`. Use the right level:
 - **summary** — first call, orient yourself (table list, model names, route overview)
 - **standard** — working detail (columns with types, associations, action source) — DEFAULT
 - **full** — only when you need indexes, foreign keys, code snippets, or complete content
 
 Pattern: summary to find the target → standard to understand it → full only if needed.
+
+**Do NOT pass `detail` to composite tools** — `rails_get_context` and `rails_analyze_feature` do not accept it and will return an error.
 
 ### Start here — composite tools save multiple calls
 
@@ -35,12 +37,12 @@ Pattern: summary to find the target → standard to understand it → full only 
 → CLI: `rails 'ai:tool[onboard]' detail=standard`
 
 **`get_context` is your power tool** — bundles schema + model + controller + routes + views in ONE call:
-→ MCP: `rails_get_context(controller:"CooksController", action:"create")`
-→ CLI: `rails 'ai:tool[context]' controller=CooksController action=create`
-→ MCP: `rails_get_context(model:"Cook")`
-→ CLI: `rails 'ai:tool[context]' model=Cook`
-→ MCP: `rails_get_context(feature:"cook")`
-→ CLI: `rails 'ai:tool[context]' feature=cook`
+→ MCP: `rails_get_context(controller:"PostsController", action:"create")`
+→ CLI: `rails 'ai:tool[context]' controller=PostsController action=create`
+→ MCP: `rails_get_context(model:"Post")`
+→ CLI: `rails 'ai:tool[context]' model=Post`
+→ MCP: `rails_get_context(feature:"post")`
+→ CLI: `rails 'ai:tool[context]' feature=post`
 
 **`analyze_feature` for broad discovery** — scans all layers (models, controllers, routes, services, jobs, views, tests):
 → MCP: `rails_analyze_feature(feature:"authentication")`
@@ -51,39 +53,39 @@ Use individual tools only when you need deeper detail on a specific layer.
 ### Step-by-step workflows (follow this order)
 
 **Modify a model** (add field, change validation, add scope):
-1. `rails_get_context(model:"Cook")` or `rails 'ai:tool[context]' model=Cook` — schema + associations + validations in one call
+1. `rails_get_context(model:"Post")` or `rails 'ai:tool[context]' model=Post` — schema + associations + validations in one call
 2. Read the model file, make your edit
-3. `rails_migration_advisor(action:"add_column", table:"cooks", column:"rating", type:"integer")` or `rails 'ai:tool[migration_advisor]' action=add_column table=cooks column=rating type=integer` — if schema change needed
-4. `rails_validate(files:["app/models/cook.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/models/cook.rb level=rails` — EVERY time after editing
-5. `rails_generate_test(model:"Cook")` or `rails 'ai:tool[generate_test]' model=Cook` — generate tests matching project patterns
+3. `rails_migration_advisor(action:"add_column", table:"posts", column:"rating", type:"integer")` or `rails 'ai:tool[migration_advisor]' action=add_column table=posts column=rating type=integer` — if schema change needed
+4. `rails_validate(files:["app/models/post.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/models/post.rb level=rails` — EVERY time after editing
+5. `rails_generate_test(model:"Post")` or `rails 'ai:tool[generate_test]' model=Post` — generate tests matching project patterns
 
 **Fix a controller bug:**
-1. `rails_get_context(controller:"CooksController", action:"create")` or `rails 'ai:tool[context]' controller=CooksController action=create` — action source + routes + views + model
+1. `rails_get_context(controller:"PostsController", action:"create")` or `rails 'ai:tool[context]' controller=PostsController action=create` — action source + routes + views + model
 2. Read the controller file, make your fix
-3. `rails_validate(files:["app/controllers/cooks_controller.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/controllers/cooks_controller.rb level=rails`
+3. `rails_validate(files:["app/controllers/posts_controller.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/controllers/posts_controller.rb level=rails`
 
 **Build or modify a view:**
-1. `rails_get_view(controller:"cooks")` or `rails 'ai:tool[view]' controller=cooks` — existing templates, partials, Stimulus refs
+1. `rails_get_view(controller:"posts")` or `rails 'ai:tool[view]' controller=posts` — existing templates, partials, Stimulus refs
 2. `rails_get_partial_interface(partial:"shared/status_badge")` or `rails 'ai:tool[partial_interface]' partial=shared/status_badge` — partial locals contract
 3. `rails_get_component_catalog(component:"Button")` or `rails 'ai:tool[component_catalog]' component=Button` — ViewComponent/Phlex props, slots, previews
 4. Read the view file, make your edit
-5. `rails_validate(files:["app/views/cooks/index.html.erb"])` or `rails 'ai:tool[validate]' files=app/views/cooks/index.html.erb`
+5. `rails_validate(files:["app/views/posts/index.html.erb"])` or `rails 'ai:tool[validate]' files=app/views/posts/index.html.erb`
 
 **Trace a method:**
-→ MCP: `rails_search_code(pattern:"can_cook?", match_type:"trace")`
-→ CLI: `rails 'ai:tool[search_code]' pattern="can_cook?" match_type=trace`
+→ MCP: `rails_search_code(pattern:"publishable?", match_type:"trace")`
+→ CLI: `rails 'ai:tool[search_code]' pattern="publishable?" match_type=trace`
 
 **Debug an error (one call — gathers context + git + logs + fix):**
-→ MCP: `rails_diagnose(error:"NoMethodError: undefined method `foo` for nil", file:"app/models/cook.rb")`
-→ CLI: `rails 'ai:tool[diagnose]' error="NoMethodError: undefined method foo" file=app/models/cook.rb`
+→ MCP: `rails_diagnose(error:"NoMethodError: undefined method `foo` for nil", file:"app/models/post.rb")`
+→ CLI: `rails 'ai:tool[diagnose]' error="NoMethodError: undefined method foo" file=app/models/post.rb`
 
 **Review changes before merging:**
 → MCP: `rails_review_changes(ref:"main")`
 → CLI: `rails 'ai:tool[review_changes]' ref=main`
 
 **Generate tests matching project patterns:**
-→ MCP: `rails_generate_test(model:"Cook")`
-→ CLI: `rails 'ai:tool[generate_test]' model=Cook`
+→ MCP: `rails_generate_test(model:"Post")`
+→ CLI: `rails 'ai:tool[generate_test]' model=Post`
 
 ### Common mistakes — avoid these
 

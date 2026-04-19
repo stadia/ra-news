@@ -55,3 +55,6 @@ claude-swarm.log
 
 # graphify
 graphify-out/
+
+# phlexed component registry (regenerated per project)
+.phlexed/

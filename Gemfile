@@ -40,6 +40,7 @@ gem "bootsnap", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
+gem "aws-sdk-s3", require: false
 gem "image_processing", "~> 1.2"
 
 group :development, :test do
@@ -114,7 +115,7 @@ gem "appsignal"
 gem "federails", github: "stadia/federails"
 # gem "federails", path: "../federails"
 gem "friendly_id"
-gem "lexxy", "~> 0.9.5.beta"
+gem "lexxy", "~> 0.9.8.beta"
 gem "oj"
 gem "pg_query"
 gem "phlex-icons"
@@ -122,7 +123,8 @@ gem "phlex-rails", "~> 2.4"
 gem "prosopite"
 gem "rails-ai-context"
 gem "rails_semantic_logger"
-gem "rorvswild"
+# gem "rorvswild"
+gem "rack-cors"
 gem "ruby_llm", "~> 1.14"
 gem "ruby_llm-schema"
 gem "ruby-mcp-client", "~> 1.0"

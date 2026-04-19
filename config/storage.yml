@@ -28,6 +28,18 @@ local:
 #   storage_access_key: <%= Rails.application.credentials.dig(:azure_storage, :storage_access_key) %>
 #   container: your_container_name-<%= Rails.env %>
 
+cloudflare:
+  service: S3
+  access_key_id: <%= ENV["R2_ACCESS_KEY_ID"] %>
+  secret_access_key: <%= ENV["R2_SECRET_ACCESS_KEY"] %>
+  endpoint: <%= "https://#{ENV['R2_ACCOUNT_ID']}.r2.cloudflarestorage.com" %>
+  bucket: <%= ENV["R2_BUCKET"] %>
+  region: auto
+  force_path_style: true
+  request_checksum_calculation: when_required
+  response_checksum_validation: when_required
+  public: true
+
 # mirror:
 #   service: Mirror
 #   primary: local

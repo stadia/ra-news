@@ -90,8 +90,10 @@ class FollowingsController < ApplicationController
   end
 
   def respond_with_accept(following)
+    follow_activity = following.follow_activity
+
     respond_to do |format|
-      if following.accept!
+      if follow_activity && following.accept!(follow_activity: follow_activity)
         format.html { redirect_to actor_path(following.actor), notice: "팔로우 요청을 수락했습니다." }
         format.turbo_stream { render_follow_actions_stream(following.actor, following:, remove_row: false) }
         format.json { render json: { status: following.status }, status: :ok }

@@ -12,7 +12,7 @@ Check here first for scopes, constants, associations. Read model files for busin
 - ActsAsTaggableOn::Tagging (3 associations)
 - Article (10 associations)
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
-- Federails::Actor (10 associations)
+- Federails::Actor (14 associations)
 - Federails::Following (3 associations)
 - Like (2 associations)
 - Post (9 associations)
@@ -31,5 +31,5 @@ Check here first for scopes, constants, associations. Read model files for busin
 - Socialization::ActiveRecordStores::Mention (2 associations)
 - Tag (1 associations)
   scopes: confirmed, unconfirmed
-- User (4 associations)
+- User (6 associations)
   scopes: with_role, admins

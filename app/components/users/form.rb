@@ -21,8 +21,12 @@ class Components::Users::Form < Components::Base
           # Avatar & Primary Identity Section (Visual only)
           div(class: "flex flex-col sm:flex-row items-center sm:items-end gap-6 -mt-12 mb-10") do
             render RubyUI::Avatar.new(size: :xl, class: "h-24 w-24 ring-4 ring-app bg-app shadow-xl") do
-              render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground text-3xl font-bold") do
-                initials
+              if avatar_url
+                render RubyUI::AvatarImage.new(src: avatar_url, alt: avatar_alt)
+              else
+                render RubyUI::AvatarFallback.new(class: "bg-brand-solid text-brand-foreground text-3xl font-bold") do
+                  initials
+                end
               end
             end
 
@@ -47,6 +51,24 @@ class Components::Users::Form < Components::Base
 
           if @user.persisted?
             div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_avatar) { "프로필 사진" }
+                render RubyUI::FormFieldHint.new(class: "mb-3 text-content-muted") do
+                  "정사각형 대표 썸네일로 400x400 크롭되어 외부에 공개됩니다."
+                end
+                form.file_field :avatar, class: input_classes(@user.errors[:avatar]), accept: "image/png,image/jpeg,image/webp,image/gif"
+                @user.errors[:avatar].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+
+                if @user.avatar_attached?
+                  label(for: :user_remove_avatar, class: "mt-4 inline-flex items-center gap-3 text-sm text-content-secondary cursor-pointer") do
+                    render RubyUI::Checkbox.new(id: :user_remove_avatar, name: "user[remove_avatar]", value: "1")
+                    span { "현재 프로필 사진 제거" }
+                  end
+                end
+              end
+
               render RubyUI::FormField.new do
                 render RubyUI::FormFieldLabel.new(for: :user_name) { "이름" }
                 form.text_field :name, class: input_classes(@user.errors[:name]), autocomplete: "name"
@@ -154,5 +176,13 @@ class Components::Users::Form < Components::Base
 
   def initials
     (@user.name.presence || @user.email.presence || "U").first.upcase
+  end
+
+  def avatar_alt
+    @user.name.presence || @user.username.presence || @user.email.presence || "프로필 이미지"
+  end
+
+  def avatar_url
+    @user.avatar_url
   end
 end

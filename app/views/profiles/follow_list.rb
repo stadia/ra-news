@@ -52,7 +52,7 @@ class Views::Profiles::FollowList < Views::Base
 
     div(id: "following_row_#{following.id}", class: "flex items-center gap-4 px-4 py-3 bg-app/40 border border-border-subtle rounded-xl hover:border-border-strong transition-colors") do
       render RubyUI::Avatar.new(size: :md, class: "h-10 w-10 shrink-0") do
-        icon_url = actor.extensions&.dig("icon", "url")
+        icon_url = avatar_url_for(actor)
         if icon_url
           render RubyUI::AvatarImage.new(src: icon_url, alt: actor.name.presence || actor.username)
         else
@@ -113,5 +113,11 @@ class Views::Profiles::FollowList < Views::Base
       variant: variant,
       class: "inline-flex items-center rounded-lg px-3 py-1 text-xs font-medium"
     ) { text }
+  end
+
+  def avatar_url_for(actor)
+    return actor.entity.avatar_url if actor.local? && actor.entity.respond_to?(:avatar_url) && actor.entity.avatar_attached?
+
+    actor.extensions&.dig("icon", "url")
   end
 end

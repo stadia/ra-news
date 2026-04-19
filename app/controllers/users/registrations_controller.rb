@@ -67,7 +67,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def account_update_params
-    params.expect(user: [ :email, :name ])
+    params.expect(user: [ :email, :name, :avatar, :remove_avatar ])
   end
 
   private
@@ -93,7 +93,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def update_without_password
-    if resource.update(account_update_params)
+    if update_account_with_avatar
       flash_key = if resource.pending_reconfirmation?
         "devise.registrations.update_needs_confirmation"
       else
@@ -103,5 +103,22 @@ class Users::RegistrationsController < Devise::RegistrationsController
     else
       render Views::Users::Edit.new(user: resource), status: :unprocessable_entity
     end
+  end
+
+  def update_account_with_avatar
+    permitted_params = account_update_params
+    attributes = permitted_params.except(:avatar, :remove_avatar)
+    avatar = permitted_params[:avatar]
+    remove_avatar = ActiveModel::Type::Boolean.new.cast(permitted_params[:remove_avatar])
+
+    resource.assign_attributes(attributes)
+
+    User.transaction do
+      resource.remove_avatar! if remove_avatar
+      resource.avatar.attach(avatar) if avatar.present?
+      raise ActiveRecord::Rollback unless resource.save
+    end
+
+    resource.errors.empty?
   end
 end
