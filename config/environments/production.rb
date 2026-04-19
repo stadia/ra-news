@@ -31,7 +31,7 @@ Rails.application.configure do
   }
 
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  # config.asset_host = "http://assets.example.com"
+  config.asset_host = "https://assets.ruby-news.kr"
 
   # Store uploaded files on Cloudflare R2 (S3-compatible; see config/storage.yml).
   config.active_storage.service = :cloudflare
