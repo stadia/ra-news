@@ -56,13 +56,7 @@ class Components::Users::Form < Components::Base
                 render RubyUI::FormFieldHint.new(class: "mb-3 text-content-muted") do
                   "정사각형 대표 썸네일로 400x400 크롭되어 외부에 공개됩니다."
                 end
-                render RubyUI::Input.new(
-                  type: :file,
-                  name: "user[avatar]",
-                  id: :user_avatar,
-                  accept: "image/png,image/jpeg,image/webp,image/gif",
-                  class: input_classes(@user.errors[:avatar])
-                )
+                form.file_field :avatar, class: input_classes(@user.errors[:avatar]), accept: "image/png,image/jpeg,image/webp,image/gif"
                 @user.errors[:avatar].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
                 end
