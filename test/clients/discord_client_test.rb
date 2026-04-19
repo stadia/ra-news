@@ -18,6 +18,7 @@ class DiscordClientTest < ActiveSupport::TestCase
 
     Discordrb::Webhooks::Client.stub(:new, fake_webhook) do
       result = client.post_embed(title: "Test", url: "https://example.com", description: "desc", color: 3447003)
+
       assert_equal "msg-123", result
     end
   end

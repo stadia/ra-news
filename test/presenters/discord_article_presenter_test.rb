@@ -9,7 +9,7 @@ class DiscordArticlePresenterTest < ActiveSupport::TestCase
 
     params = presenter.embed_params
 
-    assert params[:title].present?
+    assert_predicate params[:title], :present?
     assert_match %r{/articles/}, params[:url]
     assert_equal 3447003, params[:color]
     assert_equal "AlNews", params[:footer_text]

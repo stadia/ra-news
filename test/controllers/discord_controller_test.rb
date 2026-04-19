@@ -97,6 +97,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Discord 서버가 연결되었습니다.", flash[:notice]
 
     channel = DiscordChannel.find_by!(remote_id: "G_SETUP2")
+
     assert_equal "Setup Guild", channel.name
     assert_equal "https://discord.com/api/webhooks/WH123/whtoken", channel.webhook_url
     assert_equal "C_PICK", channel.channel_id
