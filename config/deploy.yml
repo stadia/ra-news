@@ -13,10 +13,10 @@ servers:
   #     - 192.168.0.1
   #   cmd: bin/jobs
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
-#
-# Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
+  # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
+  # Remove this section when using multiple web servers and ensure you terminate SSL at your load balancer.
+  #
+  # Note: If using Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 proxy:
   ssl: true
   host: app.example.com
@@ -40,7 +40,7 @@ env:
     - R2_SECRET_ACCESS_KEY
     - R2_BUCKET
   clear:
-    ACTIVE_STORAGE_CDN_HOST: https://assets.ruby-news.kr
+    ACTIVE_STORAGE_CDN_HOST: https://cdn.ruby-news.kr
 
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.
@@ -78,7 +78,6 @@ asset_path: /rails/public/assets
 # Configure the image builder.
 builder:
   arch: amd64
-
   # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
   # remote: ssh://docker@docker-builder-server
   #
@@ -88,30 +87,30 @@ builder:
   # secrets:
   #   - GITHUB_TOKEN
   #   - RAILS_MASTER_KEY
-# Use a different ssh user than root
-# ssh:
-#   user: app
+  # Use a different ssh user than root
+  # ssh:
+  #   user: app
 
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: redis:7.0
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+  # Use accessory services (secrets come from .kamal/secrets).
+  # accessories:
+  #   db:
+  #     image: mysql:8.0
+  #     host: 192.168.0.2
+  #     # Change to 3306 to expose port to the world instead of just local network.
+  #     port: "127.0.0.1:3306:3306"
+  #     env:
+  #       clear:
+  #         MYSQL_ROOT_HOST: '%'
+  #       secret:
+  #         - MYSQL_ROOT_PASSWORD
+  #     files:
+  #       - config/mysql/production.cnf:/etc/mysql/my.cnf
+  #       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
+  #     directories:
+  #       - data:/var/lib/mysql
+  #   redis:
+  #     image: redis:7.0
+  #     host: 192.168.0.2
+  #     port: 6379
+  #     directories:
+  #       - data:/data
