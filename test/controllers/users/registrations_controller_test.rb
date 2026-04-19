@@ -72,7 +72,7 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     json = JSON.parse(response.body)
 
     assert_equal "Image", json.dig("icon", "type")
-    assert_match %r{\Ahttp://example\.com/rails/active_storage/representations/}, json.dig("icon", "url")
+    assert_match %r{\Ahttp://example\.com/rails/active_storage/disk/}, json.dig("icon", "url")
   end
 
   private

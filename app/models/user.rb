@@ -65,10 +65,8 @@ class User < ApplicationRecord
   def avatar_url
     return unless avatar_attached?
 
-    Rails.application.routes.url_helpers.rails_representation_url(
-      avatar_variant.processed,
-      **Rails.application.routes.default_url_options.symbolize_keys
-    )
+    ActiveStorage::Current.url_options ||= Rails.application.routes.default_url_options.symbolize_keys
+    avatar_variant.processed.url
   end
 
   def remove_avatar!

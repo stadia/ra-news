@@ -228,7 +228,7 @@ class UserTest < ActiveSupport::TestCase
     )
 
     assert_predicate @user, :avatar_attached?
-    assert_match %r{\Ahttp://example\.com/rails/active_storage/representations/}, @user.avatar_url
+    assert_match %r{\Ahttp://example\.com/rails/active_storage/disk/}, @user.avatar_url
   end
 
   test "프로필 아바타가 없으면 대표 이미지 URL은 nil이어야 한다" do
@@ -246,7 +246,7 @@ class UserTest < ActiveSupport::TestCase
 
     assert_equal "Image", object[:icon][:type]
     assert_equal "image/png", object[:icon][:mediaType]
-    assert_equal @user.avatar_url, object[:icon][:url]
+    assert_match %r{\Ahttp://example\.com/rails/active_storage/disk/}, object[:icon][:url]
   end
 
   test "프로필 아바타가 없으면 activitypub object에 icon을 포함하지 않아야 한다" do
