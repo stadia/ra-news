@@ -19,8 +19,8 @@ class CreateNotificationTables < ActiveRecord::Migration[8.1]
 
     create_table :notification_deliveries do |t|
       t.string :type, null: false
-      t.references :article, foreign_key: true
-      t.references :notification_channel, foreign_key: true
+      t.references :article, null: false, foreign_key: true
+      t.references :notification_channel, null: false, foreign_key: true
       t.string :channel_id, null: false
       t.string :channel_name, null: false
       t.string :status, null: false, default: "failed"

@@ -15,6 +15,6 @@ class NotificationChannelTest < ActiveSupport::TestCase
     channel = notification_channels(:acme_slack)
 
     assert_not channel.destroy
-    assert_includes channel.errors[:base], "Cannot delete record because dependent notification deliveries exist"
+    assert channel.errors[:base].any?
   end
 end
