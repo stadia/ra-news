@@ -12,8 +12,8 @@ class SlackClient
   # : () -> Array[Hash[String, String]]
   def list_channels: () -> Array[Hash[String, String]]
 
-  # : (channel: String, text: String, blocks: Array[untyped]) -> Hash[String, String]
-  def post_message: (channel: String, text: String, blocks: Array[untyped]) -> Hash[String, String]
+  # : (text: String, blocks: Array[untyped]) -> Hash[String, String]
+  def post_message: (text: String, blocks: Array[untyped]) -> Hash[String, String]
 
   private
 
@@ -21,11 +21,13 @@ class SlackClient
 
   @client: Slack::Web::Client?
 
+  @webhook_client: Faraday::Connection?
+
   # : () -> Slack::Web::Client
   def client: () -> Slack::Web::Client
 
-  # : (?String api_error_message) -> String
-  def not_in_channel_guidance: (?String api_error_message) -> String
+  # : () -> Faraday::Connection
+  def webhook_client: () -> Faraday::Connection
 
   # : (Exception error) -> bot
   def raise_api_error: (Exception error) -> bot

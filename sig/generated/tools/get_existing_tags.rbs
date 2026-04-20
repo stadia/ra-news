@@ -1,0 +1,5 @@
+# Generated from app/tools/get_existing_tags.rb with RBS::Inline
+
+class GetExistingTags < RubyLLM::Tool
+  def execute: (?keyword: untyped, ?limit: untyped) -> untyped
+end
