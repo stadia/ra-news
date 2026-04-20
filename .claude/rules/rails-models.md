@@ -49,4 +49,4 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
   methods: count, taggings, validates_name_uniqueness?
 - User (table: users) — 6 assocs, 11 validations
   scopes: with_role, admins
-  methods: admin?, full_name, has_role?, accept_follow, avatar_attached?, avatar_url, remove_avatar!, to_activitypub_object, after_confirmation, articles, avatar, avatar_attachment, avatar_blob, confirm, confirmation_period_expired?, confirmed?, devise_saved_change_to_email?
+  methods: admin?, full_name, has_role?, accept_follow, avatar_attached?, avatar_url, remove_avatar!, sync_federails_actor_extensions, to_activitypub_object, after_confirmation, articles, avatar, avatar_attachment, avatar_blob, confirm, confirmation_period_expired?, confirmed?

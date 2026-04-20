@@ -13,10 +13,8 @@
     "rails-ai-context": {
       "type": "local",
       "command": [
-        "bundle",
-        "exec",
-        "rails",
-        "ai:serve"
+        "rails-ai-context",
+        "serve"
       ]
     }
   },

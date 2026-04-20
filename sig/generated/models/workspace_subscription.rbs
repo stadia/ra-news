@@ -1,4 +1,0 @@
-# Generated from app/models/workspace_subscription.rb with RBS::Inline
-
-class WorkspaceSubscription < ApplicationRecord
-end

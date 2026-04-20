@@ -1,0 +1,5 @@
+# Generated from app/tools/validate_slug.rb with RBS::Inline
+
+class ValidateSlug < RubyLLM::Tool
+  def execute: (slug: untyped) -> untyped
+end
