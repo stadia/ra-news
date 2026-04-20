@@ -15,6 +15,6 @@ class NotificationChannelTest < ActiveSupport::TestCase
     channel = notification_channels(:acme_slack)
 
     assert_not channel.destroy
-    assert channel.errors[:base].any?
+    assert_predicate channel.errors[:base], :any?
   end
 end
