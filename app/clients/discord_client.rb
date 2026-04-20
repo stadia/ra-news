@@ -7,6 +7,8 @@ class DiscordClient
   AUTHORIZE_URL = "https://discord.com/api/oauth2/authorize" #: String
   TOKEN_URL = "https://discord.com/api/oauth2/token" #: String
   API_BASE = "https://discord.com/api/v10" #: String
+  OPEN_TIMEOUT = 5 #: Integer
+  REQUEST_TIMEOUT = 10 #: Integer
   MANAGE_WEBHOOKS_PERMISSION = 536870912 #: Integer
   TEXT_CHANNEL_TYPE = 0 #: Integer
 
@@ -59,6 +61,7 @@ class DiscordClient
     #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
     def exchange_code(code, redirect_uri:)
       response = Faraday.post(TOKEN_URL) do |req|
+        apply_timeouts(req)
         req.headers["Content-Type"] = "application/x-www-form-urlencoded"
         req.body = URI.encode_www_form(
           client_id: DiscordConfig.client_id,
@@ -81,6 +84,7 @@ class DiscordClient
     #: (String bot_token, String guild_id) -> Array[Hash[String, untyped]]
     def list_channels(bot_token, guild_id)
       response = Faraday.get("#{API_BASE}/guilds/#{guild_id}/channels") do |req|
+        apply_timeouts(req)
         req.headers["Authorization"] = "Bot #{bot_token}"
       end
 
@@ -96,6 +100,7 @@ class DiscordClient
     #: (String bot_token, String channel_id, ?name: String) -> Hash[Symbol, String]
     def create_webhook(bot_token, channel_id, name: "AlNews")
       response = Faraday.post("#{API_BASE}/channels/#{channel_id}/webhooks") do |req|
+        apply_timeouts(req)
         req.headers["Authorization"] = "Bot #{bot_token}"
         req.headers["Content-Type"] = "application/json"
         req.body = { name: }.to_json
@@ -115,6 +120,19 @@ class DiscordClient
       raise ApiError, "#{e.class}: #{e.message}"
     end
 
+    #: (String webhook_url) -> void
+    def delete_webhook(webhook_url)
+      response = Faraday.delete(webhook_url) do |req|
+        apply_timeouts(req)
+      end
+
+      return if response.success?
+
+      raise ApiError, "Discord 웹훅 삭제에 실패했습니다. HTTP #{response.status}"
+    rescue Faraday::Error => e
+      raise ApiError, "#{e.class}: #{e.message}"
+    end
+
     #: (String body) -> untyped
     def parse_json(body)
       JSON.parse(body)
@@ -122,5 +140,12 @@ class DiscordClient
       raise ApiError, "Discord API 응답 파싱에 실패했습니다: #{e.message}"
     end
     private :parse_json
+
+    #: (untyped req) -> void
+    def apply_timeouts(req)
+      req.options.open_timeout = OPEN_TIMEOUT
+      req.options.timeout = REQUEST_TIMEOUT
+    end
+    private :apply_timeouts
   end
 end

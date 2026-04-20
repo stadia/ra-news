@@ -31,7 +31,7 @@ class DiscordController < ApplicationController
 
     session[:discord_guild_id] = guild[:id]
     session[:discord_guild_name] = guild[:name]
-    session[:discord_bot_token] = oauth[:access_token]
+    session[:discord_oauth_token] = oauth[:access_token]
 
     redirect_to discord_channels_path
   rescue DiscordClient::ApiError => e
@@ -39,7 +39,7 @@ class DiscordController < ApplicationController
   end
 
   def channels
-    bot_token = session[:discord_bot_token]
+    bot_token = discord_bot_token
     guild_id = session[:discord_guild_id]
 
     if bot_token.blank? || guild_id.blank?
@@ -56,7 +56,7 @@ class DiscordController < ApplicationController
   end
 
   def setup
-    bot_token = session[:discord_bot_token]
+    bot_token = discord_bot_token
     guild_id = session[:discord_guild_id]
     guild_name = session[:discord_guild_name]
     channel_id = params[:channel_id]
@@ -74,28 +74,52 @@ class DiscordController < ApplicationController
       return
     end
 
-    webhook = DiscordClient.create_webhook(bot_token, channel_id)
     channel_name = channel_info.dig("name") || params[:channel_name].presence || "unknown"
+    channel = DiscordChannel.find_or_initialize_by(remote_id: guild_id)
+    channel.assign_attributes(
+      name: guild_name,
+      channel_id: channel_id,
+      channel_name: channel_name,
+      status: :active,
+      last_verified_at: Time.current
+    )
 
-    DiscordChannel.transaction do
-      channel = DiscordChannel.find_or_initialize_by(remote_id: guild_id)
-      channel.assign_attributes(
-        name: guild_name,
-        webhook_url: webhook[:url],
-        channel_id: channel_id,
-        channel_name: channel_name,
-        status: :active,
-        last_verified_at: Time.current
-      )
-      channel.save!
+    webhook_url = DiscordClient.create_webhook(bot_token, channel_id)[:url]
+    channel.webhook_url = webhook_url
+
+    begin
+      DiscordChannel.transaction do
+        channel.save!
+      end
+    rescue ActiveRecord::RecordInvalid
+      cleanup_discord_webhook(webhook_url)
+      raise
     end
 
-    session.delete(:discord_guild_id)
-    session.delete(:discord_guild_name)
-    session.delete(:discord_bot_token)
+    clear_discord_session!
 
     redirect_to edit_user_registration_path, notice: "Discord 서버가 연결되었습니다."
   rescue DiscordClient::ApiError, ActiveRecord::RecordInvalid => e
     redirect_to edit_user_registration_path, alert: "Discord 연결에 실패했습니다: #{e.message}"
+  end
+
+  private
+
+  def discord_bot_token
+    DiscordConfig.bot_token
+  end
+
+  def clear_discord_session!
+    session.delete(:discord_guild_id)
+    session.delete(:discord_guild_name)
+    session.delete(:discord_oauth_token)
+  end
+
+  def cleanup_discord_webhook(webhook_url)
+    return if webhook_url.blank?
+
+    DiscordClient.delete_webhook(webhook_url)
+  rescue DiscordClient::ApiError => e
+    Rails.logger.warn("Failed to cleanup Discord webhook #{webhook_url}: #{e.message}")
   end
 end

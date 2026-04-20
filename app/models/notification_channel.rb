@@ -3,7 +3,9 @@
 
 class NotificationChannel < ApplicationRecord
   include Discard::Model
-  has_many :notification_deliveries, dependent: :nullify
+  self.discard_column = :deleted_at
+
+  has_many :notification_deliveries, dependent: :restrict_with_error
 
   enum :status, {
     active: "active",
@@ -14,7 +16,7 @@ class NotificationChannel < ApplicationRecord
   validates :remote_id, :name, :webhook_url, :channel_id, :channel_name, presence: true
   validates :remote_id, uniqueness: { scope: :type }
 
-  scope :active, -> { where(status: :active) }
+  scope :active, -> { kept.where(status: :active) }
   scope :delivery_ready, -> {
     active.where.not(webhook_url: [ nil, "" ]).where.not(channel_id: [ nil, "" ]).where.not(channel_name: [ nil, "" ])
   }

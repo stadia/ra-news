@@ -15,9 +15,14 @@ class DiscordConfig
       preference&.client_secret
     end
 
+    #: () -> String?
+    def bot_token
+      Rails.application.credentials.dig(:discord, :bot_token).presence || ENV["DISCORD_BOT_TOKEN"].presence
+    end
+
     #: () -> bool
     def configured?
-      client_id.present? && client_secret.present?
+      client_id.present? && client_secret.present? && bot_token.present?
     end
 
     private

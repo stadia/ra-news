@@ -68,4 +68,51 @@ class DiscordClientTest < ActiveSupport::TestCase
       end
     end
   end
+
+  test "Faraday 요청에 timeout을 설정한다" do
+    timeout_values = []
+    response = Struct.new(:success?, :status, :body).new(true, 200, { "guild" => { "id" => "G1" } }.to_json)
+
+    request_factory = lambda do
+      options = Struct.new(:open_timeout, :timeout).new
+      Struct.new(:headers, :body, :options).new({}, nil, options)
+    end
+
+    DiscordConfig.stub(:client_id, "dc-123") do
+      DiscordConfig.stub(:client_secret, "secret") do
+        Faraday.stub(:post, lambda { |url, &block|
+          req = request_factory.call
+          block.call(req)
+          timeout_values << [ url, req.options.open_timeout, req.options.timeout ]
+          response
+        }) do
+          DiscordClient.exchange_code("good-code", redirect_uri: "https://example.com/callback")
+        end
+      end
+    end
+
+    Faraday.stub(:get, lambda { |url, &block|
+      req = request_factory.call
+      block.call(req)
+      timeout_values << [ url, req.options.open_timeout, req.options.timeout ]
+      Struct.new(:success?, :status, :body).new(true, 200, [ { "id" => "1", "type" => 0 } ].to_json)
+    }) do
+      DiscordClient.list_channels("bot-token", "guild-1")
+    end
+
+    Faraday.stub(:post, lambda { |url, &block|
+      req = request_factory.call
+      block.call(req)
+      timeout_values << [ url, req.options.open_timeout, req.options.timeout ]
+      Struct.new(:success?, :status, :body).new(true, 200, { id: "WH1", token: "token" }.to_json)
+    }) do
+      DiscordClient.create_webhook("bot-token", "channel-1")
+    end
+
+    assert_equal [
+      [ DiscordClient::TOKEN_URL, 5, 10 ],
+      [ "#{DiscordClient::API_BASE}/guilds/guild-1/channels", 5, 10 ],
+      [ "#{DiscordClient::API_BASE}/channels/channel-1/webhooks", 5, 10 ]
+    ], timeout_values
+  end
 end
