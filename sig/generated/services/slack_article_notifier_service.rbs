@@ -3,12 +3,4 @@
 class SlackArticleNotifierService < OperationService
   # : (Article article) -> Dry::Monads::Result
   def call: (Article article) -> Dry::Monads::Result
-
-  private
-
-  # : (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
-  def generate_jobs: (Article article, Array[Hash[Symbol, untyped]] subscriptions) -> Array[SlackArticleDeliveryJob]
-
-  # : () -> Array[Hash[Symbol, untyped]]
-  def targets: () -> Array[Hash[Symbol, untyped]]
 end
