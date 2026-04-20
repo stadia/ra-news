@@ -2,18 +2,11 @@
   "mcpServers": {
     "sequential-thinking": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     },
     "rails-ai-context": {
-      "command": "bundle",
-      "args": [
-        "exec",
-        "rails",
-        "ai:serve"
-      ]
+      "command": "rails-ai-context",
+      "args": ["serve"]
     }
   }
 }
