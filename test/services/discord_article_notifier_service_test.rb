@@ -11,7 +11,8 @@ class DiscordArticleNotifierServiceTest < ActiveSupport::TestCase
   end
 
   test "channel 기준으로 기사 알림 잡을 enqueue한다" do
-    assert_enqueued_jobs 1, only: DiscordArticleDeliveryJob do
+    expected_count = DiscordChannel.delivery_ready.count
+    assert_enqueued_jobs expected_count, only: DiscordArticleDeliveryJob do
       DiscordArticleNotifierService.new.call(@article)
     end
 

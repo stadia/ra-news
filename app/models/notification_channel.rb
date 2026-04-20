@@ -2,7 +2,8 @@
 # rbs_inline: enabled
 
 class NotificationChannel < ApplicationRecord
-  has_many :notification_deliveries, dependent: :destroy
+  include Discard::Model
+  has_many :notification_deliveries, dependent: :nullify
 
   enum :status, {
     active: "active",

@@ -34,7 +34,7 @@ class SlackArticleDeliveryJob < ApplicationJob
 
   private
 
-  #: (SlackDelivery delivery, String channel_name, String message_ts) -> void
+  #: (SlackDelivery delivery, String channel_name, String? message_ts) -> void
   def persist_delivery_success(delivery, channel_name, message_ts)
     delivery.update!(
         channel_name:,

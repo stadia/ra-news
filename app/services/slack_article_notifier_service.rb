@@ -11,10 +11,10 @@ class SlackArticleNotifierService < OperationService
       SlackArticleDeliveryJob.new(article.id, channel.id)
     end
 
-    return nil if delivery_jobs.empty?
+    return Success() if delivery_jobs.empty?
 
     ActiveJob.perform_all_later(delivery_jobs)
 
-    true
+    Success(true)
   end
 end

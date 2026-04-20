@@ -7,6 +7,8 @@ class DiscordClient
   AUTHORIZE_URL = "https://discord.com/api/oauth2/authorize" #: String
   TOKEN_URL = "https://discord.com/api/oauth2/token" #: String
   API_BASE = "https://discord.com/api/v10" #: String
+  MANAGE_WEBHOOKS_PERMISSION = 536870912 #: Integer
+  TEXT_CHANNEL_TYPE = 0 #: Integer
 
   #: (DiscordChannel channel) -> void
   def initialize(channel)
@@ -45,7 +47,7 @@ class DiscordClient
       query = {
         client_id: DiscordConfig.client_id,
         scope: "bot webhook.incoming",
-        permissions: 536870912,
+        permissions: MANAGE_WEBHOOKS_PERMISSION,
         redirect_uri:,
         response_type: "code",
         state:
@@ -71,7 +73,7 @@ class DiscordClient
         raise ApiError, "Discord OAuth 토큰 교환에 실패했습니다. HTTP #{response.status}"
       end
 
-      JSON.parse(response.body).with_indifferent_access
+      parse_json(response.body).with_indifferent_access
     rescue Faraday::Error => e
       raise ApiError, "#{e.class}: #{e.message}"
     end
@@ -86,7 +88,7 @@ class DiscordClient
         raise ApiError, "Discord 채널 목록 조회에 실패했습니다. HTTP #{response.status}"
       end
 
-      JSON.parse(response.body).select { |c| c["type"] == 0 }
+      parse_json(response.body).select { |c| c["type"] == TEXT_CHANNEL_TYPE }
     rescue Faraday::Error => e
       raise ApiError, "#{e.class}: #{e.message}"
     end
@@ -103,7 +105,7 @@ class DiscordClient
         raise ApiError, "Discord 웹훅 생성에 실패했습니다. HTTP #{response.status}"
       end
 
-      webhook = JSON.parse(response.body).with_indifferent_access
+      webhook = parse_json(response.body).with_indifferent_access
       {
         id: webhook[:id],
         token: webhook[:token],
@@ -112,5 +114,13 @@ class DiscordClient
     rescue Faraday::Error => e
       raise ApiError, "#{e.class}: #{e.message}"
     end
+
+    #: (String body) -> untyped
+    def parse_json(body)
+      JSON.parse(body)
+    rescue JSON::ParserError => e
+      raise ApiError, "Discord API 응답 파싱에 실패했습니다: #{e.message}"
+    end
+    private :parse_json
   end
 end

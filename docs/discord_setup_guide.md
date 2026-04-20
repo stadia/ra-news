@@ -45,11 +45,11 @@
    - **Reset Secret** 버튼 클릭
    - 생성된 시크릿 복사 (Rails 환경 변수에 필요)
 4. **Redirects**에 다음 URL 추가:
-   ```
+   ```text
    https://your-domain.com/discord/oauth/callback
    ```
    - 로컬 개발 환경:
-   ```
+   ```text
    http://localhost:3000/discord/oauth/callback
    ```
 
@@ -335,7 +335,7 @@ export DISCORD_BOT_TOKEN=production_bot_token
 ### 9.2 프로덕션 Redirect URI
 
 Discord Developer Portal에 프로덕션 URI 추가:
-```
+```text
 https://your-production-domain.com/discord/oauth/callback
 ```
 

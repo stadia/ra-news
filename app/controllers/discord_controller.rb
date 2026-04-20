@@ -66,11 +66,16 @@ class DiscordController < ApplicationController
       return
     end
 
-    webhook = DiscordClient.create_webhook(bot_token, channel_id)
-
     channels_list = DiscordClient.list_channels(bot_token, guild_id)
     channel_info = channels_list.find { |c| c["id"] == channel_id }
-    channel_name = channel_info&.dig("name") || "unknown"
+
+    if channel_info.nil?
+      redirect_to edit_user_registration_path, alert: "유효하지 않은 채널입니다."
+      return
+    end
+
+    webhook = DiscordClient.create_webhook(bot_token, channel_id)
+    channel_name = channel_info.dig("name") || params[:channel_name].presence || "unknown"
 
     DiscordChannel.transaction do
       channel = DiscordChannel.find_or_initialize_by(remote_id: guild_id)

@@ -4,6 +4,8 @@
 class DiscordArticlePresenter
   include Rails.application.routes.url_helpers
 
+  DEFAULT_EMBED_COLOR = 3447003 #: Integer
+
   #: (Article article) -> void
   def initialize(article)
     @article = article
@@ -15,7 +17,7 @@ class DiscordArticlePresenter
       title: title,
       url: article_url(@article),
       description: summary&.truncate(200),
-      color: 3447003,
+      color: DEFAULT_EMBED_COLOR,
       image_url: nil,
       footer_text: "AlNews",
       timestamp: @article.created_at

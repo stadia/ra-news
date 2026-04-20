@@ -227,6 +227,8 @@ After all code references are updated, drop `slack_workspaces` and `slack_articl
 # Discord (new)
 get  "/discord/install",        to: "discord#install",   as: :discord_install
 get  "/discord/oauth/callback", to: "discord#callback",  as: :discord_oauth_callback
+get  "/discord/channels",       to: "discord#channels",  as: :discord_channels
+post "/discord/setup",          to: "discord#setup",     as: :discord_setup
 
 # Slack (existing, unchanged paths)
 get  "/slack/install",          to: "slack#install",      as: :slack_install

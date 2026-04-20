@@ -1158,7 +1158,7 @@ end
 - [ ] **Step 6: Run all Slack tests**
 
 ```bash
-rails test test/controllers/slack_controller_test.rb test/services/slack_client_test.rb test/services/slack_article_notifier_service_test.rb test/jobs/slack_article_delivery_job.rb test/presenters/slack_article_presenter_test.rb
+rails test test/controllers/slack_controller_test.rb test/services/slack_client_test.rb test/services/slack_article_notifier_service_test.rb test/jobs/slack_article_delivery_job_test.rb test/presenters/slack_article_presenter_test.rb
 ```
 
 Expected: All tests pass

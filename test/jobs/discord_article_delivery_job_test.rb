@@ -9,7 +9,7 @@ class DiscordArticleDeliveryJobTest < ActiveJob::TestCase
     delivery = DiscordDelivery.create!(
       article:,
       notification_channel: channel,
-      channel_id: "DCFAILED1",
+      channel_id: channel.channel_id,
       channel_name: "al-news",
       status: :failed
     )
@@ -22,7 +22,10 @@ class DiscordArticleDeliveryJobTest < ActiveJob::TestCase
 
     DiscordClient.stub(:new, fake_client) do
       job = DiscordArticleDeliveryJob.new
-      job.stub(:persist_delivery_success, ->(_d, _c, _m) { delivery.errors.add(:base, "test"); raise ActiveRecord::RecordInvalid, delivery }) do
+      job.stub(:persist_delivery_success, ->(actual_delivery, _c, _m) {
+        actual_delivery.errors.add(:base, "test")
+        raise ActiveRecord::RecordInvalid, actual_delivery
+      }) do
         error = assert_raises(ActiveRecord::RecordInvalid) do
           job.perform(article.id, channel.id)
         end
