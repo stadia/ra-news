@@ -1,8 +1,7 @@
-# frozen_string_literal: true
-
-existing_delivery:
+existing_slack_delivery:
+  type: SlackDelivery
   article: ruby_article
-  slack_workspace: acme
+  notification_channel: acme_slack
   channel_id: CDELIVERED
   channel_name: delivered
   status: sent

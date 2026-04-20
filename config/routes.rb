@@ -45,6 +45,12 @@ Rails.application.routes.draw do
   get "social/:provider/authorize", to: "social#provider_authorize", as: :social_provider_authorize
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
 
+  # Discord
+  get  "discord/install",        to: "discord#install",   as: :discord_install
+  get  "discord/oauth/callback", to: "discord#callback",  as: :discord_oauth_callback
+  get  "discord/channels",       to: "discord#channels",  as: :discord_channels
+  post "discord/setup",          to: "discord#setup",     as: :discord_setup
+
   get "slack/install", to: "slack#install", as: :slack_install
   get "slack/oauth/callback", to: "slack#callback", as: :slack_oauth_callback
   post "slack/events", to: "slack#events", as: :slack_events

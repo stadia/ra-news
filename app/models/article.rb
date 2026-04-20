@@ -49,7 +49,7 @@ class Article < ApplicationRecord
   belongs_to :site, optional: true
 
   has_many :posts, dependent: :nullify
-  has_many :slack_article_deliveries, dependent: :destroy
+  has_many :notification_deliveries, dependent: :destroy
 
   store_accessor :summary_detail, :introduction, :conclusion, prefix: :summary
 

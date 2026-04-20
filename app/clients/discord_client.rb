@@ -1,0 +1,151 @@
+# frozen_string_literal: true
+# rbs_inline: enabled
+
+class DiscordClient
+  class ApiError < StandardError; end
+
+  AUTHORIZE_URL = "https://discord.com/api/oauth2/authorize" #: String
+  TOKEN_URL = "https://discord.com/api/oauth2/token" #: String
+  API_BASE = "https://discord.com/api/v10" #: String
+  OPEN_TIMEOUT = 5 #: Integer
+  REQUEST_TIMEOUT = 10 #: Integer
+  MANAGE_WEBHOOKS_PERMISSION = 536870912 #: Integer
+  TEXT_CHANNEL_TYPE = 0 #: Integer
+
+  #: (DiscordChannel channel) -> void
+  def initialize(channel)
+    @channel = channel
+  end
+
+  #: (Hash[Symbol, untyped] embed_params) -> String?
+  def post_embed(embed_params)
+    webhook = Discordrb::Webhooks::Client.new(url: @channel.webhook_url)
+    response = webhook.execute(nil, true) do |builder|
+      builder.add_embed do |embed|
+        embed.title = embed_params[:title]
+        embed.url = embed_params[:url]
+        embed.description = embed_params[:description]
+        embed.colour = embed_params[:color] if embed_params[:color]
+        if embed_params[:image_url].present?
+          embed.image = Discordrb::Webhooks::EmbedImage.new(url: embed_params[:image_url])
+        end
+        if embed_params[:footer_text].present?
+          embed.footer = Discordrb::Webhooks::EmbedFooter.new(text: embed_params[:footer_text])
+        end
+        embed.timestamp = embed_params[:timestamp] if embed_params[:timestamp]
+      end
+    end
+    parsed = JSON.parse(response.body)
+    parsed["id"]
+  rescue RestClient::Exception => e
+    raise ApiError, "#{e.class}: #{e.message}"
+  rescue StandardError => e
+    raise ApiError, "#{e.class}: #{e.message}"
+  end
+
+  class << self
+    #: (redirect_uri: String, state: String) -> String
+    def authorize_url(redirect_uri:, state:)
+      query = {
+        client_id: DiscordConfig.client_id,
+        scope: "bot webhook.incoming",
+        permissions: MANAGE_WEBHOOKS_PERMISSION,
+        redirect_uri:,
+        response_type: "code",
+        state:
+      }.to_query
+
+      "#{AUTHORIZE_URL}?#{query}"
+    end
+
+    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
+    def exchange_code(code, redirect_uri:)
+      response = Faraday.post(TOKEN_URL) do |req|
+        apply_timeouts(req)
+        req.headers["Content-Type"] = "application/x-www-form-urlencoded"
+        req.body = URI.encode_www_form(
+          client_id: DiscordConfig.client_id,
+          client_secret: DiscordConfig.client_secret,
+          grant_type: "authorization_code",
+          code:,
+          redirect_uri:
+        )
+      end
+
+      unless response.success?
+        raise ApiError, "Discord OAuth 토큰 교환에 실패했습니다. HTTP #{response.status}"
+      end
+
+      parse_json(response.body).with_indifferent_access
+    rescue Faraday::Error => e
+      raise ApiError, "#{e.class}: #{e.message}"
+    end
+
+    #: (String bot_token, String guild_id) -> Array[Hash[String, untyped]]
+    def list_channels(bot_token, guild_id)
+      response = Faraday.get("#{API_BASE}/guilds/#{guild_id}/channels") do |req|
+        apply_timeouts(req)
+        req.headers["Authorization"] = "Bot #{bot_token}"
+      end
+
+      unless response.success?
+        raise ApiError, "Discord 채널 목록 조회에 실패했습니다. HTTP #{response.status}"
+      end
+
+      parse_json(response.body).select { |c| c["type"] == TEXT_CHANNEL_TYPE }
+    rescue Faraday::Error => e
+      raise ApiError, "#{e.class}: #{e.message}"
+    end
+
+    #: (String bot_token, String channel_id, ?name: String) -> Hash[Symbol, String]
+    def create_webhook(bot_token, channel_id, name: "AlNews")
+      response = Faraday.post("#{API_BASE}/channels/#{channel_id}/webhooks") do |req|
+        apply_timeouts(req)
+        req.headers["Authorization"] = "Bot #{bot_token}"
+        req.headers["Content-Type"] = "application/json"
+        req.body = { name: }.to_json
+      end
+
+      unless response.success?
+        raise ApiError, "Discord 웹훅 생성에 실패했습니다. HTTP #{response.status}"
+      end
+
+      webhook = parse_json(response.body).with_indifferent_access
+      {
+        id: webhook[:id],
+        token: webhook[:token],
+        url: "https://discord.com/api/webhooks/#{webhook[:id]}/#{webhook[:token]}"
+      }
+    rescue Faraday::Error => e
+      raise ApiError, "#{e.class}: #{e.message}"
+    end
+
+    #: (String webhook_url) -> void
+    def delete_webhook(webhook_url)
+      response = Faraday.delete(webhook_url) do |req|
+        apply_timeouts(req)
+      end
+
+      return if response.success?
+
+      raise ApiError, "Discord 웹훅 삭제에 실패했습니다. HTTP #{response.status}"
+    rescue Faraday::Error => e
+      raise ApiError, "#{e.class}: #{e.message}"
+    end
+
+    #: (String body) -> untyped
+    def parse_json(body)
+      JSON.parse(body)
+    rescue JSON::ParserError => e
+      raise ApiError, "Discord API 응답 파싱에 실패했습니다: #{e.message}"
+    end
+    private :parse_json
+
+    #: (untyped req) -> void
+    def apply_timeouts(req)
+      req.options.open_timeout = OPEN_TIMEOUT
+      req.options.timeout = REQUEST_TIMEOUT
+    end
+    private :apply_timeouts
+  end
+end

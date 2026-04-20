@@ -4,8 +4,8 @@ require "test_helper"
 
 class SlackClientTest < ActiveSupport::TestCase
   test "incoming webhook으로 메시지를 전송한다" do
-    workspace = slack_workspaces(:acme)
-    client = SlackClient.new(workspace)
+    channel = notification_channels(:acme_slack)
+    client = SlackClient.new(channel)
     response = Struct.new(:success?, :status).new(true, 200)
     webhook_client = Struct.new(:calls, :response) do
       def post
@@ -24,8 +24,8 @@ class SlackClientTest < ActiveSupport::TestCase
   end
 
   test "Faraday 오류를 ApiError로 래핑한다" do
-    workspace = slack_workspaces(:acme)
-    client = SlackClient.new(workspace)
+    channel = notification_channels(:acme_slack)
+    client = SlackClient.new(channel)
 
     error = assert_raises(SlackClient::ApiError) do
       client.stub(:webhook_client, Struct.new(:exception) {

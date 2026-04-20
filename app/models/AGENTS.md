@@ -5,7 +5,7 @@
 
 - **ActsAsTaggableOn::Tag** (table: tags) — has_many :taggings [3v]
 - **ActsAsTaggableOn::Tagging** (table: taggings) — belongs_to :tag, belongs_to :taggable, belongs_to :tagger [5v]
-- **Article** (table: articles) — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :slack_article_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor [6v]
+- **Article** (table: articles) — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :slack_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor [6v]
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
 - **Federails::Actor** (table: federails_actors) — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host [14v]
 - **Federails::Following** (table: federails_followings) — belongs_to :actor, belongs_to :target_actor, has_many :activities [5v]
@@ -18,8 +18,8 @@
 - **Role** (table: roles) [2v]
   scopes: named
 - **Site** (table: sites) — has_many :articles [1v]
-- **SlackArticleDelivery** (table: slack_article_deliveries) — belongs_to :article, belongs_to :slack_workspace [5v]
-- **SlackWorkspace** (table: slack_workspaces) — has_many :slack_article_deliveries [3v]
+- **SlackDelivery** (table: slack_deliveries) — belongs_to :article, belongs_to :slack_channel [5v]
+- **SlackChannel** (table: slack_channels) — has_many :slack_deliveries [3v]
   scopes: active, delivery_ready
 - **Socialization::ActiveRecordStores::Follow** (table: follows) — belongs_to :follower, belongs_to :followable
 - **Socialization::ActiveRecordStores::Like** (table: likes) — belongs_to :liker, belongs_to :likeable

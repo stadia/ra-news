@@ -8,28 +8,9 @@ class SlackClient
 
   # ── Instance methods ────────────────────────────────────
 
-  #: (SlackWorkspace workspace) -> void
-  def initialize(workspace)
-    @workspace = workspace
-  end
-
-  #: () -> Array[Hash[String, String]]
-  def list_channels
-    channels = []
-
-    client.conversations_list(
-      exclude_archived: true,
-      types: "public_channel,private_channel",
-      limit: 200
-    ) do |response|
-      channels.concat(response.channels.map { |ch| { "id" => ch.id, "name" => ch.name } })
-    end
-
-    channels
-  rescue Slack::Web::Api::Errors::SlackError => e
-    raise ApiError, e.message
-  rescue Faraday::Error => e
-    raise_api_error(e)
+  #: (SlackChannel channel) -> void
+  def initialize(channel)
+    @channel = channel
   end
 
   #: (text: String, blocks: Array[untyped]) -> Hash[String, String]
@@ -52,19 +33,13 @@ class SlackClient
 
   private
 
-  attr_reader :workspace #: SlackWorkspace
+  attr_reader :channel #: SlackChannel
 
-  # @rbs @client: Slack::Web::Client?
   # @rbs @webhook_client: Faraday::Connection?
-
-  #: () -> Slack::Web::Client
-  def client
-    @client ||= SlackClient.oauth_client(workspace.bot_access_token)
-  end
 
   #: () -> Faraday::Connection
   def webhook_client
-    @webhook_client ||= Faraday.new(url: workspace.incoming_webhook_url) do |faraday|
+    @webhook_client ||= Faraday.new(url: channel.webhook_url) do |faraday|
       faraday.request :json
       faraday.response :raise_error
       faraday.adapter Faraday.default_adapter
