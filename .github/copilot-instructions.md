@@ -4,11 +4,14 @@
 Rails 8.1.3 | Ruby 4.0.2
 
 ## Stack
-- Database: static_parse — 22 tables
+- Database: PostgreSQL — 24 tables
 - Models: 18
 - Routes: 146 across 44 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
+- Storage: ActiveStorage (1 models with attachments)
+- Assets: propshaft, importmap, tailwindcss
+- Databases: 3 (primary, cache, queue)
 - Components: 112 components, 112 Phlex
 - Performance: 10 issues detected
 - auth: devise, pundit, jwt

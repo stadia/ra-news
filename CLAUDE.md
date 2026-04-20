@@ -12,6 +12,9 @@
 - Migrations: 100 total, 0 pending
 - Auth: Devise
 - I18n: 2 locales (en, ko)
+- Storage: ActiveStorage (1 models with attachments)
+- Assets: propshaft, importmap, tailwindcss
+- Databases: 3 (primary, cache, queue)
 - Components: 112 components, 112 Phlex
 - Performance: 10 issues detected
 
@@ -149,9 +152,6 @@ Use individual tools only when you need deeper detail on a specific layer.
 4. `rails_validate(files:["app/models/post.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/models/post.rb level=rails` — EVERY time after editing
 5. `rails_generate_test(model:"Post")` or `rails 'ai:tool[generate_test]' model=Post` — generate tests matching project patterns
 
-**Fix a controller bug:**
-1. `rails_get_context(controller:"PostsController", action:"create")` or `rails 'ai:tool[context]' controller=PostsController action=create` — action source + routes + views + model
-2. Read the controller file, make your fix
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->
