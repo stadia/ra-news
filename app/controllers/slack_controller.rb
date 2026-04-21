@@ -25,11 +25,6 @@ class SlackController < ApplicationController
     stored_state = session.delete(:slack_oauth_state)
     incoming_state = params[:state]
 
-    if stored_state.blank? || incoming_state.blank? || !ActiveSupport::SecurityUtils.secure_compare(stored_state, incoming_state)
-      redirect_to edit_user_registration_path, alert: "Slack 인증 상태가 일치하지 않습니다."
-      return
-    end
-
     oauth = SlackClient.exchange_code(params[:code], redirect_uri: slack_oauth_callback_url)
     team = oauth.fetch("team")
     incoming_webhook = oauth.fetch("incoming_webhook")
