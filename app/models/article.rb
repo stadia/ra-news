@@ -2,6 +2,11 @@
 # rbs_inline: enabled
 
 class Article < ApplicationRecord
+  TITLE_MAX_LENGTH = 120
+  TITLE_OMISSION = "..."
+  TITLE_BOUNDARY_MIN_RATIO = 0.6
+  TITLE_BOUNDARY_PATTERN = /[\s[:punct:]、。，．！？；：·|｜-]/
+
   extend FriendlyId
   friendly_id :slug, use: :slugged
 
@@ -55,6 +60,7 @@ class Article < ApplicationRecord
 
   store_accessor :social_post_ids, :twitter_id, :mastodon_id
 
+  validates :title, length: { maximum: TITLE_MAX_LENGTH }, allow_blank: true
   validates :url, :origin_url, presence: true, uniqueness: { case_sensitive: false }
   validates :slug, uniqueness: true, allow_blank: true
 
@@ -131,6 +137,11 @@ class Article < ApplicationRecord
   def generate_metadata #: void
     result = metadata_service.call(self)
     logger.debug { "Article metadata preparation failed for #{url}: #{result.failure}" } if result.failure?
+  end
+
+  #: (untyped value) -> untyped
+  def title=(value)
+    super(self.class.truncate_title(value))
   end
 
   def youtube_id #: String?
@@ -260,6 +271,20 @@ class Article < ApplicationRecord
   end
 
   class << self
+    #: (untyped value) -> untyped
+    def truncate_title(value)
+      return value unless value.is_a?(String)
+
+      normalized = value.squish
+      return normalized if normalized.length <= TITLE_MAX_LENGTH
+
+      content_limit = TITLE_MAX_LENGTH - TITLE_OMISSION.length
+      boundary_index = normalized.rindex(TITLE_BOUNDARY_PATTERN, content_limit)
+      min_boundary_index = (content_limit * TITLE_BOUNDARY_MIN_RATIO).floor
+      cut_index = boundary_index && boundary_index >= min_boundary_index ? boundary_index : content_limit
+      "#{normalized[0...cut_index].rstrip}#{TITLE_OMISSION}"
+    end
+
     # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
     #: (String url) -> bool
     def should_ignore_url?(url)

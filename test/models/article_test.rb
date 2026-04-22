@@ -124,6 +124,35 @@ class ArticleTest < ActiveSupport::TestCase
     assert_predicate article, :valid?
   end
 
+  test "title은 최대 길이 안에서 단어 경계로 줄여야 한다" do
+    long_title = "#{'Ruby ' * 80}AbruptTail"
+    article = Article.new(
+      title: long_title,
+      url: "https://example.com/title-too-long",
+      origin_url: "https://example.com/title-too-long-origin",
+      user: @user
+    )
+
+    assert_predicate article, :valid?
+    assert_operator article.title.length, :<=, Article::TITLE_MAX_LENGTH
+    assert_equal "...", article.title.last(3)
+    assert_not_includes article.title, "AbruptTail"
+    assert_equal "Ruby...", article.title.last(7)
+  end
+
+  test "title에 단어 경계가 없으면 최대 길이에 맞춰 줄여야 한다" do
+    article = Article.new(
+      title: "가" * (Article::TITLE_MAX_LENGTH + 20),
+      url: "https://example.com/title-no-boundary",
+      origin_url: "https://example.com/title-no-boundary-origin",
+      user: @user
+    )
+
+    assert_predicate article, :valid?
+    assert_equal Article::TITLE_MAX_LENGTH, article.title.length
+    assert_equal "...", article.title.last(3)
+  end
+
   # ========== Association Tests ==========
 
   test "user에 필수적으로 속해야 한다" do
@@ -536,6 +565,22 @@ class ArticleTest < ActiveSupport::TestCase
     # YouTube should not be automatically deleted
     # (unless explicitly marked for deletion)
     assert youtube_article.is_youtube
+  end
+
+  test "title에서 생성한 slug는 줄여진 title을 기반으로 해야 한다" do
+    service = Articles::MetadataPreparationService.new
+    article = Article.new(
+      title: "#{'Ruby ' * 80}AbruptTail",
+      url: "https://example.com/long-title-slug",
+      origin_url: "https://example.com/long-title-slug-origin",
+      user: @user
+    )
+
+    article.valid?
+    service.send(:ensure_article_slug, article)
+
+    assert_operator article.slug.length, :<=, Article::TITLE_MAX_LENGTH
+    assert_not_includes article.slug, "abrupttail"
   end
 
   # ========== Store Accessor Tests ==========
