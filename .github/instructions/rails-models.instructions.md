@@ -4,7 +4,7 @@ name: "Rails Models Reference"
 description: "ActiveRecord models — associations, validations, scopes, enums"
 ---
 
-# ActiveRecord Models (18)
+# ActiveRecord Models (22)
 
 Check here first for scopes, constants, associations. Read model files for business logic/methods.
 
@@ -12,9 +12,14 @@ Check here first for scopes, constants, associations. Read model files for busin
 - ActsAsTaggableOn::Tagging (3 associations)
 - Article (10 associations)
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
+- DiscordChannel (1 associations)
+- DiscordDelivery (2 associations)
 - Federails::Actor (14 associations)
 - Federails::Following (3 associations)
 - Like (2 associations)
+- NotificationChannel (1 associations)
+  scopes: active, delivery_ready
+- NotificationDelivery (2 associations)
 - Post (9 associations)
   scopes: comments, standalone
 - Preference (0 associations)
@@ -23,9 +28,8 @@ Check here first for scopes, constants, associations. Read model files for busin
 - Role (0 associations)
   scopes: named
 - Site (1 associations)
-- SlackArticleDelivery (2 associations)
-- SlackWorkspace (1 associations)
-  scopes: active, delivery_ready
+- SlackChannel (1 associations)
+- SlackDelivery (2 associations)
 - Socialization::ActiveRecordStores::Follow (2 associations)
 - Socialization::ActiveRecordStores::Like (2 associations)
 - Socialization::ActiveRecordStores::Mention (2 associations)

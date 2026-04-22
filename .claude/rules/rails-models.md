@@ -3,20 +3,33 @@ paths:
   - "app/models/**/*.rb"
 ---
 
-# ActiveRecord Models (16)
+# ActiveRecord Models (20)
 
 _Quick reference — use `rails_get_model_details(model:"Name")` for live data with resolved concerns and callbacks._
 
 - ActsAsTaggableOn::Tag (table: tags) — 1 assocs, 3 validations
   methods: count, taggings, validates_name_uniqueness?
-- Article (table: articles) — 10 assocs, 6 validations
+- Article (table: articles) — 10 assocs, 7 validations
   concerns: FederailsLikeable
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
   methods: to_activitypub_object, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, likes_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, apply_like, apply_undo_like, apply_unlike, base_tags, cached_owned_tag_list_on, cached_tag_list_on, create_or_update_pg_search_document, current_federails_activity_actor
+- DiscordChannel (table: notification_channels) — 1 assocs, 3 validations
+  methods: active!, active?, discard, discard!, discard_column, discard_column?, discarded?, error!, error?, inactive!, inactive?, kept?, notification_deliveries, undiscard, undiscard!, undiscarded?
+  status: active, inactive, error
+- DiscordDelivery (table: notification_deliveries) — 2 assocs, 5 validations
+  methods: article, failed!, failed?, notification_channel, sent!, sent?
+  status: sent, failed
 - Federails::Actor (table: federails_actors) — 14 assocs, 14 validations
   methods: accepted_followers, accepted_following_followers, accepted_following_follows, accepted_follows, acct_uri, activities, activities_as_entity, actor_type, at_address, distant?, entity, entity_configuration, feature, featured_items, featured_tags, federated_url, followed_by?, followers, followers_url, following_followers
 - Like (table: likes) — 2 assocs, 0 validations
   methods: likeable, liker
+- NotificationChannel (table: notification_channels) — 1 assocs, 3 validations
+  scopes: active, delivery_ready
+  methods: active!, active?, discard, discard!, discard_column, discard_column?, discarded?, error!, error?, inactive!, inactive?, kept?, notification_deliveries, undiscard, undiscard!, undiscarded?
+  status: active, inactive, error
+- NotificationDelivery (table: notification_deliveries) — 2 assocs, 5 validations
+  methods: article, failed!, failed?, notification_channel, sent!, sent?
+  status: sent, failed
 - Post (table: posts) — 9 assocs, 2 validations
   concerns: FederailsLikeable, HtmlSanitizable
   scopes: comments, standalone
@@ -31,13 +44,12 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - Site (table: sites) — 1 assocs, 1 validations
   methods: init_client, articles, discard, discard!, discard_column, discard_column?, discarded?, gmail!, gmail?, hacker_news!, hacker_news?, kept?, reddit!, reddit?, rss!, rss?, rss_page!, rss_page?, undiscard, undiscard!
   client: rss, gmail, youtube, hacker_news, rss_page, reddit
-- SlackArticleDelivery (table: slack_article_deliveries) — 2 assocs, 5 validations
-  methods: article, failed!, failed?, sent!, sent?, slack_workspace
-  status: sent, failed
-- SlackWorkspace (table: slack_workspaces) — 1 assocs, 3 validations
-  scopes: active, delivery_ready
-  methods: active!, active?, error!, error?, inactive!, inactive?, slack_article_deliveries
+- SlackChannel (table: notification_channels) — 1 assocs, 3 validations
+  methods: active!, active?, discard, discard!, discard_column, discard_column?, discarded?, error!, error?, inactive!, inactive?, kept?, notification_deliveries, undiscard, undiscard!, undiscarded?
   status: active, inactive, error
+- SlackDelivery (table: notification_deliveries) — 2 assocs, 5 validations
+  methods: article, failed!, failed?, notification_channel, sent!, sent?
+  status: sent, failed
 - Socialization::ActiveRecordStores::Follow (table: follows) — 2 assocs, 0 validations
   methods: followable, follower
 - Socialization::ActiveRecordStores::Like (table: likes) — 2 assocs, 0 validations

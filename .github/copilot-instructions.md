@@ -1,19 +1,19 @@
 <!-- BEGIN rails-ai-context -->
 # AlNews — Copilot Context
 
-Rails 8.1.3 | Ruby 4.0.2
+Rails 8.1.3 | Ruby 4.0.3
 
 ## Stack
-- Database: PostgreSQL — 24 tables
-- Models: 18
-- Routes: 146 across 44 controllers
+- Database: PostgreSQL — 25 tables
+- Models: 22
+- Routes: 150 across 45 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Storage: ActiveStorage (1 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
 - Components: 112 components, 112 Phlex
-- Performance: 10 issues detected
+- Performance: 12 issues detected
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -27,22 +27,26 @@ Rails 8.1.3 | Ruby 4.0.2
 - search: pg_search
 - server: puma
 - validation: dry-monads
-- utilities: nokogiri, faraday
+- utilities: nokogiri, faraday, rest-client
 
-## Models (18)
+## Models (22)
 - **ActsAsTaggableOn::Tag** — has_many :taggings
 - **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
-- **Article** — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :slack_article_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
+- **Article** — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :notification_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
+- **DiscordChannel** — has_many :notification_deliveries
+- **DiscordDelivery** — belongs_to :article, belongs_to :notification_channel
 - **Federails::Actor** — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
 - **Federails::Following** — belongs_to :actor, belongs_to :target_actor, has_many :activities
 - **Like** — belongs_to :liker, belongs_to :likeable
+- **NotificationChannel** — has_many :notification_deliveries
+- **NotificationDelivery** — belongs_to :article, belongs_to :notification_channel
 - **Post** — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :article, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags
 - **Preference**
 - **PushSubscription** — belongs_to :user
 - **Role**
 - **Site** — has_many :articles
-- **SlackArticleDelivery** — belongs_to :article, belongs_to :slack_workspace
-- **SlackWorkspace** — has_many :slack_article_deliveries
+- **SlackChannel** — has_many :notification_deliveries
+- **SlackDelivery** — belongs_to :article, belongs_to :notification_channel
 - **Socialization::ActiveRecordStores::Follow** — belongs_to :follower, belongs_to :followable
 - **Socialization::ActiveRecordStores::Like** — belongs_to :liker, belongs_to :likeable
 - **Socialization::ActiveRecordStores::Mention** — belongs_to :mentioner, belongs_to :mentionable
@@ -59,7 +63,6 @@ Rails 8.1.3 | Ruby 4.0.2
 - Import maps (no JS bundler)
 - concerns_models
 - concerns_controllers
-- policies
 - pwa
 - Dockerized
 - Kamal deployment
@@ -69,6 +72,7 @@ Rails 8.1.3 | Ruby 4.0.2
 - solid_cable
 - dry_rb
 - zeitwerk
+- Single Table Inheritance (STI)
 - Soft deletes (paranoia/discard)
 - Full-text search (Searchkick/pg_search/Ransack)
 - Tagging

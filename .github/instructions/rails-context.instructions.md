@@ -6,11 +6,11 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 # AlNews — Overview
 
-Rails 8.1.3 | Ruby 4.0.2
+Rails 8.1.3 | Ruby 4.0.3
 
-- Database: PostgreSQL — 24 tables
-- Models: 18
-- Routes: 146
+- Database: PostgreSQL — 25 tables
+- Models: 22
+- Routes: 150
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -28,9 +28,9 @@ Rails 8.1.3 | Ruby 4.0.2
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
 - Components: 112 components, 112 Phlex
-- Performance: 10 issues detected
-- Services: ArticleAgentsService, ContentService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SocialMediaService, TwitterService
-- Jobs: ArticleBatchJob, ArticleJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
+- Performance: 12 issues detected
+- Services: ArticleAgentsService, ContentService, DiscordArticleNotifierService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SocialMediaService, TwitterService
+- Jobs: ArticleBatchJob, ArticleJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
 **Global before_actions:** authenticate_user!
 
