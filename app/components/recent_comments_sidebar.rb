@@ -29,11 +29,13 @@ class Components::RecentCommentsSidebar < Components::Base
   def comment_card(comment)
     render RubyUI::Card.new(class: "bg-surface p-3 border-border-strong hover:border-border-muted transition-colors rounded-lg") do
       div(class: "flex items-center gap-2 mb-2") do
-        render RubyUI::Avatar.new(size: :sm, class: "shrink-0") do
-          render RubyUI::AvatarFallback.new(class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted font-bold") do
-            plain comment.author_name.to_s.first.to_s.upcase
-          end
-        end
+        render Components::UserAvatar.new(
+          user: comment.user,
+          federails_actor: comment.federails_actor,
+          name: comment.author_name,
+          size: "h-7 w-7",
+          fallback_class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted font-bold"
+        )
         span(class: "text-sm font-medium text-content-secondary truncate") { comment.author_name }
         if comment.author_host.present?
           span(class: "text-xs text-content-disabled shrink-0") { comment&.author_host }

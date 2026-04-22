@@ -44,15 +44,12 @@ class Components::Posts::PostCard < Components::Base
 
   def post_header
     div(class: "flex items-center gap-3") do
-      render RubyUI::Avatar.new(class: "h-8 w-8 sm:h-10 sm:w-10 shrink-0") do
-        if author_avatar_url.present?
-          render RubyUI::AvatarImage.new(src: author_avatar_url, alt: author_name)
-        else
-          render RubyUI::AvatarFallback.new(class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold") do
-            plain author_name.first.to_s.upcase
-          end
-        end
-      end
+      render Components::UserAvatar.new(
+        user: @post.user,
+        federails_actor: @post.federails_actor,
+        name: author_name,
+        size: "h-8 w-8 sm:h-10 sm:w-10"
+      )
 
       div(class: "flex-1 min-w-0") do
         span(class: "font-semibold text-content text-sm") { author_name }
@@ -196,9 +193,6 @@ class Components::Posts::PostCard < Components::Base
     @post.user&.name || @post.federails_actor&.name || "알 수 없음"
   end
 
-  def author_avatar_url
-    @post.federails_actor&.extensions&.dig("icon", "url")
-  end
 
   def body_preview
     view_context.truncate(view_context.strip_tags(@post.body.to_s).squish, length: 120)

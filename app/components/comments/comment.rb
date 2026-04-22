@@ -45,24 +45,17 @@ class Components::Comments::Comment < Components::Base
   def comment_header
     div(class: "flex items-center justify-between mb-3") do
       div(class: "flex items-center space-x-3") do
-        render RubyUI::Avatar.new(class: "h-8 w-8 shrink-0") do
-          if author_avatar_url.present?
-            render RubyUI::AvatarImage.new(src: author_avatar_url, alt: @comment.author_name)
-          else
-            render RubyUI::AvatarFallback.new(class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold") do
-              plain @comment.author_name.to_s.first.to_s.upcase
-            end
-          end
-        end
+        render Components::UserAvatar.new(
+          user: @comment.user,
+          federails_actor: @comment.federails_actor,
+          name: @comment.author_name
+        )
         author_info
       end
       delete_button
     end
   end
 
-  def author_avatar_url
-    @comment.user&.avatar_url || @comment.federails_actor&.extensions&.dig("icon", "url")
-  end
 
   def author_info
     div do
