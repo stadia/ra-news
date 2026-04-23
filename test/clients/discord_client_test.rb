@@ -91,28 +91,8 @@ class DiscordClientTest < ActiveSupport::TestCase
       end
     end
 
-    Faraday.stub(:get, lambda { |url, &block|
-      req = request_factory.call
-      block.call(req)
-      timeout_values << [ url, req.options.open_timeout, req.options.timeout ]
-      Struct.new(:success?, :status, :body).new(true, 200, [ { "id" => "1", "type" => 0 } ].to_json)
-    }) do
-      DiscordClient.list_channels("bot-token", "guild-1")
-    end
-
-    Faraday.stub(:post, lambda { |url, &block|
-      req = request_factory.call
-      block.call(req)
-      timeout_values << [ url, req.options.open_timeout, req.options.timeout ]
-      Struct.new(:success?, :status, :body).new(true, 200, { id: "WH1", token: "token" }.to_json)
-    }) do
-      DiscordClient.create_webhook("bot-token", "channel-1")
-    end
-
     assert_equal [
-      [ DiscordClient::TOKEN_URL, 5, 10 ],
-      [ "#{DiscordClient::API_BASE}/guilds/guild-1/channels", 5, 10 ],
-      [ "#{DiscordClient::API_BASE}/channels/channel-1/webhooks", 5, 10 ]
+      [ DiscordClient::TOKEN_URL, 5, 10 ]
     ], timeout_values
   end
 end

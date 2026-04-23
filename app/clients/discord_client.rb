@@ -10,7 +10,6 @@ class DiscordClient
   OPEN_TIMEOUT = 5 #: Integer
   REQUEST_TIMEOUT = 10 #: Integer
   MANAGE_WEBHOOKS_PERMISSION = 536870912 #: Integer
-  TEXT_CHANNEL_TYPE = 0 #: Integer
 
   #: (DiscordChannel channel) -> void
   def initialize(channel)
@@ -77,45 +76,6 @@ class DiscordClient
       end
 
       parse_json(response.body).with_indifferent_access
-    rescue Faraday::Error => e
-      raise ApiError, "#{e.class}: #{e.message}"
-    end
-
-    #: (String bot_token, String guild_id) -> Array[Hash[String, untyped]]
-    def list_channels(bot_token, guild_id)
-      response = Faraday.get("#{API_BASE}/guilds/#{guild_id}/channels") do |req|
-        apply_timeouts(req)
-        req.headers["Authorization"] = "Bot #{bot_token}"
-      end
-
-      unless response.success?
-        raise ApiError, "Discord 채널 목록 조회에 실패했습니다. HTTP #{response.status}"
-      end
-
-      parse_json(response.body).select { |c| c["type"] == TEXT_CHANNEL_TYPE }
-    rescue Faraday::Error => e
-      raise ApiError, "#{e.class}: #{e.message}"
-    end
-
-    #: (String bot_token, String channel_id, ?name: String) -> Hash[Symbol, String]
-    def create_webhook(bot_token, channel_id, name: "AlNews")
-      response = Faraday.post("#{API_BASE}/channels/#{channel_id}/webhooks") do |req|
-        apply_timeouts(req)
-        req.headers["Authorization"] = "Bot #{bot_token}"
-        req.headers["Content-Type"] = "application/json"
-        req.body = { name: }.to_json
-      end
-
-      unless response.success?
-        raise ApiError, "Discord 웹훅 생성에 실패했습니다. HTTP #{response.status}"
-      end
-
-      webhook = parse_json(response.body).with_indifferent_access
-      {
-        id: webhook[:id],
-        token: webhook[:token],
-        url: "https://discord.com/api/webhooks/#{webhook[:id]}/#{webhook[:token]}"
-      }
     rescue Faraday::Error => e
       raise ApiError, "#{e.class}: #{e.message}"
     end

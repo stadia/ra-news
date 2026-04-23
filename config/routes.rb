@@ -48,8 +48,6 @@ Rails.application.routes.draw do
   # Discord
   get  "discord/install",        to: "discord#install",   as: :discord_install
   get  "discord/oauth/callback", to: "discord#callback",  as: :discord_oauth_callback
-  get  "discord/channels",       to: "discord#channels",  as: :discord_channels
-  post "discord/setup",          to: "discord#setup",     as: :discord_setup
 
   get "slack/install", to: "slack#install", as: :slack_install
   get "slack/oauth/callback", to: "slack#callback", as: :slack_oauth_callback
