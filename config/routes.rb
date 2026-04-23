@@ -46,14 +46,13 @@ Rails.application.routes.draw do
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback
 
   # Discord
-  get  "discord/install",        to: "discord#install",   as: :discord_install
-  get  "discord/oauth/callback", to: "discord#callback",  as: :discord_oauth_callback
+  get "discord/oauth/callback", to: "discord#callback",  as: :discord_oauth_callback
 
-  get "slack/install", to: "slack#install", as: :slack_install
   get "slack/oauth/callback", to: "slack#callback", as: :slack_oauth_callback
   post "slack/events", to: "slack#events", as: :slack_events
 
-  get "oauth/result", to: "oauth#result", as: :oauth_result
+  get ":provider/install", to: "oauth#install", as: :oauth_install
+  get ":provider/result", to: "oauth#result", as: :oauth_result
 
   # Public user profiles at /@username (also used as ActivityPub profile_url)
   # 1. 실제 요청을 처리할 내부 라우트 (컨트롤러 연결)
