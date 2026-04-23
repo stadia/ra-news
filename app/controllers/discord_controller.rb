@@ -21,11 +21,6 @@ class DiscordController < ApplicationController
     stored_state = session.delete(:discord_oauth_state)
     incoming_state = params[:state]
 
-    unless stored_state.present? && ActiveSupport::SecurityUtils.secure_compare(stored_state, incoming_state.to_s)
-      redirect_to edit_user_registration_path, alert: "Discord 인증 상태가 일치하지 않습니다."
-      return
-    end
-
     oauth = DiscordClient.exchange_code(params[:code], redirect_uri: discord_oauth_callback_url)
     guild = oauth[:guild]
     webhook = oauth[:webhook]
