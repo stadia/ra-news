@@ -223,16 +223,16 @@ Use individual tools only when you need deeper detail on a specific layer.
 | `rails_performance_check(model:"X")` | `rails-ai-context tool performance_check model=X` | N+1 risks, missing indexes, Model.all anti-patterns |
 | `rails_dependency_graph(model:"X")` | `rails-ai-context tool dependency_graph model=X` | Model association graph as Mermaid diagram |
 | `rails_migration_advisor(action:"X", table:"Y")` | `rails-ai-context tool migration_advisor action=X table=Y` | Generate migration code, flag irreversible ops |
-| `rails_get_frontend_stack` | `rails 'ai:tool[frontend_stack]'` | React/Vue/Svelte/Angular, Inertia, TypeScript, package manager |
-| `rails_search_docs(query:"X")` | `rails 'ai:tool[search_docs]' query=X` | Bundled topic index with weighted keyword search, on-demand GitHub fetch |
-| `rails_query(sql:"X")` | `rails 'ai:tool[query]' sql=X` | Safe read-only SQL queries with timeout, row limit, column redaction |
-| `rails_read_logs(level:"X")` | `rails 'ai:tool[read_logs]' level=X` | Reverse file tail with level filtering and sensitive data redaction |
+| `rails_get_frontend_stack` | `rails-ai-context tool frontend_stack` | React/Vue/Svelte/Angular, Inertia, TypeScript, package manager |
+| `rails_search_docs(query:"X")` | `rails-ai-context tool search_docs query=X` | Bundled topic index with weighted keyword search, on-demand GitHub fetch |
+| `rails_query(sql:"X")` | `rails-ai-context tool query sql=X` | Safe read-only SQL queries with timeout, row limit, column redaction |
+| `rails_read_logs(level:"X")` | `rails-ai-context tool read_logs level=X` | Reverse file tail with level filtering and sensitive data redaction |
 | `rails_generate_test(model:"X")` | `rails-ai-context tool generate_test model=X` | Generate test scaffolding matching project patterns (framework, factories, style) |
 | `rails_diagnose(error:"X")` | `rails-ai-context tool diagnose error="X"` | One-call error diagnosis: context + git changes + logs + fix suggestions |
 | `rails_review_changes(ref:"main")` | `rails-ai-context tool review_changes ref=main` | PR/commit review: file context + warnings (missing indexes, removed validations) |
 | `rails_onboard(detail:"standard")` | `rails-ai-context tool onboard detail=standard` | Narrative app walkthrough for new developers or AI agents |
-| `rails_runtime_info(detail:"standard")` | `rails 'ai:tool[runtime_info]' detail=standard` | Live runtime: DB pool, table sizes, cache stats, job queues, pending migrations |
-| `rails_session_context(action:"status")` | `rails 'ai:tool[session_context]' action=status` | Track what you've already queried, avoid redundant calls |
+| `rails_runtime_info(detail:"standard")` | `rails-ai-context tool runtime_info detail=standard` | Live runtime: DB pool, table sizes, cache stats, job queues, pending migrations |
+| `rails_session_context(action:"status")` | `rails-ai-context tool session_context action=status` | Track what you've already queried, avoid redundant calls |
 ## Conventions
 - Follow existing patterns and naming conventions
 - Use the introspection tools to check schema before writing migrations
