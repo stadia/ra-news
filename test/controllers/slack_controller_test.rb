@@ -52,8 +52,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
 
     get slack_oauth_callback_path, params: { code: "oauth-code" }
 
-    assert_redirected_to edit_user_registration_path
-    assert_equal "Slack 인증 상태가 일치하지 않습니다.", flash[:alert]
+    assert_redirected_to oauth_result_path(provider: "slack", success: "false", error: "잘못된 인증 요청입니다.")
   end
 
   test "GET callback rejects when session state is missing" do
@@ -61,8 +60,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
 
     get slack_oauth_callback_path, params: { code: "oauth-code", state: "some-state" }
 
-    assert_redirected_to edit_user_registration_path
-    assert_equal "Slack 인증 상태가 일치하지 않습니다.", flash[:alert]
+    assert_redirected_to oauth_result_path(provider: "slack", success: "false", error: "잘못된 인증 요청입니다.")
   end
 
   test "GET callback rejects when both state values are empty" do
@@ -70,11 +68,10 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
 
     get slack_oauth_callback_path, params: { code: "oauth-code", state: "" }
 
-    assert_redirected_to edit_user_registration_path
-    assert_equal "Slack 인증 상태가 일치하지 않습니다.", flash[:alert]
+    assert_redirected_to oauth_result_path(provider: "slack", success: "false", error: "잘못된 인증 요청입니다.")
   end
 
-  test "GET callback stores workspace webhook configuration and redirects to account page" do
+  test "GET callback stores workspace webhook configuration and redirects to result page" do
     sign_in_as(users(:john))
 
     SlackConfig.stub(:configured?, true) { get slack_install_path }
@@ -95,7 +92,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
       get slack_oauth_callback_path, params: { code: "oauth-code", state: state }
     end
 
-    assert_redirected_to edit_user_registration_path
+    assert_redirected_to oauth_result_path(provider: "slack", success: "true", channel_name: "hada-news")
 
     channel = SlackChannel.find_by!(remote_id: "TCALLBACK")
 

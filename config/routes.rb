@@ -53,6 +53,8 @@ Rails.application.routes.draw do
   get "slack/oauth/callback", to: "slack#callback", as: :slack_oauth_callback
   post "slack/events", to: "slack#events", as: :slack_events
 
+  get "oauth/result", to: "oauth#result", as: :oauth_result
+
   # Public user profiles at /@username (also used as ActivityPub profile_url)
   # 1. 실제 요청을 처리할 내부 라우트 (컨트롤러 연결)
   get "/@:username", to: "profiles#show", as: :user_profile_base

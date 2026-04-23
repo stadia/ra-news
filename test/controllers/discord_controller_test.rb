@@ -34,11 +34,10 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
 
     get discord_oauth_callback_path, params: { code: "oauth-code", state: "wrong" }
 
-    assert_redirected_to edit_user_registration_path
-    assert_equal "Discord 인증 상태가 일치하지 않습니다.", flash[:alert]
+    assert_redirected_to oauth_result_path(provider: "discord", success: "false", error: "잘못된 인증 요청입니다.")
   end
 
-  test "GET callback stores oauth webhook and redirects to account settings" do
+  test "GET callback stores oauth webhook and redirects to result page" do
     sign_in_as(users(:john))
 
     DiscordConfig.stub(:configured?, true) do
@@ -63,8 +62,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
       get discord_oauth_callback_path, params: { code: "code", state: state }
     end
 
-    assert_redirected_to edit_user_registration_path
-    assert_equal "Discord 서버가 연결되었습니다.", flash[:notice]
+    assert_redirected_to oauth_result_path(provider: "discord", success: "true", channel_name: "al-news")
 
     channel = DiscordChannel.find_by!(remote_id: "G_SETUP")
 
@@ -92,7 +90,6 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
       get discord_oauth_callback_path, params: { code: "code", state: state }
     end
 
-    assert_redirected_to edit_user_registration_path
-    assert_includes flash[:alert], "Discord 연결에 실패했습니다"
+    assert_redirected_to oauth_result_path(provider: "discord", success: "false", error: "Discord OAuth 응답에 webhook 정보가 없습니다.")
   end
 end

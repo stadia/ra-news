@@ -25,10 +25,16 @@ class SlackController < ApplicationController
     stored_state = session.delete(:slack_oauth_state)
     incoming_state = params[:state]
 
+    if stored_state.blank? || stored_state != incoming_state
+      redirect_to oauth_result_path(provider: "slack", success: "false", error: "잘못된 인증 요청입니다."), allow_other_host: false
+      return
+    end
+
     oauth = SlackClient.exchange_code(params[:code], redirect_uri: slack_oauth_callback_url)
     team = oauth.fetch("team")
     incoming_webhook = oauth.fetch("incoming_webhook")
 
+    channel = nil
     SlackChannel.transaction do
       channel = SlackChannel.find_or_initialize_by(remote_id: team.fetch("id"))
       channel.assign_attributes(
@@ -42,9 +48,9 @@ class SlackController < ApplicationController
       channel.save!
     end
 
-    redirect_to edit_user_registration_path, notice: "Slack 워크스페이스가 연결되었습니다."
+    redirect_to oauth_result_path(provider: "slack", success: "true", channel_name: channel.channel_name)
   rescue KeyError, SlackClient::ApiError, ActiveRecord::RecordInvalid => e
-    redirect_to edit_user_registration_path, alert: "Slack 연결에 실패했습니다: #{e.message}"
+    redirect_to oauth_result_path(provider: "slack", success: "false", error: e.message)
   end
 
   def events
