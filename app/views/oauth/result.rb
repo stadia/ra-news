@@ -12,10 +12,10 @@ class Views::Oauth::Result < Views::Base
   end
 
   def view_template
-    provider_name = @provider == "slack" ? "Slack" : "Discord"
+    provider_name = @provider&.capitalize
     title = @success ? "#{provider_name} 연결 완료" : "#{provider_name} 연결 실패"
 
-    content_for(:title, "#{title} | AlNews")
+    content_for(:title, "#{title} | Ruby-News")
 
     div(class: "max-w-lg mx-auto mt-16 px-4 space-y-6") do
       render RubyUI::Card.new do
@@ -60,7 +60,7 @@ class Views::Oauth::Result < Views::Base
 
           render RubyUI::CardContent.new do
             div(class: "space-y-3 text-sm text-content-secondary") do
-              p { "#{@provider&.capitalize} Webhook이 설정되었습니다. 선택한 채널로 새 기사 알림이 자동으로 발송됩니다." }
+              p { "#{provider_name} Webhook이 설정되었습니다. 선택한 채널로 새 기사 알림이 자동으로 발송됩니다." }
               p { "별도의 봇 초대나 추가 설정 없이 바로 알림이 전송됩니다." }
             end
           end
