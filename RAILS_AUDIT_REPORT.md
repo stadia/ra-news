@@ -615,10 +615,10 @@ Rails performance check 도구로 N+1 쿼리 이슈가 감지되지 않았습니
 For ongoing code quality:
 
 1. **RuboCop** - Style and lint checking
-2. **Brakeman** - Security scanning (use `rails ai:tool security_scan`)
+2. **Brakeman** - Security scanning (use `rails-ai-context tool security_scan`)
 3. **SimpleCov** - Test coverage (SimpleCov was used to generate coverage data in this report. Consider keeping it permanently in your test suite for continuous coverage tracking.)
 4. **RubyCritic** - Code quality metrics combining Reek (code smells), Flay (duplication), and Flog (complexity) (RubyCritic was used to generate code quality metrics in this report. Consider running it periodically to track code quality trends.)
-5. **Bullet** - N+1 query detection (use `rails ai:tool performance_check`)
+5. **Bullet** - N+1 query detection (use `rails-ai-context tool performance_check`)
 6. **bundler-audit** - Gem vulnerability scanning
 7. **database_consistency** - Missing indexes and constraints detection
 8. **strong_migrations** - Catch unsafe migrations

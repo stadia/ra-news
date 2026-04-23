@@ -1256,7 +1256,7 @@ grep -rn 'comment' --include='*.rb' config/routes.rb
 - [ ] **Step 3: Rails validate 실행**
 
 ```bash
-bin/rails 'ai:tool[validate]' files=app/models/post.rb,app/controllers/posts_controller.rb level=rails
+bin/rails-ai-context tool validate files=app/models/post.rb,app/controllers/posts_controller.rb level=rails
 ```
 
 - [ ] **Step 4: 최종 커밋**

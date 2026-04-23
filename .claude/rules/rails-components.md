@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (112)
+# Components (113)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -164,6 +164,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: rows:4, attrs
 - **ThemeToggle** (phlex)
 - **TypographyBlockquote** (phlex)
+- **UserAvatar** (phlex)
+  props: user:nil, federails_actor:nil, name, size:"h-8 w-8", fallback_class:"bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold"
 - **Users::Form** (phlex)
   props: user
 - **Users::PwdForm** (phlex)

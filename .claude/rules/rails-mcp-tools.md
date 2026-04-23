@@ -1,10 +1,10 @@
 ## Tools (38) — MANDATORY, Use Before Read
 
-This project has 38 MCP tools via `rails ai:serve`.
+This project has 38 MCP tools via `rails-ai-context serve`.
 **MANDATORY — use these instead of reading files.** They return ground truth from the running app:
 real schema, real associations, real filters — not guesses from file reads.
 Read files ONLY when you are about to Edit them.
-If MCP tools are not connected, use CLI fallback: `rails 'ai:tool[TOOL_NAME]' param=value`
+If MCP tools are not connected, use CLI fallback: `rails-ai-context tool TOOL_NAME param=value`
 
 ### Anti-Hallucination Protocol — Verify Before You Write
 
@@ -34,58 +34,58 @@ Pattern: summary to find the target → standard to understand it → full only 
 
 **New to this project?** Get a full walkthrough first:
 → MCP: `rails_onboard(detail:"standard")`
-→ CLI: `rails 'ai:tool[onboard]' detail=standard`
+→ CLI: `rails-ai-context tool onboard detail=standard`
 
 **`get_context` is your power tool** — bundles schema + model + controller + routes + views in ONE call:
 → MCP: `rails_get_context(controller:"PostsController", action:"create")`
-→ CLI: `rails 'ai:tool[context]' controller=PostsController action=create`
+→ CLI: `rails-ai-context tool context controller=PostsController action=create`
 → MCP: `rails_get_context(model:"Post")`
-→ CLI: `rails 'ai:tool[context]' model=Post`
+→ CLI: `rails-ai-context tool context model=Post`
 → MCP: `rails_get_context(feature:"post")`
-→ CLI: `rails 'ai:tool[context]' feature=post`
+→ CLI: `rails-ai-context tool context feature=post`
 
 **`analyze_feature` for broad discovery** — scans all layers (models, controllers, routes, services, jobs, views, tests):
 → MCP: `rails_analyze_feature(feature:"authentication")`
-→ CLI: `rails 'ai:tool[analyze_feature]' feature=authentication`
+→ CLI: `rails-ai-context tool analyze_feature feature=authentication`
 
 Use individual tools only when you need deeper detail on a specific layer.
 
 ### Step-by-step workflows (follow this order)
 
 **Modify a model** (add field, change validation, add scope):
-1. `rails_get_context(model:"Post")` or `rails 'ai:tool[context]' model=Post` — schema + associations + validations in one call
+1. `rails_get_context(model:"Post")` or `rails-ai-context tool context model=Post` — schema + associations + validations in one call
 2. Read the model file, make your edit
-3. `rails_migration_advisor(action:"add_column", table:"posts", column:"rating", type:"integer")` or `rails 'ai:tool[migration_advisor]' action=add_column table=posts column=rating type=integer` — if schema change needed
-4. `rails_validate(files:["app/models/post.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/models/post.rb level=rails` — EVERY time after editing
-5. `rails_generate_test(model:"Post")` or `rails 'ai:tool[generate_test]' model=Post` — generate tests matching project patterns
+3. `rails_migration_advisor(action:"add_column", table:"posts", column:"rating", type:"integer")` or `rails-ai-context tool migration_advisor action=add_column table=posts column=rating type=integer` — if schema change needed
+4. `rails_validate(files:["app/models/post.rb"], level:"rails")` or `rails-ai-context tool validate files=app/models/post.rb level=rails` — EVERY time after editing
+5. `rails_generate_test(model:"Post")` or `rails-ai-context tool generate_test model=Post` — generate tests matching project patterns
 
 **Fix a controller bug:**
-1. `rails_get_context(controller:"PostsController", action:"create")` or `rails 'ai:tool[context]' controller=PostsController action=create` — action source + routes + views + model
+1. `rails_get_context(controller:"PostsController", action:"create")` or `rails-ai-context tool context controller=PostsController action=create` — action source + routes + views + model
 2. Read the controller file, make your fix
-3. `rails_validate(files:["app/controllers/posts_controller.rb"], level:"rails")` or `rails 'ai:tool[validate]' files=app/controllers/posts_controller.rb level=rails`
+3. `rails_validate(files:["app/controllers/posts_controller.rb"], level:"rails")` or `rails-ai-context tool validate files=app/controllers/posts_controller.rb level=rails`
 
 **Build or modify a view:**
-1. `rails_get_view(controller:"posts")` or `rails 'ai:tool[view]' controller=posts` — existing templates, partials, Stimulus refs
-2. `rails_get_partial_interface(partial:"shared/status_badge")` or `rails 'ai:tool[partial_interface]' partial=shared/status_badge` — partial locals contract
-3. `rails_get_component_catalog(component:"Button")` or `rails 'ai:tool[component_catalog]' component=Button` — ViewComponent/Phlex props, slots, previews
+1. `rails_get_view(controller:"posts")` or `rails-ai-context tool view controller=posts` — existing templates, partials, Stimulus refs
+2. `rails_get_partial_interface(partial:"shared/status_badge")` or `rails-ai-context tool partial_interface partial=shared/status_badge` — partial locals contract
+3. `rails_get_component_catalog(component:"Button")` or `rails-ai-context tool component_catalog component=Button` — ViewComponent/Phlex props, slots, previews
 4. Read the view file, make your edit
-5. `rails_validate(files:["app/views/posts/index.html.erb"])` or `rails 'ai:tool[validate]' files=app/views/posts/index.html.erb`
+5. `rails_validate(files:["app/views/posts/index.html.erb"])` or `rails-ai-context tool validate files=app/views/posts/index.html.erb`
 
 **Trace a method:**
 → MCP: `rails_search_code(pattern:"publishable?", match_type:"trace")`
-→ CLI: `rails 'ai:tool[search_code]' pattern="publishable?" match_type=trace`
+→ CLI: `rails-ai-context tool search_code pattern="publishable?" match_type=trace`
 
 **Debug an error (one call — gathers context + git + logs + fix):**
 → MCP: `rails_diagnose(error:"NoMethodError: undefined method `foo` for nil", file:"app/models/post.rb")`
-→ CLI: `rails 'ai:tool[diagnose]' error="NoMethodError: undefined method foo" file=app/models/post.rb`
+→ CLI: `rails-ai-context tool diagnose error="NoMethodError: undefined method foo" file=app/models/post.rb`
 
 **Review changes before merging:**
 → MCP: `rails_review_changes(ref:"main")`
-→ CLI: `rails 'ai:tool[review_changes]' ref=main`
+→ CLI: `rails-ai-context tool review_changes ref=main`
 
 **Generate tests matching project patterns:**
 → MCP: `rails_generate_test(model:"Post")`
-→ CLI: `rails 'ai:tool[generate_test]' model=Post`
+→ CLI: `rails-ai-context tool generate_test model=Post`
 
 ### Common mistakes — avoid these
 
@@ -105,47 +105,47 @@ Use individual tools only when you need deeper detail on a specific layer.
 4. **Read files ONLY to Edit them** — not for reference
 5. **Validate EVERY edit** — `rails_validate(files:[...], level:"rails")`
 6. **Follow _Next:_ hints** — tool responses suggest the best follow-up call
-7. If MCP tools are not connected, use CLI: `rails 'ai:tool[TOOL_NAME]' param=value`
+7. If MCP tools are not connected, use CLI: `rails-ai-context tool TOOL_NAME param=value`
 
 ### All 38 Tools
 
 | MCP | CLI | What it does |
 |-----|-----|-------------|
-| `rails_get_context(model:"X")` | `rails 'ai:tool[context]' model=X` | **START HERE** — schema + model + controller + routes + views in one call |
-| `rails_analyze_feature(feature:"X")` | `rails 'ai:tool[analyze_feature]' feature=X` | Full-stack: models + controllers + routes + services + jobs + views + tests |
-| `rails_search_code(pattern:"X", match_type:"trace")` | `rails 'ai:tool[search_code]' pattern=X match_type=trace` | Search + trace: definition, source, callers, test coverage. Also: `match_type:"any"` for regex search |
-| `rails_get_controllers(controller:"X", action:"Y")` | `rails 'ai:tool[controllers]' controller=X action=Y` | Action source + inherited filters + render map + private methods |
-| `rails_validate(files:[...], level:"rails")` | `rails 'ai:tool[validate]' files=a.rb,b.rb level=rails` | Syntax + semantic validation (run after EVERY edit) |
-| `rails_get_schema(table:"X")` | `rails 'ai:tool[schema]' table=X` | Columns with [indexed]/[unique]/[encrypted]/[default] hints |
-| `rails_get_model_details(model:"X")` | `rails 'ai:tool[model_details]' model=X` | Associations, validations, scopes, enums, macros, delegations |
-| `rails_get_routes(controller:"X")` | `rails 'ai:tool[routes]' controller=X` | Routes with code-ready helpers and controller filters inline |
-| `rails_get_view(controller:"X")` | `rails 'ai:tool[view]' controller=X` | Templates with ivars, Turbo wiring, Stimulus refs, partial locals |
-| `rails_get_stimulus(controller:"X")` | `rails 'ai:tool[stimulus]' controller=X` | Targets, values, actions + HTML data-attributes + view lookup |
-| `rails_get_test_info(model:"X")` | `rails 'ai:tool[test_info]' model=X` | Tests + fixture contents + test template |
-| `rails_get_concern(name:"X", detail:"full")` | `rails 'ai:tool[concern]' name=X detail=full` | Concern methods with source + which models include it |
-| `rails_get_callbacks(model:"X")` | `rails 'ai:tool[callbacks]' model=X` | Callbacks in Rails execution order with source |
-| `rails_get_edit_context(file:"X", near:"Y")` | `rails 'ai:tool[edit_context]' file=X near=Y` | Code around a match with class/method context |
-| `rails_get_service_pattern` | `rails 'ai:tool[service_pattern]'` | Service objects: interface, dependencies, side effects, callers |
-| `rails_get_job_pattern` | `rails 'ai:tool[job_pattern]'` | Jobs: queue, retries, guard clauses, broadcasts, schedules |
-| `rails_get_env` | `rails 'ai:tool[env]'` | Environment variables + credentials keys (not values) |
-| `rails_get_partial_interface(partial:"X")` | `rails 'ai:tool[partial_interface]' partial=X` | Partial locals contract: what to pass + usage examples |
-| `rails_get_turbo_map` | `rails 'ai:tool[turbo_map]'` | Turbo Stream/Frame wiring + mismatch warnings |
-| `rails_get_helper_methods` | `rails 'ai:tool[helper_methods]'` | App + framework helpers with view cross-references |
-| `rails_get_config` | `rails 'ai:tool[config]'` | Database adapter, auth, assets, cache, queue, Action Cable |
-| `rails_get_gems` | `rails 'ai:tool[gems]'` | Notable gems with versions, categories, config file locations |
-| `rails_get_conventions` | `rails 'ai:tool[conventions]'` | App patterns: auth checks, flash messages, test patterns |
-| `rails_security_scan` | `rails 'ai:tool[security_scan]'` | Brakeman static analysis: SQL injection, XSS, mass assignment |
-| `rails_get_component_catalog(component:"X")` | `rails 'ai:tool[component_catalog]' component=X` | ViewComponent/Phlex: props, slots, previews, usage |
-| `rails_performance_check(model:"X")` | `rails 'ai:tool[performance_check]' model=X` | N+1 risks, missing indexes, Model.all anti-patterns |
-| `rails_dependency_graph(model:"X")` | `rails 'ai:tool[dependency_graph]' model=X` | Model association graph as Mermaid diagram |
-| `rails_migration_advisor(action:"X", table:"Y")` | `rails 'ai:tool[migration_advisor]' action=X table=Y` | Generate migration code, flag irreversible ops |
+| `rails_get_context(model:"X")` | `rails-ai-context tool context model=X` | **START HERE** — schema + model + controller + routes + views in one call |
+| `rails_analyze_feature(feature:"X")` | `rails-ai-context tool analyze_feature feature=X` | Full-stack: models + controllers + routes + services + jobs + views + tests |
+| `rails_search_code(pattern:"X", match_type:"trace")` | `rails-ai-context tool search_code pattern=X match_type=trace` | Search + trace: definition, source, callers, test coverage. Also: `match_type:"any"` for regex search |
+| `rails_get_controllers(controller:"X", action:"Y")` | `rails-ai-context tool controllers controller=X action=Y` | Action source + inherited filters + render map + private methods |
+| `rails_validate(files:[...], level:"rails")` | `rails-ai-context tool validate files=a.rb,b.rb level=rails` | Syntax + semantic validation (run after EVERY edit) |
+| `rails_get_schema(table:"X")` | `rails-ai-context tool schema table=X` | Columns with [indexed]/[unique]/[encrypted]/[default] hints |
+| `rails_get_model_details(model:"X")` | `rails-ai-context tool model_details model=X` | Associations, validations, scopes, enums, macros, delegations |
+| `rails_get_routes(controller:"X")` | `rails-ai-context tool routes controller=X` | Routes with code-ready helpers and controller filters inline |
+| `rails_get_view(controller:"X")` | `rails-ai-context tool view controller=X` | Templates with ivars, Turbo wiring, Stimulus refs, partial locals |
+| `rails_get_stimulus(controller:"X")` | `rails-ai-context tool stimulus controller=X` | Targets, values, actions + HTML data-attributes + view lookup |
+| `rails_get_test_info(model:"X")` | `rails-ai-context tool test_info model=X` | Tests + fixture contents + test template |
+| `rails_get_concern(name:"X", detail:"full")` | `rails-ai-context tool concern name=X detail=full` | Concern methods with source + which models include it |
+| `rails_get_callbacks(model:"X")` | `rails-ai-context tool callbacks model=X` | Callbacks in Rails execution order with source |
+| `rails_get_edit_context(file:"X", near:"Y")` | `rails-ai-context tool edit_context file=X near=Y` | Code around a match with class/method context |
+| `rails_get_service_pattern` | `rails-ai-context tool service_pattern` | Service objects: interface, dependencies, side effects, callers |
+| `rails_get_job_pattern` | `rails-ai-context tool job_pattern` | Jobs: queue, retries, guard clauses, broadcasts, schedules |
+| `rails_get_env` | `rails-ai-context tool env` | Environment variables + credentials keys (not values) |
+| `rails_get_partial_interface(partial:"X")` | `rails-ai-context tool partial_interface partial=X` | Partial locals contract: what to pass + usage examples |
+| `rails_get_turbo_map` | `rails-ai-context tool turbo_map` | Turbo Stream/Frame wiring + mismatch warnings |
+| `rails_get_helper_methods` | `rails-ai-context tool helper_methods` | App + framework helpers with view cross-references |
+| `rails_get_config` | `rails-ai-context tool config` | Database adapter, auth, assets, cache, queue, Action Cable |
+| `rails_get_gems` | `rails-ai-context tool gems` | Notable gems with versions, categories, config file locations |
+| `rails_get_conventions` | `rails-ai-context tool conventions` | App patterns: auth checks, flash messages, test patterns |
+| `rails_security_scan` | `rails-ai-context tool security_scan` | Brakeman static analysis: SQL injection, XSS, mass assignment |
+| `rails_get_component_catalog(component:"X")` | `rails-ai-context tool component_catalog component=X` | ViewComponent/Phlex: props, slots, previews, usage |
+| `rails_performance_check(model:"X")` | `rails-ai-context tool performance_check model=X` | N+1 risks, missing indexes, Model.all anti-patterns |
+| `rails_dependency_graph(model:"X")` | `rails-ai-context tool dependency_graph model=X` | Model association graph as Mermaid diagram |
+| `rails_migration_advisor(action:"X", table:"Y")` | `rails-ai-context tool migration_advisor action=X table=Y` | Generate migration code, flag irreversible ops |
 | `rails_get_frontend_stack` | `rails 'ai:tool[frontend_stack]'` | React/Vue/Svelte/Angular, Inertia, TypeScript, package manager |
 | `rails_search_docs(query:"X")` | `rails 'ai:tool[search_docs]' query=X` | Bundled topic index with weighted keyword search, on-demand GitHub fetch |
 | `rails_query(sql:"X")` | `rails 'ai:tool[query]' sql=X` | Safe read-only SQL queries with timeout, row limit, column redaction |
 | `rails_read_logs(level:"X")` | `rails 'ai:tool[read_logs]' level=X` | Reverse file tail with level filtering and sensitive data redaction |
-| `rails_generate_test(model:"X")` | `rails 'ai:tool[generate_test]' model=X` | Generate test scaffolding matching project patterns (framework, factories, style) |
-| `rails_diagnose(error:"X")` | `rails 'ai:tool[diagnose]' error="X"` | One-call error diagnosis: context + git changes + logs + fix suggestions |
-| `rails_review_changes(ref:"main")` | `rails 'ai:tool[review_changes]' ref=main` | PR/commit review: file context + warnings (missing indexes, removed validations) |
-| `rails_onboard(detail:"standard")` | `rails 'ai:tool[onboard]' detail=standard` | Narrative app walkthrough for new developers or AI agents |
+| `rails_generate_test(model:"X")` | `rails-ai-context tool generate_test model=X` | Generate test scaffolding matching project patterns (framework, factories, style) |
+| `rails_diagnose(error:"X")` | `rails-ai-context tool diagnose error="X"` | One-call error diagnosis: context + git changes + logs + fix suggestions |
+| `rails_review_changes(ref:"main")` | `rails-ai-context tool review_changes ref=main` | PR/commit review: file context + warnings (missing indexes, removed validations) |
+| `rails_onboard(detail:"standard")` | `rails-ai-context tool onboard detail=standard` | Narrative app walkthrough for new developers or AI agents |
 | `rails_runtime_info(detail:"standard")` | `rails 'ai:tool[runtime_info]' detail=standard` | Live runtime: DB pool, table sizes, cache stats, job queues, pending migrations |
 | `rails_session_context(action:"status")` | `rails 'ai:tool[session_context]' action=status` | Track what you've already queried, avoid redundant calls |
