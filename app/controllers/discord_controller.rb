@@ -2,6 +2,9 @@
 # rbs_inline: enabled
 
 class DiscordController < ApplicationController
+  protect_from_forgery except: [ :callback ]
+  skip_before_action :authenticate_user!
+
   def install
     unless DiscordConfig.configured?
       redirect_to edit_user_registration_path, alert: "Discord 연동이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요."
