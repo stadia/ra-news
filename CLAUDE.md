@@ -7,7 +7,7 @@
 ## Stack
 - Database: static_parse — 25 tables
 - Models: 20
-- Routes: 150 across 24 controllers
+- Routes: 148 across 25 controllers
 - Async: 13 jobs
 - Migrations: 105 total, 0 pending
 - Auth: Devise
@@ -15,7 +15,7 @@
 - Storage: ActiveStorage (1 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 112 components, 112 Phlex
+- Components: 113 components, 113 Phlex
 - Performance: 12 issues detected
 
 ## Key models (20 total)
@@ -102,11 +102,9 @@
 
 ## Tools (38) — MANDATORY, Use Before Read
 
-This project has 38 MCP tools via `rails-ai-context serve`.
-**MANDATORY — use these instead of reading files.** They return ground truth from the running app:
-real schema, real associations, real filters — not guesses from file reads.
+This project has 38 introspection tools. **MANDATORY — use these instead of reading files.**
+They return ground truth from the running app: real schema, real associations, real filters — not guesses.
 Read files ONLY when you are about to Edit them.
-If MCP tools are not connected, use CLI fallback: `rails-ai-context tool TOOL_NAME param=value`
 
 ### Anti-Hallucination Protocol — Verify Before You Write
 
@@ -124,34 +122,31 @@ verification at the exact moments hallucination is most likely.
 ### Start here — composite tools save multiple calls
 
 **New to this project?** Get a full walkthrough first:
-→ MCP: `rails_onboard(detail:"standard")`
-→ CLI: `rails-ai-context tool onboard detail=standard`
+→ `rails 'ai:tool[onboard]' detail=standard`
 
 **`get_context` is your power tool** — bundles schema + model + controller + routes + views in ONE call:
-→ MCP: `rails_get_context(controller:"PostsController", action:"create")`
-→ CLI: `rails-ai-context tool context controller=PostsController action=create`
-→ MCP: `rails_get_context(model:"Post")`
-→ CLI: `rails-ai-context tool context model=Post`
-→ MCP: `rails_get_context(feature:"post")`
-→ CLI: `rails-ai-context tool context feature=post`
+→ `rails 'ai:tool[context]' controller=PostsController action=create`
+→ `rails 'ai:tool[context]' model=Post`
+→ `rails 'ai:tool[context]' feature=post`
 
 **`analyze_feature` for broad discovery** — scans all layers (models, controllers, routes, services, jobs, views, tests):
-→ MCP: `rails_analyze_feature(feature:"authentication")`
-→ CLI: `rails-ai-context tool analyze_feature feature=authentication`
+→ `rails 'ai:tool[analyze_feature]' feature=authentication`
 
 Use individual tools only when you need deeper detail on a specific layer.
 
 ### Step-by-step workflows (follow this order)
 
 **Modify a model** (add field, change validation, add scope):
-1. `rails_get_context(model:"Post")` or `rails-ai-context tool context model=Post` — schema + associations + validations in one call
+1. `rails 'ai:tool[context]' model=Post` — schema + associations + validations in one call
 2. Read the model file, make your edit
-3. `rails_migration_advisor(action:"add_column", table:"posts", column:"rating", type:"integer")` or `rails-ai-context tool migration_advisor action=add_column table=posts column=rating type=integer` — if schema change needed
-4. `rails_validate(files:["app/models/post.rb"], level:"rails")` or `rails-ai-context tool validate files=app/models/post.rb level=rails` — EVERY time after editing
-5. `rails_generate_test(model:"Post")` or `rails-ai-context tool generate_test model=Post` — generate tests matching project patterns
+3. `rails 'ai:tool[migration_advisor]' action=add_column table=posts column=rating type=integer` — if schema change needed
+4. `rails 'ai:tool[validate]' files=app/models/post.rb level=rails` — EVERY time after editing
+5. `rails 'ai:tool[generate_test]' model=Post` — generate tests matching project patterns
 
 **Fix a controller bug:**
-1. `rails_get_context(controller:"PostsController", action:"create")` or `rails-ai-context tool context controller=PostsController action=create` — action source + routes + views + model
+1. `rails 'ai:tool[context]' controller=PostsController action=create` — action source + routes + views + model
+2. Read the controller file, make your fix
+3. `rails 'ai:tool[validate]' files=app/controllers/posts_controller.rb level=rails`
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->

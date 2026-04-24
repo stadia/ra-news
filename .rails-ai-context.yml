@@ -4,4 +4,4 @@ ai_tools:
 - copilot
 - opencode
 - codex
-tool_mode: mcp
+tool_mode: cli

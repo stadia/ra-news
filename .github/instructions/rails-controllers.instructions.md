@@ -4,7 +4,7 @@ name: "Rails Controllers Reference"
 description: "Controllers — actions, filters, strong parameters"
 ---
 
-# Controllers (33)
+# Controllers (34)
 
 Use `rails_get_controllers` MCP tool for full details.
 
@@ -16,7 +16,7 @@ Use `rails_get_controllers` MCP tool for full details.
 - Devise::RegistrationsController (7 actions)
 - Devise::SessionsController (4 actions)
 - DeviseController (1 actions)
-- DiscordController (2 actions)
+- DiscordController (1 actions)
 - Federails::ApplicationController (233 actions)
 - FollowingsController (5 actions)
 - HomeController (3 actions)
@@ -32,5 +32,5 @@ Use `rails_get_controllers` MCP tool for full details.
 - Madmin::SocialController (1 actions)
 - Madmin::TagsController (247 actions)
 - Madmin::UsersController (247 actions)
-- PostsController (3 actions)
-- ...8 more
+- OauthController (2 actions)
+- ...9 more
