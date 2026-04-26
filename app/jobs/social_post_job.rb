@@ -25,8 +25,8 @@ class SocialPostJob < ApplicationJob
 
       TwitterService.new.call(article)
       MastodonService.new.call(article)
-      SlackArticleNotifierService.new.call(article)
-      DiscordArticleNotifierService.new.call(article)
+      SlackNotifier.call(article)
+      DiscordNotifier.call(article)
       article.update(is_posted: true)
       sleep 2
     end

@@ -1,0 +1,6 @@
+# Generated from app/services/slack_notifier.rb with RBS::Inline
+
+module SlackNotifier
+  # : (Article article) -> bool?
+  def self?.call: (Article article) -> bool?
+end

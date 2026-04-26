@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class DiscordArticleNotifierServiceTest < ActiveSupport::TestCase
+class DiscordNotifierTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   setup do
@@ -13,7 +13,7 @@ class DiscordArticleNotifierServiceTest < ActiveSupport::TestCase
   test "channel 기준으로 기사 알림 잡을 enqueue한다" do
     expected_count = DiscordChannel.delivery_ready.count
     assert_enqueued_jobs expected_count, only: DiscordArticleDeliveryJob do
-      DiscordArticleNotifierService.new.call(@article)
+      DiscordNotifier.call(@article)
     end
 
     enqueued = enqueued_jobs.select { |j| j[:job] == DiscordArticleDeliveryJob }
@@ -26,7 +26,7 @@ class DiscordArticleNotifierServiceTest < ActiveSupport::TestCase
     article = articles(:site_only_article)
 
     assert_no_enqueued_jobs only: DiscordArticleDeliveryJob do
-      DiscordArticleNotifierService.new.call(article)
+      DiscordNotifier.call(article)
     end
   end
 end

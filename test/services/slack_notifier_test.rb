@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
+class SlackNotifierTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   setup do
@@ -12,7 +12,7 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
 
   test "channel 기준으로 기사 알림 잡을 enqueue한다" do
     assert_enqueued_jobs 2, only: SlackArticleDeliveryJob do
-      SlackArticleNotifierService.new.call(@article)
+      SlackNotifier.call(@article)
     end
 
     enqueued = enqueued_jobs.select { |j| j[:job] == SlackArticleDeliveryJob }
@@ -23,9 +23,8 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
 
   test "같은 기사에 대해 두 번 호출해도 각 channel마다 잡이 enqueue된다" do
     assert_enqueued_jobs 4, only: SlackArticleDeliveryJob do
-      service = SlackArticleNotifierService.new
-      service.call(@article)
-      service.call(@article)
+      SlackNotifier.call(@article)
+      SlackNotifier.call(@article)
     end
   end
 
@@ -33,7 +32,7 @@ class SlackArticleNotifierServiceTest < ActiveSupport::TestCase
     article = articles(:site_only_article)
 
     assert_no_enqueued_jobs only: SlackArticleDeliveryJob do
-      SlackArticleNotifierService.new.call(article)
+      SlackNotifier.call(article)
     end
   end
 end
