@@ -182,11 +182,12 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 변경 작업 전 `Article`, `Site`, `User`, `Comment`의 역할과 제약을 먼저 확인하고 영향 범위를 검토한다.
 - Ruby 코드에 타입 힌트를 추가하거나 수정할 때는 inline RBS 스타일을 사용한다.
 - RED, GREEN 테스트주도개발 방법에 따라 구현 코드보다 먼저 테스트 코드를 작성한 후 구현 코드를 작성한다.
-- 서비스 객체를 만들거나 수정할 때는 기존 `OperationService` 을 상속하여 ROP 패턴을 따른다.
+- 서비스 객체를 만들거나 수정할 때는 기존 `OperationService` 을 상속하여 ROP 패턴을 따른다. 단순한 유틸리티성 서비스는 module function으로 작성해도 된다.
 - 소셜 미디어 연동 코드는 `SocialMediaService` 기반 구조와 플랫폼별 서비스 분리를 유지한다.
 - 변경을 마무리하기 전에 테스트 여부와 미실행 사유를 명확히 남긴다.
 - 관련 배경 문서가 필요하면 `docs/CLAUDE_WORKFLOW.md`, `docs/postgresql-extensions.md`를 우선 참고한다.
 - 뷰 클래스는 `Views::Base`를, 컴포넌트 클래스는 `Components::Base`를 상속한다.
+- `OperationService`(`Dry::Operation`)의 `call` 메서드에서 `return Failure(:x)`를 직접 반환하면 `Dry::Operation`이 이를 `Success(Failure(:x))`로 감싸버린다. `Failure`를 반환하려면 반드시 `step`을 통해야 한다. guard clause도 `step validate_something(...)` 형태로 호출한다.
 
 ## 도구 사용 규칙
 

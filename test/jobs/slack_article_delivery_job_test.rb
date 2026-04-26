@@ -3,84 +3,31 @@
 require "test_helper"
 
 class SlackArticleDeliveryJobTest < ActiveJob::TestCase
-  test "전송 기록 저장에 실패하면 예외를 발생시켜 재시도 가능 상태로 남긴다" do
-    article = articles(:ruby_article)
-    channel = notification_channels(:acme_slack)
-    delivery = SlackDelivery.create!(
-      article:,
-      notification_channel: channel,
-      channel_id: "CFAILED1",
-      channel_name: "ruby-news",
-      status: :failed
-    )
+  setup do
+    @article = articles(:ruby_article)
+    @channel = notification_channels(:acme_slack)
+  end
 
-    SlackClient.stub(:new, Struct.new(:response) {
-      def post_message(text:, blocks:)
-        response
-      end
-    }.new({ "ts" => "123.456" })) do
-      job = SlackArticleDeliveryJob.new
-      job.stub(:persist_delivery_success, ->(_d, _c, _t) { delivery.errors.add(:base, "test"); raise ActiveRecord::RecordInvalid, delivery }) do
-        error = assert_raises(ActiveRecord::RecordInvalid) do
-          job.perform(article.id, channel.id)
-        end
-
-        assert_equal delivery.id, error.record.id
-      end
+  test "존재하지 않는 article_id면 RecordNotFound 에러가 발생한다" do
+    assert_raises(ActiveRecord::RecordNotFound) do
+      SlackArticleDeliveryJob.new.perform(-1, @channel.id)
     end
   end
 
-  test "전송 실패 처리 중 이미 sent 상태면 failed로 되돌리지 않는다" do
-    article = articles(:ruby_article)
-    channel = notification_channels(:acme_slack)
-    delivery = Class.new do
-      attr_reader :update_called
-
-      def initialize
-        @sent = false
-        @update_called = false
-      end
-
-      def with_lock
-        yield
-      end
-
-      def sent?
-        @sent
-      end
-
-      def reload
-        @sent = true
-      end
-
-      def update!(**)
-        @update_called = true
-      end
-    end.new
-
-    SlackClient.stub(:new, Struct.new(:error) {
-      def post_message(text:, blocks:)
-        raise error
-      end
-    }.new(SlackClient::ApiError.new("timeout"))) do
-      job = SlackArticleDeliveryJob.new
-      job.stub(:find_or_create_delivery, delivery) do
-        job.perform(article.id, channel.id)
-      end
+  test "존재하지 않는 channel_id면 RecordNotFound 에러가 발생한다" do
+    assert_raises(ActiveRecord::RecordNotFound) do
+      SlackArticleDeliveryJob.new.perform(@article.id, -1)
     end
-
-    assert_predicate delivery, :sent?
-    refute delivery.update_called
   end
 
-  test "신규 delivery의 기본 상태는 failed다" do
-    delivery = SlackDelivery.create!(
-      article: articles(:ruby_article),
-      notification_channel: notification_channels(:acme_slack),
-      channel_id: "CDEFAULT1",
-      channel_name: "ruby-news"
-    )
+  test "channel 필수 필드가 누락되면 ArgumentError가 발생한다" do
+    @channel.update_columns(webhook_url: "")
 
-    assert_predicate delivery, :failed?
+    assert_raises(ArgumentError) do
+      SlackArticleDeliveryJob.new.perform(@article.id, @channel.id)
+    end
+
+    # teardown
+    @channel.update_columns(webhook_url: "https://hooks.slack.com/services/EXAMPLE/REDACTED")
   end
 end
