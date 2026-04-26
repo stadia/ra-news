@@ -1,10 +1,10 @@
 <!-- BEGIN rails-ai-context -->
 # AlNews — Copilot Context
 
-Rails 8.1.3 | Ruby 4.0.3
+Rails 8.1.3 | Ruby 4.0.2
 
 ## Stack
-- Database: PostgreSQL — 25 tables
+- Database: PostgreSQL — 24 tables
 - Models: 22
 - Routes: 148 across 46 controllers
 - Auth: Devise
@@ -13,7 +13,7 @@ Rails 8.1.3 | Ruby 4.0.3
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
 - Components: 113 components, 113 Phlex
-- Performance: 12 issues detected
+- Performance: 10 issues detected
 - auth: devise, pundit, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -63,6 +63,7 @@ Rails 8.1.3 | Ruby 4.0.3
 - Import maps (no JS bundler)
 - concerns_models
 - concerns_controllers
+- policies
 - pwa
 - Dockerized
 - Kamal deployment
@@ -72,7 +73,6 @@ Rails 8.1.3 | Ruby 4.0.3
 - solid_cable
 - dry_rb
 - zeitwerk
-- Single Table Inheritance (STI)
 - Soft deletes (paranoia/discard)
 - Full-text search (Searchkick/pg_search/Ransack)
 - Tagging

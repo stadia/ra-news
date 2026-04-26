@@ -6,9 +6,9 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 # AlNews — Overview
 
-Rails 8.1.3 | Ruby 4.0.3
+Rails 8.1.3 | Ruby 4.0.2
 
-- Database: PostgreSQL — 25 tables
+- Database: PostgreSQL — 24 tables
 - Models: 22
 - Routes: 148
 - auth: devise, pundit, jwt
@@ -28,7 +28,7 @@ Rails 8.1.3 | Ruby 4.0.3
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
 - Components: 113 components, 113 Phlex
-- Performance: 12 issues detected
+- Performance: 10 issues detected
 - Services: ArticleAgentsService, ContentService, DiscordArticleNotifierService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SocialMediaService, TwitterService
 - Jobs: ArticleBatchJob, ArticleJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 

@@ -1,8 +1,8 @@
 # AlNews — Overview
 
-Rails 8.1.3 | Ruby 4.0.3
+Rails 8.1.3 | Ruby 4.0.2
 
-- Database: static_parse — 25 tables
+- Database: static_parse — 22 tables
 - Models: 20
 - Routes: 148
 - Auth: Devise
@@ -11,7 +11,7 @@ Rails 8.1.3 | Ruby 4.0.3
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
 - Components: 113 components, 113 Phlex
-- Performance: 12 issues detected
+- Performance: 10 issues detected
 
 **Global before_actions:** authenticate_user!
 
