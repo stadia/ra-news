@@ -188,6 +188,10 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 관련 배경 문서가 필요하면 `docs/CLAUDE_WORKFLOW.md`, `docs/postgresql-extensions.md`를 우선 참고한다.
 - 뷰 클래스는 `Views::Base`를, 컴포넌트 클래스는 `Components::Base`를 상속한다.
 - `OperationService`(`Dry::Operation`)의 `call` 메서드에서 `return Failure(:x)`를 직접 반환하면 `Dry::Operation`이 이를 `Success(Failure(:x))`로 감싸버린다. `Failure`를 반환하려면 반드시 `step`을 통해야 한다. guard clause도 `step validate_something(...)` 형태로 호출한다.
+- **`class` 대신 `module` 우선 원칙** (ref: Dave Thomas, "Eliminating the `class` Keyword from Ruby"):
+  - **오브젝트 팩토리가 아니면 module이다.** 인스턴스 변수, 인스턴스 메서드, 생성자가 없다면 `class`가 아니라 `module`(+ `module_function`)로 작성한다.
+  - **추상 기반 클래스(abstract base class)는 Ruby에 필요 없다.** 상속으로 메서드를 주입하는 대신 mixin(`include`/`extend`/`prepend`)을 사용한다. (Rails 프레임워크의 `ApplicationRecord`, `ApplicationController` 등은 예외)
+  - **`new` 직후 invalid한 상태면 안 된다.** 생성자에서 모든 필수 값을 받아 유효한 객체만 만들어야 한다. `new` 후 setter 호출이 필요하다면 클래스 설계가 잘못된 것이다.
 
 ## 도구 사용 규칙
 
