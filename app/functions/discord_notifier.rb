@@ -5,7 +5,7 @@ module DiscordNotifier
   module_function
 
   #: (Article article) -> bool?
-  def call(article)
+  def notify(article)
     return if article.deleted_at.present?
     return unless article.slug.present? && article.title_ko.present?
 

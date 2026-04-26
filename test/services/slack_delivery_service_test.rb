@@ -17,9 +17,11 @@ class SlackDeliveryServiceTest < ActiveSupport::TestCase
 
     SlackClient.stub(:new, ->(_c) { fake_client }) do
       result = SlackDeliveryService.new.call(@article, @channel)
-      assert result.success?
+
+      assert_predicate result, :success?
 
       delivery = SlackDelivery.find_by(article: @article, notification_channel: @channel)
+
       assert_predicate delivery, :sent?
       assert_equal "123.456", delivery.message_id
     end
@@ -33,9 +35,11 @@ class SlackDeliveryServiceTest < ActiveSupport::TestCase
 
     SlackClient.stub(:new, ->(_c) { fake_client }) do
       result = SlackDeliveryService.new.call(@article, @channel)
-      assert result.failure?
+
+      assert_predicate result, :failure?
 
       delivery = SlackDelivery.find_by(article: @article, notification_channel: @channel)
+
       assert_predicate delivery, :failed?
       assert_equal "timeout", delivery.error_message
     end
@@ -55,7 +59,8 @@ class SlackDeliveryServiceTest < ActiveSupport::TestCase
     # Client should never be called
     SlackClient.stub(:new, ->(_c) { raise "should not be called" }) do
       result = SlackDeliveryService.new.call(@article, @channel)
-      assert result.failure?
+
+      assert_predicate result, :failure?
       assert_equal :already_sent, result.failure
     end
   end

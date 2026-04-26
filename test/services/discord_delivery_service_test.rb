@@ -17,9 +17,11 @@ class DiscordDeliveryServiceTest < ActiveSupport::TestCase
 
     DiscordClient.stub(:new, ->(_c) { fake_client }) do
       result = DiscordDeliveryService.new.call(@article, @channel)
-      assert result.success?
+
+      assert_predicate result, :success?
 
       delivery = DiscordDelivery.find_by(article: @article, notification_channel: @channel)
+
       assert_predicate delivery, :sent?
       assert_equal "msg-123", delivery.message_id
     end
@@ -33,9 +35,11 @@ class DiscordDeliveryServiceTest < ActiveSupport::TestCase
 
     DiscordClient.stub(:new, ->(_c) { fake_client }) do
       result = DiscordDeliveryService.new.call(@article, @channel)
-      assert result.failure?
+
+      assert_predicate result, :failure?
 
       delivery = DiscordDelivery.find_by(article: @article, notification_channel: @channel)
+
       assert_predicate delivery, :failed?
       assert_equal "timeout", delivery.error_message
     end
@@ -54,7 +58,8 @@ class DiscordDeliveryServiceTest < ActiveSupport::TestCase
 
     DiscordClient.stub(:new, ->(_c) { raise "should not be called" }) do
       result = DiscordDeliveryService.new.call(@article, @channel)
-      assert result.failure?
+
+      assert_predicate result, :failure?
       assert_equal :already_sent, result.failure
     end
   end
