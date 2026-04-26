@@ -1,0 +1,4 @@
+# Generated from app/models/discord_channel.rb with RBS::Inline
+
+class DiscordChannel < NotificationChannel
+end

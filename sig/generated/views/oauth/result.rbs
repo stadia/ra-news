@@ -1,0 +1,9 @@
+# Generated from app/views/oauth/result.rb with RBS::Inline
+
+class Views::Oauth::Result < Views::Base
+  include Phlex::Rails::Helpers::ContentFor
+
+  def initialize: (provider: untyped, success: untyped, ?channel_name: untyped, ?error: untyped) -> untyped
+
+  def view_template: () -> untyped
+end

@@ -50,7 +50,7 @@ confirmed_tags.find_each.with_index(1) do |tag, idx|
 
   if centroid_str.blank? || article_count == 0
     puts "   → embedding이 있는 기사가 없어 건너뜁니다."
-    summary_rows << [tag.name, article_count, 0, "skipped"]
+    summary_rows << [ tag.name, article_count, 0, "skipped" ]
     next
   end
 
@@ -90,7 +90,7 @@ confirmed_tags.find_each.with_index(1) do |tag, idx|
 
   neighbor_count = neighbors.size
   puts "   → 상위 #{neighbor_count}개 결과 저장: #{csv_path}"
-  summary_rows << [tag.name, article_count, neighbor_count, csv_path.relative_path_from(Rails.root)]
+  summary_rows << [ tag.name, article_count, neighbor_count, csv_path.relative_path_from(Rails.root) ]
 end
 
 # 4) 요약 CSV

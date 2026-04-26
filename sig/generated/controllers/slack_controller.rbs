@@ -1,8 +1,6 @@
 # Generated from app/controllers/slack_controller.rb with RBS::Inline
 
 class SlackController < ApplicationController
-  def install: () -> untyped
-
   def callback: () -> untyped
 
   def events: () -> untyped

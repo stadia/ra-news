@@ -6,25 +6,17 @@ class SlackClient
 
   AUTHORIZE_URL: String
 
-  # : (SlackWorkspace workspace) -> void
-  def initialize: (SlackWorkspace workspace) -> void
-
-  # : () -> Array[Hash[String, String]]
-  def list_channels: () -> Array[Hash[String, String]]
+  # : (SlackChannel channel) -> void
+  def initialize: (SlackChannel channel) -> void
 
   # : (text: String, blocks: Array[untyped]) -> Hash[String, String]
   def post_message: (text: String, blocks: Array[untyped]) -> Hash[String, String]
 
   private
 
-  attr_reader workspace: SlackWorkspace
-
-  @client: Slack::Web::Client?
+  attr_reader channel: SlackChannel
 
   @webhook_client: Faraday::Connection?
-
-  # : () -> Slack::Web::Client
-  def client: () -> Slack::Web::Client
 
   # : () -> Faraday::Connection
   def webhook_client: () -> Faraday::Connection

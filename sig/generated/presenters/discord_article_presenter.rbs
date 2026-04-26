@@ -1,0 +1,21 @@
+# Generated from app/presenters/discord_article_presenter.rb with RBS::Inline
+
+class DiscordArticlePresenter
+  DEFAULT_EMBED_COLOR: Integer
+
+  # : (Article article) -> void
+  def initialize: (Article article) -> void
+
+  # : () -> Hash[Symbol, untyped]
+  def embed_params: () -> Hash[Symbol, untyped]
+
+  private
+
+  attr_reader article: Article
+
+  # : () -> String
+  def title: () -> String
+
+  # : () -> String?
+  def summary: () -> String?
+end

@@ -1,0 +1,6 @@
+# Generated from app/services/discord_article_notifier_service.rb with RBS::Inline
+
+class DiscordArticleNotifierService < OperationService
+  # : (Article article) -> Dry::Monads::Result
+  def call: (Article article) -> Dry::Monads::Result
+end

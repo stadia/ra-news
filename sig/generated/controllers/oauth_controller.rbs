@@ -1,0 +1,7 @@
+# Generated from app/controllers/oauth_controller.rb with RBS::Inline
+
+class OauthController < ApplicationController
+  def install: () -> untyped
+
+  def result: () -> untyped
+end

@@ -1,6 +1,14 @@
 # Generated from app/models/article.rb with RBS::Inline
 
 class Article < ApplicationRecord
+  TITLE_MAX_LENGTH: ::Integer
+
+  TITLE_OMISSION: ::String
+
+  TITLE_BOUNDARY_MIN_RATIO: ::Float
+
+  TITLE_BOUNDARY_PATTERN: ::Regexp
+
   extend FriendlyId
 
   include PgSearch::Model
@@ -15,6 +23,9 @@ class Article < ApplicationRecord
   def to_activitypub_object: () -> Hash[String, untyped]
 
   def generate_metadata: () -> void
+
+  # : (untyped value) -> untyped
+  def title=: (untyped value) -> untyped
 
   def youtube_id: () -> String?
 
@@ -49,6 +60,9 @@ class Article < ApplicationRecord
   def random_slug: () -> String
 
   def metadata_service: () -> Articles::MetadataPreparationService
+
+  # : (untyped value) -> untyped
+  def self.truncate_title: (untyped value) -> untyped
 
   # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
   # : (String url) -> bool
