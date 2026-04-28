@@ -8,6 +8,7 @@ class AiTellDetectorAgent < RubyLLM::Agent
 
   schema do
     object :meta, description: "탐지 메타 정보" do
+      string :run_id, description: "실행 ID"
       integer :input_length, description: "입력 텍스트 글자수"
       string :estimated_genre, description: "추정 장르: 칼럼|리포트|블로그|공적"
       integer :sentence_count, description: "문장 수"
@@ -19,6 +20,18 @@ class AiTellDetectorAgent < RubyLLM::Agent
       integer :detected_count, description: "탐지된 총 finding 수"
       number :ai_tell_density, description: "AI 티 밀도 (0.0~1.0)"
       number :severity_weighted_score, description: "심각도 가중 점수 (0~100)"
+      object :category_summary, description: "카테고리별 탐지 건수" do
+        integer :A, description: "번역투"
+        integer :B, description: "영어 인용·용어 과다"
+        integer :C, description: "구조적 AI 패턴"
+        integer :D, description: "AI 특유 관용구"
+        integer :E, description: "리듬 균일성"
+        integer :F, description: "과도한 수식·중복"
+        integer :G, description: "Hedging 남용"
+        integer :H, description: "접속사 남발"
+        integer :I, description: "형식명사·의존명사 과다"
+        integer :J, description: "시각 장식 남용"
+      end
     end
 
     array :findings, description: "탐지된 AI 티 패턴 목록" do

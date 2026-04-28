@@ -18,12 +18,12 @@ class HumanMonolithAgent < RubyLLM::Agent
       string :estimated_genre, description: "추정 장르"
     end
 
-    object :category_detection, description: "카테고리별 탐지 (before → after)" do
-      array :items, description: "탐지 항목 목록" do
+    object :category_detection, description: "카테고리 탐지 (before → after)" do
+      array :items, description: "카테고리 탐지 표 항목" do
         string :id, description: "패턴 ID (예: D-4)"
-        string :pattern_label, description: "패턴 레이블"
-        integer :before_count, description: "원문에서 탐지 수"
-        integer :after_count, description: "윤문 후 탐지 수"
+        string :pattern, description: "패턴명"
+        integer :before, description: "원문 탐지 수"
+        integer :after, description: "윤문 후 탐지 수"
       end
     end
 
@@ -33,12 +33,18 @@ class HumanMonolithAgent < RubyLLM::Agent
       string :after, description: "변경 후 (100자 이내)"
     end
 
+    array :self_check_items, description: "자체검증 6항 상세 결과" do
+      string :label, description: "검증 항목명"
+      boolean :passed, description: "통과 여부"
+    end
+
     array :residual_findings, description: "잔존 finding (있으면)" do
       string :id, description: "패턴 ID"
       string :severity, description: "심각도"
       string :reason, description: "잔존 사유"
     end
 
+    string :grade_reason, description: "등급 판정 사유"
     boolean :over_polish_aborted, description: "과윤문으로 인한 중단 여부"
   end
 
