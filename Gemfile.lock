@@ -680,6 +680,8 @@ GEM
       ruby_llm-schema (~> 0)
       zeitwerk (~> 2)
     ruby_llm-schema (0.3.0)
+    ruby_llm-skills (0.3.0)
+      ruby_llm (~> 1.12)
     ruby_parser (3.22.0)
       racc (~> 1.5)
       sexp_processor (~> 4.16)
@@ -901,6 +903,7 @@ DEPENDENCIES
   ruby-readability
   ruby_llm (~> 1.14)
   ruby_llm-schema
+  ruby_llm-skills
   ruby_ui (~> 1.1)
   schema_dot_org
   selenium-webdriver
