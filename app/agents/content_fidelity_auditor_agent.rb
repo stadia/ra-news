@@ -4,7 +4,7 @@
 class ContentFidelityAuditorAgent < RubyLLM::Agent
   model "gemini-3-flash-preview"
   temperature 0.1
-  skills "app/skills", only: [:humanize_korean]
+  skills "app/skills", only: [ :humanize_korean ]
 
   schema do
     string :audit_verdict, description: "판정: full_pass / conditional_pass / fail"
@@ -29,9 +29,7 @@ class ContentFidelityAuditorAgent < RubyLLM::Agent
 
   instructions {
     <<~PROMPT
-      CRITICAL: 응답은 스키마에 정의된 필드만 채운다. 설명문, 메타 코멘트, 사족을 출력하지 않는다.
-
-      #{File.read(File.join(__dir__, "content-fidelity-auditor.md"))}
+#{File.read(File.join(__dir__, "content-fidelity-auditor.md"))}
     PROMPT
   }
 end

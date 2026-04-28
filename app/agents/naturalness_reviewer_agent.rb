@@ -4,7 +4,7 @@
 class NaturalnessReviewerAgent < RubyLLM::Agent
   model "gemini-3-flash-preview"
   temperature 0.2
-  skills "app/skills", only: [:humanize_korean]
+  skills "app/skills", only: [ :humanize_korean ]
 
   schema do
     string :verdict, description: "판정: accept / accept_with_note / rewrite_round_2 / rollback_and_rewrite / hold_and_report"
@@ -34,9 +34,7 @@ class NaturalnessReviewerAgent < RubyLLM::Agent
 
   instructions {
     <<~PROMPT
-      CRITICAL: 응답은 스키마에 정의된 필드만 채운다. 설명문, 메타 코멘트, 사족을 출력하지 않는다.
-
-      #{File.read(File.join(__dir__, "naturalness-reviewer.md"))}
+#{File.read(File.join(__dir__, "naturalness-reviewer.md"))}
     PROMPT
   }
 end

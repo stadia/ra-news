@@ -4,7 +4,7 @@
 class KoreanStyleRewriterAgent < RubyLLM::Agent
   model "gemini-3-flash-preview"
   temperature 0.3
-  skills "app/skills", only: [:humanize_korean]
+  skills "app/skills", only: [ :humanize_korean ]
 
   schema do
     string :rewritten_text, description: "윤문된 텍스트 전체"
@@ -31,11 +31,7 @@ class KoreanStyleRewriterAgent < RubyLLM::Agent
 
   instructions {
     <<~PROMPT
-      CRITICAL: 원문의 의미·사실·주장·인용·수치는 한 글자도 변경하지 않는다.
-      CRITICAL: 탐지 finding이 없는 구간은 건드리지 않는다.
-      CRITICAL: 응답은 스키마에 정의된 필드만 채운다.
-
-      #{File.read(File.join(__dir__, "korean-style-rewriter.md"))}
+#{File.read(File.join(__dir__, "korean-style-rewriter.md"))}
     PROMPT
   }
 end
