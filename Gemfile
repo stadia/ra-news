@@ -71,7 +71,7 @@ group :development do
   gem "letter_opener"
   gem "ruby-lsp-brakeman", require: false
   gem "ruby-lsp-i18n", require: false
-  gem "ruby_ui", "~> 1.1"
+  gem "ruby_ui", "~> 1.2"
   gem "sorbet"
   gem "web-console"
 end
