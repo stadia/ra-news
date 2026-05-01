@@ -62,14 +62,16 @@ module Articles
       assert_nil youtube_article.deleted_at
     end
 
-    test "fetch 실패 시 failure를 반환한다" do
-      article = Article.new(url: "https://example.com/error-test")
+    test "fetch 실패 시 failure를 반환해도 URL 정규화는 먼저 적용한다" do
+      article = Article.new(url: "https://example.com/error-test?utm_source=x&utm_medium=y&ref=z")
 
       Faraday.stub(:get, ->(*) { raise Faraday::ConnectionFailed.new("Connection failed") }) do
         result = MetadataPreparationService.new.call(article)
 
         assert_predicate result, :failure?
         assert_equal :fetch_failed, result.failure
+        assert_equal "https://example.com/error-test", article.url
+        assert_equal "example.com", article.host
       end
     end
 
