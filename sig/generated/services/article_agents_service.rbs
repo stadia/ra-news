@@ -13,4 +13,6 @@ class ArticleAgentsService < OperationService
   def user_prompt: (untyped article) -> untyped
 
   def run_embed: (untyped article) -> untyped
+
+  def run_humanize: (untyped article) -> untyped
 end

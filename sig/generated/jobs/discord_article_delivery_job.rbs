@@ -3,12 +3,4 @@
 class DiscordArticleDeliveryJob < ApplicationJob
   # : (Integer article_id, Integer channel_id) -> void
   def perform: (Integer article_id, Integer channel_id) -> void
-
-  private
-
-  # : (DiscordDelivery delivery, String channel_name, String? message_id) -> void
-  def persist_delivery_success: (DiscordDelivery delivery, String channel_name, String? message_id) -> void
-
-  # : (Article article, DiscordChannel channel) -> DiscordDelivery
-  def find_or_create_delivery: (Article article, DiscordChannel channel) -> DiscordDelivery
 end

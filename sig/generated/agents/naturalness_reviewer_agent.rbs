@@ -1,0 +1,4 @@
+# Generated from app/agents/naturalness_reviewer_agent.rb with RBS::Inline
+
+class NaturalnessReviewerAgent < RubyLLM::Agent
+end

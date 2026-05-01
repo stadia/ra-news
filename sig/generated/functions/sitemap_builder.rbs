@@ -1,0 +1,6 @@
+# Generated from app/functions/sitemap_builder.rb with RBS::Inline
+
+module SitemapBuilder
+  # : () -> void
+  def self?.build: () -> void
+end

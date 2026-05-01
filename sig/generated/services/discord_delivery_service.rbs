@@ -1,0 +1,14 @@
+# Generated from app/services/discord_delivery_service.rb with RBS::Inline
+
+class DiscordDeliveryService < OperationService
+  # : (Article article, DiscordChannel channel) -> Dry::Monads::Result
+  def call: (Article article, DiscordChannel channel) -> Dry::Monads::Result
+
+  private
+
+  # : (Article article, DiscordChannel channel) -> Dry::Monads::Result
+  def find_or_create_delivery: (Article article, DiscordChannel channel) -> Dry::Monads::Result
+
+  # : (Article article, DiscordChannel channel, DiscordDelivery delivery) -> Dry::Monads::Result
+  def send_message: (Article article, DiscordChannel channel, DiscordDelivery delivery) -> Dry::Monads::Result
+end
