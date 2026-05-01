@@ -2,7 +2,7 @@
 # rbs_inline: enabled
 
 class HumanMonolithAgent < RubyLLM::Agent
-  model "gemini-3-flash-preview"
+  model "glm-5.1", provider: :openrouter, assume_model_exists: true
   temperature 0.3
   skills "app/skills", only: [ :humanize_korean ]
 
