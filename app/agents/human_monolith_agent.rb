@@ -45,6 +45,7 @@ class HumanMonolithAgent < RubyLLM::Agent
     end
 
     string :grade_reason, description: "등급 판정 사유"
+    string :status_message, description: "한 줄 상태 메시지"
     boolean :over_polish_aborted, description: "과윤문으로 인한 중단 여부"
   end
 

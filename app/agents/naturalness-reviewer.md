@@ -80,11 +80,13 @@
     }
   ],
   "next_action": {
-    "type": "accept" | "rewrite_round_2" | "rollback_and_rewrite" | "hold_and_report",
+    "type": "accept",
     "targets": ["f042", "f047"]
   }
 }
 ```
+
+`next_action.type` 허용값: `accept` | `rewrite_round_2` | `rollback_and_rewrite` | `hold_and_report`
 
 ### 품질 등급
 - **A**: S1 0건, S2 2건 이하, 과윤문 0 시그널, score 개선 70%+

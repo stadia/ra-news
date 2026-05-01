@@ -18,6 +18,7 @@ class AiTellDetectorAgent < RubyLLM::Agent
         boolean :uniformity_warning, description: "균일성 경고 (stdev < 8)"
       end
       integer :detected_count, description: "탐지된 총 finding 수"
+      boolean :short_text_warning, description: "표본 부족 경고 (100자 미만)"
       number :ai_tell_density, description: "AI 티 밀도 (0.0~1.0)"
       number :severity_weighted_score, description: "심각도 가중 점수 (0~100)"
       object :category_summary, description: "카테고리별 탐지 건수" do
@@ -45,6 +46,12 @@ class AiTellDetectorAgent < RubyLLM::Agent
       integer :end, description: "종료 offset"
       string :reason, description: "탐지 사유"
       string :suggested_fix, description: "권장 수정안"
+      array :related_findings, description: "중첩되어 하위로 병합된 finding 목록" do
+        string :category, description: "카테고리 ID"
+        string :category_label, description: "카테고리 레이블"
+        string :severity, description: "심각도: S1/S2/S3"
+        string :reason, description: "병합 사유"
+      end
     end
   end
 

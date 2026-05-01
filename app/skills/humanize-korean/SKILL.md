@@ -18,7 +18,7 @@ description: AI(ChatGPT·Claude·Gemini 등)가 쓴 한글 텍스트를 "사람�
 
 작업 시작 시 가장 먼저 다음 한 줄을 사용자에게 출력한다.
 
-```
+```text
 humanize-korean v1.5 — {fast|strict} 모드 / run_id: {YYYY-MM-DD-NNN}
 ```
 
@@ -42,7 +42,7 @@ humanize-korean v1.5 — {fast|strict} 모드 / run_id: {YYYY-MM-DD-NNN}
 `humanize-monolith` 에이전트를 `Agent` 도구로 1회 호출.
 
 입력:
-```
+```yaml
 input_path: <abs path>/_workspace/{run_id}/01_input.txt
 quick_rules_path: <abs path>/.claude/skills/humanize-korean/references/quick-rules.md
 genre_hint: 칼럼 | 리포트 | 블로그 | 공적 | null
@@ -119,7 +119,7 @@ v1.1 5인 파이프라인 그대로. 검증 분리·재윤문 루프가 의미 �
 ## 데이터 흐름 요약
 
 ### Fast 모드 (디폴트)
-```
+```text
 01_input.txt
     ↓ [humanize-monolith — 단일 호출]
     ├ 메모리: quick-rules 로드 → 탐지 → 윤문 → 자체검증
@@ -127,7 +127,7 @@ v1.1 5인 파이프라인 그대로. 검증 분리·재윤문 루프가 의미 �
 ```
 
 ### Strict 모드
-```
+```text
 01_input.txt
     ↓ [ai-tell-detector]
 02_detection.json
@@ -142,8 +142,6 @@ v1.1 5인 파이프라인 그대로. 검증 분리·재윤문 루프가 의미 �
 ```
 
 ## 에이전트 호출 규칙
-
-**모델:** 모두 `model: opus` 통일 (v1.1 베이스라인). 모델 다운그레이드는 v1.4에서 시도했으나 도구 호출 chain이 진짜 병목이라 효과 미미했음.
 
 **에이전트 정의 위치:** Claude Code가 다음 우선순위로 자동 탐색.
 1. `<cwd>/.claude/agents/` (프로젝트 로컬)
