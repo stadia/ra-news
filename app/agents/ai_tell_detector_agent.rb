@@ -1,0 +1,63 @@
+# frozen_string_literal: true
+# rbs_inline: enabled
+
+class AiTellDetectorAgent < RubyLLM::Agent
+  model "glm-5.1", provider: :openrouter, assume_model_exists: true
+  temperature 0.2
+  skills "app/skills", only: [ :humanize_korean ]
+
+  schema do
+    object :meta, description: "탐지 메타 정보" do
+      string :run_id, description: "실행 ID"
+      integer :input_length, description: "입력 텍스트 글자수"
+      string :estimated_genre, description: "추정 장르: 칼럼|리포트|블로그|공적"
+      integer :sentence_count, description: "문장 수"
+      object :sentence_length_stats, description: "문장 길이 통계" do
+        number :mean, description: "평균 문장 길이"
+        number :stdev, description: "표준편차"
+        boolean :uniformity_warning, description: "균일성 경고 (stdev < 8)"
+      end
+      integer :detected_count, description: "탐지된 총 finding 수"
+      boolean :short_text_warning, description: "표본 부족 경고 (100자 미만)"
+      number :ai_tell_density, description: "AI 티 밀도 (0.0~1.0)"
+      number :severity_weighted_score, description: "심각도 가중 점수 (0~100)"
+      object :category_summary, description: "카테고리별 탐지 건수" do
+        integer :A, description: "번역투"
+        integer :B, description: "영어 인용·용어 과다"
+        integer :C, description: "구조적 AI 패턴"
+        integer :D, description: "AI 특유 관용구"
+        integer :E, description: "리듬 균일성"
+        integer :F, description: "과도한 수식·중복"
+        integer :G, description: "Hedging 남용"
+        integer :H, description: "접속사 남발"
+        integer :I, description: "형식명사·의존명사 과다"
+        integer :J, description: "시각 장식 남용"
+      end
+    end
+
+    array :findings, description: "탐지된 AI 티 패턴 목록" do
+      string :id, description: "Finding 고유 ID"
+      string :category, description: "카테고리 ID"
+      string :category_label, description: "카테고리 레이블"
+      string :severity, description: "심각도: S1/S2/S3"
+      string :scope, description: "범위: span 또는 document"
+      string :text_span, description: "탐지된 원문 구간"
+      integer :start, description: "시작 offset"
+      integer :end, description: "종료 offset"
+      string :reason, description: "탐지 사유"
+      string :suggested_fix, description: "권장 수정안"
+      array :related_findings, description: "중첩되어 하위로 병합된 finding 목록" do
+        string :category, description: "카테고리 ID"
+        string :category_label, description: "카테고리 레이블"
+        string :severity, description: "심각도: S1/S2/S3"
+        string :reason, description: "병합 사유"
+      end
+    end
+  end
+
+  instructions {
+    <<~PROMPT
+#{File.read(File.join(__dir__, "ai-tell-detector.md"))}
+    PROMPT
+  }
+end
