@@ -2,7 +2,7 @@
 # rbs_inline: enabled
 
 class KoreanStyleRewriterAgent < RubyLLM::Agent
-  model "glm-5.1", provider: :openrouter, assume_model_exists: true
+  model "deepseek-v4-flash", provider: :openrouter, assume_model_exists: true
   temperature 0.3
   skills "app/skills", only: [ :humanize_korean ]
 
