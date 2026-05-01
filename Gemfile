@@ -71,7 +71,7 @@ group :development do
   gem "letter_opener"
   gem "ruby-lsp-brakeman", require: false
   gem "ruby-lsp-i18n", require: false
-  gem "ruby_ui", "~> 1.1"
+  gem "ruby_ui", "~> 1.2"
   gem "sorbet"
   gem "web-console"
 end
@@ -106,7 +106,7 @@ gem "sitemap_generator"
 gem "yt"
 # Use sqlite3 as the database for Active Record
 gem "dry-operation"
-gem "pg_reports", "~> 0.6.0"
+gem "pg_reports", "~> 0.7.0"
 gem "sqlite3", ">= 2.1"
 gem "youtube-transcript-rb", "~> 0.2.0"
 
