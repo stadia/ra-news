@@ -1,7 +1,6 @@
 # config/initializers/ruby_llm.rb or similar
 RubyLLM.configure do |config|
   config.gemini_api_key = ENV.fetch("GEMINI_API_KEY", nil)
-  config.openai_api_key = ENV.fetch("OPENAI_API_KEY", nil)
 
   # --- Default Models ---
   # Used by RubyLLM.chat, RubyLLM.embed, RubyLLM.paint if no model is specified.
@@ -17,4 +16,11 @@ RubyLLM.configure do |config|
 
   # --- OR Custom Logger ---
   config.logger = Rails.logger
+
+  # API key - use what your server expects
+  config.openai_api_key = ENV.fetch("OPENAI_API_KEY", nil)
+  # Your custom endpoint
+  config.openai_api_base = ENV.fetch("OPENAI_API_BASE", "https://api.openai.com/v1/")
+
+  config.openrouter_api_key = ENV.fetch("OPENROUTER_API_KEY", nil)
 end
