@@ -1,6 +1,6 @@
 # AlNews — Overview
 
-Rails 8.1.3 | Ruby 4.0.2
+Rails 8.1.3 | Ruby 4.0.3
 
 - Database: static_parse — 22 tables
 - Models: 20

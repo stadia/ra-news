@@ -1,7 +1,7 @@
 <!-- BEGIN rails-ai-context -->
 # AlNews — Copilot Context
 
-Rails 8.1.3 | Ruby 4.0.2
+Rails 8.1.3 | Ruby 4.0.3
 
 ## Stack
 - Database: PostgreSQL — 24 tables

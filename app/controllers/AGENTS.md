@@ -32,7 +32,7 @@
 - **PostsController** — create, destroy, show
 - _...8 more_
 
-**Services:** ArticleAgentsService, ContentService, DiscordArticleNotifierService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SitemapService, SlackArticleNotifierService, SocialMediaService, TwitterService
+**Services:** ArticleAgentsService, ContentService, DiscordDeliveryService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SlackDeliveryService, SocialMediaService, TwitterService
 **Jobs:** ArticleBatchJob, ArticleJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
 Use `rails_get_controllers(controller:"Name", action:"index")` for one action's source code.

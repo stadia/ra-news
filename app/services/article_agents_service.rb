@@ -7,6 +7,7 @@ class ArticleAgentsService < OperationService
     step ensure_body(article)
     step run_embed(article)
     step run_agents(article)
+    step run_humanize(article)
   end
 
   private
@@ -107,5 +108,18 @@ class ArticleAgentsService < OperationService
       logger.error "Failed to generate embeddings for article #{article.id}: #{e.message}"
       Failure(:embedding_failed)
     end
+  end
+
+  def run_humanize(article)
+    result = RubyLLM.chat(model: "glm-5.1", provider: :openrouter, assume_model_exists: true).with_skills.ask(ArticleHumanizer.prompt(article))
+    humanized_content = ArticleHumanizer.extract_content(result.content)
+
+    return Failure(:humanize_failed) if humanized_content[:summary_body].blank?
+
+    article.update!(humanized_content)
+    Success(article)
+  rescue StandardError => e
+    logger.error "Failed to humanize article #{article.id}: #{e.message}"
+    Failure(:humanize_failed)
   end
 end
