@@ -2,18 +2,6 @@
 
 module Articles
   class MetadataPreparationService < OperationService
-    PUBLISHED_META_SELECTORS: untyped
-
-    PUBLISHED_DATE_SELECTORS: untyped
-
-    JSON_LD_ARTICLE_TYPES: untyped
-
-    TRACKING_QUERY_KEYS: untyped
-
-    YOUTUBE_QUERY_KEYS: untyped
-
-    MAX_REDIRECTS: ::Integer
-
     # : (Article article) -> Dry::Monads::Result
     def call: (Article article) -> Dry::Monads::Result
 
@@ -30,46 +18,7 @@ module Articles
     # : (Article article, String body) -> void
     def apply_webpage_metadata: (Article article, String body) -> void
 
-    # : (String url) -> Faraday::Response?
-    def fetch_url_content: (String url) -> Faraday::Response?
-
-    # : (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
-    def follow_redirection: (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
-
-    # : (String url) -> DateTime?
-    def url_to_published_at: (String url) -> DateTime?
-
-    # : (String body) -> DateTime?
-    def extract_published_at_from_content: (String body) -> DateTime?
-
-    # : (Article article, String body) -> Time
-    def published_at_for: (Article article, String body) -> Time
-
     # : (Article article) -> void
     def ensure_article_slug: (Article article) -> void
-
-    def normalized_url: (untyped parsed_url) -> untyped
-
-    def should_discard_url?: (untyped article, untyped parsed_url) -> untyped
-
-    def normalize_published_at: (untyped candidate) -> untyped
-
-    def meta_published_at: (untyped doc) -> untyped
-
-    def json_ld_published_at: (untyped doc) -> untyped
-
-    def selector_published_at: (untyped doc) -> untyped
-
-    def text_published_at: (untyped doc) -> untyped
-
-    def parse_json_ld: (untyped text) -> untyped
-
-    def extract_published_at_from_json_ld: (untyped payload) -> untyped
-
-    def article_json_ld?: (untyped node) -> untyped
-
-    def parse_published_at_value: (untyped value) -> untyped
-
-    def random_slug: () -> untyped
   end
 end

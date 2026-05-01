@@ -1,0 +1,10 @@
+# Generated from app/jobs/discarded_article_cleanup_job.rb with RBS::Inline
+
+class DiscardedArticleCleanupJob < ApplicationJob
+  BATCH_SIZE: ::Integer
+
+  RETENTION_PERIOD: untyped
+
+  # : () -> void
+  def perform: () -> void
+end

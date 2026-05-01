@@ -1,4 +1,0 @@
-# Generated from app/models/slack_article_delivery.rb with RBS::Inline
-
-class SlackArticleDelivery < ApplicationRecord
-end

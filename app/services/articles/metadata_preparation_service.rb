@@ -3,7 +3,6 @@
 
 module Articles
   class MetadataPreparationService < OperationService
-
     #: (Article article) -> Dry::Monads::Result
     def call(article)
       if article.url.blank? || !article.url.is_a?(String)
@@ -83,6 +82,5 @@ module Articles
       article.slug = "#{article.slug}-#{SecureRandom.hex(4)}" if Article.exists?(slug: article.slug)
       Success(article)
     end
-
   end
 end
