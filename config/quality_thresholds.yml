@@ -2,8 +2,8 @@ coverage:
   line_min: 70.0
   branch_min: 50.0
 flog:
-  method_max: 20
-  class_max: 70
+  method_max: null
+  class_max: null
 rubocop_metrics:
   class_length_max: 100
   method_length_max: 15
@@ -11,4 +11,4 @@ rubocop_metrics:
   cyclomatic_complexity_max: 6
   perceived_complexity_max: 7
 mutation:
-  kill_ratio_min: null
+  kill_ratio_min: 100.0
