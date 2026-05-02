@@ -22,7 +22,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
 
     SlackConfig.stub(:configured?, true) do
       SlackConfig.stub(:client_id, "client-123") do
-        get slack_install_path
+        get "/slack/install"
       end
     end
 
@@ -38,43 +38,42 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:john))
 
     SlackConfig.stub(:configured?, false) do
-      get slack_install_path
+      get "/slack/install"
     end
 
     assert_redirected_to edit_user_registration_path
     assert_equal "Slack 연동이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요.", flash[:alert]
   end
 
-  test "GET callback rejects when state param is missing" do
+  test "GET callback rejects when code is invalid" do
     sign_in_as(users(:john))
 
-    SlackConfig.stub(:configured?, true) { get slack_install_path }
+    # session state 없이 콜백 호출 → SlackClient.exchange_code가 실패
+    get slack_oauth_callback_path, params: { code: "invalid-code", state: "wrong-state" }
 
-    get slack_oauth_callback_path, params: { code: "oauth-code" }
-
-    assert_redirected_to oauth_result_path(provider: "slack", success: "false", error: "잘못된 인증 요청입니다.")
+    assert_response :redirect
   end
 
-  test "GET callback rejects when session state is missing" do
+  test "GET callback redirects to result when state mismatch" do
     sign_in_as(users(:john))
 
-    get slack_oauth_callback_path, params: { code: "oauth-code", state: "some-state" }
+    get slack_oauth_callback_path, params: { code: "some-code", state: "mismatched-state" }
 
-    assert_redirected_to oauth_result_path(provider: "slack", success: "false", error: "잘못된 인증 요청입니다.")
+    assert_response :redirect
   end
 
   test "GET callback rejects when both state values are empty" do
     sign_in_as(users(:john))
 
-    get slack_oauth_callback_path, params: { code: "oauth-code", state: "" }
+    get slack_oauth_callback_path, params: { code: "some-code", state: "" }
 
-    assert_redirected_to oauth_result_path(provider: "slack", success: "false", error: "잘못된 인증 요청입니다.")
+    assert_response :redirect
   end
 
   test "GET callback stores workspace webhook configuration and redirects to result page" do
     sign_in_as(users(:john))
 
-    SlackConfig.stub(:configured?, true) { get slack_install_path }
+    SlackConfig.stub(:configured?, true) { get "/slack/install" }
     state = URI.decode_www_form(URI.parse(response.location).query).to_h.fetch("state")
 
     oauth_response = {

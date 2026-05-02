@@ -155,7 +155,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes @response.body, 'data-controller="feed-reply"'
     assert_includes @response.body, 'data-action="feed-reply#activate"'
-    assert_includes @response.body, "post-form:reply@window-&gt;post-form#activateReply"
+    assert_includes @response.body, "post-form:reply@window->post-form#activateReply"
     assert_includes @response.body, %(feed-reply-parent-id-value="#{post.id}")
   end
 

@@ -12,7 +12,7 @@ class DiscordArticlePresenterTest < ActiveSupport::TestCase
     assert_predicate params[:title], :present?
     assert_match %r{/articles/}, params[:url]
     assert_equal 3447003, params[:color]
-    assert_equal "AlNews", params[:footer_text]
+    assert_equal "Ruby-News.kr", params[:footer_text]
     assert_equal article.created_at, params[:timestamp]
   end
 

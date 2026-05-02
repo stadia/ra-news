@@ -681,8 +681,7 @@ class ArticleTest < ActiveSupport::TestCase
     }
 
     urls_with_dates.each do |url, expected_date|
-      service = Articles::MetadataPreparationService.new
-      extracted_date = service.send(:url_to_published_at, url)
+      extracted_date = Articles::MetadataPreparation.url_to_published_at(url)
 
       if extracted_date
         assert_equal expected_date.year, extracted_date.year
@@ -693,9 +692,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "URL 파싱 오류를 정상적으로 처리해야 한다" do
-    service = Articles::MetadataPreparationService.new
-
-    assert_nil service.send(:url_to_published_at, "invalid-url")
+    assert_nil Articles::MetadataPreparation.url_to_published_at("invalid-url")
   end
 
   # ========== Cache Management Tests ==========

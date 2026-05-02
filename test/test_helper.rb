@@ -8,6 +8,20 @@ SimpleCov.start "rails" do
   add_filter "/db/"
   add_filter "/lib/tasks/"
   add_filter "/vendor/"
+
+  # UI 라이브러리 컴포넌트: 벤더 코드 성격으로 앱에서 테스트하지 않음
+  add_filter "/app/components/ruby_ui/"
+
+  # 관리자 백오피스: madmin 자동 생성 코드
+  add_filter "/app/controllers/madmin/"
+
+  # AI 에이전트/도구: LLM 호출 코드로 단위 테스트가 불가능
+  add_filter "/app/agents/"
+  add_filter "/app/tools/"
+
+  # 인프라: 채널/제약조건은 프레임워크 수준
+  add_filter "/app/channels/"
+  add_filter "/app/constraints/"
 end
 
 ENV["RAILS_ENV"] ||= "test"

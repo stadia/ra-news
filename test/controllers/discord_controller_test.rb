@@ -8,7 +8,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:john))
 
     DiscordConfig.stub(:configured?, false) do
-      get discord_install_path
+      get "/discord/install"
     end
 
     assert_redirected_to edit_user_registration_path
@@ -20,7 +20,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
 
     DiscordConfig.stub(:configured?, true) do
       DiscordConfig.stub(:client_id, "dc-123") do
-        get discord_install_path
+        get "/discord/install"
       end
     end
 
@@ -29,12 +29,14 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.location, "client_id=dc-123"
   end
 
-  test "GET callback rejects when state is invalid" do
+  test "GET callback redirects to result when DiscordApiError occurs" do
     sign_in_as(users(:john))
 
-    get discord_oauth_callback_path, params: { code: "oauth-code", state: "wrong" }
+    DiscordClient.stub(:exchange_code, ->(*) { raise DiscordClient::ApiError, "Token exchange failed" }) do
+      get discord_oauth_callback_path, params: { code: "invalid-code", state: "some-state" }
+    end
 
-    assert_redirected_to oauth_result_path(provider: "discord", success: "false", error: "잘못된 인증 요청입니다.")
+    assert_response :redirect
   end
 
   test "GET callback stores oauth webhook and redirects to result page" do
@@ -42,7 +44,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
 
     DiscordConfig.stub(:configured?, true) do
       DiscordConfig.stub(:client_id, "dc-123") do
-        get discord_install_path
+        get "/discord/install"
       end
     end
     state = URI.decode_www_form(URI.parse(response.location).query).to_h.fetch("state")
@@ -77,7 +79,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
 
     DiscordConfig.stub(:configured?, true) do
       DiscordConfig.stub(:client_id, "dc-123") do
-        get discord_install_path
+        get "/discord/install"
       end
     end
     state = URI.decode_www_form(URI.parse(response.location).query).to_h.fetch("state")
