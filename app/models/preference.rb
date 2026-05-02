@@ -17,9 +17,15 @@ class Preference < ApplicationRecord
 
   #: (String name) -> Preference?
   def self.get_object(name)
+    resolving = Thread.current[:preference_resolving] ||= Set.new
+    return nil if resolving.include?(name)
+
+    resolving.add(name)
     Rails.cache.fetch("preferences_#{name}", expires_in: 2.weeks) do
       Preference.find_by(name:)
     end
+  ensure
+    resolving&.delete(name)
   end
 
   def self.ignore_hosts #: Array[String]
