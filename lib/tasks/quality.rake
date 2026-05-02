@@ -68,7 +68,7 @@ namespace :quality do
 end
 
 desc "Run all quality gates"
-task quality: :setup do
+task quality: "quality:setup" do
   Rake::Task["quality:rubocop"].invoke
   Rake::Task["quality:flog"].invoke
   Rake::Task["quality:mutation"].invoke
