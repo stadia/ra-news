@@ -107,7 +107,7 @@ task quality: :test do
   thresholds = YAML.load_file(Rails.root.join("config/quality_thresholds.yml"))
   report = Quality::Report.new(measurements: measurements, thresholds: thresholds)
 
-  puts report.to_s
+  puts report
   exit(report.passed? ? 0 : 1)
 end
 

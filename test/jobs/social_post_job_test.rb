@@ -21,11 +21,13 @@ class SocialPostJobTest < ActiveSupport::TestCase
 
   test "rate_limit_threshold가 2다" do
     job = SocialPostJob.new
+
     assert_equal 2, job.rate_limit_threshold
   end
 
   test "rate_limit_window가 5분이다" do
     job = SocialPostJob.new
+
     assert_equal 5.minutes, job.rate_limit_window
   end
 end

@@ -4,7 +4,7 @@ require "test_helper"
 
 class RubyConferenceTest < ActiveSupport::TestCase
   test "RubyConference가 정의되어 있다" do
-    assert RubyConference.is_a?(Class)
+    assert_kind_of Class, RubyConference
   end
 
   test "BASE_URI가 올바르다" do

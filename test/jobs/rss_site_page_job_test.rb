@@ -6,7 +6,7 @@ class RssSitePageJobTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   test "enqueue_all이 Site.kept.rss_page의 ID를 예약한다" do
-    assert_enqueued_with(job: RssSitePageJob, args: [Site.kept.rss_page.order("id ASC").pluck(:id)]) do
+    assert_enqueued_with(job: RssSitePageJob, args: [ Site.kept.rss_page.order("id ASC").pluck(:id) ]) do
       RssSitePageJob.enqueue_all
     end
   end

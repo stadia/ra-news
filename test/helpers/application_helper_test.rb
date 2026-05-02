@@ -44,7 +44,7 @@ class ApplicationHelperTest < ActionView::TestCase
     long_text = "a" * 200
     result = truncate_smart(long_text, length: 100)
 
-    assert result.length <= 103
+    assert_operator result.length, :<=, 103
     assert_includes result, "..."
   end
 

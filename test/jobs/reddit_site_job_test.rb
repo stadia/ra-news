@@ -11,6 +11,7 @@ class RedditSiteJobTest < ActiveSupport::TestCase
 
   test "REDDIT_HOSTS 상수가 정의되어 있다" do
     expected_hosts = %w[reddit.com www.reddit.com old.reddit.com new.reddit.com redd.it v.redd.it i.redd.it preview.redd.it external-preview.redd.it rubygems.org]
+
     assert_equal expected_hosts, RedditSiteJob::REDDIT_HOSTS
   end
 

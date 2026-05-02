@@ -65,9 +65,9 @@ group :development, :test do
   gem "minitest-mock"
 
   # Quality gates
-  gem "simplecov", require: false
   gem "flog", require: false
   gem "mutant-minitest", require: false
+  gem "simplecov", require: false
   gem "tapioca", require: false
 end
 

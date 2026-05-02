@@ -4,7 +4,7 @@ require "test_helper"
 
 class MastodonClientTest < ActiveSupport::TestCase
   test "MastodonClient가 정의되어 있다" do
-    assert MastodonClient.is_a?(Class)
+    assert_kind_of Class, MastodonClient
   end
 
   test "MastodonClient는 client 접근자를 가진다" do

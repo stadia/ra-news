@@ -6,7 +6,7 @@ class YoutubeSiteJobTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   test "enqueue_all이 Site.kept.youtube의 ID를 예약한다" do
-    assert_enqueued_with(job: YoutubeSiteJob, args: [Site.kept.youtube.order("id ASC").pluck(:id)]) do
+    assert_enqueued_with(job: YoutubeSiteJob, args: [ Site.kept.youtube.order("id ASC").pluck(:id) ]) do
       YoutubeSiteJob.enqueue_all
     end
   end

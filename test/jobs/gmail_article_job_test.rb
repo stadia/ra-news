@@ -6,7 +6,7 @@ class GmailArticleJobTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   test "enqueue_all이 Site.kept.gmail의 ID를 예약한다" do
-    assert_enqueued_with(job: GmailArticleJob, args: [Site.kept.gmail.order("id ASC").pluck(:id)]) do
+    assert_enqueued_with(job: GmailArticleJob, args: [ Site.kept.gmail.order("id ASC").pluck(:id) ]) do
       GmailArticleJob.enqueue_all
     end
   end
