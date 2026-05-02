@@ -1,9 +1,20 @@
 # frozen_string_literal: true
 
+require "simplecov"
+SimpleCov.start "rails" do
+  enable_coverage :branch
+  add_filter "/test/"
+  add_filter "/config/"
+  add_filter "/db/"
+  add_filter "/lib/tasks/"
+  add_filter "/vendor/"
+end
+
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"
+require "mutant/minitest/coverage"
 
 Warning[:deprecated] = true
 module ActiveSupport

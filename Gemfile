@@ -63,6 +63,11 @@ group :development, :test do
   gem "faker"
   gem "minitest", "~> 6.0"
   gem "minitest-mock"
+
+  # Quality gates
+  gem "simplecov", require: false
+  gem "flog", require: false
+  gem "mutant-minitest", require: false
   gem "tapioca", require: false
 end
 
