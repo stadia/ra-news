@@ -8,6 +8,14 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     @avatar_path = Rails.root.join("public/icon.png")
   end
 
+  test "GET edit renders account edit page" do
+    sign_in_as(@user)
+
+    get edit_user_registration_path
+
+    assert_response :success
+  end
+
   test "PATCH update로 프로필 이미지를 업로드할 수 있다" do
     sign_in_as(@user)
 

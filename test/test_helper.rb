@@ -22,6 +22,9 @@ SimpleCov.start "rails" do
   # 인프라: 채널/제약조건은 프레임워크 수준
   add_filter "/app/channels/"
   add_filter "/app/constraints/"
+
+  # 품질 관리: Rake 태스크에서만 사용
+  add_filter "/lib/quality/"
 end
 
 ENV["RAILS_ENV"] ||= "test"
