@@ -10,6 +10,8 @@ class Site < ApplicationRecord
 
   validates :name, :client, presence: true
 
+  before_save :parse_url_to_uri_parts, if: :will_save_change_to_url?
+
   before_create do
     self.last_checked_at = 6.months.ago if last_checked_at.blank?
   end
@@ -33,5 +35,20 @@ class Site < ApplicationRecord
     else
       raise ArgumentError, "Unsupported client type: #{client}"
     end
+  end
+
+  private
+
+  def parse_url_to_uri_parts #: void
+    return if url.blank?
+
+    parsed = URI.parse(url)
+    return if parsed.scheme.blank? || parsed.host.blank?
+
+    port_part = ":#{parsed.port}" if parsed.port && ![80, 443].include?(parsed.port)
+    self.base_uri = "#{parsed.scheme}://#{parsed.host}#{port_part}"
+    self.path = parsed.path.presence || "/"
+  rescue URI::InvalidURIError
+    # url이 유효하지 않으면 base_uri/path를 그대로 둔다
   end
 end

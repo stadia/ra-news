@@ -418,6 +418,82 @@ class SiteTest < ActiveSupport::TestCase
     assert_predicate sites(:hacker_news_ruby), :rss_page?
   end
 
+  # ========== URL Auto-Parsing Tests ==========
+
+  test "url을 저장하면 base_uri와 path로 자동 분리되어야 한다" do
+    site = Site.create!(name: "URL Parse Test", client: :rss, url: "https://example.com/feed.xml")
+
+    assert_equal "https://example.com", site.base_uri
+    assert_equal "/feed.xml", site.path
+  end
+
+  test "url에 포트가 있으면 base_uri에 포함되어야 한다" do
+    site = Site.create!(name: "Port Test", client: :rss, url: "http://localhost:3000/blog/feed")
+
+    assert_equal "http://localhost:3000", site.base_uri
+    assert_equal "/blog/feed", site.path
+  end
+
+  test "표준 포트는 base_uri에서 생략되어야 한다" do
+    https_site = Site.create!(name: "HTTPS Standard", client: :rss, url: "https://example.com/rss")
+    http_site = Site.create!(name: "HTTP Standard", client: :rss, url: "http://example.com/rss")
+
+    assert_equal "https://example.com", https_site.base_uri
+    assert_equal "http://example.com", http_site.base_uri
+  end
+
+  test "path가 없는 url은 path를 /로 설정해야 한다" do
+    site = Site.create!(name: "No Path", client: :rss, url: "https://example.com")
+
+    assert_equal "https://example.com", site.base_uri
+    assert_equal "/", site.path
+  end
+
+  test "url을 수정하면 base_uri와 path도 업데이트되어야 한다" do
+    site = Site.create!(name: "Update Test", client: :rss, url: "https://old.example.com/rss.xml")
+
+    assert_equal "https://old.example.com", site.base_uri
+    assert_equal "/rss.xml", site.path
+
+    site.update!(url: "https://new.example.com/feed.atom")
+
+    assert_equal "https://new.example.com", site.base_uri
+    assert_equal "/feed.atom", site.path
+  end
+
+  test "url이 비어있으면 base_uri와 path를 변경하지 않아야 한다" do
+    site = Site.create!(name: "Empty URL", client: :rss, url: "")
+
+    assert_nil site.base_uri
+    assert_nil site.path
+  end
+
+  test "유효하지 않은 url은 base_uri와 path를 변경하지 않아야 한다" do
+    site = Site.create!(name: "Invalid URL", client: :rss, url: "not-a-uri")
+
+    # scheme/host가 없는 문자열은 파싱하지 않음
+    assert_nil site.base_uri
+    assert_nil site.path
+  end
+
+  test "url이 nil이면 base_uri와 path를 변경하지 않아야 한다" do
+    site = Site.create!(name: "Nil URL", client: :gmail)
+
+    assert_nil site.url
+    assert_nil site.base_uri
+    assert_nil site.path
+  end
+
+  test "url을 저장하면 기존 fixture 데이터도 정상 동작해야 한다" do
+    site = sites(:ruby_weekly)
+
+    # 기존 fixture는 url이 nil일 수 있으므로 url을 설정하면 파싱 동작 확인
+    site.update!(url: "https://rubyweekly.com/rss")
+
+    assert_equal "https://rubyweekly.com", site.base_uri
+    assert_equal "/rss", site.path
+  end
+
   private
 
   # Helper method for testing query count
