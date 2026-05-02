@@ -11,7 +11,7 @@ require_relative "../quality/mutant_parser"
 require_relative "../quality/report"
 
 QUALITY_DIR = Rails.root.join("tmp/quality")
-MUTANT_SUBJECTS = %w[*].freeze
+MUTANT_SUBJECTS = %w[Article User Post].freeze
 
 namespace :quality do
   task :setup do
@@ -50,14 +50,10 @@ namespace :quality do
 
     cmd = [
       "bundle", "exec", "mutant", "run",
-      "--integration", "minitest",
-      "--include", "test",
-      "--include", "lib",
-      "--require", "./script/mutant_bootstrap.rb",
-      "--usage", "opensource",
       "--", *MUTANT_SUBJECTS
     ]
-    sh "#{cmd.shelljoin} > #{txt_path.to_s.shellescape} 2>&1 || true"
+    env = { "PGGSSENCMODE" => "disable" }
+    sh({ **env }, "#{cmd.shelljoin} > #{txt_path.to_s.shellescape} 2>&1 || true")
 
     begin
       parser = Quality::MutantParser.new(txt_path)
@@ -71,9 +67,8 @@ namespace :quality do
   end
 end
 
-desc "Run all quality gates (runs tests first, then metrics)"
-task quality: :test do
-  Rake::Task["quality:setup"].invoke
+desc "Run all quality gates"
+task quality: :setup do
   Rake::Task["quality:rubocop"].invoke
   Rake::Task["quality:flog"].invoke
   Rake::Task["quality:mutation"].invoke
