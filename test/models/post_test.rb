@@ -3,6 +3,7 @@
 require "test_helper"
 
 class PostTest < ActiveSupport::TestCase
+  cover Post
   include ActiveJob::TestHelper
 
   def setup
