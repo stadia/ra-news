@@ -13,3 +13,5 @@ pin "@floating-ui/utils/dom", to: "@floating-ui--utils--dom.js" # @0.2.11
 pin "embla-carousel" # @8.6.0
 pin "lexxy", to: "lexxy.js"
 pin "@rails/activestorage", to: "activestorage.esm.js"
+pin "chart.js" # @4.5.1
+pin "@kurkle/color", to: "@kurkle--color.js" # @0.3.4

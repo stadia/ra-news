@@ -4,7 +4,7 @@ require "tailwind_merge"
 
 module RubyUI
   class Base < Phlex::HTML
-    TAILWIND_MERGER = ::TailwindMerge::Merger.new.freeze unless const_defined?(:TAILWIND_MERGER)
+    TAILWIND_MERGER = ::TailwindMerge::Merger.new.freeze unless defined?(TAILWIND_MERGER)
 
     attr_reader :attrs
 
