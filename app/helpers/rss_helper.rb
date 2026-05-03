@@ -17,9 +17,12 @@ module RssHelper
   end
 
   # Fetches and parses the RSS feed for a site.
-  #: (Site site) -> RSS::Rss || RSS::Atom::Feed
+  #: (Site site) -> RSS::Rss || RSS::Atom::Feed | nil
   def fetch_feed(site)
     RssClient.feed(site.url)
+  rescue RSS::NotWellFormedError, RSS::Error, REXML::ParseException => e
+    logger.warn "RSS parsing error for site #{site.id} (#{site.url}): #{e.class} - #{e.message}"
+    nil
   rescue StandardError => e
     logger.error "RSS parsing error for site #{site.id}: #{e.message}"
     raise e

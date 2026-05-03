@@ -36,9 +36,14 @@ module RssClient
 
   #: (String xml) -> RSS::Rss | RSS::Atom::Feed | nil
   def parse(xml)
+    return nil if xml.blank?
+
     RSS::Parser.parse(xml, false)
   rescue RSS::NotWellFormedError
-    RSS::Parser.parse(repair_xml(xml), false)
+    repaired = repair_xml(xml)
+    return nil if repaired.blank? || repaired == xml
+
+    RSS::Parser.parse(repaired, false)
   end
 
   #: (String xml) -> String
