@@ -7,8 +7,8 @@ class RubyConferenceTest < ActiveSupport::TestCase
     assert_kind_of Class, RubyConference
   end
 
-  test "URL이 올바르다" do
-    assert_equal "https://raw.githubusercontent.com/ruby-conferences/ruby-conferences.github.io/refs/heads/main", RubyConference::URL
+  test "BASE_URL이 올바르다" do
+    assert_equal "https://raw.githubusercontent.com/ruby-conferences/ruby-conferences.github.io/refs/heads/main", RubyConference::BASE_URL
   end
 
   test "RubyConference는 conferences 메서드를 가진다" do

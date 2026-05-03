@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class Reddit < ApplicationClient
-  def initialize #: Reddit
-    super(url: "https://www.reddit.com")
-  end
+require "rss"
+
+class Reddit
+  BASE_URL = "https://www.reddit.com"
 
   def feed
-    response = get("/r/ruby+rails/.rss")
+    response = Faraday.get("#{BASE_URL}/r/ruby+rails/.rss")
     RSS::Parser.parse(response.body, false)
   end
 end

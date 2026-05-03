@@ -1,24 +1,22 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class HackerNews < ApplicationClient
-  def initialize #: HackerNews
-    super(url: "https://hacker-news.firebaseio.com/v0")
-  end
+class HackerNews
+  BASE_URL = "https://hacker-news.firebaseio.com/v0"
 
   def top_stories
-    get("/topstories.json")&.body
+    Faraday.get("#{BASE_URL}/topstories.json")&.body
   end
 
   def new_stories
-    get("/newstories.json")&.body
+    Faraday.get("#{BASE_URL}/newstories.json")&.body
   end
 
   def best_stories
-    get("/beststories.json")&.body
+    Faraday.get("#{BASE_URL}/beststories.json")&.body
   end
 
   def item(id)
-    get("/item/#{id}.json")&.body
+    Faraday.get("#{BASE_URL}/item/#{id}.json")&.body
   end
 end

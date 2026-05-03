@@ -93,19 +93,19 @@ class DiscordClient
       raise ApiError, "#{e.class}: #{e.message}"
     end
 
+    private
+
     #: (String body) -> untyped
     def parse_json(body)
       JSON.parse(body)
     rescue JSON::ParserError => e
       raise ApiError, "Discord API 응답 파싱에 실패했습니다: #{e.message}"
     end
-    private :parse_json
 
     #: (untyped req) -> void
     def apply_timeouts(req)
       req.options.open_timeout = OPEN_TIMEOUT
       req.options.timeout = REQUEST_TIMEOUT
     end
-    private :apply_timeouts
   end
 end

@@ -37,5 +37,6 @@ module OauthClient
   def extract_provider_from_preference_name(name) #: (String name) -> String
     name.gsub(/_oauth$/, "")
   end
+
   private_class_method :extract_provider_from_preference_name
 end

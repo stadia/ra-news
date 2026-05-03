@@ -3,8 +3,8 @@
 require "test_helper"
 
 class RedditTest < ActiveSupport::TestCase
-  test "Reddit은 ApplicationClient를 상속한다" do
-    assert_operator Reddit, :<, ApplicationClient
+  test "Reddit가 정의되어 있다" do
+    assert_kind_of Class, Reddit
   end
 
   test "Reddit은 feed 메서드를 가진다" do
