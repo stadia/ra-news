@@ -100,6 +100,24 @@ module ArticleHumanizer
   end
 
   #: (String text) -> String
+  def strip_leading_ai_preamble(text)
+    # LLM이 본문 앞에 붙이는 분석 코멘트를 제거 (실제 콘텐츠는 ### 마크다운 헤딩으로 시작)
+    match = text.match(/\A.*?(?=###\s)/m)
+    if match && match[0].strip.present?
+      preamble = match[0].strip
+      # 프리앰블이 실제 본문보다 짧은 경우만 제거 (안전장치)
+      text.sub(/\A#{Regexp.escape(preamble)}/m, "") if preamble.length < text.length / 2
+    else
+      text
+    end
+  end
+
+  #: (String text) -> String
+  def strip_trailing_tags(text)
+    text.gsub(/\s*<<<\/?END?_?SUMMARY[^>]*>>>{0,1}/m, "")
+  end
+
+  #: (String text) -> String
   def strip_leading_humanize_metadata(text)
     cleaned = text.sub(/\A```(?:[\w-]*)\s*\nhumanize-korean[^\n]*\n```\s*/m, "")
     cleaned = cleaned.sub(/\Ahumanize-korean\s+v[\d.]+\s+—.*?\n+/m, "")
@@ -109,8 +127,10 @@ module ArticleHumanizer
   #: (String body) -> String
   def clean_body(body)
     body = extract_humanized_section(body)
+    body = strip_leading_ai_preamble(body)
     body = strip_leading_humanize_metadata(body)
     body = strip_trailing_humanize_metadata(body)
+    body = strip_trailing_tags(body)
     body.strip
   end
 
@@ -118,9 +138,11 @@ module ArticleHumanizer
   def extract_body_fallback(text)
     text = strip_tagged_blocks(text, "SUMMARY_KEY")
     text = strip_summary_detail_blocks(text)
-    text = text.gsub(/<<<SUMMARY_BODY>>>\s*/m, "").gsub(/\s*<<<END_SUMMARY_BODY>>>/m, "")
+    text = text.gsub(/<<<SUMMARY_BODY>>>{0,1}\s*/m, "").gsub(/\s*<<<END_SUMMARY_BODY>>>{0,1}/m, "")
+    text = strip_leading_ai_preamble(text)
     text = strip_leading_humanize_metadata(text)
     text = strip_trailing_humanize_metadata(text)
+    text = strip_trailing_tags(text)
     text.strip
   end
 
