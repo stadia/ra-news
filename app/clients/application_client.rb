@@ -3,19 +3,13 @@
 
 class ApplicationClient
   class Error < StandardError; end
-
   class Forbidden < Error; end
-
   class Unauthorized < Error; end
-
   class RateLimit < Error; end
-
   class NotFound < Error; end
-
   class InternalError < Error; end
 
   BASE_URI = "https://example.org"
-  NET_HTTP_ERRORS = [ Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError ]
 
   #: (?token: String, ?base_uri: String) -> ApplicationClient
   def initialize(token: nil, base_uri: nil)
@@ -23,135 +17,43 @@ class ApplicationClient
     @base_uri = base_uri || BASE_URI
   end
 
-  def default_headers #: Hash[String, String]
-    {
-      "Accept" => content_type,
-      "Content-Type" => content_type
-    }.merge(authorization_header)
-  end
-
-  def content_type #: String
-    "application/json"
-  end
-
-  def authorization_header #: Hash[String, String]
-    token ? { "Authorization" => "Bearer #{token}" } : {}
-  end
-
-  def default_query_params #: Hash[String, String]
-    {}
-  end
-
-  #: (String path, ?headers: Hash, ?query: untyped)
-  def get(path, headers: {}, query: nil)
-    make_request(klass: Net::HTTP::Get, path: path, headers: headers, query: query)
-  end
-
-  def post(path, headers: {}, query: nil, body: nil, form_data: nil)
-    make_request(
-      klass: Net::HTTP::Post,
-      path: path,
-      headers: headers,
-      query: query,
-      body: body,
-      form_data: form_data
-    )
-  end
-
-  def patch(path, headers: {}, query: nil, body: nil, form_data: nil)
-    make_request(
-      klass: Net::HTTP::Patch,
-      path: path,
-      headers: headers,
-      query: query,
-      body: body,
-      form_data: form_data
-    )
-  end
-
-  def put(path, headers: {}, query: nil, body: nil, form_data: nil)
-    make_request(
-      klass: Net::HTTP::Put,
-      path: path,
-      headers: headers,
-      query: query,
-      body: body,
-      form_data: form_data
-    )
-  end
-
-  def delete(path, headers: {}, query: nil, body: nil)
-    make_request(klass: Net::HTTP::Delete, path: path, headers: headers, query: query, body: body)
-  end
-
   attr_reader :token, :base_uri
 
-  def make_request(klass:, path:, headers: {}, body: nil, query: nil, form_data: nil)
-    raise ArgumentError, "Cannot pass both body and form_data" if body.present? && form_data.present?
-
-    uri = URI("#{base_uri}#{path}")
-    existing_params = Rack::Utils.parse_query(uri.query).with_defaults(default_query_params)
-    query_params = existing_params.merge(query || {})
-    uri.query = Rack::Utils.build_query(query_params) if query_params.present?
-
-    logger.debug("#{klass.name.split("::").last.upcase}: #{uri}")
-
-    all_headers = default_headers.merge(headers)
-    all_headers.delete("Content-Type") if klass == Net::HTTP::Get
-
-    conn = initialize_faraday_connection(uri, all_headers, form_data) # Refactored connection initialization
-
-    response = case klass
-    when Net::HTTP::Get.class
-                 conn.get(uri.request_uri) do |req|
-                   req.params = uri.query if query_params.present?
-                 end
-    when Net::HTTP::Post.class
-                 conn.post(uri.request_uri, build_body(body) || form_data) do |req|
-                   req.params = uri.query if query_params.present?
-                 end
-    when Net::HTTP::Patch.class
-                 conn.patch(uri.request_uri, build_body(body) || form_data) do |req|
-                   req.params = uri.query if query_params.present?
-                 end
-    when Net::HTTP::Put.class
-                 conn.put(uri.request_uri, build_body(body)) do |req|
-                   req.params = uri.query if query_params.present?
-                 end
-    when Net::HTTP::Delete.class
-                 conn.delete(uri.request_uri) do |req|
-                   req.params = uri.query if query_params.present?
-                 end
-    end
-
-    response
+  #: (String path, ?headers: Hash, ?query: untyped) -> Faraday::Response
+  def get(path, headers: {}, query: nil)
+    request(:get, path, headers: headers, query: query)
   end
 
+  #: (String path, ?headers: Hash, ?query: untyped, ?body: untyped, ?form_data: untyped) -> Faraday::Response
+  def post(path, headers: {}, query: nil, body: nil, form_data: nil)
+    request(:post, path, headers: headers, query: query, body: body, form_data: form_data)
+  end
+
+  #: (String path, ?headers: Hash, ?query: untyped, ?body: untyped, ?form_data: untyped) -> Faraday::Response
+  def patch(path, headers: {}, query: nil, body: nil, form_data: nil)
+    request(:patch, path, headers: headers, query: query, body: body, form_data: form_data)
+  end
+
+  #: (String path, ?headers: Hash, ?query: untyped, ?body: untyped, ?form_data: untyped) -> Faraday::Response
+  def put(path, headers: {}, query: nil, body: nil, form_data: nil)
+    request(:put, path, headers: headers, query: query, body: body, form_data: form_data)
+  end
+
+  #: (String path, ?headers: Hash, ?query: untyped, ?body: untyped) -> Faraday::Response
+  def delete(path, headers: {}, query: nil, body: nil)
+    request(:delete, path, headers: headers, query: query, body: body)
+  end
+
+  #: (Faraday::Response) -> Faraday::Response
   def handle_response(response)
-    case response.status.to_i # Use to_i for robust comparison
-    when 200, 201, 202, 203, 204
-      response
-    when 401
-      raise Unauthorized, "Unauthorized: #{response.body}"
-    when 403
-      raise Forbidden, "Forbidden: #{response.body}"
-    when 404
-      raise NotFound, "Not Found: #{response.body}"
-    when 429
-      raise RateLimit, "Rate Limited: #{response.body}"
-    when 500..599
-      raise InternalError, "Server Error (#{response.status}): #{response.body}"
-    else
-      raise Error, "HTTP Error #{response.status}: #{response.body}"
-    end
-  end
-
-  def build_body(body)
-    case body
-    when String
-      body
-    else
-      body.to_json
+    case response.status.to_i
+    when 200..204 then response
+    when 401     then raise Unauthorized, "Unauthorized: #{response.body}"
+    when 403     then raise Forbidden, "Forbidden: #{response.body}"
+    when 404     then raise NotFound, "Not Found: #{response.body}"
+    when 429     then raise RateLimit, "Rate Limited: #{response.body}"
+    when 500..599 then raise InternalError, "Server Error (#{response.status}): #{response.body}"
+    else              raise Error, "HTTP Error #{response.status}: #{response.body}"
     end
   end
 
@@ -161,14 +63,76 @@ class ApplicationClient
     Rails.logger
   end
 
+  def content_type #: String
+    "application/json"
+  end
+
+  def default_query_params #: Hash[String, String]
+    {}
+  end
+
   private
 
+  HTTP_METHODS = %i[get post patch put delete].freeze
+  private_constant :HTTP_METHODS
+
+  #: (Symbol method, String path, ?headers: Hash, ?query: untyped, ?body: untyped, ?form_data: untyped) -> Faraday::Response
+  def request(method, path, headers: {}, query: nil, body: nil, form_data: nil)
+    raise ArgumentError, "Cannot pass both body and form_data" if body.present? && form_data.present?
+    raise ArgumentError, "Unsupported HTTP method: #{method}" unless HTTP_METHODS.include?(method)
+
+    uri = build_uri(path, query)
+    all_headers = build_headers(headers, method)
+
+    logger.debug("#{method.to_s.upcase}: #{uri}")
+
+    connection(uri, all_headers, form_data).public_send(method, uri.request_uri, request_body(body, form_data)) do |req|
+      req.params = uri.query if uri.query.present?
+    end
+  end
+
+  #: (String path, untyped query) -> URI::Generic
+  def build_uri(path, query)
+    uri = URI("#{base_uri}#{path}")
+    merged = Rack::Utils.parse_query(uri.query).with_defaults(default_query_params).merge(query || {})
+    uri.query = Rack::Utils.build_query(merged) if merged.present?
+    uri
+  end
+
+  #: (Hash headers, Symbol method) -> Hash[String, String]
+  def build_headers(headers, method)
+    h = {
+      "Accept" => content_type,
+      "Content-Type" => content_type
+    }.merge(authorization_header).merge(headers)
+    h.delete("Content-Type") if method == :get
+    h
+  end
+
+  #: () -> Hash[String, String]
+  def authorization_header
+    token ? { "Authorization" => "Bearer #{token}" } : {}
+  end
+
+  #: (untyped body, untyped form_data) -> String?
+  def request_body(body, form_data)
+    form_data || build_body(body)
+  end
+
+  #: (untyped body) -> String?
+  def build_body(body)
+    case body
+    when String then body
+    when NilClass then nil
+    else body.to_json
+    end
+  end
+
   #: (URI uri, Hash headers, untyped form_data) -> Faraday::Connection
-  def initialize_faraday_connection(uri, headers, form_data)
-    Faraday.new(url: "#{uri.scheme}://#{uri.host}", headers: headers) do |conn|
-      # Add retry middleware for resilience
+  def connection(uri, headers, form_data)
+    Faraday.new(url: "#{uri.scheme}://#{uri.host}:#{}", headers: headers) do |conn|
       conn.request :retry, max: 3, interval: 0.5, backoff_factor: 2,
-                   exceptions: [ Errno::ETIMEDOUT, "Timeout::Error", Faraday::TimeoutError ]
+                   exceptions: [Errno::ETIMEDOUT, "Timeout::Error", Faraday::TimeoutError]
 
       if form_data.present?
         conn.request :url_encoded
@@ -177,8 +141,6 @@ class ApplicationClient
       end
 
       conn.response :json, content_type: /\bjson$/
-
-      # Set reasonable timeouts
       conn.options.timeout = 30
       conn.options.open_timeout = 10
     end
