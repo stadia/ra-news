@@ -22,7 +22,7 @@ module RssHelper
     RssClient.feed(site.url)
   rescue StandardError => e
     logger.error "RSS parsing error for site #{site.id}: #{e.message}"
-    nil
+    raise e
   end
 
   # Returns the items from an RSS or Atom feed.
