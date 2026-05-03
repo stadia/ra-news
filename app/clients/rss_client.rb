@@ -2,9 +2,25 @@
 # rbs_inline: enabled
 
 require "rss"
+require "nokogiri"
 
 module RssClient
   module_function
+
+  # RSS/Atom 피드에서 자주 누락되는 XML 네임스페이스
+  KNOWN_NAMESPACES = {
+    "content" => "http://purl.org/rss/1.0/modules/content/",
+    "dc" => "http://purl.org/dc/elements/1.1/",
+    "atom" => "http://www.w3.org/2005/Atom",
+    "media" => "http://search.yahoo.com/mrss/",
+    "slash" => "http://purl.org/rss/1.0/modules/slash/",
+    "wfw" => "http://wellformedweb.org/CommentAPI/",
+    "feedburner" => "http://rssnamespace.org/feedburner/ext/1.0",
+    "sy" => "http://purl.org/rss/1.0/modules/syndication/",
+    "admin" => "http://webns.net/mvcb/",
+    "rdf" => "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  }.freeze
+  private_constant :KNOWN_NAMESPACES
 
   #: (String url) -> RSS::Rss | RSS::Atom::Feed | nil
   def feed(url)
@@ -12,6 +28,30 @@ module RssClient
     if response.status.between?(300, 399) && response.headers["location"]
       response = Faraday.get(response.headers["location"])
     end
-    RSS::Parser.parse(response.body, false)
+    parse(response.body)
+  end
+
+  #: (String xml) -> RSS::Rss | RSS::Atom::Feed | nil
+  def parse(xml)
+    RSS::Parser.parse(xml, false)
+  rescue RSS::NotWellFormedError
+    RSS::Parser.parse(repair_xml(xml), false)
+  end
+
+  #: (String xml) -> String
+  def repair_xml(xml)
+    doc = Nokogiri::XML(xml)
+    root = doc.at("rss") || doc.at("feed") || doc.root
+    return xml unless root
+
+    doc.errors.each do |error|
+      if error.to_s =~ /Namespace prefix (\w+) on/i
+        prefix = $1
+        uri = KNOWN_NAMESPACES[prefix] || "http://unknown.namespace/#{prefix}"
+        root["xmlns:#{prefix}"] = uri
+      end
+    end
+
+    doc.to_xml
   end
 end
