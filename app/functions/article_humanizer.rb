@@ -28,23 +28,26 @@ module ArticleHumanizer
   #: (untyped content) -> Hash[Symbol, untyped]
   def extract_content(content)
     text = content.to_s.strip
+    tagged_body = extract_tagged_block(text, "SUMMARY_BODY")
 
-    {
-      summary_key: extract_summary_key(text),
-      summary_detail: extract_summary_detail(text),
-      summary_body: extract_body(text)
-    }
+    if tagged_body.present?
+      {
+        summary_key: extract_summary_key(text),
+        summary_detail: extract_summary_detail(text),
+        summary_body: clean_body(tagged_body)
+      }
+    else
+      # 폴백: 태그 매칭 실패 시 summary_body만 업데이트
+      { summary_body: extract_body_fallback(text) }
+    end
   end
 
   #: (untyped content) -> String
   def extract_body(content)
-    body = extract_tagged_block(content, "SUMMARY_BODY") || content.to_s.strip
-    return body if body.blank?
+    text = content.to_s.strip
+    tagged_body = extract_tagged_block(text, "SUMMARY_BODY")
 
-    body = extract_humanized_section(body)
-    body = strip_leading_humanize_metadata(body)
-    body = strip_trailing_humanize_metadata(body)
-    body.strip
+    tagged_body.present? ? clean_body(tagged_body) : extract_body_fallback(text)
   end
 
   #: (untyped content) -> Array[String]
@@ -101,6 +104,35 @@ module ArticleHumanizer
     cleaned = text.sub(/\A```(?:[\w-]*)\s*\nhumanize-korean[^\n]*\n```\s*/m, "")
     cleaned = cleaned.sub(/\Ahumanize-korean\s+v[\d.]+\s+—.*?\n+/m, "")
     cleaned.sub(/\A---\s*\n+/m, "")
+  end
+
+  #: (String body) -> String
+  def clean_body(body)
+    body = extract_humanized_section(body)
+    body = strip_leading_humanize_metadata(body)
+    body = strip_trailing_humanize_metadata(body)
+    body.strip
+  end
+
+  #: (String text) -> String
+  def extract_body_fallback(text)
+    text = strip_tagged_blocks(text, "SUMMARY_KEY")
+    text = strip_summary_detail_blocks(text)
+    text = text.gsub(/<<<SUMMARY_BODY>>>\s*/m, "").gsub(/\s*<<<END_SUMMARY_BODY>>>/m, "")
+    text = strip_leading_humanize_metadata(text)
+    text = strip_trailing_humanize_metadata(text)
+    text.strip
+  end
+
+  #: (String content, String tag) -> String
+  def strip_tagged_blocks(content, tag)
+    escaped_tag = Regexp.escape(tag)
+    content.gsub(%r{<<<#{escaped_tag}>>>\s*.*?\s*<<<END_#{escaped_tag}>>>}m, "")
+  end
+
+  #: (String content) -> String
+  def strip_summary_detail_blocks(content)
+    content.gsub(%r{<<<SUMMARY_DETAIL:[^>]+>>>\s*.*?\s*<<<END_SUMMARY_DETAIL:[^>]+>>>}m, "")
   end
 
   #: (String text) -> String
