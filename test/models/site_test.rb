@@ -340,12 +340,12 @@ class SiteTest < ActiveSupport::TestCase
     rss_site = @rss_site
     rss_invocations = []
     rss_client = Object.new
-    RssClient.stub(:new, ->(**args) { rss_invocations << args; rss_client }) do
+    RssClient.stub(:new, ->(arg) { rss_invocations << arg; rss_client }) do
       result = rss_site.init_client
 
       assert_equal rss_client, result
     end
-    assert_equal [ { url: rss_site.url } ], rss_invocations
+    assert_equal [rss_site.url], rss_invocations
 
     # YouTube Client
     youtube_site = @youtube_site

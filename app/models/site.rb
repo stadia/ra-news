@@ -21,7 +21,7 @@ class Site < ApplicationRecord
   def init_client #: (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
     case client
     when "rss", "rss_page"
-      RssClient.new(url: url)
+      RssClient.new(url)
     when "gmail"
       Gmail.new
     when "hacker_news"
