@@ -11,10 +11,7 @@ module ArticleHumanizer
     body = article.summary_body.to_s
 
     <<~PROMPT
-      다음 텍스트를 자연스러운 한국어로 윤문하라.
-      원문의 의미와 마크다운 구조는 유지하라.
-      고유명사·수치·인용·영어 약어는 원형을 보존하라.
-
+      /humanize
       응답은 아래 JSON 형식만 반환하라.
       JSON 외에 설명·코멘트·상태줄·마크다운 코드펜스·구분선을 절대 포함하지 마라.
       JSON 키와 구조를 임의로 변경하지 마라.
@@ -27,7 +24,6 @@ module ArticleHumanizer
 
       각 필드의 내용만 윤문하여 동일한 JSON 구조로 반환하라.
       summary_key는 문자열 배열, summary_detail은 문자열 해시, summary_body는 마크다운 문자열이다.
-      summary_body 안에 <<<태그>>> 를 포함하지 마라.
     PROMPT
   end
 
