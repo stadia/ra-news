@@ -29,6 +29,10 @@ class RssSiteJob < ApplicationJob
 
     site.update!(last_checked_at: Time.zone.now)
     RssSiteJob.perform_later(ids) unless ids.empty?
+  rescue Faraday::ForbiddenError, Faraday::UnauthorizedError => e
+    logger.warn("Site #{site.id} (#{site.name}) discarded: #{e.class} - #{e.message}")
+    site.discard!
+    RssSiteJob.perform_later(ids) unless ids.empty?
   end
 
   private

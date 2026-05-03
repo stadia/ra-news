@@ -28,6 +28,8 @@ module RssClient
     if response.status.between?(300, 399) && response.headers["location"]
       response = Faraday.get(response.headers["location"])
     end
+    raise Faraday::ForbiddenError, response.body if response.status == 403
+    raise Faraday::UnauthorizedError, response.body if response.status == 401
     parse(response.body)
   end
 
