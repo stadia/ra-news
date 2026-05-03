@@ -8,6 +8,7 @@ class HackerNewsSiteJob < ApplicationJob
     return if site.nil?
 
     top_story_ids = HackerNews.new_stories
+    return if top_story_ids.blank?
 
     tag_terms = %w[ruby rails]
     tag_terms += Tag.where(is_confirmed: true, taggings_count: 2..).order(taggings_count: :desc).limit(50).pluck(:name)
