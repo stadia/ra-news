@@ -4,7 +4,6 @@
 class HumanMonolithAgent < RubyLLM::Agent
   model "deepseek-v4-flash", provider: :openrouter, assume_model_exists: true
   temperature 0.3
-  skills "app/skills", only: [ :humanize_korean ]
 
   schema do
     string :rewritten_text, description: "윤문된 텍스트 전체"

@@ -111,7 +111,7 @@ class ArticleAgentsService < OperationService
   end
 
   def run_humanize(article)
-    result = RubyLLM.chat(model: "gemini-3-flash-preview", provider: :gemini, assume_model_exists: true).with_skills.ask(ArticleHumanizer.prompt(article))
+    result = HumanizeKorean.chat.ask(ArticleHumanizer.prompt(article))
     humanized_content = ArticleHumanizer.extract_content(result.content)
 
     return Failure(:humanize_failed) if humanized_content[:summary_body].blank?

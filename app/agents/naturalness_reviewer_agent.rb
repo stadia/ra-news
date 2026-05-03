@@ -4,7 +4,6 @@
 class NaturalnessReviewerAgent < RubyLLM::Agent
   model "deepseek-v4-flash", provider: :openrouter, assume_model_exists: true
   temperature 0.2
-  skills "app/skills", only: [ :humanize_korean ]
 
   schema do
     object :meta, description: "검증 메타" do
