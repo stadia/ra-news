@@ -11,7 +11,7 @@ class RssClientTest < ActiveSupport::TestCase
   end
 
   test "feed 싱글톤 메서드를 가진다" do
-    assert RssClient.respond_to?(:feed)
+    assert_respond_to RssClient, :feed
   end
 
   test "정상 RSS XML을 파싱한다" do
@@ -29,6 +29,7 @@ class RssClientTest < ActiveSupport::TestCase
     XML
 
     result = RssClient.parse(xml)
+
     assert_kind_of RSS::Rss, result
     assert_equal "Test Feed", result.channel.title
   end
@@ -48,6 +49,7 @@ class RssClientTest < ActiveSupport::TestCase
     XML
 
     result = RssClient.parse(xml)
+
     assert_kind_of RSS::Rss, result
     assert_equal "Broken Feed", result.channel.title
   end
@@ -67,6 +69,7 @@ class RssClientTest < ActiveSupport::TestCase
     XML
 
     result = RssClient.parse(xml)
+
     assert_kind_of RSS::Rss, result
     assert_equal "DC Feed", result.channel.title
   end
@@ -88,6 +91,7 @@ class RssClientTest < ActiveSupport::TestCase
     XML
 
     result = RssClient.parse(xml)
+
     assert_kind_of RSS::Rss, result
     assert_equal "Multi NS Feed", result.channel.title
   end
@@ -107,6 +111,7 @@ class RssClientTest < ActiveSupport::TestCase
     XML
 
     result = RssClient.parse(xml)
+
     assert_kind_of RSS::Rss, result
     assert_equal "Unknown NS Feed", result.channel.title
   end
@@ -127,6 +132,7 @@ class RssClientTest < ActiveSupport::TestCase
 
     RssClient.stub(:repair_xml, ->(_) { flunk "repair_xml should not be called" }) do
       result = RssClient.parse(xml)
+
       assert_kind_of RSS::Rss, result
     end
   end
