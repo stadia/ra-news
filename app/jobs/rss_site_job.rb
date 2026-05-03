@@ -33,6 +33,9 @@ class RssSiteJob < ApplicationJob
     logger.warn("Site #{site.id} (#{site.name}) discarded: #{e.class} - #{e.message}")
     site.discard!
     RssSiteJob.perform_later(ids) unless ids.empty?
+  rescue Faraday::TooManyRequestsError => e
+    logger.warn("Site #{site.id} (#{site.name}) rate limited, skipping: #{e.message}")
+    RssSiteJob.perform_later(ids) unless ids.empty?
   end
 
   private
