@@ -45,7 +45,7 @@ class Site < ApplicationRecord
     parsed = URI.parse(url)
     return if parsed.scheme.blank? || parsed.host.blank?
 
-    port_part = ":#{parsed.port}" if parsed.port && ![80, 443].include?(parsed.port)
+    port_part = ":#{parsed.port}" if parsed.port && ![ 80, 443 ].include?(parsed.port)
     self.base_uri = "#{parsed.scheme}://#{parsed.host}#{port_part}"
     self.path = parsed.path.presence || "/"
   rescue URI::InvalidURIError

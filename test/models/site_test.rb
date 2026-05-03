@@ -345,7 +345,7 @@ class SiteTest < ActiveSupport::TestCase
 
       assert_equal rss_client, result
     end
-    assert_equal [rss_site.url], rss_invocations
+    assert_equal [ rss_site.url ], rss_invocations
 
     # YouTube Client
     youtube_site = @youtube_site

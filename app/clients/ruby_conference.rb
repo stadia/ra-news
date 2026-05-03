@@ -5,7 +5,7 @@ class RubyConference
   BASE_URL = "https://raw.githubusercontent.com/ruby-conferences/ruby-conferences.github.io/refs/heads/main"
 
   def conferences #: Array[untyped]
-    YAML.load(Faraday.get("#{BASE_URL}/_data/conferences.yml").body, permitted_classes: [Date])
+    YAML.load(Faraday.get("#{BASE_URL}/_data/conferences.yml").body, permitted_classes: [ Date ])
   end
 
   def conferences_cached #: Array[untyped]
