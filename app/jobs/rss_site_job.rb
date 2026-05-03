@@ -13,7 +13,7 @@ class RssSiteJob < ApplicationJob
   def perform(ids)
     ids = [ ids ] unless ids.is_a?(Array)
     site_id = ids.shift
-    site = Site.find_by(id: site_id)
+    site = Site.kept.find_by(id: site_id)
     if site.nil?
       RssSiteJob.perform_later(ids) unless ids.empty?
       return
