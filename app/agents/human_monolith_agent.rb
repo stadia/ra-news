@@ -2,8 +2,10 @@
 # rbs_inline: enabled
 
 class HumanMonolithAgent < RubyLLM::Agent
-  model "gemini-3-flash-preview"
+  model "deepseek-v4-flash", provider: :openrouter, assume_model_exists: true
+  # model "gemini-3-flash-preview"
   temperature 0.3
+  # skills "app/skills", only: [ "humanize-korean" ]
 
   schema do
     array :summary_key, of: :string, description: "윤문된 핵심 요약 배열 (원본 길이·항목 수 유지)"

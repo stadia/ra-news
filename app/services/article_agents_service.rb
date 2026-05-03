@@ -112,7 +112,7 @@ class ArticleAgentsService < OperationService
 
   def run_humanize(article)
     prompt = ArticleHumanizer.prompt(article)
-    message = HumanMonolithAgent.new.ask(prompt)
+    message = HumanMonolithAgent.chat.ask(prompt)
     humanized = extract_humanized(message.content)
 
     return Failure(:humanize_failed) if humanized.blank? || humanized[:summary_body].blank?
