@@ -6,48 +6,114 @@ module ArticleHumanizer
 
   #: (Article article) -> String
   def prompt(article)
+    keys = Array(article.summary_key).map(&:to_s).reject(&:blank?)
+    details = article.summary_detail.to_h.transform_values(&:to_s)
+    body = article.summary_body.to_s
+
     <<~PROMPT
-      /humanize
       다음 텍스트를 자연스러운 한국어로 윤문하라.
-      응답에는 설명, 상태줄, 메타데이터, 코드 펜스, 구분선, 표를 포함하지 말고 아래 태그 블록만 그대로 유지하여 반환하라.
-      각 태그의 이름과 순서는 절대 바꾸지 말고, 태그 사이의 내용만 윤문하라.
       원문의 의미와 마크다운 구조는 유지하라.
+      고유명사·수치·인용·영어 약어는 원형을 보존하라.
 
-      <<<SUMMARY_KEY>>>
-      #{format_summary_key(article.summary_key)}
-      <<<END_SUMMARY_KEY>>>
+      응답은 아래 JSON 형식만 반환하라.
+      JSON 외에 설명·코멘트·상태줄·마크다운 코드펜스·구분선을 절대 포함하지 마라.
+      JSON 키와 구조를 임의로 변경하지 마라.
 
-      #{format_summary_detail_blocks(article.summary_detail)}
+      {
+        "summary_key": #{keys.to_json},
+        "summary_detail": #{details.to_json},
+        "summary_body": #{body.to_json}
+      }
 
-      <<<SUMMARY_BODY>>>
-      #{article.summary_body}
-      <<<END_SUMMARY_BODY>>>
+      각 필드의 내용만 윤문하여 동일한 JSON 구조로 반환하라.
+      summary_key는 문자열 배열, summary_detail은 문자열 해시, summary_body는 마크다운 문자열이다.
+      summary_body 안에 <<<태그>>> 를 포함하지 마라.
     PROMPT
   end
 
   #: (untyped content) -> Hash[Symbol, untyped]
   def extract_content(content)
     text = content.to_s.strip
-    tagged_body = extract_tagged_block(text, "SUMMARY_BODY")
+    json = extract_json(text)
 
-    if tagged_body.present?
-      {
-        summary_key: extract_summary_key(text),
-        summary_detail: extract_summary_detail(text),
-        summary_body: clean_body(tagged_body)
-      }
+    if json.present?
+      build_result_from_json(json)
     else
-      # 폴백: 태그 매칭 실패 시 summary_body만 업데이트
-      { summary_body: extract_body_fallback(text) }
+      # 폴백: JSON 파싱 실패 시 기존 태그 기반 파싱
+      tagged_body = extract_tagged_block(text, "SUMMARY_BODY")
+      if tagged_body.present?
+        {
+          summary_key: extract_summary_key(text),
+          summary_detail: extract_summary_detail(text),
+          summary_body: clean_body(tagged_body)
+        }
+      else
+        { summary_body: extract_body_fallback(text) }
+      end
     end
   end
 
-  #: (untyped content) -> String
-  def extract_body(content)
-    text = content.to_s.strip
-    tagged_body = extract_tagged_block(text, "SUMMARY_BODY")
+  # --- JSON 파싱 ---
 
-    tagged_body.present? ? clean_body(tagged_body) : extract_body_fallback(text)
+  #: (String text) -> Hash?
+  def extract_json(text)
+    cleaned = text.sub(/\A```(?:json)?\s*\n?/m, "").sub(/\n?```\s*\z/m, "")
+    json_match = cleaned.match(/\{.*\}/m)
+    return nil unless json_match
+
+    JSON.parse(json_match[0])
+  rescue JSON::ParserError
+    nil
+  end
+
+  #: (Hash json) -> Hash[Symbol, untyped]
+  def build_result_from_json(json)
+    result = {}
+
+    if json["summary_key"].is_a?(Array)
+      result[:summary_key] = json["summary_key"].map(&:to_s).reject(&:blank?)
+    end
+
+    if json["summary_detail"].is_a?(Hash)
+      result[:summary_detail] = json["summary_detail"].transform_values(&:to_s)
+    end
+
+    body = json["summary_body"].to_s.strip
+    if body.present?
+      result[:summary_body] = body
+    end
+
+    result
+  end
+
+  # --- 폴백: 태그 기반 파싱 ---
+
+  #: (String body) -> String
+  def clean_body(body)
+    body = strip_leading_ai_preamble(body)
+    body = strip_leading_humanize_metadata(body)
+    body = strip_trailing_humanize_metadata(body)
+    body = strip_trailing_tags(body)
+    body.strip
+  end
+
+  #: (String text) -> String
+  def extract_body_fallback(text)
+    text = strip_tagged_blocks(text, "SUMMARY_KEY")
+    text = strip_summary_detail_blocks(text)
+    text = text.gsub(/<<<SUMMARY_BODY>>>{0,1}\s*/m, "").gsub(/\s*<<<END_SUMMARY_BODY>>>{0,1}/m, "")
+    text = strip_leading_ai_preamble(text)
+    text = strip_leading_humanize_metadata(text)
+    text = strip_trailing_humanize_metadata(text)
+    text = strip_trailing_tags(text)
+    text.strip
+  end
+
+  #: (untyped content, String tag) -> String?
+  def extract_tagged_block(content, tag)
+    escaped_tag = Regexp.escape(tag)
+    match = content.to_s.match(%r{<<<#{escaped_tag}>>>\s*(.+?)\s*<<<END_#{escaped_tag}>>>{0,1}}m)
+    match && match[1].strip
   end
 
   #: (untyped content) -> Array[String]
@@ -71,41 +137,10 @@ module ArticleHumanizer
   end
 
   #: (String text) -> String
-  def extract_humanized_section(text)
-    match = text.match(/##\s*윤문 결과\s*(.+?)(?=\n---\s*\n|\n##\s*요약\b|\z)/m)
-    match ? match[1].strip : text
-  end
-
-  #: (untyped content, String tag) -> String?
-  def extract_tagged_block(content, tag)
-    escaped_tag = Regexp.escape(tag)
-    match = content.to_s.match(%r{<<<#{escaped_tag}>>>\s*(.+?)\s*<<<END_#{escaped_tag}>>>}m)
-    match && match[1].strip
-  end
-
-  #: (untyped summary_key) -> String
-  def format_summary_key(summary_key)
-    Array(summary_key).map { |item| "- #{item}" }.join("\n")
-  end
-
-  #: (untyped summary_detail) -> String
-  def format_summary_detail_blocks(summary_detail)
-    summary_detail.to_h.map do |key, value|
-      <<~BLOCK.strip
-        <<<SUMMARY_DETAIL:#{key}>>>
-        #{value}
-        <<<END_SUMMARY_DETAIL:#{key}>>>
-      BLOCK
-    end.join("\n\n")
-  end
-
-  #: (String text) -> String
   def strip_leading_ai_preamble(text)
-    # LLM이 본문 앞에 붙이는 분석 코멘트를 제거 (실제 콘텐츠는 ### 마크다운 헤딩으로 시작)
     match = text.match(/\A.*?(?=###\s)/m)
     if match && match[0].strip.present?
       preamble = match[0].strip
-      # 프리앰블이 실제 본문보다 짧은 경우만 제거 (안전장치)
       text.sub(/\A#{Regexp.escape(preamble)}/m, "") if preamble.length < text.length / 2
     else
       text
@@ -124,26 +159,12 @@ module ArticleHumanizer
     cleaned.sub(/\A---\s*\n+/m, "")
   end
 
-  #: (String body) -> String
-  def clean_body(body)
-    body = extract_humanized_section(body)
-    body = strip_leading_ai_preamble(body)
-    body = strip_leading_humanize_metadata(body)
-    body = strip_trailing_humanize_metadata(body)
-    body = strip_trailing_tags(body)
-    body.strip
-  end
-
   #: (String text) -> String
-  def extract_body_fallback(text)
-    text = strip_tagged_blocks(text, "SUMMARY_KEY")
-    text = strip_summary_detail_blocks(text)
-    text = text.gsub(/<<<SUMMARY_BODY>>>{0,1}\s*/m, "").gsub(/\s*<<<END_SUMMARY_BODY>>>{0,1}/m, "")
-    text = strip_leading_ai_preamble(text)
-    text = strip_leading_humanize_metadata(text)
-    text = strip_trailing_humanize_metadata(text)
-    text = strip_trailing_tags(text)
-    text.strip
+  def strip_trailing_humanize_metadata(text)
+    cleaned = text.sub(/\n+##\s*요약\b.*\z/m, "")
+    cleaned = cleaned.sub(/\n+###\s*(?:탐지·처방 내역|자체검증)\b.*\z/m, "")
+    cleaned = cleaned.sub(/\n+\|\s*항목\s*\|\s*내용\s*\|.*\z/m, "")
+    cleaned.sub(/\n+>\s*원문이 기술 리포트.*\z/m, "")
   end
 
   #: (String content, String tag) -> String
@@ -155,13 +176,5 @@ module ArticleHumanizer
   #: (String content) -> String
   def strip_summary_detail_blocks(content)
     content.gsub(%r{<<<SUMMARY_DETAIL:[^>]+>>>\s*.*?\s*<<<END_SUMMARY_DETAIL:[^>]+>>>}m, "")
-  end
-
-  #: (String text) -> String
-  def strip_trailing_humanize_metadata(text)
-    cleaned = text.sub(/\n+##\s*요약\b.*\z/m, "")
-    cleaned = cleaned.sub(/\n+###\s*(?:탐지·처방 내역|자체검증)\b.*\z/m, "")
-    cleaned = cleaned.sub(/\n+\|\s*항목\s*\|\s*내용\s*\|.*\z/m, "")
-    cleaned.sub(/\n+>\s*원문이 기술 리포트.*\z/m, "")
   end
 end
