@@ -18,14 +18,14 @@ class SiteTest < ActiveSupport::TestCase
     site = Site.new(
       name: "Valid Site",
       client: :rss,
-      base_uri: "https://example.com/rss"
+      url: "https://example.com/rss"
     )
 
     assert_predicate site, :valid?
   end
 
   test "name은 필수 항목이어야 한다" do
-    site = Site.new(client: :rss, base_uri: "https://example.com/rss")
+    site = Site.new(client: :rss, url: "https://example.com/rss")
     site.client = nil
 
     assert_not site.valid?
@@ -33,17 +33,17 @@ class SiteTest < ActiveSupport::TestCase
   end
 
   test "client는 필수 항목이어야 한다" do
-    site = Site.new(name: "Test Site", base_uri: "https://example.com/rss")
+    site = Site.new(name: "Test Site", url: "https://example.com/rss")
     site.client = nil
 
     assert_not site.valid?
     assert_includes site.errors[:client], "내용을 입력해 주세요"
   end
 
-  test "base_uri가 없는 사이트를 허용해야 한다" do
+  test "url이 없는 사이트를 허용해야 한다" do
     site = Site.new(name: "No URI Site", client: :gmail)
 
-    assert_predicate site, :valid?, "Gmail sites should not require base_uri"
+    assert_predicate site, :valid?, "Gmail sites should not require url"
   end
 
   # ========== Enum Tests ==========
@@ -126,7 +126,7 @@ class SiteTest < ActiveSupport::TestCase
     client = @rss_site.init_client
 
     assert_kind_of RssClient, client
-    assert_equal @rss_site.base_uri, client.instance_variable_get(:@base_uri)
+    assert_equal @rss_site.url, client.url
   end
 
   test "init_client는 rss_page 클라이언트에 대해 RssClient를 반환해야 한다" do
@@ -187,18 +187,14 @@ class SiteTest < ActiveSupport::TestCase
 
   # ========== RSS-Specific Tests ==========
 
-  test "RssClient를 올바른 base_uri로 초기화해야 한다" do
+  test "RssClient를 올바른 url로 초기화해야 한다" do
     rss_sites = [ @rss_site, sites(:rails_blog) ]
 
     rss_sites.each do |site|
       client = site.init_client
 
       assert_kind_of RssClient, client
-
-      # Check that base_uri is passed correctly
-      client_base_uri = client.instance_variable_get(:@base_uri)
-
-      assert_equal site.base_uri, client_base_uri
+      assert_equal site.url, client.url
     end
   end
 
@@ -216,7 +212,7 @@ class SiteTest < ActiveSupport::TestCase
       site = Site.new(
         name: name,
         client: :rss,
-        base_uri: "https://korean#{index}.example.com/rss"
+        url: "https://korean#{index}.example.com/rss"
       )
 
       assert_predicate site, :valid?, "Korean site name '#{name}' should be valid"
@@ -226,18 +222,19 @@ class SiteTest < ActiveSupport::TestCase
     end
   end
 
-  test "base_uri에 있는 한글 문자를 처리해야 한다" do
-    # While uncommon, Korean domains do exist
+  test "url에 있는 IDN(punycode) 문자를 처리해야 한다" do
+    # IDN 도메인(punycode)은 URI.parse에서 유효하게 처리됨
     site = Site.new(
       name: "Korean Domain Site",
       client: :rss,
-      base_uri: "https://한국.example.com/rss"
+      url: "https://xn--3e0b70gj.example.com/rss"
     )
 
     assert_predicate site, :valid?
     site.save!
 
-    assert_equal "https://한국.example.com/rss", site.base_uri
+    assert_equal "https://xn--3e0b70gj.example.com", site.base_uri
+    assert_equal "/rss", site.path
   end
 
   # ========== Edge Cases and Error Handling ==========
@@ -278,7 +275,7 @@ class SiteTest < ActiveSupport::TestCase
     end
   end
 
-  test "base_uri에 있는 유효하지 않은 URI를 정상적으로 처리해야 한다" do
+  test "url에 있는 유효하지 않은 URI를 정상적으로 처리해야 한다" do
     invalid_uris = [
       "not-a-uri",
       "ftp://invalid-protocol.com",
@@ -287,7 +284,7 @@ class SiteTest < ActiveSupport::TestCase
     ]
 
     invalid_uris.each do |uri|
-      site = Site.new(name: "Invalid URI Test", client: :rss, base_uri: uri)
+      site = Site.new(name: "Invalid URI Test", client: :rss, url: uri)
 
       # Site creation should work, validation depends on requirements
       if site.valid?
@@ -348,7 +345,7 @@ class SiteTest < ActiveSupport::TestCase
 
       assert_equal rss_client, result
     end
-    assert_equal [ { base_uri: rss_site.base_uri } ], rss_invocations
+    assert_equal [ { url: rss_site.url } ], rss_invocations
 
     # YouTube Client
     youtube_site = @youtube_site

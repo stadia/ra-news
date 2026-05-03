@@ -3,8 +3,7 @@
 
 class HackerNews < ApplicationClient
   def initialize #: HackerNews
-    # Initialize with the base URI for Hacker News API
-    super(base_uri: "https://hacker-news.firebaseio.com/v0")
+    super(url: "https://hacker-news.firebaseio.com/v0")
   end
 
   def top_stories

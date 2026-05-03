@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-require "rss"
-
 class RssClient < ApplicationClient
   #: (String path) -> RSS::Rss?
   def feed(path)

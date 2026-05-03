@@ -9,15 +9,12 @@ class ApplicationClient
   class NotFound < Error; end
   class InternalError < Error; end
 
-  BASE_URI = "https://example.org"
-
-  #: (?token: String, ?base_uri: String) -> ApplicationClient
-  def initialize(token: nil, base_uri: nil)
-    @token = token
-    @base_uri = base_uri || BASE_URI
+  #: (?url: String) -> ApplicationClient
+  def initialize(url: BASE_URI)
+    @url = url
   end
 
-  attr_reader :token, :base_uri
+  attr_reader :url
 
   #: (String path, ?headers: Hash, ?query: untyped) -> Faraday::Response
   def get(path, headers: {}, query: nil)
@@ -73,8 +70,9 @@ class ApplicationClient
 
   private
 
+  BASE_URI = "https://example.org"
   HTTP_METHODS = %i[get post patch put delete].freeze
-  private_constant :HTTP_METHODS
+  private_constant :BASE_URI, :HTTP_METHODS
 
   #: (Symbol method, String path, ?headers: Hash, ?query: untyped, ?body: untyped, ?form_data: untyped) -> Faraday::Response
   def request(method, path, headers: {}, query: nil, body: nil, form_data: nil)
@@ -86,14 +84,14 @@ class ApplicationClient
 
     logger.debug("#{method.to_s.upcase}: #{uri}")
 
-    connection(uri, all_headers, form_data).public_send(method, uri.request_uri, request_body(body, form_data)) do |req|
+    build_connection(uri, all_headers, form_data).public_send(method, uri.request_uri, request_body(body, form_data)) do |req|
       req.params = uri.query if uri.query.present?
     end
   end
 
   #: (String path, untyped query) -> URI::Generic
   def build_uri(path, query)
-    uri = URI("#{base_uri}#{path}")
+    uri = URI("#{url}#{path}")
     merged = Rack::Utils.parse_query(uri.query).with_defaults(default_query_params).merge(query || {})
     uri.query = Rack::Utils.build_query(merged) if merged.present?
     uri
@@ -101,17 +99,9 @@ class ApplicationClient
 
   #: (Hash headers, Symbol method) -> Hash[String, String]
   def build_headers(headers, method)
-    h = {
-      "Accept" => content_type,
-      "Content-Type" => content_type
-    }.merge(authorization_header).merge(headers)
+    h = { "Accept" => content_type, "Content-Type" => content_type }.merge(headers)
     h.delete("Content-Type") if method == :get
     h
-  end
-
-  #: () -> Hash[String, String]
-  def authorization_header
-    token ? { "Authorization" => "Bearer #{token}" } : {}
   end
 
   #: (untyped body, untyped form_data) -> String?
@@ -129,8 +119,8 @@ class ApplicationClient
   end
 
   #: (URI uri, Hash headers, untyped form_data) -> Faraday::Connection
-  def connection(uri, headers, form_data)
-    Faraday.new(url: "#{uri.scheme}://#{uri.host}:#{}", headers: headers) do |conn|
+  def build_connection(uri, headers, form_data)
+    Faraday.new(url: "#{uri.scheme}://#{uri.host}#{":#{uri.port}" if uri.port && ![80, 443].include?(uri.port)}", headers: headers) do |conn|
       conn.request :retry, max: 3, interval: 0.5, backoff_factor: 2,
                    exceptions: [Errno::ETIMEDOUT, "Timeout::Error", Faraday::TimeoutError]
 

@@ -3,8 +3,7 @@
 
 class Reddit < ApplicationClient
   def initialize #: Reddit
-    # Initialize with the base URI for Hacker News API
-    super(base_uri: "https://www.reddit.com")
+    super(url: "https://www.reddit.com")
   end
 
   def feed

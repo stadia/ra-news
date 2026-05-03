@@ -4,27 +4,35 @@
 ruby_weekly:
   name: Ruby Weekly
   client: rss
-  base_uri: https://rubyweekly.com/rss
+  url: https://rubyweekly.com/rss
+  base_uri: https://rubyweekly.com
+  path: /rss
   last_checked_at: <%= 1.week.ago %>
 
 rails_blog:
   name: Rails Blog
   client: rss
-  base_uri: https://weblog.rubyonrails.org/feed.xml
+  url: https://weblog.rubyonrails.org/feed.xml
+  base_uri: https://weblog.rubyonrails.org
+  path: /feed.xml
   last_checked_at: <%= 2.days.ago %>
 
 # RSS Page Sites
 hacker_news_ruby:
   name: Hacker News Ruby
   client: rss_page
-  base_uri: https://hn.algolia.com/api/v1/search?query=ruby&tags=story
+  url: https://hn.algolia.com/api/v1/search?query=ruby&tags=story
+  base_uri: https://hn.algolia.com
+  path: /api/v1/search
   last_checked_at: <%= 3.days.ago %>
 
 # YouTube Channel
 ruby_conf:
   name: RubyConf
   client: youtube
-  base_uri: https://youtube.com/c/rubyconf
+  url: https://youtube.com/c/rubyconf
+  base_uri: https://youtube.com
+  path: /c/rubyconf
   channel: UCWnPjmqvljcafA0z2U1fwKQ
   last_checked_at: <%= 1.day.ago %>
 
@@ -38,14 +46,18 @@ newsletter:
 hn_site:
   name: Hacker News
   client: hacker_news
+  url: https://news.ycombinator.com
   base_uri: https://news.ycombinator.com
+  path: /
   last_checked_at: <%= 4.hours.ago %>
 
 # Site without last_checked_at (for testing before_create callback)
 new_site:
   name: New Ruby Site
   client: rss
-  base_uri: https://newrubysite.com/rss
+  url: https://newrubysite.com/rss
+  base_uri: https://newrubysite.com
+  path: /rss
 
 # Site for testing validations
 minimal_site:
@@ -56,7 +68,9 @@ minimal_site:
 one:
   name: Site One
   client: rss
-  base_uri: https://siteone.com/feed.xml
+  url: https://siteone.com/feed.xml
+  base_uri: https://siteone.com
+  path: /feed.xml
   last_checked_at: <%= 1.week.ago %>
 
 two:
