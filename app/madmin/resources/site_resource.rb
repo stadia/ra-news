@@ -5,7 +5,7 @@ class SiteResource < Madmin::Resource
   attribute :url, index: true
   attribute :base_uri, form: false, index: true
   attribute :email, index: true
-  attribute :path, form: false, index: true
+  attribute :path, form: false
   attribute :channel, index: true
   attribute :last_checked_at, index: true, form: false
 

@@ -12,10 +12,10 @@ class RubyConferenceTest < ActiveSupport::TestCase
   end
 
   test "RubyConference는 conferences 싱글톤 메서드를 가진다" do
-    assert RubyConference.respond_to?(:conferences)
+    assert_respond_to RubyConference, :conferences
   end
 
   test "RubyConference는 conferences_cached 싱글톤 메서드를 가진다" do
-    assert RubyConference.respond_to?(:conferences_cached)
+    assert_respond_to RubyConference, :conferences_cached
   end
 end

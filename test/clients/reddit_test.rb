@@ -8,6 +8,6 @@ class RedditTest < ActiveSupport::TestCase
   end
 
   test "Reddit은 feed 싱글톤 메서드를 가진다" do
-    assert Reddit.respond_to?(:feed)
+    assert_respond_to Reddit, :feed
   end
 end
