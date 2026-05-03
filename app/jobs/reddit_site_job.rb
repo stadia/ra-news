@@ -20,8 +20,7 @@ class RedditSiteJob < ApplicationJob
     site = Site.reddit.first
     return if site.nil?
 
-    client = site.init_client
-    feed = client.feed
+    feed = Reddit.feed
 
     feed.items.each do |item|
       process_item(item, site)

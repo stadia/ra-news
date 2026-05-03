@@ -122,29 +122,10 @@ class SiteTest < ActiveSupport::TestCase
 
   # ========== Instance Method Tests ==========
 
-  test "init_client는 rss 클라이언트에 대해 RssClient 모듈을 반환해야 한다" do
-    client = @rss_site.init_client
-
-    assert_equal RssClient, client
-  end
-
-  test "init_client는 rss_page 클라이언트에 대해 RssClient 모듈을 반환해야 한다" do
-    rss_page_site = sites(:hacker_news_ruby)
-    client = rss_page_site.init_client
-
-    assert_equal RssClient, client
-  end
-
   test "init_client는 gmail 클라이언트에 대해 Gmail을 반환해야 한다" do
     client = @gmail_site.init_client
 
     assert_kind_of Gmail, client
-  end
-
-  test "init_client는 hacker_news 클라이언트에 대해 HackerNews 모듈을 반환해야 한다" do
-    client = @hn_site.init_client
-
-    assert_equal HackerNews, client
   end
 
   test "init_client는 youtube 클라이언트에 대해 Youtube::Channel을 반환해야 한다" do
@@ -185,16 +166,6 @@ class SiteTest < ActiveSupport::TestCase
   end
 
   # ========== RSS-Specific Tests ==========
-
-  test "RssClient 모듈을 반환한다" do
-    rss_sites = [ @rss_site, sites(:rails_blog) ]
-
-    rss_sites.each do |site|
-      client = site.init_client
-
-      assert_equal RssClient, client
-    end
-  end
 
   # ========== Korean Content Tests ==========
 
@@ -284,16 +255,7 @@ class SiteTest < ActiveSupport::TestCase
     invalid_uris.each do |uri|
       site = Site.new(name: "Invalid URI Test", client: :rss, url: uri)
 
-      # Site creation should work, validation depends on requirements
-      if site.valid?
-        site.save!
-        # Client initialization should handle invalid URIs gracefully
-        assert_nothing_raised do
-          client = site.init_client
-
-          assert_equal RssClient, client
-        end
-      end
+      assert_nothing_raised { site.valid? }
     end
   end
 

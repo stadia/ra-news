@@ -7,8 +7,7 @@ class HackerNewsSiteJob < ApplicationJob
     site = Site.hacker_news.first
     return if site.nil?
 
-    client = site.init_client
-    top_story_ids = client.new_stories
+    top_story_ids = HackerNews.new_stories
 
     tag_terms = %w[ruby rails]
     tag_terms += Tag.where(is_confirmed: true, taggings_count: 2..).order(taggings_count: :desc).limit(50).pluck(:name)
@@ -17,7 +16,7 @@ class HackerNewsSiteJob < ApplicationJob
 
     # Process each story ID
     top_story_ids.each do |id|
-      item = client.item(id)
+      item = HackerNews.item(id)
 
       next if item.nil? || item["type"] != "story" || item["url"].blank?
 

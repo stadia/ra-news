@@ -20,14 +20,8 @@ class Site < ApplicationRecord
 
   def init_client #: (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
     case client
-    when "rss", "rss_page"
-      RssClient
     when "gmail"
       Gmail.new
-    when "hacker_news"
-      HackerNews
-    when "reddit"
-      Reddit
     when "youtube"
       return nil if channel.blank?
 
