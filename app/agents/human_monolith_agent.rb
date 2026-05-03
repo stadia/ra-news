@@ -2,55 +2,40 @@
 # rbs_inline: enabled
 
 class HumanMonolithAgent < RubyLLM::Agent
-  model "deepseek-v4-flash", provider: :openrouter, assume_model_exists: true
+  model "gemini-3-flash-preview"
   temperature 0.3
 
   schema do
-    string :rewritten_text, description: "윤문된 텍스트 전체"
+    array :summary_key, of: :string, description: "윤문된 핵심 요약 배열 (원본 길이·항목 수 유지)"
+
+    object :summary_detail, description: "윤문된 상세 요약" do
+      string :introduction, description: "윤문된 introduction (200-300자)"
+      string :conclusion, description: "윤문된 conclusion (200-300자)"
+    end
+
+    string :summary_body, description: "윤문된 마크다운 본론 (헤딩·구조·링크 보존)"
 
     object :metrics, description: "윤문 메트릭" do
-      integer :original_chars, description: "원본 글자수"
-      integer :rewritten_chars, description: "윤문 글자수"
+      integer :original_chars, description: "원본 총 글자수 (key+detail+body)"
+      integer :rewritten_chars, description: "윤문 총 글자수"
       number :change_rate, description: "변경률 (0.0~1.0)"
-      integer :self_check_passed, description: "자체검증 통과 항목 수 (최대 6)"
       string :grade, description: "등급: A/B/C/D"
-      string :estimated_genre, description: "추정 장르"
     end
 
-    object :category_detection, description: "카테고리 탐지 (before → after)" do
-      array :items, description: "카테고리 탐지 표 항목" do
-        string :id, description: "패턴 ID (예: D-4)"
-        string :pattern, description: "패턴명"
-        integer :before, description: "원문 탐지 수"
-        integer :after, description: "윤문 후 탐지 수"
-      end
-    end
-
-    array :highlights, description: "주요 변경 하이라이트 (3~5건)" do
-      string :category, description: "카테고리 ID"
-      string :before, description: "변경 전 (100자 이내)"
-      string :after, description: "변경 후 (100자 이내)"
-    end
-
-    array :self_check_items, description: "자체검증 6항 상세 결과" do
-      string :label, description: "검증 항목명"
-      boolean :passed, description: "통과 여부"
-    end
-
-    array :residual_findings, description: "잔존 finding (있으면)" do
-      string :id, description: "패턴 ID"
-      string :severity, description: "심각도"
-      string :reason, description: "잔존 사유"
-    end
-
-    string :grade_reason, description: "등급 판정 사유"
-    string :status_message, description: "한 줄 상태 메시지"
-    boolean :over_polish_aborted, description: "과윤문으로 인한 중단 여부"
+    boolean :over_polish_aborted, description: "변경률 50% 초과로 롤백되었는지 여부"
   end
+
+  QUICK_RULES_PATH = Rails.root.join("app/skills/humanize-korean/references/quick-rules.md").freeze
 
   instructions {
     <<~PROMPT
-#{File.read(File.join(__dir__, "humanize-monolith.md"))}
+      #{File.read(File.join(__dir__, "humanize-monolith.md"))}
+
+      ---
+
+      # Quick Rules (slim rulebook — S1·S2 핵심 패턴)
+
+      #{File.read(QUICK_RULES_PATH)}
     PROMPT
   }
 end

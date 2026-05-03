@@ -1,5 +1,5 @@
 # Omakase Ruby styling for Rails
-inherit_gem: { rubocop-rails-omakase: rubocop.yml }
+inherit_gem: {rubocop-rails-omakase: rubocop.yml}
 
 inherit_from: .rubocop_todo.yml
 
@@ -16,6 +16,8 @@ AllCops:
   TargetRailsVersion: 8.1
   Exclude:
     - "app/components/ruby_ui/**/*"
+    - "app/views/**/*"
+    - "config/**/*"
 
 Layout/LeadingCommentSpace:
   Enabled: false

@@ -111,15 +111,29 @@ class ArticleAgentsService < OperationService
   end
 
   def run_humanize(article)
-    result = HumanizeKorean.chat.ask(ArticleHumanizer.prompt(article))
-    humanized_content = ArticleHumanizer.extract_content(result.content)
+    prompt = ArticleHumanizer.prompt(article)
+    message = HumanMonolithAgent.new.ask(prompt)
+    humanized = extract_humanized(message.content)
 
-    return Failure(:humanize_failed) if humanized_content[:summary_body].blank?
+    return Failure(:humanize_failed) if humanized.blank? || humanized[:summary_body].blank?
 
-    article.update!(humanized_content)
+    logger.info "Humanize metrics for article #{article.id}: #{message.content['metrics']}"
+    article.update!(humanized)
     Success(article)
   rescue StandardError => e
     logger.error "Failed to humanize article #{article.id}: #{e.message}"
     Failure(:humanize_failed)
+  end
+
+  def extract_humanized(content)
+    return {} if content.blank?
+    return {} if content["over_polish_aborted"]
+
+    result = {}
+    result[:summary_key] = content["summary_key"].map(&:to_s).reject(&:blank?) if content["summary_key"].is_a?(Array)
+    result[:summary_detail] = content["summary_detail"].transform_values(&:to_s) if content["summary_detail"].is_a?(Hash)
+    body = content["summary_body"].to_s.strip
+    result[:summary_body] = body if body.present?
+    result
   end
 end
