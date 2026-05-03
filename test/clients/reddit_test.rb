@@ -3,11 +3,11 @@
 require "test_helper"
 
 class RedditTest < ActiveSupport::TestCase
-  test "Reddit가 정의되어 있다" do
-    assert_kind_of Class, Reddit
+  test "Reddit는 모듈이다" do
+    assert_kind_of Module, Reddit
   end
 
-  test "Reddit은 feed 메서드를 가진다" do
-    assert Reddit.method_defined?(:feed)
+  test "Reddit은 feed 싱글톤 메서드를 가진다" do
+    assert Reddit.respond_to?(:feed)
   end
 end

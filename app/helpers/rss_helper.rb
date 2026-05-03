@@ -19,7 +19,7 @@ module RssHelper
   # Fetches and parses the RSS feed for a site.
   #: (Site site) -> RSS::Rss || RSS::Atom::Feed
   def fetch_feed(site)
-    site.init_client&.feed
+    RssClient.feed(site.url)
   rescue StandardError => e
     logger.error "RSS parsing error for site #{site.id}: #{e.message}"
     nil

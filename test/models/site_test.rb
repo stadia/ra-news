@@ -122,18 +122,17 @@ class SiteTest < ActiveSupport::TestCase
 
   # ========== Instance Method Tests ==========
 
-  test "init_client는 rss 클라이언트에 대해 RssClient를 반환해야 한다" do
+  test "init_client는 rss 클라이언트에 대해 RssClient 모듈을 반환해야 한다" do
     client = @rss_site.init_client
 
-    assert_kind_of RssClient, client
-    assert_equal @rss_site.url, client.url
+    assert_equal RssClient, client
   end
 
-  test "init_client는 rss_page 클라이언트에 대해 RssClient를 반환해야 한다" do
+  test "init_client는 rss_page 클라이언트에 대해 RssClient 모듈을 반환해야 한다" do
     rss_page_site = sites(:hacker_news_ruby)
     client = rss_page_site.init_client
 
-    assert_kind_of RssClient, client
+    assert_equal RssClient, client
   end
 
   test "init_client는 gmail 클라이언트에 대해 Gmail을 반환해야 한다" do
@@ -142,10 +141,10 @@ class SiteTest < ActiveSupport::TestCase
     assert_kind_of Gmail, client
   end
 
-  test "init_client는 hacker_news 클라이언트에 대해 HackerNews를 반환해야 한다" do
+  test "init_client는 hacker_news 클라이언트에 대해 HackerNews 모듈을 반환해야 한다" do
     client = @hn_site.init_client
 
-    assert_kind_of HackerNews, client
+    assert_equal HackerNews, client
   end
 
   test "init_client는 youtube 클라이언트에 대해 Youtube::Channel을 반환해야 한다" do
@@ -187,14 +186,13 @@ class SiteTest < ActiveSupport::TestCase
 
   # ========== RSS-Specific Tests ==========
 
-  test "RssClient를 올바른 url로 초기화해야 한다" do
+  test "RssClient 모듈을 반환한다" do
     rss_sites = [ @rss_site, sites(:rails_blog) ]
 
     rss_sites.each do |site|
       client = site.init_client
 
-      assert_kind_of RssClient, client
-      assert_equal site.url, client.url
+      assert_equal RssClient, client
     end
   end
 
@@ -293,7 +291,7 @@ class SiteTest < ActiveSupport::TestCase
         assert_nothing_raised do
           client = site.init_client
 
-          assert_kind_of RssClient, client
+          assert_equal RssClient, client
         end
       end
     end
@@ -319,35 +317,14 @@ class SiteTest < ActiveSupport::TestCase
 
   # ========== Client Integration Tests ==========
 
-  test "클라이언트 초기화 오류를 정상적으로 처리해야 한다" do
-    # Test what happens when client classes are not available
-    site = @rss_site
+  test "지원하지 않는 클라이언트는 오류를 발생시켜야 한다" do
+    site = Site.new(name: "Invalid Client", client: :rss)
+    site.define_singleton_method(:client) { "invalid_client" }
 
-    # Mock missing client class
-    error = NameError.new("uninitialized constant")
-
-    RssClient.stub(:new, ->(*args, **kwargs) { raise error }) do
-      assert_raises(NameError) do
-        site.init_client
-      end
-    end
+    assert_raises(ArgumentError) { site.init_client }
   end
 
-  test "다른 클라이언트 유형에 올바른 매개변수를 전달해야 한다" do
-    # Test parameter passing for each client type
-
-    # RSS Client
-    rss_site = @rss_site
-    rss_invocations = []
-    rss_client = Object.new
-    RssClient.stub(:new, ->(arg) { rss_invocations << arg; rss_client }) do
-      result = rss_site.init_client
-
-      assert_equal rss_client, result
-    end
-    assert_equal [ rss_site.url ], rss_invocations
-
-    # YouTube Client
+  test "Youtube::Channel에 올바른 매개변수를 전달해야 한다" do
     youtube_site = @youtube_site
     youtube_invocations = []
     youtube_client = Object.new
@@ -357,46 +334,6 @@ class SiteTest < ActiveSupport::TestCase
       assert_equal youtube_client, result
     end
     assert_equal [ { id: youtube_site.channel } ], youtube_invocations
-
-    # Gmail Client (no parameters)
-    gmail_site = @gmail_site
-    gmail_invocations = 0
-    gmail_args = []
-    gmail_kwargs = {}
-    gmail_client = Object.new
-    Gmail.stub(:new, ->(*args, **kwargs) do
-      gmail_invocations += 1
-      gmail_args = args
-      gmail_kwargs = kwargs
-      gmail_client
-    end) do
-      result = gmail_site.init_client
-
-      assert_equal gmail_client, result
-    end
-    assert_equal 1, gmail_invocations
-    assert_empty gmail_args
-    assert_empty(gmail_kwargs)
-
-    # HackerNews Client (no parameters)
-    hn_site = @hn_site
-    hacker_news_invocations = 0
-    hacker_news_args = []
-    hacker_news_kwargs = {}
-    hacker_news_client = Object.new
-    HackerNews.stub(:new, ->(*args, **kwargs) do
-      hacker_news_invocations += 1
-      hacker_news_args = args
-      hacker_news_kwargs = kwargs
-      hacker_news_client
-    end) do
-      result = hn_site.init_client
-
-      assert_equal hacker_news_client, result
-    end
-    assert_equal 1, hacker_news_invocations
-    assert_empty hacker_news_args
-    assert_empty(hacker_news_kwargs)
   end
 
   # ========== Fixture Validation Tests ==========

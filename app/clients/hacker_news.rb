@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class HackerNews
+module HackerNews
+  module_function
+
   BASE_URL = "https://hacker-news.firebaseio.com/v0"
 
   def top_stories

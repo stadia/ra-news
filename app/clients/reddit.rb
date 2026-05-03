@@ -3,7 +3,9 @@
 
 require "rss"
 
-class Reddit
+module Reddit
+  module_function
+
   BASE_URL = "https://www.reddit.com"
 
   def feed

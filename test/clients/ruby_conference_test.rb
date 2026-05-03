@@ -3,19 +3,19 @@
 require "test_helper"
 
 class RubyConferenceTest < ActiveSupport::TestCase
-  test "RubyConference가 정의되어 있다" do
-    assert_kind_of Class, RubyConference
+  test "RubyConference는 모듈이다" do
+    assert_kind_of Module, RubyConference
   end
 
   test "BASE_URL이 올바르다" do
     assert_equal "https://raw.githubusercontent.com/ruby-conferences/ruby-conferences.github.io/refs/heads/main", RubyConference::BASE_URL
   end
 
-  test "RubyConference는 conferences 메서드를 가진다" do
-    assert RubyConference.method_defined?(:conferences)
+  test "RubyConference는 conferences 싱글톤 메서드를 가진다" do
+    assert RubyConference.respond_to?(:conferences)
   end
 
-  test "RubyConference는 conferences_cached 메서드를 가진다" do
-    assert RubyConference.method_defined?(:conferences_cached)
+  test "RubyConference는 conferences_cached 싱글톤 메서드를 가진다" do
+    assert RubyConference.respond_to?(:conferences_cached)
   end
 end
