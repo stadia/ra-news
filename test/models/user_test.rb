@@ -301,9 +301,11 @@ class UserTest < ActiveSupport::TestCase
     user = build_user(username: "roles_writer", email: "roles@example.com")
 
     user.roles = "user editor user"
+
     assert_equal [ "user", "editor" ], user.roles
 
     user.roles = [ "admin", "admin", "editor" ]
+
     assert_equal [ "admin", "editor" ], user.roles
   end
 
