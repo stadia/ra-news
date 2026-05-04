@@ -3,7 +3,6 @@
 require "test_helper"
 
 class UserTest < ActiveSupport::TestCase
-  cover User
   def setup
     @user = users(:john)
     @admin = users(:admin)

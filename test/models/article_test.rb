@@ -3,8 +3,6 @@
 require "test_helper"
 
 class ArticleTest < ActiveSupport::TestCase
-  cover Article
-
   # Test fixtures setup
   def setup
     preferences(:ignore_hosts)

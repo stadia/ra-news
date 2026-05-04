@@ -4,8 +4,6 @@ require "test_helper"
 require "rss"
 
 class RssClientTest < ActiveSupport::TestCase
-  cover RssClient
-
   test "RssClient는 모듈이다" do
     assert_kind_of Module, RssClient
   end
