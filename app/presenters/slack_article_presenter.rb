@@ -4,16 +4,19 @@
 require "cgi"
 
 class SlackArticlePresenter
-  include Rails.application.routes.url_helpers
+  include ArticlePresentable
 
+  #: (Article article) -> void
   def initialize(article)
     @article = article
   end
 
+  #: () -> String
   def text
     [ escaped_title, escaped_summary, escaped_article_url ].compact.join(" - ")
   end
 
+  #: () -> Array[Hash[Symbol, untyped]]
   def blocks
     [
       {
@@ -37,24 +40,8 @@ class SlackArticlePresenter
 
   private
 
-  attr_reader :article
-
-  def title
-    article.title_ko.presence || article.title
-  end
-
-  def summary
-    value = article.summary_key
-    summary_text = value.is_a?(Array) ? value.first : value
-    summary_text.presence || article.base_content[:summary]
-  end
-
-  def article_url
-    Rails.application.routes.url_helpers.article_url(article)
-  end
-
   def escaped_title
-    CGI.escapeHTML(title.to_s)
+    CGI.escapeHTML(title)
   end
 
   def escaped_summary
@@ -62,14 +49,6 @@ class SlackArticlePresenter
   end
 
   def escaped_article_url
-    CGI.escapeHTML(article_url.to_s)
-  end
-
-  def published_label
-    I18n.l(article.published_at || Time.current, format: :short)
-  end
-
-  def site_name
-    article.site&.name.presence || article.host.to_s
+    CGI.escapeHTML(article_page_url)
   end
 end

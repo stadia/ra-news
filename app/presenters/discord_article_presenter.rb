@@ -2,7 +2,7 @@
 # rbs_inline: enabled
 
 class DiscordArticlePresenter
-  include Rails.application.routes.url_helpers
+  include ArticlePresentable
 
   DEFAULT_EMBED_COLOR = 3447003 #: Integer
 
@@ -15,28 +15,12 @@ class DiscordArticlePresenter
   def embed_params
     {
       title: title,
-      url: article_url(@article),
+      url: article_page_url,
       description: summary&.truncate(200),
       color: DEFAULT_EMBED_COLOR,
       image_url: nil,
       footer_text: "Ruby-News.kr",
       timestamp: @article.created_at
     }
-  end
-
-  private
-
-  attr_reader :article #: Article
-
-  #: () -> String
-  def title
-    article.title_ko.presence || article.title.to_s
-  end
-
-  #: () -> String?
-  def summary
-    value = article.summary_key
-    summary_text = value.is_a?(Array) ? value.first : value
-    summary_text.presence || article.base_content[:summary]
   end
 end
