@@ -44,7 +44,7 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_header
-    parent_reply_badge unless @show_actions
+    parent_reply_badge if @post.parent.present?
 
     div(class: "flex items-center gap-3") do
       render Components::UserAvatar.new(
