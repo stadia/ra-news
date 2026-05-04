@@ -45,6 +45,9 @@ class Article < ApplicationRecord
 
   private
 
+  # : () -> User?
+  def bot_user: () -> User?
+
   # : (String action) -> void
   def create_federails_activity: (String action) -> void
 

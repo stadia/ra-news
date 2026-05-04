@@ -97,7 +97,7 @@ class Post < ApplicationRecord
   #: () -> Array[String]
   def federation_reply_recipients
     if parent&.federails_actor&.distant?
-      [parent.federails_actor.federated_url]
+      [ parent.federails_actor.federated_url ]
     else
       []
     end

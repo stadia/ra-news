@@ -4,4 +4,8 @@ class Site < ApplicationRecord
   include Discard::Model
 
   def init_client: () -> (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
+
+  private
+
+  def parse_url_to_uri_parts: () -> void
 end

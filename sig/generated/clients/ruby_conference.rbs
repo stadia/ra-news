@@ -1,15 +1,9 @@
 # Generated from app/clients/ruby_conference.rb with RBS::Inline
 
-class RubyConference < ApplicationClient
-  BASE_URI: ::String
+module RubyConference
+  BASE_URL: ::String
 
-  def initialize: () -> RubyConference
+  def self?.conferences: () -> Array[untyped]
 
-  def conferences: () -> Array
-
-  def conferences_cached: () -> Array
-
-  private
-
-  def content_type: () -> String
+  def self?.conferences_cached: () -> Array[untyped]
 end

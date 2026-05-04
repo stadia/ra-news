@@ -360,7 +360,7 @@ class PostTest < ActiveSupport::TestCase
     remote_root = Post.create!(body: "원격 포스트", federails_actor: remote_actor, federated_url: "https://remote.example/notes/456")
     reply = Post.create!(body: "원격 포스트에 대한 답글", user: @user, parent: remote_root)
 
-    assert_equal ["https://remote.example/users/original"], reply.federation_reply_recipients
+    assert_equal [ "https://remote.example/users/original" ], reply.federation_reply_recipients
   end
 
   test "federation_reply_recipients는 로컬 parent인 경우 빈 배열을 반환한다" do

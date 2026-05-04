@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: ee44b4491d774210b5732fd1bfeae42c395fc17f
+  revision: 9e269db2e585cc8d5c30796f1c83052583d98100
   specs:
     federails (0.8.0)
       alba (~> 3.0)
@@ -265,7 +265,7 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    json (2.19.4)
+    json (2.19.5)
     json-canonicalization (1.0.0)
     json-ld (3.3.2)
       htmlentities (~> 4.3)

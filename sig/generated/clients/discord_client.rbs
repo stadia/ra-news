@@ -32,8 +32,8 @@ class DiscordClient
   def self.delete_webhook: (String webhook_url) -> void
 
   # : (String body) -> untyped
-  def self.parse_json: (String body) -> untyped
+  private def self.parse_json: (String body) -> untyped
 
   # : (untyped req) -> void
-  def self.apply_timeouts: (untyped req) -> void
+  private def self.apply_timeouts: (untyped req) -> void
 end

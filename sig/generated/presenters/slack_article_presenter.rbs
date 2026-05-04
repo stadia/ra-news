@@ -1,27 +1,22 @@
 # Generated from app/presenters/slack_article_presenter.rb with RBS::Inline
 
 class SlackArticlePresenter
-  def initialize: (untyped article) -> untyped
+  include ArticlePresentable
 
-  def text: () -> untyped
+  # : (Article article) -> void
+  def initialize: (Article article) -> void
 
-  def blocks: () -> untyped
+  # : () -> String
+  def text: () -> String
+
+  # : () -> Array[Hash[Symbol, untyped]]
+  def blocks: () -> Array[Hash[Symbol, untyped]]
 
   private
-
-  attr_reader article: untyped
-
-  def title: () -> untyped
-
-  def summary: () -> untyped
-
-  def article_url: () -> untyped
 
   def escaped_title: () -> untyped
 
   def escaped_summary: () -> untyped
 
   def escaped_article_url: () -> untyped
-
-  def published_label: () -> untyped
 end

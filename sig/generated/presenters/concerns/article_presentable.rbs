@@ -1,0 +1,24 @@
+# Generated from app/presenters/concerns/article_presentable.rb with RBS::Inline
+
+module ArticlePresentable
+  extend ActiveSupport::Concern
+
+  private
+
+  attr_reader article: Article
+
+  # : () -> String
+  def title: () -> String
+
+  # : () -> String?
+  def summary: () -> String?
+
+  # : () -> String
+  def site_name: () -> String
+
+  # : () -> String
+  def published_label: () -> String
+
+  # : () -> String
+  def article_page_url: () -> String
+end

@@ -15,4 +15,6 @@ class ArticleAgentsService < OperationService
   def run_embed: (untyped article) -> untyped
 
   def run_humanize: (untyped article) -> untyped
+
+  def extract_humanized: (untyped content) -> untyped
 end

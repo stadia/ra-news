@@ -3,34 +3,4 @@
 module ArticleHumanizer
   # : (Article article) -> String
   def self?.prompt: (Article article) -> String
-
-  # : (untyped content) -> Hash[Symbol, untyped]
-  def self?.extract_content: (untyped content) -> Hash[Symbol, untyped]
-
-  # : (untyped content) -> String
-  def self?.extract_body: (untyped content) -> String
-
-  # : (untyped content) -> Array[String]
-  def self?.extract_summary_key: (untyped content) -> Array[String]
-
-  # : (untyped content) -> Hash[String, String]
-  def self?.extract_summary_detail: (untyped content) -> Hash[String, String]
-
-  # : (String text) -> String
-  def self?.extract_humanized_section: (String text) -> String
-
-  # : (untyped content, String tag) -> String?
-  def self?.extract_tagged_block: (untyped content, String tag) -> String?
-
-  # : (untyped summary_key) -> String
-  def self?.format_summary_key: (untyped summary_key) -> String
-
-  # : (untyped summary_detail) -> String
-  def self?.format_summary_detail_blocks: (untyped summary_detail) -> String
-
-  # : (String text) -> String
-  def self?.strip_leading_humanize_metadata: (String text) -> String
-
-  # : (String text) -> String
-  def self?.strip_trailing_humanize_metadata: (String text) -> String
 end

@@ -1,13 +1,15 @@
 # Generated from app/clients/hacker_news.rb with RBS::Inline
 
-class HackerNews < ApplicationClient
-  def initialize: () -> HackerNews
+module HackerNews
+  BASE_URL: ::String
 
-  def top_stories: () -> untyped
+  def self?.top_stories: () -> untyped
 
-  def new_stories: () -> untyped
+  def self?.new_stories: () -> untyped
 
-  def best_stories: () -> untyped
+  def self?.best_stories: () -> untyped
 
-  def item: (untyped id) -> untyped
+  def self?.item: (untyped id) -> untyped
+
+  def self?.fetch_json: (untyped url) -> untyped
 end
