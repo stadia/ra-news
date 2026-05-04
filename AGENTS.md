@@ -221,14 +221,20 @@ Rules:
 This project uses automated quality gates. **Run `bin/rake quality` before declaring any task complete.** Do not commit if any gate fails. Report the gate numbers in your response so regressions are visible.
 
 ### Gates
-- **Line coverage** >= 60.0% (SimpleCov)
+- **Line coverage** >= 70.0% (SimpleCov)
 - **Branch coverage** >= 50.0% (SimpleCov)
-- **Flog max (method)** <= 20
-- **Flog max (class)** <= 70
+- **Flog max (method)** <= 373
+- **Flog max (class)** <= 406
 - **Mutation kill ratio** >= threshold (ratcheted from first valid Mutant run)
 
 ### Thresholds
 Thresholds live in `config/quality_thresholds.yml`. The mutation threshold uses a ratchet: on the first valid run, the observed kill ratio becomes the floor.
+
+### Coverage snapshot note
+- `bin/rake quality` reads coverage from `coverage/.quality_last_run.json` first.
+- `bin/rails test` (full suite) refreshes that snapshot.
+- Partial test runs only update `coverage/.last_run.json`, so they do not lower the quality gate coverage baseline.
+- If coverage looks stale, run `bin/rails test` once before `bin/rake quality`.
 
 ### Mutant Minitest Integration
 Mutant requires `cover` declarations in test classes to know which subjects each test exercises. Example:

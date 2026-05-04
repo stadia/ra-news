@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "../lib/quality/coverage_snapshot"
 require "simplecov"
 SimpleCov.start "rails" do
   enable_coverage :branch
@@ -25,6 +26,12 @@ SimpleCov.start "rails" do
 
   # 품질 관리: Rake 태스크에서만 사용
   add_filter "/lib/quality/"
+end
+
+SimpleCov.at_exit do
+  result = SimpleCov.result
+  result.format!
+  Quality::CoverageSnapshot.persist_result!(result) if Quality::CoverageSnapshot.full_suite_run?
 end
 
 ENV["RAILS_ENV"] ||= "test"
