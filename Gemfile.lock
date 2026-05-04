@@ -161,7 +161,6 @@ GEM
       railties (>= 7.0)
       responders
       warden (~> 1.2.3)
-    diff-lcs (2.0.0)
     discard (1.4.0)
       activerecord (>= 4.2, < 9.0)
     discordrb-webhooks (3.7.2)
@@ -346,19 +345,6 @@ GEM
     multi_xml (0.9.0)
       bigdecimal (>= 3.1, < 5)
     multipart-post (2.4.1)
-    mutant (0.16.3)
-      diff-lcs (>= 1.6, < 3)
-      irb (~> 1.15)
-      parser (~> 3.3.10)
-      regexp_parser (~> 2.10)
-      securerandom (>= 0.3)
-      sorbet-runtime (~> 0.6.0)
-      unparser (>= 0.8.2, < 0.10)
-    mutant-minitest (0.16.3)
-      minitest (>= 5.11, < 7)
-      mutant (= 0.16.3)
-      mutex_m (~> 0.2)
-    mutex_m (0.3.0)
     neighbor (1.0.0)
       activerecord (>= 7.2)
     net-http (0.9.1)
@@ -816,10 +802,6 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
-    unparser (0.9.0)
-      diff-lcs (>= 1.6, < 3)
-      parser (>= 3.3.0)
-      prism (>= 1.5.1)
     uri (1.1.1)
     useragent (0.16.11)
     validated_object (2.3.4)
@@ -890,7 +872,6 @@ DEPENDENCIES
   minitest (~> 6.0)
   minitest-mock
   mission_control-jobs
-  mutant-minitest
   neighbor
   oauth2 (~> 2.0)
   oj

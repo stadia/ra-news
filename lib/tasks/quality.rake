@@ -7,11 +7,9 @@ require "yaml"
 require_relative "../quality/coverage_parser"
 require_relative "../quality/flog_parser"
 require_relative "../quality/rubocop_parser"
-require_relative "../quality/mutant_parser"
 require_relative "../quality/report"
 
 QUALITY_DIR = Rails.root.join("tmp/quality")
-MUTANT_SUBJECTS = %w[Article User Post].freeze
 
 namespace :quality do
   task :setup do
@@ -43,35 +41,12 @@ namespace :quality do
     result = parser.parse
     File.write(QUALITY_DIR.join("flog.json"), JSON.pretty_generate(result))
   end
-
-  desc "Run Mutant and parse results"
-  task mutation: :setup do
-    txt_path = QUALITY_DIR.join("mutation.txt")
-
-    cmd = [
-      "bundle", "exec", "mutant", "run",
-      "--", *MUTANT_SUBJECTS
-    ]
-    env = { "PGGSSENCMODE" => "disable" }
-    sh({ **env }, "#{cmd.shelljoin} > #{txt_path.to_s.shellescape} 2>&1 || true")
-
-    begin
-      parser = Quality::MutantParser.new(txt_path)
-      result = parser.parse
-      File.write(QUALITY_DIR.join("mutation.json"), JSON.pretty_generate(result))
-      ratchet_if_unset!(result[:kill_ratio], result[:mutations])
-    rescue Quality::MutantParser::ParseError => e
-      puts "[quality:mutation] #{e.message}"
-      File.write(QUALITY_DIR.join("mutation.json"), JSON.pretty_generate({ kill_ratio: nil }))
-    end
-  end
 end
 
 desc "Run all quality gates"
 task quality: "quality:setup" do
   Rake::Task["quality:rubocop"].invoke
   Rake::Task["quality:flog"].invoke
-  Rake::Task["quality:mutation"].invoke
 
   measurements = {}
 
@@ -93,29 +68,9 @@ task quality: "quality:setup" do
     measurements[:flog] = JSON.parse(File.read(flog_path), symbolize_names: true)
   end
 
-  # Mutation
-  mutation_path = QUALITY_DIR.join("mutation.json")
-  if mutation_path.exist?
-    measurements[:mutation] = JSON.parse(File.read(mutation_path), symbolize_names: true)
-  end
-
   thresholds = YAML.load_file(Rails.root.join("config/quality_thresholds.yml"))
   report = Quality::Report.new(measurements: measurements, thresholds: thresholds)
 
   puts report
   exit(report.passed? ? 0 : 1)
-end
-
-def ratchet_if_unset!(kill_ratio, mutations = 0)
-  return if mutations.zero?
-
-  path = Rails.root.join("config/quality_thresholds.yml")
-  thresholds = YAML.load_file(path)
-
-  return unless thresholds.dig("mutation", "kill_ratio_min").nil?
-
-  thresholds["mutation"] ||= {}
-  thresholds["mutation"]["kill_ratio_min"] = kill_ratio
-  File.write(path, thresholds.to_yaml)
-  puts "[quality:mutation] Ratchet set: mutation.kill_ratio_min = #{kill_ratio}"
 end

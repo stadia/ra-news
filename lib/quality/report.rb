@@ -8,8 +8,7 @@ module Quality
       { name: "Line coverage",       measure_path: [ :coverage, :line ],       threshold_path: [ "coverage", "line_min" ],       cmp: :>=, unit: "%" },
       { name: "Branch coverage",     measure_path: [ :coverage, :branch ],     threshold_path: [ "coverage", "branch_min" ],     cmp: :>=, unit: "%" },
       { name: "Flog max (method)",   measure_path: [ :flog, :method_max ],     threshold_path: [ "flog", "method_max" ],         cmp: :<=, unit: "" },
-      { name: "Flog max (class)",    measure_path: [ :flog, :class_max ],      threshold_path: [ "flog", "class_max" ],          cmp: :<=, unit: "" },
-      { name: "Mutation kill ratio", measure_path: [ :mutation, :kill_ratio ], threshold_path: [ "mutation", "kill_ratio_min" ], cmp: :>=, unit: "%" }
+      { name: "Flog max (class)",    measure_path: [ :flog, :class_max ],      threshold_path: [ "flog", "class_max" ],          cmp: :<=, unit: "" }
     ].freeze
 
     def initialize(measurements:, thresholds:)

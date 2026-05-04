@@ -31,7 +31,6 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"
-require "mutant/minitest/coverage"
 
 Warning[:deprecated] = true
 module ActiveSupport

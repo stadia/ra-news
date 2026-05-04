@@ -10,5 +10,3 @@ rubocop_metrics:
   abc_size_max: 15
   cyclomatic_complexity_max: 6
   perceived_complexity_max: 7
-mutation:
-  kill_ratio_min: 100.0

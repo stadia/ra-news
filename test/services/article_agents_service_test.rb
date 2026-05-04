@@ -62,14 +62,14 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     })
 
     captured_prompt = nil
-    agent = Object.new
-    agent.define_singleton_method(:ask) do |prompt|
+    chat = Object.new
+    chat.define_singleton_method(:ask) do |prompt|
       captured_prompt = prompt
       humanize_response
     end
 
     result = nil
-    HumanMonolithAgent.stub(:new, agent) do
+    HumanMonolithAgent.stub(:chat, chat) do
       result = ArticleAgentsService.new.send(:run_humanize, article)
     end
 
@@ -92,11 +92,11 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
       "over_polish_aborted" => true
     })
 
-    agent = Object.new
-    agent.define_singleton_method(:ask) { |_| aborted_response }
+    chat = Object.new
+    chat.define_singleton_method(:ask) { |_| aborted_response }
 
     result = nil
-    HumanMonolithAgent.stub(:new, agent) do
+    HumanMonolithAgent.stub(:chat, chat) do
       result = ArticleAgentsService.new.send(:run_humanize, article)
     end
 
