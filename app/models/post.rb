@@ -144,7 +144,6 @@ class Post < ApplicationRecord
   end
 
   #: () -> void
-  #: () -> void
   def validate_user_or_actor
     unless user_id.present? || federails_actor_id.present?
       errors.add(:base, "user 또는 federails_actor가 필요합니다")
@@ -166,7 +165,7 @@ class Post < ApplicationRecord
 
   #: () -> String
   def random_slug
-    SecureRandom.alphanumeric(10)
+    SecureRandom.urlsafe_base64(16)
   end
 
   class << self
