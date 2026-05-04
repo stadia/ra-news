@@ -5,10 +5,11 @@ class Components::Posts::PostCard < Components::Base
   include Phlex::Rails::Helpers::LinkTo
   include PhlexIcons
 
-  def initialize(post:, depth: 0, liked: nil)
+  def initialize(post:, depth: 0, liked: nil, show_actions: true)
     @post = post
     @depth = depth
     @liked = liked
+    @show_actions = show_actions
   end
 
   def view_template
@@ -26,7 +27,7 @@ class Components::Posts::PostCard < Components::Base
         render RubyUI::CardContent.new(class: "p-4 sm:p-5 space-y-3") do
           post_header
           post_body
-          post_actions if @depth.zero?
+          post_actions if @show_actions
         end
       end
     end

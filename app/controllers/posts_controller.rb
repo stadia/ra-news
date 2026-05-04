@@ -9,7 +9,11 @@ class PostsController < ApplicationController
   before_action :check_rate_limit, only: [ :create ]
 
   def show
-    @post = Post.find(params[:id])
+    post = Post.includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).find(params[:id])
+    root = post.root
+    @posts = build_thread(root)
+    @liked_post_ids = current_user ? Like.liked_ids_for(liker: current_user, likeable_type: "Post", likeable_ids: @posts.map(&:id)) : []
+    render Views::Posts::Show.new(posts: @posts, liked_post_ids: @liked_post_ids)
   end
 
   def create
@@ -132,5 +136,17 @@ class PostsController < ApplicationController
 
   def default_mention_text_for(actor)
     actor.local? ? actor.short_at_address : actor.at_address
+  end
+
+  def build_thread(root)
+    # parent_id 기반으로 안전하게 스레드 수집
+    ids = [ root.id ]
+    queue = [ root.id ]
+    while queue.any?
+      children = Post.where(parent_id: queue).pluck(:id)
+      ids.concat(children)
+      queue = children
+    end
+    Post.where(id: ids).includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).sort_by { |p| [ p.depth, p.created_at ] }
   end
 end
