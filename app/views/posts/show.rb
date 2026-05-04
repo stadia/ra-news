@@ -37,7 +37,8 @@ class Views::Posts::Show < Views::Base
     # 루트 포스트
     render Components::Posts::PostCard.new(
       post: root,
-      liked: @liked_post_ids.include?(root.id)
+      liked: @liked_post_ids.include?(root.id),
+      show_reply_badge: false
     )
 
     # 답글 영역
@@ -46,7 +47,8 @@ class Views::Posts::Show < Views::Base
       replies.sort_by(&:created_at).each do |reply|
         render Components::Posts::PostCard.new(
           post: reply,
-          liked: @liked_post_ids.include?(reply.id)
+          liked: @liked_post_ids.include?(reply.id),
+          show_reply_badge: false
         )
       end
     end

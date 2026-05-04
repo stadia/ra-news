@@ -5,11 +5,12 @@ class Components::Posts::PostCard < Components::Base
   include Phlex::Rails::Helpers::LinkTo
   include PhlexIcons
 
-  def initialize(post:, depth: 0, liked: nil, show_actions: true)
+  def initialize(post:, depth: 0, liked: nil, show_actions: true, show_reply_badge: true)
     @post = post
     @depth = depth
     @liked = liked
     @show_actions = show_actions
+    @show_reply_badge = show_reply_badge
   end
 
   def view_template
@@ -44,7 +45,7 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_header
-    parent_reply_badge if @post.parent.present?
+    parent_reply_badge if @show_reply_badge && @post.parent.present?
 
     div(class: "flex items-center gap-3") do
       render Components::UserAvatar.new(
