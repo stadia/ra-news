@@ -42,11 +42,10 @@ class Views::Posts::Show < Views::Base
 
     # 답글 영역
     replies = @posts[1..] || []
-    div(id: "replies_#{root.id}", class: "space-y-2") do
+    div(id: "replies_#{root.id}", class: "space-y-4") do
       replies.sort_by(&:created_at).each do |reply|
         render Components::Posts::PostCard.new(
           post: reply,
-          depth: reply.depth - root.depth,
           liked: @liked_post_ids.include?(reply.id)
         )
       end
