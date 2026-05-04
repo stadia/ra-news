@@ -22,7 +22,7 @@ class ActivitiesController < ApplicationController
     following_actor_ids = Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
 
     posts = Post
-      .includes(:user, :federails_actor, :article, :tags)
+      .includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ])
       .where(federails_actor_id: following_actor_ids)
       .or(Post.where(user_id: current_user.id))
       .order(created_at: :desc)

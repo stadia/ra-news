@@ -24,7 +24,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :success
     assert_includes @response.body, "target=\"post_#{parent.id}\""
-    assert_includes @response.body, "target=\"replies_#{parent.id}\""
+    assert_includes @response.body, 'target="posts_list"'
     created_post = Post.order(:id).last
 
     assert_includes created_post.body, %(href="#{Rails.application.routes.url_helpers.user_profile_url(parent.user)}")

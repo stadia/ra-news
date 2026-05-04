@@ -38,7 +38,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "GET feed includes replies as flat posts in reverse chronological order" do
     root = Post.create!(body: "root post", user: @user, created_at: 2.hours.ago, updated_at: 2.hours.ago)
-    reply = Post.create!(body: "reply post", user: users(:jane), parent: root, created_at: 10.minutes.ago, updated_at: 10.minutes.ago)
+    Post.create!(body: "reply post", user: users(:jane), parent: root, created_at: 10.minutes.ago, updated_at: 10.minutes.ago)
 
     sign_in_as(@user)
     get feed_path
@@ -46,6 +46,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes @response.body, "root post"
     assert_includes @response.body, "reply post"
+    assert_includes @response.body, "#{@user.name}님에게 답글"
     assert_operator @response.body.index("reply post"), :<, @response.body.index("root post")
   end
 

@@ -43,6 +43,8 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_header
+    parent_reply_badge if @post.parent.present?
+
     div(class: "flex items-center gap-3") do
       render Components::UserAvatar.new(
         user: @post.user,
@@ -61,6 +63,17 @@ class Components::Posts::PostCard < Components::Base
           plain "#{view_context.time_ago_in_words_korean(@post.created_at)} 전"
         end
       end
+    end
+  end
+
+  def parent_reply_badge
+    render RubyUI::Badge.new(
+      variant: :secondary,
+      size: :sm,
+      class: "mb-2 inline-flex items-center gap-1.5"
+    ) do
+      Hero::ArrowUturnLeft(variant: :outline, class: "w-3 h-3")
+      plain "#{parent_author_name}님에게 답글"
     end
   end
 
@@ -191,6 +204,10 @@ class Components::Posts::PostCard < Components::Base
 
   def author_name
     @post.user&.name || @post.federails_actor&.name || "알 수 없음"
+  end
+
+  def parent_author_name
+    @post.parent.user&.name || @post.parent.federails_actor&.name || "알 수 없음"
   end
 
 

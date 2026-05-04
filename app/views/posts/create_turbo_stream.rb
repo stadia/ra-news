@@ -17,8 +17,8 @@ class Views::Posts::CreateTurboStream < Views::Base
           render Components::Posts::PostCard.new(post: parent_post)
         end
 
-        turbo_stream.append("replies_#{@post.parent_id}") do
-          render Components::Posts::PostCard.new(post: @post, depth: 1)
+        turbo_stream.prepend("posts_list") do
+          render Components::Posts::PostCard.new(post: @post)
         end
       else
         turbo_stream.prepend("posts_list") do
