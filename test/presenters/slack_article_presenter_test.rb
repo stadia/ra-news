@@ -20,6 +20,9 @@ class SlackArticlePresenterTest < ActiveSupport::TestCase
 
     assert_includes presenter.text, "제목 &lt;b&gt;&amp; 테스트"
     assert_includes presenter.text, "요약 &lt;태그&gt; &amp; 내용"
-    assert_includes presenter.blocks.first.dig(:text, :text), "*제목 &lt;b&gt;&amp; 테스트*\n요약 &lt;태그&gt; &amp; 내용"
+    block_text = presenter.blocks.first.dig(:text, :text)
+    assert_includes block_text, "*<"
+    assert_includes block_text, "|제목 &lt;b&gt;&amp; 테스트>*"
+    assert_includes block_text, "요약 &lt;태그&gt; &amp; 내용"
   end
 end

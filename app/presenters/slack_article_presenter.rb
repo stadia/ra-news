@@ -20,7 +20,7 @@ class SlackArticlePresenter
         type: "section",
         text: {
           type: "mrkdwn",
-          text: "*#{escaped_title}*\n#{escaped_summary}"
+          text: "*<#{escaped_article_url}|#{escaped_title}>*\n#{escaped_summary}"
         }
       },
       {
@@ -28,7 +28,7 @@ class SlackArticlePresenter
         elements: [
           {
             type: "mrkdwn",
-            text: "<#{escaped_article_url}|기사 읽기> · #{published_label}"
+            text: "#{site_name} · #{published_label}"
           }
         ]
       }
@@ -67,5 +67,9 @@ class SlackArticlePresenter
 
   def published_label
     I18n.l(article.published_at || Time.current, format: :short)
+  end
+
+  def site_name
+    article.site&.name.presence || article.host.to_s
   end
 end
