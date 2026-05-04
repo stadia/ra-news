@@ -56,12 +56,13 @@ class Components::Posts::PostCard < Components::Base
 
       div(class: "flex-1 min-w-0") do
         span(class: "font-semibold text-content text-sm") { author_name }
-        time(
-          class: "block text-xs text-content-muted",
-          datetime: @post.created_at.iso8601,
-          title: I18n.l(@post.created_at, format: :long)
-        ) do
-          plain "#{view_context.time_ago_in_words_korean(@post.created_at)} 전"
+        link_to(post_path(@post), class: "block text-xs text-content-muted hover:text-content transition-colors") do
+          time(
+            datetime: @post.created_at.iso8601,
+            title: I18n.l(@post.created_at, format: :long)
+          ) do
+            plain "#{view_context.time_ago_in_words_korean(@post.created_at)} 전"
+          end
         end
       end
     end
