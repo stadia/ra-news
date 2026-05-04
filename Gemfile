@@ -110,7 +110,7 @@ gem "sitemap_generator"
 gem "yt"
 # Use sqlite3 as the database for Active Record
 gem "dry-operation"
-gem "pg_reports", "~> 0.7.0"
+gem "pg_reports", "~> 0.8.0"
 gem "sqlite3", ">= 2.1"
 gem "youtube-transcript-rb", "~> 0.2.0"
 

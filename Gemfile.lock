@@ -485,7 +485,7 @@ GEM
     pg (1.6.3-x86_64-linux)
     pg_query (6.2.2)
       google-protobuf (>= 3.25.3)
-    pg_reports (0.7.0)
+    pg_reports (0.8.0)
       actionpack (>= 5.0)
       activerecord (>= 5.0)
       activesupport (>= 5.0)
@@ -892,7 +892,7 @@ DEPENDENCIES
   pagy (~> 43.5)
   pg (~> 1.6)
   pg_query
-  pg_reports (~> 0.7.0)
+  pg_reports (~> 0.8.0)
   pg_search
   phlex-icons
   phlex-rails (~> 2.4)
