@@ -19,7 +19,7 @@ class DiscordArticlePresenter
       description: summary&.truncate(200),
       color: DEFAULT_EMBED_COLOR,
       image_url: nil,
-      footer_text: "Ruby-News.kr",
+      footer_text: site_name,
       timestamp: @article.created_at
     }
   end
