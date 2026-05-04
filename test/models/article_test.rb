@@ -744,6 +744,63 @@ class ArticleTest < ActiveSupport::TestCase
     assert_kind_of ActiveSupport::TimeWithZone, article.created_at
   end
 
+  test "to_activitypub_object는 기본 요약과 태그를 포함한다" do
+    article = @article
+    article.title = "Original title"
+    article.title_ko = "번역 제목"
+    article.summary_key = nil
+    article.tag_list = "ruby, rails"
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, name:, content:, custom:) { captured = { record:, name:, content:, custom: }; { "ok" => true } }) do
+      article.to_activitypub_object
+    end
+
+    assert_equal article, captured[:record]
+    assert_equal "번역 제목", captured[:name]
+    assert_includes captured[:content], "<strong>번역 제목</strong>"
+    assert_includes captured[:content], "새로운 Ruby 관련 글이 올라왔습니다."
+    assert_equal 2, captured[:custom]["tag"].size
+    assert_equal "ruby", captured[:custom]["tag"].first["name"]
+  end
+
+  test "base_content는 summary_key 배열의 첫 항목을 사용한다" do
+    article = Article.new(title: "원문 제목", summary_key: [ "첫 줄 요약", "두 번째 요약" ])
+
+    assert_equal({ title: "원문 제목", summary: "첫 줄 요약" }, article.base_content)
+  end
+
+  test "base_content는 요약이 없으면 기본 문구를 사용한다" do
+    article = Article.new(title: "원문 제목", summary_key: nil)
+
+    assert_equal "새로운 Ruby 관련 글이 올라왔습니다.", article.base_content[:summary]
+  end
+
+  test "should_federate?는 user가 없거나 title_ko가 비어 있으면 false다" do
+    assert_not Article.new(title_ko: "번역 제목").should_federate?
+    assert_not Article.new(user: @user).should_federate?
+  end
+
+  test "likes_count는 nil이어도 0을 반환한다" do
+    article = Article.new(title: "Like Count", url: "https://example.com/likes", origin_url: "https://example.com/likes", user: @user)
+    article.likers_count = nil
+
+    assert_equal 0, article.likes_count
+  end
+
+  test "user_name은 site가 없으면 host를 반환한다" do
+    article = Article.new(title: "Host fallback", url: "https://example.com/host", origin_url: "https://example.com/host", host: "example.com", user: @user)
+    article.site = nil
+
+    assert_equal "example.com", article.user_name
+  end
+
+  test "update_slug는 잘못된 URL이면 false를 반환한다" do
+    article = Article.new(title: "Broken URL", url: "http://[", origin_url: "http://[", user: @user)
+
+    assert_not article.update_slug
+  end
+
   private
 
   def stub_external_requests(article)

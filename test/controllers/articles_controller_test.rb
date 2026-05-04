@@ -101,6 +101,64 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /#{Regexp.escape(article.title_ko)}/
   end
 
+  test "GET new renders intake form for authenticated user" do
+    sign_in_as(users(:john))
+
+    get new_article_path
+
+    assert_response :success
+    assert_select "h1", text: "새 글 등록"
+    assert_select "form[action='#{articles_path}']"
+    assert_select "input[name='article[url]']"
+    assert_select "a[href='#{articles_path}']", text: "목록으로 돌아가기"
+  end
+
+  test "POST create without url rerenders form with validation errors" do
+    sign_in_as(users(:john))
+
+    post articles_path, params: { article: { url: "" } }
+
+    assert_response :unprocessable_entity
+    assert_select "#error_explanation"
+    assert_select "li", text: /Url/
+  end
+
+  test "GET others renders pagination and push notification modal when multiple pages exist" do
+    user = users(:john)
+
+    35.times do |index|
+      article = Article.new(
+        title: "Paginated article #{index}",
+        title_ko: "페이지 기사 #{index}",
+        url: "https://example.com/paginated-article-#{index}",
+        origin_url: "https://example.com/paginated-article-#{index}",
+        host: "example.com",
+        slug: "paginated-article-#{index}",
+        published_at: (4.days + index.minutes).ago,
+        created_at: (4.days + index.minutes).ago,
+        is_related: false,
+        user: user,
+        site: sites(:ruby_weekly)
+      )
+      article.stub(:generate_metadata, nil) { article.save! }
+    end
+
+    WebPushConfig.stub(:configured?, true) do
+      WebPushConfig.stub(:public_key, "test-public-key") do
+        sign_in_as(user)
+        get others_path
+
+        assert_response :success
+        assert_includes @response.body, "알림 설정"
+        assert_includes @response.body, "나중에 하기"
+        assert_includes @response.body, "First"
+        assert_includes @response.body, "Prev"
+        assert_includes @response.body, "Next"
+        assert_includes @response.body, "Last"
+      end
+    end
+  end
+
   private
 
   def capture_like_queries

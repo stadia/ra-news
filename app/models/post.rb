@@ -103,6 +103,16 @@ class Post < ApplicationRecord
 
   private
 
+  def create_federails_activity(action)
+    ensure_federails_configuration!
+    return unless local_federails_entity? && send(federails_data_configuration[:should_federate_method])
+
+    actor = federails_actor || user&.federails_actor
+    return if actor.blank?
+
+    Federails::Activity.create!(actor:, action:, entity: self)
+  end
+
   #: () -> void
   def enqueue_reply_notification
     unless parent_id.present?

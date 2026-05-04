@@ -186,5 +186,76 @@ module Articles
         assert_equal Date.new(2026, 3, 17), article.published_at.to_date
       end
     end
+
+    test "follow_redirection은 nil과 non redirect 응답을 그대로 반환한다" do
+      article = Article.new(url: "https://example.com/original")
+      ok = Response.new("ok", 200, {})
+
+      assert_nil MetadataPreparation.follow_redirection(article, nil)
+      assert_equal ok, MetadataPreparation.follow_redirection(article, ok)
+    end
+
+    test "follow_redirection은 상대 경로와 절대 경로를 따라간다" do
+      article = Article.new(url: "https://example.com/original")
+      first = Response.new("", 302, { "location" => "/step-1" })
+      second = Response.new("", 302, { "location" => "https://cdn.example.com/final" })
+      final = Response.new("done", 200, {})
+      responses = [ second, final ]
+
+      MetadataPreparation.stub(:fetch_url_content, ->(_url) { responses.shift }) do
+        result = MetadataPreparation.follow_redirection(article, first)
+
+        assert_equal final, result
+        assert_equal "https://cdn.example.com/final", article.url
+      end
+    end
+
+    test "follow_redirection은 최대 리다이렉트 수를 넘기면 중단한다" do
+      article = Article.new(url: "https://example.com/original")
+      response = Response.new("", 302, { "location" => "https://example.com/next" })
+
+      MetadataPreparation.stub(:fetch_url_content, ->(_url) { flunk "should not fetch beyond max redirects" }) do
+        assert_equal response, MetadataPreparation.follow_redirection(article, response, MetadataPreparation::MAX_REDIRECTS + 1)
+      end
+    end
+
+    test "normalized_url은 유튜브와 일반 URL에서 추적 파라미터를 제거한다" do
+      parsed = URI.parse("https://example.com/post?tag=ruby&utm_source=x&ref=y")
+      youtube = URI.parse("https://youtube.com/watch?v=test123&t=30s&feature=share&si=abc")
+
+      assert_equal "https://example.com/post?tag=ruby", MetadataPreparation.normalized_url(parsed)
+      assert_equal "https://youtube.com/watch?v=test123", MetadataPreparation.normalized_url(youtube)
+    end
+
+    test "should_discard_url?은 짧은 경로와 ignore URL을 처리한다" do
+      short_article = Article.new(url: "https://example.com", is_youtube: false)
+      safe_article = Article.new(url: "https://youtube.com/watch?v=test123", is_youtube: true)
+
+      assert MetadataPreparation.should_discard_url?(short_article, URI.parse("https://example.com"))
+      assert MetadataPreparation.should_discard_url?(safe_article, URI.parse("https://github.com/rails/rails"))
+      assert_not MetadataPreparation.should_discard_url?(safe_article, URI.parse("https://youtube.com/watch?v=test123"))
+    end
+
+    test "normalize_published_at은 nil과 미래 시간을 현재 시각으로 보정한다" do
+      travel_to Time.zone.parse("2026-05-04 12:00:00") do
+        now = Time.zone.now
+
+        assert_equal now.to_i, MetadataPreparation.normalize_published_at(nil).to_i
+        assert_equal now.to_i, MetadataPreparation.normalize_published_at(1.day.from_now).to_i
+        assert_equal 1.day.ago.to_i, MetadataPreparation.normalize_published_at(1.day.ago).to_i
+      end
+    end
+
+    test "build_slug는 제목이 없으면 랜덤 slug를 반환한다" do
+      slug = MetadataPreparation.build_slug(nil)
+
+      assert_match(/\A\d{8}-[0-9a-f]{8}\z/, slug)
+    end
+
+    test "extract_published_at_from_content는 잘못된 HTML에서도 nil을 반환한다" do
+      Nokogiri.stub(:HTML, ->(*) { raise StandardError, "parse failed" }) do
+        assert_nil MetadataPreparation.extract_published_at_from_content("<html></html>")
+      end
+    end
   end
 end

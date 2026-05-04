@@ -308,4 +308,83 @@ class PostTest < ActiveSupport::TestCase
     assert_equal I18n.t("posts.remote_attachment_only_body"), result[:body]
     assert_equal 1, result[:media_attachments].size
   end
+
+  test "to_activitypub_object는 parent와 태그와 첨부를 함께 전달한다" do
+    post = Post.create!(
+      body: "태그와 첨부가 있는 답글",
+      user: @user,
+      parent: @root_post,
+      media_attachments: [ { "url" => "https://example.com/image.png", "mediaType" => "image/png", "name" => "image" } ]
+    )
+    post.tag_list = "ruby, rails"
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, custom:) { captured = { record:, content:, custom: }; { "ok" => true } }) do
+      post.to_activitypub_object
+    end
+
+    assert_equal post, captured[:record]
+    assert_equal "태그와 첨부가 있는 답글", captured[:content]
+    assert_equal @root_post.federated_url || Rails.application.routes.url_helpers.post_url(@root_post), captured[:custom]["inReplyTo"]
+    assert_equal 2, captured[:custom]["tag"].size
+    assert_equal "Hashtag", captured[:custom]["tag"].first["type"]
+    assert_equal 1, captured[:custom]["attachment"].size
+  end
+
+  test "to_activitypub_object는 parent가 없으면 article을 inReplyTo로 사용한다" do
+    post = Post.create!(body: "기사 댓글", user: @user, article: @article)
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, custom:) { captured = { content:, custom: }; { "ok" => true } }) do
+      post.to_activitypub_object
+    end
+
+    assert_equal "기사 댓글", captured[:content]
+    assert_equal @article.federated_url || Rails.application.routes.url_helpers.article_url(@article), captured[:custom]["inReplyTo"]
+  end
+
+  test "should_federate?는 user와 actor가 모두 없으면 false를 반환한다" do
+    post = Post.new(body: "고아 포스트")
+
+    assert_not post.should_federate?
+  end
+
+  test "likes_count는 nil이어도 0을 반환한다" do
+    post = Post.new(body: "like count", user: @user)
+    post.likers_count = nil
+
+    assert_equal 0, post.likes_count
+  end
+
+  test "존재하지 않는 parent_id는 검증 오류를 추가한다" do
+    post = Post.new(body: "잘못된 parent", user: @user, parent_id: -999)
+
+    assert_not post.valid?
+    assert_includes post.errors[:parent_id], "원본 포스트를 찾을 수 없습니다."
+  end
+
+  test "from_activitypub_object는 summary를 본문 폴백으로 사용한다" do
+    hash = {
+      "id" => "https://remote.example.com/notes/summary-only",
+      "summary" => "요약만 있는 본문"
+    }
+
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal "요약만 있는 본문", result[:body]
+  end
+
+  test "from_activitypub_object는 첨부 이름들을 폴백 본문으로 합친다" do
+    hash = {
+      "id" => "https://remote.example.com/notes/attachments-with-names",
+      "attachment" => [
+        { "type" => "Document", "name" => "첫 번째 파일" },
+        { "type" => "Image", "name" => "두 번째 파일" }
+      ]
+    }
+
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal "첫 번째 파일 · 두 번째 파일", result[:body]
+  end
 end

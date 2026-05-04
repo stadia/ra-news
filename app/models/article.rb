@@ -91,7 +91,7 @@ class Article < ApplicationRecord
   include Federails::DataEntity
   include FederailsLikeable
 
-  acts_as_federails_data handles: "Note", actor_entity_method: :user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at, should_federate_method: :should_federate?
+  acts_as_federails_data handles: "Note", actor_entity_method: :bot_user, soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at, should_federate_method: :should_federate?
 
   on_federails_delete_requested -> { logger.info { "Federated article deletion requested #{id}" }; discard! }
 
@@ -203,8 +203,19 @@ class Article < ApplicationRecord
 
   private
 
+  #: () -> User?
+  def bot_user
+    User.first_bot
+  end
+
   #: (String action) -> void
   def create_federails_activity(action)
+    ensure_federails_configuration!
+    return unless local_federails_entity? && send(federails_data_configuration[:should_federate_method])
+
+    actor = federails_actor
+    return if actor.blank?
+
     if action == "Update"
       unless Federails::Activity.exists?(entity: self, action: "Create")
         action = "Create"
@@ -219,7 +230,7 @@ class Article < ApplicationRecord
         return
       end
     end
-    super(action)
+    Federails::Activity.create!(actor:, action:, entity: self)
   end
 
   #: () -> void

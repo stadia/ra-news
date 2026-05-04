@@ -304,4 +304,76 @@ class ContentServiceTest < ActiveSupport::TestCase
 
     assert_equal 2, call_count
   end
+
+  test "github_readme_url은 tree 브랜치 URL을 raw README URL로 변환한다" do
+    service = ContentService.new
+
+    url = service.send(:github_readme_url, "https://github.com/rails/rails/tree/main")
+
+    assert_equal "https://raw.githubusercontent.com/rails/rails/main/README.md", url
+  end
+
+  test "github_readme_url은 owner/repo가 없으면 nil을 반환한다" do
+    service = ContentService.new
+
+    assert_nil service.send(:github_readme_url, "https://github.com/rails")
+    assert_nil service.send(:github_readme_url, "not a valid url")
+  end
+
+  test "github_url?은 github host와 raw host만 true를 반환한다" do
+    service = ContentService.new
+
+    assert service.send(:github_url?, "https://github.com/rails/rails")
+    assert service.send(:github_url?, "https://raw.githubusercontent.com/rails/rails/main/README.md")
+    assert_not service.send(:github_url?, "https://example.com/rails")
+    assert_not service.send(:github_url?, "http://[")
+  end
+
+  test "faraday_fetch_html은 상대 경로 리다이렉트를 따라간다" do
+    service = ContentService.new
+    responses = [
+      MockResponse.new(status: 302, headers: { "location" => "/redirected" }),
+      MockResponse.new(status: 200, body: "<html>done</html>", headers: {})
+    ]
+
+    Faraday.stub(:get, ->(*) { responses.shift }) do
+      assert_equal "<html>done</html>", service.send(:faraday_fetch_html, "https://example.com/original")
+    end
+  end
+
+  test "faraday_fetch_html은 리다이렉트 제한을 넘기면 마지막 body를 반환한다" do
+    service = ContentService.new
+    response = MockResponse.new(status: 302, body: "stop", headers: { "location" => "https://example.com/next" })
+
+    Faraday.stub(:get, response) do
+      assert_equal "stop", service.send(:faraday_fetch_html, "https://example.com/original", 4)
+    end
+  end
+
+  test "mcp_fetch_html은 상태 코드가 200이 아니면 nil을 반환한다" do
+    service = ContentService.new
+    client = Object.new
+    client.define_singleton_method(:call_tool) { |*, **| { "structuredContent" => { "status" => 500, "content" => [] } } }
+
+    MCPClient.stub(:connect, client) do
+      assert_nil service.send(:mcp_fetch_html, "https://example.com")
+    end
+  end
+
+  test "mcp_fetch_html은 첫 번째 content 항목을 반환한다" do
+    service = ContentService.new
+    client = Object.new
+    client.define_singleton_method(:call_tool) { |*, **| { "structuredContent" => { "status" => 200, "content" => [ "<html>ok</html>" ] } } }
+
+    MCPClient.stub(:connect, client) do
+      assert_equal "<html>ok</html>", service.send(:mcp_fetch_html, "https://example.com")
+    end
+  end
+
+  test "format_transcript는 세그먼트가 없으면 nil을 반환한다" do
+    service = ContentService.new
+
+    assert_nil service.send(:format_transcript, nil)
+    assert_nil service.send(:format_transcript, [])
+  end
 end
