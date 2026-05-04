@@ -9,7 +9,7 @@ class PostsController < ApplicationController
   before_action :check_rate_limit, only: [ :create ]
 
   def show
-    post = Post.includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).find(params[:id])
+    post = Post.includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).find_by!(slug: params[:id])
     root = post.root
     @posts = build_thread(root)
     @liked_post_ids = current_user ? Like.liked_ids_for(liker: current_user, likeable_type: "Post", likeable_ids: @posts.map(&:id)) : []
@@ -89,7 +89,7 @@ class PostsController < ApplicationController
   end
 
   def set_post
-    @post = Post.find(params[:id])
+    @post = Post.find_by!(slug: params[:id])
   end
 
   def load_article_comments

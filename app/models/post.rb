@@ -4,6 +4,9 @@
 class Post < ApplicationRecord
   MAX_BODY_LENGTH = 1000
 
+  extend FriendlyId
+  friendly_id :random_slug, use: :slugged
+
   acts_as_nested_set
   acts_as_likeable
 
@@ -16,6 +19,7 @@ class Post < ApplicationRecord
   include HtmlSanitizable
 
   validates :body, presence: true
+  validates :slug, uniqueness: true, allow_nil: true
 
   validate :validate_user_or_actor
   validate :validate_parent_post
@@ -140,6 +144,7 @@ class Post < ApplicationRecord
   end
 
   #: () -> void
+  #: () -> void
   def validate_user_or_actor
     unless user_id.present? || federails_actor_id.present?
       errors.add(:base, "user 또는 federails_actor가 필요합니다")
@@ -153,6 +158,15 @@ class Post < ApplicationRecord
     if parent.nil?
       errors.add(:parent_id, "원본 포스트를 찾을 수 없습니다.")
     end
+  end
+
+  def should_generate_new_friendly_id?
+    slug.blank?
+  end
+
+  #: () -> String
+  def random_slug
+    SecureRandom.alphanumeric(10)
   end
 
   class << self
