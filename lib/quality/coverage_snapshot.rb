@@ -70,7 +70,7 @@ module Quality
         if absolute_path.directory?
           Dir[absolute_path.join("**/*_test.rb")]
         elsif absolute_path.file?
-          [absolute_path.to_s]
+          [ absolute_path.to_s ]
         else
           []
         end

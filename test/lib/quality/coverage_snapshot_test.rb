@@ -18,7 +18,7 @@ module Quality
         File.write(root.join("test/models/article_test.rb"), "")
         File.write(root.join("test/services/content_service_test.rb"), "")
 
-        assert CoverageSnapshot.full_suite_run?(["test"], root)
+        assert CoverageSnapshot.full_suite_run?([ "test" ], root)
       end
     end
 
@@ -30,13 +30,13 @@ module Quality
         File.write(root.join("test/models/article_test.rb"), "")
         File.write(root.join("test/services/content_service_test.rb"), "")
 
-        refute CoverageSnapshot.full_suite_run?(["test/models/article_test.rb"], root)
+        refute CoverageSnapshot.full_suite_run?([ "test/models/article_test.rb" ], root)
       end
     end
 
     test "full_suite_run?는 이름 필터 옵션이 있으면 false를 반환한다" do
-      refute CoverageSnapshot.full_suite_run?(["-n", "/article/"])
-      refute CoverageSnapshot.full_suite_run?(["--name=/article/"])
+      refute CoverageSnapshot.full_suite_run?([ "-n", "/article/" ])
+      refute CoverageSnapshot.full_suite_run?([ "--name=/article/" ])
     end
 
     test "full_suite_run?는 seed 옵션 값을 테스트 대상로 해석하지 않는다" do
@@ -45,7 +45,7 @@ module Quality
         FileUtils.mkdir_p(root.join("test/models"))
         File.write(root.join("test/models/article_test.rb"), "")
 
-        assert CoverageSnapshot.full_suite_run?(["--seed", "12345", "test/models/article_test.rb"], root)
+        assert CoverageSnapshot.full_suite_run?([ "--seed", "12345", "test/models/article_test.rb" ], root)
       end
     end
 
