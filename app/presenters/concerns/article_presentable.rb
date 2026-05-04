@@ -20,8 +20,19 @@ module ArticlePresentable
   #: () -> String?
   def summary
     value = article.summary_key
-    summary_text = value.is_a?(Array) ? value.first : value
-    summary_text.presence || article.base_content[:summary]
+    items = case value
+    when Array
+      value.compact_blank
+    when String
+      [ value ]
+    else
+      []
+    end
+    items = [ article.base_content[:summary] ] if items.empty?
+    items.compact_blank!
+    return nil if items.empty?
+
+    items.map { |text| "• #{text}" }.join("\n")
   end
 
   #: () -> String
