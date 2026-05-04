@@ -223,8 +223,8 @@ This project uses automated quality gates. **Run `bin/rake quality` before decla
 ### Gates
 - **Line coverage** >= 70.0% (SimpleCov)
 - **Branch coverage** >= 50.0% (SimpleCov)
-- **Flog max (method)** <= 373
-- **Flog max (class)** <= 406
+- **Flog max (method)** <= 93 (app code only; views/components excluded)
+- **Flog max (class)** <= 289 (app code only; views/components excluded)
 - **Mutation kill ratio** >= threshold (ratcheted from first valid Mutant run)
 
 ### Thresholds

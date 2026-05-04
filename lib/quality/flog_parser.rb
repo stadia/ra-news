@@ -4,6 +4,13 @@ require "flog"
 
 module Quality
   class FlogParser
+    EXCLUDE_PATTERNS = %w[
+      app/components
+      app/views
+      app/components/**
+      app/views/**
+    ].freeze
+
     def initialize(paths)
       @paths = Array(paths).flat_map do |p|
         if File.directory?(p)
@@ -11,7 +18,7 @@ module Quality
         else
           p
         end
-      end
+      end.reject { |f| f.include?("app/components/") || f.include?("app/views/") }
     end
 
     def parse

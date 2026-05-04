@@ -2,8 +2,8 @@ coverage:
   line_min: 70.0
   branch_min: 50.0
 flog:
-  method_max: 373
-  class_max: 406
+  method_max: 93
+  class_max: 289
 rubocop_metrics:
   class_length_max: 100
   method_length_max: 15
