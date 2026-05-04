@@ -32,7 +32,7 @@ module Articles
       video = Video.new(1.day.ago, "Video title")
 
       Faraday.stub(:get, ->(*) { response }) do
-        Yt::Video.stub(:new, ->(**) { video }) do
+        stub_constructor(Yt::Video, ->(*, **) { video }) do
           result = MetadataPreparationService.new.call(article)
 
           assert_predicate result, :success?
@@ -50,7 +50,7 @@ module Articles
       video = Video.new(1.day.ago, "YouTube title")
 
       Faraday.stub(:get, ->(*) { response }) do
-        Yt::Video.stub(:new, ->(**) { video }) do
+        stub_constructor(Yt::Video, ->(*, **) { video }) do
           service = MetadataPreparationService.new
           service.call(article)
           service.call(youtube_article)
@@ -83,7 +83,7 @@ module Articles
       response = Response.new("", 200, {})
 
       Faraday.stub(:get, ->(*) { response }) do
-        Yt::Video.stub(:new, ->(**) { raise Yt::Error.new("boom") }) do
+        stub_constructor(Yt::Video, ->(*, **) { raise Yt::Error.new("boom") }) do
           assert_nothing_raised do
             result = MetadataPreparationService.new.call(article)
 

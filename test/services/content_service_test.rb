@@ -119,7 +119,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       ]
     }
 
-    Yt::Video.stub(:new, mock_video) do
+    stub_constructor(Yt::Video, ->(*, **) { mock_video }) do
       Youtube::Transcript.stub(:get, transcript_response) do
         result = service.call(article)
 
@@ -159,8 +159,8 @@ class ContentServiceTest < ActiveSupport::TestCase
     mock_api = Object.new
     mock_api.define_singleton_method(:fetch) { |_| nil }
 
-    Yt::Video.stub(:new, mock_video) do
-      YoutubeRb::Transcript::YouTubeTranscriptApi.stub(:new, mock_api) do
+    stub_constructor(Yt::Video, ->(*, **) { mock_video }) do
+      stub_constructor(YoutubeRb::Transcript::YouTubeTranscriptApi, ->(*, **) { mock_api }) do
         result = service.call(article)
 
         assert_predicate result, :failure?
@@ -187,9 +187,9 @@ class ContentServiceTest < ActiveSupport::TestCase
     mock_formatter = Object.new
     mock_formatter.define_singleton_method(:format_transcript) { |_| backup_transcript }
 
-    Yt::Video.stub(:new, mock_video) do
-      YoutubeRb::Transcript::YouTubeTranscriptApi.stub(:new, mock_api) do
-        YoutubeRb::Formatters::TextFormatter.stub(:new, mock_formatter) do
+    stub_constructor(Yt::Video, ->(*, **) { mock_video }) do
+      stub_constructor(YoutubeRb::Transcript::YouTubeTranscriptApi, ->(*, **) { mock_api }) do
+        stub_constructor(YoutubeRb::Formatters::TextFormatter, ->(*, **) { mock_formatter }) do
           result = service.call(article)
 
           assert_predicate result, :success?
@@ -217,9 +217,9 @@ class ContentServiceTest < ActiveSupport::TestCase
     mock_formatter = Object.new
     mock_formatter.define_singleton_method(:format_transcript) { |_| backup_transcript }
 
-    Yt::Video.stub(:new, mock_video) do
-      YoutubeRb::Transcript::YouTubeTranscriptApi.stub(:new, mock_api) do
-        YoutubeRb::Formatters::TextFormatter.stub(:new, mock_formatter) do
+    stub_constructor(Yt::Video, ->(*, **) { mock_video }) do
+      stub_constructor(YoutubeRb::Transcript::YouTubeTranscriptApi, ->(*, **) { mock_api }) do
+        stub_constructor(YoutubeRb::Formatters::TextFormatter, ->(*, **) { mock_formatter }) do
           result = service.call(article)
 
           assert_predicate result, :success?
@@ -293,7 +293,7 @@ class ContentServiceTest < ActiveSupport::TestCase
       end
     }
 
-    Yt::Video.stub(:new, mock_video) do
+    stub_constructor(Yt::Video, ->(*, **) { mock_video }) do
       Youtube::Transcript.stub(:get, transcript_stub) do
         result = service.call(article)
 

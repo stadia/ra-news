@@ -45,7 +45,23 @@ module ActiveSupport
     set_fixture_class federails_actors: Federails::Actor
     set_fixture_class federails_followings: Federails::Following
 
-    # Add more helper methods to be used by all tests here...
+    def stub_constructor(klass, replacement)
+      singleton_class = class << klass
+        self
+      end
+
+      if singleton_class.instance_methods(false).include?(:new) || singleton_class.private_instance_methods(false).include?(:new)
+        raise ArgumentError, "#{klass} defines its own .new; use klass.stub(:new, ...) instead"
+      end
+
+      singleton_class.define_method(:new) do |*args, **kwargs, &block|
+        replacement.respond_to?(:call) ? replacement.call(*args, **kwargs, &block) : replacement
+      end
+
+      yield
+    ensure
+      singleton_class&.send(:remove_method, :new)
+    end
   end
 end
 

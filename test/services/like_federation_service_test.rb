@@ -25,7 +25,7 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
       federails_actor: @remote_actor,
       federated_url: "https://remote.example/notes/1"
     )
-    @remote_article = Article.new(
+    Article.insert!({
       title: "원격 아티클",
       title_ko: "원격 아티클",
       url: "https://remote.example/articles/1",
@@ -33,11 +33,13 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
       host: "remote.example",
       slug: "remote-article-1",
       published_at: Time.zone.now,
-      user: @user
-    )
-    @remote_article.federails_actor = @remote_actor
-    @remote_article.federated_url = "https://remote.example/articles/1"
-    @remote_article.save!(validate: false)
+      user_id: @user.id,
+      federails_actor_id: @remote_actor.id,
+      federated_url: "https://remote.example/articles/1",
+      created_at: Time.current,
+      updated_at: Time.current
+    })
+    @remote_article = Article.find_by!(url: "https://remote.example/articles/1")
   end
 
   test "local user like on remote post creates federated Like activity" do
