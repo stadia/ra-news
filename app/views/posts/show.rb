@@ -3,6 +3,7 @@
 class Views::Posts::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
+  include PhlexIcons
 
   def initialize(posts:, liked_post_ids: [])
     @posts = posts
