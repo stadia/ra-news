@@ -94,6 +94,15 @@ class Post < ApplicationRecord
     parent.present? ? parent : article
   end
 
+  #: () -> Array[String]
+  def federation_reply_recipients
+    if parent&.federails_actor&.distant?
+      [parent.federails_actor.federated_url]
+    else
+      []
+    end
+  end
+
   #: () -> String
   def author_name
     user&.full_name || federails_actor&.username || "익명"

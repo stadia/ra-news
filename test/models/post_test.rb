@@ -343,6 +343,36 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @article.federated_url || Rails.application.routes.url_helpers.article_url(@article), captured[:custom]["inReplyTo"]
   end
 
+  test "federation_reply_recipients는 원격 parent의 actor URL을 반환한다" do
+    remote_actor = Federails::Actor.create!(
+      federated_url: "https://remote.example/users/original",
+      username: "original",
+      name: "Original",
+      server: "remote.example",
+      inbox_url: "https://remote.example/users/original/inbox",
+      outbox_url: "https://remote.example/users/original/outbox",
+      followers_url: "https://remote.example/users/original/followers",
+      followings_url: "https://remote.example/users/original/following",
+      profile_url: "https://remote.example/@original",
+      actor_type: "Person",
+      local: false
+    )
+    remote_root = Post.create!(body: "원격 포스트", federails_actor: remote_actor, federated_url: "https://remote.example/notes/456")
+    reply = Post.create!(body: "원격 포스트에 대한 답글", user: @user, parent: remote_root)
+
+    assert_equal ["https://remote.example/users/original"], reply.federation_reply_recipients
+  end
+
+  test "federation_reply_recipients는 로컬 parent인 경우 빈 배열을 반환한다" do
+    reply = Post.create!(body: "로컬 포스트에 대한 답글", user: @user, parent: @root_post)
+
+    assert_equal [], reply.federation_reply_recipients
+  end
+
+  test "federation_reply_recipients는 parent가 없는 경우 빈 배열을 반환한다" do
+    assert_equal [], @root_post.federation_reply_recipients
+  end
+
   test "should_federate?는 user와 actor가 모두 없으면 false를 반환한다" do
     post = Post.new(body: "고아 포스트")
 
