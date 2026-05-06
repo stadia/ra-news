@@ -68,13 +68,23 @@ class ArticlesController < ApplicationController
     article = Article.kept.confirmed.without_toast.tagged_with(keyword, on: :tags)
     @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
 
-    render Views::Articles::Tagged.new(
-      pagy: @pagy,
-      articles: @articles,
-      tag: keyword,
-      sidebar_tags: sidebar_tags,
-      liked_article_ids: liked_article_ids(@articles)
-    )
+    respond_to do |format|
+      format.html do
+        render Views::Articles::Tagged.new(
+          pagy: @pagy,
+          articles: @articles,
+          tag: keyword,
+          sidebar_tags: sidebar_tags,
+          liked_article_ids: liked_article_ids(@articles)
+        )
+      end
+      format.json do
+        render json: {
+          articles: ArticleSerializer.new(@articles).serializable_hash,
+          pagination: @pagy.data_hash
+        }
+      end
+    end
   end
 
   def show
