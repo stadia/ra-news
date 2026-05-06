@@ -1,6 +1,6 @@
 require "fediverse/inbox"
 
-Alba.backend = :oj
+Alba.backend = :oj_rails
 
 Federails.config_from "federails"
 

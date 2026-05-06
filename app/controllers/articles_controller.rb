@@ -28,14 +28,25 @@ class ArticlesController < ApplicationController
       end
       scope.where.not(id: id).without_toast
     end
-    @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
-    render Views::Articles::Index.new(
-      pagy: @pagy,
-      articles: @articles,
-      sidebar_tags: sidebar_tags,
-      search: params[:search],
-      liked_article_ids: liked_article_ids(@articles)
-    )
+    @pagy, @articles = pagy(article.includes(:user, :site, :tags).order(published_at: :desc))
+
+    respond_to do |format|
+      format.html do
+        render Views::Articles::Index.new(
+          pagy: @pagy,
+          articles: @articles,
+          sidebar_tags: sidebar_tags,
+          search: params[:search],
+          liked_article_ids: liked_article_ids(@articles)
+        )
+      end
+      format.json do
+        render json: {
+          articles: ArticleSerializer.new(@articles).serializable_hash,
+          pagination: @pagy.data_hash
+        }
+      end
+    end
   end
 
   def others
