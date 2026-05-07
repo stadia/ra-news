@@ -7,5 +7,7 @@ class ArticleSerializer
              :published_at, :created_at, :updated_at
 
   attribute :summary_key, &:summary_key
-  attribute :tags, &:tag_list
+  attribute :tags do |article|
+    article.tags.map(&:name)
+  end
 end

@@ -28,10 +28,10 @@ class ArticlesController < ApplicationController
       end
       scope.where.not(id: id).without_toast
     end
-    @pagy, @articles = pagy(article.includes(:user, :site, :tags).order(published_at: :desc))
-
+    base_scope = article.includes(:user, :site, :tags)
     respond_to do |format|
       format.html do
+        @pagy, @articles = pagy(base_scope.order(published_at: :desc))
         render Views::Articles::Index.new(
           pagy: @pagy,
           articles: @articles,
@@ -41,9 +41,16 @@ class ArticlesController < ApplicationController
         )
       end
       format.json do
+        @pagy, @articles = pagy(:keyset,
+          base_scope.reorder(published_at: :desc, id: :desc)
+        )
         render json: {
           articles: ArticleSerializer.new(@articles).serializable_hash,
-          pagination: @pagy.data_hash
+          pagination: {
+            page: @pagy.page,
+            next_page: @pagy.next,
+            limit: @pagy.limit
+          }
         }
       end
     end
@@ -65,11 +72,11 @@ class ArticlesController < ApplicationController
   def tag
     cacheable_page!
     keyword = params[:keyword].to_s
-    article = Article.kept.confirmed.without_toast.tagged_with(keyword, on: :tags)
-    @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
+    article = Article.kept.confirmed.without_toast.includes(:user, :site, :tags).tagged_with(keyword, on: :tags)
 
     respond_to do |format|
       format.html do
+        @pagy, @articles = pagy(article.order(published_at: :desc))
         render Views::Articles::Tagged.new(
           pagy: @pagy,
           articles: @articles,
@@ -79,9 +86,16 @@ class ArticlesController < ApplicationController
         )
       end
       format.json do
+        @pagy, @articles = pagy(:keyset,
+          article.reorder(published_at: :desc, id: :desc)
+        )
         render json: {
           articles: ArticleSerializer.new(@articles).serializable_hash,
-          pagination: @pagy.data_hash
+          pagination: {
+            page: @pagy.page,
+            next_page: @pagy.next,
+            limit: @pagy.limit
+          }
         }
       end
     end
