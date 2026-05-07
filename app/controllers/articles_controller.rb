@@ -45,7 +45,7 @@ class ArticlesController < ApplicationController
           base_scope.reorder(published_at: :desc, id: :desc)
         )
         render json: {
-          articles: ArticleSerializer.new(@articles).serializable_hash,
+          articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
           pagination: {
             page: @pagy.page,
             next_page: @pagy.next,
@@ -90,7 +90,7 @@ class ArticlesController < ApplicationController
           article.reorder(published_at: :desc, id: :desc)
         )
         render json: {
-          articles: ArticleSerializer.new(@articles).serializable_hash,
+          articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
           pagination: {
             page: @pagy.page,
             next_page: @pagy.next,

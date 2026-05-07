@@ -10,4 +10,7 @@ class ArticleSerializer
   attribute :tags do |article|
     article.tags.map(&:name)
   end
+  attribute :liked do |article|
+    params[:liked_ids]&.include?(article.id) || false
+  end
 end

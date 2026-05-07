@@ -31,7 +31,10 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def edit
-    render Views::Users::Edit.new(user: resource)
+    respond_to do |format|
+      format.html { render Views::Users::Edit.new(user: resource) }
+      format.json { render json: { user: UserSerializer.new(resource).serializable_hash } }
+    end
   end
 
   def password

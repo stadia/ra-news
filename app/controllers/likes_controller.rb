@@ -16,6 +16,7 @@ class LikesController < ApplicationController
     respond_to do |format|
       format.turbo_stream { render Views::Likes::ToggleTurboStream.new(likeable: @likeable) }
       format.html { redirect_back fallback_location: fallback_location }
+      format.json { render json: like_status_json, status: :created }
     end
   end
 
@@ -26,6 +27,7 @@ class LikesController < ApplicationController
     respond_to do |format|
       format.turbo_stream { render Views::Likes::ToggleTurboStream.new(likeable: @likeable) }
       format.html { redirect_back fallback_location: fallback_location }
+      format.json { render json: like_status_json, status: :ok }
     end
   end
 
@@ -41,6 +43,15 @@ class LikesController < ApplicationController
 
   def fallback_location
     feed_path
+  end
+
+  def like_status_json
+    {
+      likeable_type: @likeable.class.name,
+      likeable_slug: @likeable.slug,
+      liked: current_user.likes?(@likeable),
+      likes_count: @likeable.likes_count
+    }
   end
 
   def find_likeable(likeable_class, likeable_id)
