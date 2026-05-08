@@ -3,7 +3,7 @@
 class Users::SessionsController < Devise::SessionsController
   layout -> { Components::Layout }
 
-  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }
+  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }, only: [ :create, :destroy ]
 
   respond_to :html, :json
 
@@ -25,7 +25,7 @@ class Users::SessionsController < Devise::SessionsController
     if request.format.json?
       _record, raw = RefreshToken.issue(resource)
       render json: {
-        user: { id: resource.id, email: resource.email },
+        user: UserSerializer.new(resource).serializable_hash,
         refresh_token: raw
       }, status: :ok
     else
