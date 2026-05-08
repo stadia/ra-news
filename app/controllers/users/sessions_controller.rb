@@ -3,8 +3,40 @@
 class Users::SessionsController < Devise::SessionsController
   layout -> { Components::Layout }
 
+  respond_to :html, :json
+
   def new
     redirect_to root_url and return if user_signed_in?
     render Views::Sessions::New.new
+  end
+
+  def destroy
+    if request.format.json? && current_user
+      current_user.refresh_tokens.active.find_each(&:revoke!)
+    end
+    super
+  end
+
+  private
+
+  def respond_with(resource, _opts = {})
+    if request.format.json?
+      _record, raw = RefreshToken.issue(resource)
+      render json: {
+        user: { id: resource.id, email: resource.email },
+        refresh_token: raw
+      }, status: :ok
+    else
+      super
+    end
+  end
+
+  def respond_to_on_destroy(non_navigational_status: :no_content)
+    if request.format.json?
+      current_user&.refresh_tokens&.active&.find_each(&:revoke!)
+      head :no_content
+    else
+      super
+    end
   end
 end
