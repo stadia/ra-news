@@ -191,7 +191,8 @@ end
 
 ### 로그인
 ```
-POST /login.json
+POST /login
+Header: Accept: application/json
 Body: { user: { email, password } }
 
 → Devise 검증
@@ -201,7 +202,8 @@ Body: { user: { email, password } }
 
 ### 보호된 요청
 ```
-GET /articles.json
+GET /articles
+Header: Accept: application/json
 Header: Authorization: Bearer <access>
 
 → warden jwt strategy가 토큰 검증 + jti가 denylist에 없는지 확인
@@ -254,13 +256,13 @@ Header: Authorization: Bearer <access>
   - 유효한 refresh로 호출 → 새 access/refresh 반환, 이전 refresh는 사용 불가 (회전)
   - 만료/revoked/존재하지 않는 refresh → 401
 - `ArticlesControllerTest`
-  - `GET /articles.json` 토큰 없으면 401
+  - `GET /articles` (Accept: application/json) 토큰 없으면 401
   - 유효 토큰이면 200, JSON 페이로드 정상
 - `LikesControllerTest`
-  - `POST /articles/:id/like.json` 토큰 없으면 401
+  - `POST /articles/:id/like` (Accept: application/json) 토큰 없으면 401
   - 유효 토큰이면 정상 동작
 - `PostsControllerTest`
-  - `POST /articles/:id/posts.json` 토큰 없으면 401, 유효 토큰이면 정상
+  - `POST /articles/:id/posts` (Accept: application/json) 토큰 없으면 401, 유효 토큰이면 정상
 
 기존 HTML 테스트가 깨지지 않는지도 회귀 검증한다.
 

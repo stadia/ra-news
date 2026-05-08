@@ -976,18 +976,21 @@ eval "$(rbenv init -)" && bin/dev
 
 ```bash
 # 1. 로그인
-curl -i -X POST http://localhost:3000/login.json \
+curl -i -X POST http://localhost:3000/login \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
   -d '{"user":{"email":"john@example.com","password":"password"}}'
 # → Authorization 헤더와 refresh_token body 확인
 
 # 2. 보호된 엔드포인트
-curl -i http://localhost:3000/articles.json \
+curl -i http://localhost:3000/articles \
+  -H "Accept: application/json" \
   -H "Authorization: Bearer <위에서_받은_access>"
 # → 200
 
 # 3. 토큰 없이
-curl -i http://localhost:3000/articles.json
+curl -i http://localhost:3000/articles \
+  -H "Accept: application/json"
 # → 401 unauthorized
 
 # 4. refresh
