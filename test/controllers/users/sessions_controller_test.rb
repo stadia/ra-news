@@ -70,6 +70,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
          params: { user: { email: user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]
+    assert_match(/^Bearer /, token.to_s)
     assert_operator user.refresh_tokens.active.count, :>=, 1
 
     get destroy_user_session_path,

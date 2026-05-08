@@ -12,7 +12,7 @@ class Users::SessionsController < Devise::SessionsController
 
   def destroy
     if request.format.json? && current_user
-      current_user.refresh_tokens.active.find_each(&:revoke!)
+      current_user.refresh_tokens.active.update_all(revoked_at: Time.current)
     end
     super
   end
@@ -33,7 +33,6 @@ class Users::SessionsController < Devise::SessionsController
 
   def respond_to_on_destroy(non_navigational_status: :no_content)
     if request.format.json?
-      current_user&.refresh_tokens&.active&.find_each(&:revoke!)
       head :no_content
     else
       super

@@ -15,15 +15,25 @@ class Api::V1::Auth::TokensController < ApplicationController
 
     return render(json: { error: "invalid_refresh_token" }, status: :unauthorized) unless record
 
-    user = record.user
-    record.revoke!
-    _new_record, new_raw = RefreshToken.issue(user)
+    user = nil
+    new_raw = nil
+    RefreshToken.transaction do
+      record.lock!
+      if record.revoked_at.present? || record.expires_at <= Time.current
+        return render json: { error: "invalid_refresh_token" }, status: :unauthorized
+      end
+
+      user = record.user
+      record.update!(revoked_at: Time.current)
+      _new_record, new_raw = RefreshToken.issue(user)
+    end
+
     access_token, _payload = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil)
 
     render json: {
       access_token: access_token,
       refresh_token: new_raw,
-      expires_in: 15.minutes.to_i
+      expires_in: Warden::JWTAuth.config.expiration_time.to_i
     }
   end
 end
