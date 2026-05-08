@@ -14,7 +14,7 @@
 - JWT denylist 모델 (`JwtDenylist`)
 - 자체 구현 refresh token 모델 (`RefreshToken`) 및 회전 로직
 - 로그인 시 access + refresh token 발급
-- `POST /auth/refresh` 엔드포인트로 토큰 갱신
+- `POST /api/v1/auth/refresh` 엔드포인트로 토큰 갱신 (신규 앱 전용 API는 `/api/v1` namespace 사용)
 - 로그아웃 시 access(jti denylist) + 사용자 refresh token 일괄 무효화
 - 다음 컨트롤러의 JSON 응답에 JWT 인증 적용:
   - `ArticlesController#index, #show`
@@ -24,9 +24,12 @@
 - 위 요소에 대한 Minitest 테스트
 
 ### 제외
-- 새 `/api/v1` namespace 신설
 - HTML 흐름의 인증 방식 변경 (Devise 세션 그대로)
+- 기존 컨트롤러를 `/api/v1` 하위로 이전 (기존 라우트 그대로 두고 JWT만 추가)
 - 위에 명시되지 않은 컨트롤러의 JWT 보호 (추후 별도 작업)
+
+### Namespace 정책
+신규 앱 전용 API 엔드포인트는 `/api/v1/...` namespace 하위에 배치한다 (예: `/api/v1/auth/refresh`). 기존 컨트롤러의 JSON 응답은 현재 라우트를 유지하고 JWT 인증 레이어만 추가한다.
 
 ## 아키텍처
 
@@ -121,9 +124,9 @@ end
   - 추가로 body에 `{ user: { id:, email: }, refresh_token: <raw> }` 렌더
 - `respond_to_on_destroy`: 로그아웃 시 `current_user.refresh_tokens.active.find_each(&:revoke!)` 호출 후 204 반환
 
-### 6. `Auth::TokensController` (신규)
+### 6. `Api::V1::Auth::TokensController` (신규)
 ```ruby
-class Auth::TokensController < ApplicationController
+class Api::V1::Auth::TokensController < ApplicationController
   skip_before_action :authenticate_user!
   respond_to :json
 
@@ -173,8 +176,12 @@ end
 
 ### 8. 라우트
 ```ruby
-namespace :auth do
-  post :refresh, to: "tokens#refresh"
+namespace :api do
+  namespace :v1 do
+    namespace :auth do
+      post :refresh, to: "tokens#refresh"
+    end
+  end
 end
 ```
 
@@ -204,7 +211,7 @@ Header: Authorization: Bearer <access>
 
 ### 토큰 갱신
 ```
-POST /auth/refresh
+POST /api/v1/auth/refresh
 Body: { refresh_token }
 
 → digest로 active record 조회
@@ -243,7 +250,7 @@ Header: Authorization: Bearer <access>
 - `Users::SessionsControllerTest`
   - JSON 로그인: `Authorization` 응답 헤더 존재, body에 `refresh_token` 포함
   - JSON 로그아웃: 204, access jti가 denylist에 추가, 사용자 refresh 모두 revoked
-- `Auth::TokensControllerTest`
+- `Api::V1::Auth::TokensControllerTest`
   - 유효한 refresh로 호출 → 새 access/refresh 반환, 이전 refresh는 사용 불가 (회전)
   - 만료/revoked/존재하지 않는 refresh → 401
 - `ArticlesControllerTest`
