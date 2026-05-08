@@ -51,6 +51,7 @@ ko:
     sessions:
       signed_in: "로그인되었습니다."
       signed_out: "로그아웃되었습니다."
+      already_signed_out: "이미 로그아웃되었습니다."
     registrations:
       signed_up: "회원가입이 완료되었습니다."
       signed_up_but_unconfirmed: "회원가입이 완료되었습니다. 이메일을 확인하여 계정을 활성화해주세요."

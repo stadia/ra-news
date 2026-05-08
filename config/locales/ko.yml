@@ -44,10 +44,6 @@ ko:
               too_short: "은(는) 2자 이상이어야 합니다"
               too_long: "은(는) 50자 이하여야 합니다"
 
-  devise:
-    sessions:
-      already_signed_out: "이미 로그아웃되었습니다."
-
   # UI labels
   remember_me: "로그인 상태 유지"
   sign_in: "로그인"
