@@ -79,7 +79,8 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
          params: { user: { email: @user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]
-    assert token.present?
+
+    assert_predicate token, :present?
 
     post article_like_path(@article, format: :json),
          params: { likeable_type: "Article" },

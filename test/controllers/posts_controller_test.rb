@@ -100,5 +100,4 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
     assert_equal "unauthorized", JSON.parse(response.body)["error"]
   end
-
 end

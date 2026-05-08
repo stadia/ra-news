@@ -15,8 +15,9 @@ class Api::V1::Auth::TokensControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     body = JSON.parse(response.body)
-    assert body["access_token"].present?
-    assert body["refresh_token"].present?
+
+    assert_predicate body["access_token"], :present?
+    assert_predicate body["refresh_token"], :present?
     assert_not_equal @raw_refresh, body["refresh_token"]
     assert_equal 15.minutes.to_i, body["expires_in"]
   end
@@ -25,11 +26,13 @@ class Api::V1::Auth::TokensControllerTest < ActionDispatch::IntegrationTest
     post api_v1_auth_refresh_path,
          params: { refresh_token: @raw_refresh },
          as: :json
+
     assert_response :success
 
     post api_v1_auth_refresh_path,
          params: { refresh_token: @raw_refresh },
          as: :json
+
     assert_response :unauthorized
   end
 

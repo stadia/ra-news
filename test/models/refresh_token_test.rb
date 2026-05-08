@@ -10,7 +10,7 @@ class RefreshTokenTest < ActiveSupport::TestCase
   test "issue returns record and raw token, stores digest only" do
     record, raw = RefreshToken.issue(@user)
 
-    assert raw.is_a?(String)
+    assert_kind_of String, raw
     assert_operator raw.length, :>=, 64
     assert_not_equal raw, record.token_digest
     assert_equal Digest::SHA256.hexdigest(raw), record.token_digest
@@ -49,6 +49,7 @@ class RefreshTokenTest < ActiveSupport::TestCase
 
     assert_nil record.revoked_at
     record.revoke!
+
     assert_not_nil record.reload.revoked_at
   end
 end

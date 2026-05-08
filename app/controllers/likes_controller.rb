@@ -4,6 +4,8 @@ class LikesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_likeable
 
+  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }, only: [ :create, :destroy ]
+
   LIKEABLE_CLASSES = {
     "Post" => Post,
     "Article" => Article

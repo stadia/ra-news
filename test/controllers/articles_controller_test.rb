@@ -171,7 +171,8 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
          params: { user: { email: user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]
-    assert token.present?
+
+    assert_predicate token, :present?
 
     get articles_url(format: :json),
         headers: { "Authorization" => token }

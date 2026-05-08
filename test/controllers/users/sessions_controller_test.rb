@@ -47,9 +47,10 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/^Bearer /, response.headers["Authorization"].to_s)
 
     body = JSON.parse(response.body)
+
     assert_equal user.id, body.dig("user", "id")
     assert_equal user.email, body.dig("user", "email")
-    assert body["refresh_token"].present?
+    assert_predicate body["refresh_token"], :present?
   end
 
   test "JSON login with bad password returns 401 JSON" do
@@ -70,6 +71,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
          params: { user: { email: user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]
+
     assert_match(/^Bearer /, token.to_s)
     assert_operator user.refresh_tokens.active.count, :>=, 1
 
