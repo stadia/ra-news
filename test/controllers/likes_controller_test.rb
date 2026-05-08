@@ -64,4 +64,29 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, @article.reload.likers_count
     assert_not_includes response.body, ">1<"
   end
+
+  test "JSON like create without token returns 401" do
+    post article_like_path(@article, format: :json),
+         params: { likeable_type: "Article" },
+         as: :json
+
+    assert_response :unauthorized
+    assert_equal "unauthorized", JSON.parse(response.body)["error"]
+  end
+
+  test "JSON like create with valid JWT succeeds" do
+    post user_session_path(format: :json),
+         params: { user: { email: @user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    assert token.present?
+
+    post article_like_path(@article, format: :json),
+         params: { likeable_type: "Article" },
+         headers: { "Authorization" => token },
+         as: :json
+
+    assert_includes [ 200, 201 ], response.status
+    assert @user.reload.likes?(@article)
+  end
 end
