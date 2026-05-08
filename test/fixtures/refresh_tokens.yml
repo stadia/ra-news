@@ -1,0 +1,1 @@
+# 기본 fixture는 없음. 테스트에서 RefreshToken.issue로 동적 생성.
