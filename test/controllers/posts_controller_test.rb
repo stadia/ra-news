@@ -88,4 +88,17 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :success
   end
+
+  test "JSON post create without token returns 401" do
+    sign_out @user
+    article = articles(:ruby_article)
+
+    post article_posts_url(article, format: :json),
+         params: { post: { body: "댓글" } },
+         as: :json
+
+    assert_response :unauthorized
+    assert_equal "unauthorized", JSON.parse(response.body)["error"]
+  end
+
 end

@@ -4,7 +4,8 @@ class User < ApplicationRecord
   AVATAR_SIZE = [ 400, 400 ].freeze
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :validatable, :rememberable, :timeoutable, :confirmable
+         :recoverable, :validatable, :rememberable, :timeoutable, :confirmable,
+         :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
   acts_as_liker
 
@@ -15,6 +16,8 @@ class User < ApplicationRecord
   has_many :articles, dependent: :nullify
 
   has_many :posts, dependent: :destroy
+
+  has_many :refresh_tokens, dependent: :destroy
 
   validates :username, presence: true,
                       uniqueness: { case_sensitive: false },

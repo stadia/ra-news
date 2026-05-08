@@ -159,6 +159,26 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "JSON index is publicly accessible without token" do
+    get articles_url(format: :json)
+
+    assert_response :success
+  end
+
+  test "JSON index with valid JWT returns 200" do
+    user = users(:john)
+    post user_session_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    assert token.present?
+
+    get articles_url(format: :json),
+        headers: { "Authorization" => token }
+
+    assert_response :success
+  end
+
   private
 
   def capture_like_queries
