@@ -39,7 +39,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "JSON login returns Authorization header and refresh_token body" do
     user = users(:john)
 
-    post user_session_path(format: :json),
+    post user_session_path,
          params: { user: { email: user.email, password: "password" } },
          as: :json
 
@@ -55,7 +55,7 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "JSON login with bad password returns 401 JSON" do
     user = users(:john)
 
-    post user_session_path(format: :json),
+    post user_session_path,
          params: { user: { email: user.email, password: "wrong" } },
          as: :json
 
@@ -66,13 +66,13 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "JSON logout revokes user refresh tokens" do
     user = users(:john)
 
-    post user_session_path(format: :json),
+    post user_session_path,
          params: { user: { email: user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]
     assert_operator user.refresh_tokens.active.count, :>=, 1
 
-    get destroy_user_session_path(format: :json),
+    get destroy_user_session_path,
         headers: { "Authorization" => token },
         as: :json
 

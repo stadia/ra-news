@@ -167,7 +167,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
 
   test "JSON index with valid JWT returns 200" do
     user = users(:john)
-    post user_session_path(format: :json),
+    post user_session_path,
          params: { user: { email: user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]
