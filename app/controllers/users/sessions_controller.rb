@@ -3,6 +3,8 @@
 class Users::SessionsController < Devise::SessionsController
   layout -> { Components::Layout }
 
+  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }
+
   respond_to :html, :json
 
   def new
