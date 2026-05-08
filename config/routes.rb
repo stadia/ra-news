@@ -16,6 +16,14 @@ Rails.application.routes.draw do
     get "account/password", to: "users/registrations#password", as: :account_password
   end
 
+  namespace :api do
+    namespace :v1 do
+      namespace :auth do
+        post :refresh, to: "tokens#refresh"
+      end
+    end
+  end
+
   resource :push_subscription, only: %i[ create destroy ]
   resources :posts, only: [ :show, :create ] do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
