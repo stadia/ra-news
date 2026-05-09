@@ -4,17 +4,17 @@
 Rails 8.1.3 | Ruby 4.0.3
 
 ## Stack
-- Database: PostgreSQL — 24 tables
-- Models: 22
-- Routes: 148 across 46 controllers
+- Database: PostgreSQL — 26 tables
+- Models: 24
+- Routes: 149 across 47 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Storage: ActiveStorage (1 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 113 components, 113 Phlex
+- Components: 119 components, 119 Phlex
 - Performance: 10 issues detected
-- auth: devise, pundit, jwt
+- auth: devise, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
 - api: jbuilder, alba, oj
@@ -29,7 +29,7 @@ Rails 8.1.3 | Ruby 4.0.3
 - validation: dry-monads
 - utilities: nokogiri, faraday, rest-client
 
-## Models (22)
+## Models (24)
 - **ActsAsTaggableOn::Tag** — has_many :taggings
 - **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
 - **Article** — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :notification_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
@@ -37,12 +37,14 @@ Rails 8.1.3 | Ruby 4.0.3
 - **DiscordDelivery** — belongs_to :article, belongs_to :notification_channel
 - **Federails::Actor** — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
 - **Federails::Following** — belongs_to :actor, belongs_to :target_actor, has_many :activities
+- **JwtDenylist**
 - **Like** — belongs_to :liker, belongs_to :likeable
 - **NotificationChannel** — has_many :notification_deliveries
 - **NotificationDelivery** — belongs_to :article, belongs_to :notification_channel
 - **Post** — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :article, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags
 - **Preference**
 - **PushSubscription** — belongs_to :user
+- **RefreshToken** — belongs_to :user
 - **Role**
 - **Site** — has_many :articles
 - **SlackChannel** — has_many :notification_deliveries
@@ -51,7 +53,7 @@ Rails 8.1.3 | Ruby 4.0.3
 - **Socialization::ActiveRecordStores::Like** — belongs_to :liker, belongs_to :likeable
 - **Socialization::ActiveRecordStores::Mention** — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** — has_many :taggings
-- **User** — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_one :federails_actor
+- **User** — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :refresh_tokens, has_one :federails_actor
 
 ## Architecture
 - Hotwire (Turbo + Stimulus)
@@ -64,6 +66,7 @@ Rails 8.1.3 | Ruby 4.0.3
 - concerns_models
 - concerns_controllers
 - policies
+- serializers
 - pwa
 - Dockerized
 - Kamal deployment

@@ -1,0 +1,21 @@
+# Generated from app/queries/article_query.rb with RBS::Inline
+
+module ArticleQuery
+  DEFAULT_INCLUDES: untyped
+
+  def self?.index_html: (?untyped search) -> untyped
+
+  def self?.index_json: (?untyped search) -> untyped
+
+  def self?.others: () -> untyped
+
+  def self?.tagged: (untyped keyword) -> untyped
+
+  def self?.index_scope: (untyped search) -> untyped
+
+  def self?.excluded_related_article_ids: (untyped scope) -> untyped
+
+  def self?.others_scope: () -> untyped
+
+  def self?.base_scope: () -> untyped
+end

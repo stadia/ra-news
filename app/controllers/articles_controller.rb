@@ -14,24 +14,10 @@ class ArticlesController < ApplicationController
   # GET /articles or /articles.json
   def index
     cacheable_page!
-    scope = Article.kept.confirmed
 
-    article = if params[:search].present?
-      scope.without_toast.full_text_search_for(params[:search])
-    else
-      scope = scope.related
-      article_count = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).count
-      id = if article_count < 9
-        scope.select(:id).limit(9).order(created_at: :desc).map(&:id)
-      else
-        scope.select(:id).where(created_at: 24.hours.ago...).order(created_at: :desc).map(&:id)
-      end
-      scope.where.not(id: id).without_toast
-    end
-    base_scope = article.includes(:user, :site, :tags)
     respond_to do |format|
       format.html do
-        @pagy, @articles = pagy(base_scope.order(published_at: :desc))
+        @pagy, @articles = pagy(ArticleQuery.index_html(params[:search]).order(published_at: :desc))
         render Views::Articles::Index.new(
           pagy: @pagy,
           articles: @articles,
@@ -41,9 +27,7 @@ class ArticlesController < ApplicationController
         )
       end
       format.json do
-        @pagy, @articles = pagy(:keyset,
-          base_scope.reorder(published_at: :desc, id: :desc)
-        )
+        @pagy, @articles = pagy(:keyset, ArticleQuery.index_json(params[:search]).reorder(published_at: :desc, id: :desc))
         render json: {
           articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
           pagination: {
@@ -58,21 +42,36 @@ class ArticlesController < ApplicationController
 
   def others
     cacheable_page!
-    article = Article.kept.confirmed.unrelated.without_toast
-    @pagy, @articles = pagy(article.includes(:user, :site).order(published_at: :desc))
-    render Views::Articles::Others.new(
-      pagy: @pagy,
-      articles: @articles,
-      sidebar_tags: sidebar_tags,
-      search: params[:search],
-      liked_article_ids: liked_article_ids(@articles)
-    )
+    respond_to do |format|
+      format.html do
+        @pagy, @articles = pagy(ArticleQuery.others.order(published_at: :desc))
+        render Views::Articles::Others.new(
+          pagy: @pagy,
+          articles: @articles,
+          sidebar_tags: sidebar_tags,
+          search: params[:search],
+          liked_article_ids: liked_article_ids(@articles)
+        )
+      end
+      format.json do
+        @pagy, @articles = pagy(:keyset, ArticleQuery.others.reorder(published_at: :desc, id: :desc))
+        render json: {
+          articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
+          pagination: {
+            page: @pagy.page,
+            next_page: @pagy.next,
+            limit: @pagy.limit
+          }
+        }
+      end
+    end
   end
 
   def tag
     cacheable_page!
     keyword = params[:keyword].to_s
-    article = Article.kept.confirmed.without_toast.includes(:user, :site, :tags).tagged_with(keyword, on: :tags)
+
+    article = ArticleQuery.tagged(keyword)
 
     respond_to do |format|
       format.html do

@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (113)
+# Components (119)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -38,8 +38,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Badge** (phlex)
   props: variant::primary, size::md, args
 - **Base** (phlex)
-  props: user_attrs
 - **Base** (phlex)
+  props: user_attrs
 - **Breadcrumb** (phlex)
 - **BreadcrumbEllipsis** (phlex)
 - **BreadcrumbItem** (phlex)
@@ -62,6 +62,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **CarouselItem** (phlex)
 - **CarouselNext** (phlex)
 - **CarouselPrevious** (phlex)
+- **Chart** (phlex)
+  props: options:{}, attrs
 - **Checkbox** (phlex)
 - **CheckboxGroup** (phlex)
 - **Comments::Comment** (phlex)
@@ -128,13 +130,15 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **PopoverContent** (phlex)
 - **PopoverTrigger** (phlex)
 - **Posts::PostCard** (phlex)
-  props: post, depth:0, liked:nil
+  props: post, depth:0, liked:nil, show_actions:true, show_reply_badge:true
 - **Posts::PostForm** (phlex)
   props: post:Post.new
 - **Posts::PostThread** (phlex)
   props: post, liked:nil
 - **Posts::ReplyForm** (phlex)
   props: parent_post
+- **Progress** (phlex)
+  props: value:0, attrs
 - **PushNotifications::PromptModal** (phlex)
 - **RadioButton** (phlex)
 - **RecentCommentsSidebar** (phlex)
@@ -156,6 +160,13 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **SetLightMode** (phlex)
 - **Switch** (phlex)
   props: include_hidden:true, checked_value:"1", unchecked_value:"0", attrs
+- **Tabs** (phlex)
+  props: default:nil, attrs
+- **TabsContent** (phlex)
+  props: value, attrs
+- **TabsList** (phlex)
+- **TabsTrigger** (phlex)
+  props: value, attrs
 - **TagsSidebar** (phlex)
   props: tags, current_tag:nil
 - **Text** (phlex)

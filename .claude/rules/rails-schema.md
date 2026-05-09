@@ -4,7 +4,7 @@ paths:
   - "db/migrate/**"
 ---
 
-# Database Tables (22)
+# Database Tables (24)
 
 _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")` for live data._
 
@@ -20,16 +20,18 @@ _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")
 - **federails_followings** (6 cols) — actor_id:bigint, target_actor_id:bigint, status:integer(=0), federated_url:string | Idx: actor_id+target_actor_id(unique)
 - **federails_hosts** (10 cols) — domain:string, nodeinfo_url:string, software_name:string, software_version:string, protocols:jsonb, services:jsonb, protocols:text, services:text
 - **friendly_id_slugs** (5 cols) — slug:string, sluggable_id:integer, sluggable_type:string, scope:string | Idx: sluggable_type+sluggable_id, slug+sluggable_type, slug+sluggable_type+scope(unique)
+- **jwt_denylists** (4 cols) — jti:string, exp:datetime | Idx: jti(unique)
 - **likes** (5 cols) — liker_type:string, liker_id:bigint, likeable_type:string, likeable_id:bigint | Idx: liker_type+liker_id, likeable_type+likeable_id, liker_type+liker_id+likeable_type+likeable_id
 - **notification_channels** (12 cols) — type:string, status:string(=active), last_verified_at:datetime, remote_id:string, name:string, webhook_url:string, channel_id:string, channel_name:string, metadata:jsonb, deleted_at:datetime | Idx: type+remote_id(unique)
   status: active, inactive, error
 - **notification_deliveries** (12 cols) — type:string, channel_id:string, channel_name:string, status:string(=failed), sent_at:datetime, error_message:text, message_id:string, metadata:jsonb
   status: sent, failed
-- **posts** (16 cols) — body:text, federated_url:string, parent_id:bigint, lft:integer, rgt:integer, depth:integer(=0), children_count:integer(=0), likers_count:integer(=0), url:string, title:string, media_attachments:jsonb | FK: article_id→articles | Idx: parent_id+created_at, federated_url(unique)
+- **posts** (17 cols) — body:text, federated_url:string, parent_id:bigint, lft:integer, rgt:integer, depth:integer(=0), children_count:integer(=0), likers_count:integer(=0), url:string, title:string, media_attachments:jsonb, slug:string | FK: article_id→articles | Idx: parent_id+created_at, federated_url(unique), slug(unique)
 - **push_subscriptions** (9 cols) — endpoint:text, p256dh:string, auth:string, expiration_time:datetime, last_sent_at:datetime, last_error_at:datetime | Idx: endpoint(unique)
+- **refresh_tokens** (6 cols) — token_digest:string, expires_at:datetime, revoked_at:datetime | Idx: token_digest(unique)
 - **roles** (3 cols) — name:string | Idx: name(unique)
 - **sessions** (5 cols) — ip_address:string, user_agent:string
-- **sites** (10 cols) — name:string, base_uri:string, client:integer, last_checked_at:datetime, email:string, path:string, channel:string, deleted_at:datetime | Idx: client+last_checked_at
+- **sites** (11 cols) — name:string, base_uri:string, client:integer, last_checked_at:datetime, email:string, path:string, channel:string, deleted_at:datetime, url:string | Idx: client+last_checked_at
   client: rss, gmail, youtube, hacker_news, rss_page, reddit
 - **user_workspace_subscriptions** (8 cols) — slack_workspace_id:bigint, slack_user_id:string, channel_id:string, channel_name:string, active:boolean(=false)
 - **users** (11 cols) — email_address:string, name:string, roles:json, username:string, likees_count:integer(=0), confirmation_token:string, confirmed_at:datetime, confirmation_sent_at:datetime, unconfirmed_email:string | Idx: email_address(unique), email_address(unique), username(unique), email(unique), reset_password_token(unique), confirmation_token(unique)
