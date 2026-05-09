@@ -40,7 +40,7 @@ class Components::Layout < Components::Base
         render_loading_indicator
         render_navigation unless helpers.hotwire_native_app?
         render_main { yield }
-        render_footer
+        render_footer unless helpers.hotwire_native_app?
       end
     end
   end
