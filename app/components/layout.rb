@@ -81,7 +81,7 @@ class Components::Layout < Components::Base
   end
 
   def render_meta_tags
-    meta(name: "viewport", content: "width=device-width,initial-scale=1,viewport-fit=cover")
+    meta(name: "viewport", content: "width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1.0")
     meta(name: "apple-mobile-web-app-capable", content: "yes")
     meta(name: "mobile-web-app-capable", content: "yes")
     meta(name: "apple-mobile-web-app-status-bar-style", content: "black-translucent")
