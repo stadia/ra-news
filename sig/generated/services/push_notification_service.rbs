@@ -1,0 +1,26 @@
+# Generated from app/services/push_notification_service.rb with RBS::Inline
+
+class PushNotificationService < OperationService
+  # : (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
+  def call: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
+
+  # : (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
+  def notify_user: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
+
+  private
+
+  # : (user: User, payload: String) -> Dry::Monads::Result
+  def deliver_to_subscriptions: (user: User, payload: String) -> Dry::Monads::Result
+
+  # : (title: String, body: String, path: String) -> String
+  def build_payload: (title: String, body: String, path: String) -> String
+
+  # : (subscription: PushSubscription, payload: String) -> void
+  def send_single: (subscription: PushSubscription, payload: String) -> void
+
+  # : (WebPush::ResponseError error) -> bool
+  def subscription_expired?: (WebPush::ResponseError error) -> bool
+
+  # : (WebPush::Unauthorized error) -> bool
+  def vapid_key_mismatch?: (WebPush::Unauthorized error) -> bool
+end

@@ -1,19 +1,26 @@
 # Generated from app/services/like_federation_service.rb with RBS::Inline
 
 class LikeFederationService < OperationService
-  def self.publish_like: (liker: untyped, likeable: untyped) -> untyped
+  # : (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
+  def self.publish_like: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
 
-  def self.publish_unlike: (liker: untyped, likeable: untyped) -> untyped
+  # : (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
+  def self.publish_unlike: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
 
-  def call: (command: untyped, ?liker: untyped, ?likeable: untyped) -> untyped
+  # : (command: Symbol, ?liker: (User | Federails::Actor)?, ?likeable: (Post | Article)?) -> Dry::Monads::Result
+  def call: (command: Symbol, ?liker: (User | Federails::Actor)?, ?likeable: (Post | Article)?) -> Dry::Monads::Result
 
   private
 
-  def publish_like_activity: (liker: untyped, likeable: untyped) -> untyped
+  # : (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
+  def publish_like_activity: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
 
-  def publish_undo_activity: (liker: untyped, likeable: untyped) -> untyped
+  # : (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
+  def publish_undo_activity: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
 
-  def local_actor_for: (untyped liker) -> untyped
+  # : (untyped liker) -> Federails::Actor?
+  def local_actor_for: (untyped liker) -> Federails::Actor?
 
-  def recipient_actor_for: (untyped likeable) -> untyped
+  # : (untyped likeable) -> Federails::Actor?
+  def recipient_actor_for: (untyped likeable) -> Federails::Actor?
 end

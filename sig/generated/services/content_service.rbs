@@ -3,7 +3,8 @@
 class ContentService < OperationService
   include LinkHelper
 
-  def call: (untyped article) -> untyped
+  # : (Article article) -> Dry::Monads::Result
+  def call: (Article article) -> Dry::Monads::Result
 
   # : (url: String) -> String?
   def execute_html: (url: String) -> String?
@@ -22,7 +23,9 @@ class ContentService < OperationService
   # : (String url, ?Integer? count) -> Faraday::Response
   def faraday_fetch_html: (String url, ?Integer? count) -> Faraday::Response
 
-  def mcp_fetch_html: (untyped url) -> untyped
+  # : (String url) -> String?
+  def mcp_fetch_html: (String url) -> String?
 
-  def format_transcript: (untyped actions) -> untyped
+  # : (Array[untyped]? actions) -> String?
+  def format_transcript: (Array[untyped]? actions) -> String?
 end

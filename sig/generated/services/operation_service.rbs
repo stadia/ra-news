@@ -1,5 +1,6 @@
 # Generated from app/services/operation_service.rb with RBS::Inline
 
 class OperationService < Dry::Operation
-  def logger: () -> untyped
+  # : () -> ActiveSupport::Logger
+  def logger: () -> ActiveSupport::Logger
 end

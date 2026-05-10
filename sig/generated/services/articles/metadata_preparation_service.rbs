@@ -7,7 +7,8 @@ module Articles
 
     private
 
-    def resolve_response: (untyped article) -> untyped
+    # : (Article article) -> Dry::Monads::Result
+    def resolve_response: (Article article) -> Dry::Monads::Result
 
     # : (Article article) -> void
     def normalize_article_url: (Article article) -> void

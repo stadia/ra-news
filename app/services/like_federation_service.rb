@@ -3,15 +3,18 @@
 
 class LikeFederationService < OperationService
   class << self
+    #: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
     def publish_like(liker:, likeable:)
       new.call(command: :publish_like, liker:, likeable:)
     end
 
+    #: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
     def publish_unlike(liker:, likeable:)
       new.call(command: :publish_unlike, liker:, likeable:)
     end
   end
 
+  #: (command: Symbol, ?liker: (User | Federails::Actor)?, ?likeable: (Post | Article)?) -> Dry::Monads::Result
   def call(command:, liker: nil, likeable: nil)
     case command
     when :publish_like
@@ -25,6 +28,7 @@ class LikeFederationService < OperationService
 
   private
 
+  #: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
   def publish_like_activity(liker:, likeable:)
     actor = local_actor_for(liker)
     recipient = recipient_actor_for(likeable)
@@ -41,6 +45,7 @@ class LikeFederationService < OperationService
     Success(activity)
   end
 
+  #: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
   def publish_undo_activity(liker:, likeable:)
     actor = local_actor_for(liker)
     recipient = recipient_actor_for(likeable)
@@ -63,6 +68,7 @@ class LikeFederationService < OperationService
     Success(activity)
   end
 
+  #: (untyped liker) -> Federails::Actor?
   def local_actor_for(liker)
     if liker.is_a?(User)
       liker.federails_actor
@@ -71,6 +77,7 @@ class LikeFederationService < OperationService
     end
   end
 
+  #: (untyped likeable) -> Federails::Actor?
   def recipient_actor_for(likeable)
     return unless likeable.is_a?(Post) || likeable.is_a?(Article)
 

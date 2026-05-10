@@ -17,12 +17,6 @@ class SocialMediaService < Dry::Operation
     end
   end
 
-  protected
-
-  def logger
-    Rails.logger
-  end
-
   private
 
   #: (Article article) -> bool
@@ -61,6 +55,7 @@ class SocialMediaService < Dry::Operation
     raise NotImplementedError, "Subclass must implement platform_name"
   end
 
+  #: () -> untyped
   def platform_client
     raise NotImplementedError, "Subclass must implement platform_client"
   end

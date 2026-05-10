@@ -6,15 +6,21 @@ class ArticleAgentsService < OperationService
 
   private
 
-  def ensure_body: (untyped article) -> untyped
+  # : (Article article) -> Dry::Monads::Result
+  def ensure_body: (Article article) -> Dry::Monads::Result
 
-  def run_agents: (untyped article) -> untyped
+  # : (Article article) -> Dry::Monads::Result
+  def run_agents: (Article article) -> Dry::Monads::Result
 
-  def user_prompt: (untyped article) -> untyped
+  # : (Article article) -> String
+  def user_prompt: (Article article) -> String
 
-  def run_embed: (untyped article) -> untyped
+  # : (Article article) -> Dry::Monads::Result
+  def run_embed: (Article article) -> Dry::Monads::Result
 
-  def run_humanize: (untyped article) -> untyped
+  # : (Article article) -> Dry::Monads::Result
+  def run_humanize: (Article article) -> Dry::Monads::Result
 
-  def extract_humanized: (untyped content) -> untyped
+  # : (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
+  def extract_humanized: (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
 end

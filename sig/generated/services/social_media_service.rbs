@@ -4,8 +4,6 @@ class SocialMediaService < Dry::Operation
   # : (Article article, Symbol command) -> void
   def call: (Article article, Symbol command) -> void
 
-  def logger: () -> untyped
-
   private
 
   # : (Article article) -> bool
@@ -26,5 +24,6 @@ class SocialMediaService < Dry::Operation
 
   def platform_name: () -> String
 
+  # : () -> untyped
   def platform_client: () -> untyped
 end

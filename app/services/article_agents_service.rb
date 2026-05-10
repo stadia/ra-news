@@ -12,6 +12,7 @@ class ArticleAgentsService < OperationService
 
   private
 
+  #: (Article article) -> Dry::Monads::Result
   def ensure_body(article)
     return Success(article) if article.body.present? && article.body.size > 30
 
@@ -28,6 +29,7 @@ class ArticleAgentsService < OperationService
     Failure(e.message)
   end
 
+  #: (Article article) -> Dry::Monads::Result
   def run_agents(article)
     message = ArticleAgent.new.ask(user_prompt(article))
     logger.info "Response received for article id: #{article.id}"
@@ -55,6 +57,7 @@ class ArticleAgentsService < OperationService
     Success(article)
   end
 
+  #: (Article article) -> String
   def user_prompt(article)
     if article.is_youtube?
       logger.info "YoutubeContent url: #{article.url}"
@@ -92,6 +95,7 @@ class ArticleAgentsService < OperationService
     end
   end
 
+  #: (Article article) -> Dry::Monads::Result
   def run_embed(article)
     return Success(article) if article.embedding.present?
 
@@ -110,6 +114,7 @@ class ArticleAgentsService < OperationService
     end
   end
 
+  #: (Article article) -> Dry::Monads::Result
   def run_humanize(article)
     prompt = ArticleHumanizer.prompt(article)
     message = HumanMonolithAgent.chat.ask(prompt)
@@ -125,6 +130,7 @@ class ArticleAgentsService < OperationService
     Failure(:humanize_failed)
   end
 
+  #: (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
   def extract_humanized(content)
     return {} if content.blank?
     return {} if content["over_polish_aborted"]

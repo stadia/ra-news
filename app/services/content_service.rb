@@ -6,6 +6,7 @@ require "mcp_client"
 class ContentService < OperationService
   include LinkHelper
 
+  #: (Article article) -> Dry::Monads::Result
   def call(article)
     if article.is_youtube?
       # YouTube URL인 경우
@@ -125,6 +126,7 @@ class ContentService < OperationService
   end
 
 
+  #: (String url) -> String?
   def mcp_fetch_html(url)
     client = MCPClient.connect(ENV.fetch("SCRAPLING_URL") { "http://localhost::8000/mcp" })
     result = client.call_tool("fetch", { url: })&.[]("structuredContent")
@@ -134,6 +136,7 @@ class ContentService < OperationService
     result["content"].first
   end
 
+  #: (Array[untyped]? actions) -> String?
   def format_transcript(actions)
     tsr = actions&.first&.dig("updateEngagementPanelAction", "content", "transcriptRenderer", "content", "transcriptSearchPanelRenderer", "body", "transcriptSegmentListRenderer", "initialSegments")
     return nil if tsr.nil? || tsr.empty?

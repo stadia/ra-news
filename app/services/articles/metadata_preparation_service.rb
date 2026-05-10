@@ -21,6 +21,7 @@ module Articles
 
     private
 
+    #: (Article article) -> Dry::Monads::Result
     def resolve_response(article)
       response = MetadataPreparation.fetch_url_content(article.url)
       return Failure(:fetch_failed) if response.nil?

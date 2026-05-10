@@ -1,6 +1,8 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class PushNotificationService < OperationService
+  #: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
   def call(user:, title:, body:, path:)
     unless WebPushConfig.configured?
       logger.warn "PushNotificationService: VAPID keys not configured"
@@ -11,12 +13,14 @@ class PushNotificationService < OperationService
     step deliver_to_subscriptions(user:, payload:)
   end
 
+  #: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
   def notify_user(user:, title:, body:, path:)
     call(user:, title:, body:, path:)
   end
 
   private
 
+  #: (user: User, payload: String) -> Dry::Monads::Result
   def deliver_to_subscriptions(user:, payload:)
     subscriptions = user.push_subscriptions.to_a
 
@@ -34,6 +38,7 @@ class PushNotificationService < OperationService
     Success(true)
   end
 
+  #: (title: String, body: String, path: String) -> String
   def build_payload(title:, body:, path:)
     {
       title: title,
@@ -46,6 +51,7 @@ class PushNotificationService < OperationService
     }.to_json
   end
 
+  #: (subscription: PushSubscription, payload: String) -> void
   def send_single(subscription:, payload:)
     WebPush.payload_send(
       message: payload,
@@ -85,11 +91,13 @@ class PushNotificationService < OperationService
     end
   end
 
+  #: (WebPush::ResponseError error) -> bool
   def subscription_expired?(error)
     status_code = error.response&.code.to_i
     status_code == 404 || status_code == 410
   end
 
+  #: (WebPush::Unauthorized error) -> bool
   def vapid_key_mismatch?(error)
     status_code = error.response&.code.to_i
     response_body = error.response&.body.to_s
