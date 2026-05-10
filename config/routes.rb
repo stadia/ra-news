@@ -67,6 +67,9 @@ Rails.application.routes.draw do
   get "/@:username", to: "profiles#show", as: :user_profile_base
   get "/@:username/followers", to: "profiles#followers", as: :user_profile_followers
   get "/@:username/following", to: "profiles#following", as: :user_profile_following
+  get "/@:username/posts",    to: "profiles#posts",    as: :user_profile_posts
+  get "/@:username/comments", to: "profiles#comments", as: :user_profile_comments
+  get "/@:username/likes",    to: "profiles#likes",    as: :user_profile_likes
   # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
   direct :user_profile do |user|
     # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.

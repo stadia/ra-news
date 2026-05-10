@@ -7,13 +7,21 @@ class Views::Profiles::Show < Views::Base
   include Phlex::Rails::Helpers::TurboFrameTag
   include PhlexIcons
 
-  def initialize(user:, actor:, followers_count: 0, following_count: 0, follow_actors: nil, follow_type: nil)
+  def initialize(user:, actor:, followers_count: 0, following_count: 0,
+                 follow_actors: nil, follow_type: nil,
+                 active_tab: nil, posts: nil, likeables: nil, pagy: nil,
+                 liked_post_ids: [])
     @user = user
     @actor = actor
     @followers_count = followers_count
     @following_count = following_count
     @follow_actors = follow_actors
     @follow_type = follow_type
+    @active_tab = active_tab
+    @posts = posts
+    @likeables = likeables
+    @pagy = pagy
+    @liked_post_ids = liked_post_ids
   end
 
   def view_template
@@ -27,11 +35,9 @@ class Views::Profiles::Show < Views::Base
     div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       profile_card
       fediverse_section if @actor
-      turbo_frame_tag("follow-list", class: "mt-2 block") do
-        if @follow_actors
-          render Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: @follow_type, embedded: true)
-        end
-      end
+      activity_tabs
+      activity_frame
+      follow_frame
     end
   end
 
@@ -94,6 +100,55 @@ class Views::Profiles::Show < Views::Base
             fediverse_badge
           end
         end
+      end
+    end
+  end
+
+  def activity_tabs
+    div(class: "mt-6 flex justify-center") do
+      render RubyUI::TabsList.new do
+        tab_link("글", user_profile_posts_path(username: @user.username), :posts)
+        tab_link("댓글", user_profile_comments_path(username: @user.username), :comments)
+        tab_link("좋아요", user_profile_likes_path(username: @user.username), :likes) if own_profile?
+      end
+    end
+  end
+
+  def tab_link(label, path, key)
+    active = @active_tab == key
+    classes = [
+      "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all",
+      "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    ].join(" ")
+
+    link_to(label, path, class: classes, data: { state: active ? "active" : "inactive" })
+  end
+
+  def activity_frame
+    turbo_frame_tag("activity-list", class: "mt-4 block") do
+      case @active_tab
+      when :posts
+        render Views::Profiles::PostList.new(
+          user: @user, posts: @posts || [], pagy: @pagy,
+          liked_post_ids: @liked_post_ids, embedded: true
+        )
+      when :comments
+        render Views::Profiles::CommentList.new(
+          user: @user, posts: @posts || [], pagy: @pagy, embedded: true
+        )
+      when :likes
+        render Views::Profiles::LikeList.new(
+          user: @user, likeables: @likeables || [], pagy: @pagy, embedded: true
+        )
+      end
+    end
+  end
+
+  def follow_frame
+    turbo_frame_tag("follow-list", class: "mt-2 block") do
+      if @follow_actors
+        render Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: @follow_type, embedded: true)
       end
     end
   end
