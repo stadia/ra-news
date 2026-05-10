@@ -23,8 +23,8 @@ class User < ApplicationRecord
                       uniqueness: { case_sensitive: false },
                       length: { minimum: 2, maximum: 30 },
                       format: {
-                        with: /\A[a-zA-Z0-9_]+\z/,
-                        message: "영문, 숫자, 밑줄만 사용할 수 있습니다"
+                        with: /\A[a-zA-Z0-9_.]+\z/,
+                        message: "영문, 숫자, 밑줄, 점만 사용할 수 있습니다"
                       }
 
   validates :name, length: { minimum: 2, maximum: 50 },

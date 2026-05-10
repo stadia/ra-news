@@ -89,7 +89,7 @@ class Components::Users::Form < Components::Base
             div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
               render RubyUI::FormField.new do
                 render RubyUI::FormFieldLabel.new(for: :user_username) { "아이디" }
-                form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: "영문, 숫자, 밑줄", autocomplete: "username", required: true
+                form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: "영문, 숫자, 밑줄, 점", autocomplete: "username", required: true
                 @user.errors[:username].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
                 end

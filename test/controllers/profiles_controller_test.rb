@@ -19,6 +19,14 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "GET show renders profile for username with dot" do
+    user = User.create!(email: "dot-profile@example.com", username: "john.doe", name: "Dot User", password: "password123", confirmed_at: Time.current)
+
+    get "/@#{user.username}"
+
+    assert_response :success
+  end
+
   test "GET show with nonexistent username renders 404" do
     get "/@nonexistent_user_xyz"
 

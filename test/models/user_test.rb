@@ -96,12 +96,12 @@ class UserTest < ActiveSupport::TestCase
       user = build_user(username:, email: "test#{username.hash.abs}@example.com")
 
       assert_not user.valid?, "#{username} should be invalid"
-      assert user.errors[:username].any? { |message| [ "영문, 숫자, 밑줄만 사용할 수 있습니다", "은(는) 2자 이상이어야 합니다" ].include?(message) }
+      assert user.errors[:username].any? { |message| [ "영문, 숫자, 밑줄, 점만 사용할 수 있습니다", "은(는) 2자 이상이어야 합니다" ].include?(message) }
     end
   end
 
   test "유효한 username 형식을 허용해야 한다" do
-    [ "john_doe", "kimchulsoo", "jane123", "ruby_user", "user_01" ].each do |username|
+    [ "john_doe", "kimchulsoo", "jane123", "ruby_user", "user_01", "john.doe" ].each do |username|
       user = build_user(username:, email: "test#{username.hash.abs}@example.com")
       user.valid?
 
