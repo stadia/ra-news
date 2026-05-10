@@ -25,32 +25,72 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "GET followers renders followers list" do
+  test "GET followers requires login and own profile" do
     user = users(:john)
+
+    get "/@#{user.username}/followers"
+
+    assert_response :redirect
+  end
+
+  test "GET followers as owner renders followers list" do
+    user = users(:john)
+    sign_in user
 
     get "/@#{user.username}/followers"
 
     assert_response :success
   end
 
-  test "GET following renders following list" do
+  test "GET followers as other user redirects" do
     user = users(:john)
+    other = users(:jane)
+    sign_in other
+
+    get "/@#{user.username}/followers"
+
+    assert_response :redirect
+  end
+
+  test "GET following requires login and own profile" do
+    user = users(:john)
+
+    get "/@#{user.username}/following"
+
+    assert_response :redirect
+  end
+
+  test "GET following as owner renders following list" do
+    user = users(:john)
+    sign_in user
 
     get "/@#{user.username}/following"
 
     assert_response :success
   end
 
-  test "GET followers as Turbo frame renders partial" do
+  test "GET following as other user redirects" do
     user = users(:john)
+    other = users(:jane)
+    sign_in other
+
+    get "/@#{user.username}/following"
+
+    assert_response :redirect
+  end
+
+  test "GET followers as Turbo frame renders partial for owner" do
+    user = users(:john)
+    sign_in user
 
     get "/@#{user.username}/followers", headers: { "Turbo-Frame" => "true" }
 
     assert_response :success
   end
 
-  test "GET following as Turbo frame renders partial" do
+  test "GET following as Turbo frame renders partial for owner" do
     user = users(:john)
+    sign_in user
 
     get "/@#{user.username}/following", headers: { "Turbo-Frame" => "true" }
 

@@ -4,9 +4,10 @@
 class ProfilesController < ApplicationController
   include Pagy::Method
 
-  skip_before_action :authenticate_user!, except: [ :likes ]
+  skip_before_action :authenticate_user!, except: [ :likes, :followers, :following ]
 
   before_action :set_user
+  before_action :require_own_profile, only: [ :followers, :following ]
 
   def show
     posts
@@ -125,6 +126,13 @@ class ProfilesController < ApplicationController
         liked_post_ids: @liked_post_ids,
         follow_actors: @follow_actors
       )
+    end
+
+    def require_own_profile
+      unless current_user == @user
+        redirect_to(user_profile_base_path(username: @user.username),
+                    alert: "본인만 볼 수 있습니다")
+      end
     end
 
     def liked_ids_for_posts(posts)

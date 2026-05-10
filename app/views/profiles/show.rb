@@ -105,8 +105,8 @@ class Views::Profiles::Show < Views::Base
       render RubyUI::TabsList.new do
         tab_link("글", user_profile_posts_path(username: @user.username), :posts)
         tab_link("댓글", user_profile_comments_path(username: @user.username), :comments)
-        tab_link("팔로워", user_profile_followers_path(username: @user.username), :followers)
-        tab_link("팔로잉", user_profile_following_path(username: @user.username), :following)
+        tab_link("팔로워", user_profile_followers_path(username: @user.username), :followers) if own_profile?
+        tab_link("팔로잉", user_profile_following_path(username: @user.username), :following) if own_profile?
         tab_link("좋아요", user_profile_likes_path(username: @user.username), :likes) if own_profile?
       end
     end

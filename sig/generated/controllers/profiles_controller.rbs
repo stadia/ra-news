@@ -19,8 +19,6 @@ class ProfilesController < ApplicationController
 
   def set_user: () -> untyped
 
-  def render_follow_page: (untyped actor, untyped followings, untyped type) -> untyped
-
   def render_activity_page: (untyped tab) -> untyped
 
   def render_show_with_activity: (active_tab: untyped) -> untyped
