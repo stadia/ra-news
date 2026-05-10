@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class SocialMediaService < Dry::Operation
+class SocialMediaService < OperationService
   include Rails.application.routes.url_helpers
 
   #: (Article article, Symbol command) -> void
