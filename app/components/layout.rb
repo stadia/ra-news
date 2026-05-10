@@ -38,9 +38,9 @@ class Components::Layout < Components::Base
       ) do
         render_skip_link
         render_loading_indicator
-        render_navigation unless helpers.hotwire_native_app?
+        render_navigation unless view_context.hotwire_native_app?
         render_main { yield }
-        render_footer unless helpers.hotwire_native_app?
+        render_footer unless view_context.hotwire_native_app?
       end
     end
   end

@@ -121,7 +121,7 @@ class Components::Posts::PostForm < Components::Base
   def reply_preview_text
     return unless parent_post.present?
 
-    helpers.truncate(helpers.strip_tags(parent_post.body.to_s).squish, length: 120)
+    view_context.truncate(view_context.strip_tags(parent_post.body.to_s).squish, length: 120)
   end
 
   def parent_post
