@@ -1,15 +1,29 @@
 # Generated from app/controllers/profiles_controller.rb with RBS::Inline
 
 class ProfilesController < ApplicationController
+  include Pagy::Method
+
   def show: () -> untyped
 
   def followers: () -> untyped
 
   def following: () -> untyped
 
+  def posts: () -> untyped
+
+  def comments: () -> untyped
+
+  def likes: () -> untyped
+
   private
 
   def set_user: () -> untyped
 
   def render_follow_page: (untyped actor, untyped followings, untyped type) -> untyped
+
+  def render_activity_page: (untyped tab) -> untyped
+
+  def render_show_with_activity: (active_tab: untyped) -> untyped
+
+  def liked_ids_for_posts: (untyped posts) -> untyped
 end

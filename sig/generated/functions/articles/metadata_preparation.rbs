@@ -43,22 +43,31 @@ module Articles
     # : (DateTime? candidate) -> Time
     def self?.normalize_published_at: (DateTime? candidate) -> Time
 
-    def self?.meta_published_at: (untyped doc) -> untyped
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self?.meta_published_at: (Nokogiri::HTML4::Document doc) -> Time?
 
-    def self?.json_ld_published_at: (untyped doc) -> untyped
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self?.json_ld_published_at: (Nokogiri::HTML4::Document doc) -> Time?
 
-    def self?.selector_published_at: (untyped doc) -> untyped
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self?.selector_published_at: (Nokogiri::HTML4::Document doc) -> Time?
 
-    def self?.text_published_at: (untyped doc) -> untyped
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self?.text_published_at: (Nokogiri::HTML4::Document doc) -> Time?
 
-    def self?.parse_json_ld: (untyped text) -> untyped
+    # : (String text) -> untyped
+    def self?.parse_json_ld: (String text) -> untyped
 
-    def self?.extract_published_at_from_json_ld: (untyped payload) -> untyped
+    # : (untyped payload) -> Time?
+    def self?.extract_published_at_from_json_ld: (untyped payload) -> Time?
 
-    def self?.article_json_ld?: (untyped node) -> untyped
+    # : (Hash[String, untyped] node) -> bool
+    def self?.article_json_ld?: (Hash[String, untyped] node) -> bool
 
-    def self?.parse_published_at_value: (untyped value) -> untyped
+    # : (untyped value) -> Time?
+    def self?.parse_published_at_value: (untyped value) -> Time?
 
-    def self?.random_slug: () -> untyped
+    # : () -> String
+    def self?.random_slug: () -> String
   end
 end

@@ -137,6 +137,7 @@ module Articles
       candidate
     end
 
+    #: (Nokogiri::HTML4::Document doc) -> Time?
     def meta_published_at(doc)
       PUBLISHED_META_SELECTORS.each do |selector|
         element = doc.at_css(selector)
@@ -149,6 +150,7 @@ module Articles
       nil
     end
 
+    #: (Nokogiri::HTML4::Document doc) -> Time?
     def json_ld_published_at(doc)
       doc.css('script[type="application/ld+json"]').each do |node|
         payload = parse_json_ld(node.text)
@@ -161,6 +163,7 @@ module Articles
       nil
     end
 
+    #: (Nokogiri::HTML4::Document doc) -> Time?
     def selector_published_at(doc)
       PUBLISHED_DATE_SELECTORS.each do |selector|
         doc.css(selector).each do |element|
@@ -174,6 +177,7 @@ module Articles
       end
     end
 
+    #: (Nokogiri::HTML4::Document doc) -> Time?
     def text_published_at(doc)
       text = doc.at_css("article, main, body")&.text.to_s.squish
       return if text.blank?
@@ -184,6 +188,7 @@ module Articles
         parse_published_at_value(text[/\b\d{4}년\s*\d{1,2}월\s*\d{1,2}일\b/])
     end
 
+    #: (String text) -> untyped
     def parse_json_ld(text)
       return if text.blank?
 
@@ -192,6 +197,7 @@ module Articles
       nil
     end
 
+    #: (untyped payload) -> Time?
     def extract_published_at_from_json_ld(payload)
       case payload
       when Array
@@ -214,10 +220,12 @@ module Articles
       end
     end
 
+    #: (Hash[String, untyped] node) -> bool
     def article_json_ld?(node)
       Array(node["@type"]).any? { |type| JSON_LD_ARTICLE_TYPES.include?(type) }
     end
 
+    #: (untyped value) -> Time?
     def parse_published_at_value(value)
       return if value.blank?
 
@@ -232,6 +240,7 @@ module Articles
       nil
     end
 
+    #: () -> String
     def random_slug
       "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
     end

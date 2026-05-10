@@ -2,6 +2,7 @@
 # rbs_inline: enabled
 
 module FunctionLogger
+  #: () -> ActiveSupport::Logger
   def logger
     Rails.logger
   end
