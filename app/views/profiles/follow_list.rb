@@ -22,7 +22,7 @@ class Views::Profiles::FollowList < Views::Base
     else
       content_for :title, "@#{@user.username} — #{title}"
       div(class: "max-w-2xl mx-auto py-10 px-4 sm:px-6") do
-        turbo_frame_tag("follow-list") do
+        turbo_frame_tag("activity-list") do
           list_content(title)
         end
       end

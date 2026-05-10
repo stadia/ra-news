@@ -14,14 +14,14 @@ class ProfilesController < ApplicationController
 
   def followers
     actor = @user.federails_actor
-    followings = actor ? actor.following_followers.to_a : []
-    render_follow_page(actor, followings, :followers)
+    @follow_actors = actor ? actor.following_followers.to_a : []
+    render_activity_page(:followers)
   end
 
   def following
     actor = @user.federails_actor
-    followings = actor ? actor.following_follows.to_a : []
-    render_follow_page(actor, followings, :following)
+    @follow_actors = actor ? actor.following_follows.to_a : []
+    render_activity_page(:following)
   end
 
   def posts
@@ -73,21 +73,6 @@ class ProfilesController < ApplicationController
       @user = User.find_by!(username: params[:username])
     end
 
-    def render_follow_page(actor, followings, type)
-      if turbo_frame_request?
-        render Views::Profiles::FollowList.new(user: @user, followings: followings, type: type)
-      else
-        render Views::Profiles::Show.new(
-          user: @user,
-          actor: actor,
-          followers_count: actor&.followers&.count || 0,
-          following_count: actor&.follows&.count || 0,
-          follow_actors: followings,
-          follow_type: type
-        )
-      end
-    end
-
     def render_activity_page(tab)
       case tab
       when :posts
@@ -115,6 +100,14 @@ class ProfilesController < ApplicationController
         else
           render_show_with_activity(active_tab: :likes)
         end
+      when :followers, :following
+        if turbo_frame_request?
+          render Views::Profiles::FollowList.new(
+            user: @user, followings: @follow_actors, type: tab
+          )
+        else
+          render_show_with_activity(active_tab: tab)
+        end
       end
     end
 
@@ -129,7 +122,8 @@ class ProfilesController < ApplicationController
         posts: @posts,
         likeables: @likeables,
         pagy: @pagy,
-        liked_post_ids: @liked_post_ids
+        liked_post_ids: @liked_post_ids,
+        follow_actors: @follow_actors
       )
     end
 

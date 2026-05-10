@@ -8,15 +8,14 @@ class Views::Profiles::Show < Views::Base
   include PhlexIcons
 
   def initialize(user:, actor:, followers_count: 0, following_count: 0,
-                 follow_actors: nil, follow_type: nil,
-                 active_tab: nil, posts: nil, likeables: nil, pagy: nil,
+                 follow_actors: nil,
+                 active_tab: :posts, posts: nil, likeables: nil, pagy: nil,
                  liked_post_ids: [])
     @user = user
     @actor = actor
     @followers_count = followers_count
     @following_count = following_count
     @follow_actors = follow_actors
-    @follow_type = follow_type
     @active_tab = active_tab
     @posts = posts
     @likeables = likeables
@@ -37,7 +36,6 @@ class Views::Profiles::Show < Views::Base
       fediverse_section if @actor
       activity_tabs
       activity_frame
-      follow_frame
     end
   end
 
@@ -76,17 +74,15 @@ class Views::Profiles::Show < Views::Base
             end
             div(class: "flex items-center gap-4 mt-2") do
               link_to(
-                "/@#{@user.username}/followers",
-                class: "text-sm text-content-muted hover:text-content transition-colors",
-                data: { turbo_frame: "follow-list", turbo_action: "advance" }
+                user_profile_followers_path(username: @user.username),
+                class: "text-sm text-content-muted hover:text-content transition-colors"
               ) do
                 span(class: "font-semibold text-content") { @followers_count.to_s }
                 plain " 팔로워"
               end
               link_to(
-                "/@#{@user.username}/following",
-                class: "text-sm text-content-muted hover:text-content transition-colors",
-                data: { turbo_frame: "follow-list", turbo_action: "advance" }
+                user_profile_following_path(username: @user.username),
+                class: "text-sm text-content-muted hover:text-content transition-colors"
               ) do
                 span(class: "font-semibold text-content") { @following_count.to_s }
                 plain " 팔로잉"
@@ -109,6 +105,8 @@ class Views::Profiles::Show < Views::Base
       render RubyUI::TabsList.new do
         tab_link("글", user_profile_posts_path(username: @user.username), :posts)
         tab_link("댓글", user_profile_comments_path(username: @user.username), :comments)
+        tab_link("팔로워", user_profile_followers_path(username: @user.username), :followers)
+        tab_link("팔로잉", user_profile_following_path(username: @user.username), :following)
         tab_link("좋아요", user_profile_likes_path(username: @user.username), :likes) if own_profile?
       end
     end
@@ -141,14 +139,10 @@ class Views::Profiles::Show < Views::Base
         render Views::Profiles::LikeList.new(
           user: @user, likeables: @likeables || [], pagy: @pagy, embedded: true
         )
-      end
-    end
-  end
-
-  def follow_frame
-    turbo_frame_tag("follow-list", class: "mt-2 block") do
-      if @follow_actors
-        render Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: @follow_type, embedded: true)
+      when :followers, :following
+        render Views::Profiles::FollowList.new(
+          user: @user, followings: @follow_actors || [], type: @active_tab, embedded: true
+        )
       end
     end
   end
