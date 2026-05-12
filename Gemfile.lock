@@ -777,7 +777,7 @@ GEM
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
     stringio (3.2.0)
-    tailwind_merge (1.4.0)
+    tailwind_merge (1.5.0)
       sin_lru_redux (~> 2.5)
     tailwindcss-rails (4.4.0)
       railties (>= 7.0.0)
@@ -943,7 +943,7 @@ DEPENDENCIES
   sorbet-runtime
   sqlite3 (>= 2.1)
   stimulus-rails
-  tailwind_merge (~> 1.4)
+  tailwind_merge (~> 1.5)
   tailwindcss-rails (~> 4.2)
   tapioca
   turbo-rails

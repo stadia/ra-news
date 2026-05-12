@@ -137,7 +137,7 @@ gem "ruby_llm-skills"
 gem "ruby-mcp-client", "~> 1.0"
 gem "slack-ruby-client", "~> 3.1.0"
 gem "socialization"
-gem "tailwind_merge", "~> 1.4"
+gem "tailwind_merge", "~> 1.5"
 gem "web-push", "~> 3.1"
 
 gem "opentelemetry-exporter-otlp"
