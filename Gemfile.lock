@@ -387,9 +387,9 @@ GEM
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
     openssl (4.0.1)
-    opentelemetry-api (1.9.0)
+    opentelemetry-api (1.10.0)
       logger
-    opentelemetry-common (0.24.0)
+    opentelemetry-common (0.25.0)
       opentelemetry-api (~> 1.0)
     opentelemetry-exporter-otlp (0.33.0)
       google-protobuf (>= 3.18)
@@ -468,15 +468,15 @@ GEM
       opentelemetry-api (~> 1.2)
       opentelemetry-logs-api (~> 0.1)
       opentelemetry-sdk (~> 1.3)
-    opentelemetry-registry (0.5.0)
+    opentelemetry-registry (0.6.0)
       opentelemetry-api (~> 1.1)
-    opentelemetry-sdk (1.11.0)
+    opentelemetry-sdk (1.12.0)
       logger
       opentelemetry-api (~> 1.1)
       opentelemetry-common (~> 0.20)
       opentelemetry-registry (~> 0.2)
       opentelemetry-semantic_conventions
-    opentelemetry-semantic_conventions (1.37.0)
+    opentelemetry-semantic_conventions (1.37.1)
       opentelemetry-api (~> 1.0)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
@@ -899,7 +899,7 @@ DEPENDENCIES
   opentelemetry-instrumentation-rails
   opentelemetry-instrumentation-rake
   opentelemetry-instrumentation-ruby_llm
-  opentelemetry-sdk (~> 1.10)
+  opentelemetry-sdk (~> 1.12)
   ostruct
   pagy (~> 43.5)
   pg (~> 1.6)
