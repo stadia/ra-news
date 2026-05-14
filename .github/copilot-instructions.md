@@ -1,12 +1,12 @@
 <!-- BEGIN rails-ai-context -->
 # AlNews — Copilot Context
 
-Rails 8.1.3 | Ruby 4.0.3
+Rails 8.1.3 | Ruby 4.0.4
 
 ## Stack
 - Database: PostgreSQL — 26 tables
 - Models: 24
-- Routes: 149 across 47 controllers
+- Routes: 152 across 47 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Storage: ActiveStorage (1 models with attachments)
@@ -21,7 +21,6 @@ Rails 8.1.3 | Ruby 4.0.3
 - database: pg, sqlite3, solid_cache, solid_cable
 - files: activestorage, image_processing, mini_magick, aws-sdk-s3
 - testing: minitest, faker, capybara
-- deploy: thruster
 - admin: madmin
 - pagination: pagy
 - search: pg_search
@@ -58,6 +57,7 @@ Rails 8.1.3 | Ruby 4.0.3
 ## Architecture
 - Hotwire (Turbo + Stimulus)
 - Service objects pattern (app/services/)
+- Query objects (app/queries/)
 - Presenters/Decorators
 - ViewComponent (app/components/)
 - phlex

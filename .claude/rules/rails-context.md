@@ -1,10 +1,10 @@
 # AlNews — Overview
 
-Rails 8.1.3 | Ruby 4.0.3
+Rails 8.1.3 | Ruby 4.0.4
 
 - Database: static_parse — 24 tables
 - Models: 22
-- Routes: 149
+- Routes: 152
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Storage: ActiveStorage (1 models with attachments)

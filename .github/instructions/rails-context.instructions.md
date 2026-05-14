@@ -6,11 +6,11 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 # AlNews — Overview
 
-Rails 8.1.3 | Ruby 4.0.3
+Rails 8.1.3 | Ruby 4.0.4
 
 - Database: PostgreSQL — 26 tables
 - Models: 24
-- Routes: 149
+- Routes: 152
 - auth: devise, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -19,9 +19,9 @@ Rails 8.1.3 | Ruby 4.0.3
 - files: activestorage, image_processing, mini_magick, aws-sdk-s3
 - Hotwire (Turbo + Stimulus)
 - Service objects pattern (app/services/)
+- Query objects (app/queries/)
 - Presenters/Decorators
 - ViewComponent (app/components/)
-- phlex
 - Auth: Devise
 - I18n: 2 locales (en, ko)
 - Storage: ActiveStorage (1 models with attachments)
