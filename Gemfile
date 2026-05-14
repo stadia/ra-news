@@ -74,6 +74,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "letter_opener"
+  gem "ruby-lsp", "~> 0.27.0.beta3"
   gem "ruby-lsp-brakeman", require: false
   gem "ruby-lsp-i18n", require: false
   gem "ruby_ui", "~> 1.2"
