@@ -23,5 +23,7 @@ class ProfilesController < ApplicationController
 
   def render_show_with_activity: (active_tab: untyped) -> untyped
 
+  def require_own_profile: () -> untyped
+
   def liked_ids_for_posts: (untyped posts) -> untyped
 end
