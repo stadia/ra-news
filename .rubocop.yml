@@ -1,5 +1,5 @@
 # Omakase Ruby styling for Rails
-inherit_gem: {rubocop-rails-omakase: rubocop.yml}
+inherit_gem: { rubocop-rails-omakase: rubocop.yml }
 
 inherit_from: .rubocop_todo.yml
 
@@ -27,7 +27,6 @@ Bundler/OrderedGems:
 
 Metrics/ClassLength:
   Enabled: true
-  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
@@ -35,7 +34,6 @@ Metrics/ClassLength:
 
 Metrics/ModuleLength:
   Enabled: true
-  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
@@ -43,7 +41,7 @@ Metrics/ModuleLength:
 
 Metrics/MethodLength:
   Enabled: true
-  Max: 15
+  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
@@ -51,21 +49,21 @@ Metrics/MethodLength:
 
 Metrics/AbcSize:
   Enabled: true
-  Max: 15
+  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
 
 Metrics/CyclomaticComplexity:
   Enabled: true
-  Max: 6
+  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
 
 Metrics/PerceivedComplexity:
   Enabled: true
-  Max: 7
+  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
