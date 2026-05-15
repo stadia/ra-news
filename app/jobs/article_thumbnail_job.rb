@@ -9,10 +9,10 @@ class ArticleThumbnailJob < ApplicationJob
   def perform(article_id)
     article = Article.kept.find(article_id)
 
-    if article.thumbnail.attached?
-      logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
-      return
-    end
+    # if article.thumbnail.attached?
+    #   logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
+    #   return
+    # end
 
     summary_key = article.summary_key
     if summary_key.blank? || !summary_key.is_a?(Array) || summary_key.empty?
@@ -44,10 +44,11 @@ class ArticleThumbnailJob < ApplicationJob
 
   #: (Array[String] summary_key) -> String
   def build_prompt(summary_key)
-    points = summary_key.map { |s| "- #{s}" }.join("\n")
+    points = summary_key.each_with_index.map { |s, i| "#{i + 1}. #{s}" }.join("\n")
     <<~PROMPT.strip
-      다음 기술 뉴스 요약을 시각적으로 표현하는 썸네일 이미지를 생성하십시오.
+      다음은 기술 뉴스 기사의 핵심 요약이다. 이 요약을 인포그래픽 썸네일 한 장으로 시각화한다.
 
+      [요약]
       #{points}
     PROMPT
   end
