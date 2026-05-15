@@ -752,11 +752,11 @@ class ArticleTest < ActiveSupport::TestCase
     article.tag_list = "ruby, rails"
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, name:, content:, custom:) { captured = { record:, name:, content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
 
-    assert_equal article, captured[:record]
+    assert_equal article, captured[:entity]
     assert_equal "번역 제목", captured[:name]
     assert_includes captured[:content], "<strong>번역 제목</strong>"
     assert_includes captured[:content], "새로운 Ruby 관련 글이 올라왔습니다."
@@ -772,12 +772,13 @@ class ArticleTest < ActiveSupport::TestCase
     article.thumbnail.attach(blob)
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, name:, content:, custom:) { captured = { record:, name:, content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
 
     assert_predicate captured[:custom]["attachment"], :present?
     attachment = captured[:custom]["attachment"].first
+
     assert_equal "Image", attachment["type"]
     assert_equal "image/jpeg", attachment["mediaType"]
     assert_includes attachment["url"], "rails/active_storage"
@@ -791,7 +792,7 @@ class ArticleTest < ActiveSupport::TestCase
     article.summary_key = [ "요약" ]
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, name:, content:, custom:) { captured = { record:, name:, content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
 
