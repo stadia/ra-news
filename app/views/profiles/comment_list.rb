@@ -17,7 +17,10 @@ class Views::Profiles::CommentList < Views::Base
     else
       content_for :title, "@#{@user.username} — 댓글"
       div(class: "max-w-2xl mx-auto py-10 px-4 sm:px-6") do
-        turbo_frame_tag("activity-list") { list_content }
+        turbo_frame_tag("activity-list", class: "block") do
+          render Components::Profiles::ActivityTabs.new(user: @user, active_tab: :comments)
+          div(class: "mt-4") { list_content }
+        end
       end
     end
   end

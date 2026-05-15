@@ -34,8 +34,7 @@ class Views::Profiles::Show < Views::Base
     div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       profile_card
       fediverse_section if @actor
-      activity_tabs
-      activity_frame
+      activity_section
     end
   end
 
@@ -100,50 +99,32 @@ class Views::Profiles::Show < Views::Base
     end
   end
 
-  def activity_tabs
-    div(class: "mt-6 flex justify-center") do
-      render RubyUI::TabsList.new do
-        tab_link("글", user_profile_posts_path(username: @user.username), :posts)
-        tab_link("댓글", user_profile_comments_path(username: @user.username), :comments)
-        tab_link("팔로워", user_profile_followers_path(username: @user.username), :followers) if own_profile?
-        tab_link("팔로잉", user_profile_following_path(username: @user.username), :following) if own_profile?
-        tab_link("좋아요", user_profile_likes_path(username: @user.username), :likes) if own_profile?
-      end
+  def activity_section
+    turbo_frame_tag("activity-list", class: "mt-6 block") do
+      render Components::Profiles::ActivityTabs.new(user: @user, active_tab: @active_tab)
+      div(class: "mt-4") { activity_content }
     end
   end
 
-  def tab_link(label, path, key)
-    active = @active_tab == key
-    classes = [
-      "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all",
-      "data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-    ].join(" ")
-
-    link_to(label, path, class: classes, data: { state: active ? "active" : "inactive" })
-  end
-
-  def activity_frame
-    turbo_frame_tag("activity-list", class: "mt-4 block") do
-      case @active_tab
-      when :posts
-        render Views::Profiles::PostList.new(
-          user: @user, posts: @posts || [], pagy: @pagy,
-          liked_post_ids: @liked_post_ids, embedded: true
-        )
-      when :comments
-        render Views::Profiles::CommentList.new(
-          user: @user, posts: @posts || [], pagy: @pagy, embedded: true
-        )
-      when :likes
-        render Views::Profiles::LikeList.new(
-          user: @user, likeables: @likeables || [], pagy: @pagy, embedded: true
-        )
-      when :followers, :following
-        render Views::Profiles::FollowList.new(
-          user: @user, followings: @follow_actors || [], type: @active_tab, embedded: true
-        )
-      end
+  def activity_content
+    case @active_tab
+    when :posts
+      render Views::Profiles::PostList.new(
+        user: @user, posts: @posts || [], pagy: @pagy,
+        liked_post_ids: @liked_post_ids, embedded: true
+      )
+    when :comments
+      render Views::Profiles::CommentList.new(
+        user: @user, posts: @posts || [], pagy: @pagy, embedded: true
+      )
+    when :likes
+      render Views::Profiles::LikeList.new(
+        user: @user, likeables: @likeables || [], pagy: @pagy, embedded: true
+      )
+    when :followers, :following
+      render Views::Profiles::FollowList.new(
+        user: @user, followings: @follow_actors || [], type: @active_tab, embedded: true
+      )
     end
   end
 

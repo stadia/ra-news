@@ -22,8 +22,9 @@ class Views::Profiles::FollowList < Views::Base
     else
       content_for :title, "@#{@user.username} — #{title}"
       div(class: "max-w-2xl mx-auto py-10 px-4 sm:px-6") do
-        turbo_frame_tag("activity-list") do
-          list_content(title)
+        turbo_frame_tag("activity-list", class: "block") do
+          render Components::Profiles::ActivityTabs.new(user: @user, active_tab: @type)
+          div(class: "mt-4") { list_content(title) }
         end
       end
     end
