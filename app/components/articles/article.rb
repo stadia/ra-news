@@ -14,10 +14,10 @@ class Components::Articles::Article < Components::Base
 
   def view_template
     render RubyUI::Card.new(id: dom_id(article), class:
-        "bg-surface shadow-md hover:shadow-lg transition-shadow overflow-hidden border-border-strong p-3 md:p-6 flex flex-col"
+        "relative bg-surface border-border-muted hover:border-border-strong hover:shadow-md transition-all duration-300 overflow-hidden p-3 md:p-6 flex flex-col"
     ) do
       header_section
-      div(class: "mb-4") { article.url }
+      render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
       summary_section
       footer_section
     end
@@ -28,11 +28,11 @@ class Components::Articles::Article < Components::Base
   def header_section
     display_title = @article.title_ko || @article.title
     div(class: "mb-3") do
-      h2(class: "text-xl font-semibold text-content hover:text-link-hover") do
-        link_to display_title, article_path(article)
+      h3(class: "text-xl font-semibold text-content hover:text-link-hover transition-colors duration-200") do
+        link_to display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']"
       end
       if @article.title_ko.present? && @article.title_ko != @article.title
-        h3(class: "text-l text-content wrap-break-word") { article.title }
+        p(class: "text-l text-content-secondary wrap-break-word") { article.title }
       end
     end
   end
@@ -56,7 +56,7 @@ class Components::Articles::Article < Components::Base
 
   def footer_section
     render RubyUI::Separator.new(class: "mt-auto")
-    div(class: "pt-4 flex flex-wrap justify-between items-center text-xs text-content-muted gap-y-2") do
+    div(class: "relative z-10 pt-4 flex flex-wrap justify-between items-center text-xs text-content-muted gap-y-2") do
       span(class: "inline-flex items-center") do
         Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         render Components::Articles::ArticleUser.new(article: @article)
@@ -65,10 +65,6 @@ class Components::Articles::Article < Components::Base
       span(class: "inline-flex items-center") do
         Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         plain @article.posts_count.to_s
-      end
-      span(class: "inline-flex items-center") do
-        Hero::CalendarDays(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
-        plain(@article.published_at&.strftime("%Y년 %m월 %d일") || "N/A")
       end
     end
   end
