@@ -5,6 +5,7 @@ class Views::Articles::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::ImageTag
   include Phlex::Rails::Helpers::Sanitize
 
   def initialize(article:, comments:, comment:, similar_articles:)
@@ -41,10 +42,26 @@ class Views::Articles::Show < Views::Base
   end
 
   def render_article_main
-    article(class: "bg-surface rounded-xl shadow-lg overflow-hidden border border-border-strong") do
+    article(class: "bg-surface rounded-xl overflow-hidden border border-border-strong") do
+      render_hero_thumbnail
       render_article_header
       render RubyUI::Separator.new
       render_article_body
+    end
+  end
+
+  def render_hero_thumbnail
+    return unless @article.thumbnail.attached?
+
+    div(class: "w-full overflow-hidden") do
+      image_tag(
+        @article.thumbnail.variant(resize_to_fill: [ 1600, 900 ]),
+        class: "w-full aspect-video object-cover",
+        loading: "eager",
+        decoding: "auto",
+        fetchpriority: "high",
+        alt: @article.title_ko || @article.title
+      )
     end
   end
 
@@ -57,7 +74,7 @@ class Views::Articles::Show < Views::Base
         ) { @article.title_ko }
 
         if @article.title_ko != @article.title
-          render RubyUI::Heading.new(level: 2, class: "font-medium text-content-secondary mb-4 wrap-break-word") { @article.title }
+          p(class: "text-lg font-medium text-content-secondary mb-4 wrap-break-word") { @article.title }
         end
       end
 
@@ -167,7 +184,7 @@ class Views::Articles::Show < Views::Base
   end
 
   def render_similar_articles
-    render RubyUI::Card.new(class: "bg-surface shadow-lg overflow-hidden border-border-strong") do
+    render RubyUI::Card.new(class: "bg-surface overflow-hidden border-border-strong") do
       render RubyUI::CardContent.new(class: "p-4 md:p-6 lg:p-8") do
         render RubyUI::Heading.new(level: 2, class: "font-bold text-content mb-6 flex items-center") do
           Hero::Newspaper(variant: :outline, class: "w-6 h-6 mr-2 text-brand")
@@ -176,12 +193,14 @@ class Views::Articles::Show < Views::Base
 
         div(class: "grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6") do
           @similar_articles.each do |article|
-            div(class: "group bg-surface-muted rounded-lg border border-border-muted hover:border-border-strong transition-all duration-200 overflow-hidden") do
+            div(class: "group bg-surface-muted rounded-lg border border-border-muted hover:border-border-strong hover:shadow-sm transition-all duration-200 overflow-hidden") do
               link_to(article_path(article), class: "block p-4 lg:p-6") do
                 render RubyUI::Heading.new(
                   level: 3,
                   class: "font-semibold text-content group-hover:text-link-hover transition-colors duration-200 mb-3 line-clamp-2"
                 ) { article.title_ko || article.title }
+
+                render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-3") { article.host }
 
                 p(class: "text-content-secondary text-sm leading-relaxed line-clamp-3 mb-4") do
                   plain(if article.summary_key.is_a?(String)
@@ -191,11 +210,7 @@ class Views::Articles::Show < Views::Base
                   end)
                 end
 
-                div(class: "flex items-center justify-between text-xs text-content-secondary") do
-                  span(class: "flex items-center") do
-                    Hero::Calendar(variant: :outline, class: "w-4 h-4 mr-1")
-                    plain article.published_at&.strftime("%m/%d")
-                  end
+                div(class: "flex items-center justify-end text-xs text-content-secondary") do
                   span(class: "group-hover:text-link-hover transition-colors duration-200") { "읽어보기 →" }
                 end
               end
@@ -207,10 +222,10 @@ class Views::Articles::Show < Views::Base
   end
 
   def render_comments_section
-    render RubyUI::Card.new(class: "bg-surface shadow-lg overflow-hidden border-border-strong") do
+    render RubyUI::Card.new(class: "bg-surface overflow-hidden border-border-strong") do
       render RubyUI::CardContent.new(class: "p-4 md:p-6 lg:p-8") do
         render RubyUI::Heading.new(
-          level: 3,
+          level: 2,
           class: "font-bold text-content mb-6 flex items-center",
           id: "comments_header"
         ) { render(Components::Comments::CommentHeader.new(comments: @comments)) }
