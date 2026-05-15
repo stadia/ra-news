@@ -9,10 +9,10 @@ class ArticleThumbnailJob < ApplicationJob
   def perform(article_id)
     article = Article.kept.find(article_id)
 
-    # if article.thumbnail.attached?
-    #   logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
-    #   return
-    # end
+    if article.thumbnail.attached?
+      logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
+      return
+    end
 
     summary_key = article.summary_key
     if summary_key.blank? || !summary_key.is_a?(Array) || summary_key.empty?
