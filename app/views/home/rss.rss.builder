@@ -16,6 +16,13 @@ xml.rss version: "2.0" do
         xml.link article_url(article.slug || article.id)
         xml.guid article_url(article.slug || article.id), isPermaLink: true
         xml.author article.user_name
+        if article.thumbnail.attached?
+          xml.enclosure(
+            url: rails_blob_url(article.thumbnail, disposition: "inline", host: "https://ruby-news.kr"),
+            type: article.thumbnail.blob.content_type,
+            length: article.thumbnail.blob.byte_size
+          )
+        end
       end
     end
   end

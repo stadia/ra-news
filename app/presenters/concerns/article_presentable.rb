@@ -49,4 +49,14 @@ module ArticlePresentable
   def article_page_url
     Rails.application.routes.url_helpers.article_url(article)
   end
+
+  #: () -> String?
+  def thumbnail_url
+    return nil unless article.thumbnail.attached?
+
+    Rails.application.routes.url_helpers.rails_blob_url(
+      article.thumbnail,
+      disposition: "inline"
+    )
+  end
 end

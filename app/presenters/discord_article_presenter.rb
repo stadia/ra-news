@@ -18,7 +18,7 @@ class DiscordArticlePresenter
       url: article_page_url,
       description: summary&.truncate(200),
       color: DEFAULT_EMBED_COLOR,
-      image_url: nil,
+      image_url: thumbnail_url,
       footer_text: site_name,
       timestamp: @article.created_at
     }

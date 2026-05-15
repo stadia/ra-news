@@ -18,7 +18,7 @@ class SlackArticlePresenter
 
   #: () -> Array[Hash[Symbol, untyped]]
   def blocks
-    [
+    blocks = [
       {
         type: "section",
         text: {
@@ -36,6 +36,16 @@ class SlackArticlePresenter
         ]
       }
     ]
+
+    if (url = thumbnail_url)
+      blocks << {
+        type: "image",
+        image_url: url,
+        alt_text: escaped_title
+      }
+    end
+
+    blocks
   end
 
   private
