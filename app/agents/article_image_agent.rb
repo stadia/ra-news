@@ -28,17 +28,10 @@ class ArticleImageAgent < RubyLLM::Agent
       - 모든 핵심 요소가 안전 영역(Safe Zone) 안에 들어오도록 배치하되, 주제가 작아지지 않게 한다.
       - 블록 간 정렬은 그리드 기반. 회전·기울임 없이 수평·수직 정렬만 사용한다.
 
-      ## 시각 계층
-
-      - 헤드라인 키워드 → 압도적으로 큰 폰트 / 텍스트 컬러로 강조 (Exaggerated Minimalism, oversized typography).
-      - 블록 라벨 → 중간 크기 / 본문 컬러.
-      - 강한 대비(High contrast)와 넓은 여백(Negative space)을 적극적으로 활용한다.
-
       ## 스타일
 
       - 에디토리얼 / 저널리즘 무드의 플랫 벡터 인포그래픽. 신뢰감 있고 정돈된 분위기.
       - 깔끔한 플랫 벡터. 선은 균일한 두께.
-      - 타이포그래피 무드: news / editorial / journalism. 헤드라인은 세리프 또는 강한 산세리프, 라벨은 깔끔한 산세리프.
       - 사진·실사·3D 렌더·수채화 스타일 금지.
 
       ## 텍스트 규칙
