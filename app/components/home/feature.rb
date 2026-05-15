@@ -115,8 +115,8 @@ class Components::Home::Feature < Components::Base
       end
       render Components::Likes::Button.new(likeable: article, liked: @liked_article_ids.include?(article.id))
       span(class: "inline-flex items-center") do
-        Hero::CalendarDays(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
-        plain(article.published_at&.strftime("%Y년 %m월 %d일") || "N/A")
+        Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
+        plain article.posts_count.to_s
       end
     end
   end

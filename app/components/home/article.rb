@@ -69,10 +69,6 @@ class Components::Home::Article < Components::Base
         Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         plain article.posts_count.to_s
       end
-      span(class: "inline-flex items-center") do
-        Hero::CalendarDays(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
-        plain(article.published_at&.strftime("%Y년 %m월 %d일") || "N/A")
-      end
     end
   end
 end
