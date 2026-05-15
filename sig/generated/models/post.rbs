@@ -1,6 +1,7 @@
 # Generated from app/models/post.rb with RBS::Inline
 
 class Post < ApplicationRecord
+  # ── Constants ────────────────────────────────────────────────────────
   MAX_BODY_LENGTH: ::Integer
 
   extend FriendlyId
@@ -44,6 +45,9 @@ class Post < ApplicationRecord
 
   # : () -> void
   def enqueue_reply_notification: () -> void
+
+  # : () -> void
+  def enqueue_article_thumbnail: () -> void
 
   # : () -> void
   def set_federails_actor: () -> void

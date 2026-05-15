@@ -1,6 +1,7 @@
 # Generated from app/models/article.rb with RBS::Inline
 
 class Article < ApplicationRecord
+  # ── Constants ────────────────────────────────────────────────────────
   TITLE_MAX_LENGTH: ::Integer
 
   TITLE_OMISSION: ::String

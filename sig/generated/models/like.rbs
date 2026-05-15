@@ -5,7 +5,13 @@ class Like < Socialization::ActiveRecordStores::Like
   def self.liked_ids_for: (User?, String, Array[Integer]) -> Array[Integer]
 
   # : (User, ActiveRecord::Base) -> void
+  def self.handle_after_like: (User, ActiveRecord::Base) -> void
+
+  # : (User, ActiveRecord::Base) -> void
   def self.publish_federated_like: (User, ActiveRecord::Base) -> void
+
+  # : (User, ActiveRecord::Base) -> void
+  def self.enqueue_thumbnail_generation: (User, ActiveRecord::Base) -> void
 
   # : (User, ActiveRecord::Base) -> void
   def self.publish_federated_unlike: (User, ActiveRecord::Base) -> void

@@ -1,0 +1,4 @@
+# Generated from app/agents/article_image_agent.rb with RBS::Inline
+
+class ArticleImageAgent < RubyLLM::Agent
+end

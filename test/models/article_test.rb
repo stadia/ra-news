@@ -777,8 +777,9 @@ class ArticleTest < ActiveSupport::TestCase
       article.to_activitypub_object
     end
 
-    assert captured[:custom]["attachment"].present?
+    assert_predicate captured[:custom]["attachment"], :present?
     attachment = captured[:custom]["attachment"].first
+
     assert_equal "Image", attachment["type"]
     assert_equal "image/jpeg", attachment["mediaType"]
     assert_includes attachment["url"], "rails/active_storage"

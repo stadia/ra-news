@@ -21,4 +21,7 @@ module ArticlePresentable
 
   # : () -> String
   def article_page_url: () -> String
+
+  # : () -> String?
+  def thumbnail_url: () -> String?
 end
