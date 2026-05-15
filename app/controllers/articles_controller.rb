@@ -107,6 +107,7 @@ class ArticlesController < ApplicationController
     @page_description = @article.summary_key&.first
     @page_keywords = @article.tags.map(&:name).join(",") unless @article.tags.empty?
     @og_type = "article"
+    @og_image = rails_blob_url(@article.thumbnail, disposition: "inline") if @article.thumbnail.attached?
     @og_article = {
       published_time: @article.published_at&.iso8601,
       modified_time:  @article.updated_at.iso8601,

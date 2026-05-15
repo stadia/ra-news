@@ -91,6 +91,7 @@ class Components::Layout < Components::Base
     vc.set_meta_tags canonical: "https://ruby-news.kr#{vc.request.path}"
     page_title = content_for(:title).presence || "Ruby-News | 루비 AI 뉴스"
     page_desc = vc.instance_variable_get(:@page_description) || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요"
+    og_image = vc.instance_variable_get(:@og_image) || image_url("og_main.png")
 
     raw vc.display_meta_tags(
       title: page_title,
@@ -99,7 +100,7 @@ class Components::Layout < Components::Base
         title: page_title,
         description: page_desc,
         site_name: "Ruby-News | 루비 AI 뉴스",
-        image: image_url("og_main.png"),
+        image: og_image,
         type: vc.instance_variable_get(:@og_type) || "website",
         url: "https://ruby-news.kr#{vc.request.path}",
         locale: "ko_KR"
@@ -110,7 +111,7 @@ class Components::Layout < Components::Base
         site: "@rubynewskr",
         title: page_title,
         description: page_desc,
-        image: image_url("og_main.png")
+        image: og_image
       }
     )
   end
