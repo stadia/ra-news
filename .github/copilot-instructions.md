@@ -6,14 +6,14 @@ Rails 8.1.3 | Ruby 4.0.4
 ## Stack
 - Database: PostgreSQL — 26 tables
 - Models: 24
-- Routes: 152 across 47 controllers
+- Routes: 160 across 48 controllers
 - Auth: Devise
 - I18n: 2 locales (en, ko)
-- Storage: ActiveStorage (1 models with attachments)
+- Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 119 components, 119 Phlex
-- Performance: 10 issues detected
+- Components: 120 components, 120 Phlex
+- Performance: 11 issues detected
 - auth: devise, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -31,7 +31,7 @@ Rails 8.1.3 | Ruby 4.0.4
 ## Models (24)
 - **ActsAsTaggableOn::Tag** — has_many :taggings
 - **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
-- **Article** — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :notification_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
+- **Article** — has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
 - **DiscordChannel** — has_many :notification_deliveries
 - **DiscordDelivery** — belongs_to :article, belongs_to :notification_channel
 - **Federails::Actor** — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
@@ -40,7 +40,7 @@ Rails 8.1.3 | Ruby 4.0.4
 - **Like** — belongs_to :liker, belongs_to :likeable
 - **NotificationChannel** — has_many :notification_deliveries
 - **NotificationDelivery** — belongs_to :article, belongs_to :notification_channel
-- **Post** — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :article, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags
+- **Post** — belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
 - **Preference**
 - **PushSubscription** — belongs_to :user
 - **RefreshToken** — belongs_to :user

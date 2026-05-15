@@ -7,20 +7,20 @@
 ## Stack
 - Database: static_parse — 24 tables
 - Models: 22
-- Routes: 152 across 26 controllers
-- Async: 14 jobs
+- Routes: 160 across 27 controllers
+- Async: 15 jobs
 - Migrations: 109 total, 0 pending
 - Auth: Devise
 - I18n: 2 locales (en, ko)
-- Storage: ActiveStorage (1 models with attachments)
+- Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 119 components, 119 Phlex
-- Performance: 10 issues detected
+- Components: 120 components, 120 Phlex
+- Performance: 11 issues detected
 
 ## Key models (22 total)
 - **ActsAsTaggableOn::Tag** (1a, 3v) — has_many :taggings
-- **Article** (10a, 7v) — has_one :pg_search_document, belongs_to :user, belongs_to :site, has_many :posts, has_many :notification_deliveries, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :federails_actor
+- **Article** (12a, 7v) — has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
 - **DiscordChannel** (1a, 3v) — has_many :notification_deliveries
 - **DiscordDelivery** (2a, 5v) — belongs_to :article, belongs_to :notification_channel
@@ -30,7 +30,7 @@
 - **NotificationChannel** (1a, 3v) — has_many :notification_deliveries
   scopes: active, delivery_ready
 - **NotificationDelivery** (2a, 5v) — belongs_to :article, belongs_to :notification_channel
-- **Post** (9a, 4v) — belongs_to :parent, has_many :children, belongs_to :user, belongs_to :article, belongs_to :federails_actor, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags
+- **Post** (9a, 4v) — belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
   scopes: comments, standalone
 - **Preference** (0a, 1v)
   PROTECTED_KEYS: name, value
@@ -89,7 +89,7 @@
 - phlex
 
 **Services:** ArticleAgentsService, ContentService, DiscordDeliveryService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SlackDeliveryService, SocialMediaService, TwitterService
-**Jobs:** ArticleBatchJob, ArticleJob, DiscardedArticleCleanupJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
+**Jobs:** ArticleBatchJob, ArticleJob, ArticleThumbnailJob, DiscardedArticleCleanupJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
 ## Commands
 - `bin/dev` — start dev server

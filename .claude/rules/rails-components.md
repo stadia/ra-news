@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (119)
+# Components (120)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -38,8 +38,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Badge** (phlex)
   props: variant::primary, size::md, args
 - **Base** (phlex)
-- **Base** (phlex)
   props: user_attrs
+- **Base** (phlex)
 - **Breadcrumb** (phlex)
 - **BreadcrumbEllipsis** (phlex)
 - **BreadcrumbItem** (phlex)
@@ -104,6 +104,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: level:nil, as:nil, size:nil, attrs
 - **Home::Article** (phlex)
   props: article, liked:nil
+- **Home::Feature** (phlex)
+  props: articles, liked_article_ids:[]
 - **InlineCode** (phlex)
 - **InlineLink** (phlex)
   props: href, attrs

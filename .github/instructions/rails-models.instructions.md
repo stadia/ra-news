@@ -10,7 +10,7 @@ Check here first for scopes, constants, associations. Read model files for busin
 
 - ActsAsTaggableOn::Tag (1 associations)
 - ActsAsTaggableOn::Tagging (3 associations)
-- Article (10 associations)
+- Article (12 associations)
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
 - DiscordChannel (1 associations)
 - DiscordDelivery (2 associations)
