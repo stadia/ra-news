@@ -38,7 +38,7 @@ class Components::Home::Feature < Components::Base
   def hero_card(article)
     render RubyUI::Card.new(
       id: dom_id(article, :feature),
-      class: "bg-surface border-border-muted hover:border-border-strong shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full"
+      class: "relative bg-surface border-border-muted hover:border-border-strong hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full"
     ) do
       thumbnail(article, size: [ 1200, 675 ], aspect: "aspect-video", eager: true)
       div(class: "p-6 flex flex-col flex-1") do
@@ -53,7 +53,7 @@ class Components::Home::Feature < Components::Base
   def small_card(article)
     render RubyUI::Card.new(
       id: dom_id(article, :feature),
-      class: "bg-surface border-border-muted hover:border-border-strong shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col h-full"
+      class: "relative bg-surface border-border-muted hover:border-border-strong hover:shadow-sm transition-all duration-300 overflow-hidden flex flex-col h-full"
     ) do
       thumbnail(article, size: [ 600, 338 ], aspect: "aspect-video")
       div(class: "p-4 flex flex-col flex-1") do
@@ -67,7 +67,7 @@ class Components::Home::Feature < Components::Base
   def thumbnail(article, size:, aspect:, eager: false)
     return unless article.thumbnail.attached?
 
-    link_to(article_path(article), class: "block overflow-hidden") do
+    link_to(article_path(article), class: "block overflow-hidden relative z-10") do
       image_tag(
         article.thumbnail.variant(resize_to_fill: size),
         class: "w-full #{aspect} object-cover hover:scale-105 transition-transform duration-300",
@@ -85,7 +85,7 @@ class Components::Home::Feature < Components::Base
 
     div(class: "mb-3") do
       h3(class: "#{heading_class} text-content hover:text-link-hover transition-colors duration-200") do
-        link_to(display_title, article_path(article))
+        link_to(display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']")
       end
       if size == :large && article.title_ko.present? && article.title_ko != article.title
         p(class: "text-base text-content-secondary wrap-break-word") { article.title }
@@ -99,17 +99,17 @@ class Components::Home::Feature < Components::Base
       case summary
       when Array
         ul(class: "list-disc pl-5 space-y-1") do
-          summary.each { |item| li { item } }
+          summary.first(3).each { |item| li { span(class: "line-clamp-2") { item } } }
         end
       when String
-        p { summary }
+        p(class: "line-clamp-3") { summary }
       end
     end
   end
 
   def meta_block(article)
     render RubyUI::Separator.new(class: "mt-auto")
-    div(class: "pt-3 flex flex-wrap justify-between items-center text-sm text-content-secondary gap-y-2") do
+    div(class: "relative z-10 pt-3 flex flex-wrap justify-between items-center text-sm text-content-secondary gap-y-2") do
       span(class: "inline-flex items-center") do
         Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         render Components::Articles::ArticleUser.new(article: article)

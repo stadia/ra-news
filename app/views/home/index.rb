@@ -15,6 +15,8 @@ class Views::Home::Index < Views::Base
   def view_template
     content_for :title, "Ruby-News | 루비·Rails 개발자를 위한 AI 뉴스"
 
+    render_item_list_schema
+
     div(class: "flex flex-col lg:flex-row gap-6") do
       div(class: "flex-1 min-w-0") do
         if @featured_articles.any?
@@ -61,6 +63,32 @@ class Views::Home::Index < Views::Base
           end
         end
       end
+    end
+  end
+
+  private
+
+  def render_item_list_schema
+    items = (@featured_articles + @articles)
+    return if items.empty?
+
+    payload = {
+      "@context" => "https://schema.org",
+      "@type" => "ItemList",
+      "name" => "Ruby-News 최신 뉴스",
+      "itemListOrder" => "https://schema.org/ItemListOrderDescending",
+      "numberOfItems" => items.size,
+      "itemListElement" => items.each_with_index.map do |article, idx|
+        {
+          "@type" => "ListItem",
+          "position" => idx + 1,
+          "url" => article_url(article)
+        }
+      end
+    }
+
+    script(type: "application/ld+json") do
+      raw(JSON.generate(payload).html_safe)
     end
   end
 end

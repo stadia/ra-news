@@ -15,7 +15,7 @@ class Components::Home::Article < Components::Base
 
   def view_template
     render RubyUI::Card.new(id: dom_id(article), class:
-        "bg-surface border-border-muted hover:border-border-strong shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
+        "relative bg-surface border-border-muted hover:border-border-strong hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col"
     ) do
       div(class: "p-6 flex flex-col flex-1") do
         header_section
@@ -32,7 +32,7 @@ class Components::Home::Article < Components::Base
     display_title = article.title_ko || article.title
     div(class: "mb-4") do
       h3(class: "text-xl font-bold text-content mb-2 leading-tight hover:text-link-hover transition-colors duration-200") do
-        link_to(display_title, article_path(article))
+        link_to(display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']")
       end
       if article.title_ko.present? && article.title_ko != article.title
         p(class: "text-lg font-medium text-content-secondary wrap-break-word") { article.title }
@@ -59,7 +59,7 @@ class Components::Home::Article < Components::Base
 
   def footer_section
     render RubyUI::Separator.new(class: "mt-auto")
-    div(class: "pt-4 flex flex-wrap justify-between items-center text-sm text-content-secondary gap-y-2") do
+    div(class: "relative z-10 pt-4 flex flex-wrap justify-between items-center text-sm text-content-secondary gap-y-2") do
       span(class: "inline-flex items-center") do
         Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         render Components::Articles::ArticleUser.new(article: article)
