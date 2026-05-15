@@ -2,32 +2,38 @@
 # rbs_inline: enabled
 
 class Post < ApplicationRecord
+  # ── Constants ────────────────────────────────────────────────────────
   MAX_BODY_LENGTH = 1000
 
+  # ── Extend ───────────────────────────────────────────────────────────
   extend FriendlyId
   friendly_id :random_slug, use: :slugged
 
-  acts_as_nested_set
-  acts_as_likeable
-
-  belongs_to :user, optional: true
-  belongs_to :article, optional: true, counter_cache: :posts_count
-
-  scope :comments, -> { where.not(article_id: nil) }
-  scope :standalone, -> { where(article_id: nil) }
-
+  # ── Includes ─────────────────────────────────────────────────────────
   include HtmlSanitizable
-
-  validates :body, presence: true
-  validates :slug, uniqueness: true, allow_nil: true
-
-  validate :validate_user_or_actor
-  validate :validate_parent_post
-
   include Federails::DataEntity
   include FederailsLikeable
 
+  # ── Framework Macros ─────────────────────────────────────────────────
+  acts_as_nested_set
+  acts_as_likeable
+  acts_as_taggable_on :tags
+
+  # ── Associations ─────────────────────────────────────────────────────
+  belongs_to :user, optional: true
+  belongs_to :article, optional: true, counter_cache: :posts_count
   belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
+
+  # ── Scopes ───────────────────────────────────────────────────────────
+  scope :comments, -> { where.not(article_id: nil) }
+  scope :standalone, -> { where(article_id: nil) }
+
+  # ── Validations ──────────────────────────────────────────────────────
+  validates :body, presence: true
+  validates :slug, uniqueness: true, allow_nil: true
+  validate :validate_user_or_actor
+  validate :validate_parent_post
+
   # Federails::DataEntity가 추가하는 federails_actor presence 검증을 제거
   federails_actor_presence_validator = _validate_callbacks
     .map(&:filter)
@@ -37,15 +43,18 @@ class Post < ApplicationRecord
     end
   skip_callback :validate, :before, federails_actor_presence_validator if federails_actor_presence_validator
 
-  acts_as_federails_data handles: "Note",
-    actor_entity_method: :federation_actor_entity,
-    should_federate_method: :should_federate?
+  # ── Callbacks ────────────────────────────────────────────────────────
+  after_commit :enqueue_reply_notification, on: :create
+  after_commit :enqueue_article_thumbnail, on: :create
 
-  acts_as_taggable_on :tags
+  # ── Federation ───────────────────────────────────────────────────────
+  acts_as_federails_data handles: "Note",
+                         actor_entity_method: :federation_actor_entity,
+                         should_federate_method: :should_federate?
 
   on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; destroy! }
 
-  after_commit :enqueue_reply_notification, on: :create
+  # ── Public Instance Methods ──────────────────────────────────────────
 
   #: () -> (User | Federails::Actor)?
   def federation_actor_entity
@@ -114,6 +123,7 @@ class Post < ApplicationRecord
     "(#{federails_actor&.server})"
   end
 
+  # ── Private Instance Methods ─────────────────────────────────────────
   private
 
   def create_federails_activity(action)
@@ -143,6 +153,16 @@ class Post < ApplicationRecord
 
     logger.info { "ReplyNotification enqueue: post #{id} → parent #{parent_id} (user #{parent.user_id})" }
     ReplyNotificationJob.perform_later(parent.id, id)
+  end
+
+  #: () -> void
+  def enqueue_article_thumbnail
+    return unless article_id.present?
+    return if article.blank?
+    return if article.thumbnail.attached?
+
+    logger.info { "ArticleThumbnail enqueue: comment on article #{article_id}" }
+    ArticleThumbnailJob.perform_later(article_id)
   end
 
   #: () -> void
@@ -177,6 +197,7 @@ class Post < ApplicationRecord
     SecureRandom.urlsafe_base64(16)
   end
 
+  # ── Class Methods ────────────────────────────────────────────────────
   class << self
     #: (Hash[String, untyped]) -> Hash[Symbol, untyped]
     def from_activitypub_object(hash)

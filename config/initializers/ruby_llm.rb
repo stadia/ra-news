@@ -5,6 +5,7 @@ RubyLLM.configure do |config|
   # --- Default Models ---
   # Used by RubyLLM.chat, RubyLLM.embed, RubyLLM.paint if no model is specified.
   config.default_model = "gemini-3-flash-preview"
+  config.gemini_api_base = 'https://generativelanguage.googleapis.com/v1'
 
   # --- Connection Settings ---
   config.request_timeout = 120  # Request timeout in seconds (default: 120)

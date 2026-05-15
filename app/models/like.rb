@@ -3,6 +3,7 @@
 
 class Like < Socialization::ActiveRecordStores::Like
   after_like :publish_federated_like
+  after_like :enqueue_thumbnail_generation
   after_unlike :publish_federated_unlike
 
   class << self
@@ -21,6 +22,14 @@ class Like < Socialization::ActiveRecordStores::Like
     #: (User, ActiveRecord::Base) -> void
     def publish_federated_like(liker, likeable)
       LikeFederationService.publish_like(liker:, likeable:)
+    end
+
+    #: (User, ActiveRecord::Base) -> void
+    def enqueue_thumbnail_generation(liker, likeable)
+      return unless likeable.is_a?(Article)
+      return if likeable.thumbnail.attached?
+
+      ArticleThumbnailJob.perform_later(likeable.id)
     end
 
     #: (User, ActiveRecord::Base) -> void
