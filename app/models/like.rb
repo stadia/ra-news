@@ -2,8 +2,7 @@
 # rbs_inline: enabled
 
 class Like < Socialization::ActiveRecordStores::Like
-  after_like :publish_federated_like
-  after_like :enqueue_thumbnail_generation
+  after_like :handle_after_like
   after_unlike :publish_federated_unlike
 
   class << self
@@ -17,6 +16,12 @@ class Like < Socialization::ActiveRecordStores::Like
         likeable_type:,
         likeable_id: likeable_ids
       ).pluck(:likeable_id)
+    end
+
+    #: (User, ActiveRecord::Base) -> void
+    def handle_after_like(liker, likeable)
+      publish_federated_like(liker, likeable)
+      enqueue_thumbnail_generation(liker, likeable)
     end
 
     #: (User, ActiveRecord::Base) -> void

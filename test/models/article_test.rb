@@ -764,6 +764,39 @@ class ArticleTest < ActiveSupport::TestCase
     assert_equal "ruby", captured[:custom]["tag"].first["name"]
   end
 
+  test "to_activitypub_object는 thumbnail이 있으면 attachment에 이미지를 포함한다" do
+    article = @article
+    article.title_ko = "썸네일 테스트"
+    article.summary_key = [ "요약" ]
+
+    blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new("fake image data"), filename: "test.jpg", content_type: "image/jpeg")
+    article.thumbnail.attach(blob)
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, name:, content:, custom:) { captured = { record:, name:, content:, custom: }; { "ok" => true } }) do
+      article.to_activitypub_object
+    end
+
+    assert captured[:custom]["attachment"].present?
+    attachment = captured[:custom]["attachment"].first
+    assert_equal "Image", attachment["type"]
+    assert_equal "image/jpeg", attachment["mediaType"]
+    assert_includes attachment["url"], "rails/active_storage"
+  end
+
+  test "to_activitypub_object는 thumbnail이 없으면 attachment를 포함하지 않는다" do
+    article = @article
+    article.title_ko = "썸네일 없음"
+    article.summary_key = [ "요약" ]
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, name:, content:, custom:) { captured = { record:, name:, content:, custom: }; { "ok" => true } }) do
+      article.to_activitypub_object
+    end
+
+    assert_nil captured[:custom]["attachment"]
+  end
+
   test "base_content는 summary_key 배열의 첫 항목을 사용한다" do
     article = Article.new(title: "원문 제목", summary_key: [ "첫 줄 요약", "두 번째 요약" ])
 
