@@ -3,8 +3,9 @@
 class Views::Home::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(articles:, recent_comments:, sidebar_tags:, liked_article_ids: [])
+  def initialize(articles:, recent_comments:, sidebar_tags:, liked_article_ids: [], featured_articles: [])
     @articles = articles
+    @featured_articles = featured_articles
     @recent_comments = recent_comments
     @sidebar_tags = sidebar_tags
     @liked_article_ids = liked_article_ids
@@ -15,6 +16,13 @@ class Views::Home::Index < Views::Base
 
     div(class: "flex flex-col lg:flex-row gap-6") do
       div(class: "flex-1 min-w-0") do
+        if @featured_articles.any?
+          render Components::Home::Feature.new(
+            articles: @featured_articles,
+            liked_article_ids: @liked_article_ids
+          )
+        end
+
         div(id: "articlesList", class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6") do
           @articles.each do |article|
             render Components::Home::Article.new(article: article, liked: @liked_article_ids.include?(article.id))

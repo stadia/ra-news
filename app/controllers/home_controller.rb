@@ -14,17 +14,20 @@ class HomeController < ApplicationController
 
   def index
     cacheable_page!
-    scope = Article.includes(:user, :site, :thumbnail_attachment).kept.confirmed.related
-    article_count = scope.where(created_at: 24.hours.ago...).count
+    scope = Article.includes(:user, :site).kept.confirmed.related
+    @featured_articles = scope.includes(:thumbnail_attachment).without_toast.joins(:thumbnail_attachment).order(published_at: :desc).limit(3).to_a
+    featured_ids = @featured_articles.map(&:id)
+    remaining_scope = scope.where.not(id: featured_ids)
+    article_count = remaining_scope.where(created_at: 24.hours.ago...).count
     @articles = if article_count < 9
-      scope.without_toast.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
+      remaining_scope.without_toast.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
     else
-      scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
+      remaining_scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
     end
     @liked_article_ids = Like.liked_ids_for(
       liker: current_user,
       likeable_type: "Article",
-      likeable_ids: @articles.map(&:id)
+      likeable_ids: (@articles + @featured_articles).map(&:id)
     )
 
     @news_media_organization = PUBLISHER_SCHEMA
@@ -32,6 +35,7 @@ class HomeController < ApplicationController
     @sidebar_tags = Tag.confirmed.order(taggings_count: :desc, name: :asc).limit(20)
     render Views::Home::Index.new(
       articles: @articles,
+      featured_articles: @featured_articles,
       recent_comments: @recent_comments,
       sidebar_tags: @sidebar_tags,
       liked_article_ids: @liked_article_ids

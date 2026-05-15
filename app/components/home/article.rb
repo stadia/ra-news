@@ -17,7 +17,6 @@ class Components::Home::Article < Components::Base
     render RubyUI::Card.new(id: dom_id(article), class:
         "bg-surface border-border-muted hover:border-border-strong shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
     ) do
-      thumbnail_section
       div(class: "p-6 flex flex-col flex-1") do
         header_section
         render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
@@ -28,20 +27,6 @@ class Components::Home::Article < Components::Base
   end
 
   private
-
-  def thumbnail_section
-    return unless article.thumbnail.attached?
-
-    link_to(article_path(article), class: "block overflow-hidden") do
-      image_tag(
-        article.thumbnail.variant(resize_to_fill: [800, 450]),
-        class: "w-full aspect-video object-cover hover:scale-105 transition-transform duration-300",
-        loading: "lazy",
-        decoding: "async",
-        alt: article.title_ko || article.title
-      )
-    end
-  end
 
   def header_section
     display_title = article.title_ko || article.title
