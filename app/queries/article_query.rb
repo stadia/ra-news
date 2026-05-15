@@ -2,7 +2,7 @@
 # rbs_inline: enabled
 
 module ArticleQuery
-  DEFAULT_INCLUDES = %i[user site tags].freeze
+  DEFAULT_INCLUDES = %i[user site tags thumbnail_attachment].freeze
 
   module_function
 

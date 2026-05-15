@@ -14,7 +14,7 @@ class HomeController < ApplicationController
 
   def index
     cacheable_page!
-    scope = Article.includes(:user, :site).kept.confirmed.related
+    scope = Article.includes(:user, :site, :thumbnail_attachment).kept.confirmed.related
     article_count = scope.where(created_at: 24.hours.ago...).count
     @articles = if article_count < 9
       scope.without_toast.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
@@ -48,7 +48,7 @@ class HomeController < ApplicationController
   def rss
     cacheable_page!(max_age: 1.hour)
     @articles = Rails.cache.fetch("rss_articles", expires_in: 1.hour) do
-      Article.includes(:user, :site).kept.confirmed.related.without_toast.order(created_at: :desc).limit(100)
+      Article.includes(:user, :site, :thumbnail_attachment).kept.confirmed.related.without_toast.order(created_at: :desc).limit(100)
     end
     response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
     render "rss", formats: [ :rss ], layout: false

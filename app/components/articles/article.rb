@@ -13,7 +13,7 @@ class Components::Articles::Article < Components::Base
   end
 
   def view_template
-    render RubyUI::Card.new(id: (dom_id article), class:
+    render RubyUI::Card.new(id: dom_id(article), class:
         "bg-surface shadow-md hover:shadow-lg transition-shadow overflow-hidden border-border-strong p-3 md:p-6 flex flex-col"
     ) do
       header_section

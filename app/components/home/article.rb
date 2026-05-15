@@ -3,6 +3,7 @@
 class Components::Home::Article < Components::Base
   include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::ImageTag
   include PhlexIcons
 
   attr_reader :article
@@ -13,15 +14,34 @@ class Components::Home::Article < Components::Base
   end
 
   def view_template
-    render RubyUI::Card.new(id: dom_id(article), class: "bg-surface border-border-muted hover:border-border-strong shadow-lg hover:shadow-xl transition-all duration-300 p-6 flex flex-col") do
-      header_section
-      render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
-      summary_section
-      footer_section
+    render RubyUI::Card.new(id: dom_id(article), class:
+        "bg-surface border-border-muted hover:border-border-strong shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col"
+    ) do
+      thumbnail_section
+      div(class: "p-6 flex flex-col flex-1") do
+        header_section
+        render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
+        summary_section
+        footer_section
+      end
     end
   end
 
   private
+
+  def thumbnail_section
+    return unless article.thumbnail.attached?
+
+    link_to(article_path(article), class: "block overflow-hidden") do
+      image_tag(
+        article.thumbnail.variant(resize_to_fill: [800, 450]),
+        class: "w-full aspect-video object-cover hover:scale-105 transition-transform duration-300",
+        loading: "lazy",
+        decoding: "async",
+        alt: article.title_ko || article.title
+      )
+    end
+  end
 
   def header_section
     display_title = article.title_ko || article.title
