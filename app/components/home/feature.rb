@@ -40,7 +40,7 @@ class Components::Home::Feature < Components::Base
       id: dom_id(article, :feature),
       class: "bg-surface border-border-muted hover:border-border-strong shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col h-full"
     ) do
-      thumbnail(article, size: [ 1200, 675 ], aspect: "aspect-video")
+      thumbnail(article, size: [ 1200, 675 ], aspect: "aspect-video", eager: true)
       div(class: "p-6 flex flex-col flex-1") do
         title_block(article, size: :large)
         render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
@@ -64,15 +64,16 @@ class Components::Home::Feature < Components::Base
     end
   end
 
-  def thumbnail(article, size:, aspect:)
+  def thumbnail(article, size:, aspect:, eager: false)
     return unless article.thumbnail.attached?
 
     link_to(article_path(article), class: "block overflow-hidden") do
       image_tag(
         article.thumbnail.variant(resize_to_fill: size),
         class: "w-full #{aspect} object-cover hover:scale-105 transition-transform duration-300",
-        loading: "lazy",
-        decoding: "async",
+        loading: eager ? "eager" : "lazy",
+        decoding: eager ? "auto" : "async",
+        fetchpriority: eager ? "high" : "auto",
         alt: article.title_ko || article.title
       )
     end

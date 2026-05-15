@@ -31,11 +31,11 @@ class Components::Home::Article < Components::Base
   def header_section
     display_title = article.title_ko || article.title
     div(class: "mb-4") do
-      h2(class: "text-xl font-bold text-content mb-2 leading-tight hover:text-link-hover transition-colors duration-200") do
+      h3(class: "text-xl font-bold text-content mb-2 leading-tight hover:text-link-hover transition-colors duration-200") do
         link_to(display_title, article_path(article))
       end
       if article.title_ko.present? && article.title_ko != article.title
-        h3(class: "text-lg font-medium text-content-secondary wrap-break-word") { article.title }
+        p(class: "text-lg font-medium text-content-secondary wrap-break-word") { article.title }
       end
     end
   end
