@@ -1,5 +1,8 @@
 # Below are the routes for madmin
 namespace :madmin do
+  namespace :active_storage do
+    resources :attachments
+  end
   resources :preferences
   resources :tags
   resources :articles do

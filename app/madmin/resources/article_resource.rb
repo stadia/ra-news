@@ -28,6 +28,9 @@ class ArticleResource < Madmin::Resource
   attribute :twitter_id, index: false, form: false
   attribute :mastodon_id, index: false, form: false
 
+  # ActiveStorage
+  attribute :thumbnail, index: false, form: false
+
   # Associations
   attribute :user, index: false, form: false
   attribute :site, index: true, form: false
