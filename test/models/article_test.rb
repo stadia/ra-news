@@ -768,7 +768,6 @@ class ArticleTest < ActiveSupport::TestCase
     article = @article
     article.title_ko = "썸네일 테스트"
     article.summary_key = [ "요약" ]
-
     blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new("fake image data"), filename: "test.jpg", content_type: "image/jpeg")
     article.thumbnail.attach(blob)
 
@@ -779,10 +778,11 @@ class ArticleTest < ActiveSupport::TestCase
 
     assert_predicate captured[:custom]["attachment"], :present?
     attachment = captured[:custom]["attachment"].first
-
     assert_equal "Image", attachment["type"]
     assert_equal "image/jpeg", attachment["mediaType"]
     assert_includes attachment["url"], "rails/active_storage"
+  ensure
+    article.thumbnail.detach
   end
 
   test "to_activitypub_object는 thumbnail이 없으면 attachment를 포함하지 않는다" do

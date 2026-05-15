@@ -114,7 +114,7 @@ class ArticlesController < ApplicationController
       tag:            @article.tags.map(&:name).presence
     }.compact
     if @article.title.present? || @article.title_ko.present?
-      @news_article = SchemaDotOrg::NewsArticle.new(
+      news_article_attrs = {
         headline:       @article.title_ko.presence || @article.title,
         description:    @article.summary_key&.first,
         url:            article_url(@article),
@@ -123,7 +123,9 @@ class ArticlesController < ApplicationController
         in_language:    "ko-KR",
         is_based_on:    @article.url,
         publisher: HomeController::PUBLISHER_SCHEMA
-      )
+      }
+      news_article_attrs[:image] = @og_image if @og_image
+      @news_article = SchemaDotOrg::NewsArticle.new(**news_article_attrs)
     end
     @breadcrumbs = SchemaDotOrg.make_breadcrumbs([
       { name: "홈",  url: root_url },
