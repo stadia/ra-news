@@ -8,6 +8,7 @@ class Api::V1::ArticlesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     body = JSON.parse(response.body)
+
     assert_kind_of Array, body["articles"]
     assert_kind_of Hash, body["pagination"]
   end
@@ -31,6 +32,7 @@ class Api::V1::ArticlesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     body = JSON.parse(response.body)
+
     assert_kind_of Array, body["articles"]
   end
 
@@ -44,6 +46,7 @@ class Api::V1::ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     body = JSON.parse(response.body)
     slugs = body["articles"].map { |a| a["slug"] }
+
     assert_includes slugs, article.slug
   end
 end
