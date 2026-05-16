@@ -6,6 +6,7 @@ inherit_from: .rubocop_todo.yml
 plugins:
   - rubocop-rbs_inline
   - rubocop-minitest
+  - rubocop-i18n
 
 AllCops:
   RubyInterpreters:
@@ -67,3 +68,6 @@ Metrics/PerceivedComplexity:
   Exclude:
     - "test/**/*"
     - "db/**/*"
+
+I18n/GetText/DecorateFunctionMessage:
+  Enabled: false
