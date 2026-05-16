@@ -20,9 +20,9 @@ class DeviseMailerTest < ActionMailer::TestCase
     assert_not_nil html_part
     assert_not_nil text_part
     assert_includes html_part.body.to_s, "Ruby-News"
-    assert_includes html_part.body.to_s, "이메일 확인이 필요합니다"
-    assert_includes html_part.body.to_s, "안녕하세요, #{user.name}님!"
-    assert_includes html_part.body.to_s, "이메일 확인하기"
+    assert_includes html_part.body.to_s, I18n.t("devise.mailer.confirmation_instructions.title")
+    assert_includes html_part.body.to_s, I18n.t("devise.mailer.confirmation_instructions.greeting", recipient: user.name)
+    assert_includes html_part.body.to_s, I18n.t("devise.mailer.confirmation_instructions.action")
     assert_includes html_part.body.to_s, CGI.escapeHTML(user_confirmation_url(confirmation_token: token))
     assert_includes text_part.body.to_s, user_confirmation_url(confirmation_token: token)
   end

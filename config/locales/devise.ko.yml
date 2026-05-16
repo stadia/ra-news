@@ -19,8 +19,6 @@ ko:
             password_confirmation:
               confirmation: "이 일치하지 않습니다"
   devise:
-    sessions:
-      already_signed_out: "이미 로그아웃되었습니다."
     confirmations:
       new:
         title: "이메일 확인"
@@ -28,8 +26,5 @@ ko:
         email_placeholder: "이메일 주소를 입력하세요"
     mailer:
       confirmation_instructions:
-        subject: "이메일 확인 안내"
         title: "이메일 확인이 필요합니다"
-        greeting: "안녕하세요, %{name}님!"
         message: "아래 링크를 클릭하여 이메일을 확인해주세요:"
-        action: "이메일 확인하기"

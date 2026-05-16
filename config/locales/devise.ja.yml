@@ -1,7 +1,24 @@
 ja:
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "を入力してください"
+              taken: "はすでに使用されています"
+              invalid: "の形式が正しくありません"
+            username:
+              blank: "を入力してください"
+              taken: "はすでに使用されています"
+              too_short: "は2文字以上で入力してください"
+              too_long: "は30文字以下で入力してください"
+            password:
+              blank: "を入力してください"
+              too_short: "は6文字以上で入力してください"
+            password_confirmation:
+              confirmation: "が一致しません"
   devise:
-    sessions:
-      already_signed_out: "すでにログアウトしています。"
     confirmations:
       new:
         title: "メール確認"
@@ -9,8 +26,5 @@ ja:
         email_placeholder: "メールアドレスを入力してください"
     mailer:
       confirmation_instructions:
-        subject: "メール確認のご案内"
         title: "メール確認が必要です"
-        greeting: "こんにちは、%{name}さん!"
         message: "以下のリンクをクリックしてメール確認を完了してください:"
-        action: "メールを確認する"
