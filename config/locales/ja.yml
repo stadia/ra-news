@@ -27,8 +27,103 @@ ja:
     site_name: "Ruby-News | Ruby AIニュース"
     default_title: "Ruby-News | Ruby AIニュース"
     default_description: "Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします"
+    brand_subtitle: "Ruby AIニュース"
+    skip_to_content: "本文へスキップ"
+    loading: "読み込み中..."
+    rss_feed_title: "Ruby-News RSSフィード"
+    nav:
+      aria_label: "メインナビゲーション"
+      menu_toggle: "メニュー開閉"
+      open_main_menu: "メインメニューを開く"
+      home: "ホーム"
+      past_articles: "過去の記事"
+      other_news: "その他のニュース"
+      new_article: "記事を投稿"
+    search:
+      aria_label: "記事を検索"
+      placeholder: "検索..."
+      submit: "検索"
+    footer:
+      mastodon: "Mastodon"
+      twitter: "Twitter/X"
+      rss: "RSSフィード"
+      slack: "Slackに追加"
+      discord: "Discordに追加"
+
+  home:
+    index:
+      title: "Ruby-News | Ruby・Rails開発者のためのAIニュース"
+      latest_news: "最新ニュース"
+      more_articles: "過去の記事をもっと見る"
+      item_list_name: "Ruby-News 最新ニュース"
+    feature:
+      heading: "注目ニュース"
+
+  tags_sidebar:
+    heading: "タグ"
+    empty: "表示するタグがありません。"
+
+  recent_comments_sidebar:
+    heading: "最近のコメント"
+    view_article: "記事を見る"
 
   users:
+    new:
+      title: "新規登録"
+      heading: "新規登録"
+      subtitle: "新しいアカウントを作成します。"
+    edit:
+      title: "ユーザー情報を編集"
+      heading: "ユーザー情報を編集"
+      subtitle: "アカウント情報を更新します。"
+    password:
+      title: "パスワード変更"
+      heading: "パスワード変更"
+      subtitle: "パスワードを変更します。"
+    show:
+      title: "ユーザー情報"
+      heading: "ユーザー情報"
+      subtitle: "アカウントの個人情報と設定を管理します。"
+      edit: "情報を編集"
+      change_password: "パスワード変更"
     form:
+      edit_heading: "情報を編集"
+      sign_up_heading: "新規登録"
+      new_beginning: "新しいスタート"
+      avatar_label: "プロフィール画像"
+      avatar_hint: "正方形の代表サムネイルとして400x400にクロップされ、外部に公開されます。"
+      remove_avatar: "現在のプロフィール画像を削除"
+      name_label: "名前"
+      email_label: "メールアドレス"
       locale_label: "表示言語"
       locale_auto: "自動 (ブラウザ設定)"
+      locale_options:
+        ko: "韓国語"
+        ja: "日本語"
+      username_label: "ユーザーID"
+      username_placeholder: "英字、数字、アンダースコア、ドット"
+      optional_name_label: "名前 (任意)"
+      password_label: "パスワード"
+      password_confirmation_label: "パスワード確認"
+      change_password: "パスワード変更"
+      back: "戻る"
+      save_changes: "変更を保存"
+      sign_up_submit: "登録する"
+      avatar_alt_default: "プロフィール画像"
+    password_form:
+      current_password_label: "現在のパスワード"
+      password_label: "パスワード"
+      password_confirmation_label: "パスワード確認"
+      back: "戻る"
+      save: "パスワードを保存"
+
+  sessions:
+    new:
+      title: "ログイン"
+      email_label: "メールアドレス"
+      email_placeholder: "メールアドレス"
+      password_label: "パスワード"
+      password_placeholder: "パスワード"
+      submit: "ログイン"
+      sign_up: "新規登録"
+      forgot_password: "パスワードをお忘れですか?"

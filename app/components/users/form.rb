@@ -31,8 +31,8 @@ class Components::Users::Form < Components::Base
             end
 
             div(class: "text-center sm:text-left pb-1 flex-1") do
-              h2(class: "text-3xl font-bold text-content tracking-tight") { @user.persisted? ? "정보 수정" : "회원 가입" }
-              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email || "새로운 시작" }
+              h2(class: "text-3xl font-bold text-content tracking-tight") { @user.persisted? ? t("users.form.edit_heading") : t("users.form.sign_up_heading") }
+              p(class: "text-content-muted font-medium text-lg mt-1") { @user.email || t("users.form.new_beginning") }
             end
           end
 
@@ -52,9 +52,9 @@ class Components::Users::Form < Components::Base
           if @user.persisted?
             div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_avatar) { "프로필 사진" }
+                render RubyUI::FormFieldLabel.new(for: :user_avatar) { t("users.form.avatar_label") }
                 render RubyUI::FormFieldHint.new(class: "mb-3 text-content-muted") do
-                  "정사각형 대표 썸네일로 400x400 크롭되어 외부에 공개됩니다."
+                  t("users.form.avatar_hint")
                 end
                 form.file_field :avatar, class: input_classes(@user.errors[:avatar]), accept: "image/png,image/jpeg,image/webp,image/gif"
                 @user.errors[:avatar].each do |msg|
@@ -64,13 +64,13 @@ class Components::Users::Form < Components::Base
                 if @user.avatar_attached?
                   label(for: :user_remove_avatar, class: "mt-4 inline-flex items-center gap-3 text-sm text-content-secondary cursor-pointer") do
                     render RubyUI::Checkbox.new(id: :user_remove_avatar, name: "user[remove_avatar]", value: "1")
-                    span { "현재 프로필 사진 제거" }
+                    span { t("users.form.remove_avatar") }
                   end
                 end
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_name) { "이름" }
+                render RubyUI::FormFieldLabel.new(for: :user_name) { t("users.form.name_label") }
                 form.text_field :name, class: input_classes(@user.errors[:name]), autocomplete: "name"
                 @user.errors[:name].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -78,7 +78,7 @@ class Components::Users::Form < Components::Base
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_email) { "이메일" }
+                render RubyUI::FormFieldLabel.new(for: :user_email) { t("users.form.email_label") }
                 form.email_field :email, class: input_classes(@user.errors[:email]), autocomplete: "email"
                 @user.errors[:email].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -88,7 +88,7 @@ class Components::Users::Form < Components::Base
               render RubyUI::FormField.new do
                 render RubyUI::FormFieldLabel.new(for: :user_locale) { t("users.form.locale_label") }
                 form.select :locale,
-                  [ [ "한국어", "ko" ], [ "日本語", "ja" ] ],
+                  [ [ t("users.form.locale_options.ko"), "ko" ], [ t("users.form.locale_options.ja"), "ja" ] ],
                   { include_blank: t("users.form.locale_auto") },
                   class: input_classes(@user.errors[:locale])
                 @user.errors[:locale].each do |msg|
@@ -99,15 +99,15 @@ class Components::Users::Form < Components::Base
           else
             div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_username) { "아이디" }
-                form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: "영문, 숫자, 밑줄, 점", autocomplete: "username", required: true
+                render RubyUI::FormFieldLabel.new(for: :user_username) { t("users.form.username_label") }
+                form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: t("users.form.username_placeholder"), autocomplete: "username", required: true
                 @user.errors[:username].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
                 end
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_email) { "이메일" }
+                render RubyUI::FormFieldLabel.new(for: :user_email) { t("users.form.email_label") }
                 form.email_field :email, class: input_classes(@user.errors[:email]), autocomplete: "email", required: true
                 @user.errors[:email].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -115,7 +115,7 @@ class Components::Users::Form < Components::Base
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_name) { "이름 (선택)" }
+                render RubyUI::FormFieldLabel.new(for: :user_name) { t("users.form.optional_name_label") }
                 form.text_field :name, class: input_classes(@user.errors[:name]), autocomplete: "name"
                 @user.errors[:name].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -127,7 +127,7 @@ class Components::Users::Form < Components::Base
           unless @user.persisted?
             div(class: "space-y-8 pt-8") do
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_password) { "비밀번호" }
+                render RubyUI::FormFieldLabel.new(for: :user_password) { t("users.form.password_label") }
                 form.password_field :password, class: input_classes(@user.errors[:password]), autocomplete: "new-password"
                 @user.errors[:password].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -135,7 +135,7 @@ class Components::Users::Form < Components::Base
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { "비밀번호 확인" }
+                render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { t("users.form.password_confirmation_label") }
                 form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation]), autocomplete: "new-password"
                 @user.errors[:password_confirmation].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -152,7 +152,7 @@ class Components::Users::Form < Components::Base
                 class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
               ) do
                 Hero::Key(variant: :outline, class: "w-4 h-4")
-                plain "비밀번호 변경"
+                plain t("users.form.change_password")
               end
 
               render RubyUI::Link.new(
@@ -160,7 +160,7 @@ class Components::Users::Form < Components::Base
                 class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
               ) do
                 Hero::ChevronLeft(variant: :outline, class: "w-4 h-4")
-                plain "돌아가기"
+                plain t("users.form.back")
               end
             end
 
@@ -168,7 +168,7 @@ class Components::Users::Form < Components::Base
               type: "submit",
               class: "group relative flex items-center justify-center gap-2 rounded-xl bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground font-bold text-sm transition-all active:scale-95 shadow-lg shadow-brand/20"
             ) do
-              plain @user.persisted? ? "변경사항 저장" : "가입하기"
+              plain @user.persisted? ? t("users.form.save_changes") : t("users.form.sign_up_submit")
               Hero::ArrowLongRight(variant: :outline, class: "w-5 h-5 transition-transform group-hover:translate-x-1")
             end
           end
@@ -190,7 +190,7 @@ class Components::Users::Form < Components::Base
   end
 
   def avatar_alt
-    @user.name.presence || @user.username.presence || @user.email.presence || "프로필 이미지"
+    @user.name.presence || @user.username.presence || @user.email.presence || t("users.form.avatar_alt_default")
   end
 
   def avatar_url

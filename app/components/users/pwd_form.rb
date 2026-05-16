@@ -45,7 +45,7 @@ class Components::Users::PwdForm < Components::Base
 
           div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
             render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_current_password) { "현재 비밀번호" }
+              render RubyUI::FormFieldLabel.new(for: :user_current_password) { t("users.password_form.current_password_label") }
               form.password_field :current_password, class: input_classes(@user.errors[:current_password])
               @user.errors[:current_password].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
@@ -53,7 +53,7 @@ class Components::Users::PwdForm < Components::Base
             end
 
             render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_password) { "비밀번호" }
+              render RubyUI::FormFieldLabel.new(for: :user_password) { t("users.password_form.password_label") }
               form.password_field :password, class: input_classes(@user.errors[:password])
               @user.errors[:password].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
@@ -61,7 +61,7 @@ class Components::Users::PwdForm < Components::Base
             end
 
             render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { "비밀번호 확인" }
+              render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { t("users.password_form.password_confirmation_label") }
               form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation])
               @user.errors[:password_confirmation].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
@@ -76,14 +76,14 @@ class Components::Users::PwdForm < Components::Base
               class: "flex items-center justify-center gap-2 rounded-xl bg-surface hover:bg-surface-muted text-content font-bold text-sm border border-border-strong transition-all active:scale-95 shadow-lg"
             ) do
               Hero::ChevronLeft(variant: :outline, class: "w-4 h-4")
-              plain "돌아가기"
+              plain t("users.password_form.back")
             end
 
             render RubyUI::Button.new(
               type: "submit",
               class: "group relative flex items-center justify-center gap-2 rounded-xl bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground font-bold text-sm transition-all active:scale-95 shadow-lg shadow-brand/20"
             ) do
-              plain "비밀번호 저장"
+              plain t("users.password_form.save")
               Hero::ArrowLongRight(variant: :outline, class: "w-5 h-5 transition-transform group-hover:translate-x-1")
             end
           end

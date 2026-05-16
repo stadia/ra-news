@@ -2,6 +2,7 @@
 
 class Components::TagsSidebar < Components::Base
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(tags:, current_tag: nil)
@@ -13,7 +14,7 @@ class Components::TagsSidebar < Components::Base
     aside(class: "tags-sidebar") do
       h3(class: "text-lg font-semibold text-content mb-4 flex items-center gap-2") do
         Hero::Tag(variant: :outline, class: "w-5 h-5 text-accent-text")
-        plain "태그"
+        plain t("tags_sidebar.heading")
       end
 
       render RubyUI::Card.new(class: "bg-surface p-4 border-border-strong hover:border-border-muted transition-colors rounded-lg") do
@@ -24,7 +25,7 @@ class Components::TagsSidebar < Components::Base
             end
           end
         else
-          p(class: "text-sm text-content-muted") { "표시할 태그가 없습니다." }
+          p(class: "text-sm text-content-muted") { t("tags_sidebar.empty") }
         end
       end
     end

@@ -4,6 +4,7 @@ class Components::Home::Feature < Components::Base
   include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ImageTag
+  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(articles:, liked_article_ids: [])
@@ -18,7 +19,7 @@ class Components::Home::Feature < Components::Base
 
     section(class: "mb-8") do
       div(class: "flex items-center mb-4") do
-        h2(class: "text-2xl font-bold text-content") { "주요 뉴스" }
+        h2(class: "text-2xl font-bold text-content") { t("home.feature.heading") }
       end
 
       div(class: "grid grid-cols-1 lg:grid-cols-3 gap-6") do

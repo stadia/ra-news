@@ -27,8 +27,103 @@ ko:
     site_name: "Ruby-News | 루비 AI 뉴스"
     default_title: "Ruby-News | 루비 AI 뉴스"
     default_description: "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요"
+    brand_subtitle: "루비 AI 뉴스"
+    skip_to_content: "본문으로 건너뛰기"
+    loading: "로딩 중..."
+    rss_feed_title: "Ruby-News RSS 피드"
+    nav:
+      aria_label: "주 네비게이션"
+      menu_toggle: "메뉴 열기/닫기"
+      open_main_menu: "메인 메뉴 열기"
+      home: "홈"
+      past_articles: "지난 글"
+      other_news: "그 밖의 뉴스"
+      new_article: "글 등록"
+    search:
+      aria_label: "기사 검색"
+      placeholder: "검색..."
+      submit: "검색"
+    footer:
+      mastodon: "Mastodon"
+      twitter: "Twitter/X"
+      rss: "RSS 피드"
+      slack: "Slack 추가"
+      discord: "Discord 추가"
+
+  home:
+    index:
+      title: "Ruby-News | 루비·Rails 개발자를 위한 AI 뉴스"
+      latest_news: "최신 뉴스"
+      more_articles: "지난 글 더 보기"
+      item_list_name: "Ruby-News 최신 뉴스"
+    feature:
+      heading: "주요 뉴스"
+
+  tags_sidebar:
+    heading: "태그"
+    empty: "표시할 태그가 없습니다."
+
+  recent_comments_sidebar:
+    heading: "최근 댓글"
+    view_article: "원문 보기"
 
   users:
+    new:
+      title: "회원 가입"
+      heading: "회원 가입"
+      subtitle: "새 계정을 만듭니다."
+    edit:
+      title: "사용자 정보 수정"
+      heading: "사용자 정보 수정"
+      subtitle: "계정 정보를 업데이트합니다."
+    password:
+      title: "비밀번호 수정"
+      heading: "비밀번호 수정"
+      subtitle: "비밀번호를 변경합니다."
+    show:
+      title: "사용자 정보"
+      heading: "사용자 정보"
+      subtitle: "계정의 개인 정보와 설정을 관리하세요."
+      edit: "정보 수정"
+      change_password: "비밀번호 변경"
     form:
+      edit_heading: "정보 수정"
+      sign_up_heading: "회원 가입"
+      new_beginning: "새로운 시작"
+      avatar_label: "프로필 사진"
+      avatar_hint: "정사각형 대표 썸네일로 400x400 크롭되어 외부에 공개됩니다."
+      remove_avatar: "현재 프로필 사진 제거"
+      name_label: "이름"
+      email_label: "이메일"
       locale_label: "표시 언어"
       locale_auto: "자동 (브라우저 설정)"
+      locale_options:
+        ko: "한국어"
+        ja: "일본어"
+      username_label: "아이디"
+      username_placeholder: "영문, 숫자, 밑줄, 점"
+      optional_name_label: "이름 (선택)"
+      password_label: "비밀번호"
+      password_confirmation_label: "비밀번호 확인"
+      change_password: "비밀번호 변경"
+      back: "돌아가기"
+      save_changes: "변경사항 저장"
+      sign_up_submit: "가입하기"
+      avatar_alt_default: "프로필 이미지"
+    password_form:
+      current_password_label: "현재 비밀번호"
+      password_label: "비밀번호"
+      password_confirmation_label: "비밀번호 확인"
+      back: "돌아가기"
+      save: "비밀번호 저장"
+
+  sessions:
+    new:
+      title: "로그인"
+      email_label: "이메일"
+      email_placeholder: "email 주소"
+      password_label: "비밀번호"
+      password_placeholder: "비밀번호"
+      submit: "로그인"
+      sign_up: "회원 가입"
+      forgot_password: "비밀번호를 잊으셨나요?"

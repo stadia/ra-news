@@ -3,6 +3,7 @@
 class Components::RecentCommentsSidebar < Components::Base
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::Truncate
+  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(recent_comments:)
@@ -13,7 +14,7 @@ class Components::RecentCommentsSidebar < Components::Base
     aside(class: "recent-comments-sidebar") do
       h3(class: "text-lg font-semibold text-content mb-4 flex items-center gap-2") do
         Hero::ChatBubbleLeftRight(variant: :outline, class: "w-5 h-5 text-accent-text")
-        plain "최근 댓글"
+        plain t("recent_comments_sidebar.heading")
       end
 
       div(class: "space-y-3") do
@@ -49,12 +50,12 @@ class Components::RecentCommentsSidebar < Components::Base
       div(class: "flex items-center justify-between text-xs text-content-disabled") do
         span(class: "flex items-center gap-1") do
           Hero::Clock(variant: :outline, class: "w-3 h-3")
-          plain "#{view_context.time_ago_in_words_korean(comment.created_at)} 전"
+          plain view_context.time_ago_in_words(comment.created_at)
         end
         if comment.article.present?
           link_to(article_path(comment.article), class: "text-link hover:text-link-hover flex items-center gap-1 transition-colors") do
             Hero::ArrowTopRightOnSquare(variant: :outline, class: "w-3 h-3")
-            plain "원문 보기"
+            plain t("recent_comments_sidebar.view_article")
           end
         end
       end
