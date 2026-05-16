@@ -11,7 +11,7 @@ class Views::Activities::Feed < Views::Base
   end
 
   def view_template
-    content_for :title, "피드 | Ruby-News"
+    content_for :title, t("activities.feed.title")
 
     if @pagy.page == 1
       div(class: "max-w-2xl mx-auto") do
@@ -52,7 +52,7 @@ class Views::Activities::Feed < Views::Base
   def render_empty_state
     render RubyUI::Card.new(class: "bg-surface border-border-muted shadow-sm") do
       render RubyUI::CardContent.new(class: "p-8 text-content-secondary text-center") do
-        plain "표시할 포스트가 없습니다. 다른 사용자를 팔로우하거나 첫 포스트를 작성해보세요!"
+        plain t("activities.feed.empty")
       end
     end
   end
@@ -66,7 +66,7 @@ class Views::Activities::Feed < Views::Base
       data: { controller: "infinite-scroll" }
     ) do
       div(class: "py-8 text-center text-content-muted") do
-        plain "불러오는 중..."
+        plain t("activities.feed.loading")
       end
     end
   end

@@ -31,7 +31,7 @@ class Views::Followings::FollowActions < Views::Base
     follow = current.federails_actor.follows?(@actor)
 
     if @actor.entity == current
-      span(class: "text-content-muted text-sm") { "내 계정입니다." }
+      span(class: "text-content-muted text-sm") { t("followings.follow_actions.own_account") }
     elsif follow
       existing_follow(follow)
     else
@@ -43,11 +43,11 @@ class Views::Followings::FollowActions < Views::Base
 
   def existing_follow(follow)
     if follow.pending?
-      follow_status_badge("요청 중", variant: :amber)
+      follow_status_badge(t("followings.follow_actions.requested"), variant: :amber)
     else
-      follow_status_badge("팔로잉", variant: :green)
+      follow_status_badge(t("followings.follow_actions.following"), variant: :green)
     end
-    button_to follow.pending? ? "요청 취소" : "언팔로우",
+    button_to follow.pending? ? t("followings.follow_actions.cancel_request") : t("followings.follow_actions.unfollow"),
       following_path(follow),
       method: :delete,
       form: { data: { turbo_stream: true } },
@@ -55,7 +55,7 @@ class Views::Followings::FollowActions < Views::Base
   end
 
   def new_follow
-    button_to "팔로우",
+    button_to t("followings.follow_actions.follow"),
       follow_followings_path,
       params: { account: @actor.at_address },
       method: :post,
@@ -68,20 +68,20 @@ class Views::Followings::FollowActions < Views::Base
     return unless followed
 
     if followed.pending?
-      span(class: "text-content-muted text-sm") { "#{@actor.username}이(가) 팔로우 요청했습니다." }
-      button_to "수락",
+      span(class: "text-content-muted text-sm") { t("followings.follow_actions.incoming_request", username: @actor.username) }
+      button_to t("followings.follow_actions.accept"),
         accept_following_path(followed),
         method: :put,
         form: { data: { turbo_stream: true } },
         class: "px-4 py-2 text-sm font-medium bg-info-solid hover:bg-info-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
     else
-      span(class: "text-content-muted text-sm") { "#{@actor.username}이(가) 팔로우 중입니다." }
+      span(class: "text-content-muted text-sm") { t("followings.follow_actions.incoming_following", username: @actor.username) }
     end
   end
 
   def logged_out_message
     p(class: "text-content-muted text-sm") do
-      plain "팔로우하려면 로그인하세요. 또는 다른 Fediverse 서버에서 검색: "
+      plain t("followings.follow_actions.logged_out")
       code(class: "ml-1 bg-surface px-1.5 py-0.5 rounded text-content-secondary text-xs") do
         plain @actor.at_address(prefix: "")
       end

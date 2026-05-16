@@ -41,24 +41,24 @@ class Views::Actors::Show < Views::Base
             p(class: "text-content-muted font-mono text-sm mt-1") { @actor.at_address }
 
             if @actor.profile_url && !@actor.local?
-              link_to "프로필 방문 →", @actor.profile_url,
+              link_to t("actors.show.visit_profile"), @actor.profile_url,
                 class: "text-sm text-content-muted hover:text-content transition-colors mt-1 inline-block",
                 target: "_blank", rel: "noopener noreferrer"
             end
 
             div do
-              link_to "팔로우 검색으로 돌아가기", lookup_actors_path,
+              link_to t("actors.show.back_to_lookup"), lookup_actors_path,
                 class: "text-sm text-content-muted hover:text-content transition-colors mt-1 inline-block"
             end
 
             div(class: "flex items-center gap-4 mt-2") do
               span(class: "text-sm text-content-muted") do
                 span(class: "font-semibold text-content") { @actor.following_followers.count.to_s }
-                plain " 팔로워"
+                plain t("profiles.show.followers_suffix")
               end
               span(class: "text-sm text-content-muted") do
                 span(class: "font-semibold text-content") { @actor.following_follows.count.to_s }
-                plain " 팔로잉"
+                plain t("profiles.show.following_suffix")
               end
             end
           end

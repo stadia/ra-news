@@ -207,3 +207,64 @@ ja:
       submit: "ログイン"
       sign_up: "新規登録"
       forgot_password: "パスワードをお忘れですか?"
+
+  profiles:
+    show:
+      settings: "設定"
+      feed: "フィード"
+      find_follow: "フォロー検索"
+      followers_suffix: " フォロワー"
+      following_suffix: " フォロー中"
+    activity_tabs:
+      posts: "投稿"
+      comments: "コメント"
+      followers: "フォロワー"
+      following: "フォロー中"
+      likes: "いいね"
+    follow_list:
+      followers: "フォロワー"
+      following: "フォロー中"
+      empty_followers: "まだフォロワーがいません。"
+      empty_following: "まだフォローしているアカウントがありません。"
+      accept: "承認"
+      reject: "拒否"
+      requested: "リクエスト中"
+      unfollow: "フォロー解除"
+    comment_list:
+      empty: "まだコメントを書いていません。"
+    like_list:
+      empty: "まだいいねした記事がありません。"
+    post_list:
+      empty: "まだ投稿がありません。"
+
+  followings:
+    follow_actions:
+      own_account: "あなた自身のアカウントです。"
+      requested: "リクエスト中"
+      following: "フォロー中"
+      cancel_request: "リクエストを取り消す"
+      unfollow: "フォロー解除"
+      follow: "フォロー"
+      incoming_request: "%{username}さんからフォローリクエストがあります。"
+      incoming_following: "%{username}さんがフォローしています。"
+      accept: "承認"
+      logged_out: "フォローするにはログインしてください。または他のFediverseサーバーから検索: "
+
+  activities:
+    feed:
+      title: "フィード | Ruby-News"
+      empty: "表示する投稿がありません。他のユーザーをフォローするか、最初の投稿を書いてみましょう!"
+      loading: "読み込み中..."
+
+  actors:
+    show:
+      visit_profile: "プロフィールを開く →"
+      back_to_lookup: "フォロー検索に戻る"
+    gone:
+      message: "このアカウントはもう存在しません。"
+    lookup:
+      title: "フォロー検索"
+      heading: "フォロー検索"
+      subtitle: "Fediverseアドレスでユーザーを検索してください。"
+      account_label: "アカウントアドレス"
+      submit: "検索"

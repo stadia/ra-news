@@ -207,3 +207,64 @@ ko:
       submit: "로그인"
       sign_up: "회원 가입"
       forgot_password: "비밀번호를 잊으셨나요?"
+
+  profiles:
+    show:
+      settings: "설정"
+      feed: "Feed"
+      find_follow: "팔로우 검색"
+      followers_suffix: " 팔로워"
+      following_suffix: " 팔로잉"
+    activity_tabs:
+      posts: "글"
+      comments: "댓글"
+      followers: "팔로워"
+      following: "팔로잉"
+      likes: "좋아요"
+    follow_list:
+      followers: "팔로워"
+      following: "팔로잉"
+      empty_followers: "아직 팔로워가 없습니다."
+      empty_following: "아직 팔로잉하는 계정이 없습니다."
+      accept: "수락"
+      reject: "거절"
+      requested: "요청 중"
+      unfollow: "언팔로우"
+    comment_list:
+      empty: "아직 작성한 댓글이 없습니다."
+    like_list:
+      empty: "아직 좋아요한 글이 없습니다."
+    post_list:
+      empty: "아직 작성한 글이 없습니다."
+
+  followings:
+    follow_actions:
+      own_account: "내 계정입니다."
+      requested: "요청 중"
+      following: "팔로잉"
+      cancel_request: "요청 취소"
+      unfollow: "언팔로우"
+      follow: "팔로우"
+      incoming_request: "%{username}이(가) 팔로우 요청했습니다."
+      incoming_following: "%{username}이(가) 팔로우 중입니다."
+      accept: "수락"
+      logged_out: "팔로우하려면 로그인하세요. 또는 다른 Fediverse 서버에서 검색: "
+
+  activities:
+    feed:
+      title: "피드 | Ruby-News"
+      empty: "표시할 포스트가 없습니다. 다른 사용자를 팔로우하거나 첫 포스트를 작성해보세요!"
+      loading: "불러오는 중..."
+
+  actors:
+    show:
+      visit_profile: "프로필 방문 →"
+      back_to_lookup: "팔로우 검색으로 돌아가기"
+    gone:
+      message: "이 계정은 더 이상 존재하지 않습니다."
+    lookup:
+      title: "팔로우 검색"
+      heading: "팔로우 검색"
+      subtitle: "Fediverse 주소로 사용자를 검색하세요."
+      account_label: "계정 주소"
+      submit: "검색"

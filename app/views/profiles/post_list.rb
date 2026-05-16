@@ -16,7 +16,7 @@ class Views::Profiles::PostList < Views::Base
     if @embedded
       list_content
     else
-      content_for :title, "@#{@user.username} — 글"
+      content_for :title, "@#{@user.username} — #{t("profiles.activity_tabs.posts")}"
       div(class: "max-w-2xl mx-auto py-10 px-4 sm:px-6") do
         turbo_frame_tag("activity-list", class: "block") do
           render Components::Profiles::ActivityTabs.new(user: @user, active_tab: :posts)
@@ -31,7 +31,7 @@ class Views::Profiles::PostList < Views::Base
   def list_content
     if @posts.empty?
       div(class: "text-center py-16 text-content-disabled") do
-        p { "아직 작성한 글이 없습니다." }
+        p { t("profiles.post_list.empty") }
       end
     else
       div(class: "flex flex-col gap-4") do

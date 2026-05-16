@@ -15,7 +15,7 @@ class Views::Profiles::FollowList < Views::Base
   end
 
   def view_template
-    title = @type == :followers ? "팔로워" : "팔로잉"
+    title = @type == :followers ? t("profiles.follow_list.followers") : t("profiles.follow_list.following")
 
     if @embedded
       list_content(title)
@@ -35,7 +35,7 @@ class Views::Profiles::FollowList < Views::Base
   def list_content(title)
     if @followings.empty?
       div(class: "text-center py-16 text-content-disabled") do
-        p { @type == :followers ? "아직 팔로워가 없습니다." : "아직 팔로잉하는 계정이 없습니다." }
+        p { @type == :followers ? t("profiles.follow_list.empty_followers") : t("profiles.follow_list.empty_following") }
       end
     else
       div(class: "flex flex-col gap-2") do
@@ -82,22 +82,22 @@ class Views::Profiles::FollowList < Views::Base
     div(class: "flex items-center gap-2 shrink-0") do
       if @type == :followers
         if following.pending?
-          button_to "수락", accept_following_path(following),
+          button_to t("profiles.follow_list.accept"), accept_following_path(following),
             method: :put,
             form: { data: { turbo_stream: true } },
             class: "px-3 py-1 text-xs font-medium bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground rounded-lg transition-colors cursor-pointer"
-          button_to "거절", following_path(following),
+          button_to t("profiles.follow_list.reject"), following_path(following),
             method: :delete,
             form: { data: { turbo_stream: true } },
             class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-surface text-content-secondary rounded-lg transition-colors cursor-pointer"
         end
       else
         if following.pending?
-          follow_status_badge("요청 중", variant: :amber)
+          follow_status_badge(t("profiles.follow_list.requested"), variant: :amber)
         else
-          follow_status_badge("팔로잉", variant: :green)
+          follow_status_badge(t("profiles.follow_list.following"), variant: :green)
         end
-        button_to "언팔로우", following_path(following),
+        button_to t("profiles.follow_list.unfollow"), following_path(following),
           method: :delete,
           form: { data: { turbo_stream: true } },
           class: "px-3 py-1 text-xs font-medium bg-surface-muted hover:bg-danger-solid text-content-secondary hover:text-danger-text rounded-lg transition-colors cursor-pointer"

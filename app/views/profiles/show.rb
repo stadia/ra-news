@@ -61,13 +61,13 @@ class Views::Profiles::Show < Views::Base
             p(class: "text-content-muted font-mono text-sm mt-1") { "@#{@user.username}" }
             if own_profile?
               div(class: "flex items-center gap-3 mt-2") do
-                link_to "설정", edit_user_registration_path,
+                link_to t("profiles.show.settings"), edit_user_registration_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
                 span(class: "text-content-disabled") { "·" }
-                link_to "Feed", feed_path,
+                link_to t("profiles.show.feed"), feed_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
                 span(class: "text-content-disabled") { "·" }
-                link_to "팔로우 검색", lookup_actors_path,
+                link_to t("profiles.show.find_follow"), lookup_actors_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
               end
             end
@@ -77,14 +77,14 @@ class Views::Profiles::Show < Views::Base
                 class: "text-sm text-content-muted hover:text-content transition-colors"
               ) do
                 span(class: "font-semibold text-content") { @followers_count.to_s }
-                plain " 팔로워"
+                plain t("profiles.show.followers_suffix")
               end
               link_to(
                 user_profile_following_path(username: @user.username),
                 class: "text-sm text-content-muted hover:text-content transition-colors"
               ) do
                 span(class: "font-semibold text-content") { @following_count.to_s }
-                plain " 팔로잉"
+                plain t("profiles.show.following_suffix")
               end
             end
           end
