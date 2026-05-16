@@ -8,9 +8,10 @@ class ArticleAgentsService < OperationService
     step run_embed(article)
     step run_agents(article)
     step run_humanize(article)
+    step run_thumbnail(article)
   end
 
-  private
+  protected
 
   #: (Article article) -> Dry::Monads::Result
   def ensure_body(article)
@@ -57,6 +58,69 @@ class ArticleAgentsService < OperationService
     Success(article)
   end
 
+  #: (Article article) -> Dry::Monads::Result
+  def run_embed(article)
+    return Success(article) if article.embedding.present?
+
+    # Generate embeddings if not present and body exists
+    begin
+      embedded_body = RubyLLM.embed(
+        article.body,
+        model: "gemini-embedding-001", # Google's model
+        dimensions: 1536 # 1536차원
+      )
+      article.update_column(:embedding, embedded_body.vectors.to_a) # Skip callbacks for performance
+      Success(article)
+    rescue StandardError => e
+      logger.error "Failed to generate embeddings for article #{article.id}: #{e.message}"
+      Failure(:embedding_failed)
+    end
+  end
+
+  #: (Article article) -> Dry::Monads::Result
+  def run_humanize(article)
+    prompt = ArticleHumanizer.prompt(article)
+    message = HumanMonolithAgent.chat.ask(prompt)
+    humanized = extract_humanized(message.content)
+
+    return Failure(:humanize_failed) if humanized.blank? || humanized[:summary_body].blank?
+
+    logger.info "Humanize metrics for article #{article.id}: #{message.content['metrics']}"
+    article.update!(humanized)
+    Success(article)
+  rescue StandardError => e
+    logger.error "Failed to humanize article #{article.id}: #{e.message}"
+    Failure(:humanize_failed)
+  end
+
+  def run_thumbnail(article)
+    if article.thumbnail.attached?
+      logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
+      return Success(article)
+    end
+
+    if article.discarded? || (article.slug.blank? || article.title_ko.blank?)
+      logger.info "ArticleThumbnailJob skip: article #{article.id} is discarded or has no slug or title_ko"
+      return Failure(:invalid_article)
+    end
+
+    summary_key = article.summary_key
+    if summary_key.blank? || !summary_key.is_a?(Array) || summary_key.empty?
+      logger.info "ArticleThumbnailJob skip: article #{article_id} has no summary_key"
+      return Failure(:no_summary_key)
+    end
+
+    if Article.kept.confirmed.joins(:thumbnail_attachment).where(articles: { created_at: Time.zone.now.beginning_of_day.. }).count <= 10
+      ArticleThumbnailJob.perform_later(article.id)
+    else
+      logger.info "ArticleThumbnailJob skip: thumbnail article count exceeded limit for article #{article.id}"
+    end
+
+    Success(article)
+  end
+
+  private
+
   #: (Article article) -> String
   def user_prompt(article)
     if article.is_youtube?
@@ -93,41 +157,6 @@ class ArticleAgentsService < OperationService
         #{article.body}
       PROMPT
     end
-  end
-
-  #: (Article article) -> Dry::Monads::Result
-  def run_embed(article)
-    return Success(article) if article.embedding.present?
-
-    # Generate embeddings if not present and body exists
-    begin
-      embedded_body = RubyLLM.embed(
-        article.body,
-        model: "gemini-embedding-001", # Google's model
-        dimensions: 1536 # 1536차원
-      )
-      article.update_column(:embedding, embedded_body.vectors.to_a) # Skip callbacks for performance
-      Success(article)
-    rescue StandardError => e
-      logger.error "Failed to generate embeddings for article #{article.id}: #{e.message}"
-      Failure(:embedding_failed)
-    end
-  end
-
-  #: (Article article) -> Dry::Monads::Result
-  def run_humanize(article)
-    prompt = ArticleHumanizer.prompt(article)
-    message = HumanMonolithAgent.chat.ask(prompt)
-    humanized = extract_humanized(message.content)
-
-    return Failure(:humanize_failed) if humanized.blank? || humanized[:summary_body].blank?
-
-    logger.info "Humanize metrics for article #{article.id}: #{message.content['metrics']}"
-    article.update!(humanized)
-    Success(article)
-  rescue StandardError => e
-    logger.error "Failed to humanize article #{article.id}: #{e.message}"
-    Failure(:humanize_failed)
   end
 
   #: (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
