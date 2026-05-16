@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class LikesController < ApplicationController
   before_action :authenticate_user!

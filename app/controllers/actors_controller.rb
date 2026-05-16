@@ -1,5 +1,5 @@
-# app/controllers/actors_controller.rb
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class ActorsController < ApplicationController
   include Pundit::Authorization

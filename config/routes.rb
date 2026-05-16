@@ -21,6 +21,13 @@ Rails.application.routes.draw do
       namespace :auth do
         post :refresh, to: "tokens#refresh"
       end
+
+      resources :articles, only: %i[index] do
+        collection do
+          get :others
+          get "tag/:keyword", action: :tag, as: :tag, format: false, constraints: { keyword: /[^\/]+/ }
+        end
+      end
     end
   end
 

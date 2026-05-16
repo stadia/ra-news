@@ -11,93 +11,45 @@ class ArticlesController < ApplicationController
 
   include Pagy::Method
 
-  # GET /articles or /articles.json
+  # GET /articles
   def index
     cacheable_page!
 
-    respond_to do |format|
-      format.html do
-        @pagy, @articles = pagy(Articles::Query.index_html(params[:search]).order(published_at: :desc))
-        render Views::Articles::Index.new(
-          pagy: @pagy,
-          articles: @articles,
-          sidebar_tags: sidebar_tags,
-          search: params[:search],
-          liked_article_ids: liked_article_ids(@articles)
-        )
-      end
-      format.json do
-        @pagy, @articles = pagy(:keyset, Articles::Query.index_json(params[:search]).reorder(published_at: :desc, id: :desc))
-        render json: {
-          articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
-          pagination: {
-            page: @pagy.page,
-            next_page: @pagy.next,
-            limit: @pagy.limit
-          }
-        }
-      end
-    end
+    @pagy, @articles = pagy(Articles::Query.index_html(params[:search]).order(published_at: :desc))
+    render Views::Articles::Index.new(
+      pagy: @pagy,
+      articles: @articles,
+      sidebar_tags: sidebar_tags,
+      search: params[:search],
+      liked_article_ids: liked_article_ids(@articles)
+    )
   end
 
   def others
     cacheable_page!
-    respond_to do |format|
-      format.html do
-        @pagy, @articles = pagy(Articles::Query.others.order(published_at: :desc))
-        render Views::Articles::Others.new(
-          pagy: @pagy,
-          articles: @articles,
-          sidebar_tags: sidebar_tags,
-          search: params[:search],
-          liked_article_ids: liked_article_ids(@articles)
-        )
-      end
-      format.json do
-        @pagy, @articles = pagy(:keyset, Articles::Query.others.reorder(published_at: :desc, id: :desc))
-        render json: {
-          articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
-          pagination: {
-            page: @pagy.page,
-            next_page: @pagy.next,
-            limit: @pagy.limit
-          }
-        }
-      end
-    end
+
+    @pagy, @articles = pagy(Articles::Query.others.order(published_at: :desc))
+    render Views::Articles::Others.new(
+      pagy: @pagy,
+      articles: @articles,
+      sidebar_tags: sidebar_tags,
+      search: params[:search],
+      liked_article_ids: liked_article_ids(@articles)
+    )
   end
 
   def tag
     cacheable_page!
     keyword = params[:keyword].to_s
 
-    article = Articles::Query.tagged(keyword)
-
-    respond_to do |format|
-      format.html do
-        @pagy, @articles = pagy(article.order(published_at: :desc))
-        render Views::Articles::Tagged.new(
-          pagy: @pagy,
-          articles: @articles,
-          tag: keyword,
-          sidebar_tags: sidebar_tags,
-          liked_article_ids: liked_article_ids(@articles)
-        )
-      end
-      format.json do
-        @pagy, @articles = pagy(:keyset,
-          article.reorder(published_at: :desc, id: :desc)
-        )
-        render json: {
-          articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
-          pagination: {
-            page: @pagy.page,
-            next_page: @pagy.next,
-            limit: @pagy.limit
-          }
-        }
-      end
-    end
+    @pagy, @articles = pagy(Articles::Query.tagged(keyword).order(published_at: :desc))
+    render Views::Articles::Tagged.new(
+      pagy: @pagy,
+      articles: @articles,
+      tag: keyword,
+      sidebar_tags: sidebar_tags,
+      liked_article_ids: liked_article_ids(@articles)
+    )
   end
 
   def show

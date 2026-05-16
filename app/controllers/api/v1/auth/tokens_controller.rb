@@ -1,13 +1,8 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
-class Api::V1::Auth::TokensController < ApplicationController
+class Api::V1::Auth::TokensController < Api::V1::BaseController
   skip_before_action :authenticate_user!
-  skip_before_action :verify_authenticity_token, raise: false
-  respond_to :json
-
-  rescue_from ActionController::ParameterMissing do
-    render json: { error: "missing_refresh_token" }, status: :bad_request
-  end
 
   def refresh
     raw = params.require(:refresh_token)

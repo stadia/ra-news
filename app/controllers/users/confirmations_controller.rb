@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class Users::ConfirmationsController < Devise::ConfirmationsController
   layout -> { Components::Layout }

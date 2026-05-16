@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+# rbs_inline: enabled
+
 require "schema_dot_org/news_media_organization"
 
 class HomeController < ApplicationController
