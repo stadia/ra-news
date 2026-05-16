@@ -1,0 +1,16 @@
+ja:
+  devise:
+    sessions:
+      already_signed_out: "すでにログアウトしています。"
+    confirmations:
+      new:
+        title: "メール確認"
+        submit: "確認メールを再送"
+        email_placeholder: "メールアドレスを入力してください"
+    mailer:
+      confirmation_instructions:
+        subject: "メール確認のご案内"
+        title: "メール確認が必要です"
+        greeting: "こんにちは、%{name}さん!"
+        message: "以下のリンクをクリックしてメール確認を完了してください:"
+        action: "メールを確認する"

@@ -30,8 +30,16 @@ Rails.application.configure do
     end
   }
 
-  # Enable serving of images, stylesheets, and JavaScripts from an asset server.
-  config.asset_host = "https://assets.ruby-news.kr"
+  # Use the KR asset host where it exists, but keep JP pages same-origin until a
+  # dedicated JP asset host is configured. This avoids cross-origin asset loads
+  # from ruby-news.jp to assets.ruby-news.kr without relying on CDN CORS.
+  config.asset_host = lambda do |_source, request = nil|
+    if request&.host == "ruby-news.jp"
+      nil
+    else
+      "https://assets.ruby-news.kr"
+    end
+  end
 
   # Store uploaded files on Cloudflare R2 (S3-compatible; see config/storage.yml).
   config.active_storage.service = :cloudflare
