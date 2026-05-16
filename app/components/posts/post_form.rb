@@ -52,7 +52,7 @@ class Components::Posts::PostForm < Components::Base
         class: "post-composer-editor w-full text-content",
         rows: 3,
         toolbar: false,
-        placeholder: "무슨 생각을 하고 계신가요?",
+        placeholder: t("posts.post_form.body_placeholder"),
         autocomplete: "off",
         data: {
           post_form_target: "body",
@@ -67,7 +67,7 @@ class Components::Posts::PostForm < Components::Base
     div(class: reply_banner_classes, data: { post_form_target: "replyBanner" }) do
       div(class: "flex items-center justify-between gap-3") do
         p(class: "text-sm text-content-secondary") do
-          plain "답글 작성 중 "
+          plain t("posts.post_form.replying_to")
           if reply_target_label.present?
             plain ": "
             span(class: "font-medium text-content", data: { post_form_target: "replyLabel" }) { reply_target_label }
@@ -82,7 +82,7 @@ class Components::Posts::PostForm < Components::Base
           size: :sm,
           data: { action: "post-form#cancelReply" },
           class: "text-content-muted hover:text-content hover:bg-transparent"
-        ) { "취소" }
+        ) { t("posts.post_form.cancel") }
       end
 
       p(class: "mt-2 text-sm text-content-muted wrap-break-word", data: { post_form_target: "replyPreview" }) do
@@ -109,7 +109,7 @@ class Components::Posts::PostForm < Components::Base
   end
 
   def submit_label
-    @post.parent_id.present? ? "답글" : "게시"
+    @post.parent_id.present? ? t("posts.post_form.reply_submit") : t("posts.post_form.post_submit")
   end
 
   def reply_target_label

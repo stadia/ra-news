@@ -37,7 +37,7 @@ class Components::Comments::CommentReplyForm < Components::Base
   def reply_header
     h5(class: "text-xs font-semibold text-content-muted mb-3 flex items-center uppercase tracking-wide") do
       Hero::ArrowUturnLeft(variant: :outline, class: "w-3 h-3 mr-1.5 text-info-text")
-      plain "답글 작성"
+      plain t("comments.comment_reply_form.title")
     end
   end
 
@@ -63,7 +63,7 @@ class Components::Comments::CommentReplyForm < Components::Base
     div(class: "bg-destructive/15 border border-destructive/40 text-content px-4 py-3 rounded-lg") do
       div(class: "flex items-center mb-2") do
         Hero::ExclamationCircle(variant: :mini, class: "w-5 h-5 mr-2")
-        h5(class: "font-medium") { "오류가 발생했습니다:" }
+        h5(class: "font-medium") { t("comments.comment_reply_form.error_heading") }
       end
       ul(class: "list-disc list-inside space-y-1 text-sm") do
         @comment.errors.each do |error|
@@ -76,9 +76,9 @@ class Components::Comments::CommentReplyForm < Components::Base
   def login_prompt
     div(class: "rounded-lg border border-border-muted bg-surface px-4 py-3 text-sm text-content-secondary") do
       Hero::InformationCircle(variant: :outline, class: "w-4 h-4 inline mr-1 text-info-text")
-      plain "답글을 작성하려면 "
-      link_to("로그인", new_user_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
-      plain " 하세요."
+      plain t("comments.comment_reply_form.login_prompt_before")
+      link_to(t("sign_in"), new_user_session_path, class: "text-info-text hover:text-info-text-hover", data: { turbo: false })
+      plain t("comments.comment_reply_form.login_prompt_after")
     end
   end
 
@@ -87,7 +87,7 @@ class Components::Comments::CommentReplyForm < Components::Base
       f.text_area :body,
         rows: 3,
         class: text_area_classes(@comment.errors[:body]),
-        placeholder: "답글을 입력하세요...",
+        placeholder: t("comments.comment_reply_form.body_placeholder"),
         maxlength: ::Post::MAX_BODY_LENGTH,
         data: { character_count_target: "input", action: "input->character-count#updateCount" }
       div(class: "text-xs text-content-muted text-right") do
@@ -104,8 +104,8 @@ class Components::Comments::CommentReplyForm < Components::Base
     div(class: "flex items-center justify-end gap-2") do
       render RubyUI::Button.new(variant: :ghost,
         class: "font-medium text-content-muted hover:text-content transition-colors hover:bg-transparent",
-          data: { action: "reply-form#toggle" }) { "취소" }
-      f.submit "답글 작성",
+          data: { action: "reply-form#toggle" }) { t("comments.comment_reply_form.cancel") }
+      f.submit t("comments.comment_reply_form.submit"),
         class: "inline-flex items-center px-4 py-1.5 bg-info-solid hover:bg-info-solid-hover text-brand-foreground text-xs font-medium rounded-md transition-colors duration-200"
     end
   end

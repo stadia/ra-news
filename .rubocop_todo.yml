@@ -40,7 +40,7 @@ I18n/RailsI18n/DecorateString:
 # Offense count: 8
 # Configuration parameters: CountComments, CountAsOne.
 Metrics/ClassLength:
-  Max: 208
+  Max: 209
 
 # Offense count: 1
 # Configuration parameters: CountComments, CountAsOne.

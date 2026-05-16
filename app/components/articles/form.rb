@@ -15,7 +15,7 @@ class Components::Articles::Form < Components::Base
        if article.errors.any?
          div(id: "error_explanation", class: "bg-danger-solid/10 text-danger-text px-3 py-2 font-medium rounded-md mt-3 border border-danger-solid/30") do
            h2 {
-             pluralize(article.errors.count, "error") + " prohibited this article from being saved:"
+             t("articles.form.errors_heading", count: article.errors.count)
            }
            ul(class: "list-disc ml-6") {
              article.errors.each do |error|
@@ -26,7 +26,7 @@ class Components::Articles::Form < Components::Base
        end
 
        render RubyUI::FormField.new(class: "my-5") do
-         render RubyUI::FormFieldLabel.new(for: :article_url) { "Url" }
+         render RubyUI::FormFieldLabel.new(for: :article_url) { t("articles.form.url_label") }
          form.text_field :url, class: [ "block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:border-transparent transition-colors duration-200", { "border-border-muted focus:ring-brand": article.errors[:url].none?, "border-danger-solid focus:ring-danger-solid": article.errors[:url].any? } ]
          article.errors[:url].each do |msg|
            render RubyUI::FormFieldError.new { msg }
@@ -39,7 +39,7 @@ class Components::Articles::Form < Components::Base
            size: :lg,
            class:
              "w-full sm:w-auto rounded-md bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app",
-         ) { "등록" }
+         ) { t("articles.form.submit") }
        end
      end
   end

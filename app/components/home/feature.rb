@@ -4,7 +4,6 @@ class Components::Home::Feature < Components::Base
   include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ImageTag
-  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(articles:, liked_article_ids: [])

@@ -4,7 +4,6 @@ class Components::Users::PwdForm < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::Pluralize
   include Phlex::Rails::Helpers::DOMID
-  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(user:)

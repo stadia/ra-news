@@ -22,6 +22,86 @@ ko:
   sign_up: "회원가입"
   posts:
     remote_attachment_only_body: "첨부된 미디어"
+    show:
+      title: "포스트 | Ruby-News"
+      back_to_feed: "피드로 돌아가기"
+    post_card:
+      reply_to: "%{name}님에게 답글"
+      linked_article: "연결된 기사"
+      unknown_author: "알 수 없음"
+      view_article: "기사 보기"
+    post_form:
+      body_placeholder: "무슨 생각을 하고 계신가요?"
+      replying_to: "답글 작성 중 "
+      cancel: "취소"
+      reply_submit: "답글"
+      post_submit: "게시"
+    reply_form:
+      placeholder: "답글을 입력하세요..."
+      char_unit: " 자"
+      cancel: "취소"
+      submit: "답글"
+
+  articles:
+    index:
+      title: "지난 글 모음 | Ruby-News"
+      heading: "지난 글들"
+      count: "%{count}개의 글이 있습니다"
+      item_list_name: "Ruby-News 지난 글 모음"
+    others:
+      title: "그 밖의 뉴스 | Ruby-News"
+      heading: "그 밖의 뉴스"
+      count: "%{count}개의 글이 있습니다"
+      item_list_name: "Ruby-News 그 밖의 뉴스"
+    tagged:
+      title: "#%{tag} 태그 글 | Ruby-News"
+      count: "%{count}개의 글이 있습니다"
+      item_list_name: "Ruby-News #%{tag} 태그 글"
+    show:
+      author: "작성자"
+      published_at: "발행일"
+      date_format: "%Y년 %m월 %d일"
+      not_available: "N/A"
+      summary_heading: "핵심 요약"
+      intro_heading: "도입"
+      conclusion_heading: "결론"
+      related_heading: "관련 글들"
+      read_more: "읽어보기 →"
+    new:
+      title: "새 글 등록"
+      badge: "Article Intake"
+      heading: "새 글 등록"
+      subtitle: "URL을 입력하면 수집과 요약 처리를 시작합니다."
+      back_to_list: "목록으로 돌아가기"
+    form:
+      url_label: "Url"
+      submit: "등록"
+      errors_heading: "%{count}건의 오류로 인해 글을 저장할 수 없습니다:"
+
+  comments:
+    comment:
+      delete_confirm: "정말 삭제하시겠습니까?"
+      delete: "삭제"
+      reply: "답글"
+    comment_header:
+      title: "댓글"
+    comment_form:
+      title: "댓글 작성"
+      error_heading: "오류가 발생했습니다:"
+      login_prompt_before: "댓글을 작성하려면 "
+      login_prompt_after: " 이 필요합니다."
+      body_label: "댓글 내용"
+      body_placeholder: "댓글을 입력하세요..."
+      guideline: "정중하고 건설적인 댓글을 작성해 주세요."
+      submit: "댓글 작성"
+    comment_reply_form:
+      title: "답글 작성"
+      error_heading: "오류가 발생했습니다:"
+      login_prompt_before: "답글을 작성하려면 "
+      login_prompt_after: " 하세요."
+      body_placeholder: "답글을 입력하세요..."
+      cancel: "취소"
+      submit: "답글 작성"
 
   layout:
     site_name: "Ruby-News | 루비 AI 뉴스"

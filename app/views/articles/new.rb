@@ -11,13 +11,13 @@ class Views::Articles::New < Views::Base
   end
 
   def view_template
-    content_for :title, "새 글 등록"
+    content_for :title, t("articles.new.title")
 
     section(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       div(class: "mb-6 sm:mb-8") do
-        render RubyUI::Badge.new(variant: :emerald, size: :sm, class: "mb-2 tracking-[0.22em] uppercase") { "Article Intake" }
-        render RubyUI::Heading.new(level: 1, class: "font-bold text-content text-3xl sm:text-4xl tracking-tight") { "새 글 등록" }
-        p(class: "mt-2 text-content-secondary/80 text-sm sm:text-base") { "URL을 입력하면 수집과 요약 처리를 시작합니다." }
+        render RubyUI::Badge.new(variant: :emerald, size: :sm, class: "mb-2 tracking-[0.22em] uppercase") { t("articles.new.badge") }
+        render RubyUI::Heading.new(level: 1, class: "font-bold text-content text-3xl sm:text-4xl tracking-tight") { t("articles.new.heading") }
+        p(class: "mt-2 text-content-secondary/80 text-sm sm:text-base") { t("articles.new.subtitle") }
       end
 
       render RubyUI::Card.new(class: "relative overflow-hidden rounded-2xl border-border-strong/70 bg-app/70 shadow-2xl p-5 sm:p-7 lg:p-8 backdrop-blur-sm") do
@@ -34,7 +34,7 @@ class Views::Articles::New < Views::Base
           size: :lg,
           class:
             "inline-flex items-center justify-center rounded-xl px-4 py-2.5 border border-border-muted bg-surface/80 hover:bg-surface-hover text-content font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app",
-        ) { "목록으로 돌아가기" }
+        ) { t("articles.new.back_to_list") }
       end
     end
   end

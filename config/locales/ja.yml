@@ -22,6 +22,86 @@ ja:
   sign_up: "新規登録"
   posts:
     remote_attachment_only_body: "添付メディア"
+    show:
+      title: "ポスト | Ruby-News"
+      back_to_feed: "フィードに戻る"
+    post_card:
+      reply_to: "%{name}さんへの返信"
+      linked_article: "関連記事"
+      unknown_author: "不明"
+      view_article: "記事を見る"
+    post_form:
+      body_placeholder: "いま何を考えていますか?"
+      replying_to: "返信中 "
+      cancel: "キャンセル"
+      reply_submit: "返信"
+      post_submit: "投稿"
+    reply_form:
+      placeholder: "返信を入力してください..."
+      char_unit: " 文字"
+      cancel: "キャンセル"
+      submit: "返信"
+
+  articles:
+    index:
+      title: "過去の記事 | Ruby-News"
+      heading: "過去の記事"
+      count: "%{count}件の記事があります"
+      item_list_name: "Ruby-News 過去の記事"
+    others:
+      title: "その他のニュース | Ruby-News"
+      heading: "その他のニュース"
+      count: "%{count}件の記事があります"
+      item_list_name: "Ruby-News その他のニュース"
+    tagged:
+      title: "#%{tag} タグの記事 | Ruby-News"
+      count: "%{count}件の記事があります"
+      item_list_name: "Ruby-News #%{tag} タグの記事"
+    show:
+      author: "投稿者"
+      published_at: "公開日"
+      date_format: "%Y年%m月%d日"
+      not_available: "N/A"
+      summary_heading: "要点"
+      intro_heading: "はじめに"
+      conclusion_heading: "まとめ"
+      related_heading: "関連記事"
+      read_more: "読む →"
+    new:
+      title: "新規記事を登録"
+      badge: "Article Intake"
+      heading: "新規記事を登録"
+      subtitle: "URLを入力すると収集と要約処理を開始します。"
+      back_to_list: "一覧に戻る"
+    form:
+      url_label: "URL"
+      submit: "登録"
+      errors_heading: "%{count}件のエラーにより記事を保存できませんでした:"
+
+  comments:
+    comment:
+      delete_confirm: "本当に削除しますか?"
+      delete: "削除"
+      reply: "返信"
+    comment_header:
+      title: "コメント"
+    comment_form:
+      title: "コメントを書く"
+      error_heading: "エラーが発生しました:"
+      login_prompt_before: "コメントを書くには "
+      login_prompt_after: " が必要です。"
+      body_label: "コメント内容"
+      body_placeholder: "コメントを入力してください..."
+      guideline: "丁寧で建設的なコメントを心がけてください。"
+      submit: "コメントを書く"
+    comment_reply_form:
+      title: "返信を書く"
+      error_heading: "エラーが発生しました:"
+      login_prompt_before: "返信を書くには "
+      login_prompt_after: " してください。"
+      body_placeholder: "返信を入力してください..."
+      cancel: "キャンセル"
+      submit: "返信を書く"
 
   layout:
     site_name: "Ruby-News | Ruby AIニュース"

@@ -3,7 +3,6 @@
 class Components::RecentCommentsSidebar < Components::Base
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::Truncate
-  include Phlex::Rails::Helpers::T
   include PhlexIcons
 
   def initialize(recent_comments:)

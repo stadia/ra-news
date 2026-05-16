@@ -12,16 +12,16 @@ class Views::Articles::Index < Views::Base
   end
 
   def view_template
-    content_for :title, "지난 글 모음 | Ruby-News"
+    content_for :title, t("articles.index.title")
 
     render_item_list_schema
 
     div(class: "flex flex-col lg:flex-row gap-6") do
       div(class: "flex-1 min-w-0") do
         div(class: "mb-8") do
-          render RubyUI::Heading.new(level: 1, class: "font-bold text-content mb-4") { "지난 글들" }
+          render RubyUI::Heading.new(level: 1, class: "font-bold text-content mb-4") { t("articles.index.heading") }
           p(class: "text-lg text-content-secondary") do
-            plain "#{@pagy.count}개의 글이 있습니다"
+            plain t("articles.index.count", count: @pagy.count)
             plain " #{@search}" if @search.present?
           end
         end
@@ -53,7 +53,7 @@ class Views::Articles::Index < Views::Base
     payload = {
       "@context" => "https://schema.org",
       "@type" => "ItemList",
-      "name" => "Ruby-News 지난 글 모음",
+      "name" => t("articles.index.item_list_name"),
       "itemListOrder" => "https://schema.org/ItemListOrderDescending",
       "numberOfItems" => @articles.size,
       "itemListElement" => @articles.each_with_index.map do |article, idx|

@@ -11,7 +11,7 @@ class Views::Posts::Show < Views::Base
   end
 
   def view_template
-    content_for :title, "포스트 | Ruby-News"
+    content_for :title, t("posts.show.title")
 
     div(class: "max-w-2xl mx-auto space-y-4") do
       back_link
@@ -25,7 +25,7 @@ class Views::Posts::Show < Views::Base
     div(class: "mb-2") do
       link_to feed_path, class: "inline-flex items-center gap-1.5 text-sm text-content-muted hover:text-content transition-colors" do
         Hero::ArrowLeft(variant: :outline, class: "w-4 h-4")
-        plain "피드로 돌아가기"
+        plain t("posts.show.back_to_feed")
       end
     end
   end

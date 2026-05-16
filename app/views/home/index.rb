@@ -3,7 +3,6 @@
 class Views::Home::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
-  include Phlex::Rails::Helpers::T
 
   def initialize(articles:, recent_comments:, sidebar_tags:, liked_article_ids: [], featured_articles: [])
     @articles = articles

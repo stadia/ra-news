@@ -84,7 +84,7 @@ class Views::Articles::Show < Views::Base
             Hero::User(variant: :outline, class: "w-4 h-4 text-brand-foreground")
           end
           div do
-            div(class: "text-xs text-content-secondary") { "작성자" }
+            div(class: "text-xs text-content-secondary") { t("articles.show.author") }
             div(class: "font-medium text-content") do
               render(Components::Articles::ArticleUser.new(article: @article))
             end
@@ -94,10 +94,10 @@ class Views::Articles::Show < Views::Base
         div(class: "flex items-center") do
           Hero::Calendar(variant: :outline, class: "w-5 h-5 mr-2 text-content-muted")
           div do
-            div(class: "text-xs text-content-secondary") { "발행일" }
+            div(class: "text-xs text-content-secondary") { t("articles.show.published_at") }
             div(class: "font-medium text-content") do
               time(datetime: @article.published_at&.iso8601) do
-                plain @article.published_at&.strftime("%Y년 %m월 %d일") || "N/A"
+                plain @article.published_at&.strftime(t("articles.show.date_format")) || t("articles.show.not_available")
               end
             end
           end
@@ -133,7 +133,7 @@ class Views::Articles::Show < Views::Base
             class: "font-bold text-brand-foreground mb-4 flex items-center"
           ) do
             Hero::CheckCircle(variant: :outline, class: "w-6 h-6 mr-2")
-            plain "핵심 요약"
+            plain t("articles.show.summary_heading")
           end
 
           if @article.summary_key.is_a?(Array)
@@ -155,7 +155,7 @@ class Views::Articles::Show < Views::Base
         if @article.summary_detail.is_a?(Hash)
           if @article.summary_detail["introduction"].present?
             div(class: "mb-8 p-6 bg-surface-muted rounded-xl border-l-4 border-state-info") do
-              render RubyUI::Heading.new(level: 3, class: "font-semibold text-info-text mb-3") { "도입" }
+              render RubyUI::Heading.new(level: 3, class: "font-semibold text-info-text mb-3") { t("articles.show.intro_heading") }
               div(class: "text-content-secondary leading-relaxed text-base") do
                 plain @article.summary_detail["introduction"]
               end
@@ -172,7 +172,7 @@ class Views::Articles::Show < Views::Base
 
           if @article.summary_detail["conclusion"].present?
             div(class: "p-6 bg-surface-muted rounded-xl border-l-4 border-brand") do
-              render RubyUI::Heading.new(level: 3, class: "font-semibold text-accent-text mb-3") { "결론" }
+              render RubyUI::Heading.new(level: 3, class: "font-semibold text-accent-text mb-3") { t("articles.show.conclusion_heading") }
               div(class: "text-content-secondary leading-relaxed text-base") do
                 plain @article.summary_detail["conclusion"]
               end
@@ -188,7 +188,7 @@ class Views::Articles::Show < Views::Base
       render RubyUI::CardContent.new(class: "p-4 md:p-6 lg:p-8") do
         render RubyUI::Heading.new(level: 2, class: "font-bold text-content mb-6 flex items-center") do
           Hero::Newspaper(variant: :outline, class: "w-6 h-6 mr-2 text-brand")
-          plain "관련 글들"
+          plain t("articles.show.related_heading")
         end
 
         div(class: "grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6") do
@@ -211,7 +211,7 @@ class Views::Articles::Show < Views::Base
                 end
 
                 div(class: "flex items-center justify-end text-xs text-content-secondary") do
-                  span(class: "group-hover:text-link-hover transition-colors duration-200") { "읽어보기 →" }
+                  span(class: "group-hover:text-link-hover transition-colors duration-200") { t("articles.show.read_more") }
                 end
               end
             end

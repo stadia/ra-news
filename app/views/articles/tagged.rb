@@ -12,7 +12,7 @@ class Views::Articles::Tagged < Views::Base
   end
 
   def view_template
-    content_for :title, "##{@tag} 태그 글 | Ruby-News"
+    content_for :title, t("articles.tagged.title", tag: @tag)
 
     render_item_list_schema
 
@@ -21,7 +21,7 @@ class Views::Articles::Tagged < Views::Base
         div(class: "mb-8") do
           render RubyUI::Heading.new(level: 1, class: "font-bold text-content mb-4") { "##{@tag}" }
           p(class: "text-lg text-content-secondary") do
-            plain "#{@pagy.count}개의 글이 있습니다"
+            plain t("articles.tagged.count", count: @pagy.count)
           end
         end
 
@@ -52,7 +52,7 @@ class Views::Articles::Tagged < Views::Base
     payload = {
       "@context" => "https://schema.org",
       "@type" => "ItemList",
-      "name" => "Ruby-News ##{@tag} 태그 글",
+      "name" => t("articles.tagged.item_list_name", tag: @tag),
       "itemListOrder" => "https://schema.org/ItemListOrderDescending",
       "numberOfItems" => @articles.size,
       "itemListElement" => @articles.each_with_index.map do |article, idx|

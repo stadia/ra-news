@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Views::Devise::Mailer::ConfirmationInstructions < Views::Base
-  include Phlex::Rails::Helpers::T
 
   def initialize(resource:, confirmation_url:)
     @resource = resource

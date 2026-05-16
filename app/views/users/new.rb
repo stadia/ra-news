@@ -2,7 +2,6 @@
 
 class Views::Users::New < Views::Base
   include Phlex::Rails::Helpers::ContentFor
-  include Phlex::Rails::Helpers::T
 
   def initialize(user:)
     @user = user

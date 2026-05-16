@@ -72,12 +72,12 @@ class Components::Comments::Comment < Components::Base
       button_to(
         article_post_path(@article, @comment),
         method: :delete,
-        data: { turbo_confirm: "정말 삭제하시겠습니까?" },
+        data: { turbo_confirm: t("comments.comment.delete_confirm") },
         form: { data: { turbo_stream: true } },
         class: "inline-flex items-center px-3 py-1 text-xs font-medium text-danger-text hover:text-danger-text-hover hover:bg-danger-solid/10 rounded-md transition-colors duration-200"
       ) do
         Hero::Trash(variant: :outline, class: "w-4 h-4 mr-1")
-        plain "삭제"
+        plain t("comments.comment.delete")
       end
     end
   end
@@ -97,7 +97,7 @@ class Components::Comments::Comment < Components::Base
         data: { action: "reply-form#toggle" },
         class: "inline-flex items-center text-content-muted hover:text-link-hover transition-colors hover:bg-transparent") do
         Hero::ChatBubbleLeft(variant: :outline, class: "w-4 h-4 mr-1")
-        plain "답글"
+        plain t("comments.comment.reply")
       end
     end
   end

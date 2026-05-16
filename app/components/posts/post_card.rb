@@ -76,7 +76,7 @@ class Components::Posts::PostCard < Components::Base
       class: "mb-2 inline-flex items-center gap-1.5"
     ) do
       Hero::ArrowUturnLeft(variant: :outline, class: "w-3 h-3")
-      plain "#{parent_author_name}님에게 답글"
+      plain t("posts.post_card.reply_to", name: parent_author_name)
     end
   end
 
@@ -169,7 +169,7 @@ class Components::Posts::PostCard < Components::Base
       render RubyUI::CardContent.new(class: "p-4 space-y-3") do
         div(class: "flex items-center gap-2 text-xs text-content-muted") do
           Hero::Newspaper(variant: :outline, class: "w-4 h-4")
-          plain "연결된 기사"
+          plain t("posts.post_card.linked_article")
         end
 
         div(class: "space-y-1") do
@@ -206,11 +206,11 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def author_name
-    @post.user&.name || @post.federails_actor&.name || "알 수 없음"
+    @post.user&.name || @post.federails_actor&.name || t("posts.post_card.unknown_author")
   end
 
   def parent_author_name
-    @post.parent.user&.name || @post.parent.federails_actor&.name || "알 수 없음"
+    @post.parent.user&.name || @post.parent.federails_actor&.name || t("posts.post_card.unknown_author")
   end
 
 
@@ -219,7 +219,7 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def article_preview_title(article)
-    article.title_ko.presence || article.title.presence || "기사 보기"
+    article.title_ko.presence || article.title.presence || t("posts.post_card.view_article")
   end
 
   def show_original_title?(article)

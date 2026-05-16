@@ -6,7 +6,6 @@ class Components::Layout < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ImageURL
-  include Phlex::Rails::Helpers::T
 
   def view_template
     doctype

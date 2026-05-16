@@ -2,7 +2,6 @@
 
 class Views::Sessions::New < Views::Base
   include Phlex::Rails::Helpers::FormWith
-  include Phlex::Rails::Helpers::T
 
   def view_template
     div(class: "space-y-6 max-w-6xl mx-auto") do
