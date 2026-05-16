@@ -2,18 +2,19 @@
 
 class Views::Users::New < Views::Base
   include Phlex::Rails::Helpers::ContentFor
+  include Phlex::Rails::Helpers::T
 
   def initialize(user:)
     @user = user
   end
 
   def view_template
-    content_for :title, "회원 가입"
+    content_for :title, t("users.new.title")
 
     div(class: "max-w-2xl mx-auto py-12 px-4 sm:px-6") do
       div(class: "mb-2 px-1") do
-        render RubyUI::Heading.new(level: 1, class: "text-3xl font-bold text-content tracking-tight") { "회원 가입" }
-        p(class: "mt-1 text-content-muted") { "새 계정을 만듭니다." }
+        render RubyUI::Heading.new(level: 1, class: "text-3xl font-bold text-content tracking-tight") { t("users.new.heading") }
+        p(class: "mt-1 text-content-muted") { t("users.new.subtitle") }
       end
 
       render Components::Users::Form.new(user: @user)

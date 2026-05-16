@@ -3,6 +3,7 @@
 class Views::Home::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::T
 
   def initialize(articles:, recent_comments:, sidebar_tags:, liked_article_ids: [], featured_articles: [])
     @articles = articles
@@ -13,7 +14,7 @@ class Views::Home::Index < Views::Base
   end
 
   def view_template
-    content_for :title, "Ruby-News | 루비·Rails 개발자를 위한 AI 뉴스"
+    content_for :title, t("home.index.title")
 
     render_item_list_schema
 
@@ -32,7 +33,7 @@ class Views::Home::Index < Views::Base
 
         section do
           div(class: "flex items-center mb-4") do
-            h2(class: "text-2xl font-bold text-content") { "최신 뉴스" }
+            h2(class: "text-2xl font-bold text-content") { t("home.index.latest_news") }
           end
 
           div(id: "articlesList", class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6") do
@@ -48,7 +49,7 @@ class Views::Home::Index < Views::Base
               articles_path,
               class: "inline-flex items-center gap-1 px-5 py-2.5 rounded-md border border-border-strong bg-surface text-content hover:bg-surface-muted hover:text-link-hover transition-colors duration-200 text-sm font-medium"
             ) do
-              plain "지난 글 더 보기"
+              plain t("home.index.more_articles")
               span(class: "ml-1") { "→" }
             end
           end
@@ -75,7 +76,7 @@ class Views::Home::Index < Views::Base
     payload = {
       "@context" => "https://schema.org",
       "@type" => "ItemList",
-      "name" => "Ruby-News 최신 뉴스",
+      "name" => t("home.index.item_list_name"),
       "itemListOrder" => "https://schema.org/ItemListOrderDescending",
       "numberOfItems" => items.size,
       "itemListElement" => items.each_with_index.map do |article, idx|

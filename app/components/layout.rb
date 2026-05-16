@@ -145,7 +145,7 @@ class Components::Layout < Components::Base
     link(
       rel: "alternate",
       type: "application/rss+xml",
-      title: "Ruby-News RSS 피드",
+      title: t("layout.rss_feed_title"),
       href: "/rss"
     )
   end
@@ -183,7 +183,7 @@ class Components::Layout < Components::Base
     a(
       href: "#main-content",
       class: "sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-solid focus:text-brand-foreground focus:rounded-lg focus:shadow-lg"
-    ) { "본문으로 건너뛰기" }
+    ) { t("layout.skip_to_content") }
   end
 
   def render_loading_indicator
@@ -193,7 +193,7 @@ class Components::Layout < Components::Base
     ) do
       div(class: "flex flex-col items-center space-y-4") do
         div(class: "animate-spin rounded-full h-12 w-12 border-4 border-brand border-t-transparent shadow-lg shadow-brand/50")
-        div(class: "text-content font-medium") { "로딩 중..." }
+        div(class: "text-content font-medium") { t("layout.loading") }
       end
     end
   end
@@ -201,13 +201,13 @@ class Components::Layout < Components::Base
   def render_navigation
     nav(
       class: "bg-surface border-b border-border-strong border-t-4 border-t-brand",
-      aria_label: "주 네비게이션"
+      aria_label: t("layout.nav.aria_label")
     ) do
       div(class: "max-w-[1400px] flex flex-wrap md:flex-nowrap items-center justify-between mx-auto p-4") do
         link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group" do
           span(class: "self-center text-2xl font-semibold whitespace-nowrap text-content group-hover:text-link-hover transition-colors duration-200") do
             plain "Ruby-News || "
-            span(class: "text-accent-text") { "루비 AI 뉴스" }
+            span(class: "text-accent-text") { t("layout.brand_subtitle") }
           end
         end
 
@@ -222,9 +222,9 @@ class Components::Layout < Components::Base
     label(
       for: "mobile-menu-toggle",
       class: "inline-flex items-center p-2 w-11 h-11 justify-center text-sm text-content rounded-lg md:hidden hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface cursor-pointer",
-      aria_label: "메뉴 열기/닫기"
+      aria_label: t("layout.nav.menu_toggle")
     ) do
-      span(class: "sr-only") { "Open main menu" }
+      span(class: "sr-only") { t("layout.nav.open_main_menu") }
       render PhlexIcons::Hero::Bars3.new(variant: :outline, class: "w-5 h-5")
     end
   end
@@ -236,21 +236,21 @@ class Components::Layout < Components::Base
       id: "navbar-search"
     ) do
       ul(class: "flex flex-col p-4 md:p-0 mt-4 font-medium border border-border-strong rounded-lg bg-surface-muted md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-surface animate-in slide-in-from-top-2 fade-in duration-200 md:animate-none") do
-        li { raw vc.nav_link_to("홈", root_path) }
-        li { raw vc.nav_link_to("지난 글", articles_path) }
-        li { raw vc.nav_link_to("그 밖의 뉴스", others_path) }
+        li { raw vc.nav_link_to(t("layout.nav.home"), root_path) }
+        li { raw vc.nav_link_to(t("layout.nav.past_articles"), articles_path) }
+        li { raw vc.nav_link_to(t("layout.nav.other_news"), others_path) }
         li(class: "flex items-center") { render_search_form }
 
         if vc.user_signed_in?
-          li { raw vc.nav_link_to("글 등록", new_article_path) }
+          li { raw vc.nav_link_to(t("layout.nav.new_article"), new_article_path) }
           li { raw vc.nav_link_to(vc.current_user.username ||vc.current_user.name, user_profile_path(vc.current_user)) }
         end
 
         li do
           if vc.user_signed_in?
-            raw vc.nav_link_to("로그아웃", destroy_user_session_path)
+            raw vc.nav_link_to(t("sign_out"), destroy_user_session_path)
           else
-            raw vc.nav_link_to("로그인", new_user_session_path)
+            raw vc.nav_link_to(t("sign_in"), new_user_session_path)
           end
         end
 
@@ -301,13 +301,13 @@ class Components::Layout < Components::Base
       local: true,
       html: {
         role: "search",
-        aria_label: "기사 검색",
+        aria_label: t("layout.search.aria_label"),
         class: "flex items-center space-x-2"
       }
     ) do |form|
       raw form.text_field(
         :search,
-        placeholder: "검색...",
+        placeholder: t("layout.search.placeholder"),
         value: view_context.params[:search],
         class: "px-3 py-2 text-sm text-content bg-surface-muted border border-border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent w-40 md:w-48 transition-all duration-200 placeholder:text-content-muted"
       )
@@ -316,7 +316,7 @@ class Components::Layout < Components::Base
         variant: :primary,
         size: :lg,
         class: "font-medium bg-brand-solid rounded-lg border border-brand-solid hover:bg-brand-solid-hover text-brand-foreground focus:ring-2 focus:outline-none focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface transition-all duration-150 min-h-11 cursor-pointer"
-      ) { "검색" }
+      ) { t("layout.search.submit") }
     end
   end
 
@@ -377,7 +377,7 @@ class Components::Layout < Components::Base
           d: "M23.268 5.313c-.35-2.578-2.617-4.61-5.304-5.004C17.51.242 15.792 0 11.813 0h-.03c-3.98 0-4.835.242-5.288.309C3.882.692 1.496 2.518.917 5.127.64 6.412.61 7.837.661 9.143c.074 1.874.088 3.745.26 5.611.118 1.24.325 2.47.62 3.68.55 2.237 2.777 4.098 4.96 4.857 2.336.792 4.849.923 7.256.38.265-.061.527-.132.786-.213.585-.184 1.27-.39 1.774-.753a.057.057 0 0 0 .023-.043v-1.809a.052.052 0 0 0-.02-.041.053.053 0 0 0-.046-.01 20.282 20.282 0 0 1-4.709.545c-2.73 0-3.463-1.284-3.674-1.818a5.593 5.593 0 0 1-.319-1.433.056.056 0 0 1 .017-.043.051.051 0 0 1 .043-.017c1.513.359 3.072.538 4.657.546 1.828 0 2.298-.081 3.09-.143 1.897-.149 3.566-.867 3.772-1.531.334-1.076.61-3.495.61-3.495 0-.732-.005-1.603-.05-2.447-.041-.832-.126-1.62-.333-2.377z"
         )
       end
-      plain " Mastodon"
+      plain " #{t('layout.footer.mastodon')}"
     end
   end
 
@@ -393,7 +393,7 @@ class Components::Layout < Components::Base
           d: "M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
         )
       end
-      plain " Twitter/X"
+      plain " #{t('layout.footer.twitter')}"
     end
   end
 
@@ -405,7 +405,7 @@ class Components::Layout < Components::Base
       class: "hover:underline hover:text-content flex items-center gap-1"
     ) do
       render PhlexIcons::Hero::Rss.new(variant: :outline, class: "w-5 h-5")
-      plain " RSS 피드"
+      plain " #{t('layout.footer.rss')}"
     end
   end
 
@@ -421,7 +421,7 @@ class Components::Layout < Components::Base
           d: "M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zm-1.27 0a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.163 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.163 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.163 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zm0-1.27a2.527 2.527 0 0 1-2.52-2.523 2.527 2.527 0 0 1 2.52-2.52h6.315A2.528 2.528 0 0 1 24 15.163a2.528 2.528 0 0 1-2.522 2.523h-6.315z"
         )
       end
-      plain " Slack 추가"
+      plain " #{t('layout.footer.slack')}"
     end
   end
 
@@ -437,7 +437,7 @@ class Components::Layout < Components::Base
           d: "M20.317 4.369a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.249a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.249.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.369a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.891.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.974 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"
         )
       end
-      plain " Discord 추가"
+      plain " #{t('layout.footer.discord')}"
     end
   end
 end
