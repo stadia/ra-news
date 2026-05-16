@@ -256,6 +256,45 @@ ko:
       empty: "표시할 포스트가 없습니다. 다른 사용자를 팔로우하거나 첫 포스트를 작성해보세요!"
       loading: "불러오는 중..."
 
+  login_required:
+    title: "로그인이 필요합니다"
+    message: "댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다."
+    go_to_login: "로그인 하러 가기"
+
+  passwords:
+    new:
+      heading: "비밀번호를 잊으셨나요?"
+      email_label: "이메일"
+      email_placeholder: "이메일 주소를 입력하세요"
+      submit: "재설정 메일 보내기"
+    edit:
+      heading: "새 비밀번호 설정"
+      password_label: "새 비밀번호"
+      password_placeholder: "새 비밀번호를 입력하세요"
+      password_confirmation_label: "새 비밀번호 확인"
+      password_confirmation_placeholder: "새 비밀번호를 다시 입력하세요"
+      submit: "저장"
+
+  oauth:
+    result:
+      success_title: "%{provider} 연결 완료"
+      failure_title: "%{provider} 연결 실패"
+      page_title: "%{title} | Ruby-News"
+      workspace: "워크스페이스"
+      server: "서버"
+      channel_connected: "%{channel} %{kind}가 성공적으로 연결되었습니다."
+      provider_connected: "%{provider}이 성공적으로 연결되었습니다."
+      failure_message: "%{provider} 연결 중 오류가 발생했습니다."
+      notification_guide_heading: "알림 설정 안내"
+      webhook_configured: "%{provider} Webhook이 설정되었습니다. 선택한 채널로 새 기사 알림이 자동으로 발송됩니다."
+      no_bot_required: "별도의 봇 초대나 추가 설정 없이 바로 알림이 전송됩니다."
+      back_to_home: "홈으로 돌아가기"
+
+  mailers:
+    layout:
+      brand_subtitle: "루비 AI 뉴스"
+      footer: "이 메일은 계정 확인을 위해 발송되었습니다."
+
   actors:
     show:
       visit_profile: "프로필 방문 →"

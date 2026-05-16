@@ -23,7 +23,7 @@ class Components::Mailers::Layout < Components::Base
                     div(style: brand_wrap_style) do
                       span(style: brand_style) { "Ruby-News" }
                       span(style: brand_divider_style) { "||" }
-                      span(style: brand_subtitle_style) { "루비 AI 뉴스" }
+                      span(style: brand_subtitle_style) { t("mailers.layout.brand_subtitle") }
                     end
                   end
                 end
@@ -39,7 +39,7 @@ class Components::Mailers::Layout < Components::Base
                 end
                 tr do
                   td(style: footer_wrap_style) do
-                    p(style: footer_style) { "이 메일은 계정 확인을 위해 발송되었습니다." }
+                    p(style: footer_style) { t("mailers.layout.footer") }
                   end
                 end
               end

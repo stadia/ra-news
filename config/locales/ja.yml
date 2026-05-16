@@ -256,6 +256,45 @@ ja:
       empty: "表示する投稿がありません。他のユーザーをフォローするか、最初の投稿を書いてみましょう!"
       loading: "読み込み中..."
 
+  login_required:
+    title: "ログインが必要です"
+    message: "コメントを書いたり会話に参加するにはログインが必要です。"
+    go_to_login: "ログインへ"
+
+  passwords:
+    new:
+      heading: "パスワードをお忘れですか?"
+      email_label: "メールアドレス"
+      email_placeholder: "メールアドレスを入力してください"
+      submit: "再設定メールを送信"
+    edit:
+      heading: "新しいパスワードを設定"
+      password_label: "新しいパスワード"
+      password_placeholder: "新しいパスワードを入力してください"
+      password_confirmation_label: "新しいパスワード(確認)"
+      password_confirmation_placeholder: "新しいパスワードをもう一度入力してください"
+      submit: "保存"
+
+  oauth:
+    result:
+      success_title: "%{provider} の連携が完了しました"
+      failure_title: "%{provider} の連携に失敗しました"
+      page_title: "%{title} | Ruby-News"
+      workspace: "ワークスペース"
+      server: "サーバー"
+      channel_connected: "%{channel} %{kind}の連携に成功しました。"
+      provider_connected: "%{provider} の連携に成功しました。"
+      failure_message: "%{provider} の連携中にエラーが発生しました。"
+      notification_guide_heading: "通知設定のご案内"
+      webhook_configured: "%{provider} のWebhookが設定されました。選択したチャンネルに新着記事の通知が自動配信されます。"
+      no_bot_required: "ボットの招待や追加設定なしで通知が送信されます。"
+      back_to_home: "ホームに戻る"
+
+  mailers:
+    layout:
+      brand_subtitle: "Ruby AIニュース"
+      footer: "このメールはアカウント確認のために送信されました。"
+
   actors:
     show:
       visit_profile: "プロフィールを開く →"

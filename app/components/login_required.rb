@@ -3,7 +3,7 @@
 class Components::LoginRequired < Components::Base
   include PhlexIcons
 
-  def initialize(title: "로그인이 필요합니다", message: "댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다.")
+  def initialize(title: nil, message: nil)
     @title = title
     @message = message
   end
@@ -14,15 +14,15 @@ class Components::LoginRequired < Components::Base
         Hero::LockClosed(variant: :outline, class: "w-6 h-6 text-content-secondary")
       end
 
-      h3(class: "text-lg font-medium text-content mb-2") { @title }
-      p(class: "text-content-muted mb-6") { @message }
+      h3(class: "text-lg font-medium text-content mb-2") { @title || t("login_required.title") }
+      p(class: "text-content-muted mb-6") { @message || t("login_required.message") }
 
       render RubyUI::Link.new(
         href: new_user_session_path,
         class: "inline-flex items-center px-5 py-2.5 bg-info-solid hover:bg-info-solid-hover text-brand-foreground font-medium rounded-lg transition-colors duration-200",
         data: { turbo: false }
       ) do
-        plain "로그인 하러 가기"
+        plain t("login_required.go_to_login")
         Hero::ArrowRight(variant: :outline, class: "w-4 h-4 ml-2")
       end
     end
