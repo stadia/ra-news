@@ -80,6 +80,16 @@ class Components::Layout < Components::Base
     end
   end
 
+  HREFLANG_HOSTS = {
+    "ko" => "https://ruby-news.kr",
+    "ja" => "https://ruby-news.jp"
+  }.freeze
+
+  OG_LOCALES = {
+    ko: "ko_KR",
+    ja: "ja_JP"
+  }.freeze
+
   def render_meta_tags
     meta(name: "viewport", content: "width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1.0")
     meta(name: "apple-mobile-web-app-capable", content: "yes")
@@ -88,10 +98,15 @@ class Components::Layout < Components::Base
     meta(name: "slack-app-id", content: "A0AS9BX8B7U")
 
     vc = view_context
-    vc.set_meta_tags canonical: "https://ruby-news.kr#{vc.request.path}"
+    path = vc.request.path
+    base = vc.request.base_url
+    current_url = "#{base}#{path}"
+
+    vc.set_meta_tags canonical: current_url
     page_title = content_for(:title).presence || "Ruby-News | 루비 AI 뉴스"
     page_desc = vc.instance_variable_get(:@page_description) || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요"
     og_image = vc.instance_variable_get(:@og_image) || image_url("og_main.png")
+    og_locale = OG_LOCALES.fetch(I18n.locale, "ko_KR")
 
     raw vc.display_meta_tags(
       title: page_title,
@@ -102,8 +117,8 @@ class Components::Layout < Components::Base
         site_name: "Ruby-News | 루비 AI 뉴스",
         image: og_image,
         type: vc.instance_variable_get(:@og_type) || "website",
-        url: "https://ruby-news.kr#{vc.request.path}",
-        locale: "ko_KR"
+        url: current_url,
+        locale: og_locale
       },
       article: vc.instance_variable_get(:@og_article),
       twitter: {
@@ -114,6 +129,15 @@ class Components::Layout < Components::Base
         image: og_image
       }
     )
+
+    render_hreflang_links(path)
+  end
+
+  def render_hreflang_links(path)
+    HREFLANG_HOSTS.each do |locale, host|
+      link(rel: "alternate", hreflang: locale, href: "#{host}#{path}")
+    end
+    link(rel: "alternate", hreflang: "x-default", href: "#{HREFLANG_HOSTS['ko']}#{path}")
   end
 
   def render_rss_link
@@ -323,7 +347,7 @@ class Components::Layout < Components::Base
         span(class: "text-sm text-content-secondary sm:text-center") do
           plain "© 2025 "
           a(
-            href: "https://ruby-news.kr/",
+            href: "/",
             class: "hover:underline hover:text-content transition-colors duration-200"
           ) { "Ruby-News || 루비 AI 뉴스" }
           plain ". All Rights Reserved."

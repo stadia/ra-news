@@ -2,6 +2,7 @@
 
 class User < ApplicationRecord
   AVATAR_SIZE = [ 400, 400 ].freeze
+  SUPPORTED_LOCALES = %w[ko ja en].freeze
 
   devise :database_authenticatable, :registerable,
          :recoverable, :validatable, :rememberable, :timeoutable, :confirmable,
@@ -29,9 +30,11 @@ class User < ApplicationRecord
 
   validates :name, length: { minimum: 2, maximum: 50 },
                    allow_blank: true
+  validates :locale, inclusion: { in: SUPPORTED_LOCALES }, allow_nil: true
   validate :avatar_must_be_an_image
 
   normalizes :email, with: ->(e) { e.strip.downcase }
+  normalizes :locale, with: ->(v) { v.presence }
 
   include Federails::ActorEntity
   acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_profile_url

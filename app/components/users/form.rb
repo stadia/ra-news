@@ -84,6 +84,17 @@ class Components::Users::Form < Components::Base
                   render RubyUI::FormFieldError.new { msg }
                 end
               end
+
+              render RubyUI::FormField.new do
+                render RubyUI::FormFieldLabel.new(for: :user_locale) { "표시 언어" }
+                form.select :locale,
+                  [ [ "한국어", "ko" ], [ "日本語", "ja" ] ],
+                  { include_blank: "자동 (브라우저 설정)" },
+                  class: input_classes(@user.errors[:locale])
+                @user.errors[:locale].each do |msg|
+                  render RubyUI::FormFieldError.new { msg }
+                end
+              end
             end
           else
             div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do

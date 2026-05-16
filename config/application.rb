@@ -24,7 +24,7 @@ module AlNews
     config.time_zone = "Asia/Seoul"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    config.i18n.available_locales = %w[en ko]
+    config.i18n.available_locales = %w[en ko ja]
     config.i18n.default_locale = :ko
 
     config.mission_control.jobs.base_controller_class = "Madmin::ApplicationController"

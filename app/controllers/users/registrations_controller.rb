@@ -13,6 +13,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def create
     build_resource(sign_up_params)
+    resource.signup_host = request.host
+    resource.locale ||= I18n.locale.to_s
 
     resource.save
     if resource.persisted?
@@ -67,11 +69,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   def sign_up_params
-    params.expect(user: [ :email, :name, :username, :password, :password_confirmation ])
+    params.expect(user: [ :email, :name, :username, :password, :password_confirmation, :locale ])
   end
 
   def account_update_params
-    params.expect(user: [ :email, :name, :avatar, :remove_avatar ])
+    params.expect(user: [ :email, :name, :avatar, :remove_avatar, :locale ])
   end
 
   private
