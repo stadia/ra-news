@@ -4,17 +4,20 @@
 require "schema_dot_org/web_site"
 
 class ApplicationController < ActionController::Base
+  include LocaleSwitcher
+
   before_action :authenticate_user!
   allow_browser versions: { ie: false }
   layout -> { request.format.turbo_stream? ? false : Components::Layout }
 
   before_action do
     if request.path == "/"
+      base = request.base_url
       @web_site = SchemaDotOrg::WebSite.new(
-        name: "Ruby-News | 루비 AI 뉴스",
-        url:  "https://ruby-news.kr",
+        name: t("layout.site_name"),
+        url:  base,
         potential_action: SchemaDotOrg::SearchAction.new(
-          target: "https://ruby-news.kr/articles?search={search_term_string}",
+          target: "#{base}/articles?search={search_term_string}",
           query_input: "required name=search_term_string"
         )
       )

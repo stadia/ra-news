@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DeviseMailer < Devise::Mailer
+  include RecipientHostRouting
+
   def confirmation_instructions(record, token, opts = {})
     @token = token
     initialize_from_record(record)

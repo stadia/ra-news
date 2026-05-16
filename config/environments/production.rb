@@ -112,7 +112,7 @@ Rails.application.configure do
 
   config.middleware.insert_before 0, Rack::Cors do
     allow do
-      origins "https://ruby-news.kr" # 실제 앱 도메인
+      origins "https://ruby-news.kr", "https://ruby-news.jp"
       resource "/assets/*", headers: :any, methods: [ :get, :head, :options ]
     end
   end

@@ -1,0 +1,34 @@
+ja:
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      form_errors:
+        one: "%{count}件のエラーがあります"
+        other: "%{count}件のエラーがあります"
+
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            name:
+              too_short: "は2文字以上である必要があります"
+              too_long: "は50文字以下である必要があります"
+
+  # UI labels
+  remember_me: "ログイン状態を保持する"
+  sign_in: "ログイン"
+  sign_out: "ログアウト"
+  sign_up: "新規登録"
+  posts:
+    remote_attachment_only_body: "添付メディア"
+
+  layout:
+    site_name: "Ruby-News | Ruby AIニュース"
+    default_title: "Ruby-News | Ruby AIニュース"
+    default_description: "Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします"
+
+  users:
+    form:
+      locale_label: "表示言語"
+      locale_auto: "自動 (ブラウザ設定)"
