@@ -65,7 +65,6 @@ ja:
 
   recent_comments_sidebar:
     heading: "最近のコメント"
-    time_ago: "%{time}前"
     view_article: "記事を見る"
 
   users:

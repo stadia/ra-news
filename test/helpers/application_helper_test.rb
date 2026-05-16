@@ -3,39 +3,6 @@
 require "test_helper"
 
 class ApplicationHelperTest < ActionView::TestCase
-  test "time_ago_in_words_korean이 방금을 반환한다" do
-    assert_equal "방금", time_ago_in_words_korean(Time.current)
-    assert_equal "방금", time_ago_in_words_korean(30.seconds.ago)
-  end
-
-  test "time_ago_in_words_korean이 분을 반환한다" do
-    assert_equal "5분", time_ago_in_words_korean(5.minutes.ago)
-    assert_equal "59분", time_ago_in_words_korean(59.minutes.ago)
-  end
-
-  test "time_ago_in_words_korean이 시간을 반환한다" do
-    assert_equal "1시간", time_ago_in_words_korean(1.hour.ago)
-    assert_equal "23시간", time_ago_in_words_korean(23.hours.ago)
-  end
-
-  test "time_ago_in_words_korean이 일과 시간 경계를 반환한다" do
-    assert_equal "1일", time_ago_in_words_korean(1.day.ago)
-    assert_equal "29일", time_ago_in_words_korean(29.days.ago)
-  end
-
-  test "time_ago_in_words_korean이 개월을 반환한다" do
-    assert_equal "1개월", time_ago_in_words_korean(1.month.ago)
-  end
-
-  test "time_ago_in_words_korean이 년을 반환한다" do
-    assert_equal "1년", time_ago_in_words_korean(1.year.ago)
-    assert_equal "2년", time_ago_in_words_korean(2.years.ago)
-  end
-
-  test "time_ago_in_words_korean이 nil일 때 알 수 없음을 반환한다" do
-    assert_equal "알 수 없음", time_ago_in_words_korean(nil)
-  end
-
   test "truncate_smart이 짧은 텍스트를 그대로 반환한다" do
     assert_equal "안녕", truncate_smart("안녕", length: 100)
   end

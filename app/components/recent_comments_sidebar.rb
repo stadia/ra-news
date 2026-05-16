@@ -50,7 +50,7 @@ class Components::RecentCommentsSidebar < Components::Base
       div(class: "flex items-center justify-between text-xs text-content-disabled") do
         span(class: "flex items-center gap-1") do
           Hero::Clock(variant: :outline, class: "w-3 h-3")
-          plain t("recent_comments_sidebar.time_ago", time: view_context.time_ago_in_words_korean(comment.created_at))
+          plain view_context.time_ago_in_words(comment.created_at)
         end
         if comment.article.present?
           link_to(article_path(comment.article), class: "text-link hover:text-link-hover flex items-center gap-1 transition-colors") do

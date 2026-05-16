@@ -62,7 +62,7 @@ class Components::Comments::Comment < Components::Base
       div(class: "text-sm font-medium text-content") { plain @comment.author_name }
       div(class: "text-xs text-content-muted flex items-center") do
         Hero::Clock(variant: :outline, class: "w-3 h-3 mr-1")
-        plain "#{view_context.time_ago_in_words_korean(@comment.created_at)} 전"
+        plain view_context.time_ago_in_words(@comment.created_at)
       end
     end
   end

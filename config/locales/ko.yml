@@ -65,7 +65,6 @@ ko:
 
   recent_comments_sidebar:
     heading: "최근 댓글"
-    time_ago: "%{time} 전"
     view_article: "원문 보기"
 
   users:

@@ -62,7 +62,7 @@ class Components::Posts::PostCard < Components::Base
             datetime: @post.created_at.iso8601,
             title: I18n.l(@post.created_at, format: :long)
           ) do
-            plain "#{view_context.time_ago_in_words_korean(@post.created_at)} 전"
+            plain view_context.time_ago_in_words(@post.created_at)
           end
         end
       end
