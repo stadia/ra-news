@@ -1,4 +1,0 @@
-# Generated from app/agents/ai_tell_detector_agent.rb with RBS::Inline
-
-class AiTellDetectorAgent < RubyLLM::Agent
-end

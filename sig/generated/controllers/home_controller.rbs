@@ -1,0 +1,14 @@
+# Generated from app/controllers/home_controller.rb with RBS::Inline
+
+class HomeController < ApplicationController
+  # Shared publisher schema — reused in ArticlesController as well
+  PUBLISHER_SCHEMA: untyped
+
+  def index: () -> untyped
+
+  # GET /about
+  def about: () -> untyped
+
+  # GET /rss
+  def rss: () -> untyped
+end

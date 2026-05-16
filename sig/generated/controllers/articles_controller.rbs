@@ -3,7 +3,7 @@
 class ArticlesController < ApplicationController
   include Pagy::Method
 
-  # GET /articles or /articles.json
+  # GET /articles
   def index: () -> untyped
 
   def others: () -> untyped

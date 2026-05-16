@@ -1,0 +1,15 @@
+# Generated from app/controllers/activities_controller.rb with RBS::Inline
+
+class ActivitiesController < ApplicationController
+  include Pundit::Authorization
+
+  include Pagy::Method
+
+  def index: () -> untyped
+
+  def feed: () -> untyped
+
+  private
+
+  def pundit_user: () -> untyped
+end

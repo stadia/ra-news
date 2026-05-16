@@ -1,4 +1,0 @@
-# Generated from app/agents/content_fidelity_auditor_agent.rb with RBS::Inline
-
-class ContentFidelityAuditorAgent < RubyLLM::Agent
-end

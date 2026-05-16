@@ -1,0 +1,35 @@
+# Generated from app/controllers/users/registrations_controller.rb with RBS::Inline
+
+class Users::RegistrationsController < Devise::RegistrationsController
+  def new: () -> untyped
+
+  def create: () -> untyped
+
+  def edit: () -> untyped
+
+  def password: () -> untyped
+
+  def update: () -> untyped
+
+  def destroy: () -> untyped
+
+  def after_sign_up_path_for: (untyped _resource) -> untyped
+
+  def after_inactive_sign_up_path_for: (untyped _resource) -> untyped
+
+  def sign_up_params: () -> untyped
+
+  def account_update_params: () -> untyped
+
+  private
+
+  def set_current_user_resource: () -> untyped
+
+  def updating_password?: () -> untyped
+
+  def update_user_password: () -> untyped
+
+  def update_without_password: () -> untyped
+
+  def update_account_with_avatar: () -> untyped
+end

@@ -1,4 +1,0 @@
-# Generated from app/agents/korean_style_rewriter_agent.rb with RBS::Inline
-
-class KoreanStyleRewriterAgent < RubyLLM::Agent
-end

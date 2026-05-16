@@ -1,0 +1,11 @@
+# Generated from app/controllers/concerns/rate_limiting.rb with RBS::Inline
+
+module RateLimiting
+  extend ActiveSupport::Concern
+
+  private
+
+  def check_rate_limit: () -> untyped
+
+  def rate_limit_threshold: () -> untyped
+end

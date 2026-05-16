@@ -1,0 +1,6 @@
+# Generated from app/controllers/federails/application_controller.rb with RBS::Inline
+
+module Federails
+  class ApplicationController < ::ApplicationController
+  end
+end

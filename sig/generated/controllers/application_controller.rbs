@@ -1,0 +1,9 @@
+# Generated from app/controllers/application_controller.rb with RBS::Inline
+
+class ApplicationController < ActionController::Base
+  def n_plus_one_detection: () -> untyped
+
+  private
+
+  def cacheable_page!: (?max_age: untyped) -> untyped
+end

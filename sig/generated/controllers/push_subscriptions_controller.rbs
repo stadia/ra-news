@@ -1,0 +1,11 @@
+# Generated from app/controllers/push_subscriptions_controller.rb with RBS::Inline
+
+class PushSubscriptionsController < ApplicationController
+  def create: () -> untyped
+
+  def destroy: () -> untyped
+
+  private
+
+  def subscription_params: () -> untyped
+end
