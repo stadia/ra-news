@@ -17,7 +17,7 @@ class ArticlesController < ApplicationController
 
     respond_to do |format|
       format.html do
-        @pagy, @articles = pagy(ArticleQuery.index_html(params[:search]).order(published_at: :desc))
+        @pagy, @articles = pagy(Articles::Query.index_html(params[:search]).order(published_at: :desc))
         render Views::Articles::Index.new(
           pagy: @pagy,
           articles: @articles,
@@ -27,7 +27,7 @@ class ArticlesController < ApplicationController
         )
       end
       format.json do
-        @pagy, @articles = pagy(:keyset, ArticleQuery.index_json(params[:search]).reorder(published_at: :desc, id: :desc))
+        @pagy, @articles = pagy(:keyset, Articles::Query.index_json(params[:search]).reorder(published_at: :desc, id: :desc))
         render json: {
           articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
           pagination: {
@@ -44,7 +44,7 @@ class ArticlesController < ApplicationController
     cacheable_page!
     respond_to do |format|
       format.html do
-        @pagy, @articles = pagy(ArticleQuery.others.order(published_at: :desc))
+        @pagy, @articles = pagy(Articles::Query.others.order(published_at: :desc))
         render Views::Articles::Others.new(
           pagy: @pagy,
           articles: @articles,
@@ -54,7 +54,7 @@ class ArticlesController < ApplicationController
         )
       end
       format.json do
-        @pagy, @articles = pagy(:keyset, ArticleQuery.others.reorder(published_at: :desc, id: :desc))
+        @pagy, @articles = pagy(:keyset, Articles::Query.others.reorder(published_at: :desc, id: :desc))
         render json: {
           articles: ArticleSerializer.new(@articles, params: { liked_ids: liked_article_ids(@articles) }).serializable_hash,
           pagination: {
@@ -71,7 +71,7 @@ class ArticlesController < ApplicationController
     cacheable_page!
     keyword = params[:keyword].to_s
 
-    article = ArticleQuery.tagged(keyword)
+    article = Articles::Query.tagged(keyword)
 
     respond_to do |format|
       format.html do
