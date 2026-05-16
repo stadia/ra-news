@@ -21,8 +21,8 @@ module LocaleSwitcher
   def resolved_locale
     candidate = user_locale ||
                 cookie_locale ||
-                accept_language_locale ||
-                host_locale
+                host_locale ||
+                accept_language_locale
 
     permitted_locale(candidate) || I18n.default_locale
   end
