@@ -6,6 +6,7 @@ class Components::Layout < Components::Base
   include Phlex::Rails::Helpers::FormWith
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ImageURL
+  include Phlex::Rails::Helpers::T
 
   def view_template
     doctype
@@ -103,8 +104,8 @@ class Components::Layout < Components::Base
     current_url = "#{base}#{path}"
 
     vc.set_meta_tags canonical: current_url
-    page_title = content_for(:title).presence || "Ruby-News | 루비 AI 뉴스"
-    page_desc = vc.instance_variable_get(:@page_description) || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요"
+    page_title = content_for(:title).presence || vc.t("layout.default_title")
+    page_desc = vc.instance_variable_get(:@page_description) || vc.t("layout.default_description")
     og_image = vc.instance_variable_get(:@og_image) || image_url("og_main.png")
     og_locale = OG_LOCALES.fetch(I18n.locale, "ko_KR")
 
@@ -114,7 +115,7 @@ class Components::Layout < Components::Base
       og: {
         title: page_title,
         description: page_desc,
-        site_name: "Ruby-News | 루비 AI 뉴스",
+        site_name: vc.t("layout.site_name"),
         image: og_image,
         type: vc.instance_variable_get(:@og_type) || "website",
         url: current_url,
@@ -349,7 +350,7 @@ class Components::Layout < Components::Base
           a(
             href: "/",
             class: "hover:underline hover:text-content transition-colors duration-200"
-          ) { "Ruby-News || 루비 AI 뉴스" }
+          ) { t("layout.site_name") }
           plain ". All Rights Reserved."
         end
 

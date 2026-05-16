@@ -13,7 +13,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def create
     build_resource(sign_up_params)
-    resource.signup_host = request.host
+    resource.signup_host = safe_signup_host
     resource.locale ||= I18n.locale.to_s
 
     resource.save
@@ -77,6 +77,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   private
+
+  def safe_signup_host
+    host = request.host.to_s.downcase
+    User::SUPPORTED_SIGNUP_HOSTS.include?(host) ? host : User::SUPPORTED_SIGNUP_HOSTS.first
+  end
 
   def set_current_user_resource
     self.resource = current_user

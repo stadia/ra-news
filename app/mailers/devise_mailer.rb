@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 class DeviseMailer < Devise::Mailer
-  def default_url_options
-    base = super || {}
-    host = @resource&.respond_to?(:signup_host) ? @resource.signup_host.presence : nil
-    host ? base.merge(host: host) : base
-  end
+  include RecipientHostRouting
 
   def confirmation_instructions(record, token, opts = {})
     @token = token

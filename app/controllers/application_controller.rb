@@ -14,7 +14,7 @@ class ApplicationController < ActionController::Base
     if request.path == "/"
       base = request.base_url
       @web_site = SchemaDotOrg::WebSite.new(
-        name: "Ruby-News | 루비 AI 뉴스",
+        name: t("layout.site_name"),
         url:  base,
         potential_action: SchemaDotOrg::SearchAction.new(
           target: "#{base}/articles?search={search_term_string}",

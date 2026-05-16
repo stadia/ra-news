@@ -22,3 +22,13 @@ ja:
   sign_up: "新規登録"
   posts:
     remote_attachment_only_body: "添付メディア"
+
+  layout:
+    site_name: "Ruby-News | Ruby AIニュース"
+    default_title: "Ruby-News | Ruby AIニュース"
+    default_description: "Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします"
+
+  users:
+    form:
+      locale_label: "表示言語"
+      locale_auto: "自動 (ブラウザ設定)"

@@ -22,3 +22,13 @@ ko:
   sign_up: "회원가입"
   posts:
     remote_attachment_only_body: "첨부된 미디어"
+
+  layout:
+    site_name: "Ruby-News | 루비 AI 뉴스"
+    default_title: "Ruby-News | 루비 AI 뉴스"
+    default_description: "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요"
+
+  users:
+    form:
+      locale_label: "표시 언어"
+      locale_auto: "자동 (브라우저 설정)"
