@@ -19,7 +19,7 @@ module Madmin
 
       # ── 일별 기사 수 (최근 14일) ──
       @daily_articles = (13.days.ago.to_date..Date.current).map do |day|
-        [day, Article.kept.where("DATE(created_at) = ?", day).count]
+        [ day, Article.kept.where("DATE(created_at) = ?", day).count ]
       end.to_h
 
       # ── 최근 활동 ──

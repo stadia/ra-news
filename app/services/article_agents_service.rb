@@ -120,7 +120,7 @@ class ArticleAgentsService < OperationService
 
   def run_thumbnail(article)
     if article.thumbnail.attached?
-      logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
+      logger.info "ArticleThumbnailJob skip: article #{article.id} already has thumbnail"
       return Success(article)
     end
 
@@ -131,7 +131,7 @@ class ArticleAgentsService < OperationService
 
     summary_key = article.summary_key
     if summary_key.blank? || !summary_key.is_a?(Array) || summary_key.empty?
-      logger.info "ArticleThumbnailJob skip: article #{article_id} has no summary_key"
+      logger.info "ArticleThumbnailJob skip: article #{article.id} has no summary_key"
       return Failure(:no_summary_key)
     end
 
