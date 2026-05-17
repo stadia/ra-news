@@ -80,9 +80,9 @@ class ArticlesController < ApplicationController
       @news_article = SchemaDotOrg::NewsArticle.new(**news_article_attrs)
     end
     @breadcrumbs = SchemaDotOrg.make_breadcrumbs([
-      { name: "홈",  url: root_url },
-      { name: "기사", url: articles_url },
       { name: @article.title_ko }
+      { name: t("layout.nav.home"),  url: root_url },
+      { name: t("articles.index.heading"), url: articles_url },
     ])
 
     # Only load similar articles if embedding exists

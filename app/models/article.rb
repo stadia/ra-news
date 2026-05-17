@@ -31,6 +31,7 @@ class Article < ApplicationRecord
                    if: ->(record) { record.deleted_at.nil? }
 
   store_accessor :summary_detail, :introduction, :conclusion, prefix: :summary
+  store_accessor :summary_detail_ja, :introduction, :conclusion, prefix: :summary_ja
   store_accessor :social_post_ids, :twitter_id, :mastodon_id
 
   # ── Associations ─────────────────────────────────────────────────────
