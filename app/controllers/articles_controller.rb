@@ -55,8 +55,8 @@ class ArticlesController < ApplicationController
   def show
     @comments = @article.posts.includes(:user)
 
-    @page_title = @article.title_ko
-    @page_description = @article.summary_key&.first
+    @page_title = @article.display_title
+    @page_description = @article.summary_key_preview
     @page_keywords = @article.tags.map(&:name).join(",") unless @article.tags.empty?
     @og_type = "article"
     @og_image = rails_blob_url(@article.thumbnail, disposition: "inline") if @article.thumbnail.attached?
@@ -65,14 +65,14 @@ class ArticlesController < ApplicationController
       modified_time:  @article.updated_at.iso8601,
       tag:            @article.tags.map(&:name).presence
     }.compact
-    if @article.title.present? || @article.title_ko.present?
+    if @article.display_title.present?
       news_article_attrs = {
-        headline:       @article.title_ko.presence || @article.title,
-        description:    @article.summary_key&.first,
+        headline:       @article.display_title,
+        description:    @article.summary_key_preview,
         url:            article_url(@article),
         date_published: @article.published_at&.iso8601,
         date_modified:  @article.updated_at.iso8601,
-        in_language:    "ko-KR",
+        in_language:    I18n.locale == :ja ? "ja-JP" : "ko-KR",
         is_based_on:    @article.url,
         publisher: HomeController::PUBLISHER_SCHEMA
       }
@@ -80,9 +80,9 @@ class ArticlesController < ApplicationController
       @news_article = SchemaDotOrg::NewsArticle.new(**news_article_attrs)
     end
     @breadcrumbs = SchemaDotOrg.make_breadcrumbs([
-      { name: @article.title_ko }
       { name: t("layout.nav.home"),  url: root_url },
       { name: t("articles.index.heading"), url: articles_url },
+      { name: @article.display_title }
     ])
 
     # Only load similar articles if embedding exists

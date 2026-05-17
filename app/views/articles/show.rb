@@ -16,7 +16,7 @@ class Views::Articles::Show < Views::Base
   end
 
   def view_template
-    content_for(:title, @article.title_ko)
+    content_for(:title, @article.display_title)
 
     # @news_article, @breadcrumbs are set as instance variables in ArticlesController#show
     # Insert schema.org JSON-LD into layout's head via content_for(:head)
@@ -60,7 +60,7 @@ class Views::Articles::Show < Views::Base
         loading: "eager",
         decoding: "auto",
         fetchpriority: "high",
-        alt: @article.title_ko || @article.title
+        alt: @article.display_title
       )
     end
   end
@@ -71,9 +71,9 @@ class Views::Articles::Show < Views::Base
         render RubyUI::Heading.new(
           level: 1,
           class: "text-2xl! lg:text-3xl! font-bold text-content mb-4 leading-tight"
-        ) { @article.title_ko }
+        ) { @article.display_title }
 
-        if @article.title_ko != @article.title
+        if @article.show_original_title?
           p(class: "text-lg font-medium text-content-secondary mb-4 wrap-break-word") { @article.title }
         end
       end
@@ -136,9 +136,9 @@ class Views::Articles::Show < Views::Base
             plain t("articles.show.summary_heading")
           end
 
-          if @article.summary_key.is_a?(Array)
+          if @article.display_summary_key.is_a?(Array)
             ul(class: "space-y-3") do
-              @article.summary_key&.each_with_index do |item, index|
+              @article.display_summary_key&.each_with_index do |item, index|
                 li(class: "flex items-start") do
                   span(class: "shrink-0 w-5 text-brand-foreground/60 font-semibold text-sm tabular-nums mt-0.5 mr-2 text-right") do
                     plain "#{index + 1}."
@@ -152,30 +152,30 @@ class Views::Articles::Show < Views::Base
       end
 
       section(class: "prose dark:prose-invert prose-lg max-w-none prose-headings:text-prose-heading-accent prose-strong:text-prose-strong-accent") do
-        if @article.summary_detail.is_a?(Hash)
-          if @article.summary_detail["introduction"].present?
+        if @article.display_summary_detail.is_a?(Hash)
+          if @article.display_summary_detail["introduction"].present?
             div(class: "mb-8 p-6 bg-surface-muted rounded-xl border-l-4 border-state-info") do
               render RubyUI::Heading.new(level: 3, class: "font-semibold text-info-text mb-3") { t("articles.show.intro_heading") }
               div(class: "text-content-secondary leading-relaxed text-base") do
-                plain @article.summary_detail["introduction"]
+                plain @article.display_summary_detail["introduction"]
               end
             end
           end
 
-          if @article.summary_body.present?
+          if @article.display_summary_body.present?
             div(class: "mb-8 article-content", id: "article-detail-body") do
               div(class: "prose dark:prose-invert max-w-none prose-headings:text-prose-heading-accent prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-strong:text-prose-strong-accent text-content-secondary leading-loose") do
-                # raw sanitize(Kramdown::Document.new(downshift_headings(@article.summary_body)).to_html)
-                raw sanitize(Inkmark.to_html(@article.summary_body, options: { preset: :trusted }))
+                # raw sanitize(Kramdown::Document.new(downshift_headings(@article.display_summary_body)).to_html)
+                raw sanitize(Inkmark.to_html(@article.display_summary_body, options: { preset: :trusted }))
               end
             end
           end
 
-          if @article.summary_detail["conclusion"].present?
+          if @article.display_summary_detail["conclusion"].present?
             div(class: "p-6 bg-surface-muted rounded-xl border-l-4 border-brand") do
               render RubyUI::Heading.new(level: 3, class: "font-semibold text-accent-text mb-3") { t("articles.show.conclusion_heading") }
               div(class: "text-content-secondary leading-relaxed text-base") do
-                plain @article.summary_detail["conclusion"]
+                plain @article.display_summary_detail["conclusion"]
               end
             end
           end
@@ -199,16 +199,12 @@ class Views::Articles::Show < Views::Base
                 render RubyUI::Heading.new(
                   level: 3,
                   class: "font-semibold text-content group-hover:text-link-hover transition-colors duration-200 mb-3 line-clamp-2"
-                ) { article.title_ko || article.title }
+                ) { article.display_title }
 
                 render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-3") { article.host }
 
                 p(class: "text-content-secondary text-sm leading-relaxed line-clamp-3 mb-4") do
-                  plain(if article.summary_key.is_a?(String)
-                    article.summary_key
-                  else
-                    article.summary_key&.first
-                  end)
+                  plain article.summary_key_preview.to_s
                 end
 
                 div(class: "flex items-center justify-end text-xs text-content-secondary") do

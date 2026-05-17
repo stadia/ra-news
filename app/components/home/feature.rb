@@ -44,7 +44,7 @@ class Components::Home::Feature < Components::Base
       div(class: "p-6 flex flex-col flex-1") do
         title_block(article, size: :large)
         render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
-        summary_block(article) if article.summary_key.present?
+        summary_block(article) if article.display_summary_key.present?
         meta_block(article)
       end
     end
@@ -74,27 +74,26 @@ class Components::Home::Feature < Components::Base
         loading: eager ? "eager" : "lazy",
         decoding: eager ? "auto" : "async",
         fetchpriority: eager ? "high" : "auto",
-        alt: article.title_ko || article.title
+        alt: article.display_title
       )
     end
   end
 
   def title_block(article, size:)
-    display_title = article.title_ko || article.title
     heading_class = size == :large ? "text-2xl font-bold mb-2 leading-tight" : "text-lg font-bold mb-2 leading-snug"
 
     div(class: "mb-3") do
       h3(class: "#{heading_class} text-content hover:text-link-hover transition-colors duration-200") do
-        link_to(display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']")
+        link_to(article.display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']")
       end
-      if size == :large && article.title_ko.present? && article.title_ko != article.title
+      if size == :large && article.show_original_title?
         p(class: "text-base text-content-secondary wrap-break-word") { article.title }
       end
     end
   end
 
   def summary_block(article)
-    summary = article.summary_key
+    summary = article.display_summary_key
     div(class: "text-content-secondary mb-4 text-base leading-relaxed grow space-y-2") do
       case summary
       when Array

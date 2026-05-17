@@ -29,12 +29,11 @@ class Components::Home::Article < Components::Base
   private
 
   def header_section
-    display_title = article.title_ko || article.title
     div(class: "mb-4") do
       h3(class: "text-xl font-bold text-content mb-2 leading-tight hover:text-link-hover transition-colors duration-200") do
-        link_to(display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']")
+        link_to(article.display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']")
       end
-      if article.title_ko.present? && article.title_ko != article.title
+      if article.show_original_title?
         p(class: "text-lg font-medium text-content-secondary wrap-break-word") { article.title }
       end
     end
@@ -42,7 +41,7 @@ class Components::Home::Article < Components::Base
 
   def summary_section
     div(class: "text-content-secondary mb-6 text-base leading-relaxed grow space-y-2") do
-      summary = article.summary_key
+      summary = article.display_summary_key
       if summary.present?
         if summary.is_a?(Array)
           ul(class: "list-disc pl-5 space-y-1") do

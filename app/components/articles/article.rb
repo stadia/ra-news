@@ -26,12 +26,11 @@ class Components::Articles::Article < Components::Base
   private
 
   def header_section
-    display_title = @article.title_ko || @article.title
     div(class: "mb-3") do
       h3(class: "text-xl font-semibold text-content hover:text-link-hover transition-colors duration-200") do
-        link_to display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']"
+        link_to article.display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']"
       end
-      if @article.title_ko.present? && @article.title_ko != @article.title
+      if article.show_original_title?
         p(class: "text-l text-content-secondary wrap-break-word") { article.title }
       end
     end
@@ -39,7 +38,7 @@ class Components::Articles::Article < Components::Base
 
   def summary_section
     div(class: "text-content-secondary mb-4 text-sm leading-relaxed grow") do
-      summary = @article.summary_key
+      summary = article.display_summary_key
       if summary.present?
         if summary.is_a?(Array)
           ul(class: "list-disc pl-5 space-y-1") do
@@ -59,12 +58,12 @@ class Components::Articles::Article < Components::Base
     div(class: "relative z-10 pt-4 flex flex-wrap justify-between items-center text-xs text-content-muted gap-y-2") do
       span(class: "inline-flex items-center") do
         Hero::User(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
-        render Components::Articles::ArticleUser.new(article: @article)
+        render Components::Articles::ArticleUser.new(article: article)
       end
-      render Components::Likes::Button.new(likeable: @article, liked: @liked)
+      render Components::Likes::Button.new(likeable: article, liked: @liked)
       span(class: "inline-flex items-center") do
         Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
-        plain @article.posts_count.to_s
+        plain article.posts_count.to_s
       end
     end
   end

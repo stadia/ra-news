@@ -174,16 +174,16 @@ class Components::Posts::PostCard < Components::Base
 
         div(class: "space-y-1") do
           h3(class: "text-sm font-semibold text-content leading-snug") do
-            link_to(article_preview_title(article), article_path(article), class: "hover:text-link-hover")
+            link_to(article.display_title.presence || t("posts.post_card.view_article"), article_path(article), class: "hover:text-link-hover")
           end
 
-          if show_original_title?(article)
+          if article.show_original_title?
             p(class: "text-xs text-content-secondary wrap-break-word") { article.title }
           end
         end
 
-        if article_preview_summary(article).present?
-          p(class: "text-sm text-content-secondary leading-relaxed") { article_preview_summary(article) }
+        if article.summary_key_preview.present?
+          p(class: "text-sm text-content-secondary leading-relaxed") { article.summary_key_preview }
         end
 
         div(class: "flex flex-wrap items-center gap-3 text-xs text-content-muted") do
@@ -213,25 +213,7 @@ class Components::Posts::PostCard < Components::Base
     @post.parent.user&.name || @post.parent.federails_actor&.name || t("posts.post_card.unknown_author")
   end
 
-
   def body_preview
     view_context.truncate(view_context.strip_tags(@post.body.to_s).squish, length: 120)
-  end
-
-  def article_preview_title(article)
-    article.title_ko.presence || article.title.presence || t("posts.post_card.view_article")
-  end
-
-  def show_original_title?(article)
-    article.title_ko.present? && article.title.present? && article.title_ko != article.title
-  end
-
-  def article_preview_summary(article)
-    case article.summary_key
-    when Array
-      article.summary_key.first
-    when String
-      article.summary_key
-    end
   end
 end

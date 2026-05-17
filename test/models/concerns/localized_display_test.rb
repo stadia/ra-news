@@ -15,21 +15,25 @@ class LocalizedDisplayTest < ActiveSupport::TestCase
 
   test "display_title falls back to title when title_ko is nil" do
     @article.update_columns(title_ko: nil)
+
     assert_equal @article.title, @article.display_title(locale: :ko)
   end
 
   test "display_title returns title_ja for ja locale when present" do
     @article.update_columns(title_ja: "日本語タイトル")
+
     assert_equal "日本語タイトル", @article.display_title(locale: :ja)
   end
 
   test "display_title falls back to title_ko when title_ja is nil" do
     @article.update_columns(title_ja: nil)
+
     assert_equal @article.title_ko, @article.display_title(locale: :ja)
   end
 
   test "display_title falls back to title when both title_ja and title_ko are nil" do
     @article.update_columns(title_ja: nil, title_ko: nil)
+
     assert_equal @article.title, @article.display_title(locale: :ja)
   end
 
@@ -37,11 +41,13 @@ class LocalizedDisplayTest < ActiveSupport::TestCase
 
   test "display_summary_key returns summary_key_ja for ja locale" do
     @article.update_columns(summary_key_ja: [ "要約1", "要約2" ])
+
     assert_equal [ "要約1", "要約2" ], @article.display_summary_key(locale: :ja)
   end
 
   test "display_summary_key falls back to ko when ja is nil" do
     @article.update_columns(summary_key_ja: nil)
+
     assert_equal @article.summary_key, @article.display_summary_key(locale: :ja)
   end
 
@@ -54,11 +60,13 @@ class LocalizedDisplayTest < ActiveSupport::TestCase
   test "display_summary_detail returns ja version when present" do
     @article.update_columns(summary_detail_ja: { "introduction" => "日本語の導入", "conclusion" => "日本語の結論" })
     result = @article.display_summary_detail(locale: :ja)
+
     assert_equal "日本語の導入", result["introduction"]
   end
 
   test "display_summary_detail falls back to ko when ja is nil" do
     @article.update_columns(summary_detail_ja: nil)
+
     assert_equal @article.summary_detail, @article.display_summary_detail(locale: :ja)
   end
 
@@ -66,11 +74,13 @@ class LocalizedDisplayTest < ActiveSupport::TestCase
 
   test "display_summary_body returns ja version when present" do
     @article.update_columns(summary_body_ja: "日本語の本文")
+
     assert_equal "日本語の本文", @article.display_summary_body(locale: :ja)
   end
 
   test "display_summary_body falls back to ko when ja is nil" do
     @article.update_columns(summary_body_ja: nil, summary_body: "한국어 본문")
+
     assert_equal "한국어 본문", @article.display_summary_body(locale: :ja)
   end
 
@@ -82,11 +92,13 @@ class LocalizedDisplayTest < ActiveSupport::TestCase
 
   test "show_original_title returns false for ko when title_ko matches title" do
     @article.update_columns(title_ko: @article.title)
+
     assert_not @article.show_original_title?(locale: :ko)
   end
 
   test "show_original_title returns false for ja when title_ja is nil" do
     @article.update_columns(title_ja: nil)
+
     assert_not @article.show_original_title?(locale: :ja)
   end
 
@@ -94,16 +106,19 @@ class LocalizedDisplayTest < ActiveSupport::TestCase
 
   test "summary_key_preview returns first item of array" do
     @article.update_columns(summary_key: [ "첫 번째", "두 번째" ])
+
     assert_equal "첫 번째", @article.summary_key_preview
   end
 
   test "summary_key_preview returns string as-is" do
     @article.update_columns(summary_key: "단일 요약")
+
     assert_equal "단일 요약", @article.summary_key_preview
   end
 
   test "summary_key_preview respects locale for ja" do
     @article.update_columns(summary_key_ja: [ "要約第一", "要約第二" ])
+
     assert_equal "要約第一", @article.summary_key_preview(locale: :ja)
   end
 end
