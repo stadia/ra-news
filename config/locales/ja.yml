@@ -138,6 +138,11 @@ ja:
       item_list_name: "Ruby-News 最新ニュース"
     feature:
       heading: "注目ニュース"
+    rss:
+      title: "Ruby-News || Ruby AIニュース"
+      description: "Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします"
+      no_title: "タイトルなし"
+      no_summary: "要約がありません"
 
   tags_sidebar:
     heading: "タグ"
@@ -196,6 +201,9 @@ ja:
       password_confirmation_label: "パスワード確認"
       back: "戻る"
       save: "パスワードを保存"
+    user:
+      email_label: "メールアドレス"
+      name_label: "ユーザー名"
 
   sessions:
     new:
@@ -255,6 +263,25 @@ ja:
       title: "フィード | Ruby-News"
       empty: "表示する投稿がありません。他のユーザーをフォローするか、最初の投稿を書いてみましょう!"
       loading: "読み込み中..."
+
+  push_notifications:
+    prompt_modal:
+      title: "通知設定"
+      body_line1: "自分のコメントに返信が来たらすぐ気づけるよう"
+      body_line2: "ブラウザ通知をオンにしてみましょう。"
+      enable: "オンにする"
+      later: "あとで"
+
+  federails_layout:
+    title: "Ruby-News || Ruby AIニュース"
+    brand_subtitle: "ソーシャル"
+    nav_aria_label: "Fediverseナビゲーション"
+    menu: "メニュー"
+    nav:
+      home: "← ホーム"
+      feed: "フィード"
+      lookup: "フォロー検索"
+      my_profile: "マイプロフィール"
 
   login_required:
     title: "ログインが必要です"

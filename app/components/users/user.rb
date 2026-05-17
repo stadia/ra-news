@@ -33,8 +33,8 @@ class Components::Users::User < Components::Base
 
         # Details Grid
         div(class: "grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 pt-8 border-t border-border-subtle/60") do
-          detail_field("이메일 주소", @user.email)
-          detail_field("사용자 이름", @user.name)
+          detail_field(t("users.user.email_label"), @user.email)
+          detail_field(t("users.user.name_label"), @user.name)
         end
       end
     end

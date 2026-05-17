@@ -24,18 +24,18 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <% set_meta_tags canonical: "https://ruby-news.kr#{request.path}" %>
-    <%= display_meta_tags title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
+    <%= display_meta_tags title: content_for(:title) || t("federails_layout.title"),
     og: {
-      title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
-      description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
-      site_name: "Ruby-News || 루비 AI 뉴스",
+      title: content_for(:title) || t("federails_layout.title"),
+      description: @page_description || t("layout.default_description"),
+      site_name: t("federails_layout.title"),
       image: image_url("og_main.png"),
       type: "website",
     },
     twitter: {
-      title: content_for(:title) || "Ruby-News || 루비 AI 뉴스",
-      description: @page_description || "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요",
-      site_name: "Ruby-News || 루비 AI 뉴스",
+      title: content_for(:title) || t("federails_layout.title"),
+      description: @page_description || t("layout.default_description"),
+      site_name: t("federails_layout.title"),
       image: image_url("og_main.png"),
       type: "website",
     } %>
@@ -76,7 +76,7 @@
         focus:px-4 focus:py-2 focus:bg-brand focus:text-brand-foreground focus:rounded-lg
       "
     >
-      본문으로 건너뛰기
+      <%= t("layout.skip_to_content") %>
     </a>
 
     <div
@@ -92,7 +92,7 @@
             border-t-transparent shadow-lg shadow-brand/50
           "
         ></div>
-        <div class="text-content font-medium">로딩 중...</div>
+        <div class="text-content font-medium"><%= t("layout.loading") %></div>
       </div>
     </div>
 
@@ -100,7 +100,7 @@
       class="
         bg-surface border-b border-border-strong border-t-4 border-t-brand
       "
-      aria-label="Fediverse 네비게이션"
+      aria-label="<%= t("federails_layout.nav_aria_label") %>"
     >
       <div class="max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4">
         <%= link_to main_app.root_path, class: "flex items-center space-x-3 group" do %>
@@ -111,7 +111,7 @@
             "
           >
             Ruby-News ||
-            <span class="text-brand-soft">소셜</span>
+            <span class="text-brand-soft"><%= t("federails_layout.brand_subtitle") %></span>
           </span>
         <% end %>
 
@@ -123,9 +123,9 @@
             rounded-lg md:hidden hover:bg-surface-muted focus:outline-none focus:ring-2
             focus:ring-brand cursor-pointer
           "
-          aria-label="메뉴 열기/닫기"
+          aria-label="<%= t("layout.nav.menu_toggle") %>"
         >
-          <span class="sr-only">메뉴</span>
+          <span class="sr-only"><%= t("federails_layout.menu") %></span>
           <%= phlex_icon "bars-3", variant: :outline, class: "w-5 h-5" %>
         </label>
 
@@ -142,16 +142,16 @@
               bg-surface-muted md:space-x-2 md:flex-row md:mt-0 md:border-0 md:bg-surface
             "
           >
-            <%= nav_link_to "← 홈", main_app.root_path %>
+            <%= nav_link_to t("federails_layout.nav.home"), main_app.root_path %>
             <% if authenticated? %>
-              <%= nav_link_to "피드", feed_activities_path %>
-              <%= nav_link_to "팔로우 검색", lookup_actors_path %>
+              <%= nav_link_to t("federails_layout.nav.feed"), feed_activities_path %>
+              <%= nav_link_to t("federails_layout.nav.lookup"), lookup_actors_path %>
               <% if Current.user.federails_actor %>
-                <%= nav_link_to "내 프로필", actor_path(Current.user.federails_actor) %>
+                <%= nav_link_to t("federails_layout.nav.my_profile"), actor_path(Current.user.federails_actor) %>
               <% end %>
-              <%= nav_link_to "로그아웃", main_app.logout_path %>
+              <%= nav_link_to t("sign_out"), main_app.logout_path %>
             <% else %>
-              <%= nav_link_to "로그인", main_app.new_session_path %>
+              <%= nav_link_to t("sign_in"), main_app.new_session_path %>
             <% end %>
           </ul>
         </div>
@@ -187,7 +187,7 @@
       >
         <span class="text-sm text-content-secondary sm:text-center">
           © 2025
-          <%= link_to "Ruby-News || 루비 AI 뉴스",
+          <%= link_to t("federails_layout.title"),
           "https://ruby-news.kr/",
           class: "hover:underline hover:text-content transition-colors duration-200" %>. All Rights Reserved.
         </span>

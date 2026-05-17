@@ -23,24 +23,24 @@ class Components::PushNotifications::PromptModal < Components::Base
               Hero::Bell(variant: :solid, class: "h-7 w-7")
             end
 
-            h2(id: "push-notification-modal-title", class: "text-2xl font-bold text-content") { "알림 설정" }
+            h2(id: "push-notification-modal-title", class: "text-2xl font-bold text-content") { t("push_notifications.prompt_modal.title") }
             p(class: "mt-3 text-sm leading-6 text-content-secondary") do
-              plain "내 댓글에 답글이 달리면 바로 알 수 있도록"
+              plain t("push_notifications.prompt_modal.body_line1")
               br
-              plain "브라우저 알림을 활성화해 보세요."
+              plain t("push_notifications.prompt_modal.body_line2")
             end
           end
 
           div(class: "border-t border-border-strong/80") do
             render RubyUI::Button.new(variant: :primary, size: :lg,
                     data: { action: "click->push-notifications#enable" },
-                    class: "w-full font-semibold text-link transition hover:bg-surface hover:text-link-hover") { "설정" }
+                    class: "w-full font-semibold text-link transition hover:bg-surface hover:text-link-hover") { t("push_notifications.prompt_modal.enable") }
           end
 
           div(class: "border-t border-border-strong/80") do
             render RubyUI::Button.new(variant: :ghost, size: :lg,
                     data: { action: "click->push-notifications#dismiss" },
-                    class: "w-full font-medium text-content-secondary transition hover:bg-surface") { "나중에 하기" }
+                    class: "w-full font-medium text-content-secondary transition hover:bg-surface") { t("push_notifications.prompt_modal.later") }
           end
         end
       end

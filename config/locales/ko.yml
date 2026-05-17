@@ -138,6 +138,11 @@ ko:
       item_list_name: "Ruby-News 최신 뉴스"
     feature:
       heading: "주요 뉴스"
+    rss:
+      title: "Ruby-News || 루비 AI 뉴스"
+      description: "최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요"
+      no_title: "제목 없음"
+      no_summary: "핵심 요약이 없습니다"
 
   tags_sidebar:
     heading: "태그"
@@ -196,6 +201,9 @@ ko:
       password_confirmation_label: "비밀번호 확인"
       back: "돌아가기"
       save: "비밀번호 저장"
+    user:
+      email_label: "이메일 주소"
+      name_label: "사용자 이름"
 
   sessions:
     new:
@@ -255,6 +263,25 @@ ko:
       title: "피드 | Ruby-News"
       empty: "표시할 포스트가 없습니다. 다른 사용자를 팔로우하거나 첫 포스트를 작성해보세요!"
       loading: "불러오는 중..."
+
+  push_notifications:
+    prompt_modal:
+      title: "알림 설정"
+      body_line1: "내 댓글에 답글이 달리면 바로 알 수 있도록"
+      body_line2: "브라우저 알림을 활성화해 보세요."
+      enable: "설정"
+      later: "나중에 하기"
+
+  federails_layout:
+    title: "Ruby-News || 루비 AI 뉴스"
+    brand_subtitle: "소셜"
+    nav_aria_label: "Fediverse 네비게이션"
+    menu: "메뉴"
+    nav:
+      home: "← 홈"
+      feed: "피드"
+      lookup: "팔로우 검색"
+      my_profile: "내 프로필"
 
   login_required:
     title: "로그인이 필요합니다"
