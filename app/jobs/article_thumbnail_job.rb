@@ -27,6 +27,8 @@ class ArticleThumbnailJob < ApplicationJob
 
     prompt = build_prompt(summary_key)
     message = ArticleImageAgent.new.ask(prompt)
+    # attachment = RubyLLM.paint(prompt, size: "1536x1024", model: "gpt-image-2", provider: :openai,
+    #   assume_model_exists: true)
 
     attachment = message.content[:attachments].first
     if attachment.blank?
@@ -38,6 +40,8 @@ class ArticleThumbnailJob < ApplicationJob
     article.thumbnail.attach(
       io: StringIO.new(attachment.content),
       filename: "thumbnail-#{article.id}.#{ext}",
+      # io: StringIO.new(attachment.to_blob),
+      # filename: "thumbnail-#{article.id}.png",
       content_type: attachment.mime_type
     )
     logger.info "ArticleThumbnailJob attached thumbnail for article #{article_id}"
