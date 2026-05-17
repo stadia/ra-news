@@ -1,0 +1,4 @@
+# Generated from app/agents/article_japanese_schema.rb with RBS::Inline
+
+class ArticleJapaneseSchema < RubyLLM::Schema
+end

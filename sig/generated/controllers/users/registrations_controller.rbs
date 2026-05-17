@@ -23,6 +23,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   private
 
+  def safe_signup_host: () -> untyped
+
   def set_current_user_resource: () -> untyped
 
   def updating_password?: () -> untyped

@@ -1,0 +1,4 @@
+# Generated from app/agents/article_japanese_agent.rb with RBS::Inline
+
+class ArticleJapaneseAgent < RubyLLM::Agent
+end
