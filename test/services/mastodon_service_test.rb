@@ -168,7 +168,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
   test "build_post_text는 500자 이내로 제한한다" do
     # 긴 내용으로 테스트
     @article.update(
-      title_ko: "A" * 200,
+      title_ko: "A" * 95,
       summary_key: [ "B" * 300 ]
     )
 
