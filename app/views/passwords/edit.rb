@@ -15,21 +15,21 @@ class Views::Passwords::Edit < Views::Base
       form_with(url: user_password_path, method: :put, scope: :user, class: "contents") do |f|
         f.hidden_field :reset_password_token, value: @token
         render RubyUI::FormField.new(class: "my-5") do
-          render RubyUI::FormFieldLabel.new(for: :password) { t("passwords.edit.password_label") }
+          render RubyUI::FormFieldLabel.new(for: :password) { User.human_attribute_name(:password) }
           f.password_field :password,
             required: true,
             autocomplete: "new-password",
-            placeholder: t("passwords.edit.password_placeholder"),
+            placeholder: t("helpers.placeholder.user.new_password"),
             maxlength: 72,
             class: "block shadow-sm rounded-md border border-border-muted px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors duration-200"
         end
 
         render RubyUI::FormField.new(class: "my-5") do
-          render RubyUI::FormFieldLabel.new(for: :password_confirmation) { t("passwords.edit.password_confirmation_label") }
+          render RubyUI::FormFieldLabel.new(for: :password_confirmation) { User.human_attribute_name(:password_confirmation) }
           f.password_field :password_confirmation,
             required: true,
             autocomplete: "new-password",
-            placeholder: t("passwords.edit.password_confirmation_placeholder"),
+            placeholder: t("helpers.placeholder.user.new_password_confirmation"),
             maxlength: 72,
             class: "block shadow-sm rounded-md border border-border-muted px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors duration-200"
         end

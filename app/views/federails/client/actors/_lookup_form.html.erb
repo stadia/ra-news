@@ -1,5 +1,5 @@
 <%= form_tag lookup_actors_url, method: :get do %>
   <%= label_tag :account %>
-  <%= render RubyUI::Input.new(type: :text, name: "account", id: "account", placeholder: "user@domain.tld or username", required: true) %>
+  <%= render RubyUI::Input.new(type: :text, name: "account", id: "account", placeholder: t("helpers.placeholder.actor.account_or_username"), required: true) %>
   <%= render RubyUI::Button.new(type: "submit") { "Search" } %>
 <% end %>

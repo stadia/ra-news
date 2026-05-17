@@ -52,7 +52,7 @@ class Components::Posts::PostForm < Components::Base
         class: "post-composer-editor w-full text-content",
         rows: 3,
         toolbar: false,
-        placeholder: t("posts.post_form.body_placeholder"),
+        placeholder: t("helpers.placeholder.post.body"),
         autocomplete: "off",
         data: {
           post_form_target: "body",

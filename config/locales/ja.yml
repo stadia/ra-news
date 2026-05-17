@@ -6,7 +6,41 @@ ja:
         one: "%{count}件のエラーがあります"
         other: "%{count}件のエラーがあります"
 
+  helpers:
+    placeholder:
+      actor:
+        account: "user@domain.tld"
+        account_or_username: "user@domain.tld または username"
+      comment:
+        body: "コメントを入力してください..."
+        reply_body: "返信を入力してください..."
+      post:
+        body: "いま何を考えていますか?"
+        reply_body: "返信を入力してください..."
+      search:
+        articles: "検索..."
+      user:
+        email: "メールアドレス"
+        new_password: "新しいパスワードを入力してください"
+        new_password_confirmation: "新しいパスワードをもう一度入力してください"
+        password: "パスワード"
+        username: "英字、数字、アンダースコア、ドット"
+
   activerecord:
+    attributes:
+      article:
+        url: "URL"
+      post:
+        body: "コメント内容"
+      user:
+        avatar: "プロフィール画像"
+        current_password: "現在のパスワード"
+        email: "メールアドレス"
+        locale: "表示言語"
+        name: "名前"
+        password: "パスワード"
+        password_confirmation: "パスワード確認"
+        username: "ユーザーID"
     errors:
       models:
         user:
@@ -31,13 +65,11 @@ ja:
       unknown_author: "不明"
       view_article: "記事を見る"
     post_form:
-      body_placeholder: "いま何を考えていますか?"
       replying_to: "返信中 "
       cancel: "キャンセル"
       reply_submit: "返信"
       post_submit: "投稿"
     reply_form:
-      placeholder: "返信を入力してください..."
       char_unit: " 文字"
       cancel: "キャンセル"
       submit: "返信"
@@ -74,7 +106,6 @@ ja:
       subtitle: "URLを入力すると収集と要約処理を開始します。"
       back_to_list: "一覧に戻る"
     form:
-      url_label: "URL"
       submit: "登録"
       errors_heading: "%{count}件のエラーにより記事を保存できませんでした:"
 
@@ -90,8 +121,6 @@ ja:
       error_heading: "エラーが発生しました:"
       login_prompt_before: "コメントを書くには "
       login_prompt_after: " が必要です。"
-      body_label: "コメント内容"
-      body_placeholder: "コメントを入力してください..."
       guideline: "丁寧で建設的なコメントを心がけてください。"
       submit: "コメントを書く"
     comment_reply_form:
@@ -99,7 +128,6 @@ ja:
       error_heading: "エラーが発生しました:"
       login_prompt_before: "返信を書くには "
       login_prompt_after: " してください。"
-      body_placeholder: "返信を入力してください..."
       cancel: "キャンセル"
       submit: "返信を書く"
 
@@ -121,7 +149,6 @@ ja:
       new_article: "記事を投稿"
     search:
       aria_label: "記事を検索"
-      placeholder: "検索..."
       submit: "検索"
     footer:
       mastodon: "Mastodon"
@@ -175,43 +202,26 @@ ja:
       edit_heading: "情報を編集"
       sign_up_heading: "新規登録"
       new_beginning: "新しいスタート"
-      avatar_label: "プロフィール画像"
       avatar_hint: "正方形の代表サムネイルとして400x400にクロップされ、外部に公開されます。"
       remove_avatar: "現在のプロフィール画像を削除"
-      name_label: "名前"
-      email_label: "メールアドレス"
-      locale_label: "表示言語"
       locale_auto: "自動 (ブラウザ設定)"
       locale_options:
         ko: "韓国語"
         ja: "日本語"
-      username_label: "ユーザーID"
-      username_placeholder: "英字、数字、アンダースコア、ドット"
       optional_name_label: "名前 (任意)"
-      password_label: "パスワード"
-      password_confirmation_label: "パスワード確認"
       change_password: "パスワード変更"
       back: "戻る"
       save_changes: "変更を保存"
       sign_up_submit: "登録する"
       avatar_alt_default: "プロフィール画像"
     password_form:
-      current_password_label: "現在のパスワード"
-      password_label: "パスワード"
-      password_confirmation_label: "パスワード確認"
       back: "戻る"
       save: "パスワードを保存"
     user:
-      email_label: "メールアドレス"
-      name_label: "ユーザー名"
 
   sessions:
     new:
       title: "ログイン"
-      email_label: "メールアドレス"
-      email_placeholder: "メールアドレス"
-      password_label: "パスワード"
-      password_placeholder: "パスワード"
       submit: "ログイン"
       sign_up: "新規登録"
       forgot_password: "パスワードをお忘れですか?"
@@ -291,15 +301,9 @@ ja:
   passwords:
     new:
       heading: "パスワードをお忘れですか?"
-      email_label: "メールアドレス"
-      email_placeholder: "メールアドレスを入力してください"
       submit: "再設定メールを送信"
     edit:
       heading: "新しいパスワードを設定"
-      password_label: "新しいパスワード"
-      password_placeholder: "新しいパスワードを入力してください"
-      password_confirmation_label: "新しいパスワード(確認)"
-      password_confirmation_placeholder: "新しいパスワードをもう一度入力してください"
       submit: "保存"
 
   oauth:

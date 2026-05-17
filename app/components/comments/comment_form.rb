@@ -71,11 +71,11 @@ class Components::Comments::CommentForm < Components::Base
 
   def body_field(f)
     render RubyUI::FormField.new do
-      render RubyUI::FormFieldLabel.new(for: :comment_body) { t("comments.comment_form.body_label") }
+      render RubyUI::FormFieldLabel.new(for: :comment_body) { Post.human_attribute_name(:body) }
       f.text_area :body,
         rows: 4,
         class: text_area_classes(@comment.errors[:body]),
-        placeholder: t("comments.comment_form.body_placeholder"),
+        placeholder: t("helpers.placeholder.comment.body"),
         maxlength: ::Post::MAX_BODY_LENGTH,
         data: { character_count_target: "input", action: "input->character-count#updateCount" }
       div(class: "text-xs text-content-muted text-right") do

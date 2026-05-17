@@ -49,6 +49,16 @@ class PostTest < ActiveSupport::TestCase
     assert_not post.valid?
   end
 
+  test "human_attribute_name은 locale별 댓글 본문 속성명을 반환해야 한다" do
+    I18n.with_locale(:ko) do
+      assert_equal "댓글 내용", Post.human_attribute_name(:body)
+    end
+
+    I18n.with_locale(:ja) do
+      assert_equal "コメント内容", Post.human_attribute_name(:body)
+    end
+  end
+
   # ========== Nested Set Tests ==========
 
   test "root post는 parent가 없다" do

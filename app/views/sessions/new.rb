@@ -9,22 +9,22 @@ class Views::Sessions::New < Views::Base
 
       form_with(url: user_session_path, scope: :user, class: "contents") do |form|
         render RubyUI::FormField.new(class: "my-5") do
-          render RubyUI::FormFieldLabel.new(for: :email) { t("sessions.new.email_label") }
+          render RubyUI::FormFieldLabel.new(for: :email) { User.human_attribute_name(:email) }
           form.email_field :email,
                            required: true,
                            autofocus: true,
                            autocomplete: "username",
-                           placeholder: t("sessions.new.email_placeholder"),
+                           placeholder: t("helpers.placeholder.user.email"),
                            value: view_context.params[:email],
                            class: "block shadow-sm rounded-md border border-border-muted px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors duration-200"
         end
 
         render RubyUI::FormField.new(class: "my-5") do
-          render RubyUI::FormFieldLabel.new(for: :password) { t("sessions.new.password_label") }
+          render RubyUI::FormFieldLabel.new(for: :password) { User.human_attribute_name(:password) }
           form.password_field :password,
                               required: true,
                               autocomplete: "current-password",
-                              placeholder: t("sessions.new.password_placeholder"),
+                              placeholder: t("helpers.placeholder.user.password"),
                               maxlength: 72,
                               class: "block shadow-sm rounded-md border border-border-muted px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors duration-200"
         end

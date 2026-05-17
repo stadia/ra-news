@@ -306,7 +306,7 @@ class Components::Layout < Components::Base
     ) do |form|
       raw form.text_field(
         :search,
-        placeholder: t("layout.search.placeholder"),
+        placeholder: t("helpers.placeholder.search.articles"),
         value: view_context.params[:search],
         class: "px-3 py-2 text-sm text-content bg-surface-muted border border-border-muted rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent w-40 md:w-48 transition-all duration-200 placeholder:text-content-muted"
       )

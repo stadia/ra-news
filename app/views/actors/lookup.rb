@@ -18,7 +18,7 @@ class Views::Actors::Lookup < Views::Base
             type: :text,
             name: "account",
             id: "account",
-            placeholder: "user@domain.tld",
+            placeholder: t("helpers.placeholder.actor.account"),
             required: true,
             autofocus: true,
             class: "bg-surface-muted border-border-muted text-content placeholder:text-content-muted"

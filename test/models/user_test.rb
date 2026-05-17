@@ -123,6 +123,32 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "  Test User  ", user.name
   end
 
+  test "human_attribute_name은 locale별 사용자 속성명을 반환해야 한다" do
+    I18n.with_locale(:ko) do
+      assert_equal "이메일", User.human_attribute_name(:email)
+      assert_equal "현재 비밀번호", User.human_attribute_name(:current_password)
+      assert_equal "아이디", User.human_attribute_name(:username)
+    end
+
+    I18n.with_locale(:ja) do
+      assert_equal "メールアドレス", User.human_attribute_name(:email)
+      assert_equal "現在のパスワード", User.human_attribute_name(:current_password)
+      assert_equal "ユーザーID", User.human_attribute_name(:username)
+    end
+  end
+
+  test "helpers placeholder는 locale별 사용자 입력 안내 문구를 반환해야 한다" do
+    I18n.with_locale(:ko) do
+      assert_equal "email 주소", I18n.t("helpers.placeholder.user.email")
+      assert_equal "새 비밀번호를 다시 입력하세요", I18n.t("helpers.placeholder.user.new_password_confirmation")
+    end
+
+    I18n.with_locale(:ja) do
+      assert_equal "メールアドレス", I18n.t("helpers.placeholder.user.email")
+      assert_equal "新しいパスワードをもう一度入力してください", I18n.t("helpers.placeholder.user.new_password_confirmation")
+    end
+  end
+
   test "admin?은 관리자 사용자에 대해 true를 반환해야 한다" do
     assert_predicate @admin, :admin?
     assert_not @user.admin?

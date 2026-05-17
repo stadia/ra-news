@@ -51,7 +51,7 @@ class Components::Users::Form < Components::Base
           if @user.persisted?
             div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_avatar) { t("users.form.avatar_label") }
+                render RubyUI::FormFieldLabel.new(for: :user_avatar) { User.human_attribute_name(:avatar) }
                 render RubyUI::FormFieldHint.new(class: "mb-3 text-content-muted") do
                   t("users.form.avatar_hint")
                 end
@@ -69,7 +69,7 @@ class Components::Users::Form < Components::Base
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_name) { t("users.form.name_label") }
+                render RubyUI::FormFieldLabel.new(for: :user_name) { User.human_attribute_name(:name) }
                 form.text_field :name, class: input_classes(@user.errors[:name]), autocomplete: "name"
                 @user.errors[:name].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -77,7 +77,7 @@ class Components::Users::Form < Components::Base
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_email) { t("users.form.email_label") }
+                render RubyUI::FormFieldLabel.new(for: :user_email) { User.human_attribute_name(:email) }
                 form.email_field :email, class: input_classes(@user.errors[:email]), autocomplete: "email"
                 @user.errors[:email].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -85,7 +85,7 @@ class Components::Users::Form < Components::Base
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_locale) { t("users.form.locale_label") }
+                render RubyUI::FormFieldLabel.new(for: :user_locale) { User.human_attribute_name(:locale) }
                 form.select :locale,
                   [ [ t("users.form.locale_options.ko"), "ko" ], [ t("users.form.locale_options.ja"), "ja" ] ],
                   { include_blank: t("users.form.locale_auto") },
@@ -98,15 +98,15 @@ class Components::Users::Form < Components::Base
           else
             div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_username) { t("users.form.username_label") }
-                form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: t("users.form.username_placeholder"), autocomplete: "username", required: true
+                render RubyUI::FormFieldLabel.new(for: :user_username) { User.human_attribute_name(:username) }
+                form.text_field :username, class: input_classes(@user.errors[:username]), placeholder: t("helpers.placeholder.user.username"), autocomplete: "username", required: true
                 @user.errors[:username].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
                 end
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_email) { t("users.form.email_label") }
+                render RubyUI::FormFieldLabel.new(for: :user_email) { User.human_attribute_name(:email) }
                 form.email_field :email, class: input_classes(@user.errors[:email]), autocomplete: "email", required: true
                 @user.errors[:email].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -126,7 +126,7 @@ class Components::Users::Form < Components::Base
           unless @user.persisted?
             div(class: "space-y-8 pt-8") do
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_password) { t("users.form.password_label") }
+                render RubyUI::FormFieldLabel.new(for: :user_password) { User.human_attribute_name(:password) }
                 form.password_field :password, class: input_classes(@user.errors[:password]), autocomplete: "new-password"
                 @user.errors[:password].each do |msg|
                   render RubyUI::FormFieldError.new { msg }
@@ -134,7 +134,7 @@ class Components::Users::Form < Components::Base
               end
 
               render RubyUI::FormField.new do
-                render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { t("users.form.password_confirmation_label") }
+                render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { User.human_attribute_name(:password_confirmation) }
                 form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation]), autocomplete: "new-password"
                 @user.errors[:password_confirmation].each do |msg|
                   render RubyUI::FormFieldError.new { msg }

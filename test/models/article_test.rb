@@ -58,6 +58,16 @@ class ArticleTest < ActiveSupport::TestCase
     assert_includes article.errors[:url], "내용을 입력해 주세요"
   end
 
+  test "human_attribute_name은 locale별 기사 속성명을 반환해야 한다" do
+    I18n.with_locale(:ko) do
+      assert_equal "URL", Article.human_attribute_name(:url)
+    end
+
+    I18n.with_locale(:ja) do
+      assert_equal "URL", Article.human_attribute_name(:url)
+    end
+  end
+
   test "origin_url이 비어있을 때 url로부터 설정되어야 한다" do
     article = Article.new(
       title: "Test Article",

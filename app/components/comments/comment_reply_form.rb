@@ -87,7 +87,7 @@ class Components::Comments::CommentReplyForm < Components::Base
       f.text_area :body,
         rows: 3,
         class: text_area_classes(@comment.errors[:body]),
-        placeholder: t("comments.comment_reply_form.body_placeholder"),
+        placeholder: t("helpers.placeholder.comment.reply_body"),
         maxlength: ::Post::MAX_BODY_LENGTH,
         data: { character_count_target: "input", action: "input->character-count#updateCount" }
       div(class: "text-xs text-content-muted text-right") do

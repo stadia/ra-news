@@ -6,7 +6,41 @@ ko:
         one: "%{count}건의 오류가 있습니다"
         other: "%{count}건의 오류가 있습니다"
 
+  helpers:
+    placeholder:
+      actor:
+        account: "user@domain.tld"
+        account_or_username: "user@domain.tld 또는 username"
+      comment:
+        body: "댓글을 입력하세요..."
+        reply_body: "답글을 입력하세요..."
+      post:
+        body: "무슨 생각을 하고 계신가요?"
+        reply_body: "답글을 입력하세요..."
+      search:
+        articles: "검색..."
+      user:
+        email: "email 주소"
+        new_password: "새 비밀번호를 입력하세요"
+        new_password_confirmation: "새 비밀번호를 다시 입력하세요"
+        password: "비밀번호"
+        username: "영문, 숫자, 밑줄, 점"
+
   activerecord:
+    attributes:
+      article:
+        url: "URL"
+      post:
+        body: "댓글 내용"
+      user:
+        avatar: "프로필 사진"
+        current_password: "현재 비밀번호"
+        email: "이메일"
+        locale: "표시 언어"
+        name: "이름"
+        password: "비밀번호"
+        password_confirmation: "비밀번호 확인"
+        username: "아이디"
     errors:
       models:
         user:
@@ -31,13 +65,11 @@ ko:
       unknown_author: "알 수 없음"
       view_article: "기사 보기"
     post_form:
-      body_placeholder: "무슨 생각을 하고 계신가요?"
       replying_to: "답글 작성 중 "
       cancel: "취소"
       reply_submit: "답글"
       post_submit: "게시"
     reply_form:
-      placeholder: "답글을 입력하세요..."
       char_unit: " 자"
       cancel: "취소"
       submit: "답글"
@@ -74,7 +106,6 @@ ko:
       subtitle: "URL을 입력하면 수집과 요약 처리를 시작합니다."
       back_to_list: "목록으로 돌아가기"
     form:
-      url_label: "Url"
       submit: "등록"
       errors_heading: "%{count}건의 오류로 인해 글을 저장할 수 없습니다:"
 
@@ -90,8 +121,6 @@ ko:
       error_heading: "오류가 발생했습니다:"
       login_prompt_before: "댓글을 작성하려면 "
       login_prompt_after: " 이 필요합니다."
-      body_label: "댓글 내용"
-      body_placeholder: "댓글을 입력하세요..."
       guideline: "정중하고 건설적인 댓글을 작성해 주세요."
       submit: "댓글 작성"
     comment_reply_form:
@@ -99,7 +128,6 @@ ko:
       error_heading: "오류가 발생했습니다:"
       login_prompt_before: "답글을 작성하려면 "
       login_prompt_after: " 하세요."
-      body_placeholder: "답글을 입력하세요..."
       cancel: "취소"
       submit: "답글 작성"
 
@@ -121,7 +149,6 @@ ko:
       new_article: "글 등록"
     search:
       aria_label: "기사 검색"
-      placeholder: "검색..."
       submit: "검색"
     footer:
       mastodon: "Mastodon"
@@ -175,43 +202,26 @@ ko:
       edit_heading: "정보 수정"
       sign_up_heading: "회원 가입"
       new_beginning: "새로운 시작"
-      avatar_label: "프로필 사진"
       avatar_hint: "정사각형 대표 썸네일로 400x400 크롭되어 외부에 공개됩니다."
       remove_avatar: "현재 프로필 사진 제거"
-      name_label: "이름"
-      email_label: "이메일"
-      locale_label: "표시 언어"
       locale_auto: "자동 (브라우저 설정)"
       locale_options:
         ko: "한국어"
         ja: "일본어"
-      username_label: "아이디"
-      username_placeholder: "영문, 숫자, 밑줄, 점"
       optional_name_label: "이름 (선택)"
-      password_label: "비밀번호"
-      password_confirmation_label: "비밀번호 확인"
       change_password: "비밀번호 변경"
       back: "돌아가기"
       save_changes: "변경사항 저장"
       sign_up_submit: "가입하기"
       avatar_alt_default: "프로필 이미지"
     password_form:
-      current_password_label: "현재 비밀번호"
-      password_label: "비밀번호"
-      password_confirmation_label: "비밀번호 확인"
       back: "돌아가기"
       save: "비밀번호 저장"
     user:
-      email_label: "이메일 주소"
-      name_label: "사용자 이름"
 
   sessions:
     new:
       title: "로그인"
-      email_label: "이메일"
-      email_placeholder: "email 주소"
-      password_label: "비밀번호"
-      password_placeholder: "비밀번호"
       submit: "로그인"
       sign_up: "회원 가입"
       forgot_password: "비밀번호를 잊으셨나요?"
@@ -291,15 +301,9 @@ ko:
   passwords:
     new:
       heading: "비밀번호를 잊으셨나요?"
-      email_label: "이메일"
-      email_placeholder: "이메일 주소를 입력하세요"
       submit: "재설정 메일 보내기"
     edit:
       heading: "새 비밀번호 설정"
-      password_label: "새 비밀번호"
-      password_placeholder: "새 비밀번호를 입력하세요"
-      password_confirmation_label: "새 비밀번호 확인"
-      password_confirmation_placeholder: "새 비밀번호를 다시 입력하세요"
       submit: "저장"
 
   oauth:
