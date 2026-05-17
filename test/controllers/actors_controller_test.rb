@@ -61,4 +61,12 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  test "GET lookup without account renders lookup form" do
+    get lookup_actors_path
+
+    assert_response :success
+    assert_select "h1", text: I18n.t("actors.lookup.heading")
+    assert_select "input[name='account'][placeholder='#{I18n.t("helpers.placeholder.actor.account")}']"
+  end
 end

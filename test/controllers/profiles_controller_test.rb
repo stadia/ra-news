@@ -104,4 +104,27 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  test "GET comments as Turbo frame renders comment list" do
+    user = users(:john)
+
+    get "/@#{user.username}/comments", headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_includes response.body, posts(:comment_post).body
+    assert_includes response.body, I18n.t("profiles.activity_tabs.comments")
+  end
+
+  test "GET likes as owner Turbo frame renders liked articles and posts" do
+    user = users(:john)
+    sign_in user
+    Like.create!(liker: user, likeable: articles(:ruby_article), created_at: Time.current)
+    Like.create!(liker: user, likeable: posts(:root_post), created_at: 1.minute.ago)
+
+    get "/@#{user.username}/likes", headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_includes response.body, articles(:ruby_article).title_ko
+    assert_includes response.body, posts(:root_post).body
+  end
 end

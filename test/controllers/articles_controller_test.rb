@@ -120,7 +120,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select "#error_explanation"
-    assert_select "li", text: /Url/
+    assert_select "#error_explanation li", text: /URL/
   end
 
   test "GET others renders pagination and push notification modal when multiple pages exist" do

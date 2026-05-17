@@ -3,6 +3,10 @@
 require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    @thumbnail_path = Rails.root.join("public/icon.png")
+  end
+
   test "GET root renders successfully" do
     get root_path
 
@@ -36,6 +40,38 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_operator queries.grep(/FROM "users" WHERE "users"\."id" =/).size, :<=, 1
   end
 
+  test "GET root renders featured article cards with hero summary string" do
+    attach_thumbnail(articles(:ruby_article))
+    attach_thumbnail(articles(:korean_content_article))
+    attach_thumbnail(create_featured_article!(title: "Feature third", title_ko: "세 번째 주요 기사", slug: "feature-third", summary_key: "핵심 요약"))
+
+    get root_path
+
+    assert_response :success
+    assert_select "section", text: /주요 뉴스/
+    assert_select "img", minimum: 3
+    assert_select "a[href='#{article_path(articles(:ruby_article))}']", text: /Ruby 3.4의 놀라운 새 기능들/
+  end
+
+  test "GET root renders featured hero summary array items" do
+    attach_thumbnail(articles(:ruby_article))
+    attach_thumbnail(articles(:korean_content_article))
+    attach_thumbnail(create_featured_article!(
+      title: "Array feature",
+      title_ko: "배열 요약 주요 기사",
+      slug: "array-feature",
+      summary_key: [ "첫 번째 요약", "두 번째 요약", "세 번째 요약" ],
+      published_at: 1.minute.from_now
+    ))
+
+    get root_path
+
+    assert_response :success
+    assert_select "li span", text: /첫 번째 요약/
+    assert_select "li span", text: /두 번째 요약/
+    assert_select "li span", text: /세 번째 요약/
+  end
+
   test "GET about returns 200 with introduction content" do
     get about_path
 
@@ -64,5 +100,32 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     end
 
     queries
+  end
+
+  def attach_thumbnail(article)
+    article.thumbnail.attach(
+      io: File.open(@thumbnail_path),
+      filename: "#{article.slug || article.id}.png",
+      content_type: "image/png"
+    )
+  end
+
+  def create_featured_article!(title:, title_ko:, slug:, summary_key:, published_at: Time.current)
+    article = Article.new(
+      title: title,
+      title_ko: title_ko,
+      url: "https://example.com/#{slug}",
+      origin_url: "https://example.com/#{slug}",
+      host: "example.com",
+      slug: slug,
+      published_at: published_at,
+      is_related: true,
+      summary_key: summary_key,
+      user: users(:john),
+      site: sites(:ruby_weekly)
+    )
+
+    article.stub(:generate_metadata, nil) { article.save! }
+    article
   end
 end
