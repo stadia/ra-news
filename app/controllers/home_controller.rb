@@ -27,9 +27,9 @@ class HomeController < ApplicationController
     remaining_scope = scope.where.not(id: featured_ids)
     article_count = remaining_scope.where(created_at: 24.hours.ago...).count
     @articles = if article_count < 9
-      remaining_scope.without_toast.limit(9).order(created_at: :desc).sort_by { -it.published_at.to_i }
+      remaining_scope.without_toast.order(published_at: :desc).limit(9)
     else
-      remaining_scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc).sort_by { -it.published_at.to_i }
+      remaining_scope.without_toast.where(created_at: 24.hours.ago...).order(published_at: :desc)
     end
     @liked_article_ids = Like.liked_ids_for(
       liker: current_user,
