@@ -44,7 +44,7 @@ class Components::Users::PwdForm < Components::Base
 
           div(class: "space-y-8 pt-8 border-t border-border-subtle/60") do
             render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_current_password) { User.human_attribute_name(:current_password) }
+              render RubyUI::FormFieldLabel.new(for: :user_current_password) { ::User.human_attribute_name(:current_password) }
               form.password_field :current_password, class: input_classes(@user.errors[:current_password])
               @user.errors[:current_password].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
@@ -52,7 +52,7 @@ class Components::Users::PwdForm < Components::Base
             end
 
             render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_password) { User.human_attribute_name(:password) }
+              render RubyUI::FormFieldLabel.new(for: :user_password) { ::User.human_attribute_name(:password) }
               form.password_field :password, class: input_classes(@user.errors[:password])
               @user.errors[:password].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
@@ -60,7 +60,7 @@ class Components::Users::PwdForm < Components::Base
             end
 
             render RubyUI::FormField.new do
-              render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { User.human_attribute_name(:password_confirmation) }
+              render RubyUI::FormFieldLabel.new(for: :user_password_confirmation) { ::User.human_attribute_name(:password_confirmation) }
               form.password_field :password_confirmation, class: input_classes(@user.errors[:password_confirmation])
               @user.errors[:password_confirmation].each do |msg|
                 render RubyUI::FormFieldError.new { msg }
