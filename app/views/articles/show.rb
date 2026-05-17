@@ -55,7 +55,7 @@ class Views::Articles::Show < Views::Base
 
     div(class: "w-full overflow-hidden") do
       image_tag(
-        @article.thumbnail.variant(resize_to_fill: [ 1600, 900 ]),
+        @article.thumbnail.variant(resize_to_fill: [ 1200, 675 ]),
         class: "w-full aspect-video object-cover",
         loading: "eager",
         decoding: "auto",
