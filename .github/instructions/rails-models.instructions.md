@@ -39,4 +39,4 @@ Check here first for scopes, constants, associations. Read model files for busin
 - Tag (1 associations)
   scopes: confirmed, unconfirmed
 - User (7 associations)
-  scopes: with_role, admins
+  scopes: with_role, admins | SUPPORTED_LOCALES: ko, ja, en | SUPPORTED_SIGNUP_HOSTS: ruby-news.kr, ruby-news.jp

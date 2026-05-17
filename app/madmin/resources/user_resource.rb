@@ -4,7 +4,8 @@ class UserResource < Madmin::Resource
   attribute :username, form: false, index: true
   attribute :name
   attribute :email, index: true
-  attribute :signup_host, index: true, form: false
+  attribute :signup_host, form: false
+  attribute :confirmed?, index: true
 
   attribute :created_at, form: false
   attribute :updated_at, form: false

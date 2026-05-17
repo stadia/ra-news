@@ -6,14 +6,14 @@ Rails 8.1.3 | Ruby 4.0.4
 ## Stack
 - Database: PostgreSQL — 26 tables
 - Models: 24
-- Routes: 160 across 48 controllers
+- Routes: 164 across 49 controllers
 - Auth: Devise
-- I18n: 2 locales (en, ko)
+- I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 120 components, 120 Phlex
-- Performance: 11 issues detected
+- Components: 121 components, 121 Phlex
+- Performance: 8 issues detected
 - auth: devise, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -57,7 +57,6 @@ Rails 8.1.3 | Ruby 4.0.4
 ## Architecture
 - Hotwire (Turbo + Stimulus)
 - Service objects pattern (app/services/)
-- Query objects (app/queries/)
 - Presenters/Decorators
 - ViewComponent (app/components/)
 - phlex
@@ -65,7 +64,6 @@ Rails 8.1.3 | Ruby 4.0.4
 - Import maps (no JS bundler)
 - concerns_models
 - concerns_controllers
-- policies
 - serializers
 - pwa
 - Dockerized

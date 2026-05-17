@@ -1,93 +1,508 @@
-<div class="container mx-auto px-4 py-8">
-  <h1 class="text-3xl font-bold mb-6">관리자 대시보드</h1>
+<% content_for :title, "대시보드" %>
 
-  <!-- Key Metrics -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-lg font-semibold text-gray-600">총 기사 수</h2>
-      <p class="text-3xl font-bold"><%= @articles_count %></p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-lg font-semibold text-gray-600">총 사이트 수</h2>
-      <p class="text-3xl font-bold"><%= @sites_count %></p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-lg font-semibold text-gray-600">총 사용자 수</h2>
-      <p class="text-3xl font-bold"><%= @users_count %></p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-lg font-semibold text-gray-600">총 댓글 수</h2>
-      <p class="text-3xl font-bold"><%= @comments_count %></p>
-    </div>
-  </div>
+<style>
+  /* ── 대시보드 커스텀 스타일 ── */
+  .dashboard { font-family: 'Noto Sans KR', system-ui, -apple-system, sans-serif; }
 
-  <!-- Weekly Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-lg font-semibold text-gray-600">이번 주 새 기사</h2>
-      <p class="text-3xl font-bold"><%= @weekly_articles %></p>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-lg font-semibold text-gray-600">활성 RSS 사이트 (1주일)</h2>
-      <p class="text-3xl font-bold"><%= @active_sites %></p>
-    </div>
-  </div>
+  /* 카드 그림자 승격 */
+  .dash-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .dash-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Recent Articles -->
-    <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow">
-      <h2 class="text-xl font-bold mb-4">최신 기사</h2>
-      <ul>
-        <% @recent_articles.each do |article| %>
-          <li class="border-b last:border-b-0 py-3">
-            <p class="font-semibold"><%= link_to article.title, madmin_article_path(article), class: "hover:text-blue-600" %></p>
-            <p class="text-sm text-gray-500"><%= article.site&.name %> - <%= time_ago_in_words(article.created_at) %> 전</p>
-          </li>
-        <% end %>
-      </ul>
-    </div>
+  /* 스파크라인 바 차트 */
+  .spark-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 48px;
+  }
+  .spark-bar .bar {
+    flex: 1;
+    background: linear-gradient(to top, oklch(0.723 0.192 150), oklch(0.55 0.15 150));
+    border-radius: 2px 2px 0 0;
+    min-width: 0;
+    transition: opacity 0.15s;
+    position: relative;
+  }
+  .spark-bar .bar:hover {
+    opacity: 0.75;
+  }
+  .spark-bar .bar .bar-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 10;
+  }
+  .spark-bar .bar:hover .bar-tooltip { display: block; }
 
-    <!-- Popular Tags -->
-    <div class="bg-white p-6 rounded-lg shadow">
-      <h2 class="text-xl font-bold mb-4">인기 태그</h2>
-      <table class="w-full text-sm text-left text-gray-500">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-          <tr>
-            <th scope="col" class="px-6 py-3">태그</th>
-            <th scope="col" class="px-6 py-3">카운트</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @popular_tags.each do |tag| %>
-            <tr class="bg-white border-b">
-              <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                <%= tag.name %>
-              </th>
-              <td class="px-6 py-4">
-                <%= tag.taggings_count %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  /* 태그 클라우드 */
+  .tag-cloud-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .tag-cloud-item:hover { transform: translateY(-1px); }
 
-  <!-- Recent Comments -->
-  <div class="mt-8 bg-white p-6 rounded-lg shadow">
-    <h2 class="text-xl font-bold mb-4">최신 댓글</h2>
-    <ul>
-      <% @recent_comments.each do |comment| %>
-        <li class="border-b last:border-b-0 py-3">
-          <p class="text-gray-800">"<%= truncate(comment.body, length: 100) %>"</p>
-          <p class="text-sm text-gray-500 mt-1">
-            <% if comment.article.present? %>
-              <strong><%= comment.author_name %></strong> 님이 <strong><%= link_to comment.article.title, madmin_article_path(comment.article), class: "hover:text-blue-600" %></strong> 기사에 댓글을 남겼습니다.
-              (<%= time_ago_in_words(comment.created_at) %> 전)
-            <% end %>
-          </p>
-        </li>
+  /* 진행률 표시줄 */
+  .progress-track {
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  /* 트렌드 화살표 */
+  .trend-up { color: oklch(0.648 0.175 132); }
+  .trend-down { color: oklch(0.637 0.208 25); }
+
+  /* 차트 컨테이너 */
+  .chart-canvas { max-height: 200px; }
+
+  /* 액티비티 타임라인 */
+  .activity-item {
+    position: relative;
+    padding-left: 1.75rem;
+  }
+  .activity-item::before {
+    content: '';
+    position: absolute;
+    left: 0.45rem;
+    top: 0.6rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: oklch(0.723 0.192 150);
+  }
+  .activity-item::after {
+    content: '';
+    position: absolute;
+    left: 0.65rem;
+    top: 1.35rem;
+    width: 1px;
+    height: calc(100% - 0.5rem);
+    background: #e5e7eb;
+  }
+  .activity-item:last-child::after { display: none; }
+
+  /* 미니 스탯 아이콘 배경 */
+  .stat-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* 섹션 제목 */
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+  }
+
+  /* 스크롤 가능한 테이블 */
+  .dash-table { width: 100%; border-collapse: collapse; }
+  .dash-table th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .dash-table td {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.8rem;
+    border-bottom: 1px solid #f3f4f6;
+    color: #374151;
+  }
+  .dash-table tr:hover td { background: #f9fafb; }
+
+  /* 상태 배지 */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .status-badge.success { background: #ecfdf5; color: #065f46; }
+  .status-badge.danger  { background: #fef2f2; color: #991b1b; }
+  .status-badge.info    { background: #eff6ff; color: #1e40af; }
+  .status-badge.warning { background: #fffbeb; color: #92400e; }
+
+  /* 여백 오버라이드 — madmin 기본 패딩과 충돌 방지 */
+  .dashboard-grid {
+    display: grid;
+    gap: 1rem;
+  }
+</style>
+
+<div class="dashboard" style="padding: 1.5rem; max-width: 1200px;">
+  <!-- ══════════════ 페이지 헤더 ══════════════ -->
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <div>
+      <h1 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin: 0;">대시보드</h1>
+      <p style="font-size: 0.8rem; color: #6b7280; margin-top: 2px;">
+        AI 뉴스 플랫폼 운영 현황 — <%= l(Time.current, format: :short) %>
+      </p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <%= link_to madmin_articles_path, class: "status-badge info", style: "text-decoration:none;" do %>
+        📰 기사 관리
       <% end %>
-    </ul>
+      <%= link_to madmin_tags_path, class: "status-badge info", style: "text-decoration:none;" do %>
+        🏷️ 태그 관리
+      <% end %>
+    </div>
+  </div>
+
+  <!-- ══════════════ 핵심 지표 카드 ══════════════ -->
+  <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+    <%# ── 기사 ── %>
+    <div class="dash-card" style="padding: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="stat-icon" style="background: #ecfdf5; color: #065f46;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9.2a2 2 0 0 1 .15-.74L3.4 3.8A2 2 0 0 1 5.27 2h13.46a2 2 0 0 1 1.87 1.27l1.27 3.26a2 2 0 0 1 .15.74V18a2 2 0 0 1-2 2H4Z"/><path d="M10 2v4a2 2 0 0 1-2 2H2"/><path d="M9 14h6"/><path d="M9 18h6"/></svg>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:0.7rem; color:#6b7280; font-weight:500; text-transform:uppercase; letter-spacing:0.05em;">총 기사</div>
+          <div style="font-size:1.5rem; font-weight:700; color:#111827; line-height:1.2;"><%= number_with_delimiter(@articles_count) %></div>
+        </div>
+      </div>
+      <div style="margin-top:0.5rem; font-size:0.7rem; color:#6b7280;">
+        이번 주 <strong style="color:#111827;"><%= @weekly_articles %></strong>건
+        <% if @prev_weekly_articles > 0 %>
+          <% diff = @weekly_articles - @prev_weekly_articles %>
+          <% pct = ((diff.to_f / @prev_weekly_articles) * 100).round %>
+          <span class="<%= diff >= 0 ? 'trend-up' : 'trend-down' %>" style="font-weight:600;">
+            <%= diff >= 0 ? '↑' : '↓' %><%= pct.abs %>%
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── 사이트 ── %>
+    <div class="dash-card" style="padding: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="stat-icon" style="background: #eff6ff; color: #1e40af;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:0.7rem; color:#6b7280; font-weight:500; text-transform:uppercase; letter-spacing:0.05em;">RSS 사이트</div>
+          <div style="font-size:1.5rem; font-weight:700; color:#111827; line-height:1.2;"><%= number_with_delimiter(@sites_count) %></div>
+        </div>
+      </div>
+      <div style="margin-top:0.5rem; font-size:0.7rem; color:#6b7280;">
+        활성 <strong style="color:#111827;"><%= @active_sites %></strong>개 (최근 1주)
+      </div>
+    </div>
+
+    <%# ── 사용자 ── %>
+    <div class="dash-card" style="padding: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="stat-icon" style="background: #fef3c7; color: #92400e;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:0.7rem; color:#6b7280; font-weight:500; text-transform:uppercase; letter-spacing:0.05em;">사용자</div>
+          <div style="font-size:1.5rem; font-weight:700; color:#111827; line-height:1.2;"><%= number_with_delimiter(@users_count) %></div>
+        </div>
+      </div>
+      <div style="margin-top:0.5rem; font-size:0.7rem; color:#6b7280;">
+        인증 완료 <strong style="color:#111827;"><%= @confirmed_users %></strong>명
+      </div>
+    </div>
+
+    <%# ── 댓글 ── %>
+    <div class="dash-card" style="padding: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="stat-icon" style="background: #faf5ff; color: #7c3aed;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:0.7rem; color:#6b7280; font-weight:500; text-transform:uppercase; letter-spacing:0.05em;">댓글</div>
+          <div style="font-size:1.5rem; font-weight:700; color:#111827; line-height:1.2;"><%= number_with_delimiter(@comments_count) %></div>
+        </div>
+      </div>
+      <div style="margin-top:0.5rem; font-size:0.7rem; color:#6b7280;">
+        이번 주 <strong style="color:#111827;"><%= @weekly_comments %></strong>건
+        <% if @prev_weekly_comments > 0 %>
+          <% diff_c = @weekly_comments - @prev_weekly_comments %>
+          <% pct_c = ((diff_c.to_f / @prev_weekly_comments) * 100).round %>
+          <span class="<%= diff_c >= 0 ? 'trend-up' : 'trend-down' %>" style="font-weight:600;">
+            <%= diff_c >= 0 ? '↑' : '↓' %><%= pct_c.abs %>%
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ── 좋아요 ── %>
+    <div class="dash-card" style="padding: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="stat-icon" style="background: #fff1f2; color: #e11d48;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        </div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-size:0.7rem; color:#6b7280; font-weight:500; text-transform:uppercase; letter-spacing:0.05em;">좋아요</div>
+          <div style="font-size:1.5rem; font-weight:700; color:#111827; line-height:1.2;"><%= number_with_delimiter(@likes_count) %></div>
+        </div>
+      </div>
+      <div style="margin-top:0.5rem; font-size:0.7rem; color:#6b7280;">
+        전체 활동 누적
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ 메인 그리드 ══════════════ -->
+  <div class="dashboard-grid" style="grid-template-columns: 1fr 380px; margin-bottom: 1.5rem;">
+
+    <!-- ── 왼쪽: 일별 기사 차트 + 최근 기사 ── -->
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+      <%# ── 일별 기사 수 바 차트 ── %>
+      <div class="dash-card" style="padding: 1.25rem;">
+        <div class="section-title">최근 14일 기사 트렌드</div>
+        <div class="spark-bar" id="daily-chart">
+          <% max_val = @daily_articles.values.max || 1 %>
+          <% @daily_articles.each do |day, count| %>
+            <div class="bar" style="height: <%= max_val > 0 ? [(count.to_f / max_val * 100), 4].max : 4 %>%; min-width: 0;">
+              <span class="bar-tooltip"><%= l(day, format: :short) %>: <%= count %>건</span>
+            </div>
+          <% end %>
+        </div>
+        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+          <span style="font-size:0.65rem; color:#9ca3af;"><%= l(13.days.ago.to_date, format: :short) %></span>
+          <span style="font-size:0.65rem; color:#9ca3af;"><%= l(Date.current, format: :short) %></span>
+        </div>
+      </div>
+
+      <%# ── 최근 기사 테이블 ── %>
+      <div class="dash-card" style="padding: 1.25rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+          <div class="section-title" style="margin-bottom:0;">최신 기사</div>
+          <%= link_to "전체 보기 →", madmin_articles_path, style: "font-size:0.75rem; color:#4f46e5; text-decoration:none;" %>
+        </div>
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>제목</th>
+              <th>사이트</th>
+              <th style="text-align:right;">등록</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @recent_articles.each do |article| %>
+              <tr>
+                <td style="max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                  <%= link_to article.title_ko.presence || article.title, madmin_article_path(article), style: "color:#1d4ed8; text-decoration:none; font-weight:500;" %>
+                  <% if article.is_youtube %>
+                    <span class="status-badge warning" style="margin-left:4px;">YT</span>
+                  <% end %>
+                </td>
+                <td style="color:#6b7280;"><%= article.site&.name || "—" %></td>
+                <td style="text-align:right; color:#6b7280; white-space:nowrap;"><%= time_ago_in_words(article.created_at) %> 전</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── 오른쪽 사이드바 ── -->
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+
+      <%# ── 콘텐츠 분해 ── %>
+      <div class="dash-card" style="padding: 1.25rem;">
+        <div class="section-title">콘텐츠 분해</div>
+
+        <%# 요약 커버리지 ── %>
+        <div style="margin-bottom: 1rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:4px;">
+            <span style="color:#374151; font-weight:500;">AI 요약 완료</span>
+            <span style="color:#6b7280;"><%= @summarized_count %> / <%= @articles_count %></span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: <%= @articles_count > 0 ? (@summarized_count.to_f / @articles_count * 100).round : 0 %>%; background: oklch(0.723 0.192 150);"></div>
+          </div>
+        </div>
+
+        <%# 포스팅 비율 ── %>
+        <div style="margin-bottom: 1rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:4px;">
+            <span style="color:#374151; font-weight:500;">소셜 포스팅</span>
+            <span style="color:#6b7280;"><%= @posted_count %> / <%= @articles_count %></span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: <%= @articles_count > 0 ? (@posted_count.to_f / @articles_count * 100).round : 0 %>%; background: #8b5cf6;"></div>
+          </div>
+        </div>
+
+        <%# 관련 기사 ── %>
+        <div style="margin-bottom: 1rem;">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:4px;">
+            <span style="color:#374151; font-weight:500;">관련성 표시</span>
+            <span style="color:#6b7280;"><%= @related_count %> / <%= @articles_count %></span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" style="width: <%= @articles_count > 0 ? (@related_count.to_f / @articles_count * 100).round : 0 %>%; background: #f59e0b;"></div>
+          </div>
+        </div>
+
+        <%# 소스별 ── %>
+        <div style="font-size:0.75rem; font-weight:500; color:#374151; margin-bottom:0.5rem;">소스 유형별 사이트</div>
+        <% @articles_by_client.each do |client, count| %>
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:0.25rem 0; border-bottom:1px solid #f3f4f6;">
+            <span style="color:#6b7280;">
+              <% case client %>
+              <% when :rss %>
+                📡 RSS
+              <% when :youtube %>
+                🎬 YouTube
+              <% when :reddit %>
+                💬 Reddit
+              <% when :hacker_news %>
+                📢 HN
+              <% when :gmail %>
+                📧 Gmail
+              <% when :rss_page %>
+                🌐 RSS Page
+              <% else %>
+                ❓ <%= client %>
+              <% end %>
+            </span>
+            <span style="font-weight:600; color:#111827;"><%= count %></span>
+          </div>
+        <% end %>
+      </div>
+
+      <%# ── 알림 배송 건강 ── %>
+      <div class="dash-card" style="padding: 1.25rem;">
+        <div class="section-title">알림 배송 상태</div>
+        <div style="display:flex; gap:1rem; align-items:center;">
+          <div style="flex:1; text-align:center;">
+            <div style="font-size:1.8rem; font-weight:700; color:oklch(0.648 0.175 132);"><%= @notification_total > 0 ? (@notification_sent.to_f / @notification_total * 100).round(1) : 0 %>%</div>
+            <div style="font-size:0.7rem; color:#6b7280;">성공률</div>
+          </div>
+          <div style="border-left:1px solid #e5e7eb; padding-left:1rem;">
+            <div style="font-size:0.75rem; margin-bottom:0.4rem;">
+              <span class="status-badge success">✓ 성공</span>
+              <strong style="color:#111827; margin-left:4px;"><%= number_with_delimiter(@notification_sent) %></strong>
+            </div>
+            <div style="font-size:0.75rem;">
+              <span class="status-badge danger">✗ 실패</span>
+              <strong style="color:#111827; margin-left:4px;"><%= number_with_delimiter(@notification_failed) %></strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%# ── 인기 태그 클라우드 ── %>
+      <div class="dash-card" style="padding: 1.25rem;">
+        <div class="section-title">인기 태그</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px;">
+          <% max_taggings = @popular_tags.maximum(:taggings_count) || 1 %>
+          <% @popular_tags.each do |tag| %>
+            <% ratio = (tag.taggings_count.to_f / max_taggings) %>
+            <% font_size = 0.65 + ratio * 0.45 %>
+            <% bg_colors = ["#ecfdf5", "#eff6ff", "#fef3c7", "#faf5ff", "#fff1f2", "#f0fdf4", "#fefce8", "#eff6ff", "#fdf2f8", "#f5f3ff"] %>
+            <% text_colors = ["#065f46", "#1e40af", "#92400e", "#7c3aed", "#e11d48", "#166534", "#854d0e", "#1d4ed8", "#be185d", "#6d28d9"] %>
+            <% idx = @popular_tags.index(tag) %>
+            <%= link_to madmin_tags_path, style: "text-decoration:none;" do %>
+              <span class="tag-cloud-item" style="background:<%= bg_colors[idx % bg_colors.length] %>; color:<%= text_colors[idx % text_colors.length] %>; font-size:<%= font_size.round(2) %>rem;">
+                <%= tag.name %>
+                <span style="opacity:0.6; font-weight:400;"><%= tag.taggings_count %></span>
+              </span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ 최근 댓글 ══════════════ -->
+  <div class="dash-card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+      <div class="section-title" style="margin-bottom:0;">최신 댓글</div>
+    </div>
+    <% if @recent_comments.any? %>
+      <div style="display:flex; flex-direction:column; gap:0;">
+        <% @recent_comments.each do |comment| %>
+          <div class="activity-item" style="padding-bottom:0.75rem; padding-top:0.5rem;">
+            <div style="font-size:0.8rem; color:#374151; line-height:1.5;">
+              "<%= truncate(comment.body, length: 120) %>"
+            </div>
+            <div style="font-size:0.7rem; color:#9ca3af; margin-top:2px;">
+              <strong style="color:#6b7280;"><%= comment.user&.name || "익명" %></strong> 님이
+              <% if comment.article.present? %>
+                <%= link_to truncate(comment.article.title, length: 40), madmin_article_path(comment.article), style: "color:#4f46e5; text-decoration:none;" %>에 댓글
+              <% end %>
+              — <%= time_ago_in_words(comment.created_at) %> 전
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p style="color:#9ca3af; font-size:0.8rem; text-align:center; padding:1.5rem 0;">아직 댓글이 없습니다.</p>
+    <% end %>
+  </div>
+
+  <!-- ══════════════ 호스트 순위 6–15위 ══════════════ -->
+  <div class="dash-card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+    <div class="section-title">호스트 순위 <span style="font-weight:400; text-transform:none; letter-spacing:normal;">6–15위</span></div>
+    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.5rem 1.5rem;">
+      <% max_host_count = @top_hosts.values.first || 1 %>
+      <% @top_hosts.each_with_index do |(host, count), idx| %>
+        <div style="display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0;">
+          <span style="width:1.5rem; text-align:right; font-size:0.7rem; color:#9ca3af; flex-shrink:0;"><%= idx + 6 %></span>
+          <span style="flex:1; font-size:0.8rem; color:#374151; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="<%= host %>"><%= host %></span>
+          <span style="font-size:0.75rem; font-weight:600; color:#111827; flex-shrink:0;"><%= number_with_delimiter(count) %></span>
+          <div style="width:60px; flex-shrink:0;">
+            <div class="progress-track" style="height:4px;">
+              <div class="progress-fill" style="width:<%= (count.to_f / max_host_count * 100).round %>%; background:oklch(0.723 0.192 150);"></div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- ══════════════ 푸터 정보 ══════════════ -->
+  <div style="text-align:center; padding:1rem 0; font-size:0.7rem; color:#9ca3af;">
+    AI 뉴스 관리자 대시보드 — Rails <%= Rails.version %> / Ruby <%= RUBY_VERSION %>
   </div>
 </div>

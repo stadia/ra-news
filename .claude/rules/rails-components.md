@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (120)
+# Components (121)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -117,7 +117,7 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Link** (phlex)
   props: href:"#", variant::link, size::md, icon:false, attrs
 - **LoginRequired** (phlex)
-  props: title:"로그인이 필요합니다", message:"댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다."
+  props: title:nil, message:nil
 - **Mailers::Layout** (phlex)
   props: title, intro:nil, eyebrow:nil
 - **Pagination** (phlex)
@@ -139,6 +139,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: post, liked:nil
 - **Posts::ReplyForm** (phlex)
   props: parent_post
+- **Profiles::ActivityTabs** (phlex)
+  props: user, active_tab
 - **Progress** (phlex)
   props: value:0, attrs
 - **PushNotifications::PromptModal** (phlex)

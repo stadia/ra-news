@@ -10,7 +10,7 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - ActsAsTaggableOn::Tag (table: tags) — 1 assocs, 3 validations
   methods: count, taggings, validates_name_uniqueness?
 - Article (table: articles) — 12 assocs, 7 validations
-  concerns: ArticleClassMethods, FederailsLikeable
+  concerns: LocalizedDisplay, ArticleClassMethods, FederailsLikeable
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
   methods: to_activitypub_object, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, likes_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, apply_like, apply_undo_like, apply_unlike, base_tags, cached_owned_tag_list_on, cached_tag_list_on, create_or_update_pg_search_document, current_federails_activity_actor
 - DiscordChannel (table: notification_channels) — 1 assocs, 3 validations
@@ -63,6 +63,8 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - Tag (table: tags) — 1 assocs, 3 validations
   scopes: confirmed, unconfirmed
   methods: count, taggings, validates_name_uniqueness?
-- User (table: users) — 7 assocs, 11 validations
+- User (table: users) — 7 assocs, 13 validations
   scopes: with_role, admins
   methods: admin?, full_name, has_role?, accept_follow, avatar_attached?, avatar_url, remove_avatar!, sync_federails_actor_extensions, to_activitypub_object, after_confirmation, articles, avatar, avatar_attachment, avatar_blob, confirm, confirmation_period_expired?, confirmed?
+  SUPPORTED_LOCALES: ko, ja, en
+  SUPPORTED_SIGNUP_HOSTS: ruby-news.kr, ruby-news.jp

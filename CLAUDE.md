@@ -7,16 +7,16 @@
 ## Stack
 - Database: static_parse — 24 tables
 - Models: 22
-- Routes: 160 across 27 controllers
+- Routes: 164 across 28 controllers
 - Async: 15 jobs
-- Migrations: 109 total, 0 pending
+- Migrations: 112 total, 0 pending
 - Auth: Devise
-- I18n: 2 locales (en, ko)
+- I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 120 components, 120 Phlex
-- Performance: 11 issues detected
+- Components: 121 components, 121 Phlex
+- Performance: 8 issues detected
 
 ## Key models (22 total)
 - **ActsAsTaggableOn::Tag** (1a, 3v) — has_many :taggings
@@ -60,7 +60,6 @@
 ## Architecture
 - Hotwire (Turbo + Stimulus)
 - Service objects pattern (app/services/)
-- Query objects (app/queries/)
 - Presenters/Decorators
 - ViewComponent (app/components/)
 - phlex
@@ -68,7 +67,6 @@
 - Import maps (no JS bundler)
 - concerns_models
 - concerns_controllers
-- policies
 - serializers
 - pwa
 - Dockerized
@@ -99,7 +97,7 @@
 ## Rules
 - Run `rails test` after changes
 - Do NOT re-read files to verify edits — trust your Edit, validate syntax only
-- Follow hotwire + service_objects + query_objects + presenters + view_components + phlex + stimulus + importmaps + concerns_models + concerns_controllers + policies + serializers + pwa + docker + kamal + ci_github_actions + solid_queue + solid_cache + solid_cable + dry_rb + zeitwerk architecture
+- Follow hotwire + service_objects + presenters + view_components + phlex + stimulus + importmaps + concerns_models + concerns_controllers + serializers + pwa + docker + kamal + ci_github_actions + solid_queue + solid_cache + solid_cable + dry_rb + zeitwerk architecture
 - Stimulus controllers auto-register — no manual import in controllers/index.js needed
 - Global before_actions: authenticate_user!
 
@@ -147,6 +145,8 @@ Use individual tools only when you need deeper detail on a specific layer.
 5. `rails 'ai:tool[generate_test]' model=Post` — generate tests matching project patterns
 
 **Fix a controller bug:**
+1. `rails 'ai:tool[context]' controller=PostsController action=create` — action source + routes + views + model
+2. Read the controller file, make your fix
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->
