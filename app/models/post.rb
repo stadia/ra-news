@@ -119,6 +119,7 @@ class Post < ApplicationRecord
 
   #: () -> String?
   def author_host
+    return if user_id.present?
     return if federails_actor.nil? || federails_actor&.server.blank?
     "(#{federails_actor&.server})"
   end

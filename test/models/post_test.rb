@@ -149,6 +149,11 @@ class PostTest < ActiveSupport::TestCase
     assert_equal "(#{@remote_post.federails_actor.server})", @remote_post.author_host
   end
 
+  test "author_host는 로컬 user가 있으면 nil을 반환한다" do
+    assert_nil @root_post.author_host
+    assert_nil @comment_post.author_host
+  end
+
   test "author_host는 federails_actor가 없으면 nil을 반환한다" do
     assert_nil @root_post.author_host
   end

@@ -25,6 +25,17 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, like_queries.size
   end
 
+  test "GET root avoids per-record queries for thumbnails and recent comment authors" do
+    queries = capture_queries do
+      get root_path
+    end
+
+    assert_response :success
+    assert_empty queries.grep(/FROM "active_storage_blobs" WHERE "active_storage_blobs"\."id" =/)
+    assert_empty queries.grep(/FROM "active_storage_attachments" WHERE "active_storage_attachments"\."record_id" =/)
+    assert_operator queries.grep(/FROM "users" WHERE "users"\."id" =/).size, :<=, 1
+  end
+
   test "GET about returns 200 with introduction content" do
     get about_path
 
@@ -34,18 +45,22 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
 
   private
 
-  def capture_like_queries
+  def capture_like_queries(&block)
+    capture_queries(&block).select { |sql| sql.include?('"likes"') }
+  end
+
+  def capture_queries(&block)
     queries = []
     callback = lambda do |_name, _start, _finish, _id, payload|
       sql = payload[:sql]
-      next unless sql&.include?('"likes"')
-      next unless payload[:name] != "SCHEMA"
+      next unless sql
+      next if payload[:name] == "SCHEMA"
 
       queries << sql
     end
 
     ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
-      yield
+      block.call
     end
 
     queries

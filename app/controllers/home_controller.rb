@@ -17,8 +17,8 @@ class HomeController < ApplicationController
 
   def index
     cacheable_page!
-    scope = Article.includes(:user, :site).kept.confirmed.related
-    @featured_articles = scope.includes(:thumbnail_attachment).without_toast.joins(:thumbnail_attachment).order(published_at: :desc).limit(3).to_a
+    scope = Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related
+    @featured_articles = scope.without_toast.joins(:thumbnail_attachment).order(published_at: :desc).limit(3).to_a
     featured_ids = @featured_articles.map(&:id)
     remaining_scope = scope.where.not(id: featured_ids)
     article_count = remaining_scope.where(created_at: 24.hours.ago...).count
@@ -34,7 +34,12 @@ class HomeController < ApplicationController
     )
 
     @news_media_organization = PUBLISHER_SCHEMA
-    @recent_comments = Post.comments.joins(:article).includes(:article, :user, :federails_actor).where(article: { deleted_at: nil }).order(created_at: :desc).limit(10)
+    @recent_comments = Post.comments
+      .joins(:article)
+      .preload(:article, :federails_actor, user: { avatar_attachment: :blob })
+      .where(article: { deleted_at: nil })
+      .order(created_at: :desc)
+      .limit(10)
     @sidebar_tags = Tag.confirmed.order(taggings_count: :desc, name: :asc).limit(20)
     render Views::Home::Index.new(
       articles: @articles,
