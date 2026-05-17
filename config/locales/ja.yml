@@ -1,6 +1,6 @@
 ja:
   errors:
-    format: "%{attribute} %{message}"
+    format: "%{attribute}%{message}"
     messages:
       form_errors:
         one: "%{count}件のエラーがあります"
