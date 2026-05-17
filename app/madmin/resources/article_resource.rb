@@ -58,6 +58,9 @@ class ArticleResource < Madmin::Resource
         class: "btn btn-warning bg-yellow-600 text-white rounded px-4 py-2 hover:bg-yellow-700")
     end
 
+    actions << button_to("재처리", reprocess_madmin_article_path(record), method: :put, data: { turbo_confirm: "이 기사의 AI 요약을 다시 생성하시겠습니까?" },
+      class: "btn btn-primary bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700")
+
     safe_join(actions, " ")
   end
 

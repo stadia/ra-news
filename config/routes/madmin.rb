@@ -10,6 +10,7 @@ namespace :madmin do
       put :discard
       put :restore
       put :mark_unrelated
+      put :reprocess
     end
   end
   resources :sites do
