@@ -18,7 +18,11 @@ class HomeController < ApplicationController
   def index
     cacheable_page!
     scope = Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related
-    @featured_articles = scope.without_toast.joins(:thumbnail_attachment).order(published_at: :desc).limit(3).to_a
+    @featured_articles = scope.without_toast
+      .where("likers_count > 0 OR EXISTS (SELECT 1 FROM posts WHERE posts.article_id = articles.id)")
+      .order(published_at: :desc)
+      .limit(3)
+      .to_a
     featured_ids = @featured_articles.map(&:id)
     remaining_scope = scope.where.not(id: featured_ids)
     article_count = remaining_scope.where(created_at: 24.hours.ago...).count
