@@ -8,6 +8,8 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "a[href='#{new_user_confirmation_path}']", count: 0
+    assert_select "form[action='#{user_google_oauth2_omniauth_authorize_path}'] button", text: I18n.t("sessions.new.continue_with_google")
+    assert_select "form[action='#{user_apple_omniauth_authorize_path}'] button", text: I18n.t("sessions.new.continue_with_apple")
   end
 
   test "POST create with unconfirmed user shows resend confirmation link" do

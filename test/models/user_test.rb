@@ -15,6 +15,11 @@ class UserTest < ActiveSupport::TestCase
     assert_predicate build_user(email: "test@example.com", username: "test_user", name: "테스트 사용자"), :valid?
   end
 
+  test "omniauth provider가 설정되어 있어야 한다" do
+    assert_includes User.devise_modules, :omniauthable
+    assert_equal %i[google_oauth2 apple], User.omniauth_providers
+  end
+
   test "email는 필수 항목이어야 한다" do
     user = build_user(email: nil)
 

@@ -95,6 +95,7 @@ GEM
       zeitwerk (>= 2.4, < 3.0)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
+    aes_key_wrap (1.1.0)
     alba (3.10.0)
     amazing_print (2.0.0)
     appsignal (4.8.4)
@@ -129,6 +130,7 @@ GEM
     bcrypt (3.1.22)
     benchmark (0.5.0)
     bigdecimal (4.1.2)
+    bindata (2.5.1)
     bindex (0.8.1)
     bootsnap (1.24.4)
       msgpack (~> 1.2)
@@ -284,6 +286,13 @@ GEM
     jmespath (1.6.2)
     json (2.19.5)
     json-canonicalization (1.0.0)
+    json-jwt (1.17.0)
+      activesupport (>= 4.2)
+      aes_key_wrap
+      base64
+      bindata
+      faraday (~> 2.0)
+      faraday-follow_redirects
     json-ld (3.3.2)
       htmlentities (~> 4.3)
       json-canonicalization (~> 1.0)
@@ -395,6 +404,22 @@ GEM
     oj (3.17.1)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
+    omniauth (2.1.4)
+      hashie (>= 3.4.6)
+      logger
+      rack (>= 2.2.3)
+      rack-protection
+    omniauth-apple (1.4.0)
+      json-jwt
+      omniauth-oauth2
+    omniauth-google-oauth2 (1.2.2)
+      jwt (>= 2.9.2)
+      oauth2 (~> 2.0)
+      omniauth (~> 2.0)
+      omniauth-oauth2 (~> 1.8)
+    omniauth-oauth2 (1.9.0)
+      oauth2 (>= 2.0.2, < 3)
+      omniauth (~> 2.0)
     openssl (4.0.2)
     opentelemetry-api (1.10.0)
       logger
@@ -545,6 +570,10 @@ GEM
     rack-cors (3.0.0)
       logger
       rack (>= 3.0.14)
+    rack-protection (4.2.1)
+      base64 (>= 0.1.0)
+      logger (>= 1.6.0)
+      rack (>= 3.0.0, < 4)
     rack-session (2.1.2)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -902,6 +931,8 @@ DEPENDENCIES
   neighbor
   oauth2 (~> 2.0)
   oj
+  omniauth-apple
+  omniauth-google-oauth2
   opentelemetry-exporter-otlp
   opentelemetry-exporter-otlp-logs
   opentelemetry-instrumentation-concurrent_ruby

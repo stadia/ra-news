@@ -162,6 +162,20 @@ Devise.setup do |config|
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [:email]
 
+  config.omniauth :google_oauth2,
+                  ENV.fetch("GOOGLE_OAUTH_CLIENT_ID", nil),
+                  ENV.fetch("GOOGLE_OAUTH_CLIENT_SECRET", nil),
+                  scope: "email,profile",
+                  prompt: "select_account"
+
+  config.omniauth :apple,
+                  ENV.fetch("APPLE_CLIENT_ID", nil),
+                  "",
+                  scope: "email name",
+                  team_id: ENV.fetch("APPLE_TEAM_ID", nil),
+                  key_id: ENV.fetch("APPLE_KEY_ID", nil),
+                  pem: ENV.fetch("APPLE_PRIVATE_KEY", nil)
+
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
   config.remember_for = 2.weeks

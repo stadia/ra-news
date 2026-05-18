@@ -9,11 +9,14 @@ Rails.application.routes.draw do
     sessions: "users/sessions",
     registrations: "users/registrations",
     passwords: "users/passwords",
-    confirmations: "users/confirmations"
+    confirmations: "users/confirmations",
+    omniauth_callbacks: "users/omniauth_callbacks"
   }
 
   devise_scope :user do
     get "account/password", to: "users/registrations#password", as: :account_password
+    get "account/oauth-signup", to: "users/oauth_registrations#new", as: :new_user_oauth_registration
+    post "account/oauth-signup", to: "users/oauth_registrations#create", as: :user_oauth_registration
   end
 
   namespace :api do

@@ -7,6 +7,20 @@ class Views::Sessions::New < Views::Base
     div(class: "space-y-6 max-w-6xl mx-auto") do
       render RubyUI::Heading.new(level: 1, class: "font-bold") { t("sessions.new.title") }
 
+      div(class: "mb-6 flex flex-col gap-3 sm:flex-row") do
+        form_with(url: user_google_oauth2_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
+          render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
+            t("sessions.new.continue_with_google")
+          end
+        end
+
+        form_with(url: user_apple_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
+          render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
+            t("sessions.new.continue_with_apple")
+          end
+        end
+      end
+
       form_with(url: user_session_path, scope: :user, class: "contents") do |form|
         render RubyUI::FormField.new(class: "my-5") do
           render RubyUI::FormFieldLabel.new(for: :email) { User.human_attribute_name(:email) }
