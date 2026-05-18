@@ -19,18 +19,22 @@ class HomeController < ApplicationController
     cacheable_page!
     scope = Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related
     @featured_articles = scope.without_toast
-      .where("likers_count > 0 OR EXISTS (SELECT 1 FROM posts WHERE posts.article_id = articles.id)")
-      .order(published_at: :desc)
+      .where("likers_count > ? OR posts_count > ?", 0, 0)
+      .where(created_at: 48.hours.ago...)
+      .order(likers_count: :desc, posts_count: :desc, created_at: :desc)
       .limit(3)
       .to_a
+
     featured_ids = @featured_articles.map(&:id)
     remaining_scope = scope.where.not(id: featured_ids)
     article_count = remaining_scope.where(created_at: 24.hours.ago...).count
     @articles = if article_count < 9
-      remaining_scope.without_toast.order(published_at: :desc).limit(9)
+      remaining_scope.without_toast.order(created_at: :desc).limit(9)
     else
-      remaining_scope.without_toast.where(created_at: 24.hours.ago...).order(published_at: :desc)
+      remaining_scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc)
     end
+    @articles = @articles.sort_by { -it.published_at.to_i }
+
     @liked_article_ids = Like.liked_ids_for(
       liker: current_user,
       likeable_type: "Article",

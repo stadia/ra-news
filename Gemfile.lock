@@ -661,7 +661,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.35.0)
+    rubocop-rails (2.35.1)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
@@ -746,7 +746,7 @@ GEM
       gli
       hashie
       logger
-    snaky_hash (2.0.3)
+    snaky_hash (2.0.4)
       hashie (>= 0.1.0, < 6)
       version_gem (>= 1.1.8, < 3)
     socialization (3.0.0)
