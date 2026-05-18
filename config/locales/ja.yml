@@ -225,6 +225,7 @@ ja:
       submit: "ログイン"
       sign_up: "新規登録"
       forgot_password: "パスワードをお忘れですか?"
+      resend_confirmation: "確認メールを再送しますか?"
 
   profiles:
     show:

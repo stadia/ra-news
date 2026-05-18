@@ -3,10 +3,25 @@
 require "test_helper"
 
 class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
-  test "GET new renders sign in page" do
+  test "GET new renders sign in page without resend confirmation link" do
     get new_user_session_path
 
     assert_response :success
+    assert_select "a[href='#{new_user_confirmation_path}']", count: 0
+  end
+
+  test "POST create with unconfirmed user shows resend confirmation link" do
+    user = users(:john)
+    user.update!(confirmed_at: nil)
+
+    post user_session_path, params: {
+      user: { email: user.email, password: "password" }
+    }
+    follow_redirect!
+
+    assert_response :success
+    assert_equal I18n.t("devise.failure.unconfirmed"), flash[:alert]
+    assert_select "a[href='#{new_user_confirmation_path}']", text: I18n.t("sessions.new.resend_confirmation")
   end
 
   test "GET new redirects to root for already signed in user" do

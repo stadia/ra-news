@@ -225,6 +225,7 @@ ko:
       submit: "로그인"
       sign_up: "회원 가입"
       forgot_password: "비밀번호를 잊으셨나요?"
+      resend_confirmation: "인증 메일을 다시 받으시겠어요?"
 
   profiles:
     show:

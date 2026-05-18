@@ -29,35 +29,44 @@ class Views::Sessions::New < Views::Base
                               class: "block shadow-sm rounded-md border border-border-muted px-3 py-2 mt-2 w-full bg-surface-muted text-content placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent transition-colors duration-200"
         end
 
-        div(class: "col-span-6 sm:flex sm:items-center sm:gap-4") do
-          div(class: "inline") do
-            render RubyUI::Button.new(
-              type: "submit",
-              variant: :primary,
-              size: :lg,
-              class: "w-full sm:w-auto rounded-md bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
-            ) { t("sessions.new.submit") }
-          end
+        div(class: "col-span-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4") do
+          render RubyUI::Button.new(
+            type: "submit",
+            variant: :primary,
+            size: :lg,
+            class: "w-full sm:w-auto rounded-md bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
+          ) { t("sessions.new.submit") }
 
-          div(class: "inline") do
-            render RubyUI::Link.new(
-              href: new_user_registration_path,
-              variant: :primary,
-              size: :lg,
-              class: "w-full sm:w-auto text-center rounded-md bg-surface-muted hover:bg-surface-hover text-content inline-block font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
-            ) { t("sessions.new.sign_up") }
-          end
+          render RubyUI::Link.new(
+            href: new_user_registration_path,
+            variant: :primary,
+            size: :lg,
+            class: "w-full sm:w-auto text-center rounded-md bg-surface-muted hover:bg-surface-hover text-content font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
+          ) { t("sessions.new.sign_up") }
 
-          div(class: "inline") do
+          render RubyUI::Link.new(
+            href: new_user_password_path,
+            variant: :primary,
+            size: :lg,
+            class: "w-full sm:w-auto text-center rounded-md text-content-muted hover:text-content font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
+          ) { t("sessions.new.forgot_password") }
+
+          if confirmation_required?
             render RubyUI::Link.new(
-              href: new_user_password_path,
+              href: new_user_confirmation_path,
               variant: :primary,
               size: :lg,
-              class: "w-full sm:w-auto text-center rounded-md text-content-muted hover:text-content inline-block font-medium cursor-pointer focus:outline-none"
-            ) { t("sessions.new.forgot_password") }
+              class: "w-full sm:w-auto text-center rounded-md text-content-muted hover:text-content font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-app"
+            ) { t("sessions.new.resend_confirmation") }
           end
         end
       end
     end
+  end
+
+  private
+
+  def confirmation_required?
+    view_context.flash[:alert] == t("devise.failure.unconfirmed")
   end
 end
