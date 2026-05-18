@@ -68,6 +68,35 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
     assert_equal "Like", undo_activity.entity.action
   end
 
+  test "local user like on local post creates public federated Like activity" do
+    assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
+      @user.like!(@local_post)
+    end
+
+    activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+
+    assert_equal @user.federails_actor, activity.actor
+    assert_equal @local_post, activity.entity
+    assert_equal [ Fediverse::Collection::PUBLIC ], activity.to
+    assert_includes activity.cc, @user.federails_actor.followers_url
+  end
+
+  test "local user unlike on local post creates public federated Undo activity" do
+    @user.like!(@local_post)
+
+    assert_difference("Federails::Activity.where(action: 'Undo').count", 1) do
+      @user.unlike!(@local_post)
+    end
+
+    undo_activity = Federails::Activity.where(action: "Undo").order(created_at: :desc).first
+
+    assert_equal @user.federails_actor, undo_activity.actor
+    assert_instance_of Federails::Activity, undo_activity.entity
+    assert_equal "Like", undo_activity.entity.action
+    assert_equal [ Fediverse::Collection::PUBLIC ], undo_activity.to
+    assert_includes undo_activity.cc, @user.federails_actor.followers_url
+  end
+
   test "local user like on remote article creates federated Like activity" do
     assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
       @user.like!(@remote_article)
@@ -92,6 +121,35 @@ class LikeFederationServiceTest < ActiveSupport::TestCase
     assert_equal @user.federails_actor, undo_activity.actor
     assert_instance_of Federails::Activity, undo_activity.entity
     assert_equal "Like", undo_activity.entity.action
+  end
+
+  test "local user like on local article creates public federated Like activity" do
+    assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
+      @user.like!(@local_article)
+    end
+
+    activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+
+    assert_equal @user.federails_actor, activity.actor
+    assert_equal @local_article, activity.entity
+    assert_equal [ Fediverse::Collection::PUBLIC ], activity.to
+    assert_includes activity.cc, @user.federails_actor.followers_url
+  end
+
+  test "local user unlike on local article creates public federated Undo activity" do
+    @user.like!(@local_article)
+
+    assert_difference("Federails::Activity.where(action: 'Undo').count", 1) do
+      @user.unlike!(@local_article)
+    end
+
+    undo_activity = Federails::Activity.where(action: "Undo").order(created_at: :desc).first
+
+    assert_equal @user.federails_actor, undo_activity.actor
+    assert_instance_of Federails::Activity, undo_activity.entity
+    assert_equal "Like", undo_activity.entity.action
+    assert_equal [ Fediverse::Collection::PUBLIC ], undo_activity.to
+    assert_includes undo_activity.cc, @user.federails_actor.followers_url
   end
 
   test "incoming remote like increases local post like count" do
