@@ -64,6 +64,15 @@ minimal_site:
   name: Minimal Site
   client: rss
 
+# Reddit
+reddit:
+  name: Reddit Ruby
+  client: reddit
+  url: https://www.reddit.com/r/ruby+rails
+  base_uri: https://www.reddit.com
+  path: /r/ruby+rails
+  last_checked_at: <%= 12.hours.ago %>
+
 # Legacy fixture names
 one:
   name: Site One

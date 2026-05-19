@@ -2,7 +2,7 @@
 # rbs_inline: enabled
 
 class RedditSiteJob < ApplicationJob
-  # Reddit 내부 도메인 패턴 (이 도메인들은 외부 링크로 취급하지 않음)
+  # Reddit 내부 도메인 (self-post 판별용)
   REDDIT_HOSTS = %w[
     reddit.com
     www.reddit.com
@@ -13,17 +13,16 @@ class RedditSiteJob < ApplicationJob
     i.redd.it
     preview.redd.it
     external-preview.redd.it
-    rubygems.org
+    github.com
   ].freeze
 
   def perform
     site = Site.reddit.first
     return if site.nil?
 
-    feed = Reddit.feed
-
-    feed.items.each do |item|
-      process_item(item, site)
+    %i[top hot].each do |sort|
+      params = sort == :top ? { sort: :top, period: :day, limit: 50 } : { sort: :hot, limit: 50 }
+      Reddit.feed(**params).each { |post| process_post(post, site) }
     end
 
     site.update(last_checked_at: Time.zone.now)
@@ -31,49 +30,58 @@ class RedditSiteJob < ApplicationJob
 
   private
 
-  #: (RSS::Atom::Feed::Entry item, Site site) -> void
-  def process_item(item, site)
-    # 이미 처리된 아이템인지 확인 (origin_url 기준)
-    item_url = item.link&.href
-    return if item_url.blank? || Article.exists?(origin_url: item_url)
+  #: (Hash[String, untyped] post, Site site) -> void
+  def process_post(post, site)
+    post_url = post["url"]
+    return if post_url.blank?
 
-    # 본문에서 외부 링크 추출
-    external_links = extract_external_links_from_content(item)
-
-    external_links.each do |url|
-      next if Article.exists?(origin_url: url)
-      next if Article.should_ignore_url?(url)
-
-      begin
-        parsed_url = URI.parse(url)
-        next if parsed_url.path.nil? || parsed_url.path.size < 2
-      rescue URI::InvalidURIError
-        next
+    # self-post인 경우: 본문의 외부 링크를 추출
+    if post["is_self"]
+      extract_external_links(post["selftext_html"]).each do |url|
+        create_article(url:, site:, post:)
       end
-
-      Article.create!(
-        url: url,
-        origin_url: url,
-        site: site,
-        user: User.first_bot
-      )
-      sleep 1
-    rescue ActiveRecord::ActiveRecordError => e
-      logger.error "Failed to create article for #{url}: #{e.message}"
+      return
     end
+
+    # 링크 포스트인 경우: url이 곧 외부 링크
+    create_article(url: post_url, site:, post:) if external_link?(post_url)
   end
 
-  #: (RSS::Atom::Feed::Entry item) -> Array[String]
-  def extract_external_links_from_content(item)
-    content = item.content&.content
-    return [] if content.blank?
+  #: (url: String, site: Site, post: Hash[String, untyped]) -> void
+  def create_article(url:, site:, post:)
+    return if Article.exists?(origin_url: url)
+    return if Article.should_ignore_url?(url)
 
-    doc = Nokogiri::HTML5.fragment(content)
+    begin
+      parsed_url = URI.parse(url)
+      return if parsed_url.path.nil? || parsed_url.path.size < 2
+    rescue URI::InvalidURIError
+      return
+    end
+
+    Article.create!(
+      title: post["title"],
+      url: url,
+      origin_url: url,
+      published_at: post["created_utc"] ? Time.at(post["created_utc"]) : nil,
+      site: site,
+      user: User.first_bot
+    )
+    sleep 1
+  rescue ActiveRecord::ActiveRecordError => e
+    logger.error "Failed to create article for #{url}: #{e.message}"
+  end
+
+  #: (String? html) -> Array[String]
+  def extract_external_links(html)
+    return [] if html.blank?
+
+    # Reddit의 selftext_html은 HTML 엔티티로 인코딩되어 있음
+    decoded = CGI.unescapeHTML(html)
+    doc = Nokogiri::HTML5.fragment(decoded)
     links = doc.css("a").map { |a| a["href"] }.compact.uniq
 
-    links.filter do |url|
-      external_link?(url)
-    end
+    links.select { |link| external_link?(link) }
   end
 
   #: (String url) -> bool
@@ -85,7 +93,6 @@ class RedditSiteJob < ApplicationJob
       host = uri.host&.downcase
       return false if host.blank?
 
-      # Reddit 내부 도메인이 아닌 경우만 외부 링크로 판단
       REDDIT_HOSTS.none? { |reddit_host| host == reddit_host || host.end_with?(".#{reddit_host}") }
     rescue URI::InvalidURIError
       false
