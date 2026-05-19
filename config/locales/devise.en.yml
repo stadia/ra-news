@@ -1,0 +1,30 @@
+en:
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            email:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              invalid: "is not a valid email format"
+            username:
+              blank: "can't be blank"
+              taken: "has already been taken"
+              too_short: "must be at least 2 characters"
+              too_long: "must be 30 characters or fewer"
+            password:
+              blank: "can't be blank"
+              too_short: "must be at least 6 characters"
+            password_confirmation:
+              confirmation: "doesn't match password"
+  devise:
+    confirmations:
+      new:
+        title: "Email Confirmation"
+        submit: "Resend confirmation email"
+        email_placeholder: "Enter your email address"
+    mailer:
+      confirmation_instructions:
+        title: "Email confirmation required"
+        message: "Click the link below to confirm your email:"

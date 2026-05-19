@@ -23,6 +23,9 @@ production:
   social_post_job:
     class: "SocialPostJob"
     schedule: "*/10 * * * *"
+  reddit_site_job:
+    class: RedditSiteJob
+    schedule: "0 10,22 * * *"
   discarded_article_cleanup_job:
     class: "DiscardedArticleCleanupJob"
     schedule: "0 4 * * 0"

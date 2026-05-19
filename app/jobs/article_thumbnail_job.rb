@@ -19,20 +19,67 @@ class ArticleThumbnailJob < ApplicationJob
       return
     end
 
+    if article.is_youtube?
+      attach_youtube_thumbnail(article)
+    else
+      generate_ai_thumbnail(article)
+    end
+  rescue ActiveRecord::RecordNotFound
+    logger.info "ArticleThumbnailJob skip: article #{article_id} not found"
+  end
+
+  private
+
+  # YouTube 썸네일 해상도 후보 (높은 순)
+  YOUTUBE_THUMBNAIL_QUALITIES = %w[maxresdefault sddefault hqdefault mqdefault default].freeze
+
+  #: (Article article) -> void
+  def attach_youtube_thumbnail(article)
+    video_id = article.youtube_id
+    if video_id.blank?
+      logger.info "ArticleThumbnailJob skip: article #{article.id} has no youtube_id"
+      return
+    end
+
+    response = fetch_youtube_thumbnail(video_id)
+    if response.nil?
+      logger.warn "ArticleThumbnailJob failed: no youtube thumbnail for article #{article.id}"
+      return
+    end
+
+    article.thumbnail.attach(
+      io: StringIO.new(response.body),
+      filename: "thumbnail-#{article.id}.jpg",
+      content_type: response.headers["content-type"] || "image/jpeg"
+    )
+    logger.info "ArticleThumbnailJob attached youtube thumbnail for article #{article.id}"
+  end
+
+  #: (String video_id) -> Faraday::Response?
+  def fetch_youtube_thumbnail(video_id)
+    YOUTUBE_THUMBNAIL_QUALITIES.each do |quality|
+      url = "https://img.youtube.com/vi/#{video_id}/#{quality}.jpg"
+      response = Faraday.get(url)
+      # YouTube는 존재하지 않는 해상도에 120x90 placeholder를 반환하므로 크기로 판별
+      return response if response.success? && response.body.bytesize > 5_000
+    end
+    nil
+  end
+
+  #: (Article article) -> void
+  def generate_ai_thumbnail(article)
     summary_key = article.summary_key
     if summary_key.blank? || !summary_key.is_a?(Array) || summary_key.empty?
-      logger.info "ArticleThumbnailJob skip: article #{article_id} has no summary_key"
+      logger.info "ArticleThumbnailJob skip: article #{article.id} has no summary_key"
       return
     end
 
     prompt = build_prompt(summary_key)
     message = ArticleImageAgent.new.ask(prompt)
-    # attachment = RubyLLM.paint(prompt, size: "1536x1024", model: "gpt-image-2", provider: :openai,
-    #   assume_model_exists: true)
 
     attachment = message.content[:attachments].first
     if attachment.blank?
-      logger.warn "ArticleThumbnailJob failed: no image generated for article #{article_id}"
+      logger.warn "ArticleThumbnailJob failed: no image generated for article #{article.id}"
       return
     end
 
@@ -40,16 +87,10 @@ class ArticleThumbnailJob < ApplicationJob
     article.thumbnail.attach(
       io: StringIO.new(attachment.content),
       filename: "thumbnail-#{article.id}.#{ext}",
-      # io: StringIO.new(attachment.to_blob),
-      # filename: "thumbnail-#{article.id}.png",
       content_type: attachment.mime_type
     )
-    logger.info "ArticleThumbnailJob attached thumbnail for article #{article_id}"
-  rescue ActiveRecord::RecordNotFound
-    logger.info "ArticleThumbnailJob skip: article #{article_id} not found"
+    logger.info "ArticleThumbnailJob attached ai thumbnail for article #{article.id}"
   end
-
-  private
 
   #: (Array[String] summary_key) -> String
   def build_prompt(summary_key)

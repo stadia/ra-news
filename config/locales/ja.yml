@@ -208,6 +208,7 @@ ja:
       locale_options:
         ko: "韓国語"
         ja: "日本語"
+        en: "英語"
       optional_name_label: "名前 (任意)"
       change_password: "パスワード変更"
       back: "戻る"
