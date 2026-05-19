@@ -7,7 +7,7 @@ class ArticleThumbnailJob < ApplicationJob
 
   #: (Integer article_id) -> void
   def perform(article_id)
-    article = Article.kept.confirmed.find_by(id: article_id)
+    article = Article.find_by(id: article_id)
 
     if article.nil?
       logger.info "ArticleThumbnailJob skip: article #{article_id} not found"
