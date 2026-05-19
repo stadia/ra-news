@@ -87,7 +87,7 @@ class Components::Users::Form < Components::Base
               render RubyUI::FormField.new do
                 render RubyUI::FormFieldLabel.new(for: :user_locale) { ::User.human_attribute_name(:locale) }
                 form.select :locale,
-                  [ [ t("users.form.locale_options.ko"), "ko" ], [ t("users.form.locale_options.ja"), "ja" ] ],
+                  [ [ t("users.form.locale_options.ko"), "ko" ], [ t("users.form.locale_options.ja"), "ja" ], [ t("users.form.locale_options.en"), "en" ] ],
                   { include_blank: t("users.form.locale_auto") },
                   class: input_classes(@user.errors[:locale])
                 @user.errors[:locale].each do |msg|

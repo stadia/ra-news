@@ -87,7 +87,8 @@ class Components::Layout < Components::Base
 
   OG_LOCALES = {
     ko: "ko_KR",
-    ja: "ja_JP"
+    ja: "ja_JP",
+    en: "en_US"
   }.freeze
 
   def render_meta_tags
