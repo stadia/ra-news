@@ -707,7 +707,7 @@ GEM
       marcel (~> 1)
       ruby_llm-schema (~> 0)
       zeitwerk (~> 2)
-    ruby_llm-schema (0.3.0)
+    ruby_llm-schema (0.3.1)
     ruby_llm-skills (0.3.0)
       ruby_llm (~> 1.12)
     ruby_parser (3.22.0)
