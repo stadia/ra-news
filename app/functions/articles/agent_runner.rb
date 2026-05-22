@@ -7,13 +7,15 @@ module Articles
     class << self
       def run(article:, prompt:, logger:)
         message = ArticleAgent.new.ask(prompt)
-        content = message.content.deep_stringify_keys
+        raw_content = message.content
         logger.info "Response received for article id: #{article.id}"
 
-        if content.blank?
+        if raw_content.blank?
           article.discard!
           return message.finish_reason
         end
+
+        content = raw_content.deep_stringify_keys
 
         apply_tags(article, content)
         normalize_summary_body(content)
@@ -33,9 +35,10 @@ module Articles
       end
 
       def normalize_summary_body(content)
-        return unless content["summary_body"].present?
+        body = content["summary_body"]
+        return if body.blank?
 
-        content["summary_body"] = content["summary_body"]
+        content["summary_body"] = body.to_s
           .gsub("\\n", "\n")
           .gsub("\\t", "\t")
           .gsub("\\r", "\r")

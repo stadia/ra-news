@@ -118,7 +118,14 @@ module OauthAccounts
         incoming_info = incoming.to_h.deep_stringify_keys
 
         existing_info.deep_merge(incoming_info) do |_key, old_value, new_value|
-          new_value.present? ? new_value : old_value
+          case new_value
+          when nil
+            old_value
+          when String, Array, Hash
+            new_value.empty? ? old_value : new_value
+          else
+            new_value
+          end
         end
       end
     end

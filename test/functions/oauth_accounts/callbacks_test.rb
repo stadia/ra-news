@@ -89,6 +89,35 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
     assert_equal "First Login", account.raw_info.dig("info", "name")
   end
 
+  test "기존 oauth account 로그인 시 false 값도 raw_info에 반영한다" do
+    user = users(:john)
+    OauthAccount.create!(
+      user:,
+      provider: "google_oauth2",
+      uid: "google-123",
+      email: user.email,
+      email_verified: true,
+      raw_info: {
+        "provider" => "google_oauth2",
+        "uid" => "google-123",
+        "info" => {
+          "email" => user.email,
+          "name" => "First Login",
+          "email_verified" => true
+        }
+      }
+    )
+    session = {}
+
+    auth = google_auth_hash(email: user.email)
+    auth["info"]["email_verified"] = false
+
+    result = OauthAccounts::Callbacks.handle_callback(auth:, session:)
+
+    assert_equal :sign_in, result[:type]
+    refute OauthAccount.find_by!(provider: "google_oauth2", uid: "google-123").raw_info.dig("info", "email_verified")
+  end
+
   test "신규 user면 signup completion 결과와 suggested username을 반환한다" do
     session = {}
 

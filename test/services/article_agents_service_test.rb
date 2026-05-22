@@ -103,6 +103,22 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     assert_includes article.tag_list, "keynote"
   end
 
+  test "run_agents는 agent content가 nil이면 article을 discard하고 finish_reason을 반환한다" do
+    article = articles(:ruby_article)
+    agent_response = AgentResult.new("length", nil)
+
+    agent = Object.new
+    agent.define_singleton_method(:ask) { |_| agent_response }
+
+    result = nil
+    ArticleAgent.stub(:new, agent) do
+      result = ArticleAgentsService.new.send(:run_agents, article)
+    end
+
+    assert_predicate article.reload, :discarded?
+    assert_equal "length", result
+  end
+
   test "run_humanize는 over_polish_aborted=true이면 article을 갱신하지 않고 실패를 반환한다" do
     article = articles(:ruby_article)
     article.update!(summary_body: "원본 요약")

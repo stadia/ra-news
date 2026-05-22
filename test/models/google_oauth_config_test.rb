@@ -29,14 +29,14 @@ class GoogleOauthConfigTest < ActiveSupport::TestCase
   test "둘 다 있으면 configured?는 true" do
     Preference.create!(name: "google_oauth2_oauth", value: { "client_id" => "id", "client_secret" => "secret" })
 
-    assert GoogleOauthConfig.configured?
+    assert_predicate GoogleOauthConfig, :configured?
   end
 
   test "client_id가 없으면 configured?는 false" do
     ClimateControl.modify GOOGLE_OAUTH_CLIENT_ID: nil, GOOGLE_OAUTH_CLIENT_SECRET: "secret" do
       Preference.create!(name: "google_oauth2_oauth", value: { "client_secret" => "secret" })
 
-      refute GoogleOauthConfig.configured?
+      refute_predicate GoogleOauthConfig, :configured?
     end
   end
 
@@ -44,7 +44,7 @@ class GoogleOauthConfigTest < ActiveSupport::TestCase
     ClimateControl.modify GOOGLE_OAUTH_CLIENT_ID: nil, GOOGLE_OAUTH_CLIENT_SECRET: nil do
       Preference.create!(name: "google_oauth2_oauth", value: { "client_id" => "id" })
 
-      refute GoogleOauthConfig.configured?
+      refute_predicate GoogleOauthConfig, :configured?
     end
   end
 end

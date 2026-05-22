@@ -24,14 +24,14 @@ class AppleOauthConfigTest < ActiveSupport::TestCase
   test "모든 필수 값이 있으면 configured?는 true" do
     Preference.create!(name: "apple_oauth", value: { "client_id" => "id", "team_id" => "team", "key_id" => "key", "signing_secret" => "pem" })
 
-    assert AppleOauthConfig.configured?
+    assert_predicate AppleOauthConfig, :configured?
   end
 
   test "client_id가 없으면 configured?는 false" do
     ClimateControl.modify APPLE_CLIENT_ID: nil do
       Preference.create!(name: "apple_oauth", value: { "team_id" => "team", "key_id" => "key", "signing_secret" => "pem" })
 
-      refute AppleOauthConfig.configured?
+      refute_predicate AppleOauthConfig, :configured?
     end
   end
 
@@ -39,7 +39,7 @@ class AppleOauthConfigTest < ActiveSupport::TestCase
     ClimateControl.modify APPLE_TEAM_ID: nil do
       Preference.create!(name: "apple_oauth", value: { "client_id" => "id", "key_id" => "key", "signing_secret" => "pem" })
 
-      refute AppleOauthConfig.configured?
+      refute_predicate AppleOauthConfig, :configured?
     end
   end
 
@@ -47,7 +47,7 @@ class AppleOauthConfigTest < ActiveSupport::TestCase
     ClimateControl.modify APPLE_KEY_ID: nil do
       Preference.create!(name: "apple_oauth", value: { "client_id" => "id", "team_id" => "team", "signing_secret" => "pem" })
 
-      refute AppleOauthConfig.configured?
+      refute_predicate AppleOauthConfig, :configured?
     end
   end
 
@@ -55,7 +55,7 @@ class AppleOauthConfigTest < ActiveSupport::TestCase
     ClimateControl.modify APPLE_PRIVATE_KEY: nil do
       Preference.create!(name: "apple_oauth", value: { "client_id" => "id", "team_id" => "team", "key_id" => "key" })
 
-      refute AppleOauthConfig.configured?
+      refute_predicate AppleOauthConfig, :configured?
     end
   end
 end
