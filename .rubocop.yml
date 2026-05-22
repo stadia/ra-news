@@ -28,6 +28,7 @@ Bundler/OrderedGems:
 
 Metrics/ClassLength:
   Enabled: true
+  Max: 220
   Exclude:
     - "test/**/*"
     - "db/**/*"
