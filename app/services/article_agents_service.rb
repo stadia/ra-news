@@ -33,7 +33,8 @@ class ArticleAgentsService < OperationService
 
   #: (Article article) -> Dry::Monads::Result
   def run_agents(article)
-    ArticleAgents::AgentRunner.run(article:, prompt: user_prompt(article), logger:)
+    result = Articles::AgentRunner.run(article:, prompt: user_prompt(article), logger:)
+    result.is_a?(Article) ? Success(result) : Failure(result)
   end
 
   #: (Article article) -> Dry::Monads::Result
