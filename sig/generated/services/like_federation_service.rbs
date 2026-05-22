@@ -18,6 +18,15 @@ class LikeFederationService < OperationService
   # : (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
   def publish_undo_activity: (liker: User | Federails::Actor, likeable: Post | Article) -> Dry::Monads::Result
 
+  # : (Federails::Actor, action: String, entity: ActiveRecord::Base, likeable: Post | Article) -> Hash[Symbol, untyped]
+  def activity_attributes: (Federails::Actor, action: String, entity: ActiveRecord::Base, likeable: Post | Article) -> Hash[Symbol, untyped]
+
+  # : (Post | Article) -> Hash[Symbol, Array[String]]
+  def directed_addressing_for: (Post | Article) -> Hash[Symbol, Array[String]]
+
+  # : (untyped likeable) -> bool
+  def federatable_likeable?: (untyped likeable) -> bool
+
   # : (untyped liker) -> Federails::Actor?
   def local_actor_for: (untyped liker) -> Federails::Actor?
 

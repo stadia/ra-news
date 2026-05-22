@@ -22,6 +22,8 @@ class Article < ApplicationRecord
 
   include ArticleClassMethods
 
+  include LocalizedDisplay
+
   # : () -> Hash[String, untyped]
   def to_activitypub_object: () -> Hash[String, untyped]
 
