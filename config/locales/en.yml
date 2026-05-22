@@ -223,6 +223,9 @@ en:
       subtitle: "Confirm the username you'll use and complete your signup."
       submit: "Complete signup"
       session_missing: "Your OAuth signup session has expired. Please sign in again."
+      duplicate_account: "This OAuth account is already linked."
+    omniauth_callbacks:
+      not_configured: "%{provider} login is not yet configured. Please contact the administrator."
 
   sessions:
     new:

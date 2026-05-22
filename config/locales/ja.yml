@@ -223,6 +223,9 @@ ja:
       subtitle: "利用するユーザーIDを確認して登録を完了してください。"
       submit: "登録を完了"
       session_missing: "OAuth登録セッションの有効期限が切れました。もう一度ログインしてください。"
+      duplicate_account: "このOAuthアカウントはすでに連携されています。"
+    omniauth_callbacks:
+      not_configured: "%{provider}ログインはまだ設定されていません。管理者にお問い合わせください。"
 
   sessions:
     new:
