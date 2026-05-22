@@ -49,7 +49,7 @@ class Preference < ApplicationRecord
     # Add other cases for other preference names
     when /_oauth$/
       # Common keys for OAuth preferences
-      [ :site, :client_id, :client_secret, :signing_secret, :access_token, :refresh_token, :expires_at, :token_created_at ]
+      [ :site, :client_id, :client_secret, :signing_secret, :access_token, :refresh_token, :expires_at, :token_created_at, :team_id, :key_id ]
     else
                   []
     end

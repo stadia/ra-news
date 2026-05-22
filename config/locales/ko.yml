@@ -223,6 +223,9 @@ ko:
       subtitle: "사용할 아이디를 확인하고 가입을 완료하세요."
       submit: "가입 완료"
       session_missing: "OAuth 가입 세션이 만료되었습니다. 다시 로그인해 주세요."
+      duplicate_account: "이미 연결된 OAuth 계정입니다."
+    omniauth_callbacks:
+      not_configured: "%{provider} 로그인이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요."
 
   sessions:
     new:

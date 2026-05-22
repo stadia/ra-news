@@ -8,15 +8,19 @@ class Views::Sessions::New < Views::Base
       render RubyUI::Heading.new(level: 1, class: "font-bold") { t("sessions.new.title") }
 
       div(class: "mb-6 flex flex-col gap-3 sm:flex-row") do
-        form_with(url: user_google_oauth2_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
-          render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
-            t("sessions.new.continue_with_google")
+        if GoogleOauthConfig.configured?
+          form_with(url: user_google_oauth2_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
+            render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
+              t("sessions.new.continue_with_google")
+            end
           end
         end
 
-        form_with(url: user_apple_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
-          render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
-            t("sessions.new.continue_with_apple")
+        if AppleOauthConfig.configured?
+          form_with(url: user_apple_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
+            render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
+              t("sessions.new.continue_with_apple")
+            end
           end
         end
       end

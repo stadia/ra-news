@@ -3,6 +3,9 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   layout -> { Components::Layout }
 
+  before_action :verify_google_config, only: :google_oauth2
+  before_action :verify_apple_config, only: :apple
+
   def google_oauth2
     handle_oauth_callback
   end
@@ -12,6 +15,18 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   private
+
+  def verify_google_config
+    return if GoogleOauthConfig.configured?
+
+    redirect_to new_user_session_path, alert: t("users.omniauth_callbacks.not_configured", provider: "Google")
+  end
+
+  def verify_apple_config
+    return if AppleOauthConfig.configured?
+
+    redirect_to new_user_session_path, alert: t("users.omniauth_callbacks.not_configured", provider: "Apple")
+  end
 
   def handle_oauth_callback
     result = OauthAccounts::Callbacks.handle_callback(auth: request.env["omniauth.auth"], session: session)

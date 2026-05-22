@@ -163,18 +163,26 @@ Devise.setup do |config|
   # config.confirmation_keys = [:email]
 
   config.omniauth :google_oauth2,
-                  ENV.fetch("GOOGLE_OAUTH_CLIENT_ID", nil),
-                  ENV.fetch("GOOGLE_OAUTH_CLIENT_SECRET", nil),
+                  nil, nil,
+                  setup: ->(env) {
+                    strategy = env["omniauth.strategy"]
+                    strategy.options[:client_id] = GoogleOauthConfig.client_id
+                    strategy.options[:client_secret] = GoogleOauthConfig.client_secret
+                  },
                   scope: "email,profile",
                   prompt: "select_account"
 
   config.omniauth :apple,
-                  ENV.fetch("APPLE_CLIENT_ID", nil),
-                  "",
-                  scope: "email name",
-                  team_id: ENV.fetch("APPLE_TEAM_ID", nil),
-                  key_id: ENV.fetch("APPLE_KEY_ID", nil),
-                  pem: ENV.fetch("APPLE_PRIVATE_KEY", nil)
+                  nil, "",
+                  setup: ->(env) {
+                    strategy = env["omniauth.strategy"]
+                    strategy.options[:client_id] = AppleOauthConfig.client_id
+                    strategy.options[:client_secret] = "" # Apple uses token-based auth, not client_secret
+                    strategy.options[:team_id] = AppleOauthConfig.team_id
+                    strategy.options[:key_id] = AppleOauthConfig.key_id
+                    strategy.options[:pem] = AppleOauthConfig.private_key
+                  },
+                  scope: "email name"
 
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
