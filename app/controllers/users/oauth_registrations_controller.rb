@@ -9,7 +9,7 @@ class Users::OauthRegistrationsController < ApplicationController
     oauth_signup = session[:oauth_signup]
     return redirect_to(new_user_session_path, alert: t("users.oauth_signup.session_missing")) unless oauth_signup
 
-    @user = User.new(username: OauthAccounts::UsernameSuggester.suggest_username(name: oauth_signup["name"], email: oauth_signup["email"]))
+    @user = User.new(username: OauthAccounts::Callbacks.suggest_username(name: oauth_signup["name"], email: oauth_signup["email"]))
     render Views::Users::OauthSignup.new(user: @user, email: oauth_signup["email"], name: oauth_signup["name"])
   end
 
