@@ -219,6 +219,9 @@ GEM
       net-http (~> 0.5)
     faraday-retry (2.4.0)
       faraday (~> 2.0)
+    ffi (1.17.4-aarch64-linux-gnu)
+    ffi (1.17.4-arm64-darwin)
+    ffi (1.17.4-x86_64-linux-gnu)
     flog (4.9.4)
       path_expander (~> 2.0)
       prism (~> 1.7)
@@ -685,6 +688,9 @@ GEM
     ruby-readability (0.7.3)
       guess_html_encoding (>= 0.0.4)
       nokogiri (>= 1.6.0)
+    ruby-vips (2.3.0)
+      ffi (~> 1.12)
+      logger
     ruby2ruby (2.6.1)
       sexp_processor (~> 4.6)
     ruby_llm (1.15.0)
@@ -933,6 +939,7 @@ DEPENDENCIES
   ruby-lsp-i18n
   ruby-mcp-client (~> 1.0)
   ruby-readability
+  ruby-vips (~> 2.0)
   ruby_llm (~> 1.14)
   ruby_llm-schema
   ruby_llm-skills
