@@ -140,8 +140,8 @@ git commit -m "feat: add omniauth callback endpoints"
 ### Task 4: OAuth payload 정규화 객체/서비스 구현
 
 **Files:**
-- Create: `app/services/oauth_accounts/auth_result_builder.rb`
-- Test: `test/services/oauth_accounts/auth_result_builder_test.rb`
+- Create: `app/functions/oauth_accounts/auth_result_builder.rb`
+- Test: `test/functions/oauth_accounts/auth_result_builder_test.rb`
 
 **Step 1: 실패 테스트 작성**
 - Google payload에서 email/name/uid/provider/email_verified 추출 테스트
@@ -149,7 +149,7 @@ git commit -m "feat: add omniauth callback endpoints"
 - Apple private relay 판별 테스트
 
 **Step 2: 실패 확인**
-- Run: `bin/rails test test/services/oauth_accounts/auth_result_builder_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/auth_result_builder_test.rb`
 
 **Step 3: 최소 구현**
 - auth hash를 받아 normalized result 반환
@@ -164,11 +164,11 @@ git commit -m "feat: add omniauth callback endpoints"
 - private relay 판단 로직 구현
 
 **Step 4: 테스트 통과 확인**
-- Run: `bin/rails test test/services/oauth_accounts/auth_result_builder_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/auth_result_builder_test.rb`
 
 **Step 5: Commit**
 ```bash
-git add app/services/oauth_accounts/auth_result_builder.rb test/services/oauth_accounts/auth_result_builder_test.rb
+git add app/functions/oauth_accounts/auth_result_builder.rb test/functions/oauth_accounts/auth_result_builder_test.rb
 git commit -m "feat: normalize oauth provider payloads"
 ```
 
@@ -177,8 +177,8 @@ git commit -m "feat: normalize oauth provider payloads"
 ### Task 5: 기존 사용자 연결 규칙 서비스 구현
 
 **Files:**
-- Create: `app/services/oauth_accounts/user_matcher.rb`
-- Test: `test/services/oauth_accounts/user_matcher_test.rb`
+- Create: `app/functions/oauth_accounts/user_matcher.rb`
+- Test: `test/functions/oauth_accounts/user_matcher_test.rb`
 
 **Step 1: 실패 테스트 작성**
 - 기존 `OauthAccount` 있으면 해당 사용자 반환
@@ -187,7 +187,7 @@ git commit -m "feat: normalize oauth provider payloads"
 - Apple relay email이면 자동 연결 안 함
 
 **Step 2: 실패 확인**
-- Run: `bin/rails test test/services/oauth_accounts/user_matcher_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/user_matcher_test.rb`
 
 **Step 3: 최소 구현**
 - 우선순위:
@@ -197,11 +197,11 @@ git commit -m "feat: normalize oauth provider payloads"
 - module보다 상태가 필요 없다면 module + `module_function` 우선 검토
 
 **Step 4: 테스트 통과 확인**
-- Run: `bin/rails test test/services/oauth_accounts/user_matcher_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/user_matcher_test.rb`
 
 **Step 5: Commit**
 ```bash
-git add app/services/oauth_accounts/user_matcher.rb test/services/oauth_accounts/user_matcher_test.rb
+git add app/functions/oauth_accounts/user_matcher.rb test/functions/oauth_accounts/user_matcher_test.rb
 git commit -m "feat: add oauth user matching rules"
 ```
 
@@ -210,8 +210,8 @@ git commit -m "feat: add oauth user matching rules"
 ### Task 6: username 제안기 구현
 
 **Files:**
-- Create: `app/services/oauth_accounts/username_suggester.rb`
-- Test: `test/services/oauth_accounts/username_suggester_test.rb`
+- Create: `app/functions/oauth_accounts/username_suggester.rb`
+- Test: `test/functions/oauth_accounts/username_suggester_test.rb`
 
 **Step 1: 실패 테스트 작성**
 - name/email 기반 기본 username 제안 테스트
@@ -220,7 +220,7 @@ git commit -m "feat: add oauth user matching rules"
 - 길이/최소 길이 보정 테스트
 
 **Step 2: 실패 확인**
-- Run: `bin/rails test test/services/oauth_accounts/username_suggester_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/username_suggester_test.rb`
 
 **Step 3: 최소 구현**
 - 입력 후보: name → email local-part 순
@@ -229,11 +229,11 @@ git commit -m "feat: add oauth user matching rules"
 - 중복이면 `_1`, `_2` 등 suffix
 
 **Step 4: 테스트 통과 확인**
-- Run: `bin/rails test test/services/oauth_accounts/username_suggester_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/username_suggester_test.rb`
 
 **Step 5: Commit**
 ```bash
-git add app/services/oauth_accounts/username_suggester.rb test/services/oauth_accounts/username_suggester_test.rb
+git add app/functions/oauth_accounts/username_suggester.rb test/functions/oauth_accounts/username_suggester_test.rb
 git commit -m "feat: suggest usernames for oauth signups"
 ```
 
@@ -242,9 +242,9 @@ git commit -m "feat: suggest usernames for oauth signups"
 ### Task 7: callback 분기 서비스 구현 (로그인 vs 신규가입 준비)
 
 **Files:**
-- Create: `app/services/oauth_accounts/callback_service.rb`
+- Create: `app/functions/oauth_accounts/callback_service.rb`
 - Modify: `app/controllers/users/omniauth_callbacks_controller.rb`
-- Test: `test/services/oauth_accounts/callback_service_test.rb`
+- Test: `test/functions/oauth_accounts/callback_service_test.rb`
 - Test: `test/controllers/users/omniauth_callbacks_controller_test.rb`
 
 **Step 1: 실패 테스트 작성**
@@ -253,7 +253,7 @@ git commit -m "feat: suggest usernames for oauth signups"
 - 신규 사용자면 보완 세션 payload 반환
 
 **Step 2: 실패 확인**
-- Run: `bin/rails test test/services/oauth_accounts/callback_service_test.rb test/controllers/users/omniauth_callbacks_controller_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/callback_service_test.rb test/controllers/users/omniauth_callbacks_controller_test.rb`
 
 **Step 3: 최소 구현**
 - 서비스 결과 타입 예시:
@@ -264,11 +264,11 @@ git commit -m "feat: suggest usernames for oauth signups"
 - 신규 플로우는 session에 임시 oauth payload 저장
 
 **Step 4: 테스트 통과 확인**
-- Run: `bin/rails test test/services/oauth_accounts/callback_service_test.rb test/controllers/users/omniauth_callbacks_controller_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/callback_service_test.rb test/controllers/users/omniauth_callbacks_controller_test.rb`
 
 **Step 5: Commit**
 ```bash
-git add app/services/oauth_accounts/callback_service.rb app/controllers/users/omniauth_callbacks_controller.rb test/services/oauth_accounts/callback_service_test.rb test/controllers/users/omniauth_callbacks_controller_test.rb
+git add app/functions/oauth_accounts/callback_service.rb app/controllers/users/omniauth_callbacks_controller.rb test/functions/oauth_accounts/callback_service_test.rb test/controllers/users/omniauth_callbacks_controller_test.rb
 git commit -m "feat: route oauth callbacks into sign-in flow"
 ```
 
@@ -310,9 +310,9 @@ git commit -m "feat: add oauth username completion screen"
 ### Task 9: 최종 신규 가입 서비스 구현
 
 **Files:**
-- Create: `app/services/oauth_accounts/registration_service.rb`
+- Create: `app/functions/oauth_accounts/registration_service.rb`
 - Modify: `app/controllers/users/oauth_registrations_controller.rb`
-- Test: `test/services/oauth_accounts/registration_service_test.rb`
+- Test: `test/functions/oauth_accounts/registration_service_test.rb`
 - Test: `test/controllers/users/oauth_registrations_controller_test.rb`
 
 **Step 1: 실패 테스트 작성**
@@ -322,7 +322,7 @@ git commit -m "feat: add oauth username completion screen"
 - username validation 실패 시 다시 폼 표시 테스트
 
 **Step 2: 실패 확인**
-- Run: `bin/rails test test/services/oauth_accounts/registration_service_test.rb test/controllers/users/oauth_registrations_controller_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/registration_service_test.rb test/controllers/users/oauth_registrations_controller_test.rb`
 
 **Step 3: 최소 구현**
 - service에서 transaction으로 생성
@@ -338,11 +338,11 @@ git commit -m "feat: add oauth username completion screen"
 - 성공 시 sign in
 
 **Step 4: 테스트 통과 확인**
-- Run: `bin/rails test test/services/oauth_accounts/registration_service_test.rb test/controllers/users/oauth_registrations_controller_test.rb`
+- Run: `bin/rails test test/functions/oauth_accounts/registration_service_test.rb test/controllers/users/oauth_registrations_controller_test.rb`
 
 **Step 5: Commit**
 ```bash
-git add app/services/oauth_accounts/registration_service.rb app/controllers/users/oauth_registrations_controller.rb test/services/oauth_accounts/registration_service_test.rb test/controllers/users/oauth_registrations_controller_test.rb
+git add app/functions/oauth_accounts/registration_service.rb app/controllers/users/oauth_registrations_controller.rb test/functions/oauth_accounts/registration_service_test.rb test/controllers/users/oauth_registrations_controller_test.rb
 git commit -m "feat: complete oauth user registration"
 ```
 
@@ -418,11 +418,11 @@ git add test/integration/oauth_auth_flow_test.rb test/test_helper.rb
 ```bash
 bin/rails test \
   test/models/oauth_account_test.rb \
-  test/services/oauth_accounts/auth_result_builder_test.rb \
-  test/services/oauth_accounts/user_matcher_test.rb \
-  test/services/oauth_accounts/username_suggester_test.rb \
-  test/services/oauth_accounts/callback_service_test.rb \
-  test/services/oauth_accounts/registration_service_test.rb \
+  test/functions/oauth_accounts/auth_result_builder_test.rb \
+  test/functions/oauth_accounts/user_matcher_test.rb \
+  test/functions/oauth_accounts/username_suggester_test.rb \
+  test/functions/oauth_accounts/callback_service_test.rb \
+  test/functions/oauth_accounts/registration_service_test.rb \
   test/controllers/users/omniauth_callbacks_controller_test.rb \
   test/controllers/users/oauth_registrations_controller_test.rb \
   test/controllers/users/sessions_controller_test.rb \

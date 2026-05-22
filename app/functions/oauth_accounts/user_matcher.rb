@@ -11,7 +11,7 @@ module OauthAccounts
       return if relay_email
       return if email.blank?
 
-      User.find_by(email: email.to_s.downcase)
+      User.find_by(email: email.to_s.strip.downcase)
     end
   end
 end
