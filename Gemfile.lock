@@ -219,9 +219,6 @@ GEM
       net-http (~> 0.5)
     faraday-retry (2.4.0)
       faraday (~> 2.0)
-    ffi (1.17.4-aarch64-linux-gnu)
-    ffi (1.17.4-arm64-darwin)
-    ffi (1.17.4-x86_64-linux-gnu)
     flog (4.9.4)
       path_expander (~> 2.0)
       prism (~> 1.7)
@@ -262,9 +259,7 @@ GEM
       domain_name (~> 0.5)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    image_processing (1.14.0)
-      mini_magick (>= 4.9.5, < 6)
-      ruby-vips (>= 2.0.17, < 3)
+    image_processing (2.0.0)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -340,8 +335,6 @@ GEM
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2026.0414)
-    mini_magick (5.3.1)
-      logger
     mini_mime (1.1.5)
     minitest (6.0.6)
       drb (~> 2.0)
@@ -692,9 +685,6 @@ GEM
     ruby-readability (0.7.3)
       guess_html_encoding (>= 0.0.4)
       nokogiri (>= 1.6.0)
-    ruby-vips (2.3.0)
-      ffi (~> 1.12)
-      logger
     ruby2ruby (2.6.1)
       sexp_processor (~> 4.6)
     ruby_llm (1.15.0)
@@ -887,7 +877,7 @@ DEPENDENCIES
   friendly_id
   google-protobuf
   hairtrigger
-  image_processing (~> 1.2)
+  image_processing (~> 2.0)
   importmap-rails
   inkmark
   jbuilder
