@@ -218,7 +218,11 @@ ja:
     password_form:
       back: "戻る"
       save: "パスワードを保存"
-    user:
+    oauth_signup:
+      heading: "OAuth登録を完了"
+      subtitle: "利用するユーザーIDを確認して登録を完了してください。"
+      submit: "登録を完了"
+      session_missing: "OAuth登録セッションの有効期限が切れました。もう一度ログインしてください。"
 
   sessions:
     new:
@@ -233,13 +237,6 @@ ja:
   profiles:
     show:
       settings: "設定"
-
-  users:
-    oauth_signup:
-      heading: "OAuth登録を完了"
-      subtitle: "利用するユーザーIDを確認して登録を完了してください。"
-      submit: "登録を完了"
-      session_missing: "OAuth登録セッションの有効期限が切れました。もう一度ログインしてください。"
       feed: "フィード"
       find_follow: "フォロー検索"
       followers_suffix: " フォロワー"

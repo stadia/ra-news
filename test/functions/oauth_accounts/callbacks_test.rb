@@ -10,8 +10,8 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
     assert_equal "google-123", result[:uid]
     assert_equal "john@example.com", result[:email]
     assert_equal "John Doe", result[:name]
-    assert_equal true, result[:email_verified]
-    assert_equal false, result[:relay_email]
+    assert result[:email_verified]
+    refute result[:relay_email]
   end
 
   test "apple relay email을 판별한다" do
@@ -29,8 +29,8 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
 
     result = OauthAccounts::Callbacks.build_auth_result(auth: auth)
 
-    assert_equal true, result[:email_verified]
-    assert_equal true, result[:relay_email]
+    assert result[:email_verified]
+    assert result[:relay_email]
   end
 
   test "existing oauth account면 sign_in 결과를 반환한다" do
@@ -54,6 +54,7 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
     assert_equal :sign_in, result[:type]
     assert_equal user, result[:user]
     account = OauthAccount.find_by(provider: "google_oauth2", uid: "google-123")
+
     assert_equal user, account.user
   end
 

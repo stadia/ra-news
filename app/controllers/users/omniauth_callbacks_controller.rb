@@ -25,8 +25,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     else
       redirect_to new_user_session_path, alert: t("devise.omniauth_callbacks.failure", kind: provider_name, reason: "OAuth 인증 처리 실패")
     end
-  rescue KeyError, ActiveRecord::RecordInvalid => e
-    redirect_to new_user_session_path, alert: t("devise.omniauth_callbacks.failure", kind: provider_name, reason: e.message)
+  rescue KeyError, NoMethodError, ActiveRecord::RecordInvalid => e
+    logger.warn("[OAuth callback failure] provider=#{provider_name} error=#{e.class}: #{e.message}")
+    redirect_to new_user_session_path, alert: t("devise.omniauth_callbacks.failure", kind: provider_name, reason: "OAuth 인증 처리 실패")
   end
 
   def provider_name

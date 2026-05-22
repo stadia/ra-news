@@ -22,7 +22,13 @@ module OauthAccounts
 
       { success: true, user: user }
     rescue ActiveRecord::RecordInvalid => e
-      { success: false, user: e.record }
+      unless e.record.is_a?(User)
+        user.errors.add(:base, e.record.errors.full_messages.to_sentence)
+      end
+      { success: false, user: user }
+    rescue ActiveRecord::RecordNotUnique
+      user.errors.add(:base, I18n.t("users.oauth_signup.duplicate_account", default: "이미 연결된 OAuth 계정입니다."))
+      { success: false, user: user }
     end
 
     def build_user(payload:, username:, locale:, signup_host:)

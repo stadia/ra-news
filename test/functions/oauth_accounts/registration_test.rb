@@ -11,8 +11,10 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
       signup_host: "ruby-news.kr"
     )
 
-    assert_equal true, result[:success]
+    assert result[:success]
+
     user = result[:user]
+
     assert_equal "oauth@example.com", user.email
     assert_equal "oauth_user", user.username
     assert_equal "ko", user.locale
@@ -20,8 +22,9 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
     assert_not_nil user.confirmed_at
 
     account = OauthAccount.find_by!(provider: "google_oauth2", uid: "google-123")
+
     assert_equal user, account.user
-    assert_equal true, account.email_verified
+    assert account.email_verified
   end
 
   test "username이 유효하지 않으면 실패를 반환한다" do
@@ -32,8 +35,8 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
       signup_host: "ruby-news.kr"
     )
 
-    assert_equal false, result[:success]
-    assert result[:user].errors[:username].any?
+    refute result[:success]
+    assert_predicate result[:user].errors[:username], :any?
   end
 
   private

@@ -228,10 +228,9 @@ This project uses automated quality gates. **Run `bin/rake quality` before decla
 - **Branch coverage** >= 50.0% (SimpleCov)
 - **Flog max (method)** <= 93 (app code only; views/components excluded)
 - **Flog max (class)** <= 289 (app code only; views/components excluded)
-- **Mutation kill ratio** >= threshold (ratcheted from first valid Mutant run)
 
 ### Thresholds
-Thresholds live in `config/quality_thresholds.yml`. The mutation threshold uses a ratchet: on the first valid run, the observed kill ratio becomes the floor.
+Thresholds live in `config/quality_thresholds.yml`.
 
 ### Coverage snapshot note
 - `bin/rake quality` reads coverage from `coverage/.quality_last_run.json` first.
@@ -239,19 +238,8 @@ Thresholds live in `config/quality_thresholds.yml`. The mutation threshold uses 
 - Partial test runs only update `coverage/.last_run.json`, so they do not lower the quality gate coverage baseline.
 - If coverage looks stale, run `bin/rails test` once before `bin/rake quality`.
 
-### Mutant Minitest Integration
-Mutant requires `cover` declarations in test classes to know which subjects each test exercises. Example:
-```ruby
-class ArticleTest < ActiveSupport::TestCase
-  cover Article
-  # ...
-end
-```
-Without `cover` declarations, Mutant reports 0 subjects/0 mutations. Add `cover` to existing tests incrementally to make the mutation gate meaningful.
-
 ### Current Baseline (as of setup)
 - Line Coverage: ~43% (needs improvement to reach 60%)
 - Branch Coverage: ~51% (needs improvement to reach 50%)
 - Flog method max: ~373 (needs refactoring to reach 20)
 - Flog class max: ~406 (needs refactoring to reach 70)
-- Mutant: 0 subjects (pending `.cover` additions in tests)

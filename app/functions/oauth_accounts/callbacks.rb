@@ -26,7 +26,7 @@ module OauthAccounts
         return { type: :sign_in, user: user }
       end
 
-      session[:oauth_signup] = oauth_data.slice(:provider, :uid, :email, :email_verified, :relay_email, :name, :raw_info).deep_stringify_keys
+      session[:oauth_signup] = oauth_data.slice(:provider, :uid, :email, :email_verified, :relay_email, :name).deep_stringify_keys
 
       {
         type: :complete_signup,
@@ -46,7 +46,11 @@ module OauthAccounts
         email_verified: verified_email?(provider: auth.fetch("provider"), info:, credentials:),
         relay_email: relay_email?(email),
         name: info[:name].to_s.presence,
-        raw_info: auth.deep_dup
+        raw_info: {
+          "provider" => auth.fetch("provider"),
+          "uid" => auth.fetch("uid").to_s,
+          "info" => info.slice(:email, :name, :email_verified).to_h
+        }
       }
     end
 

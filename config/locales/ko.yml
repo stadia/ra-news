@@ -218,7 +218,11 @@ ko:
     password_form:
       back: "돌아가기"
       save: "비밀번호 저장"
-    user:
+    oauth_signup:
+      heading: "OAuth 가입 마무리"
+      subtitle: "사용할 아이디를 확인하고 가입을 완료하세요."
+      submit: "가입 완료"
+      session_missing: "OAuth 가입 세션이 만료되었습니다. 다시 로그인해 주세요."
 
   sessions:
     new:
@@ -233,13 +237,6 @@ ko:
   profiles:
     show:
       settings: "설정"
-
-  users:
-    oauth_signup:
-      heading: "OAuth 가입 마무리"
-      subtitle: "사용할 아이디를 확인하고 가입을 완료하세요."
-      submit: "가입 완료"
-      session_missing: "OAuth 가입 세션이 만료되었습니다. 다시 로그인해 주세요."
       feed: "Feed"
       find_follow: "팔로우 검색"
       followers_suffix: " 팔로워"
