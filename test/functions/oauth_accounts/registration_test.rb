@@ -25,6 +25,7 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
 
     assert_equal user, account.user
     assert account.email_verified
+    assert_equal({ "provider" => "google_oauth2" }, account.raw_info)
   end
 
   test "username이 유효하지 않으면 실패를 반환한다" do

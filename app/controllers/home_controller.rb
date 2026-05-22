@@ -17,51 +17,14 @@ class HomeController < ApplicationController
 
   def index
     cacheable_page!
-    scope = Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related
-    featured_scope = scope.without_toast.where(created_at: 48.hours.ago...)
+    scope = article_scope
 
-    featured_articles = featured_scope
-      .where("likers_count > ? OR posts_count > ?", 0, 0)
-      .order(likers_count: :desc, posts_count: :desc, created_at: :desc)
-      .limit(3)
-      .to_a
-
-    if featured_articles.size < 3
-      featured_articles.concat(
-        featured_scope
-          .where.not(id: featured_articles.map(&:id))
-          .order(published_at: :desc, created_at: :desc)
-          .limit(3 - featured_articles.size)
-          .to_a
-      )
-    end
-
-    @featured_articles = featured_articles.sort_by { [ -it.published_at.to_i, -it.created_at.to_i ] }
-
-    featured_ids = @featured_articles.map(&:id)
-    remaining_scope = scope.where.not(id: featured_ids)
-    article_count = remaining_scope.where(created_at: 24.hours.ago...).count
-    @articles = if article_count < 9
-      remaining_scope.without_toast.order(created_at: :desc).limit(9)
-    else
-      remaining_scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc)
-    end
-    @articles = @articles.sort_by { -it.published_at.to_i }
-
-    @liked_article_ids = Like.liked_ids_for(
-      liker: current_user,
-      likeable_type: "Article",
-      likeable_ids: (@articles + @featured_articles).map(&:id)
-    )
-
+    @featured_articles = build_featured_articles(scope)
+    @articles = build_recent_articles(scope, excluded_ids: @featured_articles.map(&:id))
+    @liked_article_ids = liked_article_ids_for(@articles, @featured_articles)
     @news_media_organization = PUBLISHER_SCHEMA
-    @recent_comments = Post.comments
-      .joins(:article)
-      .preload(:article, :federails_actor, user: { avatar_attachment: :blob })
-      .where(article: { deleted_at: nil })
-      .order(created_at: :desc)
-      .limit(10)
-    @sidebar_tags = Tag.confirmed.order(taggings_count: :desc, name: :asc).limit(20)
+    @recent_comments = recent_comments
+    @sidebar_tags = sidebar_tags
     render Views::Home::Index.new(
       articles: @articles,
       featured_articles: @featured_articles,
@@ -85,5 +48,70 @@ class HomeController < ApplicationController
     end
     response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
     render "rss", formats: [ :rss ], layout: false
+  end
+
+  private
+
+  def article_scope
+    Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related
+  end
+
+  def build_featured_articles(scope)
+    featured_scope = scope.without_toast.where(created_at: 48.hours.ago...)
+    featured_articles = primary_featured_articles(featured_scope)
+
+    if featured_articles.size < 3
+      featured_articles.concat(fallback_featured_articles(featured_scope, featured_articles))
+    end
+
+    featured_articles.sort_by { [ -it.published_at.to_i, -it.created_at.to_i ] }
+  end
+
+  def primary_featured_articles(featured_scope)
+    featured_scope
+      .where("likers_count > ? OR posts_count > ?", 0, 0)
+      .order(likers_count: :desc, posts_count: :desc, created_at: :desc)
+      .limit(3)
+      .to_a
+  end
+
+  def fallback_featured_articles(featured_scope, featured_articles)
+    featured_scope
+      .where.not(id: featured_articles.map(&:id))
+      .order(published_at: :desc, created_at: :desc)
+      .limit(3 - featured_articles.size)
+      .to_a
+  end
+
+  def build_recent_articles(scope, excluded_ids:)
+    remaining_scope = scope.where.not(id: excluded_ids)
+    articles = if remaining_scope.where(created_at: 24.hours.ago...).count < 9
+      remaining_scope.without_toast.order(created_at: :desc).limit(9)
+    else
+      remaining_scope.without_toast.where(created_at: 24.hours.ago...).order(created_at: :desc)
+    end
+
+    articles.sort_by { -it.published_at.to_i }
+  end
+
+  def liked_article_ids_for(articles, featured_articles)
+    Like.liked_ids_for(
+      liker: current_user,
+      likeable_type: "Article",
+      likeable_ids: (articles + featured_articles).map(&:id)
+    )
+  end
+
+  def recent_comments
+    Post.comments
+      .joins(:article)
+      .preload(:article, :federails_actor, user: { avatar_attachment: :blob })
+      .where(article: { deleted_at: nil })
+      .order(created_at: :desc)
+      .limit(10)
+  end
+
+  def sidebar_tags
+    Tag.confirmed.order(taggings_count: :desc, name: :asc).limit(20)
   end
 end

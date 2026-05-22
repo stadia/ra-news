@@ -17,16 +17,16 @@ module OauthAccounts
       if user
         oauth_account = OauthAccount.find_or_initialize_by(provider: oauth_data[:provider], uid: oauth_data[:uid])
         oauth_account.user = user
-        oauth_account.email = oauth_data[:email]
+        oauth_account.email = oauth_data[:email].presence || oauth_account.email
         oauth_account.email_verified = oauth_data[:email_verified]
-        oauth_account.raw_info = oauth_data[:raw_info]
+        oauth_account.raw_info = merged_raw_info(existing: oauth_account.raw_info, incoming: oauth_data[:raw_info])
         oauth_account.save!
 
         session.delete(:oauth_signup)
         return { type: :sign_in, user: user }
       end
 
-      session[:oauth_signup] = oauth_data.slice(:provider, :uid, :email, :email_verified, :relay_email, :name).deep_stringify_keys
+      session[:oauth_signup] = oauth_data.slice(:provider, :uid, :email, :email_verified, :relay_email, :name, :raw_info).deep_stringify_keys
 
       {
         type: :complete_signup,
@@ -69,6 +69,15 @@ module OauthAccounts
       end
 
       ActiveModel::Type::Boolean.new.cast(value)
+    end
+
+    def merged_raw_info(existing:, incoming:)
+      existing_info = existing.to_h.deep_stringify_keys
+      incoming_info = incoming.to_h.deep_stringify_keys
+
+      existing_info.deep_merge(incoming_info) do |_key, old_value, new_value|
+        new_value.present? ? new_value : old_value
+      end
     end
   end
 end

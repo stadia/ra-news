@@ -231,6 +231,8 @@ en:
       sign_up: "Sign up"
       forgot_password: "Forgot your password?"
       resend_confirmation: "Resend confirmation email?"
+      continue_with_google: "Continue with Google"
+      continue_with_apple: "Continue with Apple"
 
   profiles:
     show:

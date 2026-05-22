@@ -58,6 +58,35 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
     assert_equal user, account.user
   end
 
+  test "기존 oauth account 로그인 시 빈 provider 정보로 기존 값을 덮어쓰지 않는다" do
+    user = users(:john)
+    OauthAccount.create!(
+      user:,
+      provider: "apple",
+      uid: "apple-123",
+      email: "first-login@example.com",
+      email_verified: true,
+      raw_info: {
+        "provider" => "apple",
+        "uid" => "apple-123",
+        "info" => {
+          "email" => "first-login@example.com",
+          "name" => "First Login"
+        }
+      }
+    )
+    session = {}
+
+    result = OauthAccounts::Callbacks.handle_callback(auth: apple_auth_hash(email: nil, name: nil), session: session)
+
+    assert_equal :sign_in, result[:type]
+
+    account = OauthAccount.find_by!(provider: "apple", uid: "apple-123")
+
+    assert_equal "first-login@example.com", account.email
+    assert_equal "First Login", account.raw_info.dig("info", "name")
+  end
+
   test "신규 user면 signup completion 결과와 suggested username을 반환한다" do
     session = {}
 
@@ -66,6 +95,18 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
     assert_equal :complete_signup, result[:type]
     assert_equal "new_user", result[:suggested_username]
     assert_equal "new-user@example.com", session.dig(:oauth_signup, "email")
+  end
+
+  test "signup completion 세션에 raw_info를 보존한다" do
+    session = {}
+
+    OauthAccounts::Callbacks.handle_callback(
+      auth: apple_auth_hash(email: "first-login@example.com", name: "First Login"),
+      session: session
+    )
+
+    assert_equal "first-login@example.com", session.dig(:oauth_signup, "raw_info", "info", "email")
+    assert_equal "First Login", session.dig(:oauth_signup, "raw_info", "info", "name")
   end
 
   private
@@ -77,6 +118,20 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
       "info" => {
         "email" => email,
         "name" => name,
+        "email_verified" => true
+      }
+    }
+  end
+
+  def apple_auth_hash(email:, name:)
+    {
+      "provider" => "apple",
+      "uid" => "apple-123",
+      "info" => {
+        "email" => email,
+        "name" => name
+      },
+      "credentials" => {
         "email_verified" => true
       }
     }

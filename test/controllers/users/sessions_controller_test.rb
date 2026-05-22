@@ -12,6 +12,16 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action='#{user_apple_omniauth_authorize_path}'] button", text: I18n.t("sessions.new.continue_with_apple")
   end
 
+  test "GET new renders english oauth button labels when locale is en" do
+    host! "localhost"
+
+    get new_user_session_path, headers: { "HTTP_ACCEPT_LANGUAGE" => "en-US,en;q=0.9" }
+
+    assert_response :success
+    assert_select "form[action='#{user_google_oauth2_omniauth_authorize_path}'] button", text: "Continue with Google"
+    assert_select "form[action='#{user_apple_omniauth_authorize_path}'] button", text: "Continue with Apple"
+  end
+
   test "POST create with unconfirmed user shows resend confirmation link" do
     user = users(:john)
     user.update!(confirmed_at: nil)
