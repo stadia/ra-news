@@ -18,17 +18,6 @@ class ApplicationJob < ActiveJob::Base
   end
 
   rescue_from(StandardError) do |exception|
-    honeybadger_context = {
-      job: {
-        class: self.class.name,
-        arguments: arguments,
-        queue_name: queue_name,
-        job_id: job_id,
-        executions: executions
-      },
-      environment: Rails.env
-    }
-
     # Log error details
     logger.error "Job failed: #{self.class.name} with arguments: #{arguments}"
     logger.error "Error: #{exception.class.name} - #{exception.message}"

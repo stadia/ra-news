@@ -3,5 +3,16 @@
 module Reddit
   BASE_URL: ::String
 
-  def self?.feed: () -> untyped
+  SUBREDDIT: ::String
+
+  USER_AGENT: ::String
+
+  # Reddit JSON API를 사용해 게시물을 가져온다.
+  #
+  # sort: :hot, :new, :top, :rising, :controversial
+  # period: :hour, :day, :week, :month, :year, :all (top/controversial에서만 사용)
+  # limit: 1~100
+  #
+  # : (?sort: Symbol, ?period: Symbol, ?limit: Integer) -> Array[Hash[String, untyped]]
+  def self?.feed: (?sort: Symbol, ?period: Symbol, ?limit: Integer) -> Array[Hash[String, untyped]]
 end

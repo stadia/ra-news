@@ -7,6 +7,18 @@ class ArticleThumbnailJob < ApplicationJob
 
   private
 
+  # YouTube 썸네일 해상도 후보 (높은 순)
+  YOUTUBE_THUMBNAIL_QUALITIES: untyped
+
+  # : (Article article) -> void
+  def attach_youtube_thumbnail: (Article article) -> void
+
+  # : (String video_id) -> Faraday::Response?
+  def fetch_youtube_thumbnail: (String video_id) -> Faraday::Response?
+
+  # : (Article article) -> void
+  def generate_ai_thumbnail: (Article article) -> void
+
   # : (Array[String] summary_key) -> String
   def build_prompt: (Array[String] summary_key) -> String
 end

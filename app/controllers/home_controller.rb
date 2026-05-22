@@ -18,12 +18,25 @@ class HomeController < ApplicationController
   def index
     cacheable_page!
     scope = Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related
-    @featured_articles = scope.without_toast
+    featured_scope = scope.without_toast.where(created_at: 48.hours.ago...)
+
+    featured_articles = featured_scope
       .where("likers_count > ? OR posts_count > ?", 0, 0)
-      .where(created_at: 48.hours.ago...)
       .order(likers_count: :desc, posts_count: :desc, created_at: :desc)
       .limit(3)
       .to_a
+
+    if featured_articles.size < 3
+      featured_articles.concat(
+        featured_scope
+          .where.not(id: featured_articles.map(&:id))
+          .order(published_at: :desc, created_at: :desc)
+          .limit(3 - featured_articles.size)
+          .to_a
+      )
+    end
+
+    @featured_articles = featured_articles.sort_by { [ -it.published_at.to_i, -it.created_at.to_i ] }
 
     featured_ids = @featured_articles.map(&:id)
     remaining_scope = scope.where.not(id: featured_ids)

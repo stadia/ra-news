@@ -102,13 +102,13 @@ GEM
       logger
       rack (>= 2.0.0)
     ast (2.4.3)
-    auth-sanitizer (0.1.2)
+    auth-sanitizer (0.1.4)
       version_gem (~> 1.1, >= 1.1.9)
     awesome_nested_set (3.9.0)
       activerecord (>= 4.0.0, < 8.2)
     aws-eventstream (1.4.0)
-    aws-partitions (1.1250.0)
-    aws-sdk-core (3.247.0)
+    aws-partitions (1.1252.0)
+    aws-sdk-core (3.248.0)
       aws-eventstream (~> 1, >= 1.3.0)
       aws-partitions (~> 1, >= 1.992.0)
       aws-sigv4 (~> 1.9)
@@ -116,11 +116,11 @@ GEM
       bigdecimal
       jmespath (~> 1, >= 1.6.1)
       logger
-    aws-sdk-kms (1.125.0)
-      aws-sdk-core (~> 3, >= 3.247.0)
+    aws-sdk-kms (1.128.0)
+      aws-sdk-core (~> 3, >= 3.248.0)
       aws-sigv4 (~> 1.5)
-    aws-sdk-s3 (1.222.0)
-      aws-sdk-core (~> 3, >= 3.247.0)
+    aws-sdk-s3 (1.224.0)
+      aws-sdk-core (~> 3, >= 3.248.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.5)
     aws-sigv4 (1.12.1)
@@ -182,7 +182,7 @@ GEM
       dotenv (= 3.2.0)
       railties (>= 6.1)
     drb (2.2.3)
-    dry-auto_inject (1.1.0)
+    dry-auto_inject (1.2.0)
       dry-core (~> 1.1)
       zeitwerk (~> 2.6)
     dry-configurable (1.4.0)
@@ -217,7 +217,7 @@ GEM
       hashie
     faraday-multipart (1.2.0)
       multipart-post (~> 2.0)
-    faraday-net_http (3.4.2)
+    faraday-net_http (3.4.3)
       net-http (~> 0.5)
     faraday-retry (2.4.0)
       faraday (~> 2.0)
@@ -237,17 +237,15 @@ GEM
       ostruct
     globalid (1.3.0)
       activesupport (>= 6.1)
-    google-protobuf (4.34.1-aarch64-linux-gnu)
+    google-protobuf (4.35.0-aarch64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
-    google-protobuf (4.34.1-arm64-darwin)
+    google-protobuf (4.35.0-arm64-darwin)
       bigdecimal
       rake (~> 13.3)
-    google-protobuf (4.34.1-x86_64-linux-gnu)
+    google-protobuf (4.35.0-x86_64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
-    googleapis-common-protos-types (1.22.0)
-      google-protobuf (~> 4.26)
     guess_html_encoding (0.0.11)
     hairtrigger (1.3.1)
       activerecord (>= 6.0, < 9)
@@ -258,15 +256,16 @@ GEM
     herb (0.10.1-aarch64-linux-gnu)
     herb (0.10.1-arm64-darwin)
     herb (0.10.1-x86_64-linux-gnu)
+    honeybadger (6.6.1)
+      logger
+      ostruct
     htmlentities (4.4.2)
     http-accept (1.7.0)
     http-cookie (1.1.6)
       domain_name (~> 0.5)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    image_processing (1.14.0)
-      mini_magick (>= 4.9.5, < 6)
-      ruby-vips (>= 2.0.17, < 3)
+    image_processing (2.0.0)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -339,9 +338,9 @@ GEM
       net-imap
       net-pop
       net-smtp
-    marcel (1.1.0)
+    marcel (1.2.1)
     matrix (0.4.3)
-    mcp (0.16.0)
+    mcp (0.17.0)
       json-schema (>= 4.1)
     meta-tags (2.23.0)
       actionpack (>= 6.0.0)
@@ -349,8 +348,6 @@ GEM
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2026.0414)
-    mini_magick (5.3.1)
-      logger
     mini_mime (1.1.5)
     minitest (6.0.6)
       drb (~> 2.0)
@@ -392,14 +389,14 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.3-x86_64-linux-gnu)
       racc (~> 1.4)
-    oauth2 (2.0.19)
-      auth-sanitizer (~> 0.1)
+    oauth2 (2.0.20)
+      auth-sanitizer (~> 0.1, >= 0.1.3)
       faraday (>= 0.17.3, < 4.0)
       jwt (>= 1.0, < 4.0)
       logger (~> 1.2)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 4)
-      snaky_hash (~> 2.0, >= 2.0.3)
+      snaky_hash (~> 2.0, >= 2.0.4)
       version_gem (~> 1.1, >= 1.1.9)
     oj (3.17.1)
       bigdecimal (>= 3.0)
@@ -421,97 +418,6 @@ GEM
       oauth2 (>= 2.0.2, < 3)
       omniauth (~> 2.0)
     openssl (4.0.2)
-    opentelemetry-api (1.10.0)
-      logger
-    opentelemetry-common (0.25.0)
-      opentelemetry-api (~> 1.0)
-    opentelemetry-exporter-otlp (0.34.0)
-      google-protobuf (>= 3.18)
-      googleapis-common-protos-types (~> 1.3)
-      opentelemetry-api (~> 1.1)
-      opentelemetry-common (~> 0.20)
-      opentelemetry-sdk (~> 1.10)
-      opentelemetry-semantic_conventions
-    opentelemetry-exporter-otlp-logs (0.5.0)
-      google-protobuf (>= 3.18)
-      googleapis-common-protos-types (~> 1.3)
-      opentelemetry-api (~> 1.1)
-      opentelemetry-common (~> 0.20)
-      opentelemetry-logs-api (~> 0.1)
-      opentelemetry-logs-sdk (~> 0.1)
-      opentelemetry-sdk
-      opentelemetry-semantic_conventions
-    opentelemetry-helpers-sql (0.4.0)
-      opentelemetry-api (~> 1.7)
-    opentelemetry-helpers-sql-processor (0.5.0)
-      opentelemetry-api (~> 1.0)
-      opentelemetry-common (~> 0.21)
-    opentelemetry-instrumentation-action_mailer (0.8.0)
-      opentelemetry-instrumentation-active_support (~> 0.10)
-    opentelemetry-instrumentation-action_pack (0.18.0)
-      opentelemetry-instrumentation-rack (~> 0.29)
-    opentelemetry-instrumentation-action_view (0.13.0)
-      opentelemetry-instrumentation-active_support (~> 0.10)
-    opentelemetry-instrumentation-active_job (0.12.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-active_record (0.13.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-active_storage (0.5.0)
-      opentelemetry-instrumentation-active_support (~> 0.10)
-    opentelemetry-instrumentation-active_support (0.12.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-base (0.26.0)
-      opentelemetry-api (~> 1.7)
-      opentelemetry-common (~> 0.21)
-      opentelemetry-registry (~> 0.1)
-    opentelemetry-instrumentation-concurrent_ruby (0.25.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-ethon (0.29.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-faraday (0.33.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-http (0.30.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-http_client (0.29.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-net_http (0.29.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-pg (0.36.0)
-      opentelemetry-helpers-sql
-      opentelemetry-helpers-sql-processor
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-rack (0.31.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-rails (0.42.0)
-      opentelemetry-instrumentation-action_mailer (~> 0.7)
-      opentelemetry-instrumentation-action_pack (~> 0.17)
-      opentelemetry-instrumentation-action_view (~> 0.12)
-      opentelemetry-instrumentation-active_job (~> 0.11)
-      opentelemetry-instrumentation-active_record (~> 0.12)
-      opentelemetry-instrumentation-active_storage (~> 0.4)
-      opentelemetry-instrumentation-active_support (~> 0.11)
-      opentelemetry-instrumentation-concurrent_ruby (~> 0.25)
-    opentelemetry-instrumentation-rake (0.6.0)
-      opentelemetry-instrumentation-base (~> 0.25)
-    opentelemetry-instrumentation-ruby_llm (0.5.0)
-      opentelemetry-api (~> 1.0)
-      opentelemetry-instrumentation-base (~> 0.23)
-    opentelemetry-logs-api (0.4.0)
-      opentelemetry-api (~> 1.0)
-    opentelemetry-logs-sdk (0.6.0)
-      opentelemetry-api (~> 1.2)
-      opentelemetry-logs-api (~> 0.1)
-      opentelemetry-sdk (~> 1.3)
-    opentelemetry-registry (0.6.0)
-      opentelemetry-api (~> 1.1)
-    opentelemetry-sdk (1.12.0)
-      logger
-      opentelemetry-api (~> 1.1)
-      opentelemetry-common (~> 0.20)
-      opentelemetry-registry (~> 0.2)
-      opentelemetry-semantic_conventions
-    opentelemetry-semantic_conventions (1.37.1)
-      opentelemetry-api (~> 1.0)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
     pagy (43.5.4)
@@ -690,7 +596,7 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rails (2.35.1)
+    rubocop-rails (2.35.2)
       activesupport (>= 4.2.0)
       lint_roller (~> 1.1)
       rack (>= 1.1)
@@ -700,7 +606,7 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
-    rubocop-rbs_inline (1.5.4)
+    rubocop-rbs_inline (1.5.5)
       lint_roller (~> 1.1)
       rbs-inline
       rubocop (>= 1.72.1, < 2.0)
@@ -736,7 +642,7 @@ GEM
       marcel (~> 1)
       ruby_llm-schema (~> 0)
       zeitwerk (~> 2)
-    ruby_llm-schema (0.3.0)
+    ruby_llm-schema (0.4.0)
     ruby_llm-skills (0.3.0)
       ruby_llm (~> 1.12)
     ruby_parser (3.22.0)
@@ -796,15 +702,15 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13226)
-      sorbet-static (= 0.6.13226)
-    sorbet-runtime (0.6.13226)
-    sorbet-static (0.6.13226-aarch64-linux)
-    sorbet-static (0.6.13226-universal-darwin)
-    sorbet-static (0.6.13226-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13226)
-      sorbet (= 0.6.13226)
-      sorbet-runtime (= 0.6.13226)
+    sorbet (0.6.13238)
+      sorbet-static (= 0.6.13238)
+    sorbet-runtime (0.6.13238)
+    sorbet-static (0.6.13238-aarch64-linux)
+    sorbet-static (0.6.13238-universal-darwin)
+    sorbet-static (0.6.13238-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13238)
+      sorbet (= 0.6.13238)
+      sorbet-runtime (= 0.6.13238)
     spoom (1.7.15)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
@@ -883,7 +789,7 @@ GEM
       nokogiri (~> 1.15)
     yt (0.34.1)
       activesupport
-    zeitwerk (2.8.0)
+    zeitwerk (2.8.1)
 
 PLATFORMS
   aarch64-linux
@@ -916,7 +822,8 @@ DEPENDENCIES
   friendly_id
   google-protobuf
   hairtrigger
-  image_processing (~> 1.2)
+  honeybadger
+  image_processing (~> 2.0)
   importmap-rails
   inkmark
   jbuilder
@@ -933,19 +840,6 @@ DEPENDENCIES
   oj
   omniauth-apple
   omniauth-google-oauth2
-  opentelemetry-exporter-otlp
-  opentelemetry-exporter-otlp-logs
-  opentelemetry-instrumentation-concurrent_ruby
-  opentelemetry-instrumentation-ethon
-  opentelemetry-instrumentation-faraday
-  opentelemetry-instrumentation-http
-  opentelemetry-instrumentation-http_client
-  opentelemetry-instrumentation-net_http
-  opentelemetry-instrumentation-pg
-  opentelemetry-instrumentation-rails
-  opentelemetry-instrumentation-rake
-  opentelemetry-instrumentation-ruby_llm
-  opentelemetry-sdk (~> 1.12)
   ostruct
   pagy (~> 43.5)
   pg (~> 1.6)
@@ -974,6 +868,7 @@ DEPENDENCIES
   ruby-lsp-i18n
   ruby-mcp-client (~> 1.0)
   ruby-readability
+  ruby-vips (~> 2.0)
   ruby_llm (~> 1.14)
   ruby_llm-schema
   ruby_llm-skills
@@ -1002,4 +897,4 @@ DEPENDENCIES
   yt
 
 BUNDLED WITH
-  4.0.11
+  4.0.12
