@@ -72,11 +72,13 @@ jobs:
           kubectl rollout status deployment/ruby-news-worker -n default --timeout=300s
 
       - name: Notify Honeybadger deployment
-        if: ${{ success() && secrets.HONEYBADGER_API_KEY != '' }}
+        env:
+          HONEYBADGER_API_KEY: ${{ secrets.HONEYBADGER_API_KEY }}
+        if: ${{ success() && env.HONEYBADGER_API_KEY != '' }}
         run: |
           curl -fsS https://api.honeybadger.io/v1/deploys \
             --data-urlencode "deploy[environment]=production" \
             --data-urlencode "deploy[local_username]=${{ github.actor }}" \
             --data-urlencode "deploy[revision]=${{ github.sha }}" \
             --data-urlencode "deploy[repository]=${{ github.server_url }}/${{ github.repository }}" \
-            --data-urlencode "api_key=${{ secrets.HONEYBADGER_API_KEY }}"
+            --data-urlencode "api_key=${HONEYBADGER_API_KEY}"
