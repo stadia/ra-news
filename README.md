@@ -32,7 +32,7 @@ RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집
 - **관리/운영**
   - Madmin 기반 관리자 대시보드
   - Solid Queue/Cache/Cable을 사용하는 Rails 8 백그라운드 작업 및 실시간 기능
-  - Honeybadger, GitHub Actions, Docker를 통한 모니터링/CI/CD
+  - AppSignal, Honeybadger, GitHub Actions, Docker를 통한 모니터링/CI/CD
 
 ---
 
@@ -205,6 +205,8 @@ CI 파이프라인은 위 명령들을 기준으로 구성되어 있습니다.
   - `config/credentials.yml.enc`에 AI 키(Gemini/OpenAI 등), 외부 API 자격증명 저장
 - `.env` / 환경 변수
   - 로컬 개발에서는 `.env`를 사용해 DB, 메일, 외부 서비스 설정
+- 운영 모니터링
+  - `HONEYBADGER_API_KEY`: production 예외 추적 및 release workflow 배포 추적
 - 메일/Gmail/YouTube/HN
   - 각 클라이언트 별로 필요한 API 키/토큰/계정 정보를 환경 변수로 설정
 
@@ -267,7 +269,7 @@ vapid_key.private_key
 - Steep를 사용해 서비스/도메인 레이어 시그니처를 검증
 - ApplicationJob, 클라이언트 레이어에서
   - 외부 API 에러를 공통 포맷으로 감싸고
-  - Honeybadger로 보고하는 패턴 사용
+  - production에서는 Honeybadger 컨텍스트와 함께 보고하는 패턴 사용
 
 ---
 

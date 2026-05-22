@@ -1,0 +1,12 @@
+---
+api_key: <%= ENV["HONEYBADGER_API_KEY"] %>
+env: <%= Rails.env %>
+report_data: false
+
+production:
+  report_data: true
+  insights:
+    enabled: false
+  exceptions:
+    ignore:
+      - Faraday::SSLError
