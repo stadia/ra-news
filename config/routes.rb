@@ -57,8 +57,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#index"
 
-  get "rss"   => "home#rss",   as: :rss
-  get "about" => "home#about", as: :about
+  get "rss"            => "home#rss",            as: :rss
+  get "about"          => "home#about",          as: :about
+  get "privacy-policy" => "home#privacy_policy", as: :privacy_policy
+  get "terms"          => "home#terms",          as: :terms
 
   get "social/:provider/authorize", to: "social#provider_authorize", as: :social_provider_authorize
   get "social/:provider/callback", to: "social#provider_callback", as: :social_provider_callback

@@ -156,6 +156,8 @@ ko:
       rss: "RSS 피드"
       slack: "Slack 추가"
       discord: "Discord 추가"
+      privacy_policy: "개인정보처리방침"
+      terms: "이용약관"
 
   home:
     index:

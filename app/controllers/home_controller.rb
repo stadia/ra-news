@@ -40,6 +40,18 @@ class HomeController < ApplicationController
     render Views::Home::About.new
   end
 
+  # GET /privacy-policy
+  def privacy_policy
+    cacheable_page!
+    render Views::Home::PrivacyPolicy.new
+  end
+
+  # GET /terms
+  def terms
+    cacheable_page!
+    render Views::Home::Terms.new
+  end
+
   # GET /rss
   def rss
     cacheable_page!(max_age: 1.hour)

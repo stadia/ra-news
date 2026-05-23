@@ -156,6 +156,8 @@ en:
       rss: "RSS Feed"
       slack: "Add to Slack"
       discord: "Add to Discord"
+      privacy_policy: "Privacy Policy"
+      terms: "Terms of Service"
 
   home:
     index:

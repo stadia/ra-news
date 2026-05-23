@@ -156,6 +156,8 @@ ja:
       rss: "RSSフィード"
       slack: "Slackに追加"
       discord: "Discordに追加"
+      privacy_policy: "プライバシーポリシー"
+      terms: "利用規約"
 
   home:
     index:
