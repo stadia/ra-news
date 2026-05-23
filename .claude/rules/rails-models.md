@@ -3,7 +3,7 @@ paths:
   - "app/models/**/*.rb"
 ---
 
-# ActiveRecord Models (22)
+# ActiveRecord Models (23)
 
 _Quick reference — use `rails_get_model_details(model:"Name")` for live data with resolved concerns and callbacks._
 
@@ -31,13 +31,14 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - NotificationDelivery (table: notification_deliveries) — 2 assocs, 5 validations
   methods: article, failed!, failed?, notification_channel, sent!, sent?
   status: sent, failed
+- OauthAccount (table: oauth_accounts) — 1 assocs, 5 validations
+  methods: user
 - Post (table: posts) — 9 assocs, 4 validations
   concerns: FederailsLikeable, HtmlSanitizable
   scopes: comments, standalone
   methods: federation_actor_entity, should_federate?, to_activitypub_object, likes_count, comment?, reply, federation_reply_recipients, author_name, author_host, acts_as_nested_set_options, acts_as_nested_set_options?, add_custom_context, add_scope_conditions_to_options, after_move_to, all_tags_list, all_tags_list_on, all_tags_on, ancestors, apply_like, apply_undo_like
-- Preference (table: preferences) — 0 assocs, 1 validations
+- Preference (table: preferences) — 0 assocs, 2 validations
   methods: clear_cache
-  PROTECTED_KEYS: name, value
 - PushSubscription (table: push_subscriptions) — 1 assocs, 6 validations
   methods: user
 - RefreshToken (table: refresh_tokens) — 1 assocs, 1 validations
@@ -63,7 +64,7 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 - Tag (table: tags) — 1 assocs, 3 validations
   scopes: confirmed, unconfirmed
   methods: count, taggings, validates_name_uniqueness?
-- User (table: users) — 7 assocs, 13 validations
+- User (table: users) — 8 assocs, 13 validations
   scopes: with_role, admins
   methods: admin?, full_name, has_role?, accept_follow, avatar_attached?, avatar_url, remove_avatar!, sync_federails_actor_extensions, to_activitypub_object, after_confirmation, articles, avatar, avatar_attachment, avatar_blob, confirm, confirmation_period_expired?, confirmed?
   SUPPORTED_LOCALES: ko, ja, en
