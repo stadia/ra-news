@@ -46,7 +46,7 @@ class SlackController < ApplicationController
   def verify_slack_signature
     timestamp = request.headers["X-Slack-Request-Timestamp"]
     signature = request.headers["X-Slack-Signature"]
-    signing_secret = SlackConfig.signing_secret
+    signing_secret = Configs::Slack.signing_secret
 
     return head :unauthorized if timestamp.blank? || signature.blank?
     return head :unauthorized if signing_secret.blank?

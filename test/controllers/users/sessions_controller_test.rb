@@ -4,10 +4,30 @@ require "test_helper"
 
 class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "GET new renders sign in page without resend confirmation link" do
-    get new_user_session_path
+    Configs::GoogleOauth.stub(:configured?, true) do
+      Configs::AppleOauth.stub(:configured?, true) do
+        get new_user_session_path
 
-    assert_response :success
-    assert_select "a[href='#{new_user_confirmation_path}']", count: 0
+        assert_response :success
+        assert_select "a[href='#{new_user_confirmation_path}']", count: 0
+        assert_select "form[action='#{user_google_oauth2_omniauth_authorize_path}'] button", text: I18n.t("sessions.new.continue_with_google")
+        assert_select "form[action='#{user_apple_omniauth_authorize_path}'] button", text: I18n.t("sessions.new.continue_with_apple")
+      end
+    end
+  end
+
+  test "GET new renders english oauth button labels when locale is en" do
+    Configs::GoogleOauth.stub(:configured?, true) do
+      Configs::AppleOauth.stub(:configured?, true) do
+        host! "localhost"
+
+        get new_user_session_path, headers: { "HTTP_ACCEPT_LANGUAGE" => "en-US,en;q=0.9" }
+
+        assert_response :success
+        assert_select "form[action='#{user_google_oauth2_omniauth_authorize_path}'] button", text: "Continue with Google"
+        assert_select "form[action='#{user_apple_omniauth_authorize_path}'] button", text: "Continue with Apple"
+      end
+    end
   end
 
   test "POST create with unconfirmed user shows resend confirmation link" do

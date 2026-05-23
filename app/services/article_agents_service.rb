@@ -33,30 +33,8 @@ class ArticleAgentsService < OperationService
 
   #: (Article article) -> Dry::Monads::Result
   def run_agents(article)
-    message = ArticleAgent.new.ask(user_prompt(article))
-    logger.info "Response received for article id: #{article.id}"
-
-    if message.content.blank?
-      article.discard!
-      return Failure(message.finish_reason)
-    end
-
-    # JSON 데이터 저장
-    article.tag_list.add(message.content.delete("tags").map { it.downcase }.uniq) if message.content["tags"].present?
-
-    if message.content["summary_body"].present?
-      message.content["summary_body"] = message.content["summary_body"]
-        .gsub("\\n", "\n")
-        .gsub("\\t", "\t")
-        .gsub("\\r", "\r")
-        .gsub("\\\\", "\\")
-        .gsub('\"', '"')
-    end
-
-    article.update!(message.content)
-
-    article.discard! if message.content["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
-    Success(article)
+    result = Articles::AgentRunner.run(article:, prompt: user_prompt(article))
+    result.is_a?(Article) ? Success(result) : Failure(result)
   end
 
   #: (Article article) -> Dry::Monads::Result

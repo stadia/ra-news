@@ -46,7 +46,7 @@ class DiscordClient
     #: (redirect_uri: String, state: String) -> String
     def authorize_url(redirect_uri:, state:)
       query = {
-        client_id: DiscordConfig.client_id,
+        client_id: Configs::Discord.client_id,
         scope: "bot webhook.incoming",
         permissions: MANAGE_WEBHOOKS_PERMISSION,
         redirect_uri:,
@@ -63,8 +63,8 @@ class DiscordClient
         apply_timeouts(req)
         req.headers["Content-Type"] = "application/x-www-form-urlencoded"
         req.body = URI.encode_www_form(
-          client_id: DiscordConfig.client_id,
-          client_secret: DiscordConfig.client_secret,
+          client_id: Configs::Discord.client_id,
+          client_secret: Configs::Discord.client_secret,
           grant_type: "authorization_code",
           code:,
           redirect_uri:

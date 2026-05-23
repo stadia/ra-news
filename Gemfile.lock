@@ -95,6 +95,7 @@ GEM
       zeitwerk (>= 2.4, < 3.0)
     addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
+    aes_key_wrap (1.1.0)
     alba (3.10.0)
     amazing_print (2.0.0)
     appsignal (4.8.4)
@@ -129,6 +130,7 @@ GEM
     bcrypt (3.1.22)
     benchmark (0.5.0)
     bigdecimal (4.1.2)
+    bindata (2.5.1)
     bindex (0.8.1)
     bootsnap (1.24.5)
       msgpack (~> 1.2)
@@ -149,6 +151,7 @@ GEM
       xpath (~> 3.2)
     childprocess (5.1.0)
       logger (~> 1.5)
+    climate_control (1.2.0)
     concurrent-ruby (1.3.6)
     connection_pool (3.0.2)
     crass (1.0.6)
@@ -283,6 +286,13 @@ GEM
     jmespath (1.6.2)
     json (2.19.5)
     json-canonicalization (1.0.0)
+    json-jwt (1.17.0)
+      activesupport (>= 4.2)
+      aes_key_wrap
+      base64
+      bindata
+      faraday (~> 2.0)
+      faraday-follow_redirects
     json-ld (3.3.2)
       htmlentities (~> 4.3)
       json-canonicalization (~> 1.0)
@@ -392,6 +402,25 @@ GEM
     oj (3.17.1)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
+    omniauth (2.1.4)
+      hashie (>= 3.4.6)
+      logger
+      rack (>= 2.2.3)
+      rack-protection
+    omniauth-apple (1.4.0)
+      json-jwt
+      omniauth-oauth2
+    omniauth-google-oauth2 (1.2.2)
+      jwt (>= 2.9.2)
+      oauth2 (~> 2.0)
+      omniauth (~> 2.0)
+      omniauth-oauth2 (~> 1.8)
+    omniauth-oauth2 (1.9.0)
+      oauth2 (>= 2.0.2, < 3)
+      omniauth (~> 2.0)
+    omniauth-rails_csrf_protection (2.0.1)
+      actionpack (>= 4.2)
+      omniauth (~> 2.0)
     openssl (4.0.2)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
@@ -451,6 +480,10 @@ GEM
     rack-cors (3.0.0)
       logger
       rack (>= 3.0.14)
+    rack-protection (4.2.1)
+      base64 (>= 0.1.0)
+      logger (>= 1.6.0)
+      rack (>= 3.0.0, < 4)
     rack-session (2.1.2)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -779,6 +812,7 @@ DEPENDENCIES
   brakeman
   bundler-audit
   capybara
+  climate_control
   debug
   devise (~> 5.0)
   devise-i18n
@@ -809,6 +843,9 @@ DEPENDENCIES
   neighbor
   oauth2 (~> 2.0)
   oj
+  omniauth-apple
+  omniauth-google-oauth2
+  omniauth-rails_csrf_protection
   ostruct
   pagy (~> 43.5)
   pg (~> 1.6)

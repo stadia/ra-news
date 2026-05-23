@@ -162,6 +162,28 @@ Devise.setup do |config|
   # Defines which key will be used when confirming an account
   # config.confirmation_keys = [:email]
 
+  config.omniauth :google_oauth2,
+                  nil, nil,
+                  setup: ->(env) {
+                    strategy = env["omniauth.strategy"]
+                    strategy.options[:client_id] = Configs::GoogleOauth.client_id
+                    strategy.options[:client_secret] = Configs::GoogleOauth.client_secret
+                  },
+                  scope: "email,profile",
+                  prompt: "select_account"
+
+  config.omniauth :apple,
+                  nil, "",
+                  setup: ->(env) {
+                    strategy = env["omniauth.strategy"]
+                    strategy.options[:client_id] = Configs::AppleOauth.client_id
+                    strategy.options[:client_secret] = "" # Apple uses token-based auth, not client_secret
+                    strategy.options[:team_id] = Configs::AppleOauth.team_id
+                    strategy.options[:key_id] = Configs::AppleOauth.key_id
+                    strategy.options[:pem] = Configs::AppleOauth.private_key
+                  },
+                  scope: "email name"
+
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
   config.remember_for = 2.weeks

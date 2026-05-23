@@ -19,7 +19,7 @@ class OauthControllerTest < ActionDispatch::IntegrationTest
     user = users(:john)
     sign_in_as(user)
 
-    SlackConfig.stub(:configured?, false) do
+    Configs::Slack.stub(:configured?, false) do
       get "/slack/install"
 
       assert_redirected_to edit_user_registration_path
@@ -30,7 +30,7 @@ class OauthControllerTest < ActionDispatch::IntegrationTest
     user = users(:john)
     sign_in_as(user)
 
-    DiscordConfig.stub(:configured?, false) do
+    Configs::Discord.stub(:configured?, false) do
       get "/discord/install"
 
       assert_redirected_to edit_user_registration_path

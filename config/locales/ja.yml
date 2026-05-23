@@ -218,7 +218,14 @@ ja:
     password_form:
       back: "戻る"
       save: "パスワードを保存"
-    user:
+    oauth_signup:
+      heading: "OAuth登録を完了"
+      subtitle: "利用するユーザーIDを確認して登録を完了してください。"
+      submit: "登録を完了"
+      session_missing: "OAuth登録セッションの有効期限が切れました。もう一度ログインしてください。"
+      duplicate_account: "このOAuthアカウントはすでに連携されています。"
+    omniauth_callbacks:
+      not_configured: "%{provider}ログインはまだ設定されていません。管理者にお問い合わせください。"
 
   sessions:
     new:
@@ -227,6 +234,8 @@ ja:
       sign_up: "新規登録"
       forgot_password: "パスワードをお忘れですか?"
       resend_confirmation: "確認メールを再送しますか?"
+      continue_with_google: "Googleで続ける"
+      continue_with_apple: "Appleで続ける"
 
   profiles:
     show:

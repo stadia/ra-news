@@ -43,7 +43,7 @@ class DiscordClientTest < ActiveSupport::TestCase
   end
 
   test "authorize_url은 Discord OAuth URL을 생성한다" do
-    DiscordConfig.stub(:client_id, "dc-123") do
+    Configs::Discord.stub(:client_id, "dc-123") do
       url = DiscordClient.authorize_url(redirect_uri: "https://example.com/callback", state: "abc")
 
       assert_includes url, "discord.com/api/oauth2/authorize"
@@ -56,8 +56,8 @@ class DiscordClientTest < ActiveSupport::TestCase
   test "exchange_code는 Faraday 오류를 ApiError로 래핑한다" do
     faraday_error = Faraday::ConnectionFailed.new("connection refused")
 
-    DiscordConfig.stub(:client_id, "dc-123") do
-      DiscordConfig.stub(:client_secret, "secret") do
+    Configs::Discord.stub(:client_id, "dc-123") do
+      Configs::Discord.stub(:client_secret, "secret") do
         Faraday.stub(:post, ->(*) { raise faraday_error }) do
           error = assert_raises(DiscordClient::ApiError) do
             DiscordClient.exchange_code("bad-code", redirect_uri: "https://example.com/callback")
@@ -78,8 +78,8 @@ class DiscordClientTest < ActiveSupport::TestCase
       Struct.new(:headers, :body, :options).new({}, nil, options)
     end
 
-    DiscordConfig.stub(:client_id, "dc-123") do
-      DiscordConfig.stub(:client_secret, "secret") do
+    Configs::Discord.stub(:client_id, "dc-123") do
+      Configs::Discord.stub(:client_secret, "secret") do
         Faraday.stub(:post, lambda { |url, &block|
           req = request_factory.call
           block.call(req)

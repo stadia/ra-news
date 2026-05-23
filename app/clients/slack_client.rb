@@ -57,8 +57,8 @@ class SlackClient
     #: (redirect_uri: String, state: String) -> String
     def authorize_url(redirect_uri:, state:)
       query = {
-        client_id: SlackConfig.client_id,
-        scope: SlackConfig.install_scope,
+        client_id: Configs::Slack.client_id,
+        scope: Configs::Slack.install_scope,
         redirect_uri:,
         state:
       }.to_query
@@ -69,8 +69,8 @@ class SlackClient
     #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
     def exchange_code(code, redirect_uri:)
       response = oauth_client.oauth_v2_access(
-        client_id: SlackConfig.client_id,
-        client_secret: SlackConfig.client_secret,
+        client_id: Configs::Slack.client_id,
+        client_secret: Configs::Slack.client_secret,
         code:,
         redirect_uri:
       )

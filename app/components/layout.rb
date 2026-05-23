@@ -323,11 +323,11 @@ class Components::Layout < Components::Base
   def render_main
     vc = view_context
     main(id: "main-content", class: "container mx-auto px-4 py-8 grow") do
-      if vc.user_signed_in? && WebPushConfig.configured?
+      if vc.user_signed_in? && Configs::WebPush.configured?
         div(
           data: {
             controller: "push-notifications",
-            push_notifications_public_key_value: WebPushConfig.public_key,
+            push_notifications_public_key_value: Configs::WebPush.public_key,
             push_notifications_subscription_url_value: push_subscription_path,
             push_notifications_service_worker_path_value: pwa_service_worker_path(format: :js),
             push_notifications_cooldown_hours_value: "1"

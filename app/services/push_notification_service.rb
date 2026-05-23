@@ -4,7 +4,7 @@
 class PushNotificationService < OperationService
   #: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
   def call(user:, title:, body:, path:)
-    unless WebPushConfig.configured?
+    unless Configs::WebPush.configured?
       logger.warn "PushNotificationService: VAPID keys not configured"
       return Failure(:web_push_not_configured)
     end
@@ -59,10 +59,10 @@ class PushNotificationService < OperationService
       p256dh: subscription.p256dh,
       auth: subscription.auth,
       vapid: {
-        subject: WebPushConfig.subject,
-        public_key: WebPushConfig.public_key,
-        private_key: WebPushConfig.private_key,
-        expiration: WebPushConfig.expiration_seconds
+        subject: Configs::WebPush.subject,
+        public_key: Configs::WebPush.public_key,
+        private_key: Configs::WebPush.private_key,
+        expiration: Configs::WebPush.expiration_seconds
       }
     )
 

@@ -218,7 +218,14 @@ en:
     password_form:
       back: "Back"
       save: "Save password"
-    user:
+    oauth_signup:
+      heading: "Finish OAuth signup"
+      subtitle: "Confirm the username you'll use and complete your signup."
+      submit: "Complete signup"
+      session_missing: "Your OAuth signup session has expired. Please sign in again."
+      duplicate_account: "This OAuth account is already linked."
+    omniauth_callbacks:
+      not_configured: "%{provider} login is not yet configured. Please contact the administrator."
 
   sessions:
     new:
@@ -227,6 +234,8 @@ en:
       sign_up: "Sign up"
       forgot_password: "Forgot your password?"
       resend_confirmation: "Resend confirmation email?"
+      continue_with_google: "Continue with Google"
+      continue_with_apple: "Continue with Apple"
 
   profiles:
     show:

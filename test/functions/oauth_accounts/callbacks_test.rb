@@ -1,0 +1,214 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
+  # --- handle_callback ---
+
+  test "google payload를 정규화한다" do
+    result = OauthAccounts::Callbacks.send(:build_auth_result, auth: google_auth_hash(email: "john@example.com"))
+
+    assert_equal "google_oauth2", result[:provider]
+    assert_equal "google-123", result[:uid]
+    assert_equal "john@example.com", result[:email]
+    assert_equal "John Doe", result[:name]
+    assert result[:email_verified]
+    refute result[:relay_email]
+  end
+
+  test "apple relay email을 판별한다" do
+    auth = {
+      "provider" => "apple",
+      "uid" => "apple-123",
+      "info" => {
+        "email" => "abc@privaterelay.appleid.com",
+        "name" => "John Appleseed"
+      },
+      "credentials" => {
+        "email_verified" => true
+      }
+    }
+
+    result = OauthAccounts::Callbacks.send(:build_auth_result, auth: auth)
+
+    assert result[:email_verified]
+    assert result[:relay_email]
+  end
+
+  test "existing oauth account면 sign_in 결과를 반환한다" do
+    user = users(:john)
+    OauthAccount.create!(user:, provider: "google_oauth2", uid: "google-123")
+    session = {}
+
+    result = OauthAccounts::Callbacks.handle_callback(auth: google_auth_hash(email: user.email), session: session)
+
+    assert_equal :sign_in, result[:type]
+    assert_equal user, result[:user]
+    assert_nil session[:oauth_signup]
+  end
+
+  test "verified email 기존 user를 oauth account에 연결한다" do
+    user = users(:john)
+    session = {}
+
+    result = OauthAccounts::Callbacks.handle_callback(auth: google_auth_hash(email: user.email), session: session)
+
+    assert_equal :sign_in, result[:type]
+    assert_equal user, result[:user]
+    account = OauthAccount.find_by(provider: "google_oauth2", uid: "google-123")
+
+    assert_equal user, account.user
+  end
+
+  test "기존 oauth account 로그인 시 빈 provider 정보로 기존 값을 덮어쓰지 않는다" do
+    user = users(:john)
+    OauthAccount.create!(
+      user:,
+      provider: "apple",
+      uid: "apple-123",
+      email: "first-login@example.com",
+      email_verified: true,
+      raw_info: {
+        "provider" => "apple",
+        "uid" => "apple-123",
+        "info" => {
+          "email" => "first-login@example.com",
+          "name" => "First Login"
+        }
+      }
+    )
+    session = {}
+
+    result = OauthAccounts::Callbacks.handle_callback(auth: apple_auth_hash(email: nil, name: nil), session: session)
+
+    assert_equal :sign_in, result[:type]
+
+    account = OauthAccount.find_by!(provider: "apple", uid: "apple-123")
+
+    assert_equal "first-login@example.com", account.email
+    assert_equal "First Login", account.raw_info.dig("info", "name")
+    assert account.email_verified, "Apple 후속 콜백에서 email_verified가 덮어써지면 안 됨"
+  end
+
+  test "기존 oauth account 로그인 시 false 값도 raw_info에 반영한다" do
+    user = users(:john)
+    OauthAccount.create!(
+      user:,
+      provider: "google_oauth2",
+      uid: "google-123",
+      email: user.email,
+      email_verified: true,
+      raw_info: {
+        "provider" => "google_oauth2",
+        "uid" => "google-123",
+        "info" => {
+          "email" => user.email,
+          "name" => "First Login",
+          "email_verified" => true
+        }
+      }
+    )
+    session = {}
+
+    auth = google_auth_hash(email: user.email)
+    auth["info"]["email_verified"] = false
+
+    result = OauthAccounts::Callbacks.handle_callback(auth:, session:)
+
+    assert_equal :sign_in, result[:type]
+    refute OauthAccount.find_by!(provider: "google_oauth2", uid: "google-123").raw_info.dig("info", "email_verified")
+  end
+
+  test "신규 user면 signup completion 결과와 suggested username을 반환한다" do
+    session = {}
+
+    result = OauthAccounts::Callbacks.handle_callback(auth: google_auth_hash(email: "new-user@example.com", name: "New User"), session: session)
+
+    assert_equal :complete_signup, result[:type]
+    assert_equal "new_user", result[:suggested_username]
+    assert_equal "new-user@example.com", session.dig(:oauth_signup, "email")
+  end
+
+  test "signup completion 세션에 raw_info를 보존한다" do
+    session = {}
+
+    OauthAccounts::Callbacks.handle_callback(
+      auth: apple_auth_hash(email: "first-login@example.com", name: "First Login"),
+      session: session
+    )
+
+    assert_equal "first-login@example.com", session.dig(:oauth_signup, "raw_info", "info", "email")
+    assert_equal "First Login", session.dig(:oauth_signup, "raw_info", "info", "name")
+  end
+
+  # --- match_user (private) ---
+
+  test "existing oauth account가 있으면 해당 사용자를 반환한다" do
+    user = users(:john)
+    OauthAccount.create!(user:, provider: "google_oauth2", uid: "google-123")
+
+    assert_equal user, OauthAccounts::Callbacks.send(:match_user, provider: "google_oauth2", uid: "google-123", email: "other@example.com", email_verified: true, relay_email: false)
+  end
+
+  test "verified email이면 기존 user를 자동 연결한다" do
+    user = users(:john)
+
+    assert_equal user, OauthAccounts::Callbacks.send(:match_user, provider: "google_oauth2", uid: "google-123", email: user.email, email_verified: true, relay_email: false)
+  end
+
+  test "verified email이 아니면 기존 user를 자동 연결하지 않는다" do
+    assert_nil OauthAccounts::Callbacks.send(:match_user, provider: "google_oauth2", uid: "google-123", email: users(:john).email, email_verified: false, relay_email: false)
+  end
+
+  test "apple relay email이면 기존 user를 자동 연결하지 않는다" do
+    assert_nil OauthAccounts::Callbacks.send(:match_user, provider: "apple", uid: "apple-123", email: users(:john).email, email_verified: true, relay_email: true)
+  end
+
+  # --- suggest_username (public) ---
+
+  test "name 기반 username을 제안한다" do
+    assert_equal "john_doe", OauthAccounts::Callbacks.suggest_username(name: "John Doe", email: "john@example.com")
+  end
+
+  test "허용 문자만 남긴다" do
+    assert_equal "johndoe", OauthAccounts::Callbacks.send(:sanitize, 'John!@#$Doe')
+  end
+
+  test "중복이면 suffix를 붙인다" do
+    User.create!(email: "john-doe@example.com", username: "john_doe", name: "John Doe", password: "password123", confirmed_at: Time.current)
+
+    assert_equal "john_doe_1", OauthAccounts::Callbacks.suggest_username(name: "John Doe", email: "other@example.com")
+  end
+
+  test "너무 짧으면 fallback을 보정한다" do
+    assert_equal "user", OauthAccounts::Callbacks.suggest_username(name: "!", email: nil)
+  end
+
+  private
+
+  def google_auth_hash(email:, name: "John Doe")
+    {
+      "provider" => "google_oauth2",
+      "uid" => "google-123",
+      "info" => {
+        "email" => email,
+        "name" => name,
+        "email_verified" => true
+      }
+    }
+  end
+
+  def apple_auth_hash(email:, name:)
+    {
+      "provider" => "apple",
+      "uid" => "apple-123",
+      "info" => {
+        "email" => email,
+        "name" => name
+      },
+      "credentials" => {
+        "email_verified" => true
+      }
+    }
+  end
+end

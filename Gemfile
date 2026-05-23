@@ -88,6 +88,7 @@ end
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
+  gem "climate_control"
   gem "selenium-webdriver"
 end
 
@@ -106,6 +107,9 @@ gem "meta-tags"
 gem "mission_control-jobs"
 gem "neighbor"
 gem "oauth2", "~> 2.0"
+gem "omniauth-apple"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
 gem "ostruct"
 gem "pg_search"
 gem "rails-i18n"

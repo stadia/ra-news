@@ -7,7 +7,8 @@ class User < ApplicationRecord
 
   devise :database_authenticatable, :registerable,
          :recoverable, :validatable, :rememberable, :timeoutable, :confirmable,
-         :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
+         :jwt_authenticatable, :omniauthable,
+         omniauth_providers: %i[google_oauth2 apple], jwt_revocation_strategy: JwtDenylist
 
   acts_as_liker
 
@@ -20,6 +21,8 @@ class User < ApplicationRecord
   has_many :posts, dependent: :destroy
 
   has_many :refresh_tokens, dependent: :destroy
+
+  has_many :oauth_accounts, dependent: :destroy
 
   validates :username, presence: true,
                       uniqueness: { case_sensitive: false },

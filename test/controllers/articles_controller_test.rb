@@ -143,8 +143,8 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
       article.stub(:generate_metadata, nil) { article.save! }
     end
 
-    WebPushConfig.stub(:configured?, true) do
-      WebPushConfig.stub(:public_key, "test-public-key") do
+    Configs::WebPush.stub(:configured?, true) do
+      Configs::WebPush.stub(:public_key, "test-public-key") do
         sign_in_as(user)
         get others_path
 

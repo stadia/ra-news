@@ -5,7 +5,7 @@ require "uri"
 
 class SlackControllerTest < ActionDispatch::IntegrationTest
   test "POST events rejects when signing secret is blank" do
-    SlackConfig.stub(:signing_secret, "") do
+    Configs::Slack.stub(:signing_secret, "") do
       post slack_events_path,
         params: { type: "url_verification", challenge: "challenge-token" },
         headers: {
@@ -20,8 +20,8 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
   test "GET install redirects to slack authorize url" do
     sign_in_as(users(:john))
 
-    SlackConfig.stub(:configured?, true) do
-      SlackConfig.stub(:client_id, "client-123") do
+    Configs::Slack.stub(:configured?, true) do
+      Configs::Slack.stub(:client_id, "client-123") do
         get "/slack/install"
       end
     end
@@ -37,7 +37,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
   test "GET install redirects with alert when not configured" do
     sign_in_as(users(:john))
 
-    SlackConfig.stub(:configured?, false) do
+    Configs::Slack.stub(:configured?, false) do
       get "/slack/install"
     end
 
@@ -73,7 +73,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
   test "GET callback stores workspace webhook configuration and redirects to result page" do
     sign_in_as(users(:john))
 
-    SlackConfig.stub(:configured?, true) { get "/slack/install" }
+    Configs::Slack.stub(:configured?, true) { get "/slack/install" }
     state = URI.decode_www_form(URI.parse(response.location).query).to_h.fetch("state")
 
     oauth_response = {
@@ -107,7 +107,7 @@ class SlackControllerTest < ActionDispatch::IntegrationTest
     raw_body = payload.to_json
     signature = "v0=" + OpenSSL::HMAC.hexdigest("SHA256", "signing-secret", "v0:#{timestamp}:#{raw_body}")
 
-    SlackConfig.stub(:signing_secret, "signing-secret") do
+    Configs::Slack.stub(:signing_secret, "signing-secret") do
       post slack_events_path,
         params: raw_body,
         headers: {
