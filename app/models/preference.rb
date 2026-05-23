@@ -4,9 +4,16 @@
 class Preference < ApplicationRecord
   validates :name, presence: true, uniqueness: true
 
-  after_initialize :define_dynamic_accessors, if: -> { persisted? && name.present? }
+  after_initialize :define_dynamic_accessors, if: -> { name.present? }
 
   after_commit :clear_cache, on: %i[create update destroy]
+
+  #: (String? value) -> String?
+  def name=(value)
+    super.tap do
+      define_dynamic_accessors if name.present?
+    end
+  end
 
   #: (String name) -> Hash[String, untyped] || Array[untyped]
   def self.get_value(name)
