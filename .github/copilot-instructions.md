@@ -5,21 +5,21 @@ Rails 8.1.3 | Ruby 4.0.5
 
 ## Stack
 - Database: PostgreSQL — 27 tables
-- Models: 24
-- Routes: 164 across 49 controllers
+- Models: 25
+- Routes: 172 across 51 controllers
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 121 components, 121 Phlex
-- Performance: 9 issues detected
-- auth: devise, pundit, devise-jwt, jwt
+- Components: 123 components, 123 Phlex
+- Performance: 2 issues detected
+- auth: devise, omniauth, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
 - api: jbuilder, alba, oj
 - database: pg, sqlite3, solid_cache, solid_cable
-- files: activestorage, image_processing, mini_magick, aws-sdk-s3
+- files: activestorage, image_processing, aws-sdk-s3
 - testing: minitest, faker, capybara
 - admin: madmin
 - pagination: pagy
@@ -28,7 +28,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - validation: dry-monads
 - utilities: nokogiri, faraday, rest-client
 
-## Models (24)
+## Models (25)
 - **ActsAsTaggableOn::Tag** — has_many :taggings
 - **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
 - **Article** — has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
@@ -40,6 +40,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - **Like** — belongs_to :liker, belongs_to :likeable
 - **NotificationChannel** — has_many :notification_deliveries
 - **NotificationDelivery** — belongs_to :article, belongs_to :notification_channel
+- **OauthAccount** — belongs_to :user
 - **Post** — belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
 - **Preference**
 - **PushSubscription** — belongs_to :user
@@ -52,7 +53,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - **Socialization::ActiveRecordStores::Like** — belongs_to :liker, belongs_to :likeable
 - **Socialization::ActiveRecordStores::Mention** — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** — has_many :taggings
-- **User** — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :refresh_tokens, has_one :federails_actor
+- **User** — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :refresh_tokens, has_many :oauth_accounts, has_one :federails_actor
 
 ## Architecture
 - Hotwire (Turbo + Stimulus)
@@ -73,6 +74,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - solid_cache
 - solid_cable
 - dry_rb
+- error_monitoring
 - zeitwerk
 - Soft deletes (paranoia/discard)
 - Full-text search (Searchkick/pg_search/Ransack)

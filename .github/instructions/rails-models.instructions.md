@@ -4,7 +4,7 @@ name: "Rails Models Reference"
 description: "ActiveRecord models — associations, validations, scopes, enums"
 ---
 
-# ActiveRecord Models (24)
+# ActiveRecord Models (25)
 
 Check here first for scopes, constants, associations. Read model files for business logic/methods.
 
@@ -21,10 +21,10 @@ Check here first for scopes, constants, associations. Read model files for busin
 - NotificationChannel (1 associations)
   scopes: active, delivery_ready
 - NotificationDelivery (2 associations)
+- OauthAccount (1 associations)
 - Post (9 associations)
   scopes: comments, standalone
 - Preference (0 associations)
-  PROTECTED_KEYS: name, value
 - PushSubscription (1 associations)
 - RefreshToken (1 associations)
   scopes: active
@@ -38,5 +38,5 @@ Check here first for scopes, constants, associations. Read model files for busin
 - Socialization::ActiveRecordStores::Mention (2 associations)
 - Tag (1 associations)
   scopes: confirmed, unconfirmed
-- User (7 associations)
+- User (8 associations)
   scopes: with_role, admins | SUPPORTED_LOCALES: ko, ja, en | SUPPORTED_SIGNUP_HOSTS: ruby-news.kr, ruby-news.jp

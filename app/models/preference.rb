@@ -8,6 +8,13 @@ class Preference < ApplicationRecord
 
   after_commit :clear_cache, on: %i[create update destroy]
 
+  #: (String? value) -> String?
+  def name=(value)
+    super.tap do
+      define_dynamic_accessors if name.present?
+    end
+  end
+
   #: (String name) -> Hash[String, untyped] || Array[untyped]
   def self.get_value(name)
     get_object(name)&.value

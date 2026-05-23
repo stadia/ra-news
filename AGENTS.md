@@ -6,19 +6,19 @@
 
 ## Stack
 - Database: PostgreSQL — 27 tables
-- Models: 24
-- Routes: 164 across 28 controllers
+- Models: 25
+- Routes: 172 across 30 controllers
 - Async: 15 jobs
-- Migrations: 112 total, 0 pending
+- Migrations: 115 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 121 components, 121 Phlex
-- Performance: 9 issues detected
+- Components: 123 components, 123 Phlex
+- Performance: 2 issues detected
 
-## Key models (24 total)
+## Key models (25 total)
 - **ActsAsTaggableOn::Tag** (1a, 3v) — has_many :taggings
 - **ActsAsTaggableOn::Tagging** (3a, 5v) — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
 - **Article** (12a, 7v) — has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
@@ -32,22 +32,20 @@
 - **NotificationChannel** (1a, 3v) — has_many :notification_deliveries
   scopes: active, delivery_ready
 - **NotificationDelivery** (2a, 5v) — belongs_to :article, belongs_to :notification_channel
+- **OauthAccount** (1a, 5v) — belongs_to :user
 - **Post** (9a, 4v) — belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
   scopes: comments, standalone
-- **Preference** (0a, 1v)
-  PROTECTED_KEYS: name, value
+- **Preference** (0a, 2v)
 - **PushSubscription** (1a, 6v) — belongs_to :user
-- **RefreshToken** (1a, 1v) — belongs_to :user
-  scopes: active
-- _...9 more (use `rails_get_model_details` tool)_
+- _...10 more (use `rails_get_model_details` tool)_
 
 ## Gems
-- **auth**: devise, pundit, devise-jwt, jwt
+- **auth**: devise, omniauth, pundit, devise-jwt, jwt
 - **jobs**: solid_queue, mission_control-jobs
 - **frontend**: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
 - **api**: jbuilder, alba, oj
 - **database**: pg, sqlite3, solid_cache, solid_cable
-- **files**: activestorage, image_processing, mini_magick, aws-sdk-s3
+- **files**: activestorage, image_processing, aws-sdk-s3
 - **testing**: minitest, faker, capybara
 - **admin**: madmin
 - **pagination**: pagy
@@ -75,6 +73,7 @@
 - solid_cache
 - solid_cable
 - dry_rb
+- error_monitoring
 - zeitwerk
 - Soft deletes (paranoia/discard)
 - Full-text search (Searchkick/pg_search/Ransack)
@@ -147,6 +146,7 @@ Use individual tools only when you need deeper detail on a specific layer.
 
 **Trace a method:**
 → `rails 'ai:tool[search_code]' pattern="publishable?" match_type=trace`
+
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->

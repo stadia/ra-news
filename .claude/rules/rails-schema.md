@@ -4,7 +4,7 @@ paths:
   - "db/migrate/**"
 ---
 
-# Database Tables (24)
+# Database Tables (25)
 
 _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")` for live data._
 
@@ -26,6 +26,7 @@ _Snapshot — may be stale after migrations. Use `rails_get_schema(table:"name")
   status: active, inactive, error
 - **notification_deliveries** (12 cols) — type:string, channel_id:string, channel_name:string, status:string(=failed), sent_at:datetime, error_message:text, message_id:string, metadata:jsonb
   status: sent, failed
+- **oauth_accounts** (8 cols) — provider:string, uid:string, email:string, email_verified:boolean(=false), raw_info:jsonb | Idx: provider+uid(unique), user_id+provider(unique)
 - **posts** (17 cols) — body:text, federated_url:string, parent_id:bigint, lft:integer, rgt:integer, depth:integer(=0), children_count:integer(=0), likers_count:integer(=0), url:string, title:string, media_attachments:jsonb, slug:string | FK: article_id→articles | Idx: parent_id+created_at, federated_url(unique), slug(unique)
 - **push_subscriptions** (9 cols) — endpoint:text, p256dh:string, auth:string, expiration_time:datetime, last_sent_at:datetime, last_error_at:datetime | Idx: endpoint(unique)
 - **refresh_tokens** (6 cols) — token_digest:string, expires_at:datetime, revoked_at:datetime | Idx: token_digest(unique)

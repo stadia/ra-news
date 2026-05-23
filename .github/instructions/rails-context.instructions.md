@@ -9,14 +9,14 @@ description: "Rails version, database, models, routes, gems, architecture patter
 Rails 8.1.3 | Ruby 4.0.5
 
 - Database: PostgreSQL — 27 tables
-- Models: 24
-- Routes: 164
-- auth: devise, pundit, devise-jwt, jwt
+- Models: 25
+- Routes: 172
+- auth: devise, omniauth, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
 - api: jbuilder, alba, oj
 - database: pg, sqlite3, solid_cache, solid_cable
-- files: activestorage, image_processing, mini_magick, aws-sdk-s3
+- files: activestorage, image_processing, aws-sdk-s3
 - Hotwire (Turbo + Stimulus)
 - Service objects pattern (app/services/)
 - Presenters/Decorators
@@ -27,8 +27,8 @@ Rails 8.1.3 | Ruby 4.0.5
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 121 components, 121 Phlex
-- Performance: 9 issues detected
+- Components: 123 components, 123 Phlex
+- Performance: 2 issues detected
 - Services: ArticleAgentsService, ContentService, DiscordDeliveryService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SlackDeliveryService, SocialMediaService, TwitterService
 - Jobs: ArticleBatchJob, ArticleJob, ArticleThumbnailJob, DiscardedArticleCleanupJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
