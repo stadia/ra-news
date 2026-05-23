@@ -9,19 +9,17 @@ class Views::Sessions::New < Views::Base
 
       div(class: "mb-6 flex flex-col gap-3 sm:flex-row") do
         if Configs::GoogleOauth.configured?
-          form_with(url: user_google_oauth2_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
-            render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
-              t("sessions.new.continue_with_google")
-            end
-          end
+          render Components::OauthButton::Google.new(
+            path: user_google_oauth2_omniauth_authorize_path,
+            label: t("sessions.new.continue_with_google")
+          )
         end
 
         if Configs::AppleOauth.configured?
-          form_with(url: user_apple_omniauth_authorize_path, method: :post, class: "w-full sm:w-auto") do
-            render RubyUI::Button.new(type: "submit", variant: :outline, size: :lg, class: "w-full rounded-md font-medium") do
-              t("sessions.new.continue_with_apple")
-            end
-          end
+          render Components::OauthButton::Apple.new(
+            path: user_apple_omniauth_authorize_path,
+            label: t("sessions.new.continue_with_apple")
+          )
         end
       end
 
