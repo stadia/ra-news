@@ -4,7 +4,7 @@
 class Preference < ApplicationRecord
   validates :name, presence: true, uniqueness: true
 
-  after_initialize :define_dynamic_accessors, if: -> { persisted? && name.present? }
+  after_initialize :define_dynamic_accessors, if: -> { name.present? }
 
   after_commit :clear_cache, on: %i[create update destroy]
 
