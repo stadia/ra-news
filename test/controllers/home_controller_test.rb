@@ -4,7 +4,7 @@ require "test_helper"
 
 class HomeControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @thumbnail_path = Rails.root.join("public/icon.png")
+    @thumbnail_path = Rails.root.join("public/apple-touch-icon.png")
   end
 
   test "GET root renders successfully" do

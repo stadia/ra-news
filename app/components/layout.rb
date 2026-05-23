@@ -360,6 +360,8 @@ class Components::Layout < Components::Base
           li { render_slack_link }
           li { render_discord_link }
           li { render_rss_footer_link }
+          li { render_privacy_policy_link }
+          li { render_terms_link }
         end
       end
     end
@@ -423,6 +425,20 @@ class Components::Layout < Components::Base
       end
       plain " #{t('layout.footer.slack')}"
     end
+  end
+
+  def render_privacy_policy_link
+    a(
+      href: privacy_policy_path,
+      class: "hover:underline hover:text-content"
+    ) { t("layout.footer.privacy_policy") }
+  end
+
+  def render_terms_link
+    a(
+      href: terms_path,
+      class: "hover:underline hover:text-content"
+    ) { t("layout.footer.terms") }
   end
 
   def render_discord_link

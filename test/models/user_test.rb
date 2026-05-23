@@ -253,7 +253,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "프로필 아바타 대표 이미지 URL을 반환해야 한다" do
     @user.avatar.attach(
-      io: File.open(Rails.root.join("public/icon.png")),
+      io: File.open(Rails.root.join("public/apple-touch-icon.png")),
       filename: "avatar.png",
       content_type: "image/png"
     )
@@ -268,7 +268,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "프로필 아바타가 있으면 activitypub object에 icon을 포함해야 한다" do
     @user.avatar.attach(
-      io: File.open(Rails.root.join("public/icon.png")),
+      io: File.open(Rails.root.join("public/apple-touch-icon.png")),
       filename: "avatar.png",
       content_type: "image/png"
     )
@@ -288,7 +288,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "프로필 아바타를 제거할 수 있어야 한다" do
     @user.avatar.attach(
-      io: File.open(Rails.root.join("public/icon.png")),
+      io: File.open(Rails.root.join("public/apple-touch-icon.png")),
       filename: "avatar.png",
       content_type: "image/png"
     )
@@ -303,7 +303,7 @@ class UserTest < ActiveSupport::TestCase
     actor = federails_actors(:john_actor)
 
     @user.avatar.attach(
-      io: File.open(Rails.root.join("public/icon.png")),
+      io: File.open(Rails.root.join("public/apple-touch-icon.png")),
       filename: "avatar.png",
       content_type: "image/png"
     )
@@ -374,7 +374,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "avatar_url은 variant 처리 오류가 나면 nil을 반환한다" do
     @user.avatar.attach(
-      io: File.open(Rails.root.join("public/icon.png")),
+      io: File.open(Rails.root.join("public/apple-touch-icon.png")),
       filename: "avatar.png",
       content_type: "image/png"
     )

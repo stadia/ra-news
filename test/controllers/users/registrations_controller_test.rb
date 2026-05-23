@@ -5,7 +5,7 @@ require "test_helper"
 class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:john)
-    @avatar_path = Rails.root.join("public/icon.png")
+    @avatar_path = Rails.root.join("public/apple-touch-icon.png")
   end
 
   test "GET edit renders account edit page" do
