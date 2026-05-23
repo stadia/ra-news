@@ -2,9 +2,7 @@
 # rbs_inline: enabled
 
 class Preference < ApplicationRecord
-  PROTECTED_KEYS = %w[name value]
-
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
 
   after_initialize :define_dynamic_accessors, if: -> { persisted? && name.present? }
 
@@ -21,7 +19,7 @@ class Preference < ApplicationRecord
     return nil if resolving.include?(name)
 
     resolving.add(name)
-    Rails.cache.fetch("preferences_#{name}", expires_in: 2.weeks, skip_nil: true) do
+    Rails.cache.fetch("preferences_#{name}", expires_in: 1.hour, skip_nil: true) do
       Preference.find_by(name:)
     end
   ensure
@@ -66,7 +64,8 @@ class Preference < ApplicationRecord
         when :hosts
           self.value = new_value.split(" ")
         else
-          self.value = value.is_a?(Hash) ? (value || {}).merge(key.to_s => new_value) : value
+          hash = value.is_a?(Hash) ? value : {}
+          self.value = hash.merge(key.to_s => new_value)
         end
       end
     end

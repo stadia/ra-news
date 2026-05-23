@@ -5,7 +5,7 @@
 require "test_helper"
 
 class ArticleAgentsServiceTest < ActiveSupport::TestCase
-  AgentResult = Struct.new(:status, :content)
+  AgentResult = Struct.new(:finish_reason, :content)
   HumanizeResult = Struct.new(:content)
 
   def build_success_content(tags: [ "rubyconf", "keynote" ], is_related: true)
@@ -103,7 +103,7 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     assert_includes article.tag_list, "keynote"
   end
 
-  test "run_agents는 agent content가 nil이면 article을 discard하고 finish_reason을 반환한다" do
+  test "run_agents는 agent content가 nil이면 article을 discard하고 Failure를 반환한다" do
     article = articles(:ruby_article)
     agent_response = AgentResult.new("length", nil)
 
@@ -116,7 +116,8 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     end
 
     assert_predicate article.reload, :discarded?
-    assert_equal "length", result
+    assert_predicate result, :failure?
+    assert_equal "length", result.failure
   end
 
   test "run_humanize는 over_polish_aborted=true이면 article을 갱신하지 않고 실패를 반환한다" do

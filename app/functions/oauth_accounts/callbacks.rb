@@ -17,14 +17,7 @@ module OauthAccounts
         )
 
         if user
-          oauth_account = OauthAccount.find_or_initialize_by(provider: oauth_data[:provider], uid: oauth_data[:uid])
-          oauth_account.user = user
-          if oauth_data[:email].present?
-            oauth_account.email = oauth_data[:email]
-            oauth_account.email_verified = oauth_data[:email_verified]
-          end
-          oauth_account.raw_info = merged_raw_info(existing: oauth_account.raw_info, incoming: oauth_data[:raw_info])
-          oauth_account.save!
+          oauth_account = upsert_oauth_account(user:, oauth_data:)
 
           session.delete(:oauth_signup)
           return { type: :sign_in, user: user }
@@ -47,6 +40,20 @@ module OauthAccounts
       end
 
       private
+
+      def upsert_oauth_account(user:, oauth_data:)
+        oauth_account = OauthAccount.find_or_initialize_by(provider: oauth_data[:provider], uid: oauth_data[:uid])
+        oauth_account.user = user
+        if oauth_data[:email].present?
+          oauth_account.email = oauth_data[:email]
+          oauth_account.email_verified = oauth_data[:email_verified]
+        end
+        oauth_account.raw_info = merged_raw_info(existing: oauth_account.raw_info, incoming: oauth_data[:raw_info])
+        oauth_account.save!
+        oauth_account
+      rescue ActiveRecord::RecordNotUnique
+        OauthAccount.find_by!(provider: oauth_data[:provider], uid: oauth_data[:uid])
+      end
 
       def match_user(provider:, uid:, email:, email_verified:, relay_email:)
         oauth_account = OauthAccount.find_by(provider:, uid: uid.to_s)
@@ -86,16 +93,18 @@ module OauthAccounts
              .gsub(/\A[._]+|[._]+\z/, "")
       end
 
+      MAX_USERNAME_RETRIES = 10
+
       def unique_username_for(base)
         return base unless User.exists?(username: base)
 
-        suffix = 1
-        loop do
-          candidate = "#{base.first(MAX_LENGTH - suffix.to_s.length - 1)}_#{suffix}"
+        MAX_USERNAME_RETRIES.times do |i|
+          suffix = (i + 1).to_s
+          candidate = "#{base.first(MAX_LENGTH - suffix.length - 1)}_#{suffix}"
           return candidate unless User.exists?(username: candidate)
-
-          suffix += 1
         end
+
+        "#{base.first(MAX_LENGTH - 6)}_#{SecureRandom.hex(2)}"
       end
 
       def relay_email?(email)

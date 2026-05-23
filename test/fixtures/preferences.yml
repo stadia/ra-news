@@ -12,5 +12,4 @@ ignore_hosts:
     - "linkedin.com"
     - "meetup.com"
 
-two: {}
 # column: value
