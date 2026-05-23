@@ -2,10 +2,10 @@
 
 module Articles
   module AgentRunner
-    module_function
+    extend FunctionLogger
 
     class << self
-      def run(article:, prompt:, logger:)
+      def run(article:, prompt:)
         message = ArticleAgent.new.ask(prompt)
         raw_content = message.content
         logger.info "Response received for article id: #{article.id}"

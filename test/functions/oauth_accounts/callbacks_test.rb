@@ -87,6 +87,7 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
 
     assert_equal "first-login@example.com", account.email
     assert_equal "First Login", account.raw_info.dig("info", "name")
+    assert account.email_verified, "Apple 후속 콜백에서 email_verified가 덮어써지면 안 됨"
   end
 
   test "기존 oauth account 로그인 시 false 값도 raw_info에 반영한다" do

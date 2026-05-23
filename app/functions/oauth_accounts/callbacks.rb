@@ -19,8 +19,10 @@ module OauthAccounts
         if user
           oauth_account = OauthAccount.find_or_initialize_by(provider: oauth_data[:provider], uid: oauth_data[:uid])
           oauth_account.user = user
-          oauth_account.email = oauth_data[:email].presence || oauth_account.email
-          oauth_account.email_verified = oauth_data[:email_verified]
+          if oauth_data[:email].present?
+            oauth_account.email = oauth_data[:email]
+            oauth_account.email_verified = oauth_data[:email_verified]
+          end
           oauth_account.raw_info = merged_raw_info(existing: oauth_account.raw_info, incoming: oauth_data[:raw_info])
           oauth_account.save!
 
