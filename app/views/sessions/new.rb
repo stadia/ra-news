@@ -21,6 +21,13 @@ class Views::Sessions::New < Views::Base
             label: t("sessions.new.continue_with_apple")
           )
         end
+
+        if Configs::GithubOauth.configured?
+          render Components::OauthButton::Github.new(
+            path: user_github_omniauth_authorize_path,
+            label: t("sessions.new.continue_with_github")
+          )
+        end
       end
 
       form_with(url: user_session_path, scope: :user, class: "contents") do |form|

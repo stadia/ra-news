@@ -174,7 +174,7 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - UI를 구현할 때 필요한 컴포넌트가 있으면 먼저 `app/components/ruby_ui` 아래 기존 RubyUI 컴포넌트를 찾고, 없을 때만 새로 만든다.
 - RubyUI 컴포넌트 수정은 프로젝트 전반에 영향을 주는 공통 규칙 변경이 꼭 필요한 경우에만 한다. 화면 단위 요구사항은 호출부의 class 조정이나 별도 앱 컴포넌트로 해결하는 것을 우선한다.
 - 보조 액션 묶음은 `RubyUI::DropdownMenu` 또는 `RubyUI::Popover`를 우선 검토하고, 설정형 on/off 값은 `RubyUI::Switch`, 다중 선택과 동의/필터 항목은 `RubyUI::Checkbox`를 우선 사용한다.
-- 아이콘은 PhlexIcons의 Hero 아이콘(`Hero::IconName`)을 사용하며, 인라인 SVG를 직접 넣지 않는다.
+- 아이콘은 PhlexIcons의 Hero 아이콘(`Hero::IconName`)을 우선 사용한다. 브랜드 로고(Google, Apple, GitHub 등)처럼 Hero 아이콘에 해당하지 않는 경우에는 공식 가이드라인을 따르는 SVG를 직접 사용할 수 있다.
 - 디자인 및 UI 작업은 `DESIGN.md`의 지침(시맨틱 토큰, 컴포넌트 규칙, 색상 전략, 접근성 기준 등)을 따른다.
 
 ## 권장 규칙

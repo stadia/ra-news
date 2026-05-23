@@ -184,6 +184,15 @@ Devise.setup do |config|
                   },
                   scope: "email name"
 
+  config.omniauth :github,
+                  nil, nil,
+                  setup: ->(env) {
+                    strategy = env["omniauth.strategy"]
+                    strategy.options[:client_id] = Configs::GithubOauth.client_id
+                    strategy.options[:client_secret] = Configs::GithubOauth.client_secret
+                  },
+                  scope: "user:email"
+
   # ==> Configuration for :rememberable
   # The time the user will be remembered without asking for credentials again.
   config.remember_for = 2.weeks

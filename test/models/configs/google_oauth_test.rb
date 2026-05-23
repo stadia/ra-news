@@ -4,7 +4,7 @@ require "test_helper"
 
 class Configs::GoogleOauthTest < ActiveSupport::TestCase
   test "Preference에 값이 있으면 client_id를 반환한다" do
-    Preference.create!(name: "google_oauth2_oauth", value: { "client_id" => "pref-client-id", "client_secret" => "pref-secret" })
+    Preference.create!(name: "google_oauth", value: { "client_id" => "pref-client-id", "client_secret" => "pref-secret" })
 
     assert_equal "pref-client-id", Configs::GoogleOauth.client_id
     assert_equal "pref-secret", Configs::GoogleOauth.client_secret
@@ -18,7 +18,7 @@ class Configs::GoogleOauthTest < ActiveSupport::TestCase
   end
 
   test "Preference 값이 ENV보다 우선한다" do
-    Preference.create!(name: "google_oauth2_oauth", value: { "client_id" => "pref-id", "client_secret" => "pref-secret" })
+    Preference.create!(name: "google_oauth", value: { "client_id" => "pref-id", "client_secret" => "pref-secret" })
 
     ClimateControl.modify GOOGLE_OAUTH_CLIENT_ID: "env-id", GOOGLE_OAUTH_CLIENT_SECRET: "env-secret" do
       assert_equal "pref-id", Configs::GoogleOauth.client_id
@@ -27,14 +27,14 @@ class Configs::GoogleOauthTest < ActiveSupport::TestCase
   end
 
   test "둘 다 있으면 configured?는 true" do
-    Preference.create!(name: "google_oauth2_oauth", value: { "client_id" => "id", "client_secret" => "secret" })
+    Preference.create!(name: "google_oauth", value: { "client_id" => "id", "client_secret" => "secret" })
 
     assert_predicate Configs::GoogleOauth, :configured?
   end
 
   test "client_id가 없으면 configured?는 false" do
     ClimateControl.modify GOOGLE_OAUTH_CLIENT_ID: nil, GOOGLE_OAUTH_CLIENT_SECRET: "secret" do
-      Preference.create!(name: "google_oauth2_oauth", value: { "client_secret" => "secret" })
+      Preference.create!(name: "google_oauth", value: { "client_secret" => "secret" })
 
       refute_predicate Configs::GoogleOauth, :configured?
     end
@@ -42,7 +42,7 @@ class Configs::GoogleOauthTest < ActiveSupport::TestCase
 
   test "client_secret가 없으면 configured?는 false" do
     ClimateControl.modify GOOGLE_OAUTH_CLIENT_ID: nil, GOOGLE_OAUTH_CLIENT_SECRET: nil do
-      Preference.create!(name: "google_oauth2_oauth", value: { "client_id" => "id" })
+      Preference.create!(name: "google_oauth", value: { "client_id" => "id" })
 
       refute_predicate Configs::GoogleOauth, :configured?
     end

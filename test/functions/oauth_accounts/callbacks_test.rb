@@ -35,6 +35,87 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
     assert result[:relay_email]
   end
 
+  test "github payload를 정규화한다" do
+    result = OauthAccounts::Callbacks.send(:build_auth_result, auth: github_auth_hash(email: "octo@example.com"))
+
+    assert_equal "github", result[:provider]
+    assert_equal "github-123", result[:uid]
+    assert_equal "octo@example.com", result[:email]
+    assert_equal "Octo Cat", result[:name]
+    assert result[:email_verified]
+    refute result[:relay_email]
+  end
+
+  test "github payload에 email이 없으면 primary verified email을 조회한다" do
+    response = Struct.new(:status, :body).new(
+      200,
+      [
+        { email: "secondary@example.com", primary: false, verified: true },
+        { email: "octo@example.com", primary: true, verified: true }
+      ].to_json
+    )
+
+    Faraday.stub(:get, github_get_response(response)) do
+      result = OauthAccounts::Callbacks.send(:build_auth_result, auth: github_auth_hash(email: nil))
+
+      assert_equal "octo@example.com", result[:email]
+      assert result[:email_verified]
+    end
+  end
+
+  test "github email 조회는 네트워크 timeout을 설정한다" do
+    response = Struct.new(:status, :body).new(
+      200,
+      [
+        { email: "octo@example.com", primary: true, verified: true }
+      ].to_json
+    )
+    request_options = nil
+
+    github_get = lambda do |_url, _params, _headers, &block|
+      request = Struct.new(:options).new(Struct.new(:timeout, :open_timeout).new)
+      block.call(request)
+      request_options = request.options
+      response
+    end
+
+    Faraday.stub(:get, github_get) do
+      result = OauthAccounts::Callbacks.send(:build_auth_result, auth: github_auth_hash(email: nil))
+
+      assert_equal "octo@example.com", result[:email]
+    end
+
+    assert_equal 5, request_options.timeout
+    assert_equal 2, request_options.open_timeout
+  end
+
+  test "github verified primary email이 없으면 email_verified는 false다" do
+    response = Struct.new(:status, :body).new(
+      200,
+      [
+        { email: "octo@example.com", primary: true, verified: false }
+      ].to_json
+    )
+
+    Faraday.stub(:get, github_get_response(response)) do
+      result = OauthAccounts::Callbacks.send(:build_auth_result, auth: github_auth_hash(email: nil))
+
+      assert_nil result[:email]
+      refute result[:email_verified]
+    end
+  end
+
+  test "github email 응답이 배열이 아니면 email_verified는 false다" do
+    response = Struct.new(:status, :body).new(200, { message: "unexpected" }.to_json)
+
+    Faraday.stub(:get, github_get_response(response)) do
+      result = OauthAccounts::Callbacks.send(:build_auth_result, auth: github_auth_hash(email: nil))
+
+      assert_nil result[:email]
+      refute result[:email_verified]
+    end
+  end
+
   test "existing oauth account면 sign_in 결과를 반환한다" do
     user = users(:john)
     OauthAccount.create!(user:, provider: "google_oauth2", uid: "google-123")
@@ -210,5 +291,26 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
         "email_verified" => true
       }
     }
+  end
+
+  def github_auth_hash(email:, name: "Octo Cat")
+    {
+      "provider" => "github",
+      "uid" => "github-123",
+      "info" => {
+        "email" => email,
+        "name" => name
+      },
+      "credentials" => {
+        "token" => "github-token"
+      }
+    }
+  end
+
+  def github_get_response(response)
+    lambda do |_url, _params, _headers, &block|
+      block.call(Struct.new(:options).new(Struct.new(:timeout, :open_timeout).new))
+      response
+    end
   end
 end

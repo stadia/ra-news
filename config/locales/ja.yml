@@ -238,6 +238,7 @@ ja:
       resend_confirmation: "確認メールを再送しますか?"
       continue_with_google: "Googleで続ける"
       continue_with_apple: "Appleで続ける"
+      continue_with_github: "GitHubで続ける"
 
   profiles:
     show:

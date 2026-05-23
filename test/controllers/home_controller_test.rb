@@ -79,6 +79,20 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /Ruby-News 소개/
   end
 
+  test "GET privacy policy returns 200 with privacy content" do
+    get privacy_policy_path
+
+    assert_response :success
+    assert_select "h1", text: /개인정보처리방침/
+  end
+
+  test "GET terms returns 200 with terms content" do
+    get terms_path
+
+    assert_response :success
+    assert_select "h1", text: /이용약관/
+  end
+
   private
 
   def capture_like_queries(&block)
