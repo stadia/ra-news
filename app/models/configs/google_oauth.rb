@@ -2,7 +2,7 @@
 
 module Configs
   class GoogleOauth < OauthBase
-    preference_key "google_oauth2_oauth"
+    preference_key "google_oauth"
 
     pref :client_id, env: "GOOGLE_OAUTH_CLIENT_ID"
     pref :client_secret, env: "GOOGLE_OAUTH_CLIENT_SECRET"
