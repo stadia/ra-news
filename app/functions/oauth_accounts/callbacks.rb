@@ -121,7 +121,7 @@ module OauthAccounts
         when "apple"
           info[:email_verified].nil? ? credentials[:email_verified] : info[:email_verified]
         when "github"
-          email.present? && (info[:email].present? || github_email.present?)
+          email.present?
         else
           info[:email_verified] || credentials[:email_verified]
         end
@@ -140,10 +140,15 @@ module OauthAccounts
             "Accept" => "application/vnd.github+json",
             "X-GitHub-Api-Version" => "2022-11-28"
           }
-        )
+        ) do |req|
+          req.options.timeout = 5
+          req.options.open_timeout = 2
+        end
         return unless response.status == 200
 
         emails = JSON.parse(response.body)
+        return unless emails.is_a?(Array)
+
         primary = emails.find { |entry| entry["primary"] && entry["verified"] }
 
         primary&.fetch("email", nil).to_s.presence
