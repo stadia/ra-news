@@ -7,7 +7,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
   test "GET install redirects with alert when not configured" do
     sign_in_as(users(:john))
 
-    DiscordConfig.stub(:configured?, false) do
+    Configs::Discord.stub(:configured?, false) do
       get "/discord/install"
     end
 
@@ -18,8 +18,8 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
   test "GET install redirects to Discord authorize url" do
     sign_in_as(users(:john))
 
-    DiscordConfig.stub(:configured?, true) do
-      DiscordConfig.stub(:client_id, "dc-123") do
+    Configs::Discord.stub(:configured?, true) do
+      Configs::Discord.stub(:client_id, "dc-123") do
         get "/discord/install"
       end
     end
@@ -42,8 +42,8 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
   test "GET callback stores oauth webhook and redirects to result page" do
     sign_in_as(users(:john))
 
-    DiscordConfig.stub(:configured?, true) do
-      DiscordConfig.stub(:client_id, "dc-123") do
+    Configs::Discord.stub(:configured?, true) do
+      Configs::Discord.stub(:client_id, "dc-123") do
         get "/discord/install"
       end
     end
@@ -77,8 +77,8 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
   test "GET callback fails when oauth response has no webhook" do
     sign_in_as(users(:john))
 
-    DiscordConfig.stub(:configured?, true) do
-      DiscordConfig.stub(:client_id, "dc-123") do
+    Configs::Discord.stub(:configured?, true) do
+      Configs::Discord.stub(:client_id, "dc-123") do
         get "/discord/install"
       end
     end

@@ -21,7 +21,7 @@ class Preference < ApplicationRecord
     return nil if resolving.include?(name)
 
     resolving.add(name)
-    Rails.cache.fetch("preferences_#{name}", expires_in: 2.weeks) do
+    Rails.cache.fetch("preferences_#{name}", expires_in: 2.weeks, skip_nil: true) do
       Preference.find_by(name:)
     end
   ensure

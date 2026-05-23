@@ -4,8 +4,8 @@ require "test_helper"
 
 class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   test "GET new renders sign in page without resend confirmation link" do
-    GoogleOauthConfig.stub(:configured?, true) do
-      AppleOauthConfig.stub(:configured?, true) do
+    Configs::GoogleOauth.stub(:configured?, true) do
+      Configs::AppleOauth.stub(:configured?, true) do
         get new_user_session_path
 
         assert_response :success
@@ -17,8 +17,8 @@ class Users::SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET new renders english oauth button labels when locale is en" do
-    GoogleOauthConfig.stub(:configured?, true) do
-      AppleOauthConfig.stub(:configured?, true) do
+    Configs::GoogleOauth.stub(:configured?, true) do
+      Configs::AppleOauth.stub(:configured?, true) do
         host! "localhost"
 
         get new_user_session_path, headers: { "HTTP_ACCEPT_LANGUAGE" => "en-US,en;q=0.9" }

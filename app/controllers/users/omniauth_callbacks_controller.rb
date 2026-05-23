@@ -17,13 +17,13 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   private
 
   def verify_google_config
-    return if GoogleOauthConfig.configured?
+    return if Configs::GoogleOauth.configured?
 
     redirect_to new_user_session_path, alert: t("users.omniauth_callbacks.not_configured", provider: "Google")
   end
 
   def verify_apple_config
-    return if AppleOauthConfig.configured?
+    return if Configs::AppleOauth.configured?
 
     redirect_to new_user_session_path, alert: t("users.omniauth_callbacks.not_configured", provider: "Apple")
   end

@@ -166,8 +166,8 @@ Devise.setup do |config|
                   nil, nil,
                   setup: ->(env) {
                     strategy = env["omniauth.strategy"]
-                    strategy.options[:client_id] = GoogleOauthConfig.client_id
-                    strategy.options[:client_secret] = GoogleOauthConfig.client_secret
+                    strategy.options[:client_id] = Configs::GoogleOauth.client_id
+                    strategy.options[:client_secret] = Configs::GoogleOauth.client_secret
                   },
                   scope: "email,profile",
                   prompt: "select_account"
@@ -176,11 +176,11 @@ Devise.setup do |config|
                   nil, "",
                   setup: ->(env) {
                     strategy = env["omniauth.strategy"]
-                    strategy.options[:client_id] = AppleOauthConfig.client_id
+                    strategy.options[:client_id] = Configs::AppleOauth.client_id
                     strategy.options[:client_secret] = "" # Apple uses token-based auth, not client_secret
-                    strategy.options[:team_id] = AppleOauthConfig.team_id
-                    strategy.options[:key_id] = AppleOauthConfig.key_id
-                    strategy.options[:pem] = AppleOauthConfig.private_key
+                    strategy.options[:team_id] = Configs::AppleOauth.team_id
+                    strategy.options[:key_id] = Configs::AppleOauth.key_id
+                    strategy.options[:pem] = Configs::AppleOauth.private_key
                   },
                   scope: "email name"
 

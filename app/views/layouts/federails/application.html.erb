@@ -159,10 +159,10 @@
     </nav>
 
     <main id="main-content" class="container mx-auto px-4 py-8 grow">
-      <% if authenticated? && WebPushConfig.configured? %>
+      <% if authenticated? && Configs::WebPush.configured? %>
         <div
           data-controller="push-notifications"
-          data-push-notifications-public-key-value="<%= WebPushConfig.public_key %>"
+          data-push-notifications-public-key-value="<%= Configs::WebPush.public_key %>"
           data-push-notifications-subscription-url-value="<%= main_app.push_subscription_path %>"
           data-push-notifications-service-worker-path-value="<%= main_app.pwa_service_worker_path(format: :js) %>"
           data-push-notifications-cooldown-hours-value="1"

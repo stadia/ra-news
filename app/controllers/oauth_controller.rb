@@ -10,13 +10,13 @@ class OauthController < ApplicationController
     case provider
     when "slack"
       # slack
-      unless SlackConfig.configured?
+      unless Configs::Slack.configured?
         redirect_to edit_user_registration_path, alert: "Slack 연동이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요."
         return
       end
     when "discord"
       # discord
-      unless DiscordConfig.configured?
+      unless Configs::Discord.configured?
         redirect_to edit_user_registration_path, alert: "Discord 연동이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요."
         return
       end
