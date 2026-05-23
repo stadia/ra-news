@@ -238,6 +238,7 @@ ko:
       resend_confirmation: "인증 메일을 다시 받으시겠어요?"
       continue_with_google: "Google로 계속하기"
       continue_with_apple: "Apple로 계속하기"
+      continue_with_github: "GitHub로 계속하기"
 
   profiles:
     show:

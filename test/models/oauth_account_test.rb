@@ -13,6 +13,12 @@ class OauthAccountTest < ActiveSupport::TestCase
     assert_predicate account, :valid?
   end
 
+  test "github provider를 저장할 수 있다" do
+    account = OauthAccount.create!(user: @user, provider: "github", uid: "github-123")
+
+    assert_equal "github", account.provider
+  end
+
   test "provider는 필수다" do
     account = OauthAccount.new(user: @user, provider: nil, uid: "google-123")
 

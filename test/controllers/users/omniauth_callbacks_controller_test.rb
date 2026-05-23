@@ -37,6 +37,24 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
     OmniAuth.config.mock_auth[:apple] = nil
   end
 
+  test "github callback에서 sign in 결과면 루트로 이동한다" do
+    Configs::GithubOauth.stub(:configured?, true) do
+      user = users(:john)
+
+      OauthAccounts::Callbacks.stub(:handle_callback, { type: :sign_in, user: user }) do
+        OmniAuth.config.test_mode = true
+        OmniAuth.config.mock_auth[:github] = OmniAuth::AuthHash.new(provider: "github", uid: "github-123")
+
+        get user_github_omniauth_callback_path
+
+        assert_redirected_to root_path
+      end
+    end
+  ensure
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth[:github] = nil
+  end
+
   test "google oauth가 설정되지 않았으면 로그인 페이지로 리다이렉트한다" do
     Configs::GoogleOauth.stub(:configured?, false) do
       OmniAuth.config.test_mode = true
@@ -63,5 +81,19 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
   ensure
     OmniAuth.config.test_mode = false
     OmniAuth.config.mock_auth[:apple] = nil
+  end
+
+  test "github oauth가 설정되지 않았으면 로그인 페이지로 리다이렉트한다" do
+    Configs::GithubOauth.stub(:configured?, false) do
+      OmniAuth.config.test_mode = true
+      OmniAuth.config.mock_auth[:github] = OmniAuth::AuthHash.new(provider: "github", uid: "github-123")
+
+      get user_github_omniauth_callback_path
+
+      assert_redirected_to new_user_session_path
+    end
+  ensure
+    OmniAuth.config.test_mode = false
+    OmniAuth.config.mock_auth[:github] = nil
   end
 end
