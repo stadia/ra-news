@@ -126,7 +126,6 @@ gem "sqlite3", ">= 2.1"
 gem "youtube-transcript-rb", "~> 0.2.0"
 
 gem "amazing_print"
-gem "appsignal"
 gem "federails", github: "stadia/federails"
 gem "honeybadger"
 # gem "federails", path: "../federails"

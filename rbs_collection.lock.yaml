@@ -89,10 +89,6 @@ gems:
     revision: 81fa8bd0617286078617a62b6a3229cebfd4af23
     remote: https://github.com/ruby/gem_rbs_collection.git
     repo_dir: gems
-- name: appsignal
-  version: 4.8.4
-  source:
-    type: rubygems
 - name: base64
   version: 0.3.0
   source:

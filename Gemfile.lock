@@ -98,9 +98,6 @@ GEM
     aes_key_wrap (1.1.0)
     alba (3.10.0)
     amazing_print (2.0.0)
-    appsignal (4.8.4)
-      logger
-      rack (>= 2.0.0)
     ast (2.4.3)
     auth-sanitizer (0.1.4)
       version_gem (~> 1.1, >= 1.1.9)
@@ -808,7 +805,6 @@ PLATFORMS
 DEPENDENCIES
   acts-as-taggable-on
   amazing_print
-  appsignal
   awesome_nested_set
   aws-sdk-s3
   bootsnap

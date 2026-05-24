@@ -32,7 +32,7 @@ RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집
 - **관리/운영**
   - Madmin 기반 관리자 대시보드
   - Solid Queue/Cache/Cable을 사용하는 Rails 8 백그라운드 작업 및 실시간 기능
-  - AppSignal, Honeybadger, GitHub Actions, Docker를 통한 모니터링/CI/CD
+  - Honeybadger, GitHub Actions, Docker를 통한 모니터링/CI/CD
 
 ---
 
