@@ -11,16 +11,19 @@ class ArticlesController < ApplicationController
 
   include Pagy::Method
 
+  SEARCH_TERM_MAX_LENGTH = 100
+
   # GET /articles
   def index
     cacheable_page!
 
-    @pagy, @articles = pagy(Articles::Query.index_html(params[:search]).order(published_at: :desc))
+    search = normalized_search_term
+    @pagy, @articles = pagy(Articles::Query.index_html(search).order(published_at: :desc))
     render Views::Articles::Index.new(
       pagy: @pagy,
       articles: @articles,
       sidebar_tags: sidebar_tags,
-      search: params[:search],
+      search: search,
       liked_article_ids: liked_article_ids(@articles)
     )
   end
@@ -162,5 +165,9 @@ class ArticlesController < ApplicationController
 
     def sidebar_tags
       @sidebar_tags ||= Tag.confirmed.order(taggings_count: :desc, name: :asc).limit(20)
+    end
+
+    def normalized_search_term
+      params[:search].to_s.strip.first(SEARCH_TERM_MAX_LENGTH).presence
     end
 end

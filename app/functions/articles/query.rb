@@ -8,7 +8,10 @@ module Articles
     module_function
 
     def index_html(search = nil)
-      index_scope(search).where.not(id: excluded_related_article_ids(base_scope.related))
+      scope = index_scope(search)
+      return scope if search.present?
+
+      scope.where.not(id: excluded_related_article_ids(base_scope.related))
     end
 
     def index_json(search = nil)
@@ -32,13 +35,10 @@ module Articles
     end
 
     def excluded_related_article_ids(scope)
-      recent_scope = scope.where(created_at: 24.hours.ago...).order(created_at: :desc)
-      target_scope = if recent_scope.count < 9
-        scope.order(created_at: :desc).limit(9)
-      else
-        recent_scope
-      end
-      target_scope.pluck(:id)
+      recent_ids = scope.where(created_at: 24.hours.ago...).order(created_at: :desc).pluck(:id)
+      return recent_ids if recent_ids.size >= 9
+
+      scope.order(created_at: :desc).limit(9).pluck(:id)
     end
 
     def others_scope
