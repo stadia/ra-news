@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (123)
+# Components (124)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -121,6 +121,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Mailers::Layout** (phlex)
   props: title, intro:nil, eyebrow:nil
 - **OauthButton::Apple** (phlex)
+  props: path, label
+- **OauthButton::Github** (phlex)
   props: path, label
 - **OauthButton::Google** (phlex)
   props: path, label

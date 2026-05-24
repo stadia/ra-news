@@ -10,7 +10,7 @@ Rails 8.1.3 | Ruby 4.0.5
 
 - Database: PostgreSQL — 27 tables
 - Models: 25
-- Routes: 172
+- Routes: 174
 - auth: devise, omniauth, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -27,7 +27,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 123 components, 123 Phlex
+- Components: 124 components, 124 Phlex
 - Performance: 2 issues detected
 - Services: ArticleAgentsService, ContentService, DiscordDeliveryService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SlackDeliveryService, SocialMediaService, TwitterService
 - Jobs: ArticleBatchJob, ArticleJob, ArticleThumbnailJob, DiscardedArticleCleanupJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob

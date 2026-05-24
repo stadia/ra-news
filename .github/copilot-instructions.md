@@ -6,13 +6,13 @@ Rails 8.1.3 | Ruby 4.0.5
 ## Stack
 - Database: PostgreSQL — 27 tables
 - Models: 25
-- Routes: 172 across 51 controllers
+- Routes: 174 across 51 controllers
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 123 components, 123 Phlex
+- Components: 124 components, 124 Phlex
 - Performance: 2 issues detected
 - auth: devise, omniauth, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
@@ -77,7 +77,6 @@ Rails 8.1.3 | Ruby 4.0.5
 - error_monitoring
 - zeitwerk
 - Soft deletes (paranoia/discard)
-- Full-text search (Searchkick/pg_search/Ransack)
 - Tagging
 - Friendly URLs/slugs
 - Tree/nested set structures
