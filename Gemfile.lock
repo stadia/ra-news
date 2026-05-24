@@ -380,6 +380,8 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     netrc (0.11.0)
+    newrelic_rpm (10.5.0)
+      logger
     nio4r (2.7.5)
     nokogiri (1.19.3-aarch64-linux-gnu)
       racc (~> 1.4)
@@ -840,6 +842,7 @@ DEPENDENCIES
   minitest-mock
   mission_control-jobs
   neighbor
+  newrelic_rpm
   oauth2 (~> 2.0)
   oj
   omniauth-apple
