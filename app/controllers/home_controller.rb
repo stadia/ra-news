@@ -76,7 +76,7 @@ class HomeController < ApplicationController
       featured_articles.concat(fallback_featured_articles(featured_scope, featured_articles))
     end
 
-    featured_articles.sort_by { [ -it.published_at.to_i, -it.created_at.to_i ] }
+    featured_articles.sort_by { [ -it.likers_count, -it.posts_count, -it.published_at.to_i, -it.created_at.to_i ] }
   end
 
   def primary_featured_articles(featured_scope)

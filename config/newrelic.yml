@@ -29,22 +29,51 @@ common:
   log_level: info
 
   application_logging:
-    # If `true`, all logging-related features for the agent can be enabled or disabled
-    # independently. If `false`, all logging-related features are disabled.
     enabled: true
     forwarding:
-      # If `true`, the agent captures log records emitted by this application.
-      enabled: true
-      # Defines the maximum number of log records to buffer in memory at a time.
-      max_samples_stored: 10000
+      enabled: false
     metrics:
-      # If `true`, the agent captures metrics related to logging for this application.
       enabled: true
     local_decorating:
-      # If `true`, the agent decorates logs with metadata to link to entities, hosts, traces, and spans.
-      # This requires a log forwarder to send your log files to New Relic.
-      # This should not be used when forwarding is enabled.
-      enabled: false
+      enabled: true
+
+  attributes:
+    exclude:
+      - request.parameters.password
+      - request.parameters.password_confirmation
+      - request.parameters.current_password
+      - request.parameters.*token*
+      - request.parameters.*secret*
+      - request.headers.authorization
+      - request.headers.cookie
+      - request.headers.x-api-key
+
+  transaction_tracer:
+    record_sql: obfuscated
+    transaction_threshold: apdex_f
+    stack_trace_threshold: 0.3
+
+  slow_sql:
+    enabled: true
+    record_sql: obfuscated
+    explain_enabled: true
+    explain_threshold: 0.3
+
+  error_collector:
+    capture_events: true
+    max_event_samples_stored: 100
+    ignore_classes:
+      - ActionController::RoutingError
+      - ActiveRecord::RecordNotFound
+      - ActionController::InvalidAuthenticityToken
+      - ActionController::UnknownFormat
+
+  rules:
+    ignore_url_regexes:
+      - "^/up"
+      - "^/health"
+      - "^/rails/active_storage"
+      - "^/cable"
 
 # Environment-specific settings are in this section.
 # RAILS_ENV or RACK_ENV (as appropriate) is used to determine the environment.
