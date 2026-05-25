@@ -92,7 +92,7 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     liked_article = body.dig("data", "articleFeed", "articles").find { |item| item["slug"] == article.slug }
 
     assert_nil body["errors"]
-    assert_equal true, liked_article["liked"]
+    assert liked_article["liked"]
   end
 
   test "tagged feed requires keyword" do

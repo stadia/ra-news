@@ -11,7 +11,7 @@ module Types
     field :likers_count, Integer, null: false
     field :posts_count, Integer, null: false
     field :summary_key, GraphQL::Types::JSON, null: true
-    field :tags, [String], null: false
+    field :tags, [ String ], null: false
     field :liked, Boolean, null: false
     field :published_at, GraphQL::Types::ISO8601DateTime, null: true
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false

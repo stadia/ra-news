@@ -17,8 +17,8 @@ gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails", "~> 4.2"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
 gem "graphql", "~> 2.5"
+gem "jbuilder"
 
 # Authentication [https://github.com/heartcombo/devise]
 gem "devise", "~> 5.0"
