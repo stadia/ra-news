@@ -222,6 +222,7 @@ GEM
     ffi (1.17.4-aarch64-linux-gnu)
     ffi (1.17.4-arm64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)
+    fiber-storage (1.0.1)
     flog (4.9.4)
       path_expander (~> 2.0)
       prism (~> 1.7)
@@ -244,6 +245,10 @@ GEM
     google-protobuf (4.35.0-x86_64-linux-gnu)
       bigdecimal
       rake (~> 13.3)
+    graphql (2.6.2)
+      base64
+      fiber-storage
+      logger
     guess_html_encoding (0.0.11)
     hairtrigger (1.3.1)
       activerecord (>= 6.0, < 9)
@@ -827,6 +832,7 @@ DEPENDENCIES
   flog
   friendly_id
   google-protobuf
+  graphql (~> 2.5)
   hairtrigger
   honeybadger
   image_processing (~> 2.0)
