@@ -39,7 +39,7 @@ query ArticleFeed(
   $kind: ArticleFeedKind!,
   $search: String,
   $keyword: String,
-  $page: Int,
+  $page: String,
   $limit: Int
 ) {
   articleFeed(kind: $kind, search: $search, keyword: $keyword, page: $page, limit: $limit) {
@@ -84,7 +84,7 @@ type Query {
     kind: ArticleFeedKind!,
     search: String,
     keyword: String,
-    page: Int,
+    page: String,
     limit: Int
   ): ArticleFeed!
 }
@@ -118,8 +118,8 @@ type Article {
 }
 
 type Pagination {
-  page: Int
-  nextPage: Int
+  page: String
+  nextPage: String
   limit: Int!
 }
 ```
