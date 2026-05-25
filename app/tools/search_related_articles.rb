@@ -58,7 +58,7 @@ class SearchRelatedArticles < RubyLLM::Tool
 
   def search_by_text(query, limit)
     Article.kept.confirmed
-           .title_matching(query)
+           .full_text_search_for(query)
            .limit(limit)
            .select(:id, :title_ko, :slug, :summary_key)
            .map { format_result(it) }
