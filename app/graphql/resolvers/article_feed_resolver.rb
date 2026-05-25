@@ -3,7 +3,7 @@
 
 module Resolvers
   class ArticleFeedResolver < GraphQL::Schema::Resolver
-    type Types::ArticleFeedType, null: true
+    type Types::ArticleFeedType, null: false
 
     argument :kind, Types::ArticleFeedKindEnum, required: true
     argument :search, String, required: false

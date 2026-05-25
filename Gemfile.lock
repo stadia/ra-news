@@ -431,7 +431,7 @@ GEM
     openssl (4.0.2)
     orm_adapter (0.5.0)
     ostruct (0.6.3)
-    pagy (43.5.4)
+    pagy (43.5.5)
       json
       uri
       yaml
@@ -697,7 +697,7 @@ GEM
       version_gem (>= 1.1.8, < 3)
     socialization (3.0.0)
       activerecord (>= 6.1)
-    solid_cable (3.0.12)
+    solid_cable (4.0.0)
       actioncable (>= 7.2)
       activejob (>= 7.2)
       activerecord (>= 7.2)

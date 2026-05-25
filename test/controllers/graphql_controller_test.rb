@@ -92,6 +92,7 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     liked_article = body.dig("data", "articleFeed", "articles").find { |item| item["slug"] == article.slug }
 
     assert_nil body["errors"]
+    assert_not_nil liked_article
     assert liked_article["liked"]
   end
 
@@ -103,7 +104,7 @@ class GraphqlControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     body = JSON.parse(response.body)
 
-    assert_nil body["data"]["articleFeed"]
+    assert_nil body["data"]
     assert_match "keyword is required for tagged article feed", body["errors"].first["message"]
   end
 
