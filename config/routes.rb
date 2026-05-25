@@ -19,6 +19,8 @@ Rails.application.routes.draw do
     post "account/oauth-signup", to: "users/oauth_registrations#create", as: :user_oauth_registration
   end
 
+  post "/graphql", to: "graphql#execute"
+
   namespace :api do
     namespace :v1 do
       namespace :auth do
