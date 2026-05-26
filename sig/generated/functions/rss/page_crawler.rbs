@@ -1,0 +1,20 @@
+# Generated from app/functions/rss/page_crawler.rb with RBS::Inline
+
+module Rss
+  module PageCrawler
+    extend FunctionLogger
+
+    include RssHelper
+
+    include LinkHelper
+
+    # : (Site site) -> void
+    def self.crawl: (Site site) -> void
+
+    # : (Array[Hash[Symbol, untyped]] attributes) -> Array[String]
+    private def self.collect_links: (Array[Hash[Symbol, untyped]] attributes) -> Array[String]
+
+    # : (String link, Site site) -> void
+    private def self.process_link: (String link, Site site) -> void
+  end
+end

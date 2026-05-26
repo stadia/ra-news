@@ -5,15 +5,8 @@ class RssSitePageJob < ApplicationJob
 
   include LinkHelper
 
-  attr_reader site: untyped
-
   def self.enqueue_all: () -> untyped
 
-  # Performs the job for a given site ID.
   # : (Array[Integer] ids) -> void
   def perform: (Array[Integer] ids) -> void
-
-  private
-
-  def before_finish: (untyped ids) -> untyped
 end
