@@ -105,7 +105,7 @@ class SocialMediaServiceTest < ActiveSupport::TestCase
   test "article_link generates correct URL" do
     result = @service.send(:article_link, "test-slug")
 
-    assert_equal "https://ruby-news.kr/articles/test-slug", result
+    assert_equal "https://ruby-news.dev/articles/test-slug", result
   end
 
   # === call 메서드 테스트 ===

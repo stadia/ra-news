@@ -150,7 +150,7 @@ class MastodonServiceTest < ActiveSupport::TestCase
     assert_includes post_text, @article.title_ko
 
     # 링크가 포함되어야 함
-    assert_includes post_text, "https://ruby-news.kr/articles/#{@article.slug}"
+    assert_includes post_text, "https://ruby-news.dev/articles/#{@article.slug}"
   end
 
   test "build_post_text는 태그를 포함한다" do

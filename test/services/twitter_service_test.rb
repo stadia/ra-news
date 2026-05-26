@@ -181,7 +181,7 @@ class TwitterServiceTest < ActiveSupport::TestCase
     # Twitter 제한 280자 확인 (URL 단축 고려)
     assert_operator post_text.length, :<=, 280 + 23, "포스트 텍스트가 너무 깁니다: #{post_text.length}자"
     assert_includes post_text, @article.title_ko
-    assert_includes post_text, "ruby-news.kr"
+    assert_includes post_text, "ruby-news.dev"
   end
 
   # 태그가 확인된 것만 사용하는지 테스트

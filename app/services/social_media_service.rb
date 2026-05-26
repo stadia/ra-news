@@ -32,7 +32,7 @@ class SocialMediaService < OperationService
 
   #: (String slug) -> String
   def article_link(slug)
-    article_url(slug, host: "https://ruby-news.kr")
+    article_url(slug, host: "https://ruby-news.dev")
   end
 
   # 서브클래스에서 구현해야 하는 추상 메서드들
