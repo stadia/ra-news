@@ -7,6 +7,7 @@ Disallow: /signup
 Disallow: /account
 Disallow: /admin
 Disallow: /madmin
+Disallow: /jobs
 Disallow: /pg_reports
 
 User-agent: SemrushBot
