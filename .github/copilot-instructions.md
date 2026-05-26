@@ -21,6 +21,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - database: pg, sqlite3, solid_cache, solid_cable
 - files: activestorage, image_processing, aws-sdk-s3
 - testing: minitest, faker, capybara
+- monitoring: newrelic_rpm
 - admin: madmin
 - pagination: pagy
 - search: pg_search

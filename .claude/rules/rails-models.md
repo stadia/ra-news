@@ -46,7 +46,7 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
   methods: revoke!, user
 - Role (table: roles) — 0 assocs, 2 validations
   scopes: named
-- Site (table: sites) — 1 assocs, 1 validations
+- Site (table: sites) — 1 assocs, 2 validations
   methods: init_client, articles, discard, discard!, discard_column, discard_column?, discarded?, gmail!, gmail?, hacker_news!, hacker_news?, kept?, reddit!, reddit?, rss!, rss?, rss_page!, rss_page?, undiscard, undiscard!
   client: rss, gmail, youtube, hacker_news, rss_page, reddit
 - SlackChannel (table: notification_channels) — 1 assocs, 3 validations
@@ -68,4 +68,4 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
   scopes: with_role, admins
   methods: admin?, full_name, has_role?, accept_follow, avatar_attached?, avatar_url, remove_avatar!, sync_federails_actor_extensions, to_activitypub_object, after_confirmation, articles, avatar, avatar_attachment, avatar_blob, confirm, confirmation_period_expired?, confirmed?
   SUPPORTED_LOCALES: ko, ja, en
-  SUPPORTED_SIGNUP_HOSTS: ruby-news.kr, ruby-news.jp
+  SUPPORTED_SIGNUP_HOSTS: ruby-news.dev, ruby-news.jp

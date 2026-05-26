@@ -25,7 +25,7 @@
   scopes: active
 - **Role** (table: roles) [2v]
   scopes: named
-- **Site** (table: sites) — has_many :articles [1v]
+- **Site** (table: sites) — has_many :articles [2v]
 - **SlackChannel** (table: notification_channels) — has_many :notification_deliveries [3v]
 - **SlackDelivery** (table: notification_deliveries) — belongs_to :article, belongs_to :notification_channel [5v]
 - **Socialization::ActiveRecordStores::Follow** (table: follows) — belongs_to :follower, belongs_to :followable

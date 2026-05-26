@@ -9,7 +9,7 @@
 - Models: 23
 - Routes: 174 across 30 controllers
 - Async: 15 jobs
-- Migrations: 117 total, 0 pending
+- Migrations: 120 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
@@ -49,6 +49,7 @@
 - **database**: pg, sqlite3, solid_cache, solid_cable
 - **files**: activestorage, image_processing, aws-sdk-s3
 - **testing**: minitest, faker, capybara
+- **monitoring**: newrelic_rpm
 - **admin**: madmin
 - **pagination**: pagy
 - **search**: pg_search
@@ -146,7 +147,6 @@ Use individual tools only when you need deeper detail on a specific layer.
 **Fix a controller bug:**
 1. `rails 'ai:tool[context]' controller=PostsController action=create` — action source + routes + views + model
 2. Read the controller file, make your fix
-3. `rails 'ai:tool[validate]' files=app/controllers/posts_controller.rb level=rails`
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->

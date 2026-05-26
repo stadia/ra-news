@@ -9,7 +9,7 @@
 - Models: 25
 - Routes: 174 across 30 controllers
 - Async: 15 jobs
-- Migrations: 117 total, 0 pending
+- Migrations: 120 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
@@ -47,6 +47,7 @@
 - **database**: pg, sqlite3, solid_cache, solid_cable
 - **files**: activestorage, image_processing, aws-sdk-s3
 - **testing**: minitest, faker, capybara
+- **monitoring**: newrelic_rpm
 - **admin**: madmin
 - **pagination**: pagy
 - **search**: pg_search
@@ -146,7 +147,6 @@ Use individual tools only when you need deeper detail on a specific layer.
 **Trace a method:**
 → `rails 'ai:tool[search_code]' pattern="publishable?" match_type=trace`
 
-**Debug an error (one call — gathers context + git + logs + fix):**
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->
