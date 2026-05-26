@@ -13,14 +13,14 @@ class ActiveStorageR2CdnPatchTest < ActiveSupport::TestCase
 
   test "cloudflare public service는 CDN 호스트를 사용한다" do
     service = build_service(name: "cloudflare")
-    ENV["ACTIVE_STORAGE_CDN_HOST"] = "https://assets.ruby-news.kr/"
+    ENV["ACTIVE_STORAGE_CDN_HOST"] = "https://assets.ruby-news.dev/"
 
-    assert_equal "https://assets.ruby-news.kr/folder/blob-key", service.public_url("folder/blob-key")
+    assert_equal "https://assets.ruby-news.dev/folder/blob-key", service.public_url("folder/blob-key")
   end
 
   test "cloudflare가 아닌 public service는 기존 public_url을 유지한다" do
     service = build_service(name: "other")
-    ENV["ACTIVE_STORAGE_CDN_HOST"] = "https://assets.ruby-news.kr"
+    ENV["ACTIVE_STORAGE_CDN_HOST"] = "https://assets.ruby-news.dev"
 
     assert_equal "https://origin.example.com/folder/blob-key", service.public_url("folder/blob-key")
   end

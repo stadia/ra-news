@@ -40,7 +40,7 @@ env:
     - R2_SECRET_ACCESS_KEY
     - R2_BUCKET
   clear:
-    ACTIVE_STORAGE_CDN_HOST: https://cdn.ruby-news.kr
+    ACTIVE_STORAGE_CDN_HOST: https://cdn.ruby-news.dev
 
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
     # When you start using multiple servers, you should split out job processing to a dedicated machine.

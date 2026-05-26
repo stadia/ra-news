@@ -32,12 +32,12 @@ Rails.application.configure do
 
   # Use the KR asset host where it exists, but keep JP pages same-origin until a
   # dedicated JP asset host is configured. This avoids cross-origin asset loads
-  # from ruby-news.jp to assets.ruby-news.kr without relying on CDN CORS.
+  # from ruby-news.jp to assets.ruby-news.dev without relying on CDN CORS.
   config.asset_host = lambda do |_source, request = nil|
     if request&.host == "ruby-news.jp"
       nil
     else
-      "https://assets.ruby-news.kr"
+      "https://assets.ruby-news.dev"
     end
   end
 
@@ -80,7 +80,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "ruby-news.kr" }
+  config.action_mailer.default_url_options = { host: "ruby-news.dev" }
 
   # Set default URL options for URL helpers
   Rails.application.routes.default_url_options = { host: "ruby-news.kr" }
@@ -94,7 +94,7 @@ Rails.application.configure do
     authentication: :plain,
     enable_starttls_auto: true,
     enable_starttls: true,
-    domain: "ruby-news.kr"
+    domain: "ruby-news.dev"
   }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
