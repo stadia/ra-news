@@ -9,7 +9,7 @@ class SitemapBuilderTest < ActiveSupport::TestCase
     SitemapGenerator::Sitemap.stub(:create, ->(&_block) {
       create_called = true
 
-      assert_equal "https://ruby-news.kr", SitemapGenerator::Sitemap.default_host
+      assert_equal "https://ruby-news.dev", SitemapGenerator::Sitemap.default_host
       assert_equal "sitemaps/", SitemapGenerator::Sitemap.sitemaps_path
       assert SitemapGenerator::Sitemap.compress
     }) do
@@ -31,7 +31,7 @@ class SitemapBuilderTest < ActiveSupport::TestCase
     assert block_passed, "create에 블록이 전달되어야 합니다"
   end
 
-  test "기본 호스트는 ruby-news.kr이다" do
+  test "기본 호스트는 ruby-news.dev이다" do
     captured_host = nil
 
     SitemapGenerator::Sitemap.stub(:default_host=, ->(v) { captured_host = v }) do
@@ -44,7 +44,14 @@ class SitemapBuilderTest < ActiveSupport::TestCase
       end
     end
 
-    assert_equal "https://ruby-news.kr", captured_host
+    assert_equal "https://ruby-news.dev", captured_host
+  end
+
+  test "보조 도메인은 hreflang alternates로 포함한다" do
+    assert_equal [
+      { href: "https://ruby-news.dev/articles", lang: "ko" },
+      { href: "https://ruby-news.jp/articles", lang: "ja" }
+    ], SitemapBuilder.alternates_for("/articles")
   end
 
   test "사이트맵 경로는 sitemaps/이다" do

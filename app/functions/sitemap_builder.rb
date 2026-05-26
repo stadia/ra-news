@@ -7,7 +7,7 @@ module SitemapBuilder
   include Rails.application.routes.url_helpers
 
   HREFLANG_HOSTS = {
-    "ko" => "https://ruby-news.kr",
+    "ko" => "https://ruby-news.dev",
     "ja" => "https://ruby-news.jp"
   }.freeze
 
@@ -18,7 +18,7 @@ module SitemapBuilder
 
   #: () -> void
   def build
-    SitemapGenerator::Sitemap.default_host  = "https://ruby-news.kr"
+    SitemapGenerator::Sitemap.default_host  = "https://ruby-news.dev"
     SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/"
     SitemapGenerator::Sitemap.compress      = true
 

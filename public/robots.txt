@@ -32,4 +32,4 @@ Disallow: /
 User-agent: ClaudeBot
 Disallow: /
 
-Sitemap: https://ruby-news.kr/sitemaps/sitemap.xml.gz
+Sitemap: https://ruby-news.dev/sitemaps/sitemap.xml.gz
