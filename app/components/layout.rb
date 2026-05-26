@@ -81,7 +81,7 @@ class Components::Layout < Components::Base
   end
 
   HREFLANG_HOSTS = {
-    "ko" => "https://ruby-news.kr",
+    "ko" => "https://ruby-news.dev",
     "ja" => "https://ruby-news.jp"
   }.freeze
 
@@ -443,7 +443,7 @@ class Components::Layout < Components::Base
 
   def render_discord_link
     a(
-      href: "https://discord.com/oauth2/authorize?client_id=1493223413265989663&permissions=536889344&response_type=code&redirect_uri=https%3A%2F%2Fruby-news.kr%2Fdiscord%2Foauth%2Fcallback&integration_type=0&scope=bot+webhook.incoming",
+      href: "https://discord.com/oauth2/authorize?client_id=1493223413265989663&permissions=536889344&response_type=code&redirect_uri=https%3A%2F%2Fruby-news.dev%2Fdiscord%2Foauth%2Fcallback&integration_type=0&scope=bot+webhook.incoming",
       target: "_blank",
       rel: "noopener noreferrer",
       class: "hover:underline hover:text-content flex items-center gap-1"

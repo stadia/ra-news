@@ -23,7 +23,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <% set_meta_tags canonical: "https://ruby-news.kr#{request.path}" %>
+    <% set_meta_tags canonical: "https://ruby-news.dev#{request.path}" %>
     <%= display_meta_tags title: content_for(:title) || t("federails_layout.title"),
     og: {
       title: content_for(:title) || t("federails_layout.title"),
@@ -188,7 +188,7 @@
         <span class="text-sm text-content-secondary sm:text-center">
           © 2025
           <%= link_to t("federails_layout.title"),
-          "https://ruby-news.kr/",
+          "https://ruby-news.dev/",
           class: "hover:underline hover:text-content transition-colors duration-200" %>. All Rights Reserved.
         </span>
         <ul

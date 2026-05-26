@@ -5,7 +5,7 @@ module LocaleSwitcher
 
   HOST_LOCALES = {
     "ruby-news.jp" => :ja,
-    "ruby-news.kr" => :ko
+    "ruby-news.dev" => :ko
   }.freeze
 
   included do

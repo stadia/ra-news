@@ -3,7 +3,7 @@
 class User < ApplicationRecord
   AVATAR_SIZE = [ 400, 400 ].freeze
   SUPPORTED_LOCALES = %w[ko ja en].freeze
-  SUPPORTED_SIGNUP_HOSTS = %w[ruby-news.kr ruby-news.jp].freeze
+  SUPPORTED_SIGNUP_HOSTS = %w[ruby-news.dev ruby-news.jp].freeze
 
   devise :database_authenticatable, :registerable,
          :recoverable, :validatable, :rememberable, :timeoutable, :confirmable,

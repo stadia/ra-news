@@ -34,7 +34,7 @@
 - **Tag** (table: tags) — has_many :taggings [3v]
   scopes: confirmed, unconfirmed
 - **User** (table: users) — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :refresh_tokens, has_many :oauth_accounts, has_one :federails_actor [13v]
-  scopes: with_role, admins | SUPPORTED_LOCALES: ko, ja, en | SUPPORTED_SIGNUP_HOSTS: ruby-news.kr, ruby-news.jp
+  scopes: with_role, admins | SUPPORTED_LOCALES: ko, ja, en | SUPPORTED_SIGNUP_HOSTS: ruby-news.dev, ruby-news.jp
 
 Use `rails_get_model_details(model:"Name")` for associations, validations, scopes, enums.
 Use `rails_get_view(controller:"name")` for view templates.

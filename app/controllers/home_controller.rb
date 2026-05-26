@@ -9,10 +9,10 @@ class HomeController < ApplicationController
   # Shared publisher schema — reused in ArticlesController as well
   PUBLISHER_SCHEMA = SchemaDotOrg::NewsMediaOrganization.new(
     name:     "Ruby-News",
-    url:      "https://ruby-news.kr",
-    logo:     "https://ruby-news.kr/icon.png",
-    same_as:  [ "https://ruby-news.kr/@bot", "https://ruby.social/@news_kr", "https://x.com/rubynewskr" ],
-    masthead: "https://ruby-news.kr/about"
+    url:      "https://ruby-news.dev",
+    logo:     "https://ruby-news.dev/icon.png",
+    same_as:  [ "https://ruby-news.dev/@bot", "https://ruby.social/@news_kr", "https://x.com/rubynewskr" ],
+    masthead: "https://ruby-news.dev/about"
   )
 
   def index

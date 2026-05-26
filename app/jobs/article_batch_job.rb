@@ -46,7 +46,7 @@ class ArticleBatchJob < ApplicationJob
   def article_public_url(article)
     Rails.application.routes.url_helpers.article_url(
       article,
-      host: "ruby-news.kr",
+      host: "ruby-news.dev",
       protocol: "https"
     )
   end
@@ -56,7 +56,7 @@ class ArticleBatchJob < ApplicationJob
     return if urls.blank?
 
     key = "187d5ed120cc45f8869b89302011d43a"
-    host = "ruby-news.kr"
+    host = "ruby-news.dev"
     key_location = "https://#{host}/#{key}.txt"
     config = { host:, key:, key_location: }
     return if config[:key].blank?
