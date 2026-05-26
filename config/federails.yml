@@ -1,6 +1,6 @@
 ---
 defaults: &defaults
-  app_name: ruby-news.kr
+  app_name: ruby-news.dev
   app_version: 1.0
   force_ssl: false
   site_host: http://localhost
@@ -24,4 +24,4 @@ production:
   <<: *defaults
   force_ssl: true
   site_port: 443
-  site_host: https://ruby-news.kr
+  site_host: https://ruby-news.dev

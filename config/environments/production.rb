@@ -83,7 +83,7 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: "ruby-news.dev" }
 
   # Set default URL options for URL helpers
-  Rails.application.routes.default_url_options = { host: "ruby-news.kr" }
+  Rails.application.routes.default_url_options = { host: "ruby-news.dev" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   config.action_mailer.smtp_settings = {

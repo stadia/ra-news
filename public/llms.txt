@@ -5,7 +5,7 @@
 
 ## About
 
-Ruby-News(ruby-news.kr)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴스, 릴리즈, 튜토리얼, 커뮤니티 업데이트를 집약하여 AI 보조 한국어 번역과 3개 핵심 요약을 제공합니다. 매일 업데이트됩니다.
+Ruby-News(ruby-news.dev)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴스, 릴리즈, 튜토리얼, 커뮤니티 업데이트를 집약하여 AI 보조 한국어 번역과 3개 핵심 요약을 제공합니다. 매일 업데이트됩니다.
 
 - 언어: 한국어 (원문 출처: 영어)
 - 주제: Ruby 언어, Ruby on Rails, RubyGems, Rack, JRuby, Matz 공지, 보안 권고(CVE), 버전 릴리즈, 개발 도구, 성능, AI 연동
@@ -15,10 +15,10 @@ Ruby-News(ruby-news.kr)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴스
 
 ## Key Resources
 
-- 홈페이지 (최신 기사): https://ruby-news.kr/
-- 전체 기사 목록: https://ruby-news.kr/articles
-- RSS 피드: https://ruby-news.kr/rss
-- 검색: https://ruby-news.kr/articles?search={query}
+- 홈페이지 (최신 기사): https://ruby-news.dev/
+- 전체 기사 목록: https://ruby-news.dev/articles
+- RSS 피드: https://ruby-news.dev/rss
+- 검색: https://ruby-news.dev/articles?search={query}
 - Mastodon: https://ruby.social/@news_kr
 
 ## Content Notes for AI Systems
@@ -41,5 +41,5 @@ Ruby-News(ruby-news.kr)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴스
 ## Excluded from AI Indexing
 
 - 사용자 댓글
-- 검색 결과 페이지: https://ruby-news.kr/articles?search=*
-- 페이지네이션: https://ruby-news.kr/articles?page=*
+- 검색 결과 페이지: https://ruby-news.dev/articles?search=*
+- 페이지네이션: https://ruby-news.dev/articles?page=*
