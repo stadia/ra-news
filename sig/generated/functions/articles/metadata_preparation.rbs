@@ -4,12 +4,6 @@ module Articles
   module MetadataPreparation
     extend FunctionLogger
 
-    PUBLISHED_META_SELECTORS: untyped
-
-    PUBLISHED_DATE_SELECTORS: untyped
-
-    JSON_LD_ARTICLE_TYPES: untyped
-
     TRACKING_QUERY_KEYS: untyped
 
     YOUTUBE_QUERY_KEYS: untyped
@@ -17,57 +11,33 @@ module Articles
     MAX_REDIRECTS: ::Integer
 
     # : (String url) -> Faraday::Response?
-    def self?.fetch_url_content: (String url) -> Faraday::Response?
+    def self.fetch_url_content: (String url) -> Faraday::Response?
 
     # : (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
-    def self?.follow_redirection: (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
+    def self.follow_redirection: (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
 
     # : (String url) -> DateTime?
-    def self?.url_to_published_at: (String url) -> DateTime?
+    def self.url_to_published_at: (String url) -> DateTime?
 
     # : (String body) -> DateTime?
-    def self?.extract_published_at_from_content: (String body) -> DateTime?
+    def self.extract_published_at_from_content: (String body) -> DateTime?
 
     # : (Article article, String body) -> Time
-    def self?.published_at_for: (Article article, String body) -> Time
+    def self.published_at_for: (Article article, String body) -> Time
 
     # : (String title) -> String
-    def self?.build_slug: (String title) -> String
+    def self.build_slug: (String title) -> String
 
     # : (URI::Generic parsed_url) -> String
-    def self?.normalized_url: (URI::Generic parsed_url) -> String
+    def self.normalized_url: (URI::Generic parsed_url) -> String
 
     # : (Article article, URI::Generic parsed_url) -> bool
-    def self?.should_discard_url?: (Article article, URI::Generic parsed_url) -> bool
+    def self.should_discard_url?: (Article article, URI::Generic parsed_url) -> bool
 
     # : (DateTime? candidate) -> Time
-    def self?.normalize_published_at: (DateTime? candidate) -> Time
-
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self?.meta_published_at: (Nokogiri::HTML4::Document doc) -> Time?
-
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self?.json_ld_published_at: (Nokogiri::HTML4::Document doc) -> Time?
-
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self?.selector_published_at: (Nokogiri::HTML4::Document doc) -> Time?
-
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self?.text_published_at: (Nokogiri::HTML4::Document doc) -> Time?
-
-    # : (String text) -> untyped
-    def self?.parse_json_ld: (String text) -> untyped
-
-    # : (untyped payload) -> Time?
-    def self?.extract_published_at_from_json_ld: (untyped payload) -> Time?
-
-    # : (Hash[String, untyped] node) -> bool
-    def self?.article_json_ld?: (Hash[String, untyped] node) -> bool
-
-    # : (untyped value) -> Time?
-    def self?.parse_published_at_value: (untyped value) -> Time?
+    def self.normalize_published_at: (DateTime? candidate) -> Time
 
     # : () -> String
-    def self?.random_slug: () -> String
+    private def self.random_slug: () -> String
   end
 end

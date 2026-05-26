@@ -1,11 +1,13 @@
 # Generated from app/functions/sitemap_builder.rb with RBS::Inline
 
 module SitemapBuilder
+  extend FunctionLogger
+
   HREFLANG_HOSTS: untyped
 
   # : (String) -> Array[Hash[Symbol, String]]
-  def self?.alternates_for: (String) -> Array[Hash[Symbol, String]]
+  def self.alternates_for: (String) -> Array[Hash[Symbol, String]]
 
   # : () -> void
-  def self?.build: () -> void
+  def self.build: () -> void
 end

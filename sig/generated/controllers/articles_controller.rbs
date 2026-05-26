@@ -3,6 +3,8 @@
 class ArticlesController < ApplicationController
   include Pagy::Method
 
+  SEARCH_TERM_MAX_LENGTH: ::Integer
+
   # GET /articles
   def index: () -> untyped
 
@@ -31,4 +33,6 @@ class ArticlesController < ApplicationController
   def liked_article_ids: (untyped articles) -> untyped
 
   def sidebar_tags: () -> untyped
+
+  def normalized_search_term: () -> untyped
 end

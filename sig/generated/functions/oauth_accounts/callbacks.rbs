@@ -1,0 +1,33 @@
+# Generated from app/functions/oauth_accounts/callbacks.rb with RBS::Inline
+
+module OauthAccounts
+  module Callbacks
+    extend FunctionLogger
+
+    MIN_LENGTH: ::Integer
+
+    MAX_LENGTH: ::Integer
+
+    def self.handle_callback: (auth: untyped, session: untyped) -> untyped
+
+    def self.suggest_username: (name: untyped, email: untyped) -> untyped
+
+    private def self.upsert_oauth_account: (user: untyped, oauth_data: untyped) -> untyped
+
+    private def self.match_user: (provider: untyped, uid: untyped, email: untyped, email_verified: untyped, relay_email: untyped) -> untyped
+
+    private def self.build_auth_result: (auth: untyped) -> untyped
+
+    private def self.sanitize: (untyped value) -> untyped
+
+    private def self.unique_username_for: (untyped base) -> untyped
+
+    private def self.relay_email?: (untyped email) -> untyped
+
+    private def self.verified_email?: (provider: untyped, info: untyped, credentials: untyped, ?email: untyped, ?github_email: untyped) -> untyped
+
+    private def self.github_verified_email: (untyped token) -> untyped
+
+    private def self.merged_raw_info: (existing: untyped, incoming: untyped) -> untyped
+  end
+end

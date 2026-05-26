@@ -9,6 +9,30 @@ class HomeController < ApplicationController
   # GET /about
   def about: () -> untyped
 
+  # GET /privacy-policy
+  def privacy_policy: () -> untyped
+
+  # GET /terms
+  def terms: () -> untyped
+
   # GET /rss
   def rss: () -> untyped
+
+  private
+
+  def article_scope: () -> untyped
+
+  def build_featured_articles: (untyped scope) -> untyped
+
+  def primary_featured_articles: (untyped featured_scope) -> untyped
+
+  def fallback_featured_articles: (untyped featured_scope, untyped featured_articles) -> untyped
+
+  def build_recent_articles: (untyped scope, excluded_ids: untyped) -> untyped
+
+  def liked_article_ids_for: (untyped articles, untyped featured_articles) -> untyped
+
+  def recent_comments: () -> untyped
+
+  def sidebar_tags: () -> untyped
 end

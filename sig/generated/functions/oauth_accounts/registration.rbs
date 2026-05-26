@@ -1,0 +1,11 @@
+# Generated from app/functions/oauth_accounts/registration.rb with RBS::Inline
+
+module OauthAccounts
+  module Registration
+    extend FunctionLogger
+
+    def self.register_user: (session_data: untyped, username: untyped, locale: untyped, signup_host: untyped) -> untyped
+
+    private def self.build_user: (payload: untyped, username: untyped, locale: untyped, signup_host: untyped) -> untyped
+  end
+end

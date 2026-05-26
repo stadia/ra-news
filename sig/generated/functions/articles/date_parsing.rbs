@@ -1,0 +1,35 @@
+# Generated from app/functions/articles/date_parsing.rb with RBS::Inline
+
+module Articles
+  module DateParsing
+    PUBLISHED_META_SELECTORS: untyped
+
+    PUBLISHED_DATE_SELECTORS: untyped
+
+    JSON_LD_ARTICLE_TYPES: untyped
+
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self.meta_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self.json_ld_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self.selector_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+
+    # : (Nokogiri::HTML4::Document doc) -> Time?
+    def self.text_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+
+    # : (String text) -> untyped
+    private def self.parse_json_ld: (String text) -> untyped
+
+    # : (untyped payload) -> Time?
+    private def self.extract_from_json_ld: (untyped payload) -> Time?
+
+    # : (Hash[String, untyped] node) -> bool
+    private def self.article_json_ld?: (Hash[String, untyped] node) -> bool
+
+    # : (untyped value) -> Time?
+    private def self.parse_value: (untyped value) -> Time?
+  end
+end
