@@ -2,6 +2,8 @@
 
 module OauthAccounts
   module Callbacks
+    extend FunctionLogger
+
     MIN_LENGTH = 2
     MAX_LENGTH = 30
 

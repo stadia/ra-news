@@ -2,6 +2,8 @@
 
 module OauthAccounts
   module Registration
+    extend FunctionLogger
+
     class << self
       def register_user(session_data:, username:, locale:, signup_host:)
         payload = session_data.with_indifferent_access
