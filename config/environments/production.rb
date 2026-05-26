@@ -30,7 +30,7 @@ Rails.application.configure do
     end
   }
 
-  # Use the KR asset host where it exists, but keep JP pages same-origin until a
+  # Use the DEV asset host where it exists, but keep JP pages same-origin until a
   # dedicated JP asset host is configured. This avoids cross-origin asset loads
   # from ruby-news.jp to assets.ruby-news.dev without relying on CDN CORS.
   config.asset_host = lambda do |_source, request = nil|
@@ -118,7 +118,12 @@ Rails.application.configure do
 
   config.middleware.insert_before 0, Rack::Cors do
     allow do
-      origins "https://ruby-news.kr", "https://ruby-news.jp"
+      origins "https://ruby-news.dev",
+              "https://www.ruby-news.dev",
+              "https://ruby-news.kr",
+              "https://www.ruby-news.kr",
+              "https://ruby-news.jp",
+              "https://www.ruby-news.jp"
       resource "/assets/*", headers: :any, methods: [ :get, :head, :options ]
     end
   end
