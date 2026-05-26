@@ -7,52 +7,85 @@ description: Ruby 클래스를 모듈/함수/Struct/Data로 리팩터링하는 �
 
 > "Ruby는 객체 지향이지 클래스 지향이 아니다. 클래스는 객체 팩토리일 때만 가치가 있다." — Dave Thomas
 
-이 스킬은 기존 Ruby 클래스를 더 단순한 구성요소(모듈 함수 / `Struct` / `Data` / `app/functions/`)로 리팩터링한다. **새 클래스 작성 직전에도 사용 가능**하다 — 동일한 결정 트리로 "이게 정말 클래스여야 하는가"를 판정한다.
+**기반 강연**: Dave Thomas, "Eliminating the `class` Keyword from Ruby" — <https://www.youtube.com/watch?v=sjuCiIdMe_4>
 
-## 컨벤션
+**적용 범위**: `app/services/`, `app/functions/`, `app/jobs/`, PORO.
+**적용 예외**: ActiveRecord/ActionController/ActiveJob/Draper::Decorator 등 Rails 프레임워크 클래스. 클래스 자체는 손대지 않되, 그 안의 도메인 로직이 두꺼우면 본체만 함수로 분리한다(레시피 D).
 
-새 코드를 만들 때, **클래스를 쓰기 전에 아래 체크리스트를 통과해야 한다.** 하나라도 "No"면 클래스가 아닌 다른 도구를 선택한다. (적용 범위: `app/services/`, `app/functions/`, `app/jobs/`, PORO. ActiveRecord/ActionController/ActiveJob/Decorator 등 Rails 프레임워크 클래스는 예외.)
+### 강연 규칙 → 스킬 매핑
 
-1. **객체 팩토리인가?** — 인스턴스를 여러 개 만들고 각자 상태를 가지는가? 아니면 `Module` (`class << self`) 또는 `app/functions/`로.
-2. **상태가 있는가?** — `@ivar`가 생성자에서만 세팅되고 곧바로 단일 메서드를 호출해 끝나는 패턴이면 함수다. `Foo.new(x).call` → `Foo.build(x)`.
-3. **디자인 패턴 이름이 붙었는가?** — `XxxFactory`, `XxxBuilder`, `XxxDecorator`(Draper 외)처럼 GoF 패턴명을 그대로 클래스명으로 쓰고 있다면 의심하라. Ruby는 대부분 언어 차원에서 해결한다.
-4. **`new` 직후 setter를 추가로 호출해야 유효해지는가?** — 설계 결함. 인자를 함수에 직접 전달하라.
-5. **단순 데이터 버킷인가?** — 필드명을 3회 이상 반복(`attr_reader` + `initialize` + 등)하는 PORO는 `Struct`/`Data.define`로 대체. 메서드가 더 필요하면 `Struct.new(...) do ... end`.
+| 강연 규칙 | 위치 |
+|---|---|
+| 객체 팩토리가 아니라면 클래스 금지 | 메인 질문 + 레시피 A/B |
+| 디자인 패턴명을 따르면 클래스 금지 | 안티패턴 신호 #1 |
+| Abstract Base Class는 Ruby에 불필요 | 아래 "ABC 관점" + 시나리오 2 |
+| 상태가 없으면 클래스 금지 | 결정 트리 D + 레시피 D |
+| 생성 직후 추가 호출이 필요하면 클래스 금지 | 안티패턴 신호 #2 |
+| 데이터 버킷이면 `Struct`/`Data` 사용 | 안티패턴 신호 #3 + 결정 트리 C + 레시피 C |
 
-근거: Ruby는 객체 지향이지 클래스 지향이 아니다. 클래스가 늘면 결합도가 올라가고 테스트 시 컨텍스트 세팅 비용이 늘어난다. 90%의 경우 클래스 없이 쓰면 메서드가 작아지고 Fat Model이 사라진다.
+### ABC 관점 — 강연의 핵심 주장
 
-## 결정 트리 — 어떤 대안으로 갈 것인가
+`class Person < ApplicationRecord`는 `ActiveRecord::Base`를 통해 약 780개의 메서드를 주입받는다. 이는 C++/Java의 추상 기반 클래스 관행이 Ruby로 이식된 것이며, Ruby는 강타입 언어가 아니므로 타입 안전 보장이 필요 없고 Mixin(`include`/`extend`)이 메서드 주입을 대체한다. `ActionController` 역시 HTTP가 무상태이므로 함수에 더 가깝다.
 
-체크리스트의 Q1이 "No"라서 클래스가 아니라고 판정됐을 때, 아래 트리를 위에서 아래로 따라 첫 번째 "Yes"에서 멈춘다.
+현실에서는 프레임워크 계약상 상속을 유지하되(시나리오 2), "이상적으로는 클래스가 아니어야 하지만 프레임워크가 강제한다"는 인식 아래 본체만 함수로 분리해 클래스 표면적을 최소화한다.
+
+### 실천적 조언 (강연 결론부)
+
+- **구조보다 인라인이 먼저** — 신규 기능은 인라인 코드나 함수로 시작한 뒤, 객체 팩토리가 진짜로 필요해질 때만 클래스로 승격한다.
+- **네임스페이스 중첩은 두세 단계까지** — `Foo::Bar::Baz::Qux::...`는 과도하다.
+- **데이터 그루핑은 Hash → Struct → Data 순으로 진화** — 클래스로 직행하지 않는다.
+- **변환 후 메서드 수/줄 수가 늘었다면 잘못된 분해** — 90%의 경우 클래스 없이 쓰면 결합도와 복잡도가 줄어들어야 한다.
+
+## 컨벤션 — 메인 질문
+
+새 코드를 만들 때 가장 먼저 답할 한 가지:
+
+> **이건 객체 팩토리인가?** — 인스턴스를 여러 개 만들고 각자 식별 가능한 상태(`@ivar`)를 가지는가? (예: `User`, `Cart`, `ChargingSession`)
+
+- **Yes** → 클래스로 작성. 단 아래 "안티패턴 신호"가 있으면 설계 재고.
+- **No**  → 결정 트리로 어떤 도구인지 결정.
+
+### 객체 팩토리여도 의심해야 할 신호
+
+하나라도 해당되면 설계를 다시 본다.
+
+1. **디자인 패턴 이름이 클래스명에 박혀 있다** — `XxxFactory`, `XxxBuilder`, `XxxDecorator`(Draper 외). Ruby는 대부분 언어 차원에서 해결한다.
+2. **`new` 직후 setter를 추가로 호출해야 유효해진다** — 생성자에서 모든 필수 값을 받아 invalid 상태가 없게 만든다.
+3. **필드명을 `attr_reader` + `initialize` + `==`에서 3회 이상 반복하는 PORO** — 데이터 버킷이지 객체가 아니다. `Struct`/`Data.define`로.
+
+## 결정 트리
+
+### 시나리오 1 — 객체 팩토리가 아니라고 판정된 일반 코드
+
+위에서 아래로 첫 "Yes"에서 멈춘다.
 
 ```
-A. Rails 프레임워크 슈퍼클래스를 상속해야 하는가?
-   (ApplicationRecord/Controller/Job, Draper::Decorator, ActiveAdmin::ResourceController 등)
-   → Yes: 클래스 유지. 로직 본체만 함수로 빼낸다 → 레시피 D.
-   → No: 계속.
-
 B. step :validate/persist 같은 모나드 파이프라인(여러 실패 분기 + 트랜잭션)이 필요한가?
    → Yes: OperationService 상속 클래스로.
    → No: 계속.
 
 C. 동작 거의 없이 필드만 담는 데이터 버킷인가?
-   (attr_reader/initialize/==에서 필드명을 반복하는 PORO)
    → Yes:
-     - 불변이면  → `Data.define(:a, :b)` (레시피 C)
-     - 가변이면  → `Struct.new(:a, :b, keyword_init: true)` (레시피 C)
-     - 메서드 1~2개 더 필요하면 → `Data.define(...) do ... end`
+     - 불변이면          → Data.define(:a, :b)         (레시피 C)
+     - 가변이면          → Struct.new(:a, :b, keyword_init: true)
+     - 메서드 1~2개 더   → Data.define(...) do ... end
    → No: 계속.
 
 D. 생성자에서 받은 인자를 단일 메서드 호출에만 쓰는가?
-   (Foo.new(x, y).call 패턴, 외부 의존성 없음)
-   → Yes: `app/functions/` + `class << self` 순수 함수 → 레시피 A.
+   (Foo.new(x, y).call 패턴, 외부 상태 없음)
+   → Yes: app/functions/ + class << self 순수 함수 → 레시피 A.
    → No: 계속.
 
 E. 여러 private 단계로 쪼개져 있지만 진입점은 하나뿐인가?
-   (@lines 같은 누적 변수가 메서드들 사이에서만 공유되는 경우)
-   → Yes: `app/functions/` + 인자 명시 전달로 → 레시피 B.
-   → No: 체크리스트로 돌아가서 재검토 — 정말 클래스가 맞을 수도 있다.
+   (@lines 같은 누적 변수가 메서드들 사이에서만 공유)
+   → Yes: app/functions/ + 인자 명시 전달 → 레시피 B.
+   → No: 메인 질문으로 돌아가 "정말 객체 팩토리가 아닌가" 재검토.
+        팩토리가 맞다면 클래스 유지 — 변환하지 않는다.
 ```
+
+### 시나리오 2 — Rails 프레임워크 클래스 안에 도메인 로직이 두껍다
+
+`ApplicationJob`/`ApplicationController`/`ApplicationRecord` 등 상속 클래스 자체는 손대지 않는다. `perform`/액션/콜백 본체가 도메인 로직으로 두꺼우면 본체를 `app/functions/`로 분리해 프레임워크 컨텍스트 없이 단위 테스트 가능하게 만든다. → **레시피 D**.
 
 ## 변환 레시피
 
@@ -89,7 +122,7 @@ After:
 ```ruby
 # app/functions/price_calculator.rb
 module PriceCalculator
-  extend Loggable  # logger 사용 시 (Rails.logger 직접 호출 금지)
+  extend Loggable  # 프로젝트가 제공하는 로거 mixin이 있다면 사용
 
   class << self
     def compute(pick:, plan:)
@@ -110,10 +143,12 @@ PriceCalculator.compute(pick: pick, plan: plan)
 ```
 
 체크:
-- 메서드명은 `call` 금지 — `build`/`compute`/`resolve` 같은 도메인 의미가 드러나는 동사 사용
+- 메서드명은 `call` 금지 — `build`/`compute`/`resolve` 같은 도메인 동사
 - `private`는 `class << self` 안에서 사용
 - 키워드 인자 권장 (호출부 가독성)
-- **로깅이 필요하면 `extend Loggable`** — `app/functions/concerns/loggable.rb`가 `delegate :logger, to: :Rails`를 제공. 모듈 내부에서 `Rails.logger.warn`이 아닌 `logger.warn`으로 호출 (기존 `app/functions/` 컨벤션과 일치)
+- **로깅**: 프로젝트에 로거 mixin 컨벤션이 있는지 먼저 확인. 있으면 `extend`해서 `logger.warn` 형태로 호출. 다른 모듈과 호출 패턴을 일치시킨다.
+- **헬퍼가 `protected` 인스턴스 메서드 모듈이면** `extend`로는 못 부른다. `class << self` 블록 안에 `include RssHelper` 형태로 들여와 singleton class의 인스턴스 메서드로 만든다.
+- **`class << self` vs `extend self`**: 강연은 `extend self`를 선호한다. 둘 다 동등한 효과이며 프로젝트 컨벤션에 맞춰 한 가지로 통일한다.
 
 ### B. 상태가 있지만 단일 호출만 있는 클래스 → 모듈 함수 + 인자 명시
 
@@ -141,8 +176,6 @@ end
 After:
 ```ruby
 module ReportBuilder
-  extend Loggable
-
   class << self
     def build(user:, range:)
       picks = collect_picks(user, range)
@@ -187,9 +220,9 @@ ChargingResult = Data.define(:pick_id, :kwh, :cost) do
 end
 ```
 
-### D. 빈 클래스 (`perform`만 있는 Job/Service) → 함수 위임
+**메서드가 많아지면** 블록을 키우지 말고 동작을 별도 네임스페이스의 독립 함수로 추출한다. 데이터 컨테이너가 비즈니스 로직을 흡수하면 결국 클래스로 회귀한다.
 
-Job은 Sidekiq 계약상 클래스여야 하지만, 로직 본체는 함수로 분리한다.
+### D. Rails 프레임워크 클래스 안의 두꺼운 도메인 로직 → 함수 위임
 
 Before:
 ```ruby
@@ -225,53 +258,62 @@ end
 
 ## 작업 워크플로우
 
-리팩터링 요청을 받으면 다음 순서로 진행한다.
-
-1. **타깃 식별** — 클래스 파일 경로 확보. 사용자가 명시하지 않았으면 묻는다.
+1. **타깃 식별** — 클래스 파일 경로 확보. 명시되지 않았으면 묻는다.
 2. **사용처 조사** (필수)
    - `rails 'ai:tool[search_code]' pattern="ClassName" match_type=trace`
-   - 모든 호출부를 파악한다. 호출부가 많으면 한 번에 바꾸지 말고 단계적으로.
-3. **체크리스트 → 결정 트리 적용** — 먼저 "컨벤션" 섹션의 5개 질문에 답하고 첫 "No"에서 멈춘다. 클래스가 아니라고 판정되면 결정 트리(A~E)를 위에서 아래로 타 첫 "Yes"에서 멈춰 레시피를 확정한다. 두 단계 모두 사용자에게 명시적으로 보여준다.
-4. **테스트 우선**
-   - 기존 spec이 있으면 그대로 유지하며 호출 형태만 바꾼다.
-   - 없으면 변환 전에 spec을 먼저 작성한다 (RED).
+   - 호출부가 많아 PR이 비대해질 것 같으면 여러 PR로 단계적 마이그레이션. 단일 PR 안에서는 절대 절반만 바꾸지 않는다(8번 참조).
+3. **판정 적용** — 메인 질문(객체 팩토리?) → No면 시나리오 1, Rails 프레임워크 클래스면 시나리오 2. 결과를 사용자에게 보여준다.
+4. **테스트 우선** — 기존 테스트는 호출 형태만 바꾸고, 없으면 변환 전에 작성(RED).
 5. **변환 적용** — 레시피 그대로.
 6. **호출부 일괄 수정** — Step 2에서 모은 모든 호출부.
 7. **검증**
    - `rails 'ai:tool[validate]' files=<바뀐 파일들> level=rails`
-   - `bundle exec rspec <관련 spec>`
-8. **이름 변경 시 주의** — `Foo.new(x).call` → `Foo.build(x)`처럼 호출 형태가 바뀌면 별칭 메서드를 두지 말고 모든 호출부를 한 번에 바꾼다 (절반만 바꾼 상태로 커밋 금지).
+   - 프로젝트의 테스트 명령으로 관련 디렉토리만 실행 (minitest면 `bin/rails test test/...`, RSpec이면 `bundle exec rspec spec/...` 등)
+8. **이름 변경 시 일관성** — `Foo.new(x).call` → `Foo.build(x)`처럼 호출 형태가 바뀌면 별칭을 두지 말고 한 PR/커밋 안에서 모든 호출부를 일괄 변경.
 
 ## 안티패턴 — 하지 말 것
 
-- **클래스를 모듈로 바꾸기만 하고 동일한 결합도 유지** — `extend self` + 동일한 인스턴스 변수 흉내. 의미가 없다.
-- **`Rails.logger`를 모듈 내부에서 직접 호출** — `extend Loggable`로 `logger`만 쓰는 게 컨벤션. `Rails.logger.warn`은 `app/functions/` 외부 경계에서만 사용.
-- **순수 함수로 바꾸면서 사이드이펙트를 숨김** — `compute`가 DB를 쓰면 그건 함수가 아니다. 이름이 거짓말을 한다.
+- **클래스를 모듈로 바꾸기만 하고 동일한 결합도 유지** — `extend self` + 인스턴스 변수 흉내. 의미가 없다.
+- **프로젝트의 로깅 컨벤션 무시** — 로거 mixin이 있는데 신규 모듈만 `Rails.logger`를 직접 부르면 일관성이 깨진다.
+- **순수 함수로 바꾸면서 사이드이펙트를 숨김** — `compute`가 DB를 쓰면 함수가 아니다. 이름이 거짓말을 한다.
 - **`Data.define` 안에 비즈니스 로직 잔뜩 넣기** — 데이터 컨테이너의 본분을 넘으면 그건 다시 클래스다.
-- **호출부의 절반만 새 API로 마이그레이션** — 일관성 깨진 채 커밋하면 다음 사람이 어느 쪽이 정답인지 모른다.
-- **Rails 프레임워크 클래스를 강제로 함수로 변환** — `ApplicationRecord` 모델을 모듈로 만들지 않는다. 결정 트리 1단계에서 멈춰야 한다.
+- **호출부의 절반만 새 API로 마이그레이션** — 같은 PR 안에서 일관성 깨진 채 커밋 금지.
+- **Rails 프레임워크 클래스를 강제로 함수로 변환** — 시나리오 2(레시피 D)는 클래스 안의 본체만 옮긴다.
 
 ## 사용자에게 보고할 형식
 
-리팩터링 제안 시 항상 아래 형식으로 답한다:
+리팩터링 제안 시 항상 아래 형식으로 답한다.
 
+시나리오 1:
 ```
 대상: app/services/xxx.rb
-체크리스트:
-  Q1 객체 팩토리? No (호출부 N곳 모두 .new(...).call 1회 호출)
-  → 클래스 아님, 결정 트리로
-결정 트리:
-  A. Rails 슈퍼클래스? No
-  B. 모나드 파이프라인? No
-  C. 데이터 버킷? No
-  D. 단일 메서드 호출에만 인자 사용? Yes → 레시피 A
+
+판정:
+  메인 질문 — 객체 팩토리? No (호출부 N곳 모두 .new(...).call 1회)
+  → 결정 트리:
+    B. 모나드 파이프라인? No
+    C. 데이터 버킷? No
+    D. 단일 메서드 호출에만 인자 사용? Yes → 레시피 A
 
 변환:
   - app/services/xxx.rb → app/functions/xxx.rb
-  - 메서드명: call → <동사>
+  - 메서드명: call → <도메인 동사>
   - 호출부 N곳 수정 필요: <목록>
 
-테스트: spec/services/xxx_spec.rb → spec/functions/xxx_spec.rb (이동 + 호출 형태 수정)
+테스트: <기존 경로> → <함수 위치에 맞는 경로>
+```
+
+시나리오 2:
+```
+대상: app/jobs/xxx_job.rb (ApplicationJob 상속)
+
+판정:
+  적용 범위 예외 (Rails 프레임워크 클래스) → 시나리오 2, 레시피 D
+
+변환:
+  - 신규 app/functions/<도메인>/<함수>.rb 추출
+  - 기존 Job: perform은 함수 위임 + 큐잉/스케줄링 책임만 유지
+  - 호출부: 변경 없음 (Job 인터페이스 유지)
 ```
 
 사용자 확인 후에만 실제 변경을 시작한다.
