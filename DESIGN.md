@@ -102,6 +102,16 @@ The design system is expressed through Phlex components, RubyUI primitives, and 
 - **Info Solid**: `oklch(0.546 0.215 263)` / hover: `oklch(0.488 0.217 264)`
 - **Info Text**: `oklch(0.714 0.143 255)` dark / info-solid light
 
+### Color Distribution (60:30:10 법칙)
+
+시각적 조화를 위해 모든 화면/컴포지션에서 색상 비율을 다음과 같이 유지한다:
+
+- **60% — 지배 색상 (Dominant)**: 배경 surface 계열 (`bg-app`, `bg-surface`, `bg-surface-muted`). 프레임의 가장 넓은 면적을 차지하며 전반적인 톤을 결정한다.
+- **30% — 보조 색상 (Secondary)**: 텍스트, 카드 구분선, neutral 계열 (`text-content`, `text-content-secondary`, `border-border-*`). 콘텐츠 구조와 위계를 형성한다.
+- **10% — 포인트 색상 (Accent)**: 브랜드/상태 색상 (`bg-brand-solid`, `text-accent-text`, status colors). CTA, 활성 상태, 핵심 지표에만 제한적으로 사용해 시선을 유도한다.
+
+이 비율을 깨뜨리는 대표적 안티패턴: 카드 배경에 brand 색을 채우기, 본문 텍스트에 accent 색 남용, 여러 status 색을 동시에 동일 영역에 노출.
+
 ### Borders & Dividers
 - **Border Strong** (border-border-strong): neutral-700 dark / neutral-300 light
 - **Border Muted** (border-border-muted): neutral-600 dark / neutral-400 light
