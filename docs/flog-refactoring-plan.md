@@ -159,7 +159,6 @@ Phase 1 완료 후 재측정. 예상 대상:
 | Post.extract_body_from_activitypub_object | 53.6  | 미디어 타입별 메서드           |
 | ContentService#execute_youtube          |  46.0  | 트랜스크립트 전략 패턴 도입    |
 | DiscordClient#post_embed                |  44.6  | 임베드 빌더 분리               |
-| Article.should_ignore_url?              |  42.9  | 조건 그룹핑                   |
 | RssSiteJob#perform                      |  42.7  | 1.5의 concern 재사용          |
 | Post#to_activitypub_object              |  42.4  | 직렬화 서비스 분리            |
 | Articles::MetadataPreparation (class)   | 229.7  | 모듈 분리 (URL/published_at)  |

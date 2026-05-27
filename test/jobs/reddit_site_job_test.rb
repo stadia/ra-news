@@ -30,7 +30,7 @@ class RedditSiteJobTest < ActiveSupport::TestCase
     assert_not job.send(:external_link?, "https://old.reddit.com/r/ruby")
     assert_not job.send(:external_link?, "https://redd.it/abc123")
 
-    # SNS 도메인은 external_link?에서 차단하지 않음 (Article.should_ignore_url?이 처리)
+    # SNS 도메인은 external_link?에서 차단하지 않음 (Articles::Utils.should_ignore_url?이 처리)
     assert job.send(:external_link?, "https://x.com/dhh/status/123")
     assert job.send(:external_link?, "https://discord.com/invite/abc")
 
