@@ -29,7 +29,7 @@ class HackerNewsSiteJob < ApplicationJob
         next
       end
 
-      next if parsed_url.path.nil? || parsed_url.path.size < 2 || Article.should_ignore_url?(parsed_url)
+      next if parsed_url.path.nil? || parsed_url.path.size < 2 || Articles::Utils.should_ignore_url?(parsed_url.to_s)
 
       break if site.last_checked_at > Time.at(item["time"])
 

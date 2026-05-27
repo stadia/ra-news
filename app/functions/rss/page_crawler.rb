@@ -50,7 +50,7 @@ module Rss
       #: (String link, Site site) -> void
       def process_link(link, site)
         processed_link = extract_link(link)
-        return if processed_link.blank? || processed_link.end_with?("pdf") || Article.should_ignore_url?(processed_link)
+        return if processed_link.blank? || processed_link.end_with?("pdf") || Articles::Utils.should_ignore_url?(processed_link)
 
         logger.info "Processing link: #{processed_link}"
         return if Article.exists?(url: processed_link) || Article.exists?(origin_url: processed_link)

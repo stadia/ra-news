@@ -104,7 +104,7 @@ module Articles
       #: (Article article, URI::Generic parsed_url) -> bool
       def should_discard_url?(article, parsed_url)
         (!article.is_youtube && (parsed_url.path.nil? || parsed_url.path.size < 2)) ||
-          Article.should_ignore_url?(parsed_url.to_s)
+          Articles::Utils.should_ignore_url?(parsed_url.to_s)
       end
 
       #: (DateTime? candidate) -> Time

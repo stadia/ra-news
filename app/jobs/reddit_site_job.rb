@@ -50,7 +50,7 @@ class RedditSiteJob < ApplicationJob
   #: (url: String, site: Site, post: Hash[String, untyped]) -> void
   def create_article(url:, site:, post:)
     return if Article.exists?(origin_url: url)
-    return if Article.should_ignore_url?(url)
+    return if Articles::Utils.should_ignore_url?(url)
 
     begin
       parsed_url = URI.parse(url)

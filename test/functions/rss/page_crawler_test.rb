@@ -120,7 +120,7 @@ module Rss
       html_body = %(<html><body><a href="#{existing}">link</a></body></html>)
       response = MockResponse.new(200, html_body)
 
-      Article.stub(:should_ignore_url?, false) do
+      Articles::Utils.stub(:should_ignore_url?, false) do
         Rss::PageCrawler.stub(:fetch_feed, Object.new) do
           Rss::PageCrawler.stub(:feed_items, [ :item ]) do
             Rss::PageCrawler.stub(:extract_item_attributes, list_attr) do

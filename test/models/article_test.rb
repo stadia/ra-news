@@ -513,7 +513,7 @@ class ArticleTest < ActiveSupport::TestCase
     ]
 
     ignored_urls.each do |url|
-      assert Article.should_ignore_url?(url), "Should ignore URL: #{url}"
+      assert Articles::Utils.should_ignore_url?(url), "Should ignore URL: #{url}"
     end
   end
 
@@ -526,7 +526,7 @@ class ArticleTest < ActiveSupport::TestCase
     ]
 
     allowed_urls.each do |url|
-      assert_not Article.should_ignore_url?(url), "Should not ignore URL: #{url}"
+      assert_not Articles::Utils.should_ignore_url?(url), "Should not ignore URL: #{url}"
     end
   end
 
@@ -540,14 +540,14 @@ class ArticleTest < ActiveSupport::TestCase
     ]
 
     dangerous_urls.each do |url|
-      assert Article.should_ignore_url?(url), "Should ignore dangerous file: #{url}"
+      assert Articles::Utils.should_ignore_url?(url), "Should ignore dangerous file: #{url}"
     end
   end
 
   test "should_ignore_url?은 유효하지 않은 URL을 처리해야 한다" do
-    assert Article.should_ignore_url?("invalid-url")
-    assert Article.should_ignore_url?(nil)
-    assert Article.should_ignore_url?("")
+    assert Articles::Utils.should_ignore_url?("invalid-url")
+    assert Articles::Utils.should_ignore_url?(nil)
+    assert Articles::Utils.should_ignore_url?("")
   end
 
   test "set_initial_url_and_host는 논리 연산자 우선순위를 올바르게 처리해야 한다 (Bug fix #1)" do

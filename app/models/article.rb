@@ -156,7 +156,7 @@ class Article < ApplicationRecord
 
   #: (untyped value) -> untyped
   def title=(value)
-    super(self.class.truncate_title(value))
+    super(Articles::Utils.truncate_title(value))
   end
 
   def youtube_id #: String?
