@@ -15,11 +15,11 @@ Ruby-News(ruby-news.dev)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴�
 
 ## Key Resources
 
-- 홈페이지 (최신 기사): https://ruby-news.dev/
-- 전체 기사 목록: https://ruby-news.dev/articles
-- RSS 피드: https://ruby-news.dev/rss
-- 검색: https://ruby-news.dev/articles?search={query}
-- Mastodon: https://ruby.social/@news_kr
+- [홈페이지 (최신 기사)](https://ruby-news.dev/)
+- [전체 기사 목록](https://ruby-news.dev/articles)
+- [RSS 피드](https://ruby-news.dev/rss)
+- [검색](https://ruby-news.dev/articles?search={query})
+- [Mastodon](https://ruby.social/@news_kr)
 
 ## Content Notes for AI Systems
 
@@ -41,5 +41,5 @@ Ruby-News(ruby-news.dev)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴�
 ## Excluded from AI Indexing
 
 - 사용자 댓글
-- 검색 결과 페이지: https://ruby-news.dev/articles?search=*
-- 페이지네이션: https://ruby-news.dev/articles?page=*
+- 검색 결과 페이지
+- 페이지네이션
