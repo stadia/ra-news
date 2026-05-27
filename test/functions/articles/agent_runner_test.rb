@@ -58,14 +58,14 @@ class Articles::AgentRunnerTest < ActiveSupport::TestCase
       assert_equal article, result
     end
 
-    assert_equal ["ruby"], article.tag_list.added
+    assert_equal [ "ruby" ], article.tag_list.added
     assert_equal({ "summary_body" => "body" }, article.updated_content)
     refute article.discarded
   end
 
   test "blank 또는 비문자열 tags는 무시하고 유효한 tag만 추가한다" do
     article = ArticleStub.new
-    message = Message.new({ tags: ["Ruby", nil, " ", :Rails, { bad: true }], summary_body: "body" }, "stop")
+    message = Message.new({ tags: [ "Ruby", nil, " ", :Rails, { bad: true } ], summary_body: "body" }, "stop")
 
     ArticleAgent.stub(:new, AgentStub.new(message)) do
       result = Articles::AgentRunner.run(article:, prompt: "prompt")
