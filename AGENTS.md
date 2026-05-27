@@ -8,7 +8,7 @@
 - Database: PostgreSQL — 27 tables
 - Models: 25
 - Routes: 174 across 30 controllers
-- Async: 15 jobs
+- Async: 16 jobs
 - Migrations: 120 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)

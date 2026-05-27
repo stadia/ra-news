@@ -8,7 +8,7 @@
 - Database: static_parse — 27 tables
 - Models: 23
 - Routes: 174 across 30 controllers
-- Async: 15 jobs
+- Async: 16 jobs
 - Migrations: 120 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
@@ -87,7 +87,7 @@
 - phlex
 
 **Services:** ArticleAgentsService, ContentService, DiscordDeliveryService, LikeFederationService, MastodonService, OperationService, PushNotificationService, SlackDeliveryService, SocialMediaService, TwitterService
-**Jobs:** ArticleBatchJob, ArticleJob, ArticleThumbnailJob, DiscardedArticleCleanupJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
+**Jobs:** ArticleBatchJob, ArticleJob, ArticleThumbnailJob, DiscardedArticleCleanupJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, JapaneseTempJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
 ## Commands
 - `bin/dev` — start dev server
