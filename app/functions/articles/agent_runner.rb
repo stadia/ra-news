@@ -31,7 +31,13 @@ module Articles
       def apply_tags(article, content)
         return unless content["tags"].present?
 
-        tags = content.delete("tags").map { it.downcase }.uniq
+        tags = Array(content.delete("tags")).filter_map do |tag|
+          next unless tag.is_a?(String) || tag.is_a?(Symbol)
+
+          tag.to_s.downcase.strip.presence
+        end.uniq
+        return if tags.empty?
+
         article.tag_list.add(*tags)
       end
 

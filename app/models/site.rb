@@ -9,7 +9,7 @@ class Site < ApplicationRecord
   has_many :articles, dependent: :destroy
 
   validates :name, :client, presence: true
-  validates :url, uniqueness: true, if: -> { rss? }
+  validates :url, uniqueness: true, if: -> { rss? }, allow_nil: true
 
   before_save :parse_url_to_uri_parts, if: :will_save_change_to_url?
 

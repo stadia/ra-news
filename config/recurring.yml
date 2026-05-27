@@ -29,3 +29,6 @@ production:
   discarded_article_cleanup_job:
     class: "DiscardedArticleCleanupJob"
     schedule: "0 4 * * 0"
+  japanese_temp_job:
+    class: "JapaneseTempJob"
+    schedule: "*/30 * * * *"

@@ -62,6 +62,58 @@ module Rss
       end
     end
 
+    test "url이 비어 있으면 Faraday.get을 호출하지 않는다" do
+      blank_url_attr = { url: nil, published_at: Time.zone.now, origin_url: "https://example.com/list" }
+
+      Rss::PageCrawler.stub(:fetch_feed, Object.new) do
+        Rss::PageCrawler.stub(:feed_items, [ :item ]) do
+          Rss::PageCrawler.stub(:extract_item_attributes, blank_url_attr) do
+            Faraday.stub(:get, ->(*) { raise "blank url should not be fetched" }) do
+              assert_no_difference("Article.count") do
+                Rss::PageCrawler.crawl(@site)
+              end
+            end
+          end
+        end
+      end
+    end
+
+    test "published_at이 nil이어도 필터링 중 예외가 나지 않는다" do
+      @site.last_checked_at = Time.zone.now
+      undated_attr = { url: "https://example.com/list", published_at: nil, origin_url: "https://example.com/list" }
+      fetched = false
+
+      Rss::PageCrawler.stub(:fetch_feed, Object.new) do
+        Rss::PageCrawler.stub(:feed_items, [ :item ]) do
+          Rss::PageCrawler.stub(:extract_item_attributes, undated_attr) do
+            Faraday.stub(:get, ->(*) { fetched = true; MockResponse.new(404, "") }) do
+              assert_no_difference("Article.count") do
+                Rss::PageCrawler.crawl(@site)
+              end
+            end
+          end
+        end
+      end
+
+      assert fetched, "published_at이 nil이어도 링크 수집 단계까지 진행되어야 합니다"
+    end
+
+    test "링크 수집 중 예외가 발생해도 crawl은 중단되지 않는다" do
+      list_attr = { url: "https://example.com/list", published_at: Time.zone.now, origin_url: "https://example.com/list" }
+
+      Rss::PageCrawler.stub(:fetch_feed, Object.new) do
+        Rss::PageCrawler.stub(:feed_items, [ :item ]) do
+          Rss::PageCrawler.stub(:extract_item_attributes, list_attr) do
+            Faraday.stub(:get, ->(*) { raise Faraday::ConnectionFailed, "timeout" }) do
+              assert_no_difference("Article.count") do
+                Rss::PageCrawler.crawl(@site)
+              end
+            end
+          end
+        end
+      end
+    end
+
     test "이미 존재하는 origin_url은 Article을 새로 만들지 않는다" do
       existing = articles(:ruby_article).origin_url
       list_attr = { url: "https://example.com/list", published_at: Time.zone.now, origin_url: "https://example.com/list" }

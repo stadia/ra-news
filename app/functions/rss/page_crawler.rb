@@ -15,7 +15,7 @@ module Rss
         return unless feed
 
         attributes = feed_items(feed).map { |item| extract_item_attributes(item) }.compact
-        attributes.reject! { |attr| attr[:published_at] < site.last_checked_at } if site.last_checked_at
+        attributes.reject! { |attr| attr[:published_at].present? && attr[:published_at] < site.last_checked_at } if site.last_checked_at
         return if attributes.empty?
 
         links = collect_links(attributes).uniq
@@ -30,9 +30,10 @@ module Rss
       def collect_links(attributes)
         links = []
         attributes.each do |attr|
-          next if attr[:url].end_with?("pdf")
+          url = attr[:url].to_s.strip
+          next if url.blank? || url.downcase.end_with?("pdf")
 
-          response = Faraday.get(attr[:url])
+          response = Faraday.get(url)
           next unless response.status.between?(200, 299)
 
           html_doc = Nokogiri::HTML5(response.body)
@@ -40,6 +41,8 @@ module Rss
             href = a["href"]
             links << href if href.is_a?(String) && href.present?
           end
+        rescue StandardError => e
+          logger.error "Error collecting links from #{url.presence || attr.inspect}: #{e.message}"
         end
         links
       end

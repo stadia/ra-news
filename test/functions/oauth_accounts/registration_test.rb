@@ -8,7 +8,7 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
       session_data: session_data,
       username: "oauth_user",
       locale: "ko",
-      signup_host: "ruby-news.kr"
+      signup_host: "ruby-news.dev"
     )
 
     assert result[:success]
@@ -18,7 +18,7 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
     assert_equal "oauth@example.com", user.email
     assert_equal "oauth_user", user.username
     assert_equal "ko", user.locale
-    assert_equal "ruby-news.kr", user.signup_host
+    assert_equal "ruby-news.dev", user.signup_host
     assert_not_nil user.confirmed_at
 
     account = OauthAccount.find_by!(provider: "google_oauth2", uid: "google-123")
@@ -33,7 +33,7 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
       session_data: session_data,
       username: "한글",
       locale: "ko",
-      signup_host: "ruby-news.kr"
+      signup_host: "ruby-news.dev"
     )
 
     refute result[:success]

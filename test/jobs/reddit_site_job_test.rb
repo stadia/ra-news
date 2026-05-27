@@ -5,6 +5,8 @@ require "test_helper"
 class RedditSiteJobTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
+  MockMetadataResponse = Struct.new(:body, :status, :headers)
+
   test "RedditSiteJob은 ApplicationJob을 상속한다" do
     assert_includes RedditSiteJob.ancestors, ActiveJob::Base
   end
@@ -84,9 +86,11 @@ class RedditSiteJobTest < ActiveSupport::TestCase
       kwargs[:sort] == :hot ? hot_posts : top_posts
     }
 
-    Reddit.stub(:feed, mock_feed) do
-      assert_difference "Article.count", 2 do
-        RedditSiteJob.new.perform
+    with_stubbed_metadata_fetch do
+      Reddit.stub(:feed, mock_feed) do
+        assert_difference "Article.count", 2 do
+          RedditSiteJob.new.perform
+        end
       end
     end
 
@@ -119,7 +123,9 @@ class RedditSiteJobTest < ActiveSupport::TestCase
   test "이미 존재하는 origin_url은 중복 생성하지 않는다" do
     site = sites(:reddit)
     existing_url = "https://blog.example.com/existing"
-    Article.create!(url: existing_url, origin_url: existing_url, site: site, user: User.first_bot)
+    with_stubbed_metadata_fetch do
+      Article.create!(url: existing_url, origin_url: existing_url, site: site, user: User.first_bot)
+    end
 
     posts = [
       {
@@ -130,9 +136,11 @@ class RedditSiteJobTest < ActiveSupport::TestCase
       }
     ]
 
-    Reddit.stub(:feed, ->(**) { posts }) do
-      assert_no_difference "Article.count" do
-        RedditSiteJob.new.perform
+    with_stubbed_metadata_fetch do
+      Reddit.stub(:feed, ->(**) { posts }) do
+        assert_no_difference "Article.count" do
+          RedditSiteJob.new.perform
+        end
       end
     end
   end
@@ -162,12 +170,24 @@ class RedditSiteJobTest < ActiveSupport::TestCase
       }
     ]
 
-    Reddit.stub(:feed, ->(**) { posts }) do
-      assert_difference "Article.count", 1 do
-        RedditSiteJob.new.perform
+    with_stubbed_metadata_fetch do
+      Reddit.stub(:feed, ->(**) { posts }) do
+        assert_difference "Article.count", 1 do
+          RedditSiteJob.new.perform
+        end
       end
     end
 
     assert Article.exists?(origin_url: "https://thoughtbot.com/blog/ruby-tips")
+  end
+
+  private
+
+  def with_stubbed_metadata_fetch(body = "<html><head><title>Fetched Title</title></head><body>Body</body></html>")
+    response = MockMetadataResponse.new(body, 200, {})
+
+    Articles::MetadataPreparation.stub(:fetch_url_content, ->(_url) { response }) do
+      yield
+    end
   end
 end
