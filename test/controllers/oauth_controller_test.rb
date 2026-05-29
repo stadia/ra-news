@@ -36,4 +36,11 @@ class OauthControllerTest < ActionDispatch::IntegrationTest
       assert_redirected_to edit_user_registration_path
     end
   end
+
+  test "GET install redirects with alert for unsupported provider" do
+    get "/unknown/install"
+
+    assert_redirected_to edit_user_registration_path
+    assert_equal "지원하지 않는 연동입니다.", flash[:alert]
+  end
 end

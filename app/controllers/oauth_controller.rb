@@ -20,6 +20,9 @@ class OauthController < ApplicationController
         redirect_to edit_user_registration_path, alert: "Discord 연동이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요."
         return
       end
+    else
+      redirect_to edit_user_registration_path, alert: "지원하지 않는 연동입니다."
+      return
     end
 
     state = SecureRandom.hex(16)
