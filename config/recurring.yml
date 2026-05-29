@@ -22,7 +22,7 @@ production:
     schedule: "*/5 * * * *"
   social_post_job:
     class: "SocialPostJob"
-    schedule: "*/10 * * * *"
+    schedule: "*/10 8-19 * * *"
   reddit_site_job:
     class: RedditSiteJob
     schedule: "0 10,22 * * *"
