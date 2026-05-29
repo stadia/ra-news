@@ -25,10 +25,10 @@ production:
     schedule: "*/10 8-19 * * *"
   reddit_site_job:
     class: RedditSiteJob
-    schedule: "0 10,22 * * *"
+    schedule: "0 */4 * * *"
   discarded_article_cleanup_job:
     class: "DiscardedArticleCleanupJob"
     schedule: "0 4 * * 0"
   japanese_temp_job:
     class: "JapaneseTempJob"
-    schedule: "*/30 * * * *"
+    schedule: "*/20 * * * *"

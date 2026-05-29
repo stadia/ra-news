@@ -1,354 +1,333 @@
+---
 ja:
+  activerecord:
+    attributes:
+      article:
+        url: URL
+      post:
+        body: コメント内容
+      user:
+        avatar: プロフィール画像
+        current_password: 現在のパスワード
+        email: メールアドレス
+        locale: 表示言語
+        name: 名前
+        password: パスワード
+        password_confirmation: パスワード確認
+        username: ユーザーID
+    errors:
+      models:
+        user:
+          attributes:
+            name:
+              too_long: は50文字以下である必要があります
+              too_short: は2文字以上である必要があります
+  activities:
+    feed:
+      empty: 表示する投稿がありません。他のユーザーをフォローするか、最初の投稿を書いてみましょう!
+      loading: 読み込み中...
+      title: フィード | Ruby-News
+  actors:
+    gone:
+      message: このアカウントはもう存在しません。
+    lookup:
+      account_label: アカウントアドレス
+      heading: フォロー検索
+      submit: 検索
+      subtitle: Fediverseアドレスでユーザーを検索してください。
+      title: フォロー検索
+    show:
+      back_to_lookup: フォロー検索に戻る
+      visit_profile: プロフィールを開く →
+  articles:
+    form:
+      errors_heading: "%{count}件のエラーにより記事を保存できませんでした:"
+      submit: 登録
+    index:
+      count: "%{count}件の記事があります"
+      heading: 過去の記事
+      item_list_name: Ruby-News 過去の記事
+      title: 過去の記事 | Ruby-News
+    new:
+      back_to_list: 一覧に戻る
+      badge: Article Intake
+      heading: 新規記事を登録
+      subtitle: URLを入力すると収集と要約処理を開始します。
+      title: 新規記事を登録
+    others:
+      count: "%{count}件の記事があります"
+      heading: その他のニュース
+      item_list_name: Ruby-News その他のニュース
+      title: その他のニュース | Ruby-News
+    show:
+      author: 投稿者
+      conclusion_heading: まとめ
+      date_format: "%Y年%m月%d日"
+      intro_heading: はじめに
+      not_available: N/A
+      published_at: 公開日
+      read_more: 読む →
+      related_heading: 関連記事
+      summary_heading: 要点
+    tagged:
+      count: "%{count}件の記事があります"
+      item_list_name: 'Ruby-News #%{tag} タグの記事'
+      title: "#%{tag} タグの記事 | Ruby-News"
+  comments:
+    comment:
+      delete: 削除
+      delete_confirm: 本当に削除しますか?
+      reply: 返信
+    comment_form:
+      error_heading: 'エラーが発生しました:'
+      guideline: 丁寧で建設的なコメントを心がけてください。
+      login_prompt_after: " が必要です。"
+      login_prompt_before: 'コメントを書くには '
+      submit: コメントを書く
+      title: コメントを書く
+    comment_header:
+      title: コメント
+    comment_reply_form:
+      cancel: キャンセル
+      error_heading: 'エラーが発生しました:'
+      login_prompt_after: " してください。"
+      login_prompt_before: '返信を書くには '
+      submit: 返信を書く
+      title: 返信を書く
   errors:
     format: "%{attribute}%{message}"
     messages:
       form_errors:
         one: "%{count}件のエラーがあります"
         other: "%{count}件のエラーがあります"
-
+  federails_layout:
+    brand_subtitle: ソーシャル
+    menu: メニュー
+    nav:
+      feed: フィード
+      home: "← ホーム"
+      lookup: フォロー検索
+      my_profile: マイプロフィール
+    nav_aria_label: Fediverseナビゲーション
+    title: Ruby-News || Ruby AIニュース
+  followings:
+    follow_actions:
+      accept: 承認
+      cancel_request: リクエストを取り消す
+      follow: フォロー
+      following: フォロー中
+      incoming_following: "%{username}さんがフォローしています。"
+      incoming_request: "%{username}さんからフォローリクエストがあります。"
+      logged_out: 'フォローするにはログインしてください。または他のFediverseサーバーから検索: '
+      own_account: あなた自身のアカウントです。
+      requested: リクエスト中
+      unfollow: フォロー解除
   helpers:
     placeholder:
       actor:
-        account: "user@domain.tld"
-        account_or_username: "user@domain.tld または username"
+        account: user@domain.tld
+        account_or_username: user@domain.tld または username
       comment:
-        body: "コメントを入力してください..."
-        reply_body: "返信を入力してください..."
+        body: コメントを入力してください...
+        reply_body: 返信を入力してください...
       post:
-        body: "いま何を考えていますか?"
-        reply_body: "返信を入力してください..."
+        body: いま何を考えていますか?
+        reply_body: 返信を入力してください...
       search:
-        articles: "検索..."
+        articles: 検索...
       user:
-        email: "メールアドレス"
-        new_password: "新しいパスワードを入力してください"
-        new_password_confirmation: "新しいパスワードをもう一度入力してください"
-        password: "パスワード"
-        username: "英字、数字、アンダースコア、ドット"
-
-  activerecord:
-    attributes:
-      article:
-        url: "URL"
-      post:
-        body: "コメント内容"
-      user:
-        avatar: "プロフィール画像"
-        current_password: "現在のパスワード"
-        email: "メールアドレス"
-        locale: "表示言語"
-        name: "名前"
-        password: "パスワード"
-        password_confirmation: "パスワード確認"
-        username: "ユーザーID"
-    errors:
-      models:
-        user:
-          attributes:
-            name:
-              too_short: "は2文字以上である必要があります"
-              too_long: "は50文字以下である必要があります"
-
-  # UI labels
-  remember_me: "ログイン状態を保持する"
-  sign_in: "ログイン"
-  sign_out: "ログアウト"
-  sign_up: "新規登録"
-  posts:
-    remote_attachment_only_body: "添付メディア"
-    show:
-      title: "ポスト | Ruby-News"
-      back_to_feed: "フィードに戻る"
-    post_card:
-      reply_to: "%{name}さんへの返信"
-      linked_article: "関連記事"
-      unknown_author: "不明"
-      view_article: "記事を見る"
-    post_form:
-      replying_to: "返信中 "
-      cancel: "キャンセル"
-      reply_submit: "返信"
-      post_submit: "投稿"
-    reply_form:
-      char_unit: " 文字"
-      cancel: "キャンセル"
-      submit: "返信"
-
-  articles:
-    index:
-      title: "過去の記事 | Ruby-News"
-      heading: "過去の記事"
-      count: "%{count}件の記事があります"
-      item_list_name: "Ruby-News 過去の記事"
-    others:
-      title: "その他のニュース | Ruby-News"
-      heading: "その他のニュース"
-      count: "%{count}件の記事があります"
-      item_list_name: "Ruby-News その他のニュース"
-    tagged:
-      title: "#%{tag} タグの記事 | Ruby-News"
-      count: "%{count}件の記事があります"
-      item_list_name: "Ruby-News #%{tag} タグの記事"
-    show:
-      author: "投稿者"
-      published_at: "公開日"
-      date_format: "%Y年%m月%d日"
-      not_available: "N/A"
-      summary_heading: "要点"
-      intro_heading: "はじめに"
-      conclusion_heading: "まとめ"
-      related_heading: "関連記事"
-      read_more: "読む →"
-    new:
-      title: "新規記事を登録"
-      badge: "Article Intake"
-      heading: "新規記事を登録"
-      subtitle: "URLを入力すると収集と要約処理を開始します。"
-      back_to_list: "一覧に戻る"
-    form:
-      submit: "登録"
-      errors_heading: "%{count}件のエラーにより記事を保存できませんでした:"
-
-  comments:
-    comment:
-      delete_confirm: "本当に削除しますか?"
-      delete: "削除"
-      reply: "返信"
-    comment_header:
-      title: "コメント"
-    comment_form:
-      title: "コメントを書く"
-      error_heading: "エラーが発生しました:"
-      login_prompt_before: "コメントを書くには "
-      login_prompt_after: " が必要です。"
-      guideline: "丁寧で建設的なコメントを心がけてください。"
-      submit: "コメントを書く"
-    comment_reply_form:
-      title: "返信を書く"
-      error_heading: "エラーが発生しました:"
-      login_prompt_before: "返信を書くには "
-      login_prompt_after: " してください。"
-      cancel: "キャンセル"
-      submit: "返信を書く"
-
-  layout:
-    site_name: "Ruby-News | Ruby AIニュース"
-    default_title: "Ruby-News | Ruby AIニュース"
-    default_description: "Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします"
-    brand_subtitle: "Ruby AIニュース"
-    skip_to_content: "本文へスキップ"
-    loading: "読み込み中..."
-    rss_feed_title: "Ruby-News RSSフィード"
-    nav:
-      aria_label: "メインナビゲーション"
-      menu_toggle: "メニュー開閉"
-      open_main_menu: "メインメニューを開く"
-      home: "ホーム"
-      past_articles: "過去の記事"
-      other_news: "その他のニュース"
-      new_article: "記事を投稿"
-    search:
-      aria_label: "記事を検索"
-      submit: "検索"
-    footer:
-      mastodon: "Mastodon"
-      twitter: "Twitter/X"
-      rss: "RSSフィード"
-      slack: "Slackに追加"
-      discord: "Discordに追加"
-      privacy_policy: "プライバシーポリシー"
-      terms: "利用規約"
-
+        email: メールアドレス
+        new_password: 新しいパスワードを入力してください
+        new_password_confirmation: 新しいパスワードをもう一度入力してください
+        password: パスワード
+        username: 英字、数字、アンダースコア、ドット
   home:
-    index:
-      title: "Ruby-News | Ruby・Rails開発者のためのAIニュース"
-      latest_news: "最新ニュース"
-      more_articles: "過去の記事をもっと見る"
-      item_list_name: "Ruby-News 最新ニュース"
     feature:
-      heading: "注目ニュース"
+      heading: 注目ニュース
+    index:
+      item_list_name: Ruby-News 最新ニュース
+      latest_news: 最新ニュース
+      more_articles: 過去の記事をもっと見る
+      title: Ruby-News | Ruby・Rails開発者のためのAIニュース
     rss:
-      title: "Ruby-News || Ruby AIニュース"
-      description: "Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします"
-      no_title: "タイトルなし"
-      no_summary: "要約がありません"
-
-  tags_sidebar:
-    heading: "タグ"
-    empty: "表示するタグがありません。"
-
-  recent_comments_sidebar:
-    heading: "最近のコメント"
-    view_article: "記事を見る"
-
-  users:
-    new:
-      title: "新規登録"
-      heading: "新規登録"
-      subtitle: "新しいアカウントを作成します。"
-    edit:
-      title: "ユーザー情報を編集"
-      heading: "ユーザー情報を編集"
-      subtitle: "アカウント情報を更新します。"
-    password:
-      title: "パスワード変更"
-      heading: "パスワード変更"
-      subtitle: "パスワードを変更します。"
-    show:
-      title: "ユーザー情報"
-      heading: "ユーザー情報"
-      subtitle: "アカウントの個人情報と設定を管理します。"
-      edit: "情報を編集"
-      change_password: "パスワード変更"
-    form:
-      edit_heading: "情報を編集"
-      sign_up_heading: "新規登録"
-      new_beginning: "新しいスタート"
-      avatar_hint: "正方形の代表サムネイルとして400x400にクロップされ、外部に公開されます。"
-      remove_avatar: "現在のプロフィール画像を削除"
-      locale_auto: "自動 (ブラウザ設定)"
-      locale_options:
-        ko: "韓国語"
-        ja: "日本語"
-        en: "英語"
-      optional_name_label: "名前 (任意)"
-      change_password: "パスワード変更"
-      back: "戻る"
-      save_changes: "変更を保存"
-      sign_up_submit: "登録する"
-      avatar_alt_default: "プロフィール画像"
-    password_form:
-      back: "戻る"
-      save: "パスワードを保存"
-    oauth_signup:
-      heading: "OAuth登録を完了"
-      subtitle: "利用するユーザーIDを確認して登録を完了してください。"
-      submit: "登録を完了"
-      session_missing: "OAuth登録セッションの有効期限が切れました。もう一度ログインしてください。"
-      duplicate_account: "このOAuthアカウントはすでに連携されています。"
-    omniauth_callbacks:
-      not_configured: "%{provider}ログインはまだ設定されていません。管理者にお問い合わせください。"
-
-  sessions:
-    new:
-      title: "ログイン"
-      submit: "ログイン"
-      sign_up: "新規登録"
-      forgot_password: "パスワードをお忘れですか?"
-      resend_confirmation: "確認メールを再送しますか?"
-      continue_with_google: "Googleで続ける"
-      continue_with_apple: "Appleで続ける"
-      continue_with_github: "GitHubで続ける"
-
-  profiles:
-    show:
-      settings: "設定"
-      feed: "フィード"
-      find_follow: "フォロー検索"
-      followers_suffix: " フォロワー"
-      following_suffix: " フォロー中"
-    activity_tabs:
-      posts: "投稿"
-      comments: "コメント"
-      followers: "フォロワー"
-      following: "フォロー中"
-      likes: "いいね"
-    follow_list:
-      followers: "フォロワー"
-      following: "フォロー中"
-      empty_followers: "まだフォロワーがいません。"
-      empty_following: "まだフォローしているアカウントがありません。"
-      accept: "承認"
-      reject: "拒否"
-      requested: "リクエスト中"
-      unfollow: "フォロー解除"
-    comment_list:
-      empty: "まだコメントを書いていません。"
-    like_list:
-      empty: "まだいいねした記事がありません。"
-    post_list:
-      empty: "まだ投稿がありません。"
-
-  followings:
-    follow_actions:
-      own_account: "あなた自身のアカウントです。"
-      requested: "リクエスト中"
-      following: "フォロー中"
-      cancel_request: "リクエストを取り消す"
-      unfollow: "フォロー解除"
-      follow: "フォロー"
-      incoming_request: "%{username}さんからフォローリクエストがあります。"
-      incoming_following: "%{username}さんがフォローしています。"
-      accept: "承認"
-      logged_out: "フォローするにはログインしてください。または他のFediverseサーバーから検索: "
-
-  activities:
-    feed:
-      title: "フィード | Ruby-News"
-      empty: "表示する投稿がありません。他のユーザーをフォローするか、最初の投稿を書いてみましょう!"
-      loading: "読み込み中..."
-
-  push_notifications:
-    prompt_modal:
-      title: "通知設定"
-      body_line1: "自分のコメントに返信が来たらすぐ気づけるよう"
-      body_line2: "ブラウザ通知をオンにしてみましょう。"
-      enable: "オンにする"
-      later: "あとで"
-
-  federails_layout:
-    title: "Ruby-News || Ruby AIニュース"
-    brand_subtitle: "ソーシャル"
-    nav_aria_label: "Fediverseナビゲーション"
-    menu: "メニュー"
+      description: Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします
+      no_summary: 要約がありません
+      no_title: タイトルなし
+      title: Ruby-News || Ruby AIニュース
+  layout:
+    brand_subtitle: Ruby AIニュース
+    default_description: Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします
+    default_title: Ruby-News | Ruby AIニュース
+    footer:
+      discord: Discordに追加
+      mastodon: Mastodon
+      privacy_policy: プライバシーポリシー
+      rss: RSSフィード
+      slack: Slackに追加
+      terms: 利用規約
+      twitter: Twitter/X
+    loading: 読み込み中...
     nav:
-      home: "← ホーム"
-      feed: "フィード"
-      lookup: "フォロー検索"
-      my_profile: "マイプロフィール"
-
+      aria_label: メインナビゲーション
+      home: ホーム
+      menu_toggle: メニュー開閉
+      new_article: 記事を投稿
+      open_main_menu: メインメニューを開く
+      other_news: その他のニュース
+      past_articles: 過去の記事
+    rss_feed_title: Ruby-News RSSフィード
+    search:
+      aria_label: 記事を検索
+      submit: 検索
+    site_name: Ruby-News | Ruby AIニュース
+    skip_to_content: 本文へスキップ
   login_required:
-    title: "ログインが必要です"
-    message: "コメントを書いたり会話に参加するにはログインが必要です。"
-    go_to_login: "ログインへ"
-
-  passwords:
-    new:
-      heading: "パスワードをお忘れですか?"
-      submit: "再設定メールを送信"
-    edit:
-      heading: "新しいパスワードを設定"
-      submit: "保存"
-
-  oauth:
-    result:
-      success_title: "%{provider} の連携が完了しました"
-      failure_title: "%{provider} の連携に失敗しました"
-      page_title: "%{title} | Ruby-News"
-      workspace: "ワークスペース"
-      server: "サーバー"
-      channel_connected: "%{channel} %{kind}の連携に成功しました。"
-      provider_connected: "%{provider} の連携に成功しました。"
-      failure_message: "%{provider} の連携中にエラーが発生しました。"
-      notification_guide_heading: "通知設定のご案内"
-      webhook_configured: "%{provider} のWebhookが設定されました。選択したチャンネルに新着記事の通知が自動配信されます。"
-      no_bot_required: "ボットの招待や追加設定なしで通知が送信されます。"
-      back_to_home: "ホームに戻る"
-
+    go_to_login: ログインへ
+    message: コメントを書いたり会話に参加するにはログインが必要です。
+    title: ログインが必要です
   mailers:
     layout:
-      brand_subtitle: "Ruby AIニュース"
-      footer: "このメールはアカウント確認のために送信されました。"
-
-  actors:
+      brand_subtitle: Ruby AIニュース
+      footer: このメールはアカウント確認のために送信されました。
+  oauth:
+    result:
+      back_to_home: ホームに戻る
+      channel_connected: "%{channel} %{kind}の連携に成功しました。"
+      failure_message: "%{provider} の連携中にエラーが発生しました。"
+      failure_title: "%{provider} の連携に失敗しました"
+      no_bot_required: ボットの招待や追加設定なしで通知が送信されます。
+      notification_guide_heading: 通知設定のご案内
+      page_title: "%{title} | Ruby-News"
+      provider_connected: "%{provider} の連携に成功しました。"
+      server: サーバー
+      success_title: "%{provider} の連携が完了しました"
+      webhook_configured: "%{provider} のWebhookが設定されました。選択したチャンネルに新着記事の通知が自動配信されます。"
+      workspace: ワークスペース
+  passwords:
+    edit:
+      heading: 新しいパスワードを設定
+      submit: 保存
+    new:
+      heading: パスワードをお忘れですか?
+      submit: 再設定メールを送信
+  posts:
+    post_card:
+      linked_article: 関連記事
+      reply_to: "%{name}さんへの返信"
+      unknown_author: 不明
+      view_article: 記事を見る
+    post_form:
+      cancel: キャンセル
+      post_submit: 投稿
+      reply_submit: 返信
+      replying_to: '返信中 '
+    remote_attachment_only_body: 添付メディア
+    reply_form:
+      cancel: キャンセル
+      char_unit: " 文字"
+      submit: 返信
     show:
-      visit_profile: "プロフィールを開く →"
-      back_to_lookup: "フォロー検索に戻る"
-    gone:
-      message: "このアカウントはもう存在しません。"
-    lookup:
-      title: "フォロー検索"
-      heading: "フォロー検索"
-      subtitle: "Fediverseアドレスでユーザーを検索してください。"
-      account_label: "アカウントアドレス"
-      submit: "検索"
+      back_to_feed: フィードに戻る
+      title: ポスト | Ruby-News
+  profiles:
+    activity_tabs:
+      comments: コメント
+      followers: フォロワー
+      following: フォロー中
+      likes: いいね
+      posts: 投稿
+    comment_list:
+      empty: まだコメントを書いていません。
+    follow_list:
+      accept: 承認
+      empty_followers: まだフォロワーがいません。
+      empty_following: まだフォローしているアカウントがありません。
+      followers: フォロワー
+      following: フォロー中
+      reject: 拒否
+      requested: リクエスト中
+      unfollow: フォロー解除
+    like_list:
+      empty: まだいいねした記事がありません。
+    post_list:
+      empty: まだ投稿がありません。
+    show:
+      feed: フィード
+      find_follow: フォロー検索
+      followers_suffix: " フォロワー"
+      following_suffix: " フォロー中"
+      settings: 設定
+  push_notifications:
+    prompt_modal:
+      body_line1: 自分のコメントに返信が来たらすぐ気づけるよう
+      body_line2: ブラウザ通知をオンにしてみましょう。
+      enable: オンにする
+      later: あとで
+      title: 通知設定
+  recent_comments_sidebar:
+    heading: 最近のコメント
+    view_article: 記事を見る
+  remember_me: ログイン状態を保持する
+  sessions:
+    new:
+      continue_with_apple: Appleで続ける
+      continue_with_github: GitHubで続ける
+      continue_with_google: Googleで続ける
+      forgot_password: パスワードをお忘れですか?
+      resend_confirmation: 確認メールを再送しますか?
+      sign_up: 新規登録
+      submit: ログイン
+      title: ログイン
+  sign_in: ログイン
+  sign_out: ログアウト
+  sign_up: 新規登録
+  tags_sidebar:
+    empty: 表示するタグがありません。
+    heading: タグ
+  users:
+    edit:
+      heading: ユーザー情報を編集
+      subtitle: アカウント情報を更新します。
+      title: ユーザー情報を編集
+    form:
+      avatar_alt_default: プロフィール画像
+      avatar_hint: 正方形の代表サムネイルとして400x400にクロップされ、外部に公開されます。
+      back: 戻る
+      change_password: パスワード変更
+      edit_heading: 情報を編集
+      locale_auto: 自動 (ブラウザ設定)
+      locale_options:
+        en: 英語
+        ja: 日本語
+        ko: 韓国語
+      new_beginning: 新しいスタート
+      optional_name_label: 名前 (任意)
+      remove_avatar: 現在のプロフィール画像を削除
+      save_changes: 変更を保存
+      sign_up_heading: 新規登録
+      sign_up_submit: 登録する
+    new:
+      heading: 新規登録
+      subtitle: 新しいアカウントを作成します。
+      title: 新規登録
+    oauth_signup:
+      duplicate_account: このOAuthアカウントはすでに連携されています。
+      heading: OAuth登録を完了
+      session_missing: OAuth登録セッションの有効期限が切れました。もう一度ログインしてください。
+      submit: 登録を完了
+      subtitle: 利用するユーザーIDを確認して登録を完了してください。
+    omniauth_callbacks:
+      not_configured: "%{provider}ログインはまだ設定されていません。管理者にお問い合わせください。"
+    password:
+      heading: パスワード変更
+      subtitle: パスワードを変更します。
+      title: パスワード変更
+    password_form:
+      back: 戻る
+      save: パスワードを保存
+    show:
+      change_password: パスワード変更
+      edit: 情報を編集
+      heading: ユーザー情報
+      subtitle: アカウントの個人情報と設定を管理します。
+      title: ユーザー情報

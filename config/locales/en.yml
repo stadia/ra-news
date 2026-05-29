@@ -1,354 +1,333 @@
+---
 en:
+  activerecord:
+    attributes:
+      article:
+        url: URL
+      post:
+        body: Comment body
+      user:
+        avatar: Profile picture
+        current_password: Current password
+        email: Email
+        locale: Display language
+        name: Name
+        password: Password
+        password_confirmation: Password confirmation
+        username: Username
+    errors:
+      models:
+        user:
+          attributes:
+            name:
+              too_long: must be 50 characters or fewer
+              too_short: must be at least 2 characters
+  activities:
+    feed:
+      empty: Nothing to show. Follow other users or write your first post!
+      loading: Loading...
+      title: Feed | Ruby-News
+  actors:
+    gone:
+      message: This account no longer exists.
+    lookup:
+      account_label: Account address
+      heading: Find & Follow
+      submit: Search
+      subtitle: Search for users by their Fediverse address.
+      title: Find & Follow
+    show:
+      back_to_lookup: Back to Find & Follow
+      visit_profile: Visit profile →
+  articles:
+    form:
+      errors_heading: 'Could not save the article due to %{count} error(s):'
+      submit: Submit
+    index:
+      count: "%{count} articles"
+      heading: Past Articles
+      item_list_name: Ruby-News Past Articles
+      title: Past Articles | Ruby-News
+    new:
+      back_to_list: Back to list
+      badge: Article Intake
+      heading: Submit Article
+      subtitle: Enter a URL to start collecting and summarizing.
+      title: Submit Article
+    others:
+      count: "%{count} articles"
+      heading: Other News
+      item_list_name: Ruby-News Other News
+      title: Other News | Ruby-News
+    show:
+      author: Author
+      conclusion_heading: Conclusion
+      date_format: "%B %d, %Y"
+      intro_heading: Introduction
+      not_available: N/A
+      published_at: Published
+      read_more: Read more →
+      related_heading: Related Articles
+      summary_heading: Key Takeaways
+    tagged:
+      count: "%{count} articles"
+      item_list_name: 'Ruby-News #%{tag} Tagged Articles'
+      title: "#%{tag} Tagged Articles | Ruby-News"
+  comments:
+    comment:
+      delete: Delete
+      delete_confirm: Are you sure you want to delete this?
+      reply: Reply
+    comment_form:
+      error_heading: 'An error occurred:'
+      guideline: Please keep comments respectful and constructive.
+      login_prompt_after: " to write a comment."
+      login_prompt_before: 'You need to '
+      submit: Post comment
+      title: Write a comment
+    comment_header:
+      title: Comments
+    comment_reply_form:
+      cancel: Cancel
+      error_heading: 'An error occurred:'
+      login_prompt_after: " to write a reply."
+      login_prompt_before: 'Please '
+      submit: Post reply
+      title: Write a reply
   errors:
     format: "%{attribute} %{message}"
     messages:
       form_errors:
         one: "%{count} error found"
         other: "%{count} errors found"
-
+  federails_layout:
+    brand_subtitle: Social
+    menu: Menu
+    nav:
+      feed: Feed
+      home: "← Home"
+      lookup: Find & Follow
+      my_profile: My Profile
+    nav_aria_label: Fediverse navigation
+    title: Ruby-News || Ruby AI News
+  followings:
+    follow_actions:
+      accept: Accept
+      cancel_request: Cancel request
+      follow: Follow
+      following: Following
+      incoming_following: "%{username} is following you."
+      incoming_request: "%{username} has sent a follow request."
+      logged_out: 'Sign in to follow. Or search from another Fediverse server: '
+      own_account: This is your account.
+      requested: Requested
+      unfollow: Unfollow
   helpers:
     placeholder:
       actor:
-        account: "user@domain.tld"
-        account_or_username: "user@domain.tld or username"
+        account: user@domain.tld
+        account_or_username: user@domain.tld or username
       comment:
-        body: "Write a comment..."
-        reply_body: "Write a reply..."
+        body: Write a comment...
+        reply_body: Write a reply...
       post:
-        body: "What's on your mind?"
-        reply_body: "Write a reply..."
+        body: What's on your mind?
+        reply_body: Write a reply...
       search:
-        articles: "Search..."
+        articles: Search...
       user:
-        email: "Email address"
-        new_password: "Enter new password"
-        new_password_confirmation: "Confirm new password"
-        password: "Password"
-        username: "Letters, numbers, underscores, dots"
-
-  activerecord:
-    attributes:
-      article:
-        url: "URL"
-      post:
-        body: "Comment body"
-      user:
-        avatar: "Profile picture"
-        current_password: "Current password"
-        email: "Email"
-        locale: "Display language"
-        name: "Name"
-        password: "Password"
-        password_confirmation: "Password confirmation"
-        username: "Username"
-    errors:
-      models:
-        user:
-          attributes:
-            name:
-              too_short: "must be at least 2 characters"
-              too_long: "must be 50 characters or fewer"
-
-  # UI labels
-  remember_me: "Remember me"
-  sign_in: "Sign in"
-  sign_out: "Sign out"
-  sign_up: "Sign up"
-  posts:
-    remote_attachment_only_body: "Attached media"
-    show:
-      title: "Post | Ruby-News"
-      back_to_feed: "Back to feed"
-    post_card:
-      reply_to: "Reply to %{name}"
-      linked_article: "Linked article"
-      unknown_author: "Unknown"
-      view_article: "View article"
-    post_form:
-      replying_to: "Replying to "
-      cancel: "Cancel"
-      reply_submit: "Reply"
-      post_submit: "Post"
-    reply_form:
-      char_unit: " chars"
-      cancel: "Cancel"
-      submit: "Reply"
-
-  articles:
-    index:
-      title: "Past Articles | Ruby-News"
-      heading: "Past Articles"
-      count: "%{count} articles"
-      item_list_name: "Ruby-News Past Articles"
-    others:
-      title: "Other News | Ruby-News"
-      heading: "Other News"
-      count: "%{count} articles"
-      item_list_name: "Ruby-News Other News"
-    tagged:
-      title: "#%{tag} Tagged Articles | Ruby-News"
-      count: "%{count} articles"
-      item_list_name: "Ruby-News #%{tag} Tagged Articles"
-    show:
-      author: "Author"
-      published_at: "Published"
-      date_format: "%B %d, %Y"
-      not_available: "N/A"
-      summary_heading: "Key Takeaways"
-      intro_heading: "Introduction"
-      conclusion_heading: "Conclusion"
-      related_heading: "Related Articles"
-      read_more: "Read more →"
-    new:
-      title: "Submit Article"
-      badge: "Article Intake"
-      heading: "Submit Article"
-      subtitle: "Enter a URL to start collecting and summarizing."
-      back_to_list: "Back to list"
-    form:
-      submit: "Submit"
-      errors_heading: "Could not save the article due to %{count} error(s):"
-
-  comments:
-    comment:
-      delete_confirm: "Are you sure you want to delete this?"
-      delete: "Delete"
-      reply: "Reply"
-    comment_header:
-      title: "Comments"
-    comment_form:
-      title: "Write a comment"
-      error_heading: "An error occurred:"
-      login_prompt_before: "You need to "
-      login_prompt_after: " to write a comment."
-      guideline: "Please keep comments respectful and constructive."
-      submit: "Post comment"
-    comment_reply_form:
-      title: "Write a reply"
-      error_heading: "An error occurred:"
-      login_prompt_before: "Please "
-      login_prompt_after: " to write a reply."
-      cancel: "Cancel"
-      submit: "Post reply"
-
-  layout:
-    site_name: "Ruby-News | Ruby AI News"
-    default_title: "Ruby-News | Ruby AI News"
-    default_description: "The latest Ruby and Rails news and trends in one place"
-    brand_subtitle: "Ruby AI News"
-    skip_to_content: "Skip to content"
-    loading: "Loading..."
-    rss_feed_title: "Ruby-News RSS Feed"
-    nav:
-      aria_label: "Main navigation"
-      menu_toggle: "Toggle menu"
-      open_main_menu: "Open main menu"
-      home: "Home"
-      past_articles: "Past Articles"
-      other_news: "Other News"
-      new_article: "Submit Article"
-    search:
-      aria_label: "Search articles"
-      submit: "Search"
-    footer:
-      mastodon: "Mastodon"
-      twitter: "Twitter/X"
-      rss: "RSS Feed"
-      slack: "Add to Slack"
-      discord: "Add to Discord"
-      privacy_policy: "Privacy Policy"
-      terms: "Terms of Service"
-
+        email: Email address
+        new_password: Enter new password
+        new_password_confirmation: Confirm new password
+        password: Password
+        username: Letters, numbers, underscores, dots
   home:
-    index:
-      title: "Ruby-News | AI News for Ruby & Rails Developers"
-      latest_news: "Latest News"
-      more_articles: "View more articles"
-      item_list_name: "Ruby-News Latest News"
     feature:
-      heading: "Featured News"
+      heading: Featured News
+    index:
+      item_list_name: Ruby-News Latest News
+      latest_news: Latest News
+      more_articles: View more articles
+      title: Ruby-News | AI News for Ruby & Rails Developers
     rss:
-      title: "Ruby-News || Ruby AI News"
-      description: "The latest Ruby and Rails news and trends in one place"
-      no_title: "Untitled"
-      no_summary: "No summary available"
-
-  tags_sidebar:
-    heading: "Tags"
-    empty: "No tags to display."
-
-  recent_comments_sidebar:
-    heading: "Recent Comments"
-    view_article: "View article"
-
-  users:
-    new:
-      title: "Sign Up"
-      heading: "Sign Up"
-      subtitle: "Create a new account."
-    edit:
-      title: "Edit Profile"
-      heading: "Edit Profile"
-      subtitle: "Update your account information."
-    password:
-      title: "Change Password"
-      heading: "Change Password"
-      subtitle: "Change your password."
-    show:
-      title: "Profile"
-      heading: "Profile"
-      subtitle: "Manage your personal information and settings."
-      edit: "Edit profile"
-      change_password: "Change password"
-    form:
-      edit_heading: "Edit Profile"
-      sign_up_heading: "Sign Up"
-      new_beginning: "New beginning"
-      avatar_hint: "Will be cropped to 400×400 as a square thumbnail and displayed publicly."
-      remove_avatar: "Remove current profile picture"
-      locale_auto: "Auto (browser setting)"
-      locale_options:
-        ko: "Korean"
-        ja: "Japanese"
-        en: "English"
-      optional_name_label: "Name (optional)"
-      change_password: "Change password"
-      back: "Back"
-      save_changes: "Save changes"
-      sign_up_submit: "Sign up"
-      avatar_alt_default: "Profile picture"
-    password_form:
-      back: "Back"
-      save: "Save password"
-    oauth_signup:
-      heading: "Finish OAuth signup"
-      subtitle: "Confirm the username you'll use and complete your signup."
-      submit: "Complete signup"
-      session_missing: "Your OAuth signup session has expired. Please sign in again."
-      duplicate_account: "This OAuth account is already linked."
-    omniauth_callbacks:
-      not_configured: "%{provider} login is not yet configured. Please contact the administrator."
-
-  sessions:
-    new:
-      title: "Sign In"
-      submit: "Sign in"
-      sign_up: "Sign up"
-      forgot_password: "Forgot your password?"
-      resend_confirmation: "Resend confirmation email?"
-      continue_with_google: "Continue with Google"
-      continue_with_apple: "Continue with Apple"
-      continue_with_github: "Continue with GitHub"
-
-  profiles:
-    show:
-      settings: "Settings"
-      feed: "Feed"
-      find_follow: "Find & Follow"
-      followers_suffix: " followers"
-      following_suffix: " following"
-    activity_tabs:
-      posts: "Posts"
-      comments: "Comments"
-      followers: "Followers"
-      following: "Following"
-      likes: "Likes"
-    follow_list:
-      followers: "Followers"
-      following: "Following"
-      empty_followers: "No followers yet."
-      empty_following: "Not following anyone yet."
-      accept: "Accept"
-      reject: "Reject"
-      requested: "Requested"
-      unfollow: "Unfollow"
-    comment_list:
-      empty: "No comments yet."
-    like_list:
-      empty: "No liked articles yet."
-    post_list:
-      empty: "No posts yet."
-
-  followings:
-    follow_actions:
-      own_account: "This is your account."
-      requested: "Requested"
-      following: "Following"
-      cancel_request: "Cancel request"
-      unfollow: "Unfollow"
-      follow: "Follow"
-      incoming_request: "%{username} has sent a follow request."
-      incoming_following: "%{username} is following you."
-      accept: "Accept"
-      logged_out: "Sign in to follow. Or search from another Fediverse server: "
-
-  activities:
-    feed:
-      title: "Feed | Ruby-News"
-      empty: "Nothing to show. Follow other users or write your first post!"
-      loading: "Loading..."
-
-  push_notifications:
-    prompt_modal:
-      title: "Notification Settings"
-      body_line1: "Get notified when someone replies to your comments"
-      body_line2: "by enabling browser notifications."
-      enable: "Enable"
-      later: "Maybe later"
-
-  federails_layout:
-    title: "Ruby-News || Ruby AI News"
-    brand_subtitle: "Social"
-    nav_aria_label: "Fediverse navigation"
-    menu: "Menu"
+      description: The latest Ruby and Rails news and trends in one place
+      no_summary: No summary available
+      no_title: Untitled
+      title: Ruby-News || Ruby AI News
+  layout:
+    brand_subtitle: Ruby AI News
+    default_description: The latest Ruby and Rails news and trends in one place
+    default_title: Ruby-News | Ruby AI News
+    footer:
+      discord: Add to Discord
+      mastodon: Mastodon
+      privacy_policy: Privacy Policy
+      rss: RSS Feed
+      slack: Add to Slack
+      terms: Terms of Service
+      twitter: Twitter/X
+    loading: Loading...
     nav:
-      home: "← Home"
-      feed: "Feed"
-      lookup: "Find & Follow"
-      my_profile: "My Profile"
-
+      aria_label: Main navigation
+      home: Home
+      menu_toggle: Toggle menu
+      new_article: Submit Article
+      open_main_menu: Open main menu
+      other_news: Other News
+      past_articles: Past Articles
+    rss_feed_title: Ruby-News RSS Feed
+    search:
+      aria_label: Search articles
+      submit: Search
+    site_name: Ruby-News | Ruby AI News
+    skip_to_content: Skip to content
   login_required:
-    title: "Sign in required"
-    message: "You need to sign in to write comments or join conversations."
-    go_to_login: "Go to sign in"
-
-  passwords:
-    new:
-      heading: "Forgot your password?"
-      submit: "Send reset email"
-    edit:
-      heading: "Set new password"
-      submit: "Save"
-
-  oauth:
-    result:
-      success_title: "%{provider} Connected"
-      failure_title: "%{provider} Connection Failed"
-      page_title: "%{title} | Ruby-News"
-      workspace: "Workspace"
-      server: "Server"
-      channel_connected: "%{channel} %{kind} connected successfully."
-      provider_connected: "%{provider} connected successfully."
-      failure_message: "An error occurred while connecting to %{provider}."
-      notification_guide_heading: "Notification Setup Guide"
-      webhook_configured: "%{provider} webhook has been configured. New article notifications will be sent to the selected channel automatically."
-      no_bot_required: "Notifications will be sent without any additional bot setup."
-      back_to_home: "Back to home"
-
+    go_to_login: Go to sign in
+    message: You need to sign in to write comments or join conversations.
+    title: Sign in required
   mailers:
     layout:
-      brand_subtitle: "Ruby AI News"
-      footer: "This email was sent for account verification."
-
-  actors:
+      brand_subtitle: Ruby AI News
+      footer: This email was sent for account verification.
+  oauth:
+    result:
+      back_to_home: Back to home
+      channel_connected: "%{channel} %{kind} connected successfully."
+      failure_message: An error occurred while connecting to %{provider}.
+      failure_title: "%{provider} Connection Failed"
+      no_bot_required: Notifications will be sent without any additional bot setup.
+      notification_guide_heading: Notification Setup Guide
+      page_title: "%{title} | Ruby-News"
+      provider_connected: "%{provider} connected successfully."
+      server: Server
+      success_title: "%{provider} Connected"
+      webhook_configured: "%{provider} webhook has been configured. New article notifications will be sent to the selected channel automatically."
+      workspace: Workspace
+  passwords:
+    edit:
+      heading: Set new password
+      submit: Save
+    new:
+      heading: Forgot your password?
+      submit: Send reset email
+  posts:
+    post_card:
+      linked_article: Linked article
+      reply_to: Reply to %{name}
+      unknown_author: Unknown
+      view_article: View article
+    post_form:
+      cancel: Cancel
+      post_submit: Post
+      reply_submit: Reply
+      replying_to: 'Replying to '
+    remote_attachment_only_body: Attached media
+    reply_form:
+      cancel: Cancel
+      char_unit: " chars"
+      submit: Reply
     show:
-      visit_profile: "Visit profile →"
-      back_to_lookup: "Back to Find & Follow"
-    gone:
-      message: "This account no longer exists."
-    lookup:
-      title: "Find & Follow"
-      heading: "Find & Follow"
-      subtitle: "Search for users by their Fediverse address."
-      account_label: "Account address"
-      submit: "Search"
+      back_to_feed: Back to feed
+      title: Post | Ruby-News
+  profiles:
+    activity_tabs:
+      comments: Comments
+      followers: Followers
+      following: Following
+      likes: Likes
+      posts: Posts
+    comment_list:
+      empty: No comments yet.
+    follow_list:
+      accept: Accept
+      empty_followers: No followers yet.
+      empty_following: Not following anyone yet.
+      followers: Followers
+      following: Following
+      reject: Reject
+      requested: Requested
+      unfollow: Unfollow
+    like_list:
+      empty: No liked articles yet.
+    post_list:
+      empty: No posts yet.
+    show:
+      feed: Feed
+      find_follow: Find & Follow
+      followers_suffix: " followers"
+      following_suffix: " following"
+      settings: Settings
+  push_notifications:
+    prompt_modal:
+      body_line1: Get notified when someone replies to your comments
+      body_line2: by enabling browser notifications.
+      enable: Enable
+      later: Maybe later
+      title: Notification Settings
+  recent_comments_sidebar:
+    heading: Recent Comments
+    view_article: View article
+  remember_me: Remember me
+  sessions:
+    new:
+      continue_with_apple: Continue with Apple
+      continue_with_github: Continue with GitHub
+      continue_with_google: Continue with Google
+      forgot_password: Forgot your password?
+      resend_confirmation: Resend confirmation email?
+      sign_up: Sign up
+      submit: Sign in
+      title: Sign In
+  sign_in: Sign in
+  sign_out: Sign out
+  sign_up: Sign up
+  tags_sidebar:
+    empty: No tags to display.
+    heading: Tags
+  users:
+    edit:
+      heading: Edit Profile
+      subtitle: Update your account information.
+      title: Edit Profile
+    form:
+      avatar_alt_default: Profile picture
+      avatar_hint: Will be cropped to 400×400 as a square thumbnail and displayed publicly.
+      back: Back
+      change_password: Change password
+      edit_heading: Edit Profile
+      locale_auto: Auto (browser setting)
+      locale_options:
+        en: English
+        ja: Japanese
+        ko: Korean
+      new_beginning: New beginning
+      optional_name_label: Name (optional)
+      remove_avatar: Remove current profile picture
+      save_changes: Save changes
+      sign_up_heading: Sign Up
+      sign_up_submit: Sign up
+    new:
+      heading: Sign Up
+      subtitle: Create a new account.
+      title: Sign Up
+    oauth_signup:
+      duplicate_account: This OAuth account is already linked.
+      heading: Finish OAuth signup
+      session_missing: Your OAuth signup session has expired. Please sign in again.
+      submit: Complete signup
+      subtitle: Confirm the username you'll use and complete your signup.
+    omniauth_callbacks:
+      not_configured: "%{provider} login is not yet configured. Please contact the administrator."
+    password:
+      heading: Change Password
+      subtitle: Change your password.
+      title: Change Password
+    password_form:
+      back: Back
+      save: Save password
+    show:
+      change_password: Change password
+      edit: Edit profile
+      heading: Profile
+      subtitle: Manage your personal information and settings.
+      title: Profile

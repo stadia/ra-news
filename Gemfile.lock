@@ -254,6 +254,8 @@ GEM
     herb (0.10.1-aarch64-linux-gnu)
     herb (0.10.1-arm64-darwin)
     herb (0.10.1-x86_64-linux-gnu)
+    highline (3.1.2)
+      reline
     honeybadger (6.6.1)
       logger
       ostruct
@@ -263,6 +265,18 @@ GEM
       domain_name (~> 0.5)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
+    i18n-tasks (1.1.2)
+      activesupport (>= 4.0.2)
+      ast (>= 2.1.0)
+      erubi
+      highline (>= 3.0.0)
+      i18n
+      parser (>= 3.2.2.1)
+      prism
+      rails-i18n
+      rainbow (>= 2.2.2, < 4.0)
+      ruby-progressbar (~> 1.8, >= 1.8.1)
+      terminal-table (>= 1.5.1)
     image_processing (2.0.1)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
@@ -751,6 +765,8 @@ GEM
       spoom (>= 1.7.9)
       thor (>= 1.2.0)
       tsort
+    terminal-table (4.0.0)
+      unicode-display_width (>= 1.1.1, < 4)
     thor (1.5.0)
     timeout (0.6.1)
     tsort (0.2.0)
@@ -829,6 +845,7 @@ DEPENDENCIES
   google-protobuf
   hairtrigger
   honeybadger
+  i18n-tasks (~> 1.1.2)
   image_processing (~> 2.0)
   importmap-rails
   inkmark

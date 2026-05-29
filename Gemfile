@@ -65,6 +65,7 @@ group :development, :test do
   # gem "steep", require: false
   gem "dotenv-rails"
   gem "faker"
+  gem "i18n-tasks", "~> 1.1.2"
   gem "minitest", "~> 6.0"
   gem "minitest-mock"
 
