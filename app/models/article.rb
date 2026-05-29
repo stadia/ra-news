@@ -51,10 +51,25 @@ class Article < ApplicationRecord
   has_one_attached :thumbnail
 
   # ── Scopes ───────────────────────────────────────────────────────────
+  # 하이브리드 전문 검색:
+  #   1) tsvector_content_tsearch(textsearch_ko, 'korean') — 한국어 형태소 + 한자
+  #   2) content LIKE(pg_bigm) — 한국어 사전이 못 잡는 일본어 가나 등 부분 일치 폴백
+  # 두 조건을 OR로 결합하고, 한국어 ts_rank를 1차 정렬(가나 전용 매치는 rank 0 →
+  # created_at 최신순으로 후순위)로 사용한다.
+  # LIKE는 gin_bigm_ops 인덱스를 타지만 ILIKE는 타지 않으므로 LIKE를 사용한다.
   scope :full_text_search_for, ->(term) do
-    joins(:pg_search_document).merge(
-      PgSearch.multisearch(term).where(searchable_type: self.name)
-    )
+    term = term.to_s.strip
+    next none if term.blank?
+
+    tsquery = "websearch_to_tsquery('korean', #{connection.quote(term)})"
+    like    = connection.quote("%#{sanitize_sql_like(term)}%")
+
+    joins(:pg_search_document)
+      .where(
+        "pg_search_documents.tsvector_content_tsearch @@ #{tsquery} " \
+        "OR pg_search_documents.content LIKE #{like}"
+      )
+      .order(Arel.sql("ts_rank(pg_search_documents.tsvector_content_tsearch, #{tsquery}) DESC"), created_at: :desc)
   end
   scope :related, -> { kept.where(is_related: true) }
   scope :unrelated, -> { where(is_related: false) }
