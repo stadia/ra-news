@@ -1,3 +1,4 @@
+---
 en:
   activerecord:
     errors:
@@ -5,26 +6,56 @@ en:
         user:
           attributes:
             email:
-              blank: "can't be blank"
-              taken: "has already been taken"
-              invalid: "is not a valid email format"
-            username:
-              blank: "can't be blank"
-              taken: "has already been taken"
-              too_short: "must be at least 2 characters"
-              too_long: "must be 30 characters or fewer"
+              blank: can't be blank
+              invalid: is not a valid email format
+              taken: has already been taken
             password:
-              blank: "can't be blank"
-              too_short: "must be at least 6 characters"
+              blank: can't be blank
+              too_short: must be at least 6 characters
             password_confirmation:
-              confirmation: "doesn't match password"
+              confirmation: doesn't match password
+            username:
+              blank: can't be blank
+              taken: has already been taken
+              too_long: must be 30 characters or fewer
+              too_short: must be at least 2 characters
   devise:
     confirmations:
+      already_confirmed: Already confirmed
       new:
-        title: "Email Confirmation"
-        submit: "Resend confirmation email"
-        email_placeholder: "Enter your email address"
+        email_placeholder: Enter your email address
+        submit: Resend confirmation email
+        title: Email Confirmation
+    failure:
+      unconfirmed: Unconfirmed
     mailer:
       confirmation_instructions:
-        title: "Email confirmation required"
-        message: "Click the link below to confirm your email:"
+        action: Action
+        greeting: Greeting
+        instruction: Instruction
+        message: 'Click the link below to confirm your email:'
+        title: Email confirmation required
+      email_changed:
+        greeting: Greeting
+        message: Message
+        message_unconfirmed: Message unconfirmed
+      password_change:
+        greeting: Greeting
+        message: Message
+      reset_password_instructions:
+        action: Action
+        greeting: Greeting
+        instruction: Instruction
+        instruction_2: Instruction 2
+        instruction_3: Instruction 3
+      unlock_instructions:
+        action: Action
+        greeting: Greeting
+        instruction: Instruction
+        message: Message
+    omniauth_callbacks:
+      failure: Failure
+      success: Success
+    registrations:
+      signed_up_but_unconfirmed: Signed up but unconfirmed
+      updated: Updated

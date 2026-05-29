@@ -1,3 +1,4 @@
+---
 ko:
   activerecord:
     errors:
@@ -5,26 +6,56 @@ ko:
         user:
           attributes:
             email:
-              blank: "을(를) 입력해주세요"
-              taken: "은(는) 이미 사용 중입니다"
-              invalid: "형식이 올바르지 않습니다"
-            username:
-              blank: "을(를) 입력해주세요"
-              taken: "은(는) 이미 사용 중입니다"
-              too_short: "은(는) 2자 이상이어야 합니다"
-              too_long: "은(는) 30자 이하여야 합니다"
+              blank: 을(를) 입력해주세요
+              invalid: 형식이 올바르지 않습니다
+              taken: 은(는) 이미 사용 중입니다
             password:
-              blank: "을(를) 입력해주세요"
-              too_short: "은(는) 6자 이상이어야 합니다"
+              blank: 을(를) 입력해주세요
+              too_short: 은(는) 6자 이상이어야 합니다
             password_confirmation:
-              confirmation: "이 일치하지 않습니다"
+              confirmation: 이 일치하지 않습니다
+            username:
+              blank: 을(를) 입력해주세요
+              taken: 은(는) 이미 사용 중입니다
+              too_long: 은(는) 30자 이하여야 합니다
+              too_short: 은(는) 2자 이상이어야 합니다
   devise:
     confirmations:
+      already_confirmed: Already confirmed
       new:
-        title: "이메일 확인"
-        submit: "확인 메일 재발송"
-        email_placeholder: "이메일 주소를 입력하세요"
+        email_placeholder: 이메일 주소를 입력하세요
+        submit: 확인 메일 재발송
+        title: 이메일 확인
+    failure:
+      unconfirmed: Unconfirmed
     mailer:
       confirmation_instructions:
-        title: "이메일 확인이 필요합니다"
-        message: "아래 링크를 클릭하여 이메일을 확인해주세요:"
+        action: Action
+        greeting: Greeting
+        instruction: Instruction
+        message: '아래 링크를 클릭하여 이메일을 확인해주세요:'
+        title: 이메일 확인이 필요합니다
+      email_changed:
+        greeting: Greeting
+        message: Message
+        message_unconfirmed: Message unconfirmed
+      password_change:
+        greeting: Greeting
+        message: Message
+      reset_password_instructions:
+        action: Action
+        greeting: Greeting
+        instruction: Instruction
+        instruction_2: Instruction 2
+        instruction_3: Instruction 3
+      unlock_instructions:
+        action: Action
+        greeting: Greeting
+        instruction: Instruction
+        message: Message
+    omniauth_callbacks:
+      failure: Failure
+      success: Success
+    registrations:
+      signed_up_but_unconfirmed: Signed up but unconfirmed
+      updated: Updated
