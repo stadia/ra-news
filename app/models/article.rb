@@ -28,7 +28,12 @@ class Article < ApplicationRecord
   # SQLite는 벡터 임베딩을 지원하지 않으므로 PostgreSQL에서만 활성화
   has_neighbors :embedding, dimensions: 1536
 
-  multisearchable against: [ :title, :title_ko, :summary_key, :summary_detail, :body ],
+  multisearchable against: [
+    :title, :title_ko, :title_ja,
+    :summary_key, :summary_key_ja,
+    :summary_detail, :summary_detail_ja,
+    :body, :summary_body, :summary_body_ja
+  ],
                    if: ->(record) { record.deleted_at.nil? }
 
   store_accessor :summary_detail, :introduction, :conclusion, prefix: :summary
