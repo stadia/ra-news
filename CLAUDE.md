@@ -9,7 +9,7 @@
 - Models: 23
 - Routes: 174 across 30 controllers
 - Async: 16 jobs
-- Migrations: 120 total, 0 pending
+- Migrations: 121 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
