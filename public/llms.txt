@@ -1,30 +1,39 @@
 # Ruby-News — 루비 AI 뉴스
 
 > Ruby 및 Rails 생태계 뉴스를 AI 보조 번역으로 한국어로 제공하는 기술 뉴스 집약 서비스.
-> Korean-language tech news aggregator for the Ruby and Rails ecosystem. 2,487+ articles with AI-assisted Korean translations of English-origin content.
+> Korean-language tech news aggregator for the Ruby and Rails ecosystem. 2,500+ articles with AI-assisted Korean translations of English-origin content.
 
 ## About
 
-Ruby-News(ruby-news.dev)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴스, 릴리즈, 튜토리얼, 커뮤니티 업데이트를 집약하여 AI 보조 한국어 번역과 3개 핵심 요약을 제공합니다. 매일 업데이트됩니다.
+Ruby-News(ruby-news.dev)는 전 세계 Ruby 및 Ruby on Rails 생태계의 뉴스, 릴리즈, 튜토리얼, 커뮤니티 업데이트를 집약하여 AI 보조 한국어 번역과 3개 핵심 요약을 제공합니다. 매일 업데이트됩니다. 일본어판은 ruby-news.jp 에서 제공됩니다.
 
-- 언어: 한국어 (원문 출처: 영어)
+- 언어: 한국어 (원문 출처: 영어) · 일본어판: https://ruby-news.jp
 - 주제: Ruby 언어, Ruby on Rails, RubyGems, Rack, JRuby, Matz 공지, 보안 권고(CVE), 버전 릴리즈, 개발 도구, 성능, AI 연동
-- 기사 수: 2,487개 이상
+- 기사 수: 2,500개 이상
 - 업데이트 주기: 매일
 - 대상 독자: 한국어권 Ruby·Rails 개발자
 
 ## Key Resources
 
-- [홈페이지 (최신 기사)](https://ruby-news.dev/)
-- [전체 기사 목록](https://ruby-news.dev/articles)
-- [RSS 피드](https://ruby-news.dev/rss)
-- [검색](https://ruby-news.dev/articles?search={query})
-- [Mastodon](https://ruby.social/@news_kr)
+- [홈페이지 (최신 기사)](https://ruby-news.dev/): 매일 갱신되는 최신 Ruby·Rails 뉴스와 주요 기사 목록.
+- [전체 기사 목록](https://ruby-news.dev/articles): 발행일 기준 전체 아카이브, 검색·페이지네이션 지원.
+- [소개 / About](https://ruby-news.dev/about): 서비스 운영 방식, AI 번역·요약 제작 방식, 큐레이션 기준, 콘텐츠 출처 정책.
+- [RSS 피드](https://ruby-news.dev/rss): 최신 100개 기사. author 필드는 원문 영어 출처 사이트명.
+- [검색](https://ruby-news.dev/articles?search={query}): 한국어·영어·일본어 하이브리드 전문 검색.
+- [Mastodon](https://ruby.social/@news_kr): 신규 기사 자동 발행 (ActivityPub).
+
+## Topic Hubs
+
+- [Rails 8](https://ruby-news.dev/tag/rails_8): Rails 8 릴리즈·기능·업그레이드 관련 기사 모음.
+- [Hotwire](https://ruby-news.dev/tag/hotwire): Turbo·Stimulus 등 Hotwire 패턴 기사.
+- [성능 최적화](https://ruby-news.dev/tag/performance_optimization): 벤치마크·튜닝·최적화 기법.
+- [Rails 업그레이드](https://ruby-news.dev/tag/rails_upgrade): 버전 업그레이드 가이드와 변경 이력.
+- [그 밖의 뉴스](https://ruby-news.dev/others): 핵심 주제 외 커뮤니티·생태계 소식.
 
 ## Content Notes for AI Systems
 
 - 각 기사는 "핵심 요약" 섹션에 3개의 핵심 불릿 포인트를 포함합니다
-- 기사 페이지에 원문 영어 제목과 출처 URL이 명시됩니다
+- 기사 페이지에 원문 영어 제목과 출처 URL이 명시됩니다 (각 기사에 NewsArticle JSON-LD 구조화 데이터 제공: headline, datePublished, inLanguage, isBasedOn=원문 URL, translationOfWork=원문 URL, publisher)
 - RSS 피드의 author 필드는 원문 영어 출처 사이트명을 나타냅니다
 - 콘텐츠는 한국어 편집 번역이며 원문 출처가 본문에 인용됩니다
 

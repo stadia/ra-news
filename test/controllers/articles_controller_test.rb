@@ -101,6 +101,25 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /#{Regexp.escape(article.title_ko)}/
   end
 
+  test "GET show renders NewsArticle JSON-LD with source attribution" do
+    article = articles(:ruby_article)
+
+    get article_path(article)
+
+    assert_response :success
+    schema = json_ld_schema("@type" => "NewsArticle")
+    assert_equal "NewsArticle", schema["@type"]
+    assert_equal article.title_ko, schema["headline"]
+    assert_equal article_url(article), schema["url"]
+    assert_equal article.url, schema["isBasedOn"]
+    assert_equal article.url, schema["translationOfWork"]
+    assert_equal "ko-KR", schema["inLanguage"]
+    assert_equal "Ruby-News", schema.dig("publisher", "name")
+    assert_equal "NewsMediaOrganization", schema.dig("publisher", "@type")
+    assert_equal article.site.name, schema.dig("author", "name")
+    assert_equal article.site.base_uri, schema.dig("author", "url")
+  end
+
   test "GET new renders intake form for authenticated user" do
     sign_in_as(users(:john))
 
@@ -176,5 +195,17 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     end
 
     queries
+  end
+
+  def json_ld_schema(expected)
+    json_ld_schemas.find do |schema|
+      expected.all? { |key, value| schema[key] == value }
+    end || flunk("Expected JSON-LD schema matching #{expected.inspect}")
+  end
+
+  def json_ld_schemas
+    assert_select("script[type='application/ld+json']").map do |node|
+      JSON.parse(node.children.first.content)
+    end
   end
 end

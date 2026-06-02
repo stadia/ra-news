@@ -145,6 +145,7 @@ ko:
     feature:
       heading: 주요 뉴스
     index:
+      heading: Ruby·Rails 개발자를 위한 한국어 AI 뉴스
       item_list_name: Ruby-News 최신 뉴스
       latest_news: 최신 뉴스
       more_articles: 지난 글 더 보기
@@ -156,7 +157,7 @@ ko:
       title: Ruby-News || 루비 AI 뉴스
   layout:
     brand_subtitle: 루비 AI 뉴스
-    default_description: 최신 Ruby, Rails 관련 뉴스와 트렌드를 한곳에서 만나보세요
+    default_description: AI 보조 한국어 번역과 3개 핵심 요약으로 최신 Ruby, Rails 뉴스를 매일 만나보세요
     default_title: Ruby-News | 루비 AI 뉴스
     footer:
       discord: Discord 추가

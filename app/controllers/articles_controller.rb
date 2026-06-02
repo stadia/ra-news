@@ -77,6 +77,8 @@ class ArticlesController < ApplicationController
         date_modified:  @article.updated_at.iso8601,
         in_language:    I18n.locale == :ja ? "ja-JP" : "ko-KR",
         is_based_on:    @article.url,
+        translation_of_work: @article.url,
+        author:         source_organization(@article),
         publisher: HomeController::PUBLISHER_SCHEMA
       }
       news_article_attrs[:image] = @og_image if @og_image
@@ -169,5 +171,17 @@ class ArticlesController < ApplicationController
 
     def normalized_search_term
       params[:search].to_s.strip.first(SEARCH_TERM_MAX_LENGTH).presence
+    end
+
+    def source_organization(article)
+      site = article.site
+      source_url = site&.base_uri.presence || site&.url.presence || article.url
+      source_name = site&.name.presence || article.host.presence || source_url
+
+      SchemaDotOrg::Organization.new(
+        name: source_name,
+        url: source_url,
+        logo: "#{source_url.delete_suffix("/")}/favicon.ico"
+      )
     end
 end

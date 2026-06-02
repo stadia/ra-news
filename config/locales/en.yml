@@ -145,6 +145,7 @@ en:
     feature:
       heading: Featured News
     index:
+      heading: Korean AI news for Ruby and Rails developers
       item_list_name: Ruby-News Latest News
       latest_news: Latest News
       more_articles: View more articles
@@ -156,7 +157,7 @@ en:
       title: Ruby-News || Ruby AI News
   layout:
     brand_subtitle: Ruby AI News
-    default_description: The latest Ruby and Rails news and trends in one place
+    default_description: Daily Ruby and Rails news with AI-assisted Korean translation and three-point summaries
     default_title: Ruby-News | Ruby AI News
     footer:
       discord: Add to Discord
