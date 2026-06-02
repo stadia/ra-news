@@ -101,6 +101,26 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /#{Regexp.escape(article.title_ko)}/
   end
 
+  test "GET show emits NewsArticle and BreadcrumbList JSON-LD in head" do
+    article = articles(:ruby_article)
+    get article_path(article)
+
+    assert_response :success
+
+    ld_blocks = css_select("script[type='application/ld+json']").map { |n| JSON.parse(n.text) }
+    news_article = ld_blocks.find { |b| b["@type"] == "NewsArticle" }
+    breadcrumbs  = ld_blocks.find { |b| b["@type"] == "BreadcrumbList" }
+
+    assert news_article, "expected a NewsArticle JSON-LD block, got types: #{ld_blocks.map { |b| b["@type"] }.inspect}"
+    assert_equal article.display_title, news_article["headline"]
+    assert_equal "ko-KR", news_article["inLanguage"]
+    assert_equal article.url, news_article["isBasedOn"]
+    assert_equal "Ruby-News", news_article.dig("publisher", "name")
+    assert news_article["datePublished"].present?, "datePublished should be set"
+
+    assert breadcrumbs, "expected a BreadcrumbList JSON-LD block"
+  end
+
   test "GET new renders intake form for authenticated user" do
     sign_in_as(users(:john))
 

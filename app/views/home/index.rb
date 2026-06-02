@@ -17,6 +17,10 @@ class Views::Home::Index < Views::Base
 
     render_item_list_schema
 
+    # Single semantic page heading for accessibility and search/AI topical clarity.
+    # Visually hidden so the existing featured-first layout is unchanged.
+    h1(class: "sr-only") { t("home.index.page_heading") }
+
     div(class: "flex flex-col lg:flex-row gap-6") do
       div(class: "flex-1 min-w-0") do
         if @featured_articles.any?

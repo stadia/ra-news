@@ -1,6 +1,12 @@
 # https://www.robotstxt.org/robotstxt.html
-
+#
+# Content-Signal (https://contentsignals.org) declares how this site's content
+# may be used by automated agents:
+#   search=yes    : indexing for search results (links + short excerpts) — allowed
+#   ai-input=yes  : real-time use in AI answers / RAG / grounding (citation) — allowed
+#   ai-train=no   : training or fine-tuning AI models — not allowed
 User-agent: *
+Content-Signal: search=yes,ai-input=yes,ai-train=no
 Disallow: /login
 Disallow: /logout
 Disallow: /signup
@@ -10,27 +16,19 @@ Disallow: /madmin
 Disallow: /jobs
 Disallow: /pg_reports
 
+# SEO crawler we don't want
 User-agent: SemrushBot
 Disallow: /
 
-# AI 인용 크롤러 (Perplexity 등) - 허용
+# AI 인용 크롤러 (Perplexity 등) - 허용 (AI 답변에 우리 콘텐츠가 인용되도록)
 User-agent: PerplexityBot
 Allow: /
 
-# AI 학습 데이터 크롤러 - 차단
-User-agent: GPTBot
-Disallow: /
-
-User-agent: CCBot
-Disallow: /
-
-User-agent: Google-Extended
-Disallow: /
-
+# AI 학습 데이터 크롤러 - 차단 (Content-Signal ai-train=no 와 일관).
+# 참고: GPTBot, CCBot, ClaudeBot, Google-Extended 등 주요 크롤러는 이미
+# Cloudflare Managed Robots 에서 차단되므로, 단일 출처 유지를 위해 여기서
+# 중복 선언하지 않는다. 관리 목록에 없는 에이전트만 아래에 명시한다.
 User-agent: anthropic-ai
-Disallow: /
-
-User-agent: ClaudeBot
 Disallow: /
 
 Sitemap: https://ruby-news.dev/sitemaps/sitemap.xml.gz

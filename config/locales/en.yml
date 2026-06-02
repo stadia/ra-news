@@ -147,7 +147,9 @@ en:
     index:
       item_list_name: Ruby-News Latest News
       latest_news: Latest News
+      meta_description: Daily AI-assisted summaries of Ruby & Rails ecosystem news — version releases, security advisories (CVEs), tutorials and conferences — each with a 3-point key summary and a link to the original source.
       more_articles: View more articles
+      page_heading: AI-Translated Ruby & Rails News for Developers
       title: Ruby-News | AI News for Ruby & Rails Developers
     rss:
       description: The latest Ruby and Rails news and trends in one place

@@ -18,10 +18,8 @@ class Views::Articles::Show < Views::Base
   def view_template
     content_for(:title, @article.display_title)
 
-    # @news_article, @breadcrumbs are set as instance variables in ArticlesController#show
-    # Insert schema.org JSON-LD into layout's head via content_for(:head)
-    content_for :head, raw(@news_article.to_s) if @news_article
-    content_for :head, raw(@breadcrumbs.to_s) if @breadcrumbs
+    # @news_article and @breadcrumbs (set in ArticlesController#show) are rendered as
+    # schema.org JSON-LD by Components::Layout#render_schema_org via view_context.
 
     div(class: "space-y-6 lg:space-y-8 max-w-6xl mx-auto", id: dom_id(@article)) do
       render_article_main

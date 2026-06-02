@@ -147,7 +147,9 @@ ja:
     index:
       item_list_name: Ruby-News 最新ニュース
       latest_news: 最新ニュース
+      meta_description: 世界中のRuby・RailsエコシステムのニュースをAI補助翻訳で毎日日本語要約。バージョンリリース、セキュリティ勧告(CVE)、チュートリアル、カンファレンス情報を3行の要点と元記事リンク付きでお届けします。
       more_articles: 過去の記事をもっと見る
+      page_heading: Ruby・Rails開発者のための日本語AIニュース
       title: Ruby-News | Ruby・Rails開発者のためのAIニュース
     rss:
       description: Ruby、Rails関連の最新ニュースとトレンドをまとめてお届けします

@@ -17,6 +17,7 @@ class HomeController < ApplicationController
 
   def index
     cacheable_page!
+    @page_description = t("home.index.meta_description")
     scope = article_scope
 
     @featured_articles = build_featured_articles(scope)

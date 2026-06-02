@@ -17,7 +17,9 @@ class Components::Layout < Components::Base
         render_rss_link
         csrf_meta_tags
         csp_meta_tag
-        yield(:head)
+        # Per-view <head> additions (e.g. page-specific meta tags). content_for is a
+        # Phlex value helper, so the buffer must be emitted explicitly with raw.
+        raw(content_for(:head)) if content_for?(:head)
         render_pwa_and_icons
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
@@ -173,10 +175,11 @@ class Components::Layout < Components::Base
 
   def render_schema_org
     vc = view_context
-    web_site = vc.instance_variable_get(:@web_site)
-    news_media = vc.instance_variable_get(:@news_media_organization)
-    raw(web_site.to_s) if web_site
-    raw(news_media.to_s) if news_media
+    # Controller instance variables (Phlex views don't inherit them, so read via view_context).
+    %i[@web_site @news_media_organization @news_article @breadcrumbs].each do |ivar|
+      schema = vc.instance_variable_get(ivar)
+      raw(schema.to_s) if schema
+    end
   end
 
   def render_skip_link
