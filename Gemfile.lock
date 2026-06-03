@@ -295,7 +295,7 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    json (2.19.7)
+    json (2.19.8)
     json-canonicalization (1.0.0)
     json-jwt (1.17.1)
       activesupport (>= 4.2)
@@ -329,7 +329,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
-    lexxy (0.9.15.alpha.3)
+    lexxy (0.9.15.alpha.4)
       rails (>= 8.0.2)
     link_header (0.0.8)
     lint_roller (1.1.0)
@@ -852,7 +852,7 @@ DEPENDENCIES
   jbuilder
   kramdown
   letter_opener
-  lexxy (~> 0.9.8.beta)
+  lexxy (~> 0.9.15.alpha)
   madmin (~> 2.3)
   meta-tags
   minitest (~> 6.0)
