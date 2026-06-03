@@ -70,7 +70,7 @@ class Components::Home::Feature < Components::Base
     link_to(article_path(article), class: "block overflow-hidden relative z-10") do
       image_tag(
         article.thumbnail.variant(resize_to_fill: size),
-        class: "w-full #{aspect} object-cover hover:scale-105 transition-transform duration-300",
+        class: "w-full #{aspect} object-cover",
         loading: eager ? "eager" : "lazy",
         decoding: eager ? "auto" : "async",
         fetchpriority: eager ? "high" : "auto",
