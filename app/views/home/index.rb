@@ -19,6 +19,8 @@ class Views::Home::Index < Views::Base
 
     div(class: "flex flex-col lg:flex-row gap-6") do
       div(class: "flex-1 min-w-0") do
+        h1(class: "sr-only") { t("home.index.heading") }
+
         if @featured_articles.any?
           render Components::Home::Feature.new(
             articles: @featured_articles,

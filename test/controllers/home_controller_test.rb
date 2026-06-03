@@ -11,6 +11,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
+    assert_select "h1.sr-only", text: /Ruby·Rails 개발자를 위한 한국어 AI 뉴스/
     assert_select "aside.recent-comments-sidebar"
     assert_select "aside.tags-sidebar"
     assert_select "a[href='#{tag_path(tags(:ruby_tag).name)}']", text: /#ruby/

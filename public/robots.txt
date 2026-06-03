@@ -1,4 +1,5 @@
 # https://www.robotstxt.org/robotstxt.html
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 
 User-agent: *
 Disallow: /login

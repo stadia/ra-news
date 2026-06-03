@@ -145,6 +145,7 @@ ja:
     feature:
       heading: 注目ニュース
     index:
+      heading: RubyとRails開発者向け韓国語AIニュース
       item_list_name: Ruby-News 最新ニュース
       latest_news: 最新ニュース
       more_articles: 過去の記事をもっと見る
