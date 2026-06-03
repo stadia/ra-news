@@ -2,7 +2,7 @@
 
 Rails 8.1.3 | Ruby 4.0.5
 
-- Database: static_parse — 27 tables
+- Database: static_parse — 28 tables
 - Models: 23
 - Routes: 174
 - Auth: Devise
@@ -11,7 +11,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
 - Components: 124 components, 124 Phlex
-- Performance: 2 issues detected
+- Performance: 4 issues detected
 
 **Global before_actions:** authenticate_user!
 

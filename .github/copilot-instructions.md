@@ -4,7 +4,7 @@
 Rails 8.1.3 | Ruby 4.0.5
 
 ## Stack
-- Database: PostgreSQL — 27 tables
+- Database: PostgreSQL — 28 tables
 - Models: 25
 - Routes: 174 across 51 controllers
 - Auth: Devise
@@ -13,7 +13,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
 - Components: 124 components, 124 Phlex
-- Performance: 2 issues detected
+- Performance: 4 issues detected
 - auth: devise, omniauth, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -77,6 +77,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - dry_rb
 - error_monitoring
 - zeitwerk
+- Single Table Inheritance (STI)
 - Soft deletes (paranoia/discard)
 - Tagging
 - Friendly URLs/slugs
