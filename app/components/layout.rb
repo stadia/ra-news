@@ -9,7 +9,7 @@ class Components::Layout < Components::Base
 
   def view_template
     doctype
-    html(lang: I18n.locale, class: "dark") do
+    html(lang: I18n.locale, class: "light theme-light") do
       head do
         render_theme_init_script
         render_analytics_scripts
@@ -52,7 +52,13 @@ class Components::Layout < Components::Base
       raw(<<~JS.html_safe)
         (function(){
           var d=document.documentElement;
-          if(localStorage.theme==='light'){d.classList.remove('dark');d.classList.add('light')}
+          var storedTheme=localStorage.theme;
+          var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark=storedTheme==='dark'||(storedTheme!=='light'&&prefersDark);
+          d.classList.toggle('dark',dark);
+          d.classList.toggle('light',!dark);
+          d.classList.toggle('theme-dark',dark);
+          d.classList.toggle('theme-light',!dark);
         })();
       JS
     end

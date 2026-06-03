@@ -10,6 +10,11 @@ body select {
     @apply rounded-md transition-all duration-200;
 }
 
+.theme-transition-disabled,
+.theme-transition-disabled * {
+    transition: none !important;
+}
+
 /* Mobile menu toggle accessibility improvements */
 .mobile-menu-toggle {
     position: absolute;

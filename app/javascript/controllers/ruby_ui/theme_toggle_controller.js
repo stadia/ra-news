@@ -5,26 +5,36 @@ export default class extends Controller {
     this.setTheme()
   }
 
-  setTheme() {
-    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      document.documentElement.classList.add('dark')
-      document.documentElement.classList.remove('light')
-    } else {
-      document.documentElement.classList.remove('dark')
-      document.documentElement.classList.add('light')
-    }
+  setTheme({ disableTransitions = false } = {}) {
+    if (disableTransitions) this.disableTransitionsForThemeChange()
+
+    const storedTheme = localStorage.theme
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const dark = storedTheme === 'dark' || (storedTheme !== 'light' && prefersDark)
+    document.documentElement.classList.toggle('dark', dark)
+    document.documentElement.classList.toggle('light', !dark)
+    document.documentElement.classList.toggle('theme-dark', dark)
+    document.documentElement.classList.toggle('theme-light', !dark)
   }
 
   setLightTheme() {
     // Whenever the user explicitly chooses light mode
     localStorage.theme = 'light'
-    this.setTheme()
+    this.setTheme({ disableTransitions: true })
   }
 
   setDarkTheme() {
     // Whenever the user explicitly chooses dark mode
     localStorage.theme = 'dark'
-    this.setTheme()
+    this.setTheme({ disableTransitions: true })
+  }
+
+  disableTransitionsForThemeChange() {
+    document.documentElement.classList.add('theme-transition-disabled')
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.documentElement.classList.remove('theme-transition-disabled')
+      })
+    })
   }
 }
