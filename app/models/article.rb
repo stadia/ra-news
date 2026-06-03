@@ -72,7 +72,7 @@ class Article < ApplicationRecord
       .order(Arel.sql("ts_rank(pg_search_documents.tsvector_content_tsearch, #{tsquery}) DESC"), created_at: :desc)
   end
   scope :related, -> { kept.where(is_related: true) }
-  scope :unrelated, -> { where(is_related: false) }
+  scope :unrelated, -> { kept.where(is_related: false) }
   scope :confirmed, -> { where("slug IS NOT NULL AND title_ko IS NOT NULL") }
 
   # TOAST 컬럼(body, summary_body, embedding) 제외 스코프
