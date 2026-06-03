@@ -1,6 +1,6 @@
-[![CI](https://github.com/stadia/ra-news/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/stadia/ra-news/actions/workflows/ci.yml)
+[![CI](https://github.com/stadia/ruby-news/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/stadia/ruby-news/actions/workflows/ci.yml)
 
-# Ruby-News (RA News)
+# Ruby-News
 
 Ruby-News는 **한국어로 Ruby/Rails 관련 뉴스를 모아 보여주는 AI 기반 뉴스 허브**입니다.  
 RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집하고, AI로 한국어 요약과 메타데이터를 생성해 제공합니다.

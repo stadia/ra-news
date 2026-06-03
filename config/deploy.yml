@@ -1,8 +1,8 @@
 # Name of your application. Used to uniquely configure containers.
-service: al_news
+service: ruby_news
 
 # Name of the container image.
-image: stadia/ra-news
+image: stadia/ruby-news
 
 # Deploy to these servers.
 servers:
@@ -53,7 +53,7 @@ env:
     # WEB_CONCURRENCY: 2
 
     # Match this to any external database server to configure Active Record correctly
-    # Use al_news-db for a db accessory server on same machine via local kamal docker network.
+    # Use ruby_news-db for a db accessory server on same machine via local kamal docker network.
     # DB_HOST: 192.168.0.2
 
     # Log everything from Rails

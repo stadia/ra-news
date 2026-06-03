@@ -24,6 +24,6 @@ acme_discord:
   name: Acme Discord
   webhook_url: https://discord.com/api/webhooks/EXAMPLE/REDACTED
   channel_id: DCNEWS1
-  channel_name: al-news
+  channel_name: ruby-news
   status: active
   last_verified_at: <%= 30.minutes.ago %>

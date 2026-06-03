@@ -69,7 +69,7 @@ class DiscordDeliveryServiceTest < ActiveSupport::TestCase
       article: @article,
       notification_channel: @channel,
       channel_id: "DCDEFAULT1",
-      channel_name: "al-news"
+      channel_name: "ruby-news"
     )
 
     assert_predicate delivery, :failed?

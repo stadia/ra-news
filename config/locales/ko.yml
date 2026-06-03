@@ -161,6 +161,7 @@ ko:
     default_title: Ruby-News | 루비 AI 뉴스
     footer:
       discord: Discord 추가
+      github: GitHub
       mastodon: Mastodon
       privacy_policy: 개인정보처리방침
       rss: RSS 피드

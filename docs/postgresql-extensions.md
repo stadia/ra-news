@@ -66,7 +66,7 @@ sudo make install USE_PGXS=1
 brew services restart postgresql@14
 
 # 6. 마이그레이션 실행
-cd /path/to/ra-news
+cd /path/to/ruby-news
 bin/rails db:migrate
 ```
 
@@ -184,7 +184,7 @@ brew services list | grep postgresql@14
 ### 5. 마이그레이션 실행
 
 ```bash
-cd /path/to/ra-news
+cd /path/to/ruby-news
 bin/rails db:migrate
 ```
 

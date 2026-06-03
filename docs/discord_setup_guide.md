@@ -1,6 +1,6 @@
 # Discord 앱 설정 가이드
 
-이 가이드는 AlNews 프로젝트에서 Discord 알림을 설정하는 전체 과정을 안내합니다.
+이 가이드는 Ruby-News 프로젝트에서 Discord 알림을 설정하는 전체 과정을 안내합니다.
 
 ## 목차
 
@@ -23,7 +23,7 @@
 ### 1.2 새 앱 생성
 
 1. **New Application** 버튼 클릭
-2. 앱 이름 입력 (예: `AlNews`)
+2. 앱 이름 입력 (예: `Ruby-News`)
 3. **Create** 버튼 클릭
 
 ---
@@ -33,7 +33,7 @@
 ### 2.1 기본 정보 설정
 
 1. **General Information** 탭에서 다음 정보 입력:
-   - Name: `AlNews`
+   - Name: `Ruby-News`
    - Description: `AI 뉴스 알림 봇`
    - Icon: 프로젝트 로고 업로드 (선택사항)
 

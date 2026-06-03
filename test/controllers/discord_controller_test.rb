@@ -55,7 +55,7 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
       "webhook" => {
         "guild_id" => "G_SETUP",
         "channel_id" => "C_PICK",
-        "name" => "al-news",
+        "name" => "ruby-news",
         "url" => "https://discord.com/api/webhooks/WH123/whtoken"
       }
     }.with_indifferent_access
@@ -64,14 +64,14 @@ class DiscordControllerTest < ActionDispatch::IntegrationTest
       get discord_oauth_callback_path, params: { code: "code", state: state }
     end
 
-    assert_redirected_to oauth_result_path(provider: "discord", success: "true", channel_name: "al-news")
+    assert_redirected_to oauth_result_path(provider: "discord", success: "true", channel_name: "ruby-news")
 
     channel = DiscordChannel.find_by!(remote_id: "G_SETUP")
 
     assert_equal "Setup Guild", channel.name
     assert_equal "https://discord.com/api/webhooks/WH123/whtoken", channel.webhook_url
     assert_equal "C_PICK", channel.channel_id
-    assert_equal "al-news", channel.channel_name
+    assert_equal "ruby-news", channel.channel_name
   end
 
   test "GET callback fails when oauth response has no webhook" do
