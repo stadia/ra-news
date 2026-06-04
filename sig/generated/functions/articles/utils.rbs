@@ -1,0 +1,12 @@
+# Generated from app/functions/articles/utils.rb with RBS::Inline
+
+module Articles
+  module Utils
+    # : (untyped value) -> untyped
+    def self.truncate_title: (untyped value) -> untyped
+
+    # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
+    # : (String url) -> bool
+    def self.should_ignore_url?: (String url) -> bool
+  end
+end

@@ -49,7 +49,6 @@ class RedditSiteJob < ApplicationJob
 
   #: (url: String, site: Site, post: Hash[String, untyped]) -> void
   def create_article(url:, site:, post:)
-    return if Article.exists?(origin_url: url)
     return if Articles::Utils.should_ignore_url?(url)
 
     begin
@@ -59,15 +58,14 @@ class RedditSiteJob < ApplicationJob
       return
     end
 
-    Article.create!(
+    article = Article.create_with(
       title: post["title"],
       url: url,
-      origin_url: url,
       published_at: post["created_utc"] ? Time.at(post["created_utc"]) : nil,
       site: site,
       user: User.first_bot
-    )
-    sleep 1
+    ).find_or_create_by!(origin_url: url)
+    sleep 1 if article.previously_new_record?
   rescue ActiveRecord::ActiveRecordError => e
     logger.error "Failed to create article for #{url}: #{e.message}"
   end

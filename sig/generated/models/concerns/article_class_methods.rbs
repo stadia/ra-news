@@ -3,13 +3,6 @@
 module ArticleClassMethods
   extend ActiveSupport::Concern
 
-  # : (untyped value) -> untyped
-  def truncate_title: (untyped value) -> untyped
-
-  # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
-  # : (String url) -> bool
-  def should_ignore_url?: (String url) -> bool
-
   # : (Hash[String, untyped]) -> Hash[Symbol, untyped]
   def from_activitypub_object: (Hash[String, untyped]) -> Hash[Symbol, untyped]
 

@@ -59,10 +59,6 @@ class Article < ApplicationRecord
   # : () -> void
   def clear_rss_cache: () -> void
 
-  def tracked_attribute_changes?: () -> untyped
-
-  def log_tracked_attribute_changes: () -> untyped
-
   def should_generate_new_friendly_id?: () -> bool
 
   def random_slug: () -> String

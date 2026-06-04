@@ -3,13 +3,15 @@ module RssHelper
 
   def create_article(attributes)
     logger.debug attributes
-    # Double check existence to prevent race conditions
-    return if Article.exists?(origin_url: attributes[:origin_url])
+    attributes = attributes.merge(user: User.find_by(username: "bot"))
 
-    attributes.merge!(user: User.find_by(username: "bot"))
-    Article.create!(attributes)
-    logger.info "Created article for #{attributes[:url]}"
-    sleep 1
+    article = Article.create_with(attributes)
+                     .find_or_create_by!(origin_url: attributes[:origin_url])
+
+    if article.previously_new_record?
+      logger.info "Created article for #{attributes[:url]}"
+      sleep 1
+    end
   rescue ActiveRecord::ActiveRecordError => e
     logger.error "Failed to create article for #{attributes[:url]}: #{e.message}"
   rescue StandardError => e

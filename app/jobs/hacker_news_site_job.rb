@@ -44,19 +44,15 @@ class HackerNewsSiteJob < ApplicationJob
 
       logger.debug item["text"]
 
-      # Skip if the item is not valid or already exists
-      next if Article.exists?(origin_url: item["url"])
-
-      # # Create a new article with the fetched data
-      Article.create(
+      # Create a new article with the fetched data (skips if it already exists)
+      article = Article.create_with(
         title: item["title"],
         url: item["url"],
-        origin_url: item["url"],
         published_at: Time.at(item["time"]),
         site: site,
         user: User.find_by(username: "bot")
-      )
-      sleep 1
+      ).find_or_create_by(origin_url: item["url"])
+      sleep 1 if article.previously_new_record?
     end
     site.update(last_checked_at: Time.zone.now)
   end
