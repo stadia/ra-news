@@ -12,3 +12,20 @@ end
 Rails.application.config.after_initialize do
   Federails::Actor.acts_as_liker unless Federails::Actor.method_defined?(:like!)
 end
+
+# threads.net의 ActivityPub inbox는 빈번하게 HTTP 500을 반환하므로 배달을 스킵한다.
+# Why: TemporaryDeliveryError가 누적되며 워커 큐를 채우고 알림이 시끄러워짐.
+module SkipBrokenInboxHosts
+  SKIPPED_HOSTS = %w[threads.net www.threads.net].freeze
+
+  def perform(activity, inbox_url = nil)
+    if inbox_url && SKIPPED_HOSTS.include?(URI(inbox_url).host)
+      Rails.logger.info { "Skipping federated delivery to #{inbox_url}" }
+      return
+    end
+    super
+  end
+end
+Rails.application.config.to_prepare do
+  Federails::NotifyInboxJob.prepend(SkipBrokenInboxHosts)
+end

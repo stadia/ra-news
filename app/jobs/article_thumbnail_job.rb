@@ -77,9 +77,9 @@ class ArticleThumbnailJob < ApplicationJob
     prompt = build_prompt(summary_key)
     message = ArticleImageAgent.new.ask(prompt)
 
-    attachment = message.content[:attachments].first
+    attachment = message.content.is_a?(Hash) ? message.content[:attachments]&.first : nil
     if attachment.blank?
-      logger.warn "ArticleThumbnailJob failed: no image generated for article #{article.id}"
+      logger.warn "ArticleThumbnailJob failed: no image generated for article #{article.id} (content=#{message.content.inspect.truncate(200)})"
       return
     end
 
