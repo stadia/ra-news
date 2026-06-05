@@ -67,10 +67,13 @@ module Madmin
     end
 
     def assign_top_hosts
-      @top_hosts = Article.kept.group(:host)
+      registered_hosts = Site.where.not(base_uri: [ nil, "" ]).pluck(:base_uri)
+                                 .filter_map { |uri| URI.parse(uri).host }
+      registered_hosts += [ "www.youtube.com", "github.com", "thoughtbot.com" ]
+      @top_hosts = Article.kept.where.not(host: registered_hosts)
+                           .group(:host)
                            .order("count_all DESC")
-                           .limit(15)
-                           .offset(5)
+                           .limit(30)
                            .count
     end
 

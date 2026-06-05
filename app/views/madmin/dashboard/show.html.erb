@@ -481,14 +481,14 @@
     <% end %>
   </div>
 
-  <!-- ══════════════ 호스트 순위 6–15위 ══════════════ -->
+  <!-- ══════════════ 미등록 호스트 순위 ══════════════ -->
   <div class="dash-card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
-    <div class="section-title">호스트 순위 <span style="font-weight:400; text-transform:none; letter-spacing:normal;">6–15위</span></div>
+    <div class="section-title">미등록 호스트 순위 <span style="font-weight:400; text-transform:none; letter-spacing:normal;">Site에 등록되지 않은 호스트</span></div>
     <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.5rem 1.5rem;">
       <% max_host_count = @top_hosts.values.first || 1 %>
       <% @top_hosts.each_with_index do |(host, count), idx| %>
         <div style="display:flex; align-items:center; gap:0.5rem; padding:0.3rem 0;">
-          <span style="width:1.5rem; text-align:right; font-size:0.7rem; color:#9ca3af; flex-shrink:0;"><%= idx + 6 %></span>
+          <span style="width:1.5rem; text-align:right; font-size:0.7rem; color:#9ca3af; flex-shrink:0;"><%= idx + 1 %></span>
           <span style="flex:1; font-size:0.8rem; color:#374151; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="<%= host %>"><%= host %></span>
           <span style="font-size:0.75rem; font-weight:600; color:#111827; flex-shrink:0;"><%= number_with_delimiter(count) %></span>
           <div style="width:60px; flex-shrink:0;">
