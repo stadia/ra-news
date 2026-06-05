@@ -48,6 +48,7 @@ class LikeTest < ActiveSupport::TestCase
     end
 
     activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+
     assert_equal @user.federails_actor, activity.actor
     assert_equal @local_post, activity.entity
     assert_includes Array(activity.to), Fediverse::Collection::PUBLIC
@@ -62,6 +63,7 @@ class LikeTest < ActiveSupport::TestCase
     end
 
     undo = Federails::Activity.where(action: "Undo").order(created_at: :desc).first
+
     assert_equal @user.federails_actor, undo.actor
     assert_instance_of Federails::Activity, undo.entity
     assert_equal "Like", undo.entity.action
@@ -73,6 +75,7 @@ class LikeTest < ActiveSupport::TestCase
     end
 
     activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+
     assert_equal @user.federails_actor, activity.actor
     assert_equal @local_article, activity.entity
   end
@@ -89,7 +92,7 @@ class LikeTest < ActiveSupport::TestCase
       Fediverse::Inbox::LikeHandler.handle_like(activity)
     end
 
-    assert @remote_actor.reload.likees_count.positive?
+    assert_predicate @remote_actor.reload.likees_count, :positive?
     assert_equal 1, @local_post.reload.likers_count
     assert Like.exists?(actor: @remote_actor, likeable: @local_post)
   end
@@ -115,6 +118,7 @@ class LikeTest < ActiveSupport::TestCase
       likeable_type: "Post",
       likeable_ids: [ @local_post.id ]
     )
+
     assert_equal [ @local_post.id ], ids
   end
 
@@ -125,8 +129,10 @@ class LikeTest < ActiveSupport::TestCase
   test "User#likes? reflects the underlying Like row" do
     refute @user.likes?(@local_post)
     @user.like!(@local_post)
+
     assert @user.likes?(@local_post)
     @user.unlike!(@local_post)
+
     refute @user.likes?(@local_post)
   end
 

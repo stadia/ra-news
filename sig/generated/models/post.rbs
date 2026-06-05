@@ -41,7 +41,7 @@ class Post < ApplicationRecord
 
   private
 
-  def create_federails_activity: (untyped action) -> untyped
+  def create_federails_activity: (untyped action, ?actor: untyped, ?to: untyped, ?cc: untyped) -> untyped
 
   # : () -> void
   def enqueue_reply_notification: () -> void
