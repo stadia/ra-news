@@ -117,12 +117,16 @@ class User < ApplicationRecord
 
   #: (ActiveRecord::Base likeable) -> Like
   def like!(likeable)
-    Like.find_or_create_by!(actor: federails_actor, likeable: likeable)
+    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+
+    Like.create_or_find_by!(actor: actor, likeable: likeable)
   end
 
   #: (ActiveRecord::Base likeable) -> void
   def unlike!(likeable)
-    Like.where(actor: federails_actor, likeable: likeable).destroy_all
+    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+
+    Like.where(actor: actor, likeable: likeable).destroy_all
   end
 
   #: (ActiveRecord::Base likeable) -> bool

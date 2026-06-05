@@ -14,7 +14,7 @@ module FederailsLikeable
     actor = resolve_federails_actor(actor_reference)
     return unless actor && persisted?
 
-    Like.find_or_create_by!(actor: actor, likeable: self)
+    Like.create_or_find_by!(actor: actor, likeable: self)
   end
 
   #: (untyped actor_reference) -> void

@@ -19,7 +19,11 @@ class ReplaceLikesPolymorphicLikerWithActor < ActiveRecord::Migration[8.1]
       WHERE liker_type = 'Federails::Actor'
     SQL
 
-    execute("DELETE FROM likes WHERE actor_id IS NULL")
+    unresolved = select_value("SELECT COUNT(*) FROM likes WHERE actor_id IS NULL").to_i
+    if unresolved.positive?
+      raise ActiveRecord::MigrationError,
+            "#{unresolved} likes could not be mapped to federails_actors. Resolve before migrating."
+    end
 
     change_column_null :likes, :actor_id, false
 
@@ -68,22 +72,42 @@ class ReplaceLikesPolymorphicLikerWithActor < ActiveRecord::Migration[8.1]
   private
 
   def reset_counters_for_likes
+    execute("UPDATE articles SET likers_count = 0")
     execute(<<~SQL.squish)
-      UPDATE articles SET likers_count = COALESCE((
-        SELECT COUNT(*) FROM likes WHERE likes.likeable_type = 'Article' AND likes.likeable_id = articles.id
-      ), 0)
+      UPDATE articles
+      SET likers_count = counts.cnt
+      FROM (
+        SELECT likeable_id, COUNT(*) AS cnt
+        FROM likes
+        WHERE likeable_type = 'Article'
+        GROUP BY likeable_id
+      ) counts
+      WHERE articles.id = counts.likeable_id
     SQL
 
+    execute("UPDATE posts SET likers_count = 0")
     execute(<<~SQL.squish)
-      UPDATE posts SET likers_count = COALESCE((
-        SELECT COUNT(*) FROM likes WHERE likes.likeable_type = 'Post' AND likes.likeable_id = posts.id
-      ), 0)
+      UPDATE posts
+      SET likers_count = counts.cnt
+      FROM (
+        SELECT likeable_id, COUNT(*) AS cnt
+        FROM likes
+        WHERE likeable_type = 'Post'
+        GROUP BY likeable_id
+      ) counts
+      WHERE posts.id = counts.likeable_id
     SQL
 
+    execute("UPDATE federails_actors SET likees_count = 0")
     execute(<<~SQL.squish)
-      UPDATE federails_actors SET likees_count = COALESCE((
-        SELECT COUNT(*) FROM likes WHERE likes.actor_id = federails_actors.id
-      ), 0)
+      UPDATE federails_actors
+      SET likees_count = counts.cnt
+      FROM (
+        SELECT actor_id, COUNT(*) AS cnt
+        FROM likes
+        GROUP BY actor_id
+      ) counts
+      WHERE federails_actors.id = counts.actor_id
     SQL
   end
 end

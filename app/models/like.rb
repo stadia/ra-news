@@ -9,8 +9,6 @@ class Like < ApplicationRecord
              polymorphic: true,
              counter_cache: :likers_count
 
-  validates :actor_id, uniqueness: { scope: [ :likeable_type, :likeable_id ] }
-
   after_create_commit  :publish_like_activity,  if: :local_actor?
   after_create_commit  :enqueue_thumbnail_generation
   after_destroy_commit :publish_undo_activity,  if: :local_actor?
@@ -20,7 +18,7 @@ class Like < ApplicationRecord
     def liked_ids_for(liker:, likeable_type:, likeable_ids:)
       actor = resolve_actor(liker)
       return [] unless actor
-      return [] if likeable_ids.empty?
+      return [] if likeable_ids.blank?
 
       where(
         actor_id: actor.id,

@@ -241,8 +241,9 @@ class Article < ApplicationRecord
     User.first_bot
   end
 
+  #: (String action, ?actor: (Federails::Actor)?, ?to: untyped, ?cc: untyped) -> void
   def create_federails_activity(action, actor: nil, to: nil, cc: nil)
-    actor ||= federails_actor
+    actor ||= federails_actor || bot_user&.federails_actor
     return if actor.blank?
 
     if action == "Update"
