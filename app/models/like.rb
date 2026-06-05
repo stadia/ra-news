@@ -1,45 +1,77 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class Like < Socialization::ActiveRecordStores::Like
-  after_like :handle_after_like
-  after_unlike :publish_federated_unlike
+class Like < ApplicationRecord
+  belongs_to :actor,
+             class_name: "Federails::Actor",
+             counter_cache: :likees_count
+  belongs_to :likeable,
+             polymorphic: true,
+             counter_cache: :likers_count
+
+  validates :actor_id, uniqueness: { scope: [ :likeable_type, :likeable_id ] }
+
+  after_create_commit  :publish_like_activity,  if: :local_actor?
+  after_create_commit  :enqueue_thumbnail_generation
+  after_destroy_commit :publish_undo_activity,  if: :local_actor?
 
   class << self
-    #: (User?, String, Array[Integer]) -> Array[Integer]
+    #: (liker: (User | Federails::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
     def liked_ids_for(liker:, likeable_type:, likeable_ids:)
-      return [] unless liker
+      actor = resolve_actor(liker)
+      return [] unless actor
       return [] if likeable_ids.empty?
 
       where(
-        liker:,
-        likeable_type:,
+        actor_id: actor.id,
+        likeable_type: likeable_type,
         likeable_id: likeable_ids
       ).pluck(:likeable_id)
     end
 
-    #: (User, ActiveRecord::Base) -> void
-    def handle_after_like(liker, likeable)
-      publish_federated_like(liker, likeable)
-      enqueue_thumbnail_generation(liker, likeable)
+    #: (untyped) -> Federails::Actor?
+    def resolve_actor(liker)
+      case liker
+      when nil
+        nil
+      when Federails::Actor
+        liker
+      else
+        liker.try(:federails_actor)
+      end
     end
+  end
 
-    #: (User, ActiveRecord::Base) -> void
-    def publish_federated_like(liker, likeable)
-      LikeFederationService.publish_like(liker:, likeable:)
-    end
+  private
 
-    #: (User, ActiveRecord::Base) -> void
-    def enqueue_thumbnail_generation(liker, likeable)
-      return unless likeable.is_a?(Article)
-      return if likeable.thumbnail.attached?
+  def local_actor?
+    actor&.local?
+  end
 
-      ArticleThumbnailJob.perform_later(likeable.id)
-    end
+  def publish_like_activity
+    return unless federatable_likeable?
 
-    #: (User, ActiveRecord::Base) -> void
-    def publish_federated_unlike(liker, likeable)
-      LikeFederationService.publish_unlike(liker:, likeable:)
-    end
+    likeable.like!(actor: actor)
+  end
+
+  def publish_undo_activity
+    return unless federatable_likeable?
+
+    like_activity = Federails::Activity
+      .where(actor: actor, action: "Like", entity: likeable)
+      .order(created_at: :desc)
+      .first
+    like_activity&.undo!
+  end
+
+  def enqueue_thumbnail_generation
+    return unless likeable.is_a?(Article)
+    return if likeable.thumbnail.attached?
+
+    ArticleThumbnailJob.perform_later(likeable.id)
+  end
+
+  def federatable_likeable?
+    likeable.is_a?(Federails::DataEntity)
   end
 end

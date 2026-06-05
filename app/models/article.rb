@@ -22,7 +22,6 @@ class Article < ApplicationRecord
 
   # ── Framework macros ─────────────────────────────────────────────────
   self.discard_column = :deleted_at
-  acts_as_likeable
   acts_as_taggable_on :tags
 
   # SQLite는 벡터 임베딩을 지원하지 않으므로 PostgreSQL에서만 활성화
@@ -242,18 +241,12 @@ class Article < ApplicationRecord
     User.first_bot
   end
 
-  #: (String action) -> void
-  def create_federails_activity(action)
-    ensure_federails_configuration!
-    return unless local_federails_entity? && send(federails_data_configuration[:should_federate_method])
-
-    actor = federails_actor
+  def create_federails_activity(action, actor: nil, to: nil, cc: nil)
+    actor ||= federails_actor
     return if actor.blank?
 
     if action == "Update"
-      unless Federails::Activity.exists?(entity: self, action: "Create")
-        action = "Create"
-      else
+      if Federails::Activity.exists?(entity: self, action: "Create")
         logger.info do
           {
             message: "[Federation] Skipping repeated Article update activity",
@@ -263,8 +256,10 @@ class Article < ApplicationRecord
         end
         return
       end
+      action = "Create"
     end
-    Federails::Activity.create!(actor:, action:, entity: self)
+
+    super(action, actor: actor, to: to, cc: cc)
   end
 
   #: () -> void

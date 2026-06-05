@@ -264,12 +264,12 @@ class ArticleTest < ActiveSupport::TestCase
       local: false
     )
 
-    assert_difference -> { Like.where(liker: actor, likeable: @article).count }, 1 do
-      @article.send(:apply_like, actor.federated_url)
+    assert_difference -> { Like.where(actor: actor, likeable: @article).count }, 1 do
+      @article.send(:apply_remote_like, actor.federated_url)
     end
 
-    assert_difference -> { Like.where(liker: actor, likeable: @article).count }, -1 do
-      @article.send(:apply_unlike, actor.federated_url)
+    assert_difference -> { Like.where(actor: actor, likeable: @article).count }, -1 do
+      @article.send(:apply_remote_unlike, actor.federated_url)
     end
   end
 
