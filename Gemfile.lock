@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: faf0090f0bbfa9607932204d04e0bc682c9f6052
+  revision: 8d48ff503a7428dd5d812d074f9e5e9c0ddf00c8
   specs:
     federails (0.8.0)
       alba (~> 3.0)

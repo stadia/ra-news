@@ -80,6 +80,14 @@ class LikeTest < ActiveSupport::TestCase
     assert_equal @local_article, activity.entity
   end
 
+  test "local user liking an article without a federation URL does not create an outbound activity" do
+    @local_article.update_columns(title_ko: nil, deleted_at: Time.current)
+
+    assert_no_difference("Federails::Activity.where(action: 'Like').count") do
+      @user.like!(@local_article)
+    end
+  end
+
   test "local user liking a remote post creates an outbound Like activity" do
     assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
       @user.like!(@remote_post)
