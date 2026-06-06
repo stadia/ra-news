@@ -13,6 +13,7 @@ class Post < ApplicationRecord
   include HtmlSanitizable
   include Federails::DataEntity
   include FederailsLikeable
+  include FederailsBoostable
 
   # ── Framework Macros ─────────────────────────────────────────────────
   acts_as_nested_set
@@ -90,6 +91,11 @@ class Post < ApplicationRecord
   #: () -> Integer
   def likes_count
     likers_count.to_i
+  end
+
+  #: () -> Integer
+  def boosts_count
+    boosters_count.to_i
   end
 
   #: () -> bool
