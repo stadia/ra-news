@@ -1,18 +1,18 @@
 <!-- BEGIN rails-ai-context -->
-# AlNews — Copilot Context
+# RubyNews — Copilot Context
 
 Rails 8.1.3 | Ruby 4.0.5
 
 ## Stack
-- Database: PostgreSQL — 28 tables
-- Models: 25
-- Routes: 174 across 51 controllers
+- Database: PostgreSQL — 29 tables
+- Models: 23
+- Routes: 179 across 52 controllers
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 124 components, 124 Phlex
+- Components: 125 components, 125 Phlex
 - Performance: 4 issues detected
 - auth: devise, omniauth, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
@@ -29,16 +29,17 @@ Rails 8.1.3 | Ruby 4.0.5
 - validation: dry-monads
 - utilities: nokogiri, faraday, rest-client
 
-## Models (25)
+## Models (23)
 - **ActsAsTaggableOn::Tag** — has_many :taggings
 - **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
 - **Article** — has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
+- **Boost** — belongs_to :actor, belongs_to :boostable
 - **DiscordChannel** — has_many :notification_deliveries
 - **DiscordDelivery** — belongs_to :article, belongs_to :notification_channel
 - **Federails::Actor** — belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
 - **Federails::Following** — belongs_to :actor, belongs_to :target_actor, has_many :activities
 - **JwtDenylist**
-- **Like** — belongs_to :liker, belongs_to :likeable
+- **Like** — belongs_to :actor, belongs_to :likeable
 - **NotificationChannel** — has_many :notification_deliveries
 - **NotificationDelivery** — belongs_to :article, belongs_to :notification_channel
 - **OauthAccount** — belongs_to :user
@@ -50,9 +51,6 @@ Rails 8.1.3 | Ruby 4.0.5
 - **Site** — has_many :articles
 - **SlackChannel** — has_many :notification_deliveries
 - **SlackDelivery** — belongs_to :article, belongs_to :notification_channel
-- **Socialization::ActiveRecordStores::Follow** — belongs_to :follower, belongs_to :followable
-- **Socialization::ActiveRecordStores::Like** — belongs_to :liker, belongs_to :likeable
-- **Socialization::ActiveRecordStores::Mention** — belongs_to :mentioner, belongs_to :mentionable
 - **Tag** — has_many :taggings
 - **User** — has_one :avatar_attachment, has_one :avatar_blob, has_many :push_subscriptions, has_many :articles, has_many :posts, has_many :refresh_tokens, has_many :oauth_accounts, has_one :federails_actor
 
@@ -78,6 +76,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - error_monitoring
 - zeitwerk
 - Single Table Inheritance (STI)
+- Polymorphic associations
 - Soft deletes (paranoia/discard)
 - Tagging
 - Friendly URLs/slugs
