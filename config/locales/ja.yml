@@ -233,6 +233,7 @@ ja:
       title: ポスト | Ruby-News
   profiles:
     activity_tabs:
+      boosts: ブースト
       comments: コメント
       followers: フォロワー
       following: フォロー中
@@ -249,6 +250,8 @@ ja:
       reject: 拒否
       requested: リクエスト中
       unfollow: フォロー解除
+    boost_list:
+      empty: まだブーストした記事がありません。
     like_list:
       empty: まだいいねした記事がありません。
     post_list:

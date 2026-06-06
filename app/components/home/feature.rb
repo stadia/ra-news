@@ -6,9 +6,10 @@ class Components::Home::Feature < Components::Base
   include Phlex::Rails::Helpers::ImageTag
   include PhlexIcons
 
-  def initialize(articles:, liked_article_ids: [])
+  def initialize(articles:, liked_article_ids: [], boosted_article_ids: [])
     @articles = articles
     @liked_article_ids = liked_article_ids
+    @boosted_article_ids = boosted_article_ids
   end
 
   def view_template
@@ -114,6 +115,7 @@ class Components::Home::Feature < Components::Base
         render Components::Articles::ArticleUser.new(article: article)
       end
       render Components::Likes::Button.new(likeable: article, liked: @liked_article_ids.include?(article.id))
+      render Components::Boosts::Button.new(boostable: article, boosted: @boosted_article_ids.include?(article.id))
       span(class: "inline-flex items-center") do
         Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         plain article.posts_count.to_s

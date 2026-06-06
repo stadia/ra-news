@@ -22,6 +22,7 @@ class HomeController < ApplicationController
     @featured_articles = build_featured_articles(scope)
     @articles = build_recent_articles(scope, excluded_ids: @featured_articles.map(&:id))
     @liked_article_ids = liked_article_ids_for(@articles, @featured_articles)
+    @boosted_article_ids = boosted_article_ids_for(@articles, @featured_articles)
     @news_media_organization = PUBLISHER_SCHEMA
     @recent_comments = recent_comments
     @sidebar_tags = sidebar_tags
@@ -30,7 +31,8 @@ class HomeController < ApplicationController
       featured_articles: @featured_articles,
       recent_comments: @recent_comments,
       sidebar_tags: @sidebar_tags,
-      liked_article_ids: @liked_article_ids
+      liked_article_ids: @liked_article_ids,
+      boosted_article_ids: @boosted_article_ids
     )
   end
 
@@ -111,6 +113,14 @@ class HomeController < ApplicationController
       liker: current_user,
       likeable_type: "Article",
       likeable_ids: (articles + featured_articles).map(&:id)
+    )
+  end
+
+  def boosted_article_ids_for(articles, featured_articles)
+    Boost.boosted_ids_for(
+      booster: current_user,
+      boostable_type: "Article",
+      boostable_ids: (articles + featured_articles).map(&:id)
     )
   end
 

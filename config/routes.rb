@@ -37,9 +37,11 @@ Rails.application.routes.draw do
   resource :push_subscription, only: %i[ create destroy ]
   resources :posts, only: [ :show, :create ] do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
+    resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Post" }
   end
   resources :articles, only: %i[index show new create] do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Article" }
+    resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Article" }
     resources :posts, only: %i[create destroy]
   end
 
@@ -82,6 +84,7 @@ Rails.application.routes.draw do
   get "/@:username/posts",    to: "profiles#posts",    as: :user_profile_posts, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/comments", to: "profiles#comments", as: :user_profile_comments, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/likes",    to: "profiles#likes",    as: :user_profile_likes, format: false, constraints: { username: /[^\/]+/ }
+  get "/@:username/boosts",   to: "profiles#boosts",   as: :user_profile_boosts, format: false, constraints: { username: /[^\/]+/ }
   # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
   direct :user_profile do |user|
     # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.

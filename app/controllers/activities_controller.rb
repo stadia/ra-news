@@ -33,8 +33,13 @@ class ActivitiesController < ApplicationController
       likeable_type: "Post",
       likeable_ids: @posts.map(&:id)
     )
+    @boosted_post_ids = Boost.boosted_ids_for(
+      booster: current_user,
+      boostable_type: "Post",
+      boostable_ids: @posts.map(&:id)
+    )
 
-    render Views::Activities::Feed.new(posts: @posts, pagy: @pagy, liked_post_ids: @liked_post_ids)
+    render Views::Activities::Feed.new(posts: @posts, pagy: @pagy, liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids)
   end
 
   private

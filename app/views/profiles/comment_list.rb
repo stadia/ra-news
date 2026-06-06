@@ -4,10 +4,11 @@ class Views::Profiles::CommentList < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::TurboFrameTag
 
-  def initialize(user:, posts:, pagy:, embedded: false)
+  def initialize(user:, posts:, pagy:, boosted_post_ids: [], embedded: false)
     @user = user
     @posts = posts
     @pagy = pagy
+    @boosted_post_ids = boosted_post_ids
     @embedded = embedded
   end
 
@@ -36,7 +37,10 @@ class Views::Profiles::CommentList < Views::Base
       div(class: "flex flex-col gap-4") do
         div(class: "flex flex-col gap-3") do
           @posts.each do |post|
-            render Components::Posts::PostCard.new(post: post)
+            render Components::Posts::PostCard.new(
+              post: post,
+              boosted: @boosted_post_ids.include?(post.id)
+            )
           end
         end
         render Components::Pagination.new(pagy: @pagy)

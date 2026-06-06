@@ -104,6 +104,7 @@ class Views::Articles::Show < Views::Base
         end
 
         render Components::Likes::Button.new(likeable: @article)
+        render Components::Boosts::Button.new(boostable: @article)
       end
 
       div(class: "mt-6 p-4 bg-surface-muted rounded-lg") do

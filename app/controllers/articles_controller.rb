@@ -24,7 +24,8 @@ class ArticlesController < ApplicationController
       articles: @articles,
       sidebar_tags: sidebar_tags,
       search: search,
-      liked_article_ids: liked_article_ids(@articles)
+      liked_article_ids: liked_article_ids(@articles),
+      boosted_article_ids: boosted_article_ids(@articles)
     )
   end
 
@@ -37,7 +38,8 @@ class ArticlesController < ApplicationController
       articles: @articles,
       sidebar_tags: sidebar_tags,
       search: params[:search],
-      liked_article_ids: liked_article_ids(@articles)
+      liked_article_ids: liked_article_ids(@articles),
+      boosted_article_ids: boosted_article_ids(@articles)
     )
   end
 
@@ -51,7 +53,8 @@ class ArticlesController < ApplicationController
       articles: @articles,
       tag: keyword,
       sidebar_tags: sidebar_tags,
-      liked_article_ids: liked_article_ids(@articles)
+      liked_article_ids: liked_article_ids(@articles),
+      boosted_article_ids: boosted_article_ids(@articles)
     )
   end
 
@@ -160,6 +163,14 @@ class ArticlesController < ApplicationController
         liker: current_user,
         likeable_type: "Article",
         likeable_ids: articles.map(&:id)
+      )
+    end
+
+    def boosted_article_ids(articles)
+      Boost.boosted_ids_for(
+        booster: current_user,
+        boostable_type: "Article",
+        boostable_ids: articles.map(&:id)
       )
     end
 

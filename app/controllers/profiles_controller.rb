@@ -32,6 +32,7 @@ class ProfilesController < ApplicationController
         .order(created_at: :desc)
     )
     @liked_post_ids = liked_ids_for_posts(@posts)
+    @boosted_post_ids = boosted_ids_for_posts(@posts)
     render_activity_page(:posts)
   end
 
@@ -41,6 +42,7 @@ class ProfilesController < ApplicationController
         .includes(:user, :federails_actor, :article, :tags)
         .order(created_at: :desc)
     )
+    @boosted_post_ids = boosted_ids_for_posts(@posts)
     render_activity_page(:comments)
   end
 
@@ -68,6 +70,30 @@ class ProfilesController < ApplicationController
     render_activity_page(:likes)
   end
 
+  def boosts
+    unless current_user == @user
+      redirect_to(user_profile_base_path(username: @user.username),
+                  alert: "본인만 볼 수 있습니다") and return
+    end
+
+    boosts = Boost.where(actor: @user.federails_actor, boostable_type: %w[Article Post])
+                  .order(created_at: :desc)
+    @pagy, page_boosts = pagy(boosts)
+
+    article_ids = page_boosts.select { |b| b.boostable_type == "Article" }.map(&:boostable_id)
+    post_ids = page_boosts.select { |b| b.boostable_type == "Post" }.map(&:boostable_id)
+
+    articles_by_id = Article.kept.where(id: article_ids)
+                            .includes(:user, :site, :tags).index_by(&:id)
+    posts_by_id = Post.where(id: post_ids)
+                      .includes(:user, :federails_actor, :article, :tags).index_by(&:id)
+
+    @boostables = page_boosts.map { |b|
+      b.boostable_type == "Article" ? articles_by_id[b.boostable_id] : posts_by_id[b.boostable_id]
+    }.compact
+    render_activity_page(:boosts)
+  end
+
   private
 
     def set_user
@@ -80,7 +106,8 @@ class ProfilesController < ApplicationController
         if turbo_frame_request?
           render Views::Profiles::PostList.new(
             user: @user, posts: @posts, pagy: @pagy,
-            liked_post_ids: @liked_post_ids
+            liked_post_ids: @liked_post_ids,
+            boosted_post_ids: @boosted_post_ids
           )
         else
           render_show_with_activity(active_tab: :posts)
@@ -88,7 +115,8 @@ class ProfilesController < ApplicationController
       when :comments
         if turbo_frame_request?
           render Views::Profiles::CommentList.new(
-            user: @user, posts: @posts, pagy: @pagy
+            user: @user, posts: @posts, pagy: @pagy,
+            boosted_post_ids: @boosted_post_ids
           )
         else
           render_show_with_activity(active_tab: :comments)
@@ -100,6 +128,14 @@ class ProfilesController < ApplicationController
           )
         else
           render_show_with_activity(active_tab: :likes)
+        end
+      when :boosts
+        if turbo_frame_request?
+          render Views::Profiles::BoostList.new(
+            user: @user, boostables: @boostables, pagy: @pagy
+          )
+        else
+          render_show_with_activity(active_tab: :boosts)
         end
       when :followers, :following
         if turbo_frame_request?
@@ -122,8 +158,10 @@ class ProfilesController < ApplicationController
         active_tab: active_tab,
         posts: @posts,
         likeables: @likeables,
+        boostables: @boostables,
         pagy: @pagy,
         liked_post_ids: @liked_post_ids,
+        boosted_post_ids: @boosted_post_ids,
         follow_actors: @follow_actors
       )
     end
@@ -140,6 +178,14 @@ class ProfilesController < ApplicationController
         liker: current_user,
         likeable_type: "Post",
         likeable_ids: posts.map(&:id)
+      )
+    end
+
+    def boosted_ids_for_posts(posts)
+      Boost.boosted_ids_for(
+        booster: current_user,
+        boostable_type: "Post",
+        boostable_ids: posts.map(&:id)
       )
     end
 end
