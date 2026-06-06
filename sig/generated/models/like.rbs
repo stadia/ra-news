@@ -1,18 +1,21 @@
 # Generated from app/models/like.rb with RBS::Inline
 
-class Like < Socialization::ActiveRecordStores::Like
-  # : (User?, String, Array[Integer]) -> Array[Integer]
-  def self.liked_ids_for: (User?, String, Array[Integer]) -> Array[Integer]
+class Like < ApplicationRecord
+  # : (liker: (User | Federails::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
+  def self.liked_ids_for: (liker: (User | Federails::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
 
-  # : (User, ActiveRecord::Base) -> void
-  def self.handle_after_like: (User, ActiveRecord::Base) -> void
+  # : (untyped) -> Federails::Actor?
+  def self.resolve_actor: (untyped) -> Federails::Actor?
 
-  # : (User, ActiveRecord::Base) -> void
-  def self.publish_federated_like: (User, ActiveRecord::Base) -> void
+  private
 
-  # : (User, ActiveRecord::Base) -> void
-  def self.enqueue_thumbnail_generation: (User, ActiveRecord::Base) -> void
+  def local_actor?: () -> untyped
 
-  # : (User, ActiveRecord::Base) -> void
-  def self.publish_federated_unlike: (User, ActiveRecord::Base) -> void
+  def publish_like_activity: () -> untyped
+
+  def publish_undo_activity: () -> untyped
+
+  def enqueue_thumbnail_generation: () -> untyped
+
+  def federatable_likeable?: () -> untyped
 end

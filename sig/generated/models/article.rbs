@@ -53,8 +53,7 @@ class Article < ApplicationRecord
   # : () -> User?
   def bot_user: () -> User?
 
-  # : (String action) -> void
-  def create_federails_activity: (String action) -> void
+  def create_federails_activity: (untyped action, ?actor: untyped, ?to: untyped, ?cc: untyped) -> untyped
 
   # : () -> void
   def clear_rss_cache: () -> void

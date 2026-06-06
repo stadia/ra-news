@@ -16,7 +16,6 @@ class Post < ApplicationRecord
 
   # ── Framework Macros ─────────────────────────────────────────────────
   acts_as_nested_set
-  acts_as_likeable
   acts_as_taggable_on :tags
 
   # ── Associations ─────────────────────────────────────────────────────
@@ -127,14 +126,11 @@ class Post < ApplicationRecord
   # ── Private Instance Methods ─────────────────────────────────────────
   private
 
-  def create_federails_activity(action)
-    ensure_federails_configuration!
-    return unless local_federails_entity? && send(federails_data_configuration[:should_federate_method])
-
-    actor = federails_actor || user&.federails_actor
+  def create_federails_activity(action, actor: nil, to: nil, cc: nil)
+    actor ||= federails_actor || user&.federails_actor
     return if actor.blank?
 
-    Federails::Activity.create!(actor:, action:, entity: self)
+    super(action, actor: actor, to: to, cc: cc)
   end
 
   #: () -> void

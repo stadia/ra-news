@@ -23,7 +23,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "GET feed preloads liked posts for authenticated user" do
     post = Post.create!(body: "liked feed post", user: @user)
-    Like.create!(liker: @user, likeable: post, created_at: Time.current)
+    Like.create!(actor: @user.federails_actor, likeable: post, created_at: Time.current)
 
     sign_in_as(@user)
 

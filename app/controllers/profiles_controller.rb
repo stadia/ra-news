@@ -50,7 +50,7 @@ class ProfilesController < ApplicationController
                   alert: "본인만 볼 수 있습니다") and return
     end
 
-    likes = Like.where(liker: @user, likeable_type: %w[Article Post])
+    likes = Like.where(actor: @user.federails_actor, likeable_type: %w[Article Post])
                 .order(created_at: :desc)
     @pagy, page_likes = pagy(likes)
 

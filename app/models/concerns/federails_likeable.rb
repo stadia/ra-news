@@ -5,27 +5,25 @@ module FederailsLikeable
   include Federails::HandlesSocialActivities
 
   included do
-    on_federails_like_received :apply_like
-    on_federails_undo_like_received :apply_unlike
+    on_federails_like_received :apply_remote_like
+    on_federails_undo_like_received :apply_remote_unlike
   end
 
-  #: (String actor_url) -> void
-  def apply_like(actor_reference)
+  #: (untyped actor_reference) -> void
+  def apply_remote_like(actor_reference)
     actor = resolve_federails_actor(actor_reference)
     return unless actor && persisted?
 
-    actor.like!(self)
+    Like.create_or_find_by!(actor: actor, likeable: self)
   end
 
-  #: (String actor_url) -> void
-  def apply_unlike(actor_reference)
+  #: (untyped actor_reference) -> void
+  def apply_remote_unlike(actor_reference)
     actor = resolve_federails_actor(actor_reference)
     return unless actor && persisted?
 
-    actor.unlike!(self)
+    Like.where(actor: actor, likeable: self).destroy_all
   end
-
-  alias_method :apply_undo_like, :apply_unlike
 
   private
 

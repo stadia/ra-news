@@ -118,8 +118,8 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
   test "GET likes as owner Turbo frame renders liked articles and posts" do
     user = users(:john)
     sign_in user
-    Like.create!(liker: user, likeable: articles(:ruby_article), created_at: Time.current)
-    Like.create!(liker: user, likeable: posts(:root_post), created_at: 1.minute.ago)
+    Like.create!(actor: user.federails_actor, likeable: articles(:ruby_article), created_at: Time.current)
+    Like.create!(actor: user.federails_actor, likeable: posts(:root_post), created_at: 1.minute.ago)
 
     get "/@#{user.username}/likes", headers: { "Turbo-Frame" => "true" }
 

@@ -10,8 +10,6 @@ class User < ApplicationRecord
          :jwt_authenticatable, :omniauthable,
          omniauth_providers: %i[google_oauth2 apple github], jwt_revocation_strategy: JwtDenylist
 
-  acts_as_liker
-
   has_one_attached :avatar
 
   has_many :push_subscriptions, dependent: :destroy
@@ -115,6 +113,27 @@ class User < ApplicationRecord
 
   def self.first_bot
     with_role("bot").first
+  end
+
+  #: (ActiveRecord::Base likeable) -> Like
+  def like!(likeable)
+    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+
+    Like.create_or_find_by!(actor: actor, likeable: likeable)
+  end
+
+  #: (ActiveRecord::Base likeable) -> void
+  def unlike!(likeable)
+    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+
+    Like.where(actor: actor, likeable: likeable).destroy_all
+  end
+
+  #: (ActiveRecord::Base likeable) -> bool
+  def likes?(likeable)
+    return false unless federails_actor
+
+    Like.exists?(actor: federails_actor, likeable: likeable)
   end
 
   private

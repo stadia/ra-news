@@ -9,10 +9,6 @@ Federails.configure do |config|
   config.remote_follow_url_method = :new_following_url
 end
 
-Rails.application.config.after_initialize do
-  Federails::Actor.acts_as_liker unless Federails::Actor.method_defined?(:like!)
-end
-
 # threads.net의 ActivityPub inbox는 빈번하게 HTTP 500을 반환하므로 배달을 스킵한다.
 # Why: TemporaryDeliveryError가 누적되며 워커 큐를 채우고 알림이 시끄러워짐.
 module SkipBrokenInboxHosts
