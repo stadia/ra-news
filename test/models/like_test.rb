@@ -80,6 +80,30 @@ class LikeTest < ActiveSupport::TestCase
     assert_equal @local_article, activity.entity
   end
 
+  test "local user liking a remote post creates an outbound Like activity" do
+    assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
+      @user.like!(@remote_post)
+    end
+
+    activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+
+    assert_equal @user.federails_actor, activity.actor
+    assert_equal @remote_post, activity.entity
+  end
+
+  test "local user unliking a remote post creates an Undo activity" do
+    @user.like!(@remote_post)
+
+    assert_difference("Federails::Activity.where(action: 'Undo').count", 1) do
+      @user.unlike!(@remote_post)
+    end
+
+    undo = Federails::Activity.where(action: "Undo").order(created_at: :desc).first
+
+    assert_instance_of Federails::Activity, undo.entity
+    assert_equal "Like", undo.entity.action
+  end
+
   test "remote actor like via inbound handler creates a Like row and updates counters" do
     activity = {
       "id" => "https://remote.example/activities/like-1",
