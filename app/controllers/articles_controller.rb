@@ -18,12 +18,19 @@ class ArticlesController < ApplicationController
     cacheable_page!
 
     search = normalized_search_term
+    source = params[:source] == "google" ? :google : :ruby_news
+    if source == :google
+      render Views::Articles::Index.new(search:, source:)
+      return
+    end
+
     @pagy, @articles = pagy(Articles::Query.index_html(search).order(published_at: :desc))
     render Views::Articles::Index.new(
       pagy: @pagy,
       articles: @articles,
       sidebar_tags: sidebar_tags,
       search: search,
+      source: source,
       liked_article_ids: liked_article_ids(@articles),
       boosted_article_ids: boosted_article_ids(@articles)
     )

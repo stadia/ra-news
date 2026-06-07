@@ -32,3 +32,7 @@ production:
   japanese_temp_job:
     class: "JapaneseTempJob"
     schedule: "*/20 * * * *"
+  federails_sync_hosts:
+    command: "Federails::Maintenance::HostsUpdater.run"
+    schedule: "15 3 * * *"
+    queue: federation
