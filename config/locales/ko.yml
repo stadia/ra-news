@@ -45,8 +45,16 @@ ko:
       submit: 등록
     index:
       count: "%{count}개의 글이 있습니다"
+      google:
+        description: Google 프로그래밍 검색에서 관련 결과를 찾습니다.
+        error: Google 검색 결과를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
+        loading: Google 검색 결과를 불러오는 중입니다.
       heading: 지난 글들
       item_list_name: Ruby-News 지난 글 모음
+      search_source: 검색 소스
+      tabs:
+        google: Google
+        ruby_news: Ruby-News
       title: 지난 글 모음 | Ruby-News
     new:
       back_to_list: 목록으로 돌아가기

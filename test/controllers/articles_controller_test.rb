@@ -3,6 +3,58 @@
 require "test_helper"
 
 class ArticlesControllerTest < ActionDispatch::IntegrationTest
+  test "GET index defaults to Ruby-News search results" do
+    get articles_path
+
+    assert_response :success
+    assert_select "[role='tablist']"
+    assert_select "a[role='tab'][href='#{articles_path(source: "ruby_news")}'][aria-selected='true'][aria-current='page']",
+      text: I18n.t("articles.index.tabs.ruby_news")
+    assert_select "a[role='tab'][href='#{articles_path(source: "google")}'][aria-selected='false']",
+      text: I18n.t("articles.index.tabs.google")
+    assert_select "[data-controller='google-search']", count: 0
+    assert_select "#articlesList"
+    assert_select "script[src*='cse.google.com']", count: 0
+  end
+
+  test "GET index renders normalized search in Google search mount" do
+    get articles_path, params: { source: "google", search: "  Ruby on Rails  " }
+
+    assert_response :success
+    assert_select "a[role='tab'][href='#{articles_path(source: "ruby_news", search: "Ruby on Rails")}'][aria-selected='false']",
+      text: I18n.t("articles.index.tabs.ruby_news")
+    assert_select "a[role='tab'][href='#{articles_path(source: "google", search: "Ruby on Rails")}'][aria-selected='true'][aria-current='page']",
+      text: I18n.t("articles.index.tabs.google")
+    assert_select "[data-controller='google-search'][data-google-search-engine-id-value='119e8b7b7b2f64488'][data-google-search-query-value='Ruby on Rails']"
+    assert_select "[data-google-search-error-message-value='#{I18n.t("articles.index.google.error")}']"
+    assert_select "[data-google-search-target='loading']", text: I18n.t("articles.index.google.loading")
+    assert_select "[data-google-search-target='container']"
+    assert_select "[data-google-search-target='error'][hidden]"
+    assert_select "[data-controller='google-search'] script[src]", count: 0
+    assert_select "#articlesList", count: 0
+    assert_select "script[type='application/ld+json']", count: 0
+  end
+
+  test "GET index treats unknown source as Ruby-News" do
+    get articles_path, params: { source: "unknown" }
+
+    assert_response :success
+    assert_select "a[role='tab'][aria-selected='true'][aria-current='page']", text: I18n.t("articles.index.tabs.ruby_news")
+    assert_select "[data-controller='google-search']", count: 0
+    assert_select "#articlesList"
+  end
+
+  test "GET index skips article like and sidebar tag queries for Google source" do
+    sql_queries = capture_sql_queries do
+      get articles_path, params: { source: "google", search: "Ruby" }
+    end
+
+    assert_response :success
+    assert_empty sql_queries.grep(/FROM "articles"/)
+    assert_empty sql_queries.grep(/FROM "likes"/)
+    assert_empty sql_queries.grep(/FROM "tags"/)
+  end
+
   test "GET index preloads liked articles for signed in user" do
     user = users(:john)
     articles = 10.times.map do |index|
@@ -169,6 +221,21 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
       next unless payload[:name] != "SCHEMA"
 
       queries << sql
+    end
+
+    ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do
+      yield
+    end
+
+    queries
+  end
+
+  def capture_sql_queries
+    queries = []
+    callback = lambda do |_name, _start, _finish, _id, payload|
+      next if payload[:name] == "SCHEMA"
+
+      queries << payload[:sql] if payload[:sql]
     end
 
     ActiveSupport::Notifications.subscribed(callback, "sql.active_record") do

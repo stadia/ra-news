@@ -45,8 +45,16 @@ ja:
       submit: 登録
     index:
       count: "%{count}件の記事があります"
+      google:
+        description: Google プログラマブル検索で関連する結果を探します。
+        error: Google 検索結果を読み込めませんでした。しばらくしてからもう一度お試しください。
+        loading: Google 検索結果を読み込んでいます。
       heading: 過去の記事
       item_list_name: Ruby-News 過去の記事
+      search_source: 検索ソース
+      tabs:
+        google: Google
+        ruby_news: Ruby-News
       title: 過去の記事 | Ruby-News
     new:
       back_to_list: 一覧に戻る

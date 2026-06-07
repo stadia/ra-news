@@ -45,8 +45,16 @@ en:
       submit: Submit
     index:
       count: "%{count} articles"
+      google:
+        description: Find related results with Google Programmable Search.
+        error: Google search results could not be loaded. Please try again later.
+        loading: Loading Google search results.
       heading: Past Articles
       item_list_name: Ruby-News Past Articles
+      search_source: Search source
+      tabs:
+        google: Google
+        ruby_news: Ruby-News
       title: Past Articles | Ruby-News
     new:
       back_to_list: Back to list
