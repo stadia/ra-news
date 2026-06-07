@@ -17,11 +17,7 @@ function loadGoogleSearch(engineId) {
       callback: resolve
     }
 
-    const existingScript = document.getElementById(SCRIPT_ID)
-    if (existingScript) {
-      existingScript.addEventListener("error", reject, { once: true })
-      return
-    }
+    document.getElementById(SCRIPT_ID)?.remove()
 
     const script = document.createElement("script")
     script.id = SCRIPT_ID
@@ -69,11 +65,15 @@ export default class extends Controller {
   }
 
   async load() {
-    this.timeoutId = window.setTimeout(() => this.showError(), LOAD_TIMEOUT_MS)
+    this.didTimeout = false
+    this.timeoutId = window.setTimeout(() => {
+      this.didTimeout = true
+      this.showError()
+    }, LOAD_TIMEOUT_MS)
 
     try {
       await loadGoogleSearch(this.engineIdValue)
-      if (!this.element.isConnected) return
+      if (!this.element.isConnected || this.didTimeout) return
 
       window.google.search.cse.element.render({
         div: this.containerTarget,
@@ -88,6 +88,7 @@ export default class extends Controller {
 
       window.clearTimeout(this.timeoutId)
       this.loadingTarget.hidden = true
+      this.errorTarget.hidden = true
     } catch {
       this.showError()
     }
