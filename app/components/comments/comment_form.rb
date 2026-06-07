@@ -72,12 +72,20 @@ class Components::Comments::CommentForm < Components::Base
   def body_field(f)
     render RubyUI::FormField.new do
       render RubyUI::FormFieldLabel.new(for: :comment_body) { Post.human_attribute_name(:body) }
-      f.text_area :body,
-        rows: 4,
-        class: text_area_classes(@comment.errors[:body]),
-        placeholder: t("helpers.placeholder.comment.body"),
-        maxlength: ::Post::MAX_BODY_LENGTH,
-        data: { character_count_target: "input", action: "input->character-count#updateCount" }
+      raw(
+        f.lexxy_rich_textarea(
+          :body,
+          class: "post-composer-editor w-full text-content",
+          rows: 4,
+          toolbar: false,
+          placeholder: t("helpers.placeholder.comment.body"),
+          autocomplete: "off",
+          data: {
+            character_count_target: "input",
+            action: "lexxy:change->character-count#updateCount lexxy:initialize->character-count#updateCount"
+          }
+        )
+      )
       div(class: "text-xs text-content-muted text-right") do
         span(data: { character_count_target: "counter" }) { "0" }
         plain "/#{::Post::MAX_BODY_LENGTH}"
@@ -103,13 +111,4 @@ class Components::Comments::CommentForm < Components::Base
     end
   end
 
-  def text_input_classes(errors)
-    state_classes = errors.none? ? "border-border-muted hover:border-border-strong focus:ring-state-info" : "border-destructive focus:ring-destructive"
-    "w-full px-3 py-2 rounded-lg border bg-surface-elevated text-content placeholder:text-content-muted focus:border-transparent transition-all duration-200 #{state_classes}"
-  end
-
-  def text_area_classes(errors)
-    state_classes = errors.none? ? "border-border-muted hover:border-border-strong focus:ring-state-info" : "border-destructive focus:ring-destructive"
-    "w-full px-4 py-3 rounded-lg border bg-surface-elevated text-content placeholder:text-content-muted focus:border-transparent transition-all duration-200 resize-none #{state_classes}"
-  end
 end
