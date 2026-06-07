@@ -26,7 +26,7 @@ class Components::Articles::SearchTabs < Components::Base
       aria_current: active ? "page" : nil,
       aria_selected: active.to_s,
       class: tab_classes(active),
-      data_turbo: false,
+      data_turbo: "false",
       href: articles_path(source:, search: @search),
       role: "tab"
     ) { label }
