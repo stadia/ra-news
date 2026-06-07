@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (125)
+# Components (127)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -30,6 +30,10 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: article
 - **Articles::Form** (phlex)
   props: article
+- **Articles::GoogleSearch** (phlex)
+  props: query:nil
+- **Articles::SearchTabs** (phlex)
+  props: source, search:nil
 - **Avatar** (phlex)
   props: size::md, attrs
 - **AvatarFallback** (phlex)

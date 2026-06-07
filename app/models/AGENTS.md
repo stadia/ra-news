@@ -5,7 +5,7 @@
 
 - **ActsAsTaggableOn::Tag** (table: tags) — has_many :taggings [3v]
 - **ActsAsTaggableOn::Tagging** (table: taggings) — belongs_to :tag, belongs_to :taggable, belongs_to :tagger [5v]
-- **Article** (table: articles) — has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob [7v]
+- **Article** (table: articles) — has_many :boosts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob [7v]
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
 - **Boost** (table: boosts) — belongs_to :actor, belongs_to :boostable [2v]
 - **DiscordChannel** (table: notification_channels) — has_many :notification_deliveries [3v]
@@ -18,7 +18,7 @@
   scopes: active, delivery_ready
 - **NotificationDelivery** (table: notification_deliveries) — belongs_to :article, belongs_to :notification_channel [5v]
 - **OauthAccount** (table: oauth_accounts) — belongs_to :user [5v]
-- **Post** (table: posts) — belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor [4v]
+- **Post** (table: posts) — has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor [4v]
   scopes: comments, standalone
 - **Preference** (table: preferences) [2v]
 - **PushSubscription** (table: push_subscriptions) — belongs_to :user [6v]

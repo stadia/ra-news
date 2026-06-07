@@ -4,7 +4,7 @@
 Rails 8.1.3 | Ruby 4.0.5
 
 ## Stack
-- Database: PostgreSQL — 29 tables
+- Database: PostgreSQL — 28 tables
 - Models: 23
 - Routes: 179 across 52 controllers
 - Auth: Devise
@@ -12,8 +12,8 @@ Rails 8.1.3 | Ruby 4.0.5
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 125 components, 125 Phlex
-- Performance: 4 issues detected
+- Components: 127 components, 127 Phlex
+- Performance: 2 issues detected
 - auth: devise, omniauth, pundit, devise-jwt, jwt
 - jobs: solid_queue, mission_control-jobs
 - frontend: turbo-rails, stimulus-rails, importmap-rails, tailwindcss-rails, propshaft, phlex-rails
@@ -32,7 +32,7 @@ Rails 8.1.3 | Ruby 4.0.5
 ## Models (23)
 - **ActsAsTaggableOn::Tag** — has_many :taggings
 - **ActsAsTaggableOn::Tagging** — belongs_to :tag, belongs_to :taggable, belongs_to :tagger
-- **Article** — has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
+- **Article** — has_many :boosts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
 - **Boost** — belongs_to :actor, belongs_to :boostable
 - **DiscordChannel** — has_many :notification_deliveries
 - **DiscordDelivery** — belongs_to :article, belongs_to :notification_channel
@@ -43,7 +43,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - **NotificationChannel** — has_many :notification_deliveries
 - **NotificationDelivery** — belongs_to :article, belongs_to :notification_channel
 - **OauthAccount** — belongs_to :user
-- **Post** — belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
+- **Post** — has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
 - **Preference**
 - **PushSubscription** — belongs_to :user
 - **RefreshToken** — belongs_to :user
@@ -75,7 +75,6 @@ Rails 8.1.3 | Ruby 4.0.5
 - dry_rb
 - error_monitoring
 - zeitwerk
-- Single Table Inheritance (STI)
 - Polymorphic associations
 - Soft deletes (paranoia/discard)
 - Tagging

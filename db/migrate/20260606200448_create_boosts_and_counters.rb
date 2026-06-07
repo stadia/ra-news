@@ -9,9 +9,9 @@ class CreateBoostsAndCounters < ActiveRecord::Migration[8.1]
       t.datetime :created_at,    null: false
     end
 
-    add_index :boosts, [:actor_id, :boostable_type, :boostable_id],
+    add_index :boosts, [ :actor_id, :boostable_type, :boostable_id ],
               unique: true, name: "index_boosts_on_actor_and_boostable"
-    add_index :boosts, [:boostable_type, :boostable_id],
+    add_index :boosts, [ :boostable_type, :boostable_id ],
               name: "index_boosts_on_boostable"
 
     add_column :federails_actors, :boostees_count, :integer, default: 0, null: false

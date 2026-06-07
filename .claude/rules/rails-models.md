@@ -9,10 +9,10 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
 
 - ActsAsTaggableOn::Tag (table: tags) — 1 assocs, 3 validations
   methods: count, taggings, validates_name_uniqueness?
-- Article (table: articles) — 12 assocs, 7 validations
+- Article (table: articles) — 13 assocs, 7 validations
   concerns: LocalizedDisplay, ArticleClassMethods, FederailsBoostable, FederailsLikeable
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
-  methods: to_activitypub_object, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, likes_count, boosts_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, announce!, apply_remote_boost, apply_remote_like, apply_remote_unboost, apply_remote_unlike, base_tags, cached_owned_tag_list_on
+  methods: to_activitypub_object, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, likes_count, boosts_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, announce!, apply_remote_boost, apply_remote_like, apply_remote_unboost, apply_remote_unlike, base_tags, boosts
 - Boost (table: boosts) — 2 assocs, 2 validations
   methods: actor, boostable
 - DiscordChannel (table: notification_channels) — 1 assocs, 3 validations
@@ -35,7 +35,7 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
   status: sent, failed
 - OauthAccount (table: oauth_accounts) — 1 assocs, 5 validations
   methods: user
-- Post (table: posts) — 9 assocs, 4 validations
+- Post (table: posts) — 10 assocs, 4 validations
   concerns: FederailsBoostable, FederailsLikeable, HtmlSanitizable
   scopes: comments, standalone
   methods: federation_actor_entity, should_federate?, to_activitypub_object, likes_count, boosts_count, comment?, reply, federation_reply_recipients, author_name, author_host, acts_as_nested_set_options, acts_as_nested_set_options?, add_custom_context, add_scope_conditions_to_options, after_move_to, all_tags_list, all_tags_list_on, all_tags_on, ancestors, announce!

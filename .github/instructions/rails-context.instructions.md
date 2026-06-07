@@ -8,7 +8,7 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 Rails 8.1.3 | Ruby 4.0.5
 
-- Database: PostgreSQL — 29 tables
+- Database: PostgreSQL — 28 tables
 - Models: 23
 - Routes: 179
 - auth: devise, omniauth, pundit, devise-jwt, jwt
@@ -27,8 +27,8 @@ Rails 8.1.3 | Ruby 4.0.5
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 125 components, 125 Phlex
-- Performance: 4 issues detected
+- Components: 127 components, 127 Phlex
+- Performance: 2 issues detected
 - Services: ArticleAgentsService, ContentService, DiscordDeliveryService, MastodonService, OperationService, PushNotificationService, SlackDeliveryService, SocialMediaService, TwitterService
 - Jobs: ArticleBatchJob, ArticleJob, ArticleThumbnailJob, DiscardedArticleCleanupJob, DiscordArticleDeliveryJob, GmailArticleJob, HackerNewsSiteJob, JapaneseTempJob, RedditSiteJob, ReplyNotificationJob, RssSiteJob, RssSitePageJob, SlackArticleDeliveryJob, SocialDeleteJob, SocialPostJob, YoutubeSiteJob
 
