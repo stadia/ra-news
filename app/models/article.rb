@@ -53,32 +53,30 @@ class Article < ApplicationRecord
   # ── Scopes ───────────────────────────────────────────────────────────
   # 하이브리드 전문 검색:
   #   1) tsvector_content_tsearch(textsearch_ko, 'korean') — 한국어 형태소 + 한자
-  #   2) content LIKE(pg_bigm) — 한국어 사전이 못 잡는 일본어 가나 등 부분 일치 폴백
-  # 두 조건을 OR로 결합하고, 한국어 ts_rank를 1차 정렬(가나 전용 매치는 rank 0 →
-  # created_at 최신순으로 후순위)로 사용한다.
-  # LIKE는 gin_bigm_ops 인덱스를 타지만 ILIKE는 타지 않으므로 LIKE를 사용한다.
+  #   2) content LIKE(pg_bigm) — 한국어 사전이 못 잡는 일본어 가나(かな) 폴백
+  #
+  # LIKE 분기는 content 컬럼 detoast + bigm 인덱스 recheck 비용이 커서
+  # (production 측정 시 150~250ms) term 에 가나가 포함된 경우에만 활성화한다.
+  # 영/한 term 은 tsvector 분기만 타서 ts_rank GIN 으로 빠르게 종결.
+  # LIKE 는 gin_bigm_ops 인덱스를 타지만 ILIKE 는 타지 않으므로 LIKE 를 사용한다.
+  JAPANESE_KANA_REGEX = /[\p{Hiragana}\p{Katakana}･-ﾟ]/
+
   scope :full_text_search_for, ->(term) do
     term = term.to_s.strip
     next none if term.blank?
 
     tsquery = "websearch_to_tsquery('korean', #{connection.quote(term)})"
-    like    = connection.quote("%#{sanitize_sql_like(term)}%")
-
-    # OR 조건을 그대로 두면 planner 가 GIN 두 개를 BitmapOr 로 결합하지 못해
-    # btree+Filter 로 풀스캔에 가까운 동작이 된다. 분기를 UNION 으로 쪼개
-    # 각자 자신의 GIN 인덱스(tsearch / bigm)를 독립적으로 타게 한다.
-    matching_ids_sql = <<~SQL.squish
-      SELECT searchable_id FROM pg_search_documents
-       WHERE searchable_type = 'Article'
-         AND tsvector_content_tsearch @@ #{tsquery}
-      UNION
-      SELECT searchable_id FROM pg_search_documents
-       WHERE searchable_type = 'Article'
-         AND content LIKE #{like}
-    SQL
+    where_clause =
+      if term.match?(JAPANESE_KANA_REGEX)
+        like = connection.quote("%#{sanitize_sql_like(term)}%")
+        "pg_search_documents.tsvector_content_tsearch @@ #{tsquery} " \
+          "OR pg_search_documents.content LIKE #{like}"
+      else
+        "pg_search_documents.tsvector_content_tsearch @@ #{tsquery}"
+      end
 
     joins(:pg_search_document)
-      .where("articles.id IN (#{matching_ids_sql})")
+      .where(where_clause)
       .order(Arel.sql("ts_rank(pg_search_documents.tsvector_content_tsearch, #{tsquery}) DESC"), created_at: :desc)
   end
   scope :related, -> { kept.where(is_related: true) }
