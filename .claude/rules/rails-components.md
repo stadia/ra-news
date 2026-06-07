@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (124)
+# Components (127)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -25,11 +25,15 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **AlertDialogTrigger** (phlex)
 - **AlertTitle** (phlex)
 - **Articles::Article** (phlex)
-  props: article, liked:nil
+  props: article, liked:nil, boosted:nil
 - **Articles::ArticleUser** (phlex)
   props: article
 - **Articles::Form** (phlex)
   props: article
+- **Articles::GoogleSearch** (phlex)
+  props: query:nil
+- **Articles::SearchTabs** (phlex)
+  props: source, search:nil
 - **Avatar** (phlex)
   props: size::md, attrs
 - **AvatarFallback** (phlex)
@@ -38,8 +42,10 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Badge** (phlex)
   props: variant::primary, size::md, args
 - **Base** (phlex)
-- **Base** (phlex)
   props: user_attrs
+- **Base** (phlex)
+- **Boosts::Button** (phlex)
+  props: boostable, boosted:nil
 - **Breadcrumb** (phlex)
 - **BreadcrumbEllipsis** (phlex)
 - **BreadcrumbItem** (phlex)
@@ -103,9 +109,9 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Heading** (phlex)
   props: level:nil, as:nil, size:nil, attrs
 - **Home::Article** (phlex)
-  props: article, liked:nil
+  props: article, liked:nil, boosted:nil
 - **Home::Feature** (phlex)
-  props: articles, liked_article_ids:[]
+  props: articles, liked_article_ids:[], boosted_article_ids:[]
 - **InlineCode** (phlex)
 - **InlineLink** (phlex)
   props: href, attrs
@@ -138,7 +144,7 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **PopoverContent** (phlex)
 - **PopoverTrigger** (phlex)
 - **Posts::PostCard** (phlex)
-  props: post, depth:0, liked:nil, show_actions:true, show_reply_badge:true
+  props: post, depth:0, liked:nil, boosted:nil, show_actions:true, show_reply_badge:true
 - **Posts::PostForm** (phlex)
   props: post:Post.new
 - **Posts::PostThread** (phlex)

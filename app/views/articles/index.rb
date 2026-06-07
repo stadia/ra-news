@@ -3,13 +3,14 @@
 class Views::Articles::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(pagy: nil, articles: [], sidebar_tags: [], search: nil, source: :ruby_news, liked_article_ids: [])
+  def initialize(pagy: nil, articles: [], sidebar_tags: [], search: nil, source: :ruby_news, liked_article_ids: [], boosted_article_ids: [])
     @pagy = pagy
     @articles = articles
     @sidebar_tags = sidebar_tags
     @search = search
     @source = source
     @liked_article_ids = liked_article_ids
+    @boosted_article_ids = boosted_article_ids
   end
 
   def view_template
@@ -45,7 +46,8 @@ class Views::Articles::Index < Views::Base
           @articles.each do |article|
             render Components::Articles::Article.new(
               article: article,
-              liked: @liked_article_ids.include?(article.id)
+              liked: @liked_article_ids.include?(article.id),
+              boosted: @boosted_article_ids.include?(article.id)
             )
           end
 

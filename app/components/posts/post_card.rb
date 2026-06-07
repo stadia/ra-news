@@ -5,10 +5,11 @@ class Components::Posts::PostCard < Components::Base
   include Phlex::Rails::Helpers::LinkTo
   include PhlexIcons
 
-  def initialize(post:, depth: 0, liked: nil, show_actions: true, show_reply_badge: true)
+  def initialize(post:, depth: 0, liked: nil, boosted: nil, show_actions: true, show_reply_badge: true)
     @post = post
     @depth = depth
     @liked = liked
+    @boosted = boosted
     @show_actions = show_actions
     @show_reply_badge = show_reply_badge
   end
@@ -147,6 +148,8 @@ class Components::Posts::PostCard < Components::Base
   def post_actions
     div(class: "flex items-center gap-4 text-sm text-content-muted") do
       render Components::Likes::Button.new(likeable: @post, liked: @liked)
+
+      render Components::Boosts::Button.new(boostable: @post, boosted: @boosted)
 
       render RubyUI::Button.new(
         variant: :ghost,

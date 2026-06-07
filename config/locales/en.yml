@@ -1,5 +1,10 @@
 ---
 en:
+  boosts:
+    button:
+      aria_label:
+        boost: Boost
+        undo: Undo boost
   activerecord:
     attributes:
       article:
@@ -241,6 +246,7 @@ en:
       title: Post | Ruby-News
   profiles:
     activity_tabs:
+      boosts: Boosts
       comments: Comments
       followers: Followers
       following: Following
@@ -257,6 +263,8 @@ en:
       reject: Reject
       requested: Requested
       unfollow: Unfollow
+    boost_list:
+      empty: No boosted articles yet.
     like_list:
       empty: No liked articles yet.
     post_list:

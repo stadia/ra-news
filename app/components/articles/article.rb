@@ -7,9 +7,10 @@ class Components::Articles::Article < Components::Base
 
   attr_reader :article
 
-  def initialize(article:, liked: nil)
+  def initialize(article:, liked: nil, boosted: nil)
     @article = article
     @liked = liked
+    @boosted = boosted
   end
 
   def view_template
@@ -61,6 +62,7 @@ class Components::Articles::Article < Components::Base
         render Components::Articles::ArticleUser.new(article: article)
       end
       render Components::Likes::Button.new(likeable: article, liked: @liked)
+      render Components::Boosts::Button.new(boostable: article, boosted: @boosted)
       span(class: "inline-flex items-center") do
         Hero::ChatBubbleLeftEllipsis(variant: :outline, class: "w-4 h-4 mr-1 text-content-muted")
         plain article.posts_count.to_s

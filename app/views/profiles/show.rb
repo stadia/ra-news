@@ -9,8 +9,8 @@ class Views::Profiles::Show < Views::Base
 
   def initialize(user:, actor:, followers_count: 0, following_count: 0,
                  follow_actors: nil,
-                 active_tab: :posts, posts: nil, likeables: nil, pagy: nil,
-                 liked_post_ids: [])
+                 active_tab: :posts, posts: nil, likeables: nil, boostables: nil, pagy: nil,
+                 liked_post_ids: [], boosted_post_ids: [])
     @user = user
     @actor = actor
     @followers_count = followers_count
@@ -19,8 +19,10 @@ class Views::Profiles::Show < Views::Base
     @active_tab = active_tab
     @posts = posts
     @likeables = likeables
+    @boostables = boostables
     @pagy = pagy
     @liked_post_ids = liked_post_ids
+    @boosted_post_ids = boosted_post_ids
   end
 
   def view_template
@@ -111,15 +113,21 @@ class Views::Profiles::Show < Views::Base
     when :posts
       render Views::Profiles::PostList.new(
         user: @user, posts: @posts || [], pagy: @pagy,
-        liked_post_ids: @liked_post_ids, embedded: true
+        liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids, embedded: true
       )
     when :comments
       render Views::Profiles::CommentList.new(
-        user: @user, posts: @posts || [], pagy: @pagy, embedded: true
+        user: @user, posts: @posts || [], pagy: @pagy,
+        liked_post_ids: @liked_post_ids,
+        boosted_post_ids: @boosted_post_ids, embedded: true
       )
     when :likes
       render Views::Profiles::LikeList.new(
         user: @user, likeables: @likeables || [], pagy: @pagy, embedded: true
+      )
+    when :boosts
+      render Views::Profiles::BoostList.new(
+        user: @user, boostables: @boostables || [], pagy: @pagy, embedded: true
       )
     when :followers, :following
       render Views::Profiles::FollowList.new(

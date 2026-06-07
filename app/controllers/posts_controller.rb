@@ -14,7 +14,8 @@ class PostsController < ApplicationController
     root = post.root
     @posts = build_thread(root)
     @liked_post_ids = current_user ? Like.liked_ids_for(liker: current_user, likeable_type: "Post", likeable_ids: @posts.map(&:id)) : []
-    render Views::Posts::Show.new(posts: @posts, liked_post_ids: @liked_post_ids)
+    @boosted_post_ids = current_user ? Boost.boosted_ids_for(booster: current_user, boostable_type: "Post", boostable_ids: @posts.map(&:id)) : []
+    render Views::Posts::Show.new(posts: @posts, liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids)
   end
 
   def create

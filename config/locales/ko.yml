@@ -1,5 +1,10 @@
 ---
 ko:
+  boosts:
+    button:
+      aria_label:
+        boost: 부스트
+        undo: 부스트 취소
   activerecord:
     attributes:
       article:
@@ -241,6 +246,7 @@ ko:
       title: 포스트 | Ruby-News
   profiles:
     activity_tabs:
+      boosts: 부스트
       comments: 댓글
       followers: 팔로워
       following: 팔로잉
@@ -257,6 +263,8 @@ ko:
       reject: 거절
       requested: 요청 중
       unfollow: 언팔로우
+    boost_list:
+      empty: 아직 부스트한 글이 없습니다.
     like_list:
       empty: 아직 좋아요한 글이 없습니다.
     post_list:

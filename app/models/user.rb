@@ -136,6 +136,27 @@ class User < ApplicationRecord
     Like.exists?(actor: federails_actor, likeable: likeable)
   end
 
+  #: (ActiveRecord::Base boostable) -> Boost
+  def boost!(boostable)
+    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+
+    Boost.create_or_find_by!(actor: actor, boostable: boostable)
+  end
+
+  #: (ActiveRecord::Base boostable) -> void
+  def unboost!(boostable)
+    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+
+    Boost.where(actor: actor, boostable: boostable).destroy_all
+  end
+
+  #: (ActiveRecord::Base boostable) -> bool
+  def boosts?(boostable)
+    return false unless federails_actor
+
+    Boost.exists?(actor: federails_actor, boostable: boostable)
+  end
+
   private
 
   def avatar_variant

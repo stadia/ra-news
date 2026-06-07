@@ -5,9 +5,10 @@ class Views::Posts::Show < Views::Base
   include Phlex::Rails::Helpers::LinkTo
   include PhlexIcons
 
-  def initialize(posts:, liked_post_ids: [])
+  def initialize(posts:, liked_post_ids: [], boosted_post_ids: [])
     @posts = posts
     @liked_post_ids = liked_post_ids
+    @boosted_post_ids = boosted_post_ids
   end
 
   def view_template
@@ -38,6 +39,7 @@ class Views::Posts::Show < Views::Base
     render Components::Posts::PostCard.new(
       post: root,
       liked: @liked_post_ids.include?(root.id),
+      boosted: @boosted_post_ids.include?(root.id),
       show_reply_badge: false
     )
 
@@ -48,6 +50,7 @@ class Views::Posts::Show < Views::Base
         render Components::Posts::PostCard.new(
           post: reply,
           liked: @liked_post_ids.include?(reply.id),
+          boosted: @boosted_post_ids.include?(reply.id),
           show_reply_badge: false
         )
       end

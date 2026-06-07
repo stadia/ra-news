@@ -17,6 +17,7 @@ class Article < ApplicationRecord
   include Discard::Model
   include Federails::DataEntity
   include FederailsLikeable
+  include FederailsBoostable
   include ArticleClassMethods
   include LocalizedDisplay
 
@@ -231,6 +232,11 @@ class Article < ApplicationRecord
   #: () -> Integer
   def likes_count
     likers_count.to_i
+  end
+
+  #: () -> Integer
+  def boosts_count
+    boosters_count.to_i
   end
 
   # ── Private Instance Methods ─────────────────────────────────────────

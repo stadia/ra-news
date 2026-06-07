@@ -3,12 +3,13 @@
 class Views::Articles::Tagged < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(pagy:, articles:, tag:, sidebar_tags:, liked_article_ids: [])
+  def initialize(pagy:, articles:, tag:, sidebar_tags:, liked_article_ids: [], boosted_article_ids: [])
     @pagy = pagy
     @articles = articles
     @tag = tag
     @sidebar_tags = sidebar_tags
     @liked_article_ids = liked_article_ids
+    @boosted_article_ids = boosted_article_ids
   end
 
   def view_template
@@ -31,7 +32,7 @@ class Views::Articles::Tagged < Views::Base
 
         div(id: "articlesList", class: "space-y-6 lg:space-y-8") do
           @articles.each do |article|
-            render Components::Articles::Article.new(article: article, liked: @liked_article_ids.include?(article.id))
+            render Components::Articles::Article.new(article: article, liked: @liked_article_ids.include?(article.id), boosted: @boosted_article_ids.include?(article.id))
           end
 
           render Components::Pagination.new(pagy: @pagy)

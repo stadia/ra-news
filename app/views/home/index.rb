@@ -4,12 +4,13 @@ class Views::Home::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
 
-  def initialize(articles:, recent_comments:, sidebar_tags:, liked_article_ids: [], featured_articles: [])
+  def initialize(articles:, recent_comments:, sidebar_tags:, liked_article_ids: [], boosted_article_ids: [], featured_articles: [])
     @articles = articles
     @featured_articles = featured_articles
     @recent_comments = recent_comments
     @sidebar_tags = sidebar_tags
     @liked_article_ids = liked_article_ids
+    @boosted_article_ids = boosted_article_ids
   end
 
   def view_template
@@ -24,7 +25,8 @@ class Views::Home::Index < Views::Base
         if @featured_articles.any?
           render Components::Home::Feature.new(
             articles: @featured_articles,
-            liked_article_ids: @liked_article_ids
+            liked_article_ids: @liked_article_ids,
+            boosted_article_ids: @boosted_article_ids
           )
         end
 
@@ -39,7 +41,7 @@ class Views::Home::Index < Views::Base
 
           div(id: "articlesList", class: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6") do
             @articles.each do |article|
-              render Components::Home::Article.new(article: article, liked: @liked_article_ids.include?(article.id))
+              render Components::Home::Article.new(article: article, liked: @liked_article_ids.include?(article.id), boosted: @boosted_article_ids.include?(article.id))
             end
           end
         end

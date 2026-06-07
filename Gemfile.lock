@@ -403,15 +403,15 @@ GEM
       racc (~> 1.4)
     nokogiri (1.19.3-x86_64-linux-gnu)
       racc (~> 1.4)
-    oauth2 (2.0.21)
+    oauth2 (2.0.22)
       auth-sanitizer (~> 0.2, >= 0.2.1)
       faraday (>= 0.17.3, < 4.0)
       jwt (>= 1.0, < 4.0)
       logger (~> 1.2)
       multi_xml (~> 0.5)
       rack (>= 1.2, < 4)
-      snaky_hash (~> 2.0, >= 2.0.4)
-      version_gem (~> 1.1, >= 1.1.10)
+      snaky_hash (~> 2.0, >= 2.0.5)
+      version_gem (~> 1.1, >= 1.1.11)
     oj (3.17.3)
       bigdecimal (>= 3.0)
       ostruct (>= 0.2)
@@ -701,7 +701,7 @@ GEM
       gli
       hashie
       logger
-    snaky_hash (2.0.4)
+    snaky_hash (2.0.5)
       hashie (>= 0.1.0, < 6)
       version_gem (>= 1.1.8, < 3)
     solid_cable (4.0.0)
