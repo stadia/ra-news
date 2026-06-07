@@ -3,36 +3,50 @@
 class Views::Articles::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(pagy:, articles:, sidebar_tags:, search: nil, liked_article_ids: [])
+  def initialize(pagy: nil, articles: [], sidebar_tags: [], search: nil, source: :ruby_news, liked_article_ids: [])
     @pagy = pagy
     @articles = articles
     @sidebar_tags = sidebar_tags
     @search = search
+    @source = source
     @liked_article_ids = liked_article_ids
   end
 
   def view_template
     content_for :title, t("articles.index.title")
 
-    render_item_list_schema
+    render_item_list_schema unless google?
 
-    div(class: "flex flex-col lg:flex-row gap-6") do
-      div(class: "flex-1 min-w-0") do
-        div(class: "mb-8") do
-          render RubyUI::Heading.new(level: 1, class: "font-bold text-content mb-4") { t("articles.index.heading") }
-          p(class: "text-lg text-content-secondary") do
-            plain t("articles.index.count", count: @pagy.count)
-            plain " #{@search}" if @search.present?
-          end
+    render RubyUI::Heading.new(level: 1, class: "mb-4 font-bold text-content") { t("articles.index.heading") }
+    render Components::Articles::SearchTabs.new(source: @source, search: @search)
+
+    if google?
+      render Components::Articles::GoogleSearch.new(query: @search)
+    else
+      render_ruby_news_results
+    end
+  end
+
+  private
+
+  def render_ruby_news_results
+    div(class: "flex flex-col gap-6 lg:flex-row") do
+      div(class: "min-w-0 flex-1") do
+        p(class: "mb-8 text-lg text-content-secondary") do
+          plain t("articles.index.count", count: @pagy.count)
+          plain " #{@search}" if @search.present?
         end
 
-        div(class: "lg:hidden mb-6") do
+        div(class: "mb-6 lg:hidden") do
           render Components::TagsSidebar.new(tags: @sidebar_tags)
         end
 
         div(id: "articlesList", class: "space-y-6 lg:space-y-8") do
           @articles.each do |article|
-            render Components::Articles::Article.new(article: article, liked: @liked_article_ids.include?(article.id))
+            render Components::Articles::Article.new(
+              article: article,
+              liked: @liked_article_ids.include?(article.id)
+            )
           end
 
           render Components::Pagination.new(pagy: @pagy)
@@ -45,7 +59,9 @@ class Views::Articles::Index < Views::Base
     end
   end
 
-  private
+  def google?
+    @source == :google
+  end
 
   def render_item_list_schema
     return if @articles.empty?
