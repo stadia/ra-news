@@ -62,8 +62,9 @@ export default class extends Controller {
 
       window.google.search.cse.element.render({
         div: this.containerTarget,
-        tag: "search",
-        gname: ELEMENT_NAME
+        tag: "searchresults-only",
+        gname: ELEMENT_NAME,
+        attributes: { linkTarget: "_blank" }
       })
 
       if (this.queryValue) {
