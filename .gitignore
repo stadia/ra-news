@@ -63,3 +63,6 @@ graphify-out/
 
 # phlexed component registry (regenerated per project)
 .phlexed/
+
+# Isolated feature worktrees
+.worktrees/
