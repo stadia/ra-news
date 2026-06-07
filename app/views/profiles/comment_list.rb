@@ -4,10 +4,11 @@ class Views::Profiles::CommentList < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::TurboFrameTag
 
-  def initialize(user:, posts:, pagy:, boosted_post_ids: [], embedded: false)
+  def initialize(user:, posts:, pagy:, liked_post_ids: [], boosted_post_ids: [], embedded: false)
     @user = user
     @posts = posts
     @pagy = pagy
+    @liked_post_ids = liked_post_ids
     @boosted_post_ids = boosted_post_ids
     @embedded = embedded
   end
@@ -39,6 +40,7 @@ class Views::Profiles::CommentList < Views::Base
           @posts.each do |post|
             render Components::Posts::PostCard.new(
               post: post,
+              liked: @liked_post_ids.include?(post.id),
               boosted: @boosted_post_ids.include?(post.id)
             )
           end

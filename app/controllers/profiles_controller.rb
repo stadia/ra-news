@@ -42,6 +42,7 @@ class ProfilesController < ApplicationController
         .includes(:user, :federails_actor, :article, :tags)
         .order(created_at: :desc)
     )
+    @liked_post_ids = liked_ids_for_posts(@posts)
     @boosted_post_ids = boosted_ids_for_posts(@posts)
     render_activity_page(:comments)
   end
@@ -116,6 +117,7 @@ class ProfilesController < ApplicationController
         if turbo_frame_request?
           render Views::Profiles::CommentList.new(
             user: @user, posts: @posts, pagy: @pagy,
+            liked_post_ids: @liked_post_ids,
             boosted_post_ids: @boosted_post_ids
           )
         else

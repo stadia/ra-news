@@ -118,6 +118,7 @@ class Views::Profiles::Show < Views::Base
     when :comments
       render Views::Profiles::CommentList.new(
         user: @user, posts: @posts || [], pagy: @pagy,
+        liked_post_ids: @liked_post_ids,
         boosted_post_ids: @boosted_post_ids, embedded: true
       )
     when :likes

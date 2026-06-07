@@ -58,10 +58,11 @@ class BoostsController < ApplicationController
   end
 
   def find_boostable(boostable_class, boostable_id)
-    if boostable_class.respond_to?(:friendly)
-      boostable_class.friendly.find(boostable_id)
+    scope = boostable_class.respond_to?(:kept) ? boostable_class.kept : boostable_class
+    if scope.respond_to?(:friendly)
+      scope.friendly.find(boostable_id)
     else
-      boostable_class.find(boostable_id)
+      scope.find(boostable_id)
     end
   end
 end

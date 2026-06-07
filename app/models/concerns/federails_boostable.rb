@@ -5,6 +5,7 @@ module FederailsBoostable
   include Federails::HandlesSocialActivities
 
   included do
+    has_many :boosts, as: :boostable, dependent: :destroy
     on_federails_announce_received :apply_remote_boost
     on_federails_undo_announce_received :apply_remote_unboost
   end
