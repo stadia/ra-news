@@ -2,9 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 
 const SCRIPT_ID = "google-programmable-search-script"
 const LOAD_TIMEOUT_MS = 10_000
-const ELEMENT_NAME = "ruby-news-programming-search"
+const GNAME_PREFIX = "ruby-news-programming-search"
 
 let googleSearchPromise
+let gnameCounter = 0
 
 function loadGoogleSearch(engineId) {
   if (window.google?.search?.cse?.element) return Promise.resolve()
@@ -46,11 +47,25 @@ export default class extends Controller {
   }
 
   connect() {
+    gnameCounter += 1
+    this.gname = `${GNAME_PREFIX}-${gnameCounter}`
     this.load()
   }
 
   disconnect() {
     window.clearTimeout(this.timeoutId)
+    this.cleanupElement()
+  }
+
+  cleanupElement() {
+    const element = window.google?.search?.cse?.element?.getElement?.(this.gname)
+    if (element && typeof element.cleanup === "function") {
+      try {
+        element.cleanup()
+      } catch {
+        // CSE 내부 상태가 이미 해제된 경우는 무시한다.
+      }
+    }
   }
 
   async load() {
@@ -63,12 +78,12 @@ export default class extends Controller {
       window.google.search.cse.element.render({
         div: this.containerTarget,
         tag: "searchresults-only",
-        gname: ELEMENT_NAME,
+        gname: this.gname,
         attributes: { linkTarget: "_blank" }
       })
 
       if (this.queryValue) {
-        window.google.search.cse.element.getElement(ELEMENT_NAME).execute(this.queryValue)
+        window.google.search.cse.element.getElement(this.gname).execute(this.queryValue)
       }
 
       window.clearTimeout(this.timeoutId)
