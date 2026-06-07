@@ -88,11 +88,13 @@ class BoostTest < ActiveSupport::TestCase
       "object" => @local_post.federated_url
     }
 
+    before_boostees = @remote_actor.reload.boostees_count
+
     assert_difference("Boost.count", 1) do
       Fediverse::Inbox::AnnounceHandler.handle_announce(activity)
     end
 
-    assert_predicate @remote_actor.reload.boostees_count, :positive?
+    assert_equal before_boostees + 1, @remote_actor.reload.boostees_count
     assert_equal 1, @local_post.reload.boosters_count
     assert Boost.exists?(actor: @remote_actor, boostable: @local_post)
   end

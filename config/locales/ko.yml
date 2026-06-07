@@ -1,5 +1,10 @@
 ---
 ko:
+  boosts:
+    button:
+      aria_label:
+        boost: 부스트
+        undo: 부스트 취소
   activerecord:
     attributes:
       article:

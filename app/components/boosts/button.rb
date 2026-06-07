@@ -23,11 +23,17 @@ class Components::Boosts::Button < Components::Base
       button_path,
       method: button_method,
       form: { data: { turbo_stream: true }, class: "inline-flex items-center m-0" },
+      aria: { label: aria_label },
       class: button_classes
     ) do
+      span(class: "sr-only") { plain aria_label }
       boost_icon
       span { plain boosts_count.to_s } if boosts_count.positive?
     end
+  end
+
+  def aria_label
+    boosted? ? t("boosts.button.aria_label.undo") : t("boosts.button.aria_label.boost")
   end
 
   def boost_icon
