@@ -3,6 +3,7 @@
 class CleanupDuplicateIndexesAndAddMissing < ActiveRecord::Migration[8.1]
   REDUNDANT_INDEXES = [
     [ :likes, :index_likes_on_actor_id ],
+    [ :boosts, :index_boosts_on_actor_id ],
     [ :notification_deliveries, :index_notification_deliveries_on_article_id ],
     [ :oauth_accounts, :index_oauth_accounts_on_user_id ],
     [ :posts, :index_posts_on_parent_id ]
@@ -36,6 +37,9 @@ class CleanupDuplicateIndexesAndAddMissing < ActiveRecord::Migration[8.1]
               if_not_exists: true
     add_index :likes, :actor_id,
               name: :index_likes_on_actor_id,
+              if_not_exists: true
+    add_index :boosts, :actor_id,
+              name: :index_boosts_on_actor_id,
               if_not_exists: true
   end
 end
