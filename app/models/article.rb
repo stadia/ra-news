@@ -64,11 +64,21 @@ class Article < ApplicationRecord
     tsquery = "websearch_to_tsquery('korean', #{connection.quote(term)})"
     like    = connection.quote("%#{sanitize_sql_like(term)}%")
 
+    # OR 조건을 그대로 두면 planner 가 GIN 두 개를 BitmapOr 로 결합하지 못해
+    # btree+Filter 로 풀스캔에 가까운 동작이 된다. 분기를 UNION 으로 쪼개
+    # 각자 자신의 GIN 인덱스(tsearch / bigm)를 독립적으로 타게 한다.
+    matching_ids_sql = <<~SQL.squish
+      SELECT searchable_id FROM pg_search_documents
+       WHERE searchable_type = 'Article'
+         AND tsvector_content_tsearch @@ #{tsquery}
+      UNION
+      SELECT searchable_id FROM pg_search_documents
+       WHERE searchable_type = 'Article'
+         AND content LIKE #{like}
+    SQL
+
     joins(:pg_search_document)
-      .where(
-        "pg_search_documents.tsvector_content_tsearch @@ #{tsquery} " \
-        "OR pg_search_documents.content LIKE #{like}"
-      )
+      .where("articles.id IN (#{matching_ids_sql})")
       .order(Arel.sql("ts_rank(pg_search_documents.tsvector_content_tsearch, #{tsquery}) DESC"), created_at: :desc)
   end
   scope :related, -> { kept.where(is_related: true) }
