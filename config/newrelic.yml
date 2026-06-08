@@ -27,6 +27,7 @@ common:
 
   # Logging level for log/newrelic_agent.log
   log_level: info
+  audit_mode: false
 
   application_logging:
     enabled: true
@@ -35,9 +36,10 @@ common:
     metrics:
       enabled: true
     local_decorating:
-      enabled: true
+      enabled: false
 
   attributes:
+    enabled: true
     exclude:
       - request.parameters.password
       - request.parameters.password_confirmation
@@ -47,26 +49,35 @@ common:
       - request.headers.authorization
       - request.headers.cookie
       - request.headers.x-api-key
+      - request.headers.set-cookie
+      - request.headers.x-csrf-token
 
   transaction_tracer:
+    enabled: true
     record_sql: obfuscated
     transaction_threshold: apdex_f
-    stack_trace_threshold: 0.3
+    stack_trace_threshold: 0.5
 
   slow_sql:
     enabled: true
     record_sql: obfuscated
-    explain_enabled: true
-    explain_threshold: 0.3
+    explain_enabled: false
 
   error_collector:
+    enabled: true
     capture_events: true
-    max_event_samples_stored: 100
+    max_event_samples_stored: 50
     ignore_classes:
       - ActionController::RoutingError
       - ActiveRecord::RecordNotFound
       - ActionController::InvalidAuthenticityToken
       - ActionController::UnknownFormat
+
+  browser_monitoring:
+    auto_instrument: false
+
+  process_host:
+    display_name: <%= ENV["HOSTNAME"] %>
 
   rules:
     ignore_url_regexes:
@@ -81,18 +92,16 @@ common:
 development:
   <<: *default_settings
   app_name: "ruby-news (Development)"
+  monitor_mode: false
 
 test:
   <<: *default_settings
   # It doesn't make sense to report to New Relic from automated test runs.
   monitor_mode: false
 
-staging:
-  <<: *default_settings
-  app_name: "ruby-news (Staging)"
-
 production:
   <<: *default_settings
-  ai_monitoring.enabled: true
-  span_events.max_samples_stored: 10000
-  custom_insights_events.max_samples_stored: 100000
+  monitor_mode: true
+  ai_monitoring.enabled: false
+  span_events.max_samples_stored: 2000
+  custom_insights_events.max_samples_stored: 3000

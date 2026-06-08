@@ -4,7 +4,7 @@
 Rails 8.1.3 | Ruby 4.0.5
 
 ## Stack
-- Database: PostgreSQL — 28 tables
+- Database: static_parse — 28 tables
 - Models: 23
 - Routes: 179 across 52 controllers
 - Auth: Devise
@@ -21,7 +21,7 @@ Rails 8.1.3 | Ruby 4.0.5
 - database: pg, sqlite3, solid_cache, solid_cable
 - files: activestorage, image_processing, aws-sdk-s3
 - testing: minitest, faker, capybara
-- monitoring: newrelic_rpm
+- monitoring: sentry-rails, newrelic_rpm
 - admin: madmin
 - pagination: pagy
 - search: pg_search

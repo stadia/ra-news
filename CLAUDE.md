@@ -9,7 +9,7 @@
 - Models: 21
 - Routes: 179 across 31 controllers
 - Async: 2 jobs
-- Migrations: 34 total, 1 pending
+- Migrations: 36 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
@@ -48,7 +48,7 @@
 - **database**: pg, sqlite3, solid_cache, solid_cable
 - **files**: activestorage, image_processing, aws-sdk-s3
 - **testing**: minitest, faker, capybara
-- **monitoring**: newrelic_rpm
+- **monitoring**: sentry-rails, newrelic_rpm
 - **admin**: madmin
 - **pagination**: pagy
 - **search**: pg_search
@@ -93,6 +93,13 @@
 - `bin/dev` — start dev server
 - `rails test` — run tests
 - `rails db:migrate` — run pending migrations
+
+
+## Warnings
+
+- **database_stats** skipped: There is an issue connecting to your database with your username/password, username: postgres.
+
+Please check your database configuration to ensure the username/password are valid.
 
 ## Rules
 - Run `rails test` after changes
@@ -143,10 +150,6 @@ Use individual tools only when you need deeper detail on a specific layer.
 3. `rails 'ai:tool[migration_advisor]' action=add_column table=posts column=rating type=integer` — if schema change needed
 4. `rails 'ai:tool[validate]' files=app/models/post.rb level=rails` — EVERY time after editing
 5. `rails 'ai:tool[generate_test]' model=Post` — generate tests matching project patterns
-
-**Fix a controller bug:**
-1. `rails 'ai:tool[context]' controller=PostsController action=create` — action source + routes + views + model
-2. Read the controller file, make your fix
 
 _Context trimmed. Use MCP tools for full details._
 <!-- END rails-ai-context -->

@@ -8,7 +8,7 @@ description: "Rails version, database, models, routes, gems, architecture patter
 
 Rails 8.1.3 | Ruby 4.0.5
 
-- Database: PostgreSQL — 28 tables
+- Database: static_parse — 28 tables
 - Models: 23
 - Routes: 179
 - auth: devise, omniauth, pundit, devise-jwt, jwt
