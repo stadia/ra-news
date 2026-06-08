@@ -103,6 +103,7 @@ class Components::Layout < Components::Base
     meta(name: "apple-mobile-web-app-capable", content: "yes")
     meta(name: "mobile-web-app-capable", content: "yes")
     meta(name: "apple-mobile-web-app-status-bar-style", content: "black-translucent")
+    meta(name: "google-adsense-account", content: "ca-pub-9551236133840367")
     meta(name: "slack-app-id", content: "A0AS9BX8B7U")
 
     vc = view_context

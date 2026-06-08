@@ -26,7 +26,19 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_select "#articlesList"
   end
 
-  test "GET index renders normalized search in Google search mount" do
+  test "GET index with Google source renders search mount with correct attributes" do
+    get articles_path, params: { source: "google", search: "  Ruby on Rails  " }
+
+    assert_response :success
+    assert_select "[data-controller='google-search'][data-google-search-engine-id-value='119e8b7b7b2f64488'][data-google-search-query-value='Ruby on Rails']"
+    assert_select "[data-google-search-error-message-value='#{I18n.t("articles.index.google.error")}']"
+    assert_select "[data-google-search-target='loading']", text: I18n.t("articles.index.google.loading")
+    assert_select "[data-google-search-target='container']"
+    assert_select "[data-google-search-target='error'][hidden]"
+    assert_select "[data-controller='google-search'] script[src]", count: 0
+  end
+
+  test "GET index with Google source shows correct tab state and hides article content" do
     get articles_path, params: { source: "google", search: "  Ruby on Rails  " }
 
     assert_response :success
@@ -34,12 +46,6 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
       text: I18n.t("articles.index.tabs.ruby_news")
     assert_select "a[role='tab'][href='#{articles_path(source: "google", search: "Ruby on Rails")}'][aria-selected='true'][aria-current='page']",
       text: I18n.t("articles.index.tabs.google")
-    assert_select "[data-controller='google-search'][data-google-search-engine-id-value='119e8b7b7b2f64488'][data-google-search-query-value='Ruby on Rails']"
-    assert_select "[data-google-search-error-message-value='#{I18n.t("articles.index.google.error")}']"
-    assert_select "[data-google-search-target='loading']", text: I18n.t("articles.index.google.loading")
-    assert_select "[data-google-search-target='container']"
-    assert_select "[data-google-search-target='error'][hidden]"
-    assert_select "[data-controller='google-search'] script[src]", count: 0
     assert_select "#articlesList", count: 0
     assert_select "script[type='application/ld+json']", count: 0
   end
