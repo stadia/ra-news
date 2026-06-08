@@ -93,7 +93,6 @@ Rails.application.routes.draw do
 
   constraints AuthenticatedConstraint.new do
     mount MissionControl::Jobs::Engine, at: "/jobs"
-    mount PgReports::Engine, at: "/pg_reports"
   end
 
   # Federails client 대체 라우트
