@@ -72,19 +72,24 @@ class Views::Profiles::PostList < Views::Base
   end
 
   def draft_row(draft)
+    # This list renders inside the "activity-list" turbo frame, so links/forms
+    # need data-turbo-frame="_top" to navigate the whole page rather than
+    # replacing the frame (which would otherwise show "Content missing").
     div(class: "flex items-center justify-between gap-3 rounded-md border border-border-muted bg-app/40 px-3 py-2") do
       link_to(
         edit_longform_post_path(draft),
-        class: "min-w-0 flex-1 truncate text-sm text-content hover:text-brand-text transition-colors"
+        class: "min-w-0 flex-1 truncate text-sm text-content hover:text-brand-text transition-colors",
+        data: { turbo_frame: "_top" }
       ) do
         plain draft.title.presence || t("posts.longform.untitled_draft")
       end
       div(class: "flex items-center gap-2 shrink-0") do
         link_to t("posts.longform.edit"), edit_longform_post_path(draft),
-          class: "text-xs font-medium text-content-muted hover:text-content transition-colors"
+          class: "text-xs font-medium text-content-muted hover:text-content transition-colors",
+          data: { turbo_frame: "_top" }
         button_to t("posts.longform.delete"), longform_post_path(draft),
           method: :delete,
-          form: { data: { turbo_confirm: t("posts.longform.delete_confirm") } },
+          form: { data: { turbo_confirm: t("posts.longform.delete_confirm"), turbo_frame: "_top" } },
           class: "text-xs font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
       end
     end

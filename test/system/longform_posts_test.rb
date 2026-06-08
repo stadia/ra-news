@@ -40,15 +40,12 @@ class LongformPostsTest < ApplicationSystemTestCase
     draft = posts(:longform_draft)
 
     # 초안 안내(draft notice)에 기존 초안이 편집기 링크로 노출된다.
-    # 이 영역은 프로필의 "activity-list" 터보 프레임 안에 있으므로, 링크 클릭은
-    # 프레임 스코프 네비게이션이 된다(편집기 응답에는 동일 프레임이 없어 프레임이
-    # "Content missing" 으로 대체됨 — 아래 CONCERN 참고). 따라서 링크의 목적지를
-    # 확인한 뒤 편집기를 직접 방문해 초안이 다시 열리는지 검증한다.
+    # 이 영역은 프로필의 "activity-list" 터보 프레임 안에 있지만, 링크에
+    # data-turbo-frame="_top" 이 있어 클릭 시 전체 페이지 네비게이션으로
+    # 편집기가 정상적으로 열린다.
     visit user_profile_posts_path(username: @user.username)
-    draft_link = find_link(draft.title)
-    assert_equal edit_longform_post_path(draft), URI(draft_link[:href]).path
+    click_link draft.title
 
-    visit draft_link[:href]
     assert_text I18n.t("posts.longform.edit_heading")
     # 초안 본문이 편집기에 다시 로드된다.
     assert_text "초안 본문입니다."
