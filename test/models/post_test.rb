@@ -408,7 +408,7 @@ class PostTest < ActiveSupport::TestCase
     post.tag_list = "ruby, rails"
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, custom:) { captured = { record:, content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -424,7 +424,7 @@ class PostTest < ActiveSupport::TestCase
     post = Post.create!(body: "기사 댓글", user: @user, article: @article)
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, custom:) { captured = { content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -507,30 +507,47 @@ class PostTest < ActiveSupport::TestCase
     assert_equal "첫 번째 파일 · 두 번째 파일", result[:body]
   end
 
-  test "to_activitypub_object는 장문을 요약과 원문 링크로 전달한다" do
+  test "to_activitypub_object는 장문을 요약과 제목과 원문 링크로 전달한다" do
     post = posts(:longform_published)
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, custom:) { captured = { record:, content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
     assert_equal post, captured[:record]
     assert_equal post.longform_summary, captured[:content]
+    assert_equal post.title, captured[:name]
     assert_equal Rails.application.routes.url_helpers.post_url(post), captured[:custom]["url"]
-    assert_equal post.title, captured[:custom]["name"]
-    assert_equal post.updated_at.iso8601, captured[:custom]["updated"]
+  end
+
+  test "to_activitypub_object의 실제 발행 Note에 장문 제목이 채워진다" do
+    post = Post.create!(
+      title: "실제 발행 장문",
+      body: "<p>실제 발행되는 장문 본문입니다.</p>",
+      user: @user,
+      post_type: :longform,
+      status: :published,
+      published_at: Time.current
+    )
+
+    note = post.to_activitypub_object
+
+    assert_equal post.title, note["name"]
+    assert_equal post.longform_summary, note["content"]
+    assert_equal Rails.application.routes.url_helpers.post_url(post), note["url"]
   end
 
   test "to_activitypub_object는 단문 본문 전체 발행을 유지한다" do
     post = @root_post
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, custom:) { captured = { content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
     assert_equal post.body, captured[:content]
+    assert_nil captured[:name]
     assert_nil captured[:custom]["url"]
     assert_nil captured[:custom]["name"]
   end

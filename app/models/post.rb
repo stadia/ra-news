@@ -94,15 +94,15 @@ class Post < ApplicationRecord
     end
 
     content = body
+    name = nil
 
     if longform?
       content = longform_summary
+      name = title
       custom["url"] = Rails.application.routes.url_helpers.post_url(self)
-      custom["name"] = title
-      custom["updated"] = updated_at.iso8601
     end
 
-    Federails::DataTransformer::Note.to_federation(self, content: content, custom: custom)
+    Federails::DataTransformer::Note.to_federation(self, content: content, name: name, custom: custom)
   end
 
   #: () -> Integer
