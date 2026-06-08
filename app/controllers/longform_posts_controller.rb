@@ -58,9 +58,11 @@ class LongformPostsController < ApplicationController
   end
 
   def destroy_permanently
-    # Hard-destroy removes the row for good. For a published (still-federated)
-    # post the model's after_discard already emitted a Delete on soft-discard;
-    # destroying a kept published post here emits one now via the destroy hook.
+    # Hard-destroy removes the row for good. Federails' after_destroy emits a
+    # Delete for a published post; since trash items were already soft-discarded
+    # (which emitted a Delete too), remotes may receive a duplicate Delete. That
+    # is benign — the tombstone already exists remotely, so the second Delete is
+    # idempotent.
     @post.destroy
     redirect_to user_profile_trash_path(username: current_user.username), notice: t("posts.longform.destroyed_permanently")
   end

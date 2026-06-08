@@ -29,6 +29,12 @@ class Post < ApplicationRecord
 
   # ── Associations ─────────────────────────────────────────────────────
   belongs_to :user, optional: true
+  # Known limitation: counter_cache is decremented by hard destroy but NOT by
+  # Discard (soft delete). A comment soft-discarded via an inbound federated
+  # Delete therefore leaves posts_count inflated, so the article card badge can
+  # drift from the .kept comment list. Acceptable for now (federated-comment
+  # delete is an edge case); revisit by maintaining the counter on
+  # discard/undiscard if it becomes user-visible noise.
   belongs_to :article, optional: true, counter_cache: :posts_count
   belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
 
@@ -238,27 +244,7 @@ class Post < ApplicationRecord
         body: extract_body_from_activitypub_object(hash, attachments:)
       }
 
-      if in_reply_to.present?
-        article_id = in_reply_to[%r{/articles/(\d+)}, 1]
-        post_id = in_reply_to[%r{/posts/(\d+)}, 1]
-
-        if article_id.present?
-          object[:article_id] = article_id
-        elsif post_id.present?
-          object[:parent_id] = post_id
-          object[:article_id] = Post.where(id: post_id).pick(:article_id)
-        else
-          parent = Post.find_by(federated_url: in_reply_to)
-          if parent
-            object[:parent_id] = parent.id
-            object[:article_id] = parent.article_id
-          end
-        end
-
-        # Inbound replies to an article are comments; without this they default
-        # to :short and fall out of the `comments` scope (and the article view).
-        object[:post_type] = :comment if object[:article_id].present?
-      end
+      object.merge!(reply_attributes(in_reply_to)) if in_reply_to.present?
 
       # Mastodon 이미지 첨부 파싱
       object[:media_attachments] = attachments.map do |a|
@@ -273,6 +259,30 @@ class Post < ApplicationRecord
     end
 
     private
+
+    # Resolves the reply target (article comment, post reply, or federated
+    # parent) from an inReplyTo URL into attributes for from_activitypub_object.
+    # Inbound replies to an article are typed :comment so they stay in the
+    # `comments` scope instead of defaulting to :short.
+    #: (String) -> Hash[Symbol, untyped]
+    def reply_attributes(in_reply_to)
+      attrs = reply_target_attributes(in_reply_to)
+      attrs[:post_type] = :comment if attrs[:article_id].present?
+      attrs
+    end
+
+    #: (String) -> Hash[Symbol, untyped]
+    def reply_target_attributes(in_reply_to)
+      if (article_id = in_reply_to[%r{/articles/(\d+)}, 1])
+        { article_id: article_id }
+      elsif (post_id = in_reply_to[%r{/posts/(\d+)}, 1])
+        { parent_id: post_id, article_id: Post.where(id: post_id).pick(:article_id) }
+      elsif (parent = Post.find_by(federated_url: in_reply_to))
+        { parent_id: parent.id, article_id: parent.article_id }
+      else
+        {}
+      end
+    end
 
     #: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
     def extract_body_from_activitypub_object(hash, attachments:)
