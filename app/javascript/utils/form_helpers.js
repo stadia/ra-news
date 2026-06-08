@@ -13,9 +13,11 @@ export function resetFormWithCounter(element) {
   form.reset()
 
   // Reset character counter if present
-  const counter = form.querySelector("[data-character-count-target='counter']")
+  const counter = form.querySelector("[data-character-counter-target='counter']")
   if (counter) {
     counter.textContent = "0"
+    counter.classList.remove("text-warning", "text-danger-text")
+    counter.classList.add("text-content-muted")
   }
 
   return true

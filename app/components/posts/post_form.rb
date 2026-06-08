@@ -13,8 +13,8 @@ class Components::Posts::PostForm < Components::Base
       id: "post_form",
       class: "mb-6",
       data: {
-        controller: "character-count post-form",
-        character_count_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
+        controller: "character-counter post-form",
+        character_counter_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
         action: "turbo:submit-end->post-form#reset post-form:reply@window->post-form#activateReply"
       }
     ) do
@@ -56,8 +56,8 @@ class Components::Posts::PostForm < Components::Base
         autocomplete: "off",
         data: {
           post_form_target: "body",
-          character_count_target: "input",
-          action: "lexxy:change->character-count#updateCount lexxy:initialize->character-count#updateCount"
+          character_counter_target: "input",
+          action: "lexxy:change->character-counter#update lexxy:initialize->character-counter#update"
         }
       )
     )
@@ -94,7 +94,7 @@ class Components::Posts::PostForm < Components::Base
   def form_footer(f)
     div(class: "flex items-center justify-between") do
       div(class: "text-xs text-content-muted") do
-        span(data: { character_count_target: "counter" }) { "0" }
+        span(data: { character_counter_target: "counter" }) { "0" }
         plain "/#{::Post::MAX_BODY_LENGTH}"
       end
       f.submit submit_label,

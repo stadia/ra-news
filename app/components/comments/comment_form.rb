@@ -16,8 +16,8 @@ class Components::Comments::CommentForm < Components::Base
       render RubyUI::Card.new(
         class: "bg-surface-muted border-border-muted p-6",
         data: {
-          controller: "character-count post-form",
-          character_count_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
+          controller: "character-counter post-form",
+          character_counter_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
           action: "turbo:submit-end->post-form#reset"
         }
       ) do
@@ -81,13 +81,13 @@ class Components::Comments::CommentForm < Components::Base
           placeholder: t("helpers.placeholder.comment.body"),
           autocomplete: "off",
           data: {
-            character_count_target: "input",
-            action: "lexxy:change->character-count#updateCount lexxy:initialize->character-count#updateCount"
+            character_counter_target: "input",
+            action: "lexxy:change->character-counter#update lexxy:initialize->character-counter#update"
           }
         )
       )
       div(class: "text-xs text-content-muted text-right") do
-        span(data: { character_count_target: "counter" }) { "0" }
+        span(data: { character_counter_target: "counter" }) { "0" }
         plain "/#{::Post::MAX_BODY_LENGTH}"
       end
       @comment.errors[:body].each do |msg|

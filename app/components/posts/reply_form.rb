@@ -12,8 +12,8 @@ class Components::Posts::ReplyForm < Components::Base
     div(
       class: "ml-4 sm:ml-8",
       data: {
-        controller: "character-count",
-        character_count_max_length_value: "500"
+        controller: "character-counter",
+        character_counter_max_length_value: "500"
       }
     ) do
       form_with(
@@ -28,11 +28,11 @@ class Components::Posts::ReplyForm < Components::Base
           rows: 2,
           class: "w-full px-3 py-2 rounded-lg border border-border-muted bg-surface text-content placeholder:text-content-muted hover:border-border-strong focus:border-transparent focus:ring-2 focus:ring-state-info transition-all duration-200 resize-none text-sm",
           placeholder: t("helpers.placeholder.post.reply_body"),
-          data: { character_count_target: "input", action: "input->character-count#updateCount" }
+          data: { character_counter_target: "input", action: "input->character-counter#update" }
 
         div(class: "flex items-center justify-between") do
           div(class: "text-xs text-content-muted") do
-            span(data: { character_count_target: "counter" }) { "0" }
+            span(data: { character_counter_target: "counter" }) { "0" }
             plain t("posts.reply_form.char_unit")
           end
           div(class: "flex items-center gap-2") do
