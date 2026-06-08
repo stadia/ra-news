@@ -22,6 +22,7 @@ class Components::Layout < Components::Base
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
         stylesheet_link_tag "lexxy", data_turbo_track: "reload"
+        stylesheet_link_tag "vendor/lightgallery", data_turbo_track: "reload"
         javascript_importmap_tags
         render_schema_org
       end

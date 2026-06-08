@@ -15,3 +15,5 @@ pin "lexxy", to: "lexxy.js"
 pin "@rails/activestorage", to: "activestorage.esm.js"
 pin "chart.js" # @4.5.1
 pin "@kurkle/color", to: "@kurkle--color.js" # @0.3.4
+pin "@stimulus-components/lightbox", to: "@stimulus-components--lightbox.js" # @4.0.0
+pin "lightgallery" # @2.9.0

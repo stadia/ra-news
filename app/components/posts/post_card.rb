@@ -107,39 +107,18 @@ class Components::Posts::PostCard < Components::Base
     return if attachments.empty?
 
     grid_class = attachments.size == 1 ? "grid-cols-1" : "grid-cols-2"
-
-    render RubyUI::Dialog.new do
-      render RubyUI::DialogTrigger.new(class: "contents") do
-        div(class: "grid #{grid_class} gap-1 rounded-xl overflow-hidden mt-2 cursor-pointer") do
-          attachments.each do |attachment|
-            img(
-              src: attachment["url"],
-              alt: attachment["name"].to_s,
-              class: "w-full object-cover max-h-72 bg-surface-muted hover:opacity-90 transition-opacity",
-              loading: "lazy"
-            )
-          end
-        end
-      end
-
-      render RubyUI::DialogContent.new(class: "max-w-3xl w-full px-15") do
-        render RubyUI::DialogMiddle.new do
-          render RubyUI::Carousel.new(options: { loop: true }, class: "w-full") do
-            render RubyUI::CarouselContent.new do
-              attachments.each do |attachment|
-                render RubyUI::CarouselItem.new do
-                  img(
-                    src: attachment["url"],
-                    alt: attachment["name"].to_s,
-                    class: "w-full rounded-md object-contain max-h-[70vh]",
-                    loading: "lazy"
-                  )
-                end
-              end
-            end
-            render RubyUI::CarouselPrevious.new if attachments.size > 1
-            render RubyUI::CarouselNext.new if attachments.size > 1
-          end
+    div(
+      data: { controller: "lightbox" },
+      class: "grid #{grid_class} gap-1 rounded-xl overflow-hidden mt-2"
+    ) do
+      attachments.each do |attachment|
+        a(href: attachment["url"], data: { sub_html: attachment["name"].presence }) do
+          img(
+            src: attachment["url"],
+            alt: attachment["name"].to_s,
+            class: "w-full object-cover max-h-72 bg-surface-muted hover:opacity-90 transition-opacity cursor-pointer",
+            loading: "lazy"
+          )
         end
       end
     end
