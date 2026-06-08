@@ -846,6 +846,31 @@ class ArticleTest < ActiveSupport::TestCase
     assert_not article.update_slug
   end
 
+  test "to_markdown은 기사의 필드들을 마크다운 형식으로 올바르게 변환한다" do
+    article = Article.new(
+      title: "Test Title",
+      title_ko: "테스트 제목",
+      url: "https://example.com/test",
+      origin_url: "https://example.com/test",
+      host: "example.com",
+      summary_key: ["핵심 요약 1", "핵심 요약 2"],
+      summary_detail: { "introduction" => "서론 부분", "conclusion" => "결론 부분" },
+      body: "원본 본문",
+      summary_body: "요약된 마크다운 본문",
+      user: @user
+    )
+
+    markdown = article.to_markdown
+    assert_match "# 테스트 제목", markdown
+    assert_match "- **원문 URL**: https://example.com/test", markdown
+    assert_match "## 요약", markdown
+    assert_match "- 핵심 요약 1", markdown
+    assert_match "- 핵심 요약 2", markdown
+    assert_match "## 소개\n서론 부분", markdown
+    assert_match "## 본문\n요약된 마크다운 본문", markdown
+    assert_match "## 결론\n결론 부분", markdown
+  end
+
   private
 
   def stub_external_requests(article)

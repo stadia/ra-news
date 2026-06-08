@@ -108,12 +108,17 @@ class ArticlesController < ApplicationController
     end
 
     @comment = Post.new
-    render Views::Articles::Show.new(
-      article: @article,
-      comments: @comments,
-      comment: @comment,
-      similar_articles: @similar_articles
-    )
+    respond_to do |format|
+      format.html do
+        render Views::Articles::Show.new(
+          article: @article,
+          comments: @comments,
+          comment: @comment,
+          similar_articles: @similar_articles
+        )
+      end
+      format.md { render markdown: @article }
+    end
   end
 
   # GET /articles/new

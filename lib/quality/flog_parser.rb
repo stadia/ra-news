@@ -25,7 +25,7 @@ module Quality
       flog = Flog.new
       flog.flog(*@paths)
 
-      totals = flog.totals
+      totals = flog.totals.reject { |name, _| name.end_with?("#none", ".none") }
       return { method_max: 0.0, class_max: 0.0 } if totals.empty?
 
       {

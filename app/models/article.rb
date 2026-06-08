@@ -139,6 +139,19 @@ class Article < ApplicationRecord
 
   # ── Public Instance Methods ──────────────────────────────────────────
 
+  # #: () -> String
+  def to_markdown
+    [
+      "# #{display_title}\n",
+      "- **원문 URL**: #{url}",
+      (published_at.present? ? "- **발행일**: #{published_at}" : nil),
+      (display_summary_key.present? ? "\n## 요약\n#{display_summary_key.map { |item| "- #{item}" }.join("\n")}" : nil),
+      (display_summary_detail.is_a?(Hash) && display_summary_detail["introduction"].present? ? "\n## 소개\n#{display_summary_detail['introduction']}" : nil),
+      (display_summary_body.present? ? "\n## 본문\n#{display_summary_body}" : nil),
+      (display_summary_detail.is_a?(Hash) && display_summary_detail["conclusion"].present? ? "\n## 결론\n#{display_summary_detail['conclusion']}" : nil)
+    ].compact.join("\n")
+  end
+
   #: () -> Hash[String, untyped]
   def to_activitypub_object
     content_data = base_content
