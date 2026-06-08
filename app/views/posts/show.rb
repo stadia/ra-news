@@ -80,7 +80,8 @@ class Views::Posts::Show < Views::Base
 
     div(class: "flex items-center gap-3 pt-4 border-t border-border-muted") do
       link_to t("posts.longform.edit"), edit_longform_post_path(root),
-        class: "text-sm font-medium text-content-muted hover:text-content transition-colors"
+        class: "text-sm font-medium text-content-muted hover:text-content transition-colors",
+        data: { turbo_prefetch: false }
       button_to t("posts.longform.delete"), longform_post_path(root),
         method: :delete,
         form: { data: { turbo_confirm: t("posts.longform.delete_confirm") } },

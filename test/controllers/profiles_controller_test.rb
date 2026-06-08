@@ -131,12 +131,14 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
   test "posts page shows published longform posts" do
     sign_in users(:john)
     get user_profile_posts_url(username: users(:john).username)
+
     assert_response :success
     assert_includes response.body, "발행된 긴 글"
   end
 
   test "posts page does not show drafts to public" do
     get user_profile_posts_url(username: users(:john).username)
+
     assert_response :success
     assert_not_includes response.body, "작성 중인 긴 글"
   end
@@ -144,6 +146,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
   test "owner posts page shows draft management entry" do
     sign_in users(:john)
     get user_profile_posts_url(username: users(:john).username)
+
     assert_response :success
     assert_includes response.body, "작성 중인 초안"
     assert_includes response.body, "작성 중인 긴 글"
@@ -153,7 +156,64 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
   test "owner draft entry offers a delete control" do
     sign_in users(:john)
     get user_profile_posts_url(username: users(:john).username)
+
     assert_response :success
     assert_select "form[action=?]", longform_post_path(posts(:longform_draft))
+  end
+
+  test "comments tab excludes discarded comments" do
+    posts(:comment_post).discard!
+
+    get user_profile_comments_url(username: users(:john).username)
+
+    assert_response :success
+    assert_not_includes response.body, posts(:comment_post).body
+  end
+
+  test "trash tab requires the owner" do
+    sign_in users(:jane)
+
+    get user_profile_trash_url(username: users(:john).username)
+
+    assert_redirected_to user_profile_base_path(username: users(:john).username)
+  end
+
+  test "owner trash tab lists discarded longform posts" do
+    sign_in users(:john)
+    posts(:longform_published).discard!
+
+    get user_profile_trash_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, "발행된 긴 글"
+    assert_select "form[action=?]", undiscard_longform_post_path(posts(:longform_published))
+    assert_select "form[action=?]", destroy_permanently_longform_post_path(posts(:longform_published))
+  end
+
+  test "owner trash tab shows empty state when nothing discarded" do
+    sign_in users(:john)
+
+    get user_profile_trash_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.trash_list.empty")
+  end
+
+  test "owner profile shows trash tab" do
+    sign_in users(:john)
+
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.activity_tabs.trash")
+  end
+
+  test "trash tab is hidden from other users" do
+    sign_in users(:jane)
+
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    assert_not_includes response.body, user_profile_trash_path(username: users(:john).username)
   end
 end

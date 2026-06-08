@@ -40,7 +40,7 @@ class ProfilesController < ApplicationController
 
   def comments
     @pagy, @posts = pagy(
-      @user.posts.comments
+      @user.posts.comments.kept
         .includes(:user, :federails_actor, :article, :tags)
         .order(created_at: :desc)
     )
@@ -97,6 +97,19 @@ class ProfilesController < ApplicationController
     render_activity_page(:boosts)
   end
 
+  def trash
+    unless current_user == @user
+      redirect_to(user_profile_base_path(username: @user.username),
+                  alert: "본인만 볼 수 있습니다") and return
+    end
+
+    @pagy, @posts = pagy(
+      @user.posts.longform.discarded
+        .order(updated_at: :desc)
+    )
+    render_activity_page(:trash)
+  end
+
   private
 
     def set_user
@@ -142,6 +155,14 @@ class ProfilesController < ApplicationController
           )
         else
           render_show_with_activity(active_tab: :boosts)
+        end
+      when :trash
+        if turbo_frame_request?
+          render Views::Profiles::TrashList.new(
+            user: @user, posts: @posts, pagy: @pagy
+          )
+        else
+          render_show_with_activity(active_tab: :trash)
         end
       when :followers, :following
         if turbo_frame_request?

@@ -233,9 +233,14 @@ en:
       published: Post published.
       updated: Post updated.
       deleted: Post deleted.
+      restored: Post restored.
+      destroyed_permanently: Post permanently deleted.
       edit: Edit
       delete: Delete
+      restore: Restore
+      destroy_permanently: Delete permanently
       delete_confirm: Delete this post?
+      destroy_permanently_confirm: Permanently delete this post? This cannot be undone.
       forbidden: You do not have permission to edit this post.
       autosave_idle: Autosave ready
       preview: Preview
@@ -275,6 +280,7 @@ en:
       following: Following
       likes: Likes
       posts: Posts
+      trash: Trash
     comment_list:
       empty: No comments yet.
     follow_list:
@@ -296,6 +302,9 @@ en:
       drafts:
         one: You have 1 draft.
         other: You have %{count} drafts.
+    trash_list:
+      heading: Deleted posts
+      empty: Trash is empty.
     show:
       feed: Feed
       find_follow: Find & Follow

@@ -233,9 +233,14 @@ ko:
       published: 글을 발행했습니다.
       updated: 글을 수정했습니다.
       deleted: 글을 삭제했습니다.
+      restored: 글을 복구했습니다.
+      destroyed_permanently: 글을 완전히 삭제했습니다.
       edit: 수정
       delete: 삭제
+      restore: 복구
+      destroy_permanently: 완전 삭제
       delete_confirm: 이 글을 삭제할까요?
+      destroy_permanently_confirm: 이 글을 완전히 삭제할까요? 되돌릴 수 없습니다.
       forbidden: 이 글을 수정할 권한이 없습니다.
       autosave_idle: 자동 저장 준비됨
       preview: 미리보기
@@ -275,6 +280,7 @@ ko:
       following: 팔로잉
       likes: 좋아요
       posts: 글
+      trash: 휴지통
     comment_list:
       empty: 아직 작성한 댓글이 없습니다.
     follow_list:
@@ -296,6 +302,9 @@ ko:
       drafts:
         one: 초안 1개가 있습니다.
         other: 초안 %{count}개가 있습니다.
+    trash_list:
+      heading: 삭제된 글
+      empty: 휴지통이 비어 있습니다.
     show:
       feed: Feed
       find_follow: 팔로우 검색

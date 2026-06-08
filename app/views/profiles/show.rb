@@ -132,6 +132,10 @@ class Views::Profiles::Show < Views::Base
       render Views::Profiles::BoostList.new(
         user: @user, boostables: @boostables || [], pagy: @pagy, embedded: true
       )
+    when :trash
+      render Views::Profiles::TrashList.new(
+        user: @user, posts: @posts || [], pagy: @pagy, embedded: true
+      )
     when :followers, :following
       render Views::Profiles::FollowList.new(
         user: @user, followings: @follow_actors || [], type: @active_tab, embedded: true
