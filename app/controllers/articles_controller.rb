@@ -18,7 +18,7 @@ class ArticlesController < ApplicationController
     cacheable_page!
 
     search = normalized_search_term
-    source = params[:source] == "google" ? :google : :ruby_news
+    source = search.present? && params[:source] == "google" ? :google : :ruby_news
     if source == :google
       render Views::Articles::Index.new(search:, source:)
       return

@@ -19,7 +19,7 @@ class Views::Articles::Index < Views::Base
     render_item_list_schema unless google?
 
     render RubyUI::Heading.new(level: 1, class: "mb-4 font-bold text-content") { t("articles.index.heading") }
-    render Components::Articles::SearchTabs.new(source: @source, search: @search)
+    render Components::Articles::SearchTabs.new(source: @source, search: @search) if searching?
 
     if google?
       render Components::Articles::GoogleSearch.new(query: @search)
@@ -63,6 +63,10 @@ class Views::Articles::Index < Views::Base
 
   def google?
     @source == :google
+  end
+
+  def searching?
+    @search.present?
   end
 
   def render_item_list_schema

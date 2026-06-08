@@ -7,14 +7,23 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     get articles_path
 
     assert_response :success
-    assert_select "[role='tablist']"
-    assert_select "a[role='tab'][href='#{articles_path(source: "ruby_news")}'][aria-selected='true'][aria-current='page']",
-      text: I18n.t("articles.index.tabs.ruby_news")
-    assert_select "a[role='tab'][href='#{articles_path(source: "google")}'][aria-selected='false']",
-      text: I18n.t("articles.index.tabs.google")
+    assert_select "[role='tablist']", count: 0
     assert_select "[data-controller='google-search']", count: 0
     assert_select "#articlesList"
     assert_select "script[src*='cse.google.com']", count: 0
+  end
+
+  test "GET index renders search tabs only when search has a value" do
+    get articles_path, params: { search: "  Ruby  " }
+
+    assert_response :success
+    assert_select "[role='tablist']"
+    assert_select "a[role='tab'][href='#{articles_path(source: "ruby_news", search: "Ruby")}'][aria-selected='true'][aria-current='page']",
+      text: I18n.t("articles.index.tabs.ruby_news")
+    assert_select "a[role='tab'][href='#{articles_path(source: "google", search: "Ruby")}'][aria-selected='false']",
+      text: I18n.t("articles.index.tabs.google")
+    assert_select "[data-controller='google-search']", count: 0
+    assert_select "#articlesList"
   end
 
   test "GET index renders normalized search in Google search mount" do
@@ -35,8 +44,17 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_select "script[type='application/ld+json']", count: 0
   end
 
+  test "GET index ignores Google source when search is blank" do
+    get articles_path, params: { source: "google", search: "   " }
+
+    assert_response :success
+    assert_select "[role='tablist']", count: 0
+    assert_select "[data-controller='google-search']", count: 0
+    assert_select "#articlesList"
+  end
+
   test "GET index treats unknown source as Ruby-News" do
-    get articles_path, params: { source: "unknown" }
+    get articles_path, params: { source: "unknown", search: "Ruby" }
 
     assert_response :success
     assert_select "a[role='tab'][aria-selected='true'][aria-current='page']", text: I18n.t("articles.index.tabs.ruby_news")
