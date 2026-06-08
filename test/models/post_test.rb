@@ -192,8 +192,13 @@ class PostTest < ActiveSupport::TestCase
     assert_equal %w[short longform comment], Post.post_types.keys
   end
 
-  test "status enum은 draft published discarded를 제공한다" do
-    assert_equal %w[draft published discarded], Post.statuses.keys
+  test "status enum은 draft published를 제공한다" do
+    assert_equal %w[draft published], Post.statuses.keys
+  end
+
+  test "삭제는 Discard::Model로 처리한다" do
+    assert_includes Post.included_modules, Discard::Model
+    assert_equal :deleted_at, Post.discard_column
   end
 
   test "기존 단문은 제목 없이 published short로 유효하다" do
@@ -560,6 +565,27 @@ class PostTest < ActiveSupport::TestCase
 
     assert_difference -> { Federails::Activity.where(action: "Update", entity: post).count }, 1 do
       post.publish!
+    end
+  end
+
+  # discard는 Discard::Model로 처리하고, after_discard에서 Delete를 발행한다.
+  test "발행 장문을 discard하면 Delete 활동을 발행한다" do
+    post = posts(:longform_published)
+
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: post).count }, 1 do
+      post.discard
+    end
+
+    assert_predicate post.reload, :discarded?
+  end
+
+  # soft_deleted_method: :discarded? 설정으로 삭제된 레코드는 federails_tombstoned?가
+  # 참이 되어, deleted_at 갱신이 일으키는 일반 Update 활동은 억제된다.
+  test "발행 장문을 discard하면 Update 활동은 발행하지 않는다" do
+    post = posts(:longform_published)
+
+    assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
+      post.discard
     end
   end
 end

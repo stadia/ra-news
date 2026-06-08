@@ -12,9 +12,12 @@ class Post < ApplicationRecord
   # ── Includes ─────────────────────────────────────────────────────────
   include HtmlSanitizable
   include Posts::Longform
+  include Discard::Model
   include Federails::DataEntity
   include FederailsLikeable
   include FederailsBoostable
+
+  self.discard_column = :deleted_at
 
   # ── Framework Macros ─────────────────────────────────────────────────
   acts_as_nested_set
@@ -22,7 +25,7 @@ class Post < ApplicationRecord
 
   # ── Enums ────────────────────────────────────────────────────────────
   enum :post_type, [ :short, :longform, :comment ], default: :short
-  enum :status, [ :draft, :published, :discarded ], default: :published
+  enum :status, [ :draft, :published ], default: :published
 
   # ── Associations ─────────────────────────────────────────────────────
   belongs_to :user, optional: true
@@ -32,7 +35,7 @@ class Post < ApplicationRecord
   # ── Scopes ───────────────────────────────────────────────────────────
   scope :comments, -> { where(post_type: :comment) }
   scope :standalone, -> { where(article_id: nil) }
-  scope :visible, -> { where(status: :published) }
+  scope :visible, -> { where(status: :published).kept }
   scope :published_longform, -> { longform.published }
 
   # ── Validations ──────────────────────────────────────────────────────
@@ -55,12 +58,20 @@ class Post < ApplicationRecord
   after_commit :enqueue_reply_notification, on: :create
   after_commit :enqueue_article_thumbnail, on: :create
 
+  # ── Soft delete ──────────────────────────────────────────────────────
+  # Only published posts were ever federated, so only they emit a Delete/Undo.
+  # Drafts are local-only (never published), so discarding one sends nothing.
+  after_discard { create_federails_activity "Delete" if published? }
+  after_undiscard { create_federails_activity "Undo" if published? }
+
   # ── Federation ───────────────────────────────────────────────────────
   acts_as_federails_data handles: "Note",
                          actor_entity_method: :federation_actor_entity,
+                         soft_deleted_method: :discarded?,
+                         soft_delete_date_method: :deleted_at,
                          should_federate_method: :should_federate?
 
-  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; destroy! }
+  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; discard! }
 
   # ── Public Instance Methods ──────────────────────────────────────────
 

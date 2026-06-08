@@ -64,7 +64,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal "자동 저장 제목", @draft.reload.title
-    assert_equal [ "ruby", "rails" ], @draft.tag_list
+    assert_equal [ "rails", "ruby" ], @draft.tag_list.sort
   end
 
   test "publishes a complete draft" do

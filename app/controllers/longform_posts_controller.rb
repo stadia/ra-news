@@ -43,9 +43,10 @@ class LongformPostsController < ApplicationController
   end
 
   def destroy
-    # Soft-discard keeps the record so federation/tombstone lookups still resolve.
-    # `Post#discard!` emits an ActivityPub Delete for published posts; drafts never federated.
-    @post.discard!
+    # Soft-delete via Discard::Model keeps the record so federation/tombstone
+    # lookups still resolve. The model's `after_discard` callback emits an
+    # ActivityPub Delete for published posts; drafts never federated.
+    @post.discard
     redirect_to feed_path, notice: t("posts.longform.deleted")
   end
 
