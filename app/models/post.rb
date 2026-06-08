@@ -4,6 +4,7 @@
 class Post < ApplicationRecord
   # ── Constants ────────────────────────────────────────────────────────
   MAX_BODY_LENGTH = 1000
+  LONGFORM_SUMMARY_LENGTH = 280
 
   # ── Extend ───────────────────────────────────────────────────────────
   extend FriendlyId
@@ -121,6 +122,12 @@ class Post < ApplicationRecord
   #: () -> bool
   def published_longform?
     longform? && published?
+  end
+
+  #: () -> String
+  def longform_summary
+    stripped = ActionView::Base.full_sanitizer.sanitize(body.to_s).squish
+    stripped.truncate(LONGFORM_SUMMARY_LENGTH)
   end
 
   #: () -> (Post | Article)

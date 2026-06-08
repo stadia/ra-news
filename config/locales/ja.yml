@@ -241,6 +241,7 @@ ja:
       no_tags: タグなし
       status_draft: 下書き
       status_published: 公開済み
+      read_more: 本文を読む
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
@@ -287,6 +288,9 @@ ja:
       empty: まだいいねした記事がありません。
     post_list:
       empty: まだ投稿がありません。
+      drafts:
+        one: 下書きが1件あります。
+        other: 下書きが%{count}件あります。
     show:
       feed: フィード
       find_follow: フォロー検索

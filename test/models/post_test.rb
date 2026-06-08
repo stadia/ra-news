@@ -242,6 +242,12 @@ class PostTest < ActiveSupport::TestCase
     assert_not_includes Post.published_longform, @root_post
   end
 
+  test "longform_summary는 HTML을 제거하고 앞부분을 반환한다" do
+    post = Post.new(body: "<p>Ruby <strong>Rails</strong> 장문입니다.</p>", user: @user, post_type: :longform)
+
+    assert_equal "Ruby Rails 장문입니다.", post.longform_summary
+  end
+
   # ========== handle_federated_object? Tests ==========
 
   # ========== Reply Notification Tests ==========

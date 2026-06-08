@@ -241,6 +241,7 @@ en:
       no_tags: No tags
       status_draft: Draft
       status_published: Published
+      read_more: Read full post
       errors:
         blank_draft: Enter a title or body before saving this draft.
     post_card:
@@ -287,6 +288,9 @@ en:
       empty: No liked articles yet.
     post_list:
       empty: No posts yet.
+      drafts:
+        one: You have 1 draft.
+        other: You have %{count} drafts.
     show:
       feed: Feed
       find_follow: Find & Follow

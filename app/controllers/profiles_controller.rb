@@ -27,10 +27,11 @@ class ProfilesController < ApplicationController
 
   def posts
     @pagy, @posts = pagy(
-      @user.posts.standalone
+      @user.posts.standalone.visible
         .includes(:user, :federails_actor, :article, :tags)
         .order(created_at: :desc)
     )
+    @drafts_count = current_user == @user ? @user.posts.longform.draft.count : 0
     @liked_post_ids = liked_ids_for_posts(@posts)
     @boosted_post_ids = boosted_ids_for_posts(@posts)
     render_activity_page(:posts)
@@ -108,7 +109,8 @@ class ProfilesController < ApplicationController
           render Views::Profiles::PostList.new(
             user: @user, posts: @posts, pagy: @pagy,
             liked_post_ids: @liked_post_ids,
-            boosted_post_ids: @boosted_post_ids
+            boosted_post_ids: @boosted_post_ids,
+            drafts_count: @drafts_count
           )
         else
           render_show_with_activity(active_tab: :posts)
@@ -164,7 +166,8 @@ class ProfilesController < ApplicationController
         pagy: @pagy,
         liked_post_ids: @liked_post_ids,
         boosted_post_ids: @boosted_post_ids,
-        follow_actors: @follow_actors
+        follow_actors: @follow_actors,
+        drafts_count: @drafts_count
       )
     end
 

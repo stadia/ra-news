@@ -36,12 +36,16 @@ class Views::Posts::Show < Views::Base
     return unless root
 
     # 루트 포스트
-    render Components::Posts::PostCard.new(
-      post: root,
-      liked: @liked_post_ids.include?(root.id),
-      boosted: @boosted_post_ids.include?(root.id),
-      show_reply_badge: false
-    )
+    if root.longform?
+      render_longform(root)
+    else
+      render Components::Posts::PostCard.new(
+        post: root,
+        liked: @liked_post_ids.include?(root.id),
+        boosted: @boosted_post_ids.include?(root.id),
+        show_reply_badge: false
+      )
+    end
 
     # 답글 영역
     replies = @posts[1..] || []
@@ -53,6 +57,18 @@ class Views::Posts::Show < Views::Base
           boosted: @boosted_post_ids.include?(reply.id),
           show_reply_badge: false
         )
+      end
+    end
+  end
+
+  def render_longform(root)
+    article(class: "rounded-lg border border-border-muted bg-surface p-5 sm:p-8 space-y-5") do
+      h1(class: "text-3xl font-bold text-content") { root.title }
+      div(class: "text-sm text-content-muted") do
+        plain I18n.l(root.published_at || root.created_at, format: :short)
+      end
+      div(class: "prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
+        raw root.body.html_safe
       end
     end
   end

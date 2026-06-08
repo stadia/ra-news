@@ -82,12 +82,33 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_body
-    div(class: "text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
-      raw @post.body.html_safe
+    if @post.longform?
+      longform_body
+    else
+      short_body
     end
+
     post_tags if post_tag_names.any?
     media_attachments if @post.media_attachments.any?
     article_preview if @post.article.present?
+  end
+
+  def short_body
+    div(class: "text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
+      raw @post.body.html_safe
+    end
+  end
+
+  def longform_body
+    div(class: "space-y-2") do
+      h2(class: "text-xl font-semibold text-content") do
+        link_to @post.title, post_path(@post), class: "hover:text-accent-text transition-colors"
+      end
+      p(class: "text-sm leading-relaxed text-content-secondary wrap-break-word") do
+        plain @post.longform_summary
+      end
+      link_to t("posts.longform.read_more"), post_path(@post), class: "text-sm font-medium text-accent-text hover:underline"
+    end
   end
 
   def post_tags

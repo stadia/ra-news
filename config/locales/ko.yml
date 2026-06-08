@@ -241,6 +241,7 @@ ko:
       no_tags: 태그 없음
       status_draft: 초안
       status_published: 발행됨
+      read_more: 원문 읽기
       errors:
         blank_draft: 제목이나 본문 중 하나는 입력해야 합니다.
     post_card:
@@ -287,6 +288,9 @@ ko:
       empty: 아직 좋아요한 글이 없습니다.
     post_list:
       empty: 아직 작성한 글이 없습니다.
+      drafts:
+        one: 초안 1개가 있습니다.
+        other: 초안 %{count}개가 있습니다.
     show:
       feed: Feed
       find_follow: 팔로우 검색

@@ -100,4 +100,12 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
     assert_equal "unauthorized", JSON.parse(response.body)["error"]
   end
+
+  test "should show longform post with reading layout" do
+    post = posts(:longform_published)
+    get post_url(post)
+    assert_response :success
+    assert_includes response.body, post.title
+    assert_includes response.body, "발행된 장문 본문"
+  end
 end

@@ -4,12 +4,13 @@ class Views::Profiles::PostList < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::TurboFrameTag
 
-  def initialize(user:, posts:, pagy:, liked_post_ids: [], boosted_post_ids: [], embedded: false)
+  def initialize(user:, posts:, pagy:, liked_post_ids: [], boosted_post_ids: [], drafts_count: 0, embedded: false)
     @user = user
     @posts = posts
     @pagy = pagy
     @liked_post_ids = liked_post_ids
     @boosted_post_ids = boosted_post_ids
+    @drafts_count = drafts_count
     @embedded = embedded
   end
 
@@ -30,6 +31,8 @@ class Views::Profiles::PostList < Views::Base
   private
 
   def list_content
+    draft_notice
+
     if @posts.empty?
       div(class: "text-center py-16 text-content-disabled") do
         p { t("profiles.post_list.empty") }
@@ -47,6 +50,14 @@ class Views::Profiles::PostList < Views::Base
         end
         render Components::Pagination.new(pagy: @pagy)
       end
+    end
+  end
+
+  def draft_notice
+    return unless @drafts_count.to_i.positive?
+
+    div(class: "mb-4 rounded-lg border border-border-muted bg-surface p-4 text-sm text-content-secondary") do
+      plain t("profiles.post_list.drafts", count: @drafts_count)
     end
   end
 end

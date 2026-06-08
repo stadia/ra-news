@@ -127,4 +127,24 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, articles(:ruby_article).title_ko
     assert_includes response.body, posts(:root_post).body
   end
+
+  test "posts page shows published longform posts" do
+    sign_in users(:john)
+    get user_profile_posts_url(username: users(:john).username)
+    assert_response :success
+    assert_includes response.body, "발행된 긴 글"
+  end
+
+  test "posts page does not show drafts to public" do
+    get user_profile_posts_url(username: users(:john).username)
+    assert_response :success
+    assert_not_includes response.body, "작성 중인 긴 글"
+  end
+
+  test "owner posts page shows draft management entry" do
+    sign_in users(:john)
+    get user_profile_posts_url(username: users(:john).username)
+    assert_response :success
+    assert_includes response.body, "초안"
+  end
 end
