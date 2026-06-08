@@ -27,13 +27,13 @@
 
 ## 도메인 모델
 
-`Post`에 유형과 발행 상태를 추가한다.
+`Post`에 유형과 발행 상태를 추가한다. 두 값은 Rails enum으로 모델에 선언하고, 데이터베이스에는 정수 컬럼으로 저장한다.
 
-- `post_type`
+- `post_type` enum
   - `short`: 기존 독립 단문
   - `longform`: 장문
   - `comment`: 기사 댓글
-- `status`
+- `status` enum
   - `draft`: 자동 저장되지만 공개 피드와 ActivityPub에 노출하지 않는다.
   - `published`: 피드, 프로필 글 목록, 원문 페이지, ActivityPub에 노출한다.
   - `discarded`: 삭제 또는 폐기 상태로 다룬다.
@@ -42,6 +42,14 @@
 
 - `title`: 장문 제목
 - `published_at`: 장문 발행 시각
+
+마이그레이션은 기존 데이터를 다음처럼 백필한다.
+
+- `article_id`가 있는 기존 글은 `comment`
+- `article_id`가 없는 기존 글은 `short`
+- 기존 글의 `status`는 `published`
+- 새 단문과 댓글의 기본 `status`는 `published`
+- 새 장문 초안의 초기 `status`는 `draft`
 
 검증 규칙은 다음과 같다.
 
@@ -149,6 +157,7 @@ PostgreSQL 기준으로 검증한다.
 ## 승인된 결정
 
 - 완전한 블로그 모델이 아니라 기존 `Post` 확장에서 시작한다.
+- `post_type`과 `status`는 Rails enum으로 모델에 선언한다.
 - 장문에는 제목을 둔다.
 - 제목은 장문 모드에서만 필수다.
 - 기존 작성창의 `장문 쓰기` 버튼으로 전용 편집 화면에 진입한다.
