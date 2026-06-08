@@ -17,3 +17,4 @@ pin "chart.js" # @4.5.1
 pin "@kurkle/color", to: "@kurkle--color.js" # @0.3.4
 pin "@stimulus-components/lightbox", to: "@stimulus-components--lightbox.js" # @4.0.0
 pin "lightgallery" # @2.9.0
+pin "@stimulus-components/character-counter", to: "@stimulus-components--character-counter.js" # @5.1.0

@@ -1,0 +1,4 @@
+// @stimulus-components/character-counter@5.1.0 downloaded from https://ga.jspm.io/npm:@stimulus-components/character-counter@5.1.0/dist/stimulus-character-counter.mjs
+
+import{Controller as t}from"@hotwired/stimulus";const e=class _CharacterCounter extends t{initialize(){this.update=this.update.bind(this)}connect(){this.update(),this.inputTarget.addEventListener("input",this.update)}disconnect(){this.inputTarget.removeEventListener("input",this.update)}update(){this.counterTarget.innerHTML=this.count.toLocaleString()}get count(){let t=this.inputTarget.value.length;return this.hasCountdownValue&&(this.maxLength<0&&console.error(`[stimulus-character-counter] You need to add a maxlength attribute on the input to use countdown mode. The current value is: ${this.maxLength}.`),t=Math.max(this.maxLength-t,0)),t}get maxLength(){return this.inputTarget.maxLength}};e.targets=["input","counter"],e.values={countdown:Boolean};let n=e;export{n as default};
+
