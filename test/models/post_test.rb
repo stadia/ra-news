@@ -506,4 +506,43 @@ class PostTest < ActiveSupport::TestCase
 
     assert_equal "첫 번째 파일 · 두 번째 파일", result[:body]
   end
+
+  test "to_activitypub_object는 장문을 요약과 원문 링크로 전달한다" do
+    post = posts(:longform_published)
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, custom:) { captured = { record:, content:, custom: }; { "ok" => true } }) do
+      post.to_activitypub_object
+    end
+
+    assert_equal post, captured[:record]
+    assert_equal post.longform_summary, captured[:content]
+    assert_equal Rails.application.routes.url_helpers.post_url(post), captured[:custom]["url"]
+    assert_equal post.title, captured[:custom]["name"]
+    assert_equal post.updated_at.iso8601, captured[:custom]["updated"]
+  end
+
+  test "to_activitypub_object는 단문 본문 전체 발행을 유지한다" do
+    post = @root_post
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, custom:) { captured = { content:, custom: }; { "ok" => true } }) do
+      post.to_activitypub_object
+    end
+
+    assert_equal post.body, captured[:content]
+    assert_nil captured[:custom]["url"]
+    assert_nil captured[:custom]["name"]
+  end
+
+  # Federails::DataEntity는 after_update 콜백으로 레코드 갱신 시 Update 활동을
+  # 자동 발행한다(data_entity.rb L204). 따라서 publish!의 save!가 Update를 트리거하며,
+  # 별도의 ActivityPub update API를 추가할 필요가 없다.
+  test "publish!는 Federails Update 활동을 발행한다" do
+    post = posts(:longform_draft)
+
+    assert_difference -> { Federails::Activity.where(action: "Update", entity: post).count }, 1 do
+      post.publish!
+    end
+  end
 end

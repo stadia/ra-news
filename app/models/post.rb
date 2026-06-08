@@ -93,7 +93,16 @@ class Post < ApplicationRecord
       custom["attachment"] = media_attachments
     end
 
-    Federails::DataTransformer::Note.to_federation(self, content: body, custom: custom)
+    content = body
+
+    if longform?
+      content = longform_summary
+      custom["url"] = Rails.application.routes.url_helpers.post_url(self)
+      custom["name"] = title
+      custom["updated"] = updated_at.iso8601
+    end
+
+    Federails::DataTransformer::Note.to_federation(self, content: content, custom: custom)
   end
 
   #: () -> Integer
