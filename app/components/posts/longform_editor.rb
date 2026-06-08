@@ -18,7 +18,7 @@ class Components::Posts::LongformEditor < Components::Base
         longform_autosave_url_value: view_context.longform_post_path(@post, format: :json)
       }
     ) do |f|
-      header(f)
+      header
       title_field(f)
       body_field(f)
       footer
@@ -27,7 +27,7 @@ class Components::Posts::LongformEditor < Components::Base
 
   private
 
-  def header(f)
+  def header
     div(class: "flex items-center justify-between gap-3") do
       p(class: "text-sm text-content-muted", data: { longform_autosave_target: "status" }) do
         t("posts.longform.autosave_idle")
@@ -35,6 +35,8 @@ class Components::Posts::LongformEditor < Components::Base
 
       div(class: "flex items-center gap-2") do
         render RubyUI::Button.new(type: :submit, variant: :secondary) { t("posts.longform.preview") }
+        # formmethod: :post issues a real POST; the _method=patch field then overrides
+        # it so the request reaches the `patch :publish` member route.
         render RubyUI::Button.new(
           type: :submit,
           formaction: view_context.publish_longform_post_path(@post),

@@ -19,22 +19,27 @@ export default class extends Controller {
   }
 
   async save() {
-    const formData = new FormData(this.element)
     this.setStatus("저장 중")
 
-    const response = await fetch(this.urlValue, {
-      method: "PATCH",
-      headers: {
-        "Accept": "application/json",
-        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
-      },
-      body: formData
-    })
+    try {
+      const headers = { "Accept": "application/json" }
+      const csrfToken = document.querySelector("meta[name='csrf-token']")?.content
+      if (csrfToken) headers["X-CSRF-Token"] = csrfToken
 
-    if (response.ok) {
+      const response = await fetch(this.urlValue, {
+        method: "PATCH",
+        headers,
+        body: new FormData(this.element)
+      })
+
+      if (!response.ok) {
+        this.setStatus("저장 실패")
+        return
+      }
+
       const payload = await response.json()
       this.setStatus(payload.saved_at ? `저장됨 ${payload.saved_at}` : "저장됨")
-    } else {
+    } catch {
       this.setStatus("저장 실패")
     }
   }
