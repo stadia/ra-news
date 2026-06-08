@@ -1,0 +1,79 @@
+# frozen_string_literal: true
+
+require "application_system_test_case"
+
+class LongformPostsTest < ApplicationSystemTestCase
+  setup do
+    @user = users(:john)
+    login_as @user, scope: :user
+  end
+
+  test "user creates and publishes a longform post" do
+    visit feed_path
+
+    # 컴포저의 "장문 쓰기" 버튼이 초안을 만들고 편집기를 연다.
+    click_button I18n.t("posts.post_form.longform")
+
+    # 편집기 진입(헤딩은 sr-only h1, 텍스트로 확인 가능).
+    assert_text I18n.t("posts.longform.edit_heading")
+
+    # 제목 입력: form_with model: @post 가 :title 에 대해 id="post_title" 를 생성.
+    fill_in "post_title", with: "시스템 테스트 장문"
+
+    # Lexxy 본문 입력: <lexxy-editor> 커스텀 엘리먼트는 form-associated 이며
+    # JS `value` setter 가 내부 Lexical 에디터와 폼 값을 동기화한다.
+    # contenteditable 영역(.lexxy-editor__content)이 나타나길 기다린 뒤 value 를 설정한다.
+    fill_lexxy ".post-composer-editor", "<p>시스템 테스트 본문입니다.</p>"
+
+    click_button I18n.t("posts.longform.publish")
+
+    # 발행 후 읽기 레이아웃 원문 페이지로 리다이렉트된다.
+    assert_text "시스템 테스트 장문"
+    assert_text "시스템 테스트 본문입니다."
+
+    # 프로필 포스트 목록에도 발행된 장문이 노출된다.
+    visit user_profile_posts_path(username: @user.username)
+    assert_text "시스템 테스트 장문"
+  end
+
+  test "owner re-opens a draft, edits, and deletes a published post" do
+    draft = posts(:longform_draft)
+
+    # 초안 안내(draft notice)에 기존 초안이 편집기 링크로 노출된다.
+    # 이 영역은 프로필의 "activity-list" 터보 프레임 안에 있으므로, 링크 클릭은
+    # 프레임 스코프 네비게이션이 된다(편집기 응답에는 동일 프레임이 없어 프레임이
+    # "Content missing" 으로 대체됨 — 아래 CONCERN 참고). 따라서 링크의 목적지를
+    # 확인한 뒤 편집기를 직접 방문해 초안이 다시 열리는지 검증한다.
+    visit user_profile_posts_path(username: @user.username)
+    draft_link = find_link(draft.title)
+    assert_equal edit_longform_post_path(draft), URI(draft_link[:href]).path
+
+    visit draft_link[:href]
+    assert_text I18n.t("posts.longform.edit_heading")
+    # 초안 본문이 편집기에 다시 로드된다.
+    assert_text "초안 본문입니다."
+
+    # 발행 장문을 원문 페이지에서 삭제(soft discard)하면 목록에서 사라진다.
+    visit post_path(posts(:longform_published))
+    accept_confirm { click_button I18n.t("posts.longform.delete") }
+
+    # 삭제 후 프로필 목록에서 해당 발행 장문이 더 이상 보이지 않는다.
+    visit user_profile_posts_path(username: @user.username)
+    assert_no_text posts(:longform_published).title
+  end
+
+  private
+
+  # Lexxy 커스텀 엘리먼트를 구동한다. `<lexxy-editor>` 는 form-associated 이고
+  # JS `value` setter 가 폼 값(setFormValue)을 채운다. `.set`/`fill_in` 은 커스텀
+  # 엘리먼트에 동작하지 않으므로 에디터가 초기화된 뒤 value 프로퍼티를 직접 설정한다.
+  def fill_lexxy(selector, html)
+    assert_selector "#{selector} .lexxy-editor__content", wait: 10
+    execute_script(<<~JS, find(selector), html)
+      const el = arguments[0];
+      el.value = arguments[1];
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new CustomEvent("lexxy:change", { bubbles: true }));
+    JS
+  end
+end
