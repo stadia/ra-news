@@ -75,9 +75,15 @@
 
 ## Lexxy 사용
 
-현재 Lexxy 래퍼는 관리 화면용 `app/madmin/fields/lexxy_editor_field.rb`에 있다. 장문 편집기에서는 관리 화면 필드를 직접 재사용하지 않는다.
+Lexxy는 이미 앱 작성 폼에서 사용 중이다.
 
-대신 앱 화면용 Phlex 컴포넌트를 새로 두고 Lexxy 설정만 공유한다.
+- `Components::Posts::PostForm`
+- `Components::Comments::CommentForm`
+- `Components::Comments::CommentReplyForm`
+
+장문 편집기는 이 기존 앱 폼 패턴의 `f.lexxy_rich_textarea` 사용을 기준으로 확장한다. 관리 화면용 `app/madmin/fields/lexxy_editor_field.rb`는 별도 래퍼로 존재하지만, 장문 편집기의 주된 기준은 현재 단문과 댓글 작성 폼이다.
+
+장문 전용 앱 컴포넌트는 기존 Lexxy 로딩, CSS, 이벤트 패턴을 재사용하되 설정만 장문 작성에 맞게 조정한다.
 
 - 장문 편집용 툴바 설정
 - 링크 삽입
