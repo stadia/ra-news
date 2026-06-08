@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add longform writing as a first slice by extending `Post` with draft/published state, a dedicated editor, summary-link federation, and profile/feed rendering while preserving existing short post and comment behavior.
+**Goal:** Add longform writing as a first slice by extending `Post` with draft/published state, a dedicated editor, summary-link federation, profile/feed rendering, re-editing of existing drafts and published posts, and owner-only soft-discard delete — all while preserving existing short post and comment behavior.
 
 **Architecture:** Keep `Post` as the shared social object and add enum-backed `post_type` and `status` plus `published_at`. Use a new `LongformPostsController` for draft/edit/autosave/publish/update flows so `PostsController` stays focused on short posts and article comments. Reuse existing Lexxy form patterns from `Components::Posts::PostForm`, `Components::Comments::CommentForm`, and `Components::Comments::CommentReplyForm`.
 
@@ -37,8 +37,11 @@
 - Modify `app/components/posts/post_form.rb`: add `장문 쓰기` entry action.
 - Modify `app/components/posts/post_card.rb`: render longform cards with title, excerpt, and read link.
 - Modify `app/views/posts/show.rb`: render longform root posts with a reading layout and replies below.
-- Modify `app/controllers/profiles_controller.rb`: hide drafts from public lists and expose owner draft counts.
-- Modify `app/views/profiles/post_list.rb`: owner-only draft management entry.
+- Modify `app/models/concerns/posts/longform.rb`: longform-specific behavior extracted from `Post` (summary, publish, draft/published predicates, draft validation, and the `discard!` soft-delete helper).
+- Modify `app/controllers/profiles_controller.rb`: hide drafts and discarded posts from public lists, expose owner draft count and draft collection.
+- Modify `app/views/profiles/post_list.rb`: owner-only draft list with edit/delete entries.
+- Add `destroy` (soft discard) to `app/controllers/longform_posts_controller.rb` and `:destroy` to the longform route; add owner-only edit/delete controls to `app/views/posts/show.rb` for published longform.
+- Verify the public feed query uses `.visible` so drafts and discarded longform posts do not leak.
 - Modify `config/locales/ko.yml`, `config/locales/en.yml`, `config/locales/ja.yml`: new UI labels and errors.
 - Run graphify rebuild after code changes: `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"`.
 
@@ -1288,7 +1291,209 @@ git commit -m "Federate longform posts as summaries"
 
 ---
 
-### Task 6: System-Level Flow Coverage
+### Task 6: Edit Entry Points and Soft-Discard Delete
+
+**Files:**
+- Modify: `config/routes.rb` (add `:destroy`)
+- Modify: `app/controllers/longform_posts_controller.rb` (add `destroy` = soft discard)
+- Modify: `app/models/concerns/posts/longform.rb` (add `discard!` helper)
+- Modify: `app/controllers/profiles_controller.rb` (load owner draft collection, not only count)
+- Modify: `app/views/profiles/post_list.rb` (draft notice → editable draft list with edit/delete entries)
+- Modify: `app/views/posts/show.rb` (owner-only edit/delete controls on published longform root)
+- Verify/modify: the public feed query (e.g. `HomeController`) so it uses `.visible` and excludes `draft`/`discarded`
+- Modify: `test/controllers/longform_posts_controller_test.rb`
+- Modify: `test/controllers/profiles_controller_test.rb`
+- Modify: `config/locales/ko.yml`, `config/locales/en.yml`, `config/locales/ja.yml`
+
+**Decisions (approved):** delete is soft discard (`status: :discarded`), applies to both drafts and published longform, owner-only; publishing-then-deleting a published post should federate an ActivityPub `Delete`/Tombstone using the existing Federails mechanism (investigate, do not invent an API). Drafts never federate on delete.
+
+- [ ] **Step 1: Verify the public feed query and draft leakage risk**
+
+Task 4 added `.visible` only to the profile posts query. Confirm whether the main/public feed also excludes drafts and discarded posts.
+
+Run:
+
+```bash
+mise exec -- bin/rails 'ai:tool[search_code]' pattern="standalone" match_type=trace
+mise exec -- bin/rails 'ai:tool[context]' controller=HomeController action=index
+```
+
+Expected: identify the feed query. If it lists standalone posts WITHOUT `.visible`, drafts and discarded longform posts will leak into the feed. Note the exact query to fix in Step 7.
+
+- [ ] **Step 2: Write failing controller tests**
+
+Append to `test/controllers/longform_posts_controller_test.rb`:
+
+```ruby
+  test "requires authentication to delete" do
+    delete longform_post_url(@draft)
+
+    assert_redirected_to new_user_session_url
+  end
+
+  test "soft-discards a draft and redirects" do
+    sign_in @user
+
+    delete longform_post_url(@draft)
+
+    assert_predicate @draft.reload, :discarded?
+    assert_predicate Post.where(id: @draft.id), :exists?
+  end
+
+  test "soft-discards a published longform post" do
+    sign_in @user
+
+    delete longform_post_url(@published)
+
+    assert_predicate @published.reload, :discarded?
+  end
+
+  test "does not allow deleting another user's post" do
+    @draft.update!(user: @other_user)
+    sign_in @user
+
+    delete longform_post_url(@draft)
+
+    assert_not_predicate @draft.reload, :discarded?
+  end
+
+  test "discarded longform is excluded from owner profile list" do
+    sign_in @user
+    @published.discard!
+
+    get user_profile_posts_url(username: @user.username)
+
+    assert_response :success
+    assert_not_includes response.body, @published.title
+  end
+```
+
+VERIFY: the real delete route helper (`longform_post_url` for `DELETE`), that `discard!` (Step 4) exists, and that `@user.username`/fixtures resolve. Adapt the redirect target assertions to whatever `destroy` actually redirects to (see Step 5).
+
+- [ ] **Step 3: Run controller tests to verify failure**
+
+Run:
+
+```bash
+TEST_DATABASE_URL=postgres://postgres:postgres1234@localhost:5432/ra-news_test mise exec -- bin/rails test test/controllers/longform_posts_controller_test.rb
+```
+
+Expected: FAIL (no `destroy` route/action, no `discard!`).
+
+- [ ] **Step 4: Add `discard!` helper to the longform concern**
+
+In `app/models/concerns/posts/longform.rb`, add a public helper:
+
+```ruby
+  def discard!
+    update!(status: :discarded)
+  end
+```
+
+Keep it minimal; `discarded` is already an enum value from Task 1. Do not destroy the record.
+
+- [ ] **Step 5: Add `destroy` route and action**
+
+In `config/routes.rb`, add `:destroy` to the longform resource:
+
+```ruby
+    resources :longform_posts, only: [ :create, :edit, :update, :destroy ] do
+      member do
+        patch :publish
+      end
+    end
+```
+
+In `app/controllers/longform_posts_controller.rb`, add `:destroy` to the `set_post`/`authorize_owner!` `before_action` lists and add:
+
+```ruby
+  def destroy
+    federate_longform_deletion if @post.published?
+    @post.discard!
+
+    redirect_to feed_path, notice: t("posts.longform.deleted")
+  end
+```
+
+Add a private helper that federates the deletion for published posts. INVESTIGATE the Federails mechanism first (like Task 5): how does Federails publish a `Delete`/Tombstone for a record that is soft-discarded rather than destroyed?
+
+```bash
+mise exec -- bin/rails 'ai:tool[search_code]' pattern="Delete" match_type=trace
+mise exec -- bin/rails 'ai:tool[search_code]' pattern="Tombstone" match_type=trace
+mise exec -- bin/rails 'ai:tool[search_code]' pattern="create_federails_activity" match_type=trace
+```
+
+If Federails exposes a way to publish a `Delete` activity for a still-present record (e.g. `create_federails_activity "Delete"` or a tombstone helper), call it in `federate_longform_deletion`. If there is NO mechanism that fits soft-discard, do NOT invent an ActivityPub API: implement the soft-discard correctly, add a focused test documenting the current federation behavior, and report the gap for follow-up. Report exactly what you wired or deferred.
+
+- [ ] **Step 6: Load owner draft collection for the profile list**
+
+In `ProfilesController#posts`, in addition to `@drafts_count`, load the owner's drafts so the list can link to each:
+
+```ruby
+      @drafts = current_user == @user ? @user.posts.longform.draft.order(updated_at: :desc) : Post.none
+      @drafts_count = @drafts.size
+```
+
+Thread `@drafts` through the same render paths that already carry `drafts_count` (`render_activity_page`, `render_show_with_activity`, `Views::Profiles::Show`, `Views::Profiles::PostList`) as a `drafts:` keyword with a default of an empty array/relation. Keep non-owner paths empty.
+
+- [ ] **Step 7: Fix the public feed query (if Step 1 found leakage)**
+
+If the feed query from Step 1 does not already exclude drafts/discarded, add `.visible` to it so only published posts appear. Add a regression test in the appropriate feed/home controller test asserting a draft longform does NOT appear in the feed body. If the feed already filters correctly, note that and skip.
+
+- [ ] **Step 8: Render edit/delete entries**
+
+In `app/views/profiles/post_list.rb`, replace the count-only `draft_notice` with an owner-only draft list. Each row links to `edit_longform_post_path(draft)` and offers a delete control (a `button_to`/form issuing `DELETE longform_post_path(draft)` with a confirm). Keep the existing published-card rendering unchanged. Guard everything behind owner-only data (`@drafts` empty for non-owners). Match existing Phlex/RubyUI button + `link_to` conventions and semantic tokens.
+
+In `app/views/posts/show.rb` `render_longform`, add owner-only controls (visible only when `current_user == root.user`): an `수정` link to `edit_longform_post_path(root)` and a `삭제` control issuing `DELETE longform_post_path(root)` with a confirm dialog. Verify how the view accesses `current_user` (helper available in Phlex views — confirm the project pattern).
+
+- [ ] **Step 9: Add locale keys**
+
+Add under `posts.longform` (all three locales): `deleted`, `edit`, `delete`, `delete_confirm`. Add a `profiles.post_list` heading for the draft list (e.g. `drafts_heading`). Korean examples:
+
+```yaml
+        deleted: 글을 삭제했습니다.
+        edit: 수정
+        delete: 삭제
+        delete_confirm: 이 글을 삭제할까요?
+```
+
+```yaml
+      post_list:
+        drafts_heading: 작성 중인 초안
+```
+
+Provide natural English and Japanese equivalents.
+
+- [ ] **Step 10: Run focused tests**
+
+Run:
+
+```bash
+TEST_DATABASE_URL=postgres://postgres:postgres1234@localhost:5432/ra-news_test mise exec -- bin/rails test test/controllers/longform_posts_controller_test.rb test/controllers/profiles_controller_test.rb test/models/post_test.rb
+```
+
+Expected: PASS.
+
+- [ ] **Step 11: Validate changed files**
+
+Run:
+
+```bash
+mise exec -- bin/rails 'ai:tool[validate]' files=app/controllers/longform_posts_controller.rb,app/models/concerns/posts/longform.rb,app/controllers/profiles_controller.rb,app/views/profiles/post_list.rb,app/views/posts/show.rb,config/routes.rb level=rails
+```
+
+Expected: validation passes.
+
+- [ ] **Step 12: Commit**
+
+```bash
+git add config/routes.rb app/controllers/longform_posts_controller.rb app/models/concerns/posts/longform.rb app/controllers/profiles_controller.rb app/views/profiles/post_list.rb app/views/posts/show.rb test/controllers/longform_posts_controller_test.rb test/controllers/profiles_controller_test.rb config/locales/ko.yml config/locales/en.yml config/locales/ja.yml
+git commit -m "Add longform edit entry points and soft-discard delete"
+```
+
+---
+
+### Task 7: System-Level Flow Coverage
 
 **Files:**
 - Create or modify: `test/system/longform_posts_test.rb`
@@ -1331,6 +1536,22 @@ class LongformPostsTest < ApplicationSystemTestCase
     visit user_profile_posts_path(username: users(:john).username)
     assert_text "시스템 테스트 장문"
   end
+
+  test "owner re-opens a draft, edits, and deletes a published post" do
+    sign_in users(:john)
+
+    # 초안 안내에서 기존 초안을 편집기로 다시 연다
+    visit user_profile_posts_path(username: users(:john).username)
+    click_link "작성 중인 긴 글"
+    assert_text "긴 글 쓰기"
+
+    # 발행 장문을 원문 페이지에서 삭제(soft discard)하면 목록에서 사라진다
+    visit post_path(posts(:longform_published))
+    accept_confirm { click_button "삭제" }
+
+    visit user_profile_posts_path(username: users(:john).username)
+    assert_no_text "발행된 긴 글"
+  end
 end
 ```
 
@@ -1353,7 +1574,7 @@ git commit -m "Add longform post system coverage"
 
 ---
 
-### Task 7: Final Verification and Graph Update
+### Task 8: Final Verification and Graph Update
 
 **Files:**
 - Modify: `graphify-out/*` generated by graphify if the rebuild changes tracked graph files.
@@ -1363,7 +1584,7 @@ git commit -m "Add longform post system coverage"
 Run:
 
 ```bash
-mise exec -- bin/rails 'ai:tool[validate]' files=app/models/post.rb,app/controllers/posts_controller.rb,app/controllers/longform_posts_controller.rb,app/components/posts/post_form.rb,app/components/posts/post_card.rb,app/components/posts/longform_editor.rb,app/views/posts/show.rb,app/views/longform_posts/edit.rb,app/views/profiles/post_list.rb,app/controllers/profiles_controller.rb level=rails
+mise exec -- bin/rails 'ai:tool[validate]' files=app/models/post.rb,app/models/concerns/posts/longform.rb,app/controllers/posts_controller.rb,app/controllers/longform_posts_controller.rb,app/components/posts/post_form.rb,app/components/posts/post_card.rb,app/components/posts/longform_editor.rb,app/views/posts/show.rb,app/views/longform_posts/edit.rb,app/views/profiles/post_list.rb,app/controllers/profiles_controller.rb level=rails
 ```
 
 Expected: validation passes.
@@ -1415,6 +1636,7 @@ Expected: only intended longform files plus generated graph updates are changed,
 ```bash
 git add graphify-out \
   app/models/post.rb \
+  app/models/concerns/posts/longform.rb \
   app/controllers/posts_controller.rb \
   app/controllers/longform_posts_controller.rb \
   app/controllers/profiles_controller.rb \
