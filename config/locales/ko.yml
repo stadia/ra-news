@@ -227,6 +227,12 @@ ko:
       submit: 재설정 메일 보내기
   posts:
     longform:
+      untitled_draft: 제목 없는 초안
+      edit_title: 긴 글 쓰기 | Ruby-News
+      edit_heading: 긴 글 쓰기
+      published: 글을 발행했습니다.
+      updated: 글을 수정했습니다.
+      forbidden: 이 글을 수정할 권한이 없습니다.
       errors:
         blank_draft: 제목이나 본문 중 하나는 입력해야 합니다.
     post_card:

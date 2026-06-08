@@ -227,6 +227,12 @@ en:
       submit: Send reset email
   posts:
     longform:
+      untitled_draft: Untitled draft
+      edit_title: Write longform | Ruby-News
+      edit_heading: Write longform
+      published: Post published.
+      updated: Post updated.
+      forbidden: You do not have permission to edit this post.
       errors:
         blank_draft: Enter a title or body before saving this draft.
     post_card:

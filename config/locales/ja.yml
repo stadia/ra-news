@@ -227,6 +227,12 @@ ja:
       submit: 再設定メールを送信
   posts:
     longform:
+      untitled_draft: 無題の下書き
+      edit_title: 長文を書く | Ruby-News
+      edit_heading: 長文を書く
+      published: 投稿を公開しました。
+      updated: 投稿を更新しました。
+      forbidden: この投稿を編集する権限がありません。
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:

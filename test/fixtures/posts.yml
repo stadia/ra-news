@@ -39,6 +39,7 @@ longform_draft:
   user: john
   post_type: 1
   status: 0
+  slug: "lf-draft-fixture"
   lft: 9
   rgt: 10
   depth: 0
@@ -50,6 +51,7 @@ longform_published:
   post_type: 1
   status: 1
   published_at: <%= 2.days.ago %>
+  slug: "lf-published-fixture"
   lft: 11
   rgt: 12
   depth: 0

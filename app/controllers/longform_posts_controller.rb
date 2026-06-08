@@ -1,0 +1,59 @@
+# frozen_string_literal: true
+# rbs_inline: enabled
+
+class LongformPostsController < ApplicationController
+  before_action :authenticate_user!
+  before_action :set_post, only: [ :edit, :update, :publish ]
+  before_action :authorize_owner!, only: [ :edit, :update, :publish ]
+
+  def create
+    post = current_user.posts.create!(
+      post_type: :longform,
+      status: :draft,
+      title: I18n.t("posts.longform.untitled_draft"),
+      body: ""
+    )
+    redirect_to edit_longform_post_path(post)
+  end
+
+  def edit
+    render Views::LongformPosts::Edit.new(post: @post)
+  end
+
+  def update
+    if @post.update(longform_post_params)
+      respond_to do |format|
+        format.html { redirect_to post_path(@post), notice: t("posts.longform.updated") }
+        format.json { render json: { status: "ok", saved_at: l(Time.current, format: :short) } }
+      end
+    else
+      respond_to do |format|
+        format.html { render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity }
+        format.json { render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def publish
+    @post.assign_attributes(longform_post_params) if params[:post].present?
+    @post.publish!
+    redirect_to post_path(@post), notice: t("posts.longform.published")
+  rescue ActiveRecord::RecordInvalid
+    render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity
+  end
+
+  private
+
+  def set_post
+    @post = Post.longform.find_by!(slug: params[:id])
+  end
+
+  def authorize_owner!
+    return if @post.user == current_user
+    redirect_to feed_path, alert: t("posts.longform.forbidden")
+  end
+
+  def longform_post_params
+    params.expect(post: [ :title, :body, :tag_list ])
+  end
+end
