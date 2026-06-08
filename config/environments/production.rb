@@ -125,6 +125,7 @@ Rails.application.configure do
               "https://ruby-news.jp",
               "https://www.ruby-news.jp"
       resource "/assets/*", headers: :any, methods: [ :get, :head, :options ]
+      resource "/vendor/*", headers: :any, methods: [ :get, :head, :options ]
     end
   end
 end
