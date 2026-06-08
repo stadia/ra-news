@@ -676,6 +676,13 @@ GEM
       websocket (~> 1.0)
     semantic_logger (4.18.0)
       concurrent-ruby (~> 1.0)
+    sentry-rails (6.6.0)
+      railties (>= 5.2.0)
+      sentry-ruby (~> 6.6.0)
+    sentry-ruby (6.6.0)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      logger
     sexp_processor (4.17.5)
     simplecov (0.22.0)
       docile (~> 1.1)
@@ -890,6 +897,8 @@ DEPENDENCIES
   ruby_ui (~> 1.2)
   schema_dot_org
   selenium-webdriver
+  sentry-rails
+  sentry-ruby
   simplecov
   sitemap_generator
   slack-ruby-client (~> 3.1.0)
