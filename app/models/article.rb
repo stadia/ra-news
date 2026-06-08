@@ -144,6 +144,7 @@ class Article < ApplicationRecord
     [
       "# #{display_title}\n",
       "- **원문 URL**: #{url}",
+      "- **Ruby-News URL**: #{Rails.application.routes.url_helpers.article_url(self)}",
       (published_at.present? ? "- **발행일**: #{published_at}" : nil),
       (display_summary_key.present? ? "\n## 요약\n#{display_summary_key.map { |item| "- #{item}" }.join("\n")}" : nil),
       (display_summary_detail.is_a?(Hash) && display_summary_detail["introduction"].present? ? "\n## 소개\n#{display_summary_detail['introduction']}" : nil),

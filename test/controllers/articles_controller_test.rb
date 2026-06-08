@@ -183,6 +183,8 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "text/markdown; charset=utf-8", response.content_type
     assert_includes response.body, "# #{article.display_title}"
+    assert_includes response.body, "- **원문 URL**: #{article.url}"
+    assert_includes response.body, "- **Ruby-News URL**: #{Rails.application.routes.url_helpers.article_url(article)}"
     assert_includes response.body, "## 요약"
     assert_includes response.body, "- 핵심 요약 1"
     assert_includes response.body, "요약된 본문"
