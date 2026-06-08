@@ -226,6 +226,9 @@ en:
       heading: Forgot your password?
       submit: Send reset email
   posts:
+    longform:
+      errors:
+        blank_draft: Enter a title or body before saving this draft.
     post_card:
       linked_article: Linked article
       reply_to: Reply to %{name}

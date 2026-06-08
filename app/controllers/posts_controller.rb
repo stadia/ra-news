@@ -55,7 +55,7 @@ class PostsController < ApplicationController
   private
 
   def create_article_comment
-    @post = @article.posts.build(article_comment_params)
+    @post = @article.posts.build(article_comment_params.merge(post_type: :comment, status: :published))
     @post.user = current_user
 
     respond_to do |format|
@@ -73,6 +73,9 @@ class PostsController < ApplicationController
 
   def create_standalone_post
     @post = current_user.posts.build(normalized_post_params)
+    @post.post_type = :short
+    @post.status = :published
+    @post.published_at ||= Time.current
 
     respond_to do |format|
       if @post.save

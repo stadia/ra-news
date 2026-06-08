@@ -19,17 +19,25 @@ class Post < ApplicationRecord
   acts_as_nested_set
   acts_as_taggable_on :tags
 
+  # ── Enums ────────────────────────────────────────────────────────────
+  enum :post_type, [ :short, :longform, :comment ], default: :short
+  enum :status, [ :draft, :published, :discarded ], default: :published
+
   # ── Associations ─────────────────────────────────────────────────────
   belongs_to :user, optional: true
   belongs_to :article, optional: true, counter_cache: :posts_count
   belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
 
   # ── Scopes ───────────────────────────────────────────────────────────
-  scope :comments, -> { where.not(article_id: nil) }
+  scope :comments, -> { where(post_type: :comment) }
   scope :standalone, -> { where(article_id: nil) }
+  scope :visible, -> { where(status: :published) }
+  scope :published_longform, -> { longform.published }
 
   # ── Validations ──────────────────────────────────────────────────────
-  validates :body, presence: true
+  validates :body, presence: true, unless: :draft_longform?
+  validates :title, presence: true, if: :published_longform?
+  validate :validate_longform_draft_content
   validates :slug, uniqueness: true, allow_nil: true
   validate :validate_user_or_actor
   validate :validate_parent_post
@@ -98,9 +106,21 @@ class Post < ApplicationRecord
     boosters_count.to_i
   end
 
+  #: () -> void
+  def publish!
+    self.published_at ||= Time.current
+    self.status = :published
+    save!
+  end
+
   #: () -> bool
-  def comment?
-    article_id.present?
+  def draft_longform?
+    longform? && draft?
+  end
+
+  #: () -> bool
+  def published_longform?
+    longform? && published?
   end
 
   #: () -> (Post | Article)
@@ -189,6 +209,14 @@ class Post < ApplicationRecord
     if parent.nil?
       errors.add(:parent_id, "원본 포스트를 찾을 수 없습니다.")
     end
+  end
+
+  #: () -> void
+  def validate_longform_draft_content
+    return unless draft_longform?
+    return if title.present? || body.present?
+
+    errors.add(:base, I18n.t("posts.longform.errors.blank_draft"))
   end
 
   def should_generate_new_friendly_id?

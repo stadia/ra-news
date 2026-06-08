@@ -174,6 +174,62 @@ class PostTest < ActiveSupport::TestCase
     assert_not_includes standalone, @comment_post
   end
 
+  # ========== Longform / Enum Tests ==========
+
+  test "post_type enum은 short longform comment를 제공한다" do
+    assert_equal %w[short longform comment], Post.post_types.keys
+  end
+
+  test "status enum은 draft published discarded를 제공한다" do
+    assert_equal %w[draft published discarded], Post.statuses.keys
+  end
+
+  test "기존 단문은 제목 없이 published short로 유효하다" do
+    post = Post.new(body: "단문", user: @user)
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+    assert_predicate post, :short?
+    assert_predicate post, :published?
+  end
+
+  test "기사 댓글은 comment 타입으로 지정할 수 있다" do
+    post = Post.new(body: "댓글", user: @user, article: @article, post_type: :comment)
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+    assert_predicate post, :comment?
+  end
+
+  test "장문 초안은 제목만 있으면 저장할 수 있다" do
+    post = Post.new(title: "초안 제목", body: "", user: @user, post_type: :longform, status: :draft)
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+  end
+
+  test "장문 초안은 본문만 있으면 저장할 수 있다" do
+    post = Post.new(title: "", body: "<p>초안 본문</p>", user: @user, post_type: :longform, status: :draft)
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+  end
+
+  test "완전히 비어 있는 장문 초안은 유효하지 않다" do
+    post = Post.new(title: "", body: "", user: @user, post_type: :longform, status: :draft)
+    assert_not post.valid?
+    assert_predicate post.errors[:base], :any?
+  end
+
+  test "발행 장문은 제목과 본문이 필요하다" do
+    missing_title = Post.new(body: "<p>본문</p>", user: @user, post_type: :longform, status: :published)
+    missing_body = Post.new(title: "제목", body: "", user: @user, post_type: :longform, status: :published)
+    assert_not missing_title.valid?
+    assert_predicate missing_title.errors[:title], :any?
+    assert_not missing_body.valid?
+    assert_predicate missing_body.errors[:body], :any?
+  end
+
+  test "published_longform 스코프는 발행된 장문만 반환한다" do
+    draft = posts(:longform_draft)
+    published = posts(:longform_published)
+    assert_includes Post.published_longform, published
+    assert_not_includes Post.published_longform, draft
+    assert_not_includes Post.published_longform, @root_post
+  end
+
   # ========== handle_federated_object? Tests ==========
 
   # ========== Reply Notification Tests ==========

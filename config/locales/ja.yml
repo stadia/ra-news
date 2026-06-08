@@ -226,6 +226,9 @@ ja:
       heading: パスワードをお忘れですか?
       submit: 再設定メールを送信
   posts:
+    longform:
+      errors:
+        blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
       linked_article: 関連記事
       reply_to: "%{name}さんへの返信"

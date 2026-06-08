@@ -27,6 +27,29 @@ comment_post:
   body: "기사에 달린 댓글입니다."
   user: john
   article: ruby_article
+  post_type: 2
+  status: 1
   lft: 7
   rgt: 8
+  depth: 0
+
+longform_draft:
+  title: "작성 중인 긴 글"
+  body: "<p>초안 본문입니다.</p>"
+  user: john
+  post_type: 1
+  status: 0
+  lft: 9
+  rgt: 10
+  depth: 0
+
+longform_published:
+  title: "발행된 긴 글"
+  body: "<p>발행된 장문 본문입니다. Ruby와 Rails에 대한 긴 글입니다.</p>"
+  user: john
+  post_type: 1
+  status: 1
+  published_at: <%= 2.days.ago %>
+  lft: 11
+  rgt: 12
   depth: 0

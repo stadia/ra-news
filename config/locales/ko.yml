@@ -226,6 +226,9 @@ ko:
       heading: 비밀번호를 잊으셨나요?
       submit: 재설정 메일 보내기
   posts:
+    longform:
+      errors:
+        blank_draft: 제목이나 본문 중 하나는 입력해야 합니다.
     post_card:
       linked_article: 연결된 기사
       reply_to: "%{name}님에게 답글"
