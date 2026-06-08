@@ -4,7 +4,6 @@
 class Post < ApplicationRecord
   # ── Constants ────────────────────────────────────────────────────────
   MAX_BODY_LENGTH = 1000
-  LONGFORM_SUMMARY_LENGTH = 280
 
   # ── Extend ───────────────────────────────────────────────────────────
   extend FriendlyId
@@ -12,6 +11,7 @@ class Post < ApplicationRecord
 
   # ── Includes ─────────────────────────────────────────────────────────
   include HtmlSanitizable
+  include Posts::Longform
   include Federails::DataEntity
   include FederailsLikeable
   include FederailsBoostable
@@ -38,7 +38,6 @@ class Post < ApplicationRecord
   # ── Validations ──────────────────────────────────────────────────────
   validates :body, presence: true, unless: :draft_longform?
   validates :title, presence: true, if: :published_longform?
-  validate :validate_longform_draft_content
   validates :slug, uniqueness: true, allow_nil: true
   validate :validate_user_or_actor
   validate :validate_parent_post
@@ -105,29 +104,6 @@ class Post < ApplicationRecord
   #: () -> Integer
   def boosts_count
     boosters_count.to_i
-  end
-
-  #: () -> void
-  def publish!
-    self.published_at ||= Time.current
-    self.status = :published
-    save!
-  end
-
-  #: () -> bool
-  def draft_longform?
-    longform? && draft?
-  end
-
-  #: () -> bool
-  def published_longform?
-    longform? && published?
-  end
-
-  #: () -> String
-  def longform_summary
-    stripped = ActionView::Base.full_sanitizer.sanitize(body.to_s).squish
-    stripped.truncate(LONGFORM_SUMMARY_LENGTH)
   end
 
   #: () -> (Post | Article)
@@ -216,14 +192,6 @@ class Post < ApplicationRecord
     if parent.nil?
       errors.add(:parent_id, "원본 포스트를 찾을 수 없습니다.")
     end
-  end
-
-  #: () -> void
-  def validate_longform_draft_content
-    return unless draft_longform?
-    return if title.present? || body.present?
-
-    errors.add(:base, I18n.t("posts.longform.errors.blank_draft"))
   end
 
   def should_generate_new_friendly_id?

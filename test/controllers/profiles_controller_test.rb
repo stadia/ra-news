@@ -145,6 +145,6 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:john)
     get user_profile_posts_url(username: users(:john).username)
     assert_response :success
-    assert_includes response.body, "초안"
+    assert_includes response.body, "초안 1개가 있습니다."
   end
 end
