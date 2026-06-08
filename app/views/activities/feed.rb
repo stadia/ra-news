@@ -20,7 +20,7 @@ class Views::Activities::Feed < Views::Base
         posts_and_pagination
       end
     else
-      turbo_frame_tag("feed_page_#{@pagy.page}", class: "block space-y-4") do
+      turbo_frame_tag("feed_page_#{@pagy.page}", class: "feed-scroll-sentinel block space-y-4") do
         posts_and_pagination
       end
     end
@@ -61,13 +61,17 @@ class Views::Activities::Feed < Views::Base
   def render_next_page_frame
     turbo_frame_tag(
       "feed_page_#{@pagy.next}",
-      src: view_context.feed_path(page: @pagy.next),
-      loading: :lazy,
-      class: "block space-y-4",
-      data: { controller: "infinite-scroll" }
+      class: "feed-scroll-sentinel block space-y-4",
+      data: {
+        controller: "infinite-scroll",
+        infinite_scroll_preload_margin_value: "640px",
+        infinite_scroll_src_value: view_context.feed_path(page: @pagy.next)
+      }
     ) do
-      div(class: "py-8 text-center text-content-muted") do
-        plain t("activities.feed.loading")
+      div(class: "feed-scroll-loader") do
+        div(class: "feed-scroll-loader__content") do
+          plain t("activities.feed.loading")
+        end
       end
     end
   end

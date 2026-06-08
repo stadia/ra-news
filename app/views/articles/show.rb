@@ -73,9 +73,7 @@ class Views::Articles::Show < Views::Base
           class: "text-2xl! lg:text-3xl! font-bold text-content mb-4 leading-tight"
         ) { @article.display_title }
 
-        if @article.show_original_title?
-          p(class: "text-lg font-medium text-content-secondary mb-4 wrap-break-word") { @article.title }
-        end
+        p(class: "text-lg font-medium text-content-secondary mb-4 wrap-break-word") { @article.title }
       end
 
       div(class: "flex flex-wrap items-center gap-4 md:gap-6 text-sm text-content-secondary") do

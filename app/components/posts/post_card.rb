@@ -180,9 +180,7 @@ class Components::Posts::PostCard < Components::Base
             link_to(article.display_title.presence || t("posts.post_card.view_article"), article_path(article), class: "hover:text-link-hover")
           end
 
-          if article.show_original_title?
-            p(class: "text-xs text-content-secondary wrap-break-word") { article.title }
-          end
+          p(class: "text-xs text-content-secondary wrap-break-word") { article.title }
         end
 
         if article.summary_key_preview.present?

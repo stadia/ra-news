@@ -128,6 +128,9 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "#posts_list turbo-frame#feed_page_2.block.space-y-4", 1
+    assert_select "#posts_list turbo-frame#feed_page_2.feed-scroll-sentinel[data-controller='infinite-scroll'][data-infinite-scroll-preload-margin-value='640px']", 1
+    assert_includes @response.body, %(data-infinite-scroll-src-value="#{feed_path(page: 2)}")
+    assert_select "#posts_list turbo-frame#feed_page_2 .feed-scroll-loader .feed-scroll-loader__content", text: "불러오는 중..."
   end
 
   test "GET second feed page uses the turbo frame as the spacing container" do
@@ -145,6 +148,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "turbo-frame#feed_page_2.block.space-y-4", 1
+    assert_select "turbo-frame#feed_page_2.feed-scroll-sentinel", 1
   end
 
   test "GET feed reply button targets the shared post form" do

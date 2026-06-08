@@ -31,9 +31,7 @@ class Components::Articles::Article < Components::Base
       h3(class: "text-xl font-semibold text-content hover:text-link-hover transition-colors duration-200") do
         link_to article.display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']"
       end
-      if article.show_original_title?
-        p(class: "text-l text-content-secondary wrap-break-word") { article.title }
-      end
+      p(class: "text-l text-content-secondary wrap-break-word") { article.title }
     end
   end
 

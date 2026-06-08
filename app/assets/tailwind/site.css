@@ -59,3 +59,55 @@ lexxy-editor.post-composer-editor.lexxy-editor--empty .lexxy-editor__content::be
     @apply text-content-muted;
     opacity: 0.82;
 }
+
+.feed-scroll-sentinel {
+    --feed-scroll-offset: 18;
+}
+
+.feed-scroll-loader {
+    @apply grid min-h-24 place-items-center overflow-hidden py-6 text-sm text-content-muted;
+    view-timeline-name: --feed-scroll-loader;
+    view-timeline-axis: block;
+}
+
+.feed-scroll-loader__content {
+    @apply rounded-md border border-border-muted bg-surface px-4 py-2 shadow-sm;
+}
+
+@supports (animation-timeline: view()) {
+    .feed-scroll-loader__content {
+        animation: feed-scroll-loader-progress linear both;
+        animation-duration: auto;
+        animation-fill-mode: both;
+        animation-range: cover;
+        animation-timeline: --feed-scroll-loader;
+        scale: calc(1 + var(--feed-scroll-offset, 18) * 2 / 100);
+        will-change: translate, opacity;
+    }
+}
+
+@keyframes feed-scroll-loader-progress {
+    0% {
+        opacity: 0.35;
+        translate: 0 calc(var(--feed-scroll-offset, 18) * 1%);
+    }
+
+    45%,
+    65% {
+        opacity: 1;
+        translate: 0 0;
+    }
+
+    100% {
+        opacity: 0.35;
+        translate: 0 calc(var(--feed-scroll-offset, 18) * -1%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .feed-scroll-loader__content {
+        animation: none;
+        scale: 1;
+        translate: 0;
+    }
+}

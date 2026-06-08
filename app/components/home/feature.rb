@@ -87,7 +87,7 @@ class Components::Home::Feature < Components::Base
       h3(class: "#{heading_class} text-content hover:text-link-hover transition-colors duration-200") do
         link_to(article.display_title, article_path(article), class: "after:absolute after:inset-0 after:content-['']")
       end
-      if size == :large && article.show_original_title?
+      if size == :large
         p(class: "text-base text-content-secondary wrap-break-word") { article.title }
       end
     end

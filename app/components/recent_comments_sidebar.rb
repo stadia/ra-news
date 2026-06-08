@@ -43,7 +43,7 @@ class Components::RecentCommentsSidebar < Components::Base
       end
 
       p(class: "text-sm text-content-muted mb-2 line-clamp-2") do
-        plain truncate(comment.body, length: 80)
+        plain truncate(view_context.strip_tags(comment.body.to_s).squish, length: 80)
       end
 
       div(class: "flex items-center justify-between text-xs text-content-disabled") do
