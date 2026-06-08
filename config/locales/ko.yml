@@ -233,6 +233,14 @@ ko:
       published: 글을 발행했습니다.
       updated: 글을 수정했습니다.
       forbidden: 이 글을 수정할 권한이 없습니다.
+      autosave_idle: 자동 저장 준비됨
+      preview: 미리보기
+      publish: 발행
+      title_placeholder: 제목을 입력하세요
+      body_placeholder: 긴 글을 작성하세요
+      no_tags: 태그 없음
+      status_draft: 초안
+      status_published: 발행됨
       errors:
         blank_draft: 제목이나 본문 중 하나는 입력해야 합니다.
     post_card:
@@ -245,6 +253,7 @@ ko:
       post_submit: 게시
       reply_submit: 답글
       replying_to: '답글 작성 중 '
+      longform: 장문 쓰기
     remote_attachment_only_body: 첨부된 미디어
     reply_form:
       cancel: 취소

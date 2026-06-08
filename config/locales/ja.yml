@@ -233,6 +233,14 @@ ja:
       published: 投稿を公開しました。
       updated: 投稿を更新しました。
       forbidden: この投稿を編集する権限がありません。
+      autosave_idle: 自動保存の準備完了
+      preview: プレビュー
+      publish: 公開
+      title_placeholder: タイトルを入力してください
+      body_placeholder: 長文を入力してください
+      no_tags: タグなし
+      status_draft: 下書き
+      status_published: 公開済み
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
@@ -245,6 +253,7 @@ ja:
       post_submit: 投稿
       reply_submit: 返信
       replying_to: '返信中 '
+      longform: 長文を書く
     remote_attachment_only_body: 添付メディア
     reply_form:
       cancel: キャンセル

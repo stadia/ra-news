@@ -35,6 +35,19 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "긴 글 쓰기"
   end
 
+  test "edit page renders longform editor form" do
+    sign_in @user
+
+    get edit_longform_post_url(@draft)
+
+    assert_response :success
+    assert_select "form[action='#{longform_post_path(@draft)}']"
+    assert_select "input[name='post[title]']"
+    assert_select "[data-controller~='longform-autosave']"
+    assert_select ".post-composer-editor"
+    assert_select "button", "발행"
+  end
+
   test "does not allow editing another user's draft" do
     @draft.update!(user: @other_user)
     sign_in @user

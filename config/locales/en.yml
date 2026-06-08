@@ -233,6 +233,14 @@ en:
       published: Post published.
       updated: Post updated.
       forbidden: You do not have permission to edit this post.
+      autosave_idle: Autosave ready
+      preview: Preview
+      publish: Publish
+      title_placeholder: Enter a title
+      body_placeholder: Write your long post
+      no_tags: No tags
+      status_draft: Draft
+      status_published: Published
       errors:
         blank_draft: Enter a title or body before saving this draft.
     post_card:
@@ -245,6 +253,7 @@ en:
       post_submit: Post
       reply_submit: Reply
       replying_to: 'Replying to '
+      longform: Write longform
     remote_attachment_only_body: Attached media
     reply_form:
       cancel: Cancel
