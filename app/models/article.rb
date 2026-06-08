@@ -18,7 +18,6 @@ class Article < ApplicationRecord
   include Federails::DataEntity
   include FederailsLikeable
   include FederailsBoostable
-  include Articles::ClassMethods
   include Articles::LocalizedDisplay
   include Articles::Activitypub
 
@@ -224,6 +223,12 @@ class Article < ApplicationRecord
   #: () -> Integer
   def boosts_count
     boosters_count.to_i
+  end
+
+  # slug로 Article을 찾는 메서드
+  #: (String slug) -> Article?
+  def self.find_by_slug(slug)
+    find_by(slug: slug)
   end
 
   # ── Private Instance Methods ─────────────────────────────────────────
