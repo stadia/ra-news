@@ -38,7 +38,8 @@
 - `status` enum
   - `draft`: 자동 저장되지만 공개 피드와 ActivityPub에 노출하지 않는다.
   - `published`: 피드, 프로필 글 목록, 원문 페이지, ActivityPub에 노출한다.
-  - `discarded`: 소프트 삭제 상태. 피드, 프로필 글 목록, 원문 페이지, ActivityPub 어디에도 노출하지 않는다. DB 레코드는 유지해 복구 여지를 남긴다. `visible` 스코프(`status: :published`)가 `draft`와 함께 자연스럽게 제외한다.
+
+삭제는 `status` 값이 아니라 기존 `Article`/`Site`/`NotificationChannel`과 동일하게 `Discard::Model`로 처리한다. Post에 `include Discard::Model`과 `self.discard_column = :deleted_at`를 두고, `deleted_at` 컬럼으로 소프트 삭제 상태를 추적한다. `visible` 스코프는 `published`이면서 `kept`(삭제되지 않음)인 글만 반환한다(`where(status: :published).kept`). 이렇게 하면 발행 상태(draft/published)와 삭제 상태(kept/discarded)가 직교하는 두 축으로 분리된다.
 
 추가 필드는 다음을 예상한다.
 
@@ -117,11 +118,11 @@ Lexxy는 이미 앱 작성 폼에서 사용 중이다.
 - 본인의 발행 장문 원문 페이지에 `수정` 진입점을 둔다. 두 경로 모두 기존 `edit_longform_post` 편집기로 이동하며, `update`/autosave 흐름을 그대로 재사용한다.
 - 비소유자에게는 수정·삭제 진입점을 노출하지 않는다.
 
-삭제는 soft discard로 처리한다.
+삭제는 `Discard::Model`을 사용한 soft discard로 처리한다.
 
 - 초안과 발행 장문 모두 본인만 삭제할 수 있다.
-- 삭제는 확인 단계를 거친 뒤 `status`를 `discarded`로 전환한다. DB 레코드는 유지한다.
-- `discarded` 글은 `visible` 스코프에서 제외되어 피드·프로필·원문 페이지에 더 이상 노출되지 않는다.
+- 삭제는 확인 단계를 거친 뒤 `discard`(또는 `discard!`)를 호출해 `deleted_at`를 기록한다. DB 레코드는 유지한다.
+- 삭제된 글은 `kept` 스코프에서 빠지므로 `visible`에서도 제외되어 피드·프로필·원문 페이지에 더 이상 노출되지 않는다.
 - 삭제 진입점은 수정 진입점과 같은 위치(초안 목록, 발행 장문 원문 페이지)에 둔다.
 
 ## ActivityPub
@@ -137,7 +138,7 @@ Lexxy는 이미 앱 작성 폼에서 사용 중이다.
 
 발행 후 수정하면 사이트 원문과 ActivityPub `Update`를 함께 갱신한다.
 
-발행 장문을 삭제(soft discard)하면 ActivityPub `Delete`(Tombstone)를 발행해 연합된 인스턴스에서도 제거되게 한다. 초안은 발행된 적이 없으므로 삭제 시 연합 활동을 발행하지 않는다. soft discard는 레코드를 실제로 `destroy`하지 않으므로, Federails의 기존 삭제/Tombstone API를 조사해 연결한다. 기존 메커니즘이 없으면 새 ActivityPub 삭제 API를 앱 코드에 임의로 만들지 않고, 현재 동작을 문서화한 뒤 별도로 다룬다.
+발행 장문을 삭제(discard)하면 ActivityPub `Delete`(Tombstone)를 발행해 연합된 인스턴스에서도 제거되게 한다. 이는 `Article`과 동일한 Federails + Discard 통합으로 처리한다: `after_discard`에서 `create_federails_activity "Delete"`를 호출하고, `acts_as_federails_data`에 `soft_deleted_method: :discarded?`, `soft_delete_date_method: :deleted_at`를 지정한다. `soft_deleted_method`가 설정되면 삭제된 레코드는 `federails_tombstoned?`가 참이 되어, `deleted_at` 갱신이 일으키는 일반 `Update` 활동은 자동으로 억제되고 `Delete`만 발행된다. 인바운드 연합 삭제 요청(`on_federails_delete_requested`)도 hard `destroy!`가 아니라 `discard!`로 처리해 동작을 일치시킨다. 초안은 발행된 적이 없으므로(로컬 미연합) 삭제 시 연합 활동이 발행되지 않는다.
 
 요약은 별도 입력란 없이 본문 앞부분에서 자동 추출한다. HTML 태그와 과도한 공백을 제거하고, 링크와 원문 URL을 함께 제공한다.
 
@@ -152,7 +153,7 @@ Lexxy는 이미 앱 작성 폼에서 사용 중이다.
 - 발행 후 수정
 - 삭제(soft discard)
 
-장문 전용 `LongformPostsController`에 `destroy` 액션을 추가하고, 표준 `DELETE` 요청을 받아 실제 레코드 삭제 대신 `status`를 `discarded`로 전환한다. 소유자 검증은 기존 `authorize_owner!`를 재사용한다.
+장문 전용 `LongformPostsController`에 `destroy` 액션을 추가하고, 표준 `DELETE` 요청을 받아 실제 레코드 삭제 대신 `@post.discard`(`Discard::Model`)를 호출한다. 연합 `Delete` 발행은 모델의 `after_discard` 콜백이 담당하므로 컨트롤러는 연합을 직접 다루지 않는다. 소유자 검증은 기존 `authorize_owner!`를 재사용한다.
 
 구현 계획에서는 기존 `PostsController`에 액션을 추가할지, 장문 전용 컨트롤러를 둘지 결정한다. 첫 설계 기준은 일반 `Post` 생성과 장문 편집 책임이 섞이지 않도록 장문 전용 컨트롤러를 우선 검토한다.
 
@@ -204,6 +205,6 @@ PostgreSQL 기준으로 검증한다.
 - 장문 ActivityPub 발행은 요약과 원문 링크 방식이다.
 - 별도 `내 글` 화면을 만들지 않고 기존 프로필 글 목록을 확장한다.
 - 기존 초안과 발행 장문을 편집기로 다시 열어 수정할 수 있다. 수정 진입점은 본인 프로필의 초안 안내와 발행 장문 원문 페이지에 둔다.
-- 삭제는 soft discard(`status: :discarded`)로 처리하고, 초안과 발행 장문 모두 본인만 삭제할 수 있다.
-- 발행 장문 삭제 시 ActivityPub `Delete`(Tombstone)를 발행한다. Federails의 기존 삭제 메커니즘을 우선 조사·활용하고 새 API를 임의로 만들지 않는다.
+- 삭제는 `Discard::Model`(기존 `Article` 패턴)을 사용한 soft discard로 처리하고, 초안과 발행 장문 모두 본인만 삭제할 수 있다. `status` enum에는 별도 `discarded` 값을 두지 않는다(발행 상태와 삭제 상태는 직교).
+- 발행 장문 삭제 시 `after_discard`에서 ActivityPub `Delete`(Tombstone)를 발행한다. `soft_deleted_method: :discarded?` 설정으로 삭제 시 불필요한 `Update` 활동은 억제된다.
 - 공개 피드 쿼리도 `visible`로 제한해 초안·`discarded` 글이 노출되지 않게 한다.

@@ -1294,18 +1294,19 @@ git commit -m "Federate longform posts as summaries"
 ### Task 6: Edit Entry Points and Soft-Discard Delete
 
 **Files:**
+- Create: `db/migrate/*_add_deleted_at_to_posts.rb` (Discard column + index)
+- Modify: `app/models/post.rb` (`include Discard::Model`, discard column, Federails soft-delete config, `visible` scope, `after_discard` Delete, enum drop `:discarded`)
 - Modify: `config/routes.rb` (add `:destroy`)
-- Modify: `app/controllers/longform_posts_controller.rb` (add `destroy` = soft discard)
-- Modify: `app/models/concerns/posts/longform.rb` (add `discard!` helper)
+- Modify: `app/controllers/longform_posts_controller.rb` (add `destroy` = `@post.discard`)
 - Modify: `app/controllers/profiles_controller.rb` (load owner draft collection, not only count)
 - Modify: `app/views/profiles/post_list.rb` (draft notice → editable draft list with edit/delete entries)
 - Modify: `app/views/posts/show.rb` (owner-only edit/delete controls on published longform root)
-- Verify/modify: the public feed query (e.g. `HomeController`) so it uses `.visible` and excludes `draft`/`discarded`
+- Verify/modify: the public feed query (`ActivitiesController#feed`) so it uses `.visible` and excludes drafts/discarded
 - Modify: `test/controllers/longform_posts_controller_test.rb`
 - Modify: `test/controllers/profiles_controller_test.rb`
 - Modify: `config/locales/ko.yml`, `config/locales/en.yml`, `config/locales/ja.yml`
 
-**Decisions (approved):** delete is soft discard (`status: :discarded`), applies to both drafts and published longform, owner-only; publishing-then-deleting a published post should federate an ActivityPub `Delete`/Tombstone using the existing Federails mechanism (investigate, do not invent an API). Drafts never federate on delete.
+**Decisions (approved):** delete is soft discard implemented with `Discard::Model` exactly like `Article` (NOT a `status: :discarded` enum value — drop that value from the status enum so status is just `draft`/`published`). Applies to both drafts and published longform, owner-only. Deleting a published post federates an ActivityPub `Delete`/Tombstone via the model's `after_discard` callback; `soft_deleted_method: :discarded?` suppresses the spurious `Update`. Drafts never federate on delete. Inbound federated delete requests use `discard!` (not hard `destroy!`).
 
 - [ ] **Step 1: Verify the public feed query and draft leakage risk**
 
@@ -1368,7 +1369,29 @@ Append to `test/controllers/longform_posts_controller_test.rb`:
   end
 ```
 
-VERIFY: the real delete route helper (`longform_post_url` for `DELETE`), that `discard!` (Step 4) exists, and that `@user.username`/fixtures resolve. Adapt the redirect target assertions to whatever `destroy` actually redirects to (see Step 5).
+Add federation tests (model-level) to `test/models/post_test.rb` asserting `after_discard` behavior:
+
+```ruby
+  test "발행 장문을 discard하면 Delete 활동을 발행한다" do
+    post = posts(:longform_published)
+
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: post).count }, 1 do
+      post.discard!
+    end
+  end
+
+  test "초안을 discard하면 Delete 활동을 발행하지 않는다" do
+    post = posts(:longform_draft)
+
+    assert_no_difference -> { Federails::Activity.where(action: "Delete", entity: post).count } do
+      post.discard!
+    end
+  end
+```
+
+(The draft case relies on Federails' locality/`should_federate?` gate — a never-published local draft should not emit a federation activity. Verify the actual gating and adapt the assertion if drafts have no `federails_actor` yet.)
+
+VERIFY: the real delete route helper (`longform_post_url` for `DELETE`), that `Discard::Model`'s `discard`/`discard!` are available after Step 4, and that `@user.username`/fixtures resolve. Adapt the redirect target assertions to whatever `destroy` actually redirects to (see Step 5).
 
 - [ ] **Step 3: Run controller tests to verify failure**
 
@@ -1380,17 +1403,32 @@ TEST_DATABASE_URL=postgres://postgres:postgres1234@localhost:5432/ra-news_test m
 
 Expected: FAIL (no `destroy` route/action, no `discard!`).
 
-- [ ] **Step 4: Add `discard!` helper to the longform concern**
+- [ ] **Step 4: Adopt `Discard::Model` on `Post` (replace the `:discarded` enum approach)**
 
-In `app/models/concerns/posts/longform.rb`, add a public helper:
+First read `app/models/article.rb` for the canonical pattern (`include Discard::Model`, `self.discard_column = :deleted_at`, `after_discard`/`after_undiscard`, `acts_as_federails_data ... soft_deleted_method: :discarded?, soft_delete_date_method: :deleted_at`, `on_federails_delete_requested -> { discard! }`).
+
+Create a migration adding the discard column:
 
 ```ruby
-  def discard!
-    update!(status: :discarded)
+class AddDeletedAtToPosts < ActiveRecord::Migration[8.1]
+  def change
+    add_column :posts, :deleted_at, :datetime
+    add_index :posts, :deleted_at
   end
+end
 ```
 
-Keep it minimal; `discarded` is already an enum value from Task 1. Do not destroy the record.
+In `app/models/post.rb`:
+- Add `include Discard::Model` and `self.discard_column = :deleted_at` near the other includes/macros.
+- Change the status enum to drop `:discarded`: `enum :status, [ :draft, :published ], default: :published`. (The DB column may still hold a `2` from no rows; nothing sets it. Verify no fixture/code uses `:discarded` as a status — the Task 6 work below replaces all such usage.)
+- Change `scope :visible` to `-> { where(status: :published).kept }` so discarded posts are excluded.
+- Add the Federails soft-delete wiring to the existing `acts_as_federails_data` call: `soft_deleted_method: :discarded?`, `soft_delete_date_method: :deleted_at` (match Article's keys; keep the existing `handles:`/other options).
+- Add `after_discard { create_federails_activity "Delete" }` (and optionally `after_undiscard { create_federails_activity "Undo" }` for symmetry with Article).
+- Change `on_federails_delete_requested` from `destroy!` to `discard!` so inbound federated deletes soft-delete too.
+
+In `app/models/concerns/posts/longform.rb`: REMOVE the custom `discard!` helper added earlier — `Discard::Model` provides `discard`/`discard!`, and federation now lives in the `after_discard` callback. Do not keep a hand-rolled discard.
+
+Verify the `to_activitypub_object` / `create_federails_activity` interplay still works and that discarding a published post now emits a `Delete` (not a stray `Update`).
 
 - [ ] **Step 5: Add `destroy` route and action**
 
@@ -1404,26 +1442,17 @@ In `config/routes.rb`, add `:destroy` to the longform resource:
     end
 ```
 
-In `app/controllers/longform_posts_controller.rb`, add `:destroy` to the `set_post`/`authorize_owner!` `before_action` lists and add:
+In `app/controllers/longform_posts_controller.rb`, add `:destroy` to the `set_post`/`authorize_owner!` `before_action` `only:` lists and add:
 
 ```ruby
   def destroy
-    federate_longform_deletion if @post.published?
-    @post.discard!
+    @post.discard
 
     redirect_to feed_path, notice: t("posts.longform.deleted")
   end
 ```
 
-Add a private helper that federates the deletion for published posts. INVESTIGATE the Federails mechanism first (like Task 5): how does Federails publish a `Delete`/Tombstone for a record that is soft-discarded rather than destroyed?
-
-```bash
-mise exec -- bin/rails 'ai:tool[search_code]' pattern="Delete" match_type=trace
-mise exec -- bin/rails 'ai:tool[search_code]' pattern="Tombstone" match_type=trace
-mise exec -- bin/rails 'ai:tool[search_code]' pattern="create_federails_activity" match_type=trace
-```
-
-If Federails exposes a way to publish a `Delete` activity for a still-present record (e.g. `create_federails_activity "Delete"` or a tombstone helper), call it in `federate_longform_deletion`. If there is NO mechanism that fits soft-discard, do NOT invent an ActivityPub API: implement the soft-discard correctly, add a focused test documenting the current federation behavior, and report the gap for follow-up. Report exactly what you wired or deferred.
+Federation of the `Delete` is handled by the model's `after_discard` callback (Step 4), so the controller does not touch Federails. `set_post` finds `Post.longform` — confirm it should find the still-present (kept) post; since `discard` keeps the record, no scope change is needed for the destroy lookup.
 
 - [ ] **Step 6: Load owner draft collection for the profile list**
 
@@ -1479,7 +1508,7 @@ Expected: PASS.
 Run:
 
 ```bash
-mise exec -- bin/rails 'ai:tool[validate]' files=app/controllers/longform_posts_controller.rb,app/models/concerns/posts/longform.rb,app/controllers/profiles_controller.rb,app/views/profiles/post_list.rb,app/views/posts/show.rb,config/routes.rb level=rails
+mise exec -- bin/rails 'ai:tool[validate]' files=app/models/post.rb,app/models/concerns/posts/longform.rb,app/controllers/longform_posts_controller.rb,app/controllers/profiles_controller.rb,app/views/profiles/post_list.rb,app/views/posts/show.rb,config/routes.rb level=rails
 ```
 
 Expected: validation passes.
@@ -1487,7 +1516,7 @@ Expected: validation passes.
 - [ ] **Step 12: Commit**
 
 ```bash
-git add config/routes.rb app/controllers/longform_posts_controller.rb app/models/concerns/posts/longform.rb app/controllers/profiles_controller.rb app/views/profiles/post_list.rb app/views/posts/show.rb test/controllers/longform_posts_controller_test.rb test/controllers/profiles_controller_test.rb config/locales/ko.yml config/locales/en.yml config/locales/ja.yml
+git add db/migrate app/models/post.rb config/routes.rb app/controllers/longform_posts_controller.rb app/models/concerns/posts/longform.rb app/controllers/profiles_controller.rb app/controllers/activities_controller.rb app/views/profiles/post_list.rb app/views/posts/show.rb test/controllers/longform_posts_controller_test.rb test/controllers/profiles_controller_test.rb test/controllers/activities_controller_test.rb config/locales/ko.yml config/locales/en.yml config/locales/ja.yml
 git commit -m "Add longform edit entry points and soft-discard delete"
 ```
 
