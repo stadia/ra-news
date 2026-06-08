@@ -664,4 +664,22 @@ class PostTest < ActiveSupport::TestCase
       draft.publish!
     end
   end
+
+  # 소프트 삭제는 장문 전용. 인바운드 연합 Delete도 타입별로 분기한다.
+  test "인바운드 연합 삭제는 장문을 soft discard한다" do
+    post = posts(:longform_published)
+
+    post.run_callbacks(:on_federails_delete_requested)
+
+    assert_predicate post.reload, :discarded?
+    assert Post.exists?(post.id)
+  end
+
+  test "인바운드 연합 삭제는 댓글을 hard destroy한다" do
+    post = @comment_post
+
+    post.run_callbacks(:on_federails_delete_requested)
+
+    assert_not Post.exists?(post.id)
+  end
 end

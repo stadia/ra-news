@@ -29,12 +29,6 @@ class Post < ApplicationRecord
 
   # ── Associations ─────────────────────────────────────────────────────
   belongs_to :user, optional: true
-  # Known limitation: counter_cache is decremented by hard destroy but NOT by
-  # Discard (soft delete). A comment soft-discarded via an inbound federated
-  # Delete therefore leaves posts_count inflated, so the article card badge can
-  # drift from the .kept comment list. Acceptable for now (federated-comment
-  # delete is an edge case); revisit by maintaining the counter on
-  # discard/undiscard if it becomes user-visible noise.
   belongs_to :article, optional: true, counter_cache: :posts_count
   belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
 
@@ -77,7 +71,10 @@ class Post < ApplicationRecord
                          soft_delete_date_method: :deleted_at,
                          should_federate_method: :should_federate?
 
-  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; discard! }
+  # Only longform posts support soft delete (trash/restore). Short posts and
+  # comments hard-destroy, both locally and on inbound federated Delete, so
+  # their rows (and counter caches) are removed as before.
+  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; longform? ? discard! : destroy! }
   on_federails_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────

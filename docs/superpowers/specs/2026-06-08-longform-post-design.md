@@ -40,7 +40,7 @@
   - `draft`: 자동 저장되지만 공개 피드와 ActivityPub에 노출하지 않는다.
   - `published`: 피드, 프로필 글 목록, 원문 페이지, ActivityPub에 노출한다.
 
-삭제는 `status` 값이 아니라 기존 `Article`/`Site`/`NotificationChannel`과 동일하게 `Discard::Model`로 처리한다. Post에 `include Discard::Model`과 `self.discard_column = :deleted_at`를 두고, `deleted_at` 컬럼으로 소프트 삭제 상태를 추적한다. `visible` 스코프는 `published`이면서 `kept`(삭제되지 않음)인 글만 반환한다(`where(status: :published).kept`). 이렇게 하면 발행 상태(draft/published)와 삭제 상태(kept/discarded)가 직교하는 두 축으로 분리된다.
+소프트 삭제(휴지통/복원)는 **장문 전용**이다. 단문(`short`)과 기사 댓글(`comment`)은 기존대로 hard delete한다(로컬 삭제도, 인바운드 연합 Delete도 `destroy`). Post에는 기존 `Article`/`Site`/`NotificationChannel`과 동일하게 `include Discard::Model`과 `self.discard_column = :deleted_at`를 두지만, `discard`를 호출하는 경로는 장문 삭제뿐이다. `visible` 스코프는 `published`이면서 `kept`(삭제되지 않음)인 글만 반환한다(`where(status: :published).kept`). 이렇게 하면 발행 상태(draft/published)와 삭제 상태(kept/discarded)가 직교하는 두 축으로 분리된다.
 
 추가 필드는 다음을 예상한다.
 
@@ -157,7 +157,7 @@ Lexxy는 이미 앱 작성 폼에서 사용 중이다.
 
 발행 후 수정하면 사이트 원문과 ActivityPub `Update`를 함께 갱신한다.
 
-발행 장문을 삭제(discard)하면 ActivityPub `Delete`(Tombstone)를 발행해 연합된 인스턴스에서도 제거되게 한다. 이는 `Article`과 동일한 Federails + Discard 통합으로 처리한다: `after_discard`에서 `create_federails_activity "Delete"`를 호출하고, `acts_as_federails_data`에 `soft_deleted_method: :discarded?`, `soft_delete_date_method: :deleted_at`를 지정한다. `soft_deleted_method`가 설정되면 삭제된 레코드는 `federails_tombstoned?`가 참이 되어, `deleted_at` 갱신이 일으키는 일반 `Update` 활동은 자동으로 억제되고 `Delete`만 발행된다. 인바운드 연합 삭제 요청(`on_federails_delete_requested`)도 hard `destroy!`가 아니라 `discard!`로 처리해 동작을 일치시킨다. 초안은 발행된 적이 없으므로(로컬 미연합) 삭제 시 연합 활동이 발행되지 않는다.
+발행 장문을 삭제(discard)하면 ActivityPub `Delete`(Tombstone)를 발행해 연합된 인스턴스에서도 제거되게 한다. 이는 `Article`과 동일한 Federails + Discard 통합으로 처리한다: `after_discard`에서 `create_federails_activity "Delete"`를 호출하고, `acts_as_federails_data`에 `soft_deleted_method: :discarded?`, `soft_delete_date_method: :deleted_at`를 지정한다. `soft_deleted_method`가 설정되면 삭제된 레코드는 `federails_tombstoned?`가 참이 되어, `deleted_at` 갱신이 일으키는 일반 `Update` 활동은 자동으로 억제되고 `Delete`만 발행된다. 인바운드 연합 삭제 요청(`on_federails_delete_requested`)은 타입별로 분기한다: 장문은 `discard!`(소프트, 휴지통에 남김), 단문·댓글은 `destroy!`(hard, 레코드·카운터 제거). 초안은 발행된 적이 없으므로(로컬 미연합) 삭제 시 연합 활동이 발행되지 않는다.
 
 휴지통에서 복원(undiscard)하면 발행이었던 글은 ActivityPub `Undo`로 원격에 되살린다(`after_undiscard`에서 발행 글에 한해 `create_federails_activity "Undo"`, 인바운드 `on_federails_undelete_requested`는 `undiscard!`). 휴지통에서 영구 삭제(hard `destroy`)하면 발행이었던 글은 Federails의 `after_destroy` 경로로 다시 `Delete`/Tombstone을 발행한다. 초안은 복원·영구삭제 모두 연합 활동을 발행하지 않는다.
 
