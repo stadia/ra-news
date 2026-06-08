@@ -18,9 +18,9 @@ class Article < ApplicationRecord
   include Federails::DataEntity
   include FederailsLikeable
   include FederailsBoostable
-  include ArticleClassMethods
-  include LocalizedDisplay
-  include ArticleActivityPub
+  include Articles::ClassMethods
+  include Articles::LocalizedDisplay
+  include Articles::Activitypub
 
   # ── Framework macros ─────────────────────────────────────────────────
   self.discard_column = :deleted_at
