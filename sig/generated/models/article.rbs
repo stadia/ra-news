@@ -20,9 +20,25 @@ class Article < ApplicationRecord
 
   include FederailsLikeable
 
+  include FederailsBoostable
+
   include ArticleClassMethods
 
   include LocalizedDisplay
+
+  # ── Scopes ───────────────────────────────────────────────────────────
+  # 하이브리드 전문 검색:
+  #   1) tsvector_content_tsearch(textsearch_ko, 'korean') — 한국어 형태소 + 한자
+  #   2) content LIKE(pg_bigm) — 한국어 사전이 못 잡는 일본어 가나(かな) 폴백
+  #
+  # LIKE 분기는 content 컬럼 detoast + bigm 인덱스 recheck 비용이 커서
+  # (production 측정 시 150~250ms) term 에 가나가 포함된 경우에만 활성화한다.
+  # 영/한 term 은 tsvector 분기만 타서 ts_rank GIN 으로 빠르게 종결.
+  # LIKE 는 gin_bigm_ops 인덱스를 타지만 ILIKE 는 타지 않으므로 LIKE 를 사용한다.
+  JAPANESE_KANA_REGEX: ::Regexp
+
+  # #: () -> String
+  def to_markdown: () -> untyped
 
   # : () -> Hash[String, untyped]
   def to_activitypub_object: () -> Hash[String, untyped]
@@ -48,12 +64,16 @@ class Article < ApplicationRecord
   # : () -> Integer
   def likes_count: () -> Integer
 
+  # : () -> Integer
+  def boosts_count: () -> Integer
+
   private
 
   # : () -> User?
   def bot_user: () -> User?
 
-  def create_federails_activity: (untyped action, ?actor: untyped, ?to: untyped, ?cc: untyped) -> untyped
+  # : (String action, ?actor: (Federails::Actor)?, ?to: untyped, ?cc: untyped) -> void
+  def create_federails_activity: (String action, ?actor: Federails::Actor?, ?to: untyped, ?cc: untyped) -> void
 
   # : () -> void
   def clear_rss_cache: () -> void

@@ -32,6 +32,8 @@ class ArticlesController < ApplicationController
 
   def liked_article_ids: (untyped articles) -> untyped
 
+  def boosted_article_ids: (untyped articles) -> untyped
+
   def sidebar_tags: () -> untyped
 
   def normalized_search_term: () -> untyped

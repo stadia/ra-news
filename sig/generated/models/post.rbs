@@ -12,6 +12,8 @@ class Post < ApplicationRecord
 
   include FederailsLikeable
 
+  include FederailsBoostable
+
   # : () -> (User | Federails::Actor)?
   def federation_actor_entity: () -> (User | Federails::Actor)?
 
@@ -23,6 +25,9 @@ class Post < ApplicationRecord
 
   # : () -> Integer
   def likes_count: () -> Integer
+
+  # : () -> Integer
+  def boosts_count: () -> Integer
 
   # : () -> bool
   def comment?: () -> bool

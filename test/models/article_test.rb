@@ -854,7 +854,7 @@ class ArticleTest < ActiveSupport::TestCase
       origin_url: "https://example.com/test",
       host: "example.com",
       slug: "test-slug",
-      summary_key: ["핵심 요약 1", "핵심 요약 2"],
+      summary_key: [ "핵심 요약 1", "핵심 요약 2" ],
       summary_detail: { "introduction" => "서론 부분", "conclusion" => "결론 부분" },
       body: "원본 본문",
       summary_body: "요약된 마크다운 본문",
@@ -862,6 +862,7 @@ class ArticleTest < ActiveSupport::TestCase
     )
 
     markdown = article.to_markdown
+
     assert_match "# 테스트 제목", markdown
     assert_match "- **원문 URL**: https://example.com/test", markdown
     assert_match "- **Ruby-News URL**: #{Rails.application.routes.url_helpers.article_url(article)}", markdown

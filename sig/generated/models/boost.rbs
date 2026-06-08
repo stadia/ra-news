@@ -1,0 +1,21 @@
+# Generated from app/models/boost.rb with RBS::Inline
+
+class Boost < ApplicationRecord
+  # : (booster: (User | Federails::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
+  def self.boosted_ids_for: (booster: (User | Federails::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
+
+  # : (untyped) -> Federails::Actor?
+  def self.resolve_actor: (untyped) -> Federails::Actor?
+
+  private
+
+  def local_actor?: () -> untyped
+
+  def publish_boost_activity: () -> untyped
+
+  def publish_undo_activity: () -> untyped
+
+  def enqueue_thumbnail_generation: () -> untyped
+
+  def federatable_boostable?: () -> untyped
+end

@@ -174,7 +174,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
   test "GET show with .md extension returns markdown representation" do
     article = articles(:ruby_article)
     article.summary_body = "요약된 본문"
-    article.summary_key = ["핵심 요약 1"]
+    article.summary_key = [ "핵심 요약 1" ]
     article.summary_detail = { "introduction" => "소개", "conclusion" => "결론" }
     article.save!
 

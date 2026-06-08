@@ -32,6 +32,8 @@ class HomeController < ApplicationController
 
   def liked_article_ids_for: (untyped articles, untyped featured_articles) -> untyped
 
+  def boosted_article_ids_for: (untyped articles, untyped featured_articles) -> untyped
+
   def recent_comments: () -> untyped
 
   def sidebar_tags: () -> untyped

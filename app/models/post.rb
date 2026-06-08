@@ -205,7 +205,7 @@ class Post < ApplicationRecord
     #: (Hash[String, untyped]) -> Hash[Symbol, untyped]
     def from_activitypub_object(hash)
       in_reply_to = hash["inReplyTo"].to_s
-      attachments = Array(hash["attachment"]).select { |a| a.is_a?(Hash) && (a["type"] == "Document" || a["type"] == "Image") }
+      attachments = Array.wrap(hash["attachment"]).select { |a| a.is_a?(Hash) && (a["type"] == "Document" || a["type"] == "Image") }
 
       object = {
         federated_url: hash["id"],
@@ -238,7 +238,7 @@ class Post < ApplicationRecord
       end
 
       # Mastodon 해시태그 파싱
-      hashtags = Array(hash["tag"]).select { |t| t.is_a?(Hash) && t["type"] == "Hashtag" }
+      hashtags = Array.wrap(hash["tag"]).select { |t| t.is_a?(Hash) && t["type"] == "Hashtag" }
       object[:tag_list] = hashtags.map { |t| t["name"].to_s.delete_prefix("#") }.uniq.join(", ") if hashtags.any?
 
       object

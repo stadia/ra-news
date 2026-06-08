@@ -15,6 +15,8 @@ class ProfilesController < ApplicationController
 
   def likes: () -> untyped
 
+  def boosts: () -> untyped
+
   private
 
   def set_user: () -> untyped
@@ -26,4 +28,6 @@ class ProfilesController < ApplicationController
   def require_own_profile: () -> untyped
 
   def liked_ids_for_posts: (untyped posts) -> untyped
+
+  def boosted_ids_for_posts: (untyped posts) -> untyped
 end
