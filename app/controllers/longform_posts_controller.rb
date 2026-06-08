@@ -3,8 +3,8 @@
 
 class LongformPostsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_post, only: [ :edit, :update, :publish ]
-  before_action :authorize_owner!, only: [ :edit, :update, :publish ]
+  before_action :set_post, only: [ :edit, :update, :publish, :destroy ]
+  before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy ]
 
   def create
     post = current_user.posts.create!(
@@ -40,6 +40,13 @@ class LongformPostsController < ApplicationController
     redirect_to post_path(@post), notice: t("posts.longform.published")
   rescue ActiveRecord::RecordInvalid
     render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity
+  end
+
+  def destroy
+    # Soft-discard keeps the record so federation/tombstone lookups still resolve.
+    # `Post#discard!` emits an ActivityPub Delete for published posts; drafts never federated.
+    @post.discard!
+    redirect_to feed_path, notice: t("posts.longform.deleted")
   end
 
   private

@@ -3,6 +3,7 @@
 class Views::Posts::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::ButtonTo
   include PhlexIcons
 
   def initialize(posts:, liked_post_ids: [], boosted_post_ids: [])
@@ -70,6 +71,20 @@ class Views::Posts::Show < Views::Base
       div(class: "prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
         raw root.body.html_safe
       end
+      owner_controls(root)
+    end
+  end
+
+  def owner_controls(root)
+    return unless view_context.current_user == root.user
+
+    div(class: "flex items-center gap-3 pt-4 border-t border-border-muted") do
+      link_to t("posts.longform.edit"), edit_longform_post_path(root),
+        class: "text-sm font-medium text-content-muted hover:text-content transition-colors"
+      button_to t("posts.longform.delete"), longform_post_path(root),
+        method: :delete,
+        form: { data: { turbo_confirm: t("posts.longform.delete_confirm") } },
+        class: "text-sm font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
     end
   end
 end

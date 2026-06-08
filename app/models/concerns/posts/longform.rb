@@ -23,6 +23,17 @@ module Posts
       save!
     end
 
+    # Soft-deletes the post by marking it discarded. The record is kept so that
+    # federation/tombstone lookups still resolve. For a published, locally-owned
+    # post we additionally emit an ActivityPub Delete so remote followers drop it;
+    # drafts never federated, so nothing is sent for them.
+    #: () -> void
+    def discard!
+      was_published = published?
+      update!(status: :discarded)
+      create_federails_activity("Delete") if was_published
+    end
+
     #: () -> bool
     def draft_longform?
       longform? && draft?

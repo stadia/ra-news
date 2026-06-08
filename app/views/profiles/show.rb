@@ -10,7 +10,7 @@ class Views::Profiles::Show < Views::Base
   def initialize(user:, actor:, followers_count: 0, following_count: 0,
                  follow_actors: nil,
                  active_tab: :posts, posts: nil, likeables: nil, boostables: nil, pagy: nil,
-                 liked_post_ids: [], boosted_post_ids: [], drafts_count: 0)
+                 liked_post_ids: [], boosted_post_ids: [], drafts_count: 0, drafts: [])
     @user = user
     @actor = actor
     @followers_count = followers_count
@@ -24,6 +24,7 @@ class Views::Profiles::Show < Views::Base
     @liked_post_ids = liked_post_ids
     @boosted_post_ids = boosted_post_ids
     @drafts_count = drafts_count
+    @drafts = drafts
   end
 
   def view_template
@@ -115,7 +116,7 @@ class Views::Profiles::Show < Views::Base
       render Views::Profiles::PostList.new(
         user: @user, posts: @posts || [], pagy: @pagy,
         liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids,
-        drafts_count: @drafts_count, embedded: true
+        drafts_count: @drafts_count, drafts: @drafts, embedded: true
       )
     when :comments
       render Views::Profiles::CommentList.new(

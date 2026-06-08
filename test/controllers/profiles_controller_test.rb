@@ -145,6 +145,15 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in users(:john)
     get user_profile_posts_url(username: users(:john).username)
     assert_response :success
-    assert_includes response.body, "초안 1개가 있습니다."
+    assert_includes response.body, "작성 중인 초안"
+    assert_includes response.body, "작성 중인 긴 글"
+    assert_select "a[href=?]", edit_longform_post_path(posts(:longform_draft))
+  end
+
+  test "owner draft entry offers a delete control" do
+    sign_in users(:john)
+    get user_profile_posts_url(username: users(:john).username)
+    assert_response :success
+    assert_select "form[action=?]", longform_post_path(posts(:longform_draft))
   end
 end

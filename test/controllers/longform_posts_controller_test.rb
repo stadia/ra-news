@@ -95,4 +95,63 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to post_url(@published)
     assert_equal "수정된 제목", @published.reload.title
   end
+
+  test "requires authentication to delete" do
+    delete longform_post_url(@draft)
+
+    assert_redirected_to new_user_session_url
+  end
+
+  test "soft-discards a draft and redirects" do
+    sign_in @user
+
+    delete longform_post_url(@draft)
+
+    assert_redirected_to feed_url
+    assert_predicate @draft.reload, :discarded?
+    assert_predicate Post.where(id: @draft.id), :exists?
+  end
+
+  test "deleting a draft does not create a Delete activity" do
+    sign_in @user
+
+    assert_no_difference -> { Federails::Activity.where(action: "Delete").count } do
+      delete longform_post_url(@draft)
+    end
+  end
+
+  test "soft-discards a published longform post" do
+    sign_in @user
+
+    delete longform_post_url(@published)
+
+    assert_predicate @published.reload, :discarded?
+  end
+
+  test "deleting a published longform federates a Delete activity" do
+    sign_in @user
+
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: @published).count }, 1 do
+      delete longform_post_url(@published)
+    end
+  end
+
+  test "does not allow deleting another user's post" do
+    @draft.update!(user: @other_user)
+    sign_in @user
+
+    delete longform_post_url(@draft)
+
+    assert_not_predicate @draft.reload, :discarded?
+  end
+
+  test "discarded longform is excluded from owner profile list" do
+    sign_in @user
+    @published.discard!
+
+    get user_profile_posts_url(username: @user.username)
+
+    assert_response :success
+    assert_not_includes response.body, @published.title
+  end
 end

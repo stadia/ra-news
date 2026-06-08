@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
     resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Post" }
   end
-  resources :longform_posts, only: [ :create, :edit, :update ] do
+  resources :longform_posts, only: [ :create, :edit, :update, :destroy ] do
     member do
       patch :publish
     end

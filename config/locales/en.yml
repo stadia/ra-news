@@ -232,6 +232,10 @@ en:
       edit_heading: Write longform
       published: Post published.
       updated: Post updated.
+      deleted: Post deleted.
+      edit: Edit
+      delete: Delete
+      delete_confirm: Delete this post?
       forbidden: You do not have permission to edit this post.
       autosave_idle: Autosave ready
       preview: Preview
@@ -288,6 +292,7 @@ en:
       empty: No liked articles yet.
     post_list:
       empty: No posts yet.
+      drafts_heading: Drafts in progress
       drafts:
         one: You have 1 draft.
         other: You have %{count} drafts.

@@ -25,6 +25,7 @@ class ActivitiesController < ApplicationController
       .includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ])
       .where(federails_actor_id: following_actor_ids)
       .or(Post.where(user_id: current_user.id))
+      .visible
       .order(created_at: :desc)
 
     @pagy, @posts = pagy(:countless, posts, limit: 20)

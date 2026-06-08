@@ -232,6 +232,10 @@ ja:
       edit_heading: 長文を書く
       published: 投稿を公開しました。
       updated: 投稿を更新しました。
+      deleted: 投稿を削除しました。
+      edit: 編集
+      delete: 削除
+      delete_confirm: この投稿を削除しますか？
       forbidden: この投稿を編集する権限がありません。
       autosave_idle: 自動保存の準備完了
       preview: プレビュー
@@ -288,6 +292,7 @@ ja:
       empty: まだいいねした記事がありません。
     post_list:
       empty: まだ投稿がありません。
+      drafts_heading: 作成中の下書き
       drafts:
         one: 下書きが1件あります。
         other: 下書きが%{count}件あります。
