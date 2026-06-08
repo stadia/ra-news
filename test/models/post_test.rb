@@ -253,6 +253,58 @@ class PostTest < ActiveSupport::TestCase
     assert_equal "Ruby Rails 장문입니다.", post.longform_summary
   end
 
+  test "from_activitypub_object은 기사 답글을 comment 타입으로 지정한다" do
+    host = Rails.application.routes.default_url_options[:host]
+    hash = {
+      "id" => "https://remote.example/notes/comment-1",
+      "content" => "기사에 대한 원격 댓글",
+      "inReplyTo" => "https://#{host}/articles/#{@article.id}"
+    }
+
+    object = Post.from_activitypub_object(hash)
+
+    assert_equal @article.id.to_s, object[:article_id]
+    assert_equal :comment, object[:post_type]
+  end
+
+  test "from_activitypub_object은 기사가 아닌 답글에는 post_type을 지정하지 않는다" do
+    hash = {
+      "id" => "https://remote.example/notes/standalone-1",
+      "content" => "원문 노트"
+    }
+
+    object = Post.from_activitypub_object(hash)
+
+    assert_nil object[:post_type]
+    assert_nil object[:article_id]
+  end
+
+  test "발행된 장문을 discard하면 Delete 활동이 생성된다" do
+    published = posts(:longform_published)
+
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: published).count }, 1 do
+      published.discard!
+    end
+  end
+
+  test "발행된 장문을 undiscard하면 Undo 활동이 생성된다" do
+    published = posts(:longform_published)
+    published.discard!
+
+    assert_difference -> { Federails::Activity.where(action: "Undo", entity: published).count }, 1 do
+      published.undiscard!
+    end
+  end
+
+  test "초안 장문을 undiscard해도 Undo 활동이 생성되지 않는다" do
+    draft = posts(:longform_draft)
+    draft.discard!
+
+    assert_no_difference -> { Federails::Activity.where(action: "Undo").count } do
+      draft.undiscard!
+    end
+  end
+
   # ========== handle_federated_object? Tests ==========
 
   # ========== Reply Notification Tests ==========

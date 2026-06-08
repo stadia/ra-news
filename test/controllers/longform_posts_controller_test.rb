@@ -154,4 +154,81 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, @published.title
   end
+
+  test "undiscard requires authentication" do
+    @published.discard!
+
+    patch undiscard_longform_post_url(@published)
+
+    assert_redirected_to new_user_session_url
+    assert_predicate @published.reload, :discarded?
+  end
+
+  test "undiscard restores a discarded post for the owner" do
+    sign_in @user
+    @published.discard!
+
+    patch undiscard_longform_post_url(@published)
+
+    assert_redirected_to user_profile_trash_url(username: @user.username)
+    assert_not_predicate @published.reload, :discarded?
+    assert_nil @published.deleted_at
+  end
+
+  test "undiscarding a published post federates an Undo activity" do
+    sign_in @user
+    @published.discard!
+
+    assert_difference -> { Federails::Activity.where(action: "Undo", entity: @published).count }, 1 do
+      patch undiscard_longform_post_url(@published)
+    end
+  end
+
+  test "non-owner cannot undiscard a post" do
+    @published.update!(user: @other_user)
+    @published.discard!
+    sign_in @user
+
+    patch undiscard_longform_post_url(@published)
+
+    assert_predicate @published.reload, :discarded?
+  end
+
+  test "destroy_permanently requires authentication" do
+    @published.discard!
+
+    delete destroy_permanently_longform_post_url(@published)
+
+    assert_redirected_to new_user_session_url
+    assert_predicate Post.where(id: @published.id), :exists?
+  end
+
+  test "destroy_permanently removes the row for the owner" do
+    sign_in @user
+    @draft.discard!
+
+    delete destroy_permanently_longform_post_url(@draft)
+
+    assert_redirected_to user_profile_trash_url(username: @user.username)
+    assert_not Post.where(id: @draft.id).exists?
+  end
+
+  test "destroy_permanently on a published post federates a Delete activity" do
+    sign_in @user
+    @published.discard!
+
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: @published).count }, 1 do
+      delete destroy_permanently_longform_post_url(@published)
+    end
+  end
+
+  test "non-owner cannot permanently destroy a post" do
+    @published.update!(user: @other_user)
+    @published.discard!
+    sign_in @user
+
+    delete destroy_permanently_longform_post_url(@published)
+
+    assert_predicate Post.where(id: @published.id), :exists?
+  end
 end

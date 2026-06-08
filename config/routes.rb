@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   resources :longform_posts, only: [ :create, :edit, :update, :destroy ] do
     member do
       patch :publish
+      patch :undiscard
+      delete :destroy_permanently
     end
   end
   resources :articles, only: %i[index show new create] do
@@ -90,6 +92,7 @@ Rails.application.routes.draw do
   get "/@:username/comments", to: "profiles#comments", as: :user_profile_comments, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/likes",    to: "profiles#likes",    as: :user_profile_likes, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/boosts",   to: "profiles#boosts",   as: :user_profile_boosts, format: false, constraints: { username: /[^\/]+/ }
+  get "/@:username/trash",    to: "profiles#trash",    as: :user_profile_trash, format: false, constraints: { username: /[^\/]+/ }
   # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
   direct :user_profile do |user|
     # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.

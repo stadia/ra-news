@@ -59,11 +59,10 @@ class Post < ApplicationRecord
   after_commit :enqueue_article_thumbnail, on: :create
 
   # ── Soft delete ──────────────────────────────────────────────────────
-  # Only published posts were ever federated, so only they emit a Delete.
-  # Drafts are local-only (never published), so discarding one sends nothing.
-  # Undelete/restore is out of scope: there is no local restore path nor an
-  # inbound on_federails_undelete_requested handler, so no after_undiscard.
+  # Only published posts were ever federated, so only they emit Delete/Undo.
+  # Drafts are local-only, so discarding/restoring one federates nothing.
   after_discard { create_federails_activity "Delete" if published? }
+  after_undiscard { create_federails_activity "Undo" if published? }
 
   # ── Federation ───────────────────────────────────────────────────────
   acts_as_federails_data handles: "Note",
@@ -73,6 +72,7 @@ class Post < ApplicationRecord
                          should_federate_method: :should_federate?
 
   on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; discard! }
+  on_federails_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────
 
@@ -254,6 +254,10 @@ class Post < ApplicationRecord
             object[:article_id] = parent.article_id
           end
         end
+
+        # Inbound replies to an article are comments; without this they default
+        # to :short and fall out of the `comments` scope (and the article view).
+        object[:post_type] = :comment if object[:article_id].present?
       end
 
       # Mastodon 이미지 첨부 파싱
