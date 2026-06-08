@@ -640,4 +640,28 @@ class PostTest < ActiveSupport::TestCase
       post.discard
     end
   end
+
+  # 초안은 발행 전까지 로컬에만 머물러야 한다. should_federate?가 published?를
+  # 게이트하지 않으면 생성·자동저장마다 미발행 초안이 원격 팔로워에게 새어 나간다.
+  test "장문 초안은 생성 시 연합 활동을 발행하지 않는다" do
+    assert_no_difference -> { Federails::Activity.where(action: [ "Create", "Update" ]).count } do
+      @user.posts.create!(post_type: :longform, status: :draft, title: "비공개 초안", body: "")
+    end
+  end
+
+  test "장문 초안은 자동저장(update) 시 연합 활동을 발행하지 않는다" do
+    draft = posts(:longform_draft)
+
+    assert_no_difference -> { Federails::Activity.where(entity: draft).count } do
+      draft.update!(title: "자동 저장됨", body: "<p>본문</p>")
+    end
+  end
+
+  test "초안을 발행하면 그때 연합된다" do
+    draft = @user.posts.create!(post_type: :longform, status: :draft, title: "초안", body: "<p>본문</p>")
+
+    assert_difference -> { Federails::Activity.where(entity: draft).count }, 1 do
+      draft.publish!
+    end
+  end
 end

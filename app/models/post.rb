@@ -89,7 +89,11 @@ class Post < ApplicationRecord
 
   #: () -> bool
   def should_federate?
-    federation_actor_entity.present?
+    # Only published posts federate. Drafts must stay local — without the
+    # published? gate, Federails' after_create/after_update would push an
+    # unpublished draft (and every autosave) to remote followers. Discarded
+    # posts keep status :published, so after_discard can still emit a Delete.
+    federation_actor_entity.present? && published?
   end
 
   #: () -> Hash[String, untyped]
