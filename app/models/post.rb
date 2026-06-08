@@ -59,10 +59,11 @@ class Post < ApplicationRecord
   after_commit :enqueue_article_thumbnail, on: :create
 
   # ── Soft delete ──────────────────────────────────────────────────────
-  # Only published posts were ever federated, so only they emit a Delete/Undo.
+  # Only published posts were ever federated, so only they emit a Delete.
   # Drafts are local-only (never published), so discarding one sends nothing.
+  # Undelete/restore is out of scope: there is no local restore path nor an
+  # inbound on_federails_undelete_requested handler, so no after_undiscard.
   after_discard { create_federails_activity "Delete" if published? }
-  after_undiscard { create_federails_activity "Undo" if published? }
 
   # ── Federation ───────────────────────────────────────────────────────
   acts_as_federails_data handles: "Note",
