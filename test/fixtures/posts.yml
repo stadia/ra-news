@@ -53,3 +53,14 @@ longform_published:
   lft: 11
   rgt: 12
   depth: 0
+
+# article_id가 있어도 post_type이 comment가 아니면 comment?는 false임을 고정
+short_with_article:
+  body: "기사에 연결됐지만 댓글 타입은 아닌 단문입니다."
+  user: john
+  article: ruby_article
+  post_type: 0
+  status: 1
+  lft: 13
+  rgt: 14
+  depth: 0

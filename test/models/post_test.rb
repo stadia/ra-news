@@ -115,12 +115,22 @@ class PostTest < ActiveSupport::TestCase
 
   # ========== Article Comment Tests ==========
 
-  test "comment?는 article_id가 있으면 true를 반환한다" do
+  test "comment?는 post_type이 comment이면 true를 반환한다" do
     assert_predicate @comment_post, :comment?
   end
 
-  test "comment?는 article_id가 없으면 false를 반환한다" do
+  test "comment?는 post_type이 short이면 false를 반환한다" do
     assert_not @root_post.comment?
+  end
+
+  test "comment?는 post_type이 longform이면 false를 반환한다" do
+    assert_not posts(:longform_published).comment?
+  end
+
+  test "comment?는 article_id가 있어도 post_type이 comment가 아니면 false를 반환한다" do
+    short_with_article = posts(:short_with_article)
+    assert_predicate short_with_article.article_id, :present?
+    assert_not short_with_article.comment?
   end
 
   test "reply는 parent가 있으면 parent를 반환한다" do
@@ -160,11 +170,13 @@ class PostTest < ActiveSupport::TestCase
 
   # ========== Scope Tests ==========
 
-  test "comments 스코프는 article_id가 있는 post만 반환한다" do
+  test "comments 스코프는 post_type이 comment인 post만 반환한다" do
     comments = Post.comments
 
     assert_includes comments, @comment_post
     assert_not_includes comments, @root_post
+    assert_not_includes comments, posts(:longform_published)
+    assert_not_includes comments, posts(:short_with_article)
   end
 
   test "standalone 스코프는 article_id가 없는 post만 반환한다" do
