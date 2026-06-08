@@ -279,8 +279,8 @@ en:
       followers: Followers
       following: Following
       likes: Likes
+      longform: Longform
       posts: Posts
-      trash: Trash
     comment_list:
       empty: No comments yet.
     follow_list:
@@ -298,13 +298,13 @@ en:
       empty: No liked articles yet.
     post_list:
       empty: No posts yet.
+    longform_list:
       drafts_heading: Drafts in progress
-      drafts:
-        one: You have 1 draft.
-        other: You have %{count} drafts.
-    trash_list:
-      heading: Deleted posts
-      empty: Trash is empty.
+      published_heading: Published
+      trash_heading: Trash
+      drafts_empty: No drafts in progress.
+      published_empty: No published longform posts.
+      trash_empty: Trash is empty.
     show:
       feed: Feed
       find_follow: Find & Follow

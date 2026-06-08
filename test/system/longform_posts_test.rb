@@ -44,11 +44,11 @@ class LongformPostsTest < ApplicationSystemTestCase
   test "owner re-opens a draft, edits, and deletes a published post" do
     draft = posts(:longform_draft)
 
-    # 초안 안내(draft notice)에 기존 초안이 편집기 링크로 노출된다.
+    # 초안은 프로필의 "장문" 탭(작성 중 초안 섹션)에 편집기 링크로 노출된다.
     # 이 영역은 프로필의 "activity-list" 터보 프레임 안에 있지만, 링크에
     # data-turbo-frame="_top" 이 있어 클릭 시 전체 페이지 네비게이션으로
     # 편집기가 정상적으로 열린다.
-    visit user_profile_posts_path(username: @user.username)
+    visit user_profile_longform_path(username: @user.username)
     click_link draft.title
 
     assert_text I18n.t("posts.longform.edit_heading")

@@ -6,14 +6,12 @@ class Views::Profiles::PostList < Views::Base
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ButtonTo
 
-  def initialize(user:, posts:, pagy:, liked_post_ids: [], boosted_post_ids: [], drafts_count: 0, drafts: [], embedded: false)
+  def initialize(user:, posts:, pagy:, liked_post_ids: [], boosted_post_ids: [], embedded: false)
     @user = user
     @posts = posts
     @pagy = pagy
     @liked_post_ids = liked_post_ids
     @boosted_post_ids = boosted_post_ids
-    @drafts_count = drafts_count
-    @drafts = drafts
     @embedded = embedded
   end
 
@@ -34,8 +32,6 @@ class Views::Profiles::PostList < Views::Base
   private
 
   def list_content
-    draft_notice
-
     if @posts.empty?
       div(class: "text-center py-16 text-content-disabled") do
         p { t("profiles.post_list.empty") }
@@ -52,45 +48,6 @@ class Views::Profiles::PostList < Views::Base
           end
         end
         render Components::Pagination.new(pagy: @pagy)
-      end
-    end
-  end
-
-  def draft_notice
-    drafts = @drafts.to_a
-    return if drafts.empty?
-
-    div(class: "mb-4 rounded-lg border border-border-muted bg-surface p-4") do
-      div(class: "flex items-center justify-between mb-3") do
-        h2(class: "text-sm font-semibold text-content") { t("profiles.post_list.drafts_heading") }
-        span(class: "text-xs text-content-muted") { t("profiles.post_list.drafts", count: drafts.size) }
-      end
-      div(class: "flex flex-col gap-2") do
-        drafts.each { |draft| draft_row(draft) }
-      end
-    end
-  end
-
-  def draft_row(draft)
-    # This list renders inside the "activity-list" turbo frame, so links/forms
-    # need data-turbo-frame="_top" to navigate the whole page rather than
-    # replacing the frame (which would otherwise show "Content missing").
-    div(class: "flex items-center justify-between gap-3 rounded-md border border-border-muted bg-app/40 px-3 py-2") do
-      link_to(
-        edit_longform_post_path(draft),
-        class: "min-w-0 flex-1 truncate text-sm text-content hover:text-brand-text transition-colors",
-        data: { turbo_frame: "_top", turbo_prefetch: false }
-      ) do
-        plain draft.title.presence || t("posts.longform.untitled_draft")
-      end
-      div(class: "flex items-center gap-2 shrink-0") do
-        link_to t("posts.longform.edit"), edit_longform_post_path(draft),
-          class: "text-xs font-medium text-content-muted hover:text-content transition-colors",
-          data: { turbo_frame: "_top", turbo_prefetch: false }
-        button_to t("posts.longform.delete"), longform_post_path(draft),
-          method: :delete,
-          form: { data: { turbo_confirm: t("posts.longform.delete_confirm"), turbo_frame: "_top" } },
-          class: "text-xs font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
       end
     end
   end

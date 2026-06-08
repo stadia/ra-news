@@ -279,8 +279,8 @@ ko:
       followers: 팔로워
       following: 팔로잉
       likes: 좋아요
+      longform: 장문
       posts: 글
-      trash: 휴지통
     comment_list:
       empty: 아직 작성한 댓글이 없습니다.
     follow_list:
@@ -298,13 +298,13 @@ ko:
       empty: 아직 좋아요한 글이 없습니다.
     post_list:
       empty: 아직 작성한 글이 없습니다.
-      drafts_heading: 작성 중인 초안
-      drafts:
-        one: 초안 1개가 있습니다.
-        other: 초안 %{count}개가 있습니다.
-    trash_list:
-      heading: 삭제된 글
-      empty: 휴지통이 비어 있습니다.
+    longform_list:
+      drafts_heading: 작성 중 초안
+      published_heading: 발행됨
+      trash_heading: 휴지통
+      drafts_empty: 작성 중인 초안이 없습니다.
+      published_empty: 발행한 장문이 없습니다.
+      trash_empty: 휴지통이 비어 있습니다.
     show:
       feed: Feed
       find_follow: 팔로우 검색

@@ -10,7 +10,8 @@ class Views::Profiles::Show < Views::Base
   def initialize(user:, actor:, followers_count: 0, following_count: 0,
                  follow_actors: nil,
                  active_tab: :posts, posts: nil, likeables: nil, boostables: nil, pagy: nil,
-                 liked_post_ids: [], boosted_post_ids: [], drafts_count: 0, drafts: [])
+                 liked_post_ids: [], boosted_post_ids: [],
+                 longform_drafts: [], longform_published: [], longform_trash: [])
     @user = user
     @actor = actor
     @followers_count = followers_count
@@ -23,8 +24,9 @@ class Views::Profiles::Show < Views::Base
     @pagy = pagy
     @liked_post_ids = liked_post_ids
     @boosted_post_ids = boosted_post_ids
-    @drafts_count = drafts_count
-    @drafts = drafts
+    @longform_drafts = longform_drafts
+    @longform_published = longform_published
+    @longform_trash = longform_trash
   end
 
   def view_template
@@ -116,7 +118,7 @@ class Views::Profiles::Show < Views::Base
       render Views::Profiles::PostList.new(
         user: @user, posts: @posts || [], pagy: @pagy,
         liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids,
-        drafts_count: @drafts_count, drafts: @drafts, embedded: true
+        embedded: true
       )
     when :comments
       render Views::Profiles::CommentList.new(
@@ -132,9 +134,10 @@ class Views::Profiles::Show < Views::Base
       render Views::Profiles::BoostList.new(
         user: @user, boostables: @boostables || [], pagy: @pagy, embedded: true
       )
-    when :trash
-      render Views::Profiles::TrashList.new(
-        user: @user, posts: @posts || [], pagy: @pagy, embedded: true
+    when :longform
+      render Views::Profiles::LongformList.new(
+        user: @user, drafts: @longform_drafts, published: @longform_published,
+        trash: @longform_trash, embedded: true
       )
     when :followers, :following
       render Views::Profiles::FollowList.new(

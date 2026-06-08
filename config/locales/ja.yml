@@ -279,8 +279,8 @@ ja:
       followers: フォロワー
       following: フォロー中
       likes: いいね
+      longform: 長文
       posts: 投稿
-      trash: ゴミ箱
     comment_list:
       empty: まだコメントを書いていません。
     follow_list:
@@ -298,13 +298,13 @@ ja:
       empty: まだいいねした記事がありません。
     post_list:
       empty: まだ投稿がありません。
+    longform_list:
       drafts_heading: 作成中の下書き
-      drafts:
-        one: 下書きが1件あります。
-        other: 下書きが%{count}件あります。
-    trash_list:
-      heading: 削除した投稿
-      empty: ゴミ箱は空です。
+      published_heading: 公開済み
+      trash_heading: ゴミ箱
+      drafts_empty: 作成中の下書きはありません。
+      published_empty: 公開した長文はありません。
+      trash_empty: ゴミ箱は空です。
     show:
       feed: フィード
       find_follow: フォロー検索

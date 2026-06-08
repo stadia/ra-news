@@ -143,22 +143,54 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, "작성 중인 긴 글"
   end
 
-  test "owner posts page shows draft management entry" do
+  test "owner posts page no longer renders drafts" do
     sign_in users(:john)
     get user_profile_posts_url(username: users(:john).username)
 
     assert_response :success
-    assert_includes response.body, "작성 중인 초안"
-    assert_includes response.body, "작성 중인 긴 글"
+    # 초안은 더 이상 글 탭이 아니라 장문 탭에서 관리한다.
+    assert_not_includes response.body, posts(:longform_draft).title
+    assert_select "a[href=?]", edit_longform_post_path(posts(:longform_draft)), count: 0
+  end
+
+  test "owner longform tab shows draft management entry" do
+    sign_in users(:john)
+    get user_profile_longform_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.longform_list.drafts_heading")
+    assert_includes response.body, posts(:longform_draft).title
     assert_select "a[href=?]", edit_longform_post_path(posts(:longform_draft))
   end
 
-  test "owner draft entry offers a delete control" do
+  test "owner longform draft entry offers a delete control" do
     sign_in users(:john)
-    get user_profile_posts_url(username: users(:john).username)
+    get user_profile_longform_url(username: users(:john).username)
 
     assert_response :success
     assert_select "form[action=?]", longform_post_path(posts(:longform_draft))
+  end
+
+  test "longform drafts exclude trashed drafts" do
+    sign_in users(:john)
+    posts(:longform_draft).discard!
+
+    get user_profile_longform_url(username: users(:john).username)
+
+    assert_response :success
+    # 휴지통 복구 컨트롤로 노출되어야 한다 (작성 중 초안에는 없어야 함).
+    assert_select "form[action=?]", undiscard_longform_post_path(posts(:longform_draft))
+    assert_select "a[href=?]", edit_longform_post_path(posts(:longform_draft)), count: 0
+  end
+
+  test "owner longform tab lists published longform posts" do
+    sign_in users(:john)
+
+    get user_profile_longform_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, posts(:longform_published).title
+    assert_select "a[href=?]", post_path(posts(:longform_published))
   end
 
   test "comments tab excludes discarded comments" do
@@ -170,19 +202,19 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes response.body, posts(:comment_post).body
   end
 
-  test "trash tab requires the owner" do
+  test "longform tab requires the owner" do
     sign_in users(:jane)
 
-    get user_profile_trash_url(username: users(:john).username)
+    get user_profile_longform_url(username: users(:john).username)
 
     assert_redirected_to user_profile_base_path(username: users(:john).username)
   end
 
-  test "owner trash tab lists discarded longform posts" do
+  test "owner longform trash section lists discarded longform posts" do
     sign_in users(:john)
     posts(:longform_published).discard!
 
-    get user_profile_trash_url(username: users(:john).username)
+    get user_profile_longform_url(username: users(:john).username)
 
     assert_response :success
     assert_includes response.body, "발행된 긴 글"
@@ -190,30 +222,30 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?]", destroy_permanently_longform_post_path(posts(:longform_published))
   end
 
-  test "owner trash tab shows empty state when nothing discarded" do
+  test "owner longform trash section shows empty state when nothing discarded" do
     sign_in users(:john)
 
-    get user_profile_trash_url(username: users(:john).username)
+    get user_profile_longform_url(username: users(:john).username)
 
     assert_response :success
-    assert_includes response.body, I18n.t("profiles.trash_list.empty")
+    assert_includes response.body, I18n.t("profiles.longform_list.trash_empty")
   end
 
-  test "owner profile shows trash tab" do
+  test "owner profile shows longform tab" do
     sign_in users(:john)
 
     get user_profile_posts_url(username: users(:john).username)
 
     assert_response :success
-    assert_includes response.body, I18n.t("profiles.activity_tabs.trash")
+    assert_includes response.body, I18n.t("profiles.activity_tabs.longform")
   end
 
-  test "trash tab is hidden from other users" do
+  test "longform tab is hidden from other users" do
     sign_in users(:jane)
 
     get user_profile_posts_url(username: users(:john).username)
 
     assert_response :success
-    assert_not_includes response.body, user_profile_trash_path(username: users(:john).username)
+    assert_not_includes response.body, user_profile_longform_path(username: users(:john).username)
   end
 end

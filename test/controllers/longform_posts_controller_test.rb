@@ -170,7 +170,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
 
     patch undiscard_longform_post_url(@published)
 
-    assert_redirected_to user_profile_trash_url(username: @user.username)
+    assert_redirected_to user_profile_longform_url(username: @user.username)
     assert_not_predicate @published.reload, :discarded?
     assert_nil @published.deleted_at
   end
@@ -209,7 +209,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
 
     delete destroy_permanently_longform_post_url(@draft)
 
-    assert_redirected_to user_profile_trash_url(username: @user.username)
+    assert_redirected_to user_profile_longform_url(username: @user.username)
     assert_not Post.where(id: @draft.id).exists?
   end
 

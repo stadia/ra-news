@@ -54,7 +54,7 @@ class LongformPostsController < ApplicationController
     # Restoring a published post re-federates via the model's after_undiscard
     # (Undo); drafts were never federated, so nothing is emitted for them.
     @post.undiscard
-    redirect_to user_profile_trash_path(username: current_user.username), notice: t("posts.longform.restored")
+    redirect_to user_profile_longform_path(username: current_user.username), notice: t("posts.longform.restored")
   end
 
   def destroy_permanently
@@ -64,7 +64,7 @@ class LongformPostsController < ApplicationController
     # is benign — the tombstone already exists remotely, so the second Delete is
     # idempotent.
     @post.destroy
-    redirect_to user_profile_trash_path(username: current_user.username), notice: t("posts.longform.destroyed_permanently")
+    redirect_to user_profile_longform_path(username: current_user.username), notice: t("posts.longform.destroyed_permanently")
   end
 
   private

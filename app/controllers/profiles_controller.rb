@@ -31,8 +31,6 @@ class ProfilesController < ApplicationController
         .includes(:user, :federails_actor, :article, :tags)
         .order(created_at: :desc)
     )
-    @drafts = current_user == @user ? @user.posts.longform.draft.order(updated_at: :desc) : Post.none
-    @drafts_count = @drafts.size
     @liked_post_ids = liked_ids_for_posts(@posts)
     @boosted_post_ids = boosted_ids_for_posts(@posts)
     render_activity_page(:posts)
@@ -97,17 +95,16 @@ class ProfilesController < ApplicationController
     render_activity_page(:boosts)
   end
 
-  def trash
+  def longform
     unless current_user == @user
       redirect_to(user_profile_base_path(username: @user.username),
                   alert: "본인만 볼 수 있습니다") and return
     end
 
-    @pagy, @posts = pagy(
-      @user.posts.longform.discarded
-        .order(updated_at: :desc)
-    )
-    render_activity_page(:trash)
+    @longform_drafts = @user.posts.longform.draft.kept.order(updated_at: :desc)
+    @longform_published = @user.posts.longform.published.kept.order(published_at: :desc)
+    @longform_trash = @user.posts.longform.discarded.order(updated_at: :desc)
+    render_activity_page(:longform)
   end
 
   private
@@ -123,9 +120,7 @@ class ProfilesController < ApplicationController
           render Views::Profiles::PostList.new(
             user: @user, posts: @posts, pagy: @pagy,
             liked_post_ids: @liked_post_ids,
-            boosted_post_ids: @boosted_post_ids,
-            drafts_count: @drafts_count,
-            drafts: @drafts
+            boosted_post_ids: @boosted_post_ids
           )
         else
           render_show_with_activity(active_tab: :posts)
@@ -156,13 +151,16 @@ class ProfilesController < ApplicationController
         else
           render_show_with_activity(active_tab: :boosts)
         end
-      when :trash
+      when :longform
         if turbo_frame_request?
-          render Views::Profiles::TrashList.new(
-            user: @user, posts: @posts, pagy: @pagy
+          render Views::Profiles::LongformList.new(
+            user: @user,
+            drafts: @longform_drafts,
+            published: @longform_published,
+            trash: @longform_trash
           )
         else
-          render_show_with_activity(active_tab: :trash)
+          render_show_with_activity(active_tab: :longform)
         end
       when :followers, :following
         if turbo_frame_request?
@@ -190,8 +188,9 @@ class ProfilesController < ApplicationController
         liked_post_ids: @liked_post_ids,
         boosted_post_ids: @boosted_post_ids,
         follow_actors: @follow_actors,
-        drafts_count: @drafts_count,
-        drafts: @drafts || []
+        longform_drafts: @longform_drafts || [],
+        longform_published: @longform_published || [],
+        longform_trash: @longform_trash || []
       )
     end
 
