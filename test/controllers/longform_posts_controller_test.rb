@@ -12,6 +12,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
 
   test "requires authentication to create a draft" do
     post longform_posts_url
+
     assert_redirected_to new_user_session_url
   end
 
@@ -21,6 +22,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
       post longform_posts_url
     end
     draft = Post.longform.draft.order(:id).last
+
     assert_equal @user, draft.user
     assert_redirected_to edit_longform_post_url(draft)
   end
@@ -28,6 +30,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "renders edit page for owner draft" do
     sign_in @user
     get edit_longform_post_url(@draft)
+
     assert_response :success
     assert_select "h1", "긴 글 쓰기"
   end
@@ -36,6 +39,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     @draft.update!(user: @other_user)
     sign_in @user
     get edit_longform_post_url(@draft)
+
     assert_redirected_to feed_url
   end
 
@@ -44,6 +48,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     patch longform_post_url(@draft), params: {
       post: { title: "자동 저장 제목", body: "<p>자동 저장 본문</p>", tag_list: "ruby, rails" }
     }, as: :json
+
     assert_response :success
     assert_equal "자동 저장 제목", @draft.reload.title
     assert_equal [ "ruby", "rails" ], @draft.tag_list
@@ -53,6 +58,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     @draft.update!(title: "발행 제목", body: "<p>발행 본문</p>")
     patch publish_longform_post_url(@draft)
+
     assert_redirected_to post_url(@draft)
     assert_predicate @draft.reload, :published?
     assert_not_nil @draft.published_at
@@ -62,6 +68,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     @draft.update!(title: "", body: "<p>본문</p>")
     patch publish_longform_post_url(@draft)
+
     assert_response :unprocessable_entity
     assert_predicate @draft.reload, :draft?
   end
@@ -71,6 +78,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     patch longform_post_url(@published), params: {
       post: { title: "수정된 제목", body: "<p>수정된 본문</p>" }
     }
+
     assert_redirected_to post_url(@published)
     assert_equal "수정된 제목", @published.reload.title
   end
