@@ -14,6 +14,7 @@
 - 장문은 초안 자동 저장, 발행, 발행 후 수정을 지원한다.
 - 본인은 기존 초안과 발행 장문을 편집기로 다시 열어 수정할 수 있다.
 - 본인은 초안과 발행 장문을 삭제(soft discard)할 수 있다.
+- 삭제된 글은 본인 프로필의 휴지통 전용 탭에서 확인하고, 복원하거나 영구 삭제할 수 있다.
 - 본문 편집은 Lexxy 리치 텍스트 편집기를 앱용 Phlex 컴포넌트로 감싸서 사용한다.
 - 이미지 업로드는 첫 버전에 포함하지 않고, 외부 이미지 URL 삽입만 허용한다.
 - 장문 ActivityPub 발행은 전체 본문이 아니라 본문 앞부분 요약과 원문 URL을 보낸다.
@@ -116,14 +117,32 @@ Lexxy는 이미 앱 작성 폼에서 사용 중이다.
 
 - 본인 프로필 글 목록의 초안 안내(`draft_notice`)는 단순 개수 텍스트가 아니라, 각 초안을 편집기로 여는 링크 목록으로 확장한다.
 - 본인의 발행 장문 원문 페이지에 `수정` 진입점을 둔다. 두 경로 모두 기존 `edit_longform_post` 편집기로 이동하며, `update`/autosave 흐름을 그대로 재사용한다.
+- 수정 링크는 Turbo hover prefetch(`data-turbo-prefetch`)를 꺼서 편집기 페이지를 미리 가져오지 않게 한다(`data-turbo-prefetch="false"`).
 - 비소유자에게는 수정·삭제 진입점을 노출하지 않는다.
 
 삭제는 `Discard::Model`을 사용한 soft discard로 처리한다.
 
 - 초안과 발행 장문 모두 본인만 삭제할 수 있다.
 - 삭제는 확인 단계를 거친 뒤 `discard`(또는 `discard!`)를 호출해 `deleted_at`를 기록한다. DB 레코드는 유지한다.
-- 삭제된 글은 `kept` 스코프에서 빠지므로 `visible`에서도 제외되어 피드·프로필·원문 페이지에 더 이상 노출되지 않는다.
+- 삭제된 글은 `kept` 스코프에서 빠지므로 `visible`에서도 제외되어 피드·프로필 목록·원문 페이지에 더 이상 노출되지 않는다.
 - 삭제 진입점은 수정 진입점과 같은 위치(초안 목록, 발행 장문 원문 페이지)에 둔다.
+
+### 공개 가시성 강제
+
+`discard`로 레코드가 남고 인바운드 연합 삭제도 `discard!`로 처리하므로, 모든 공개 read 경로가 `kept`/`visible`를 강제해야 삭제된 글이 새지 않는다.
+
+- 원문 페이지(`PostsController#show`)는 `visible`(published.kept)만 공개로 서빙한다. 비공개 초안은 소유자 본인만 미리 볼 수 있고, discarded 글은 공개로 서빙하지 않는다(소유자는 휴지통에서 확인).
+- 기사 댓글, 프로필 댓글 탭, 홈 최근 댓글 등 댓글 read 경로는 `kept`를 적용한다. `article.posts_count` 같은 카운터도 discarded 댓글을 세지 않도록 정합을 맞춘다.
+- 인바운드 연합 기사 답글은 `post_type: :comment`로 저장해 `comments` 스코프에 포함되게 한다.
+
+### 휴지통
+
+삭제된 장문은 본인 프로필의 휴지통 전용 탭에서 관리한다.
+
+- 휴지통 탭은 본인에게만 보이며, `discarded`(not kept) 장문 목록을 보여준다.
+- 각 항목은 복원과 영구 삭제를 제공한다.
+- 복원(undiscard)은 `deleted_at`을 지워 글을 원래 상태(초안/발행)로 되돌린다. 발행이었던 글을 복원하면 ActivityPub `Undo`(또는 재연합)로 원격에도 되살린다. 초안은 연합한 적이 없으므로 복원 시 연합 활동을 발행하지 않는다.
+- 영구 삭제(hard destroy)는 레코드를 실제로 제거하고, 발행이었던 글이면 Federails의 `after_destroy` 경로로 `Delete`(Tombstone)를 발행한다.
 
 ## ActivityPub
 
@@ -139,6 +158,8 @@ Lexxy는 이미 앱 작성 폼에서 사용 중이다.
 발행 후 수정하면 사이트 원문과 ActivityPub `Update`를 함께 갱신한다.
 
 발행 장문을 삭제(discard)하면 ActivityPub `Delete`(Tombstone)를 발행해 연합된 인스턴스에서도 제거되게 한다. 이는 `Article`과 동일한 Federails + Discard 통합으로 처리한다: `after_discard`에서 `create_federails_activity "Delete"`를 호출하고, `acts_as_federails_data`에 `soft_deleted_method: :discarded?`, `soft_delete_date_method: :deleted_at`를 지정한다. `soft_deleted_method`가 설정되면 삭제된 레코드는 `federails_tombstoned?`가 참이 되어, `deleted_at` 갱신이 일으키는 일반 `Update` 활동은 자동으로 억제되고 `Delete`만 발행된다. 인바운드 연합 삭제 요청(`on_federails_delete_requested`)도 hard `destroy!`가 아니라 `discard!`로 처리해 동작을 일치시킨다. 초안은 발행된 적이 없으므로(로컬 미연합) 삭제 시 연합 활동이 발행되지 않는다.
+
+휴지통에서 복원(undiscard)하면 발행이었던 글은 ActivityPub `Undo`로 원격에 되살린다(`after_undiscard`에서 발행 글에 한해 `create_federails_activity "Undo"`, 인바운드 `on_federails_undelete_requested`는 `undiscard!`). 휴지통에서 영구 삭제(hard `destroy`)하면 발행이었던 글은 Federails의 `after_destroy` 경로로 다시 `Delete`/Tombstone을 발행한다. 초안은 복원·영구삭제 모두 연합 활동을 발행하지 않는다.
 
 요약은 별도 입력란 없이 본문 앞부분에서 자동 추출한다. HTML 태그와 과도한 공백을 제거하고, 링크와 원문 URL을 함께 제공한다.
 
@@ -208,3 +229,6 @@ PostgreSQL 기준으로 검증한다.
 - 삭제는 `Discard::Model`(기존 `Article` 패턴)을 사용한 soft discard로 처리하고, 초안과 발행 장문 모두 본인만 삭제할 수 있다. `status` enum에는 별도 `discarded` 값을 두지 않는다(발행 상태와 삭제 상태는 직교).
 - 발행 장문 삭제 시 `after_discard`에서 ActivityPub `Delete`(Tombstone)를 발행한다. `soft_deleted_method: :discarded?` 설정으로 삭제 시 불필요한 `Update` 활동은 억제된다.
 - 공개 피드 쿼리도 `visible`로 제한해 초안·`discarded` 글이 노출되지 않게 한다.
+- 삭제된 글은 본인 프로필의 휴지통 전용 탭에서 복원(undiscard)·영구삭제(hard destroy)할 수 있다. 복원 시 발행 글은 `Undo`, 영구삭제 시 발행 글은 `Delete`를 발행한다.
+- 모든 공개 read 경로(원문 show, 기사 댓글, 프로필 댓글 탭, 홈 최근 댓글, 카운터)는 `kept`/`visible`를 강제해 discarded 글·댓글이 새지 않게 한다. 비공개 초안 원문은 소유자 본인만 미리 볼 수 있다.
+- 수정 링크는 `data-turbo-prefetch="false"`로 hover prefetch를 끈다.

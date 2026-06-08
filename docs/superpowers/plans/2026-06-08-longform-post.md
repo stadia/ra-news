@@ -1603,7 +1603,55 @@ git commit -m "Add longform post system coverage"
 
 ---
 
-### Task 8: Final Verification and Graph Update
+### Task 8: Trash Tab, Visibility Hardening, and Edit-Link Preload
+
+**Decisions (approved):** soft-deleted longform is managed in an owner-only "휴지통" tab on the profile, supporting restore (undiscard) and permanent delete (hard destroy). The final-review visibility bugs are fixed in the same task. Edit links disable Turbo hover prefetch.
+
+**Files:**
+- Modify: `app/models/post.rb` (`after_undiscard` Undo for published; `on_federails_undelete_requested :undiscard!`)
+- Modify: `app/controllers/posts_controller.rb` (`show`/thread scope to visible + owner draft preview; comment read path `.kept`; comment `published_at`; federated reply `post_type: :comment`)
+- Modify: `app/controllers/articles_controller.rb`, `app/controllers/home_controller.rb`, `app/controllers/profiles_controller.rb` (comment read paths `.kept`)
+- Modify: `config/routes.rb` (longform `undiscard` + permanent destroy member routes; profile trash tab route)
+- Modify: `app/controllers/longform_posts_controller.rb` (`undiscard`, `destroy_permanently`)
+- Modify: `app/controllers/profiles_controller.rb` (trash tab action/data)
+- Modify: `app/components/profiles/activity_tabs.rb`, `app/views/profiles/*` (owner-only trash tab + list)
+- Modify: `app/views/profiles/post_list.rb`, `app/views/posts/show.rb` (edit links `data-turbo-prefetch: false`)
+- Modify: locales + tests.
+
+- [ ] **Step 1: Visibility hardening tests (red).** Add controller/model tests: (a) `posts#show` returns not-visible (draft to non-owner, discarded to anyone) as 404/redirect, owner can preview own draft; (b) a discarded comment does NOT appear in article comments / profile comments tab / home recent_comments, and `article.posts_count`-driven UI doesn't count it; (c) `from_activitypub_object` for an article reply sets `post_type: :comment`; (d) a published comment has `published_at` set.
+
+- [ ] **Step 2: Visibility hardening (green).**
+  - `PostsController#show`/`build_thread`: serve only `visible` posts publicly; allow the owner to preview their own non-published longform; do not serve `discarded` publicly (404 or redirect).
+  - Add `.kept` to comment read paths: article comments (`posts_controller`/`articles_controller`), profile comments tab and home recent_comments. Reconcile any discarded-comment count (prefer querying `.kept` rather than the raw counter cache where it's user-visible).
+  - `Post.from_activitypub_object`: set `post_type: :comment` when `article_id` present.
+  - `create_article_comment`: set `published_at ||= Time.current`.
+
+- [ ] **Step 3: Restore federation + routes (red→green).**
+  - In `app/models/post.rb` re-add `after_undiscard { create_federails_activity "Undo" if published? }` and `on_federails_undelete_requested :undiscard!` (mirror Article; guard Undo to published).
+  - Routes: add member `patch :undiscard` and a permanent-delete action (e.g. `delete :destroy_permanently`, distinct from the soft-delete `destroy`).
+  - `LongformPostsController#undiscard` (owner-guarded, finds discarded post via `Post.longform.with_discarded`/unscoped lookup, calls `undiscard`, redirects to trash) and `#destroy_permanently` (owner-guarded, hard `destroy`, redirects to trash). Adjust `set_post` so undiscard/permanent-delete can find a discarded record.
+  - Tests: undiscard restores (deleted_at nil) and re-federates Undo for published; permanent destroy removes the row and federates Delete for published; owner-only.
+
+- [ ] **Step 4: Trash tab (red→green).**
+  - Profile owner-only "휴지통" tab: route + `ProfilesController` action loading `@user.posts.longform.discarded` (owner only; non-owner gets 404/empty). Add the tab to `Components::Profiles::ActivityTabs` gated to `current_user == @user`.
+  - A trash list view rendering each discarded longform with restore (`patch undiscard`) and permanent delete (`delete destroy_permanently`, with confirm) controls. Frame-escape (`data-turbo-frame: "_top"`) consistent with the activity-list frame.
+  - Tests: trash tab visible only to owner; lists discarded longform; restore/permanent-delete controls present.
+
+- [ ] **Step 5: Edit-link preload off.** Add `data: { turbo_prefetch: false }` to the draft edit links (`app/views/profiles/post_list.rb`) and the show-page `수정` link (`app/views/posts/show.rb`).
+
+- [ ] **Step 6: Locales.** Add trash/restore/permanent-delete labels + confirms in ko/en/ja (e.g. `posts.longform.{restore,destroy_permanently,destroy_permanently_confirm}`, `profiles.activity_tabs.trash`, trash heading/empty text).
+
+- [ ] **Step 7: Run focused tests + system test; validate + rubocop.**
+
+```bash
+TEST_DATABASE_URL=postgres://postgres:postgres1234@localhost:5432/ra-news_test mise exec -- bin/rails test test/models/post_test.rb test/controllers/posts_controller_test.rb test/controllers/longform_posts_controller_test.rb test/controllers/profiles_controller_test.rb test/controllers/articles_controller_test.rb test/system/longform_posts_test.rb
+```
+
+- [ ] **Step 8: Commit.** Trailer `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`; do not stage graphify-out.
+
+---
+
+### Task 9: Final Verification and Graph Update
 
 **Files:**
 - Modify: `graphify-out/*` generated by graphify if the rebuild changes tracked graph files.
