@@ -33,11 +33,13 @@ class LongformPostsTest < ApplicationSystemTestCase
 
     # 프로필 포스트 목록에도 발행된 장문이 노출된다.
     visit user_profile_posts_path(username: @user.username)
+
     assert_text "시스템 테스트 장문"
 
     # 프로필 카드(activity-list 터보 프레임 안)에서 "원문 읽기"를 눌러도
     # data-turbo-frame="_top" 덕분에 전체 페이지로 원문이 정상 열린다.
     click_link I18n.t("posts.longform.read_more"), match: :first
+
     assert_text "시스템 테스트 본문입니다."
   end
 
@@ -61,6 +63,7 @@ class LongformPostsTest < ApplicationSystemTestCase
 
     # 삭제 후 프로필 목록에서 해당 발행 장문이 더 이상 보이지 않는다.
     visit user_profile_posts_path(username: @user.username)
+
     assert_no_text posts(:longform_published).title
   end
 
