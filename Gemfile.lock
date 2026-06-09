@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/stadia/federails.git
-  revision: 8d48ff503a7428dd5d812d074f9e5e9c0ddf00c8
+  revision: 94b999a4be62c79704198b8561fa1894f58feb73
   specs:
     federails (0.8.0)
       alba (~> 3.0)
@@ -676,10 +676,10 @@ GEM
       websocket (~> 1.0)
     semantic_logger (4.18.0)
       concurrent-ruby (~> 1.0)
-    sentry-rails (6.6.0)
+    sentry-rails (6.6.1)
       railties (>= 5.2.0)
-      sentry-ruby (~> 6.6.0)
-    sentry-ruby (6.6.0)
+      sentry-ruby (~> 6.6.1)
+    sentry-ruby (6.6.1)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       logger
@@ -719,15 +719,15 @@ GEM
       fugit (~> 1.11)
       railties (>= 7.1)
       thor (>= 1.3.1)
-    sorbet (0.6.13286)
-      sorbet-static (= 0.6.13286)
-    sorbet-runtime (0.6.13286)
-    sorbet-static (0.6.13286-aarch64-linux)
-    sorbet-static (0.6.13286-universal-darwin)
-    sorbet-static (0.6.13286-x86_64-linux)
-    sorbet-static-and-runtime (0.6.13286)
-      sorbet (= 0.6.13286)
-      sorbet-runtime (= 0.6.13286)
+    sorbet (0.6.13293)
+      sorbet-static (= 0.6.13293)
+    sorbet-runtime (0.6.13293)
+    sorbet-static (0.6.13293-aarch64-linux)
+    sorbet-static (0.6.13293-universal-darwin)
+    sorbet-static (0.6.13293-x86_64-linux)
+    sorbet-static-and-runtime (0.6.13293)
+      sorbet (= 0.6.13293)
+      sorbet-runtime (= 0.6.13293)
     spoom (1.7.16)
       erubi (>= 1.10.0)
       prism (>= 0.28.0)
