@@ -629,15 +629,16 @@ class PostTest < ActiveSupport::TestCase
     end
   end
 
-  # 이미 발행된 글을 다시 publish!하면 원격에 객체가 존재하므로 일반 Update 경로를
-  # 유지한다(Create 억제는 draft→published 최초 전환에만 적용).
-  test "publish!는 이미 발행된 글에는 일반 Update 경로를 유지한다" do
+  # 이미 Create를 발행한(원격에 객체가 존재하는) 글의 수정은 일반 Update 경로를
+  # 유지한다. Create 승격은 Create 활동이 없는 최초 발행에만 적용된다.
+  test "이미 Create가 발행된 글의 수정은 Update 경로를 유지한다" do
     post = posts(:longform_published)
-    post.body = "재발행 시 본문 변경"
+    Federails::Activity.create!(actor: federails_actors(:john_actor), entity: post, action: "Create")
+    post.body = "수정된 본문"
 
     assert_difference -> { Federails::Activity.where(action: "Update", entity: post).count }, 1 do
       assert_no_difference -> { Federails::Activity.where(action: "Create", entity: post).count } do
-        post.publish!
+        post.save!
       end
     end
   end

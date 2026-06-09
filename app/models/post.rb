@@ -167,6 +167,14 @@ class Post < ApplicationRecord
     actor ||= federails_actor || user&.federails_actor
     return if actor.blank?
 
+    # A draft never federated, so its first publish fires an "Update" (via the
+    # after_update callback) that remotes would drop — there's no object to
+    # update yet. Promote that first Update to a "Create" so the post is
+    # actually delivered. Once a Create exists, later edits federate as Updates.
+    if action == "Update" && !Federails::Activity.exists?(entity: self, action: "Create")
+      action = "Create"
+    end
+
     super(action, actor: actor, to: to, cc: cc)
   end
 

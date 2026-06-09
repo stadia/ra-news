@@ -12,42 +12,15 @@ module Posts
 
     LONGFORM_SUMMARY_LENGTH = 280
 
-    # Prepended onto the including class so it sits ahead of
-    # Federails::DataEntity in the ancestor chain. That lets us swallow the
-    # automatic "Update" activity fired during a draft's first publish; publish!
-    # emits a "Create" explicitly instead (see #publish!).
-    module FederailsActivityOverride
-      private
-
-      def create_federails_activity(action, **)
-        return if action == "Update" && @suppress_federails_update
-
-        super
-      end
-    end
-
     included do
       validate :validate_longform_draft_content
-      prepend FederailsActivityOverride
     end
 
     #: () -> void
     def publish!
-      # A draft never federated, so remotes hold no object for it. Federails'
-      # after_update would emit an "Update" on this save, which remotes drop
-      # (nothing to update). Suppress that Update and emit a "Create" instead so
-      # the first publish actually delivers the post. Re-publishing an already
-      # published post keeps the normal Update path.
-      publishing_draft = draft?
-      @suppress_federails_update = publishing_draft
-
       self.published_at ||= Time.current
       self.status = :published
       save!
-
-      create_federails_activity("Create") if publishing_draft && should_federate?
-    ensure
-      @suppress_federails_update = false
     end
 
     #: () -> bool
