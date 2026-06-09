@@ -77,23 +77,37 @@ class ArticleAgentsService < OperationService
     return Success(article) if article.discarded?
     return Success(article) if article.title_ko.blank? || article.summary_body.blank?
 
-    prompt = japanese_prompt(article)
-    message = ArticleJapaneseAgent.new.ask(prompt)
-    logger.info "Japanese agent response received for article id: #{article.id}"
-
-    if message.content.blank?
-      logger.warn "Japanese agent returned empty content for article id: #{article.id}"
-      return Failure(:japanese_agent_empty)
-    end
-
-    japanese_attrs = build_japanese_attrs(message.content)
-    return Failure(:japanese_agent_empty) if japanese_attrs[:title_ja].blank?
+    japanese_attrs = japanese_translation(article)
+    return Failure(:japanese_agent_empty) if japanese_attrs.blank? || japanese_attrs[:title_ja].blank?
 
     article.update!(japanese_attrs)
     Success(article)
   rescue StandardError => e
     logger.error "Failed to translate article #{article.id} to Japanese: #{e.message}"
     Failure(:japanese_agent_failed)
+  end
+
+  # DeepL을 우선 사용하고, 무료 한도 초과/오류/미설정 시 ArticleJapaneseAgent로 폴백한다.
+  #: (Article article) -> Hash[Symbol, untyped]
+  def japanese_translation(article)
+    result = DeeplTranslationService.new.call(article)
+    return result.value! if result.success?
+
+    logger.warn "DeepL unavailable (#{result.failure}); falling back to ArticleJapaneseAgent for article #{article.id}"
+    japanese_via_agent(article)
+  end
+
+  #: (Article article) -> Hash[Symbol, untyped]
+  def japanese_via_agent(article)
+    message = ArticleJapaneseAgent.new.ask(japanese_prompt(article))
+    logger.info "Japanese agent response received for article id: #{article.id}"
+
+    if message.content.blank?
+      logger.warn "Japanese agent returned empty content for article id: #{article.id}"
+      return {}
+    end
+
+    build_japanese_attrs(message.content)
   end
 
   def run_thumbnail(article)
