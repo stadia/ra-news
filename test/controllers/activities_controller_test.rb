@@ -21,6 +21,16 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "GET feed excludes the current user's draft longform posts" do
+    draft = posts(:longform_draft)
+    sign_in_as(@user)
+
+    get feed_path
+
+    assert_response :success
+    assert_not_includes @response.body, draft.title
+  end
+
   test "GET feed preloads liked posts for authenticated user" do
     post = Post.create!(body: "liked feed post", user: @user)
     Like.create!(actor: @user.federails_actor, likeable: post, created_at: Time.current)

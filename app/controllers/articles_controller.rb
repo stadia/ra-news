@@ -66,7 +66,7 @@ class ArticlesController < ApplicationController
   end
 
   def show
-    @comments = @article.posts.includes(:user)
+    @comments = @article.posts.comments.kept.includes(:user)
 
     @page_title = @article.display_title
     @page_description = @article.summary_key_preview
