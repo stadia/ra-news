@@ -15,7 +15,12 @@ class Components::Posts::LongformEditor < Components::Base
       class: "space-y-5",
       data: {
         controller: "longform-autosave",
-        longform_autosave_url_value: view_context.longform_post_path(@post, format: :json)
+        action: "submit->longform-autosave#cancelPending",
+        longform_autosave_url_value: view_context.longform_post_path(@post, format: :json),
+        longform_autosave_pending_text_value: t("posts.longform.autosave_pending"),
+        longform_autosave_saving_text_value: t("posts.longform.autosave_saving"),
+        longform_autosave_saved_text_value: t("posts.longform.autosave_saved"),
+        longform_autosave_failed_text_value: t("posts.longform.autosave_failed")
       }
     ) do |f|
       error_summary

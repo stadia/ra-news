@@ -617,14 +617,28 @@ class PostTest < ActiveSupport::TestCase
     assert_nil captured[:custom]["name"]
   end
 
-  # Federails::DataEntity는 after_update 콜백으로 레코드 갱신 시 Update 활동을
-  # 자동 발행한다(data_entity.rb L204). 따라서 publish!의 save!가 Update를 트리거하며,
-  # 별도의 ActivityPub update API를 추가할 필요가 없다.
-  test "publish!는 Federails Update 활동을 발행한다" do
+  # 초안은 원격에 객체가 없으므로 첫 발행은 Create로 전달해야 한다. publish!는
+  # save!가 일으키는 자동 Update를 억제하고 Create를 명시적으로 발행한다.
+  test "publish!는 초안 첫 발행 시 Federails Create 활동을 발행한다" do
     post = posts(:longform_draft)
 
+    assert_difference -> { Federails::Activity.where(action: "Create", entity: post).count }, 1 do
+      assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
+        post.publish!
+      end
+    end
+  end
+
+  # 이미 발행된 글을 다시 publish!하면 원격에 객체가 존재하므로 일반 Update 경로를
+  # 유지한다(Create 억제는 draft→published 최초 전환에만 적용).
+  test "publish!는 이미 발행된 글에는 일반 Update 경로를 유지한다" do
+    post = posts(:longform_published)
+    post.body = "재발행 시 본문 변경"
+
     assert_difference -> { Federails::Activity.where(action: "Update", entity: post).count }, 1 do
-      post.publish!
+      assert_no_difference -> { Federails::Activity.where(action: "Create", entity: post).count } do
+        post.publish!
+      end
     end
   end
 

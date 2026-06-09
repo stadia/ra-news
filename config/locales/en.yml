@@ -243,6 +243,10 @@ en:
       destroy_permanently_confirm: Permanently delete this post? This cannot be undone.
       forbidden: You do not have permission to edit this post.
       autosave_idle: Autosave ready
+      autosave_pending: Saving pending
+      autosave_saving: Saving
+      autosave_saved: Saved
+      autosave_failed: Save failed
       preview: Preview
       publish: Publish
       title_placeholder: Enter a title

@@ -243,6 +243,10 @@ ja:
       destroy_permanently_confirm: この投稿を完全に削除しますか？元に戻せません。
       forbidden: この投稿を編集する権限がありません。
       autosave_idle: 自動保存の準備完了
+      autosave_pending: 保存待機中
+      autosave_saving: 保存中
+      autosave_saved: 保存しました
+      autosave_failed: 保存に失敗しました
       preview: プレビュー
       publish: 公開
       title_placeholder: タイトルを入力してください

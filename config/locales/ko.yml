@@ -243,6 +243,10 @@ ko:
       destroy_permanently_confirm: 이 글을 완전히 삭제할까요? 되돌릴 수 없습니다.
       forbidden: 이 글을 수정할 권한이 없습니다.
       autosave_idle: 자동 저장 준비됨
+      autosave_pending: 저장 대기 중
+      autosave_saving: 저장 중
+      autosave_saved: 저장됨
+      autosave_failed: 저장 실패
       preview: 미리보기
       publish: 발행
       title_placeholder: 제목을 입력하세요
