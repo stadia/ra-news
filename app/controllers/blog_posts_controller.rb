@@ -3,14 +3,27 @@
 
 class BlogPostsController < ApplicationController
   before_action :authenticate_user!
-  before_action :build_new_post, only: [ :new ]
   before_action :set_post, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
   before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
 
   # Opens the editor for an unsaved draft. No row is created on entry — the
-  # first autosave (or publish) persists it via #create. A body carried over
-  # from the composer is prefilled so the in-progress text is not lost.
+  # first autosave (or publish) persists it via #create.
+  #
+  # The composer POSTs the in-progress body here so it stays out of the URL; we
+  # stash it in the session and redirect to the GET editor (Turbo follows the
+  # redirect and renders the page). Opening the editor directly (GET) carries
+  # over that stashed body once, then starts fresh.
   def new
+    if request.post?
+      session[:blog_draft_body] = params.dig(:post, :body).to_s
+      return redirect_to new_blog_post_path, status: :see_other
+    end
+
+    @post = current_user.posts.new(
+      post_type: :blog,
+      status: :draft,
+      body: session.delete(:blog_draft_body).to_s
+    )
     render Views::BlogPosts::Edit.new(post: @post)
   end
 
@@ -90,14 +103,6 @@ class BlogPostsController < ApplicationController
   end
 
   private
-
-  def build_new_post
-    @post = current_user.posts.new(
-      post_type: :blog,
-      status: :draft,
-      body: params.dig(:post, :body).to_s
-    )
-  end
 
   # The publish button on an unsaved draft submits to #create with a publish
   # flag (HTML), so the draft is created and published in one request.

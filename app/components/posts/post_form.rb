@@ -98,15 +98,15 @@ class Components::Posts::PostForm < Components::Base
         plain "/#{::Post::MAX_BODY_LENGTH}"
       end
       div(class: "flex items-center gap-2") do
-        # Opens the blog editor carrying the in-progress body. A GET submit
-        # navigates to #new (Turbo renders the page) with the composer fields in
-        # the query string, so #new can prefill the body. The draft row is
+        # Opens the blog editor carrying the in-progress body. POSTs to #new so
+        # the body travels in the request body (not the URL); #new stashes it and
+        # redirects to the GET editor, which Turbo renders. The draft row is
         # created lazily on first autosave — switching to blog from an empty
         # composer never persists an empty draft.
         render RubyUI::Button.new(
           type: :submit,
           formaction: view_context.new_blog_post_path,
-          formmethod: :get,
+          formmethod: :post,
           variant: :secondary,
           class: "text-content-secondary"
         ) { t("posts.post_form.blog") }

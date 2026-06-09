@@ -68,6 +68,8 @@ class Views::Posts::Show < Views::Base
       div(class: "text-sm text-content-muted") do
         plain I18n.l(root.published_at || root.created_at, format: :short)
       end
+      # body is allowlist-sanitized on save (HtmlSanitizable#sanitize_body).
+      # Phlex's `raw` only accepts html_safe input, so the marker is required.
       div(class: "post-content prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
         raw root.body.html_safe
       end
