@@ -1,25 +1,26 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-# 한국어 기사 결과물을 DeepL API로 일본어 번역한다.
-# 무료 한도 초과(HTTP 456) 시 Failure(:quota_exceeded)를 반환해
-# 호출 측이 ArticleJapaneseAgent로 폴백하도록 한다.
-class DeeplTranslationService
-  include Dry::Monads[:result]
-
-  QUOTA_EXCEEDED_STATUS = 456
+# 한국어 기사 결과물을 DeepL API(공식 deepl-rb 젬)로 일본어 번역한다.
+# 무료 한도 초과(HTTP 456)를 받으면 그 달 말까지 캐시 플래그로 DeepL 호출 자체를 막고
+# Failure(:quota_exceeded)를 반환해, 호출 측이 ArticleJapaneseAgent로 폴백하도록 한다.
+class DeeplTranslationService < OperationService
   QUOTA_CACHE_KEY = "deepl:quota_exceeded"
   SOURCE_LANG = "KO"
   TARGET_LANG = "JA"
 
-  Error = Class.new(StandardError)
-  QuotaExceeded = Class.new(Error)
-
   #: (Article article) -> Dry::Monads::Result
   def call(article)
-    return Failure(:not_configured) if api_key.blank?
+    return Failure(:not_configured) if ENV.fetch("DEEPL_AUTH_KEY", nil).blank?
     return Failure(:quota_exceeded) if quota_exceeded?
 
+    step run_translation(article)
+  end
+
+  protected
+
+  #: (Article article) -> Dry::Monads::Result
+  def run_translation(article)
     keys = Array(article.summary_key).map(&:to_s).reject(&:blank?)
     detail = article.summary_detail || {}
     scalars = {
@@ -43,39 +44,27 @@ class DeeplTranslationService
       },
       summary_body_ja: scalar_out[:summary_body_ja].strip
     )
-  rescue QuotaExceeded
+  rescue DeepL::Exceptions::QuotaExceeded
     mark_quota_exceeded!
     logger.warn "DeepL quota exceeded for article #{article.id}; blocking DeepL until month reset"
     Failure(:quota_exceeded)
-  rescue Error => e
+  rescue StandardError => e
+    # DeepL 오류·네트워크 오류 모두 폴백 대상이므로 넓게 잡는다.
     logger.warn "DeepL translation failed for article #{article.id}: #{e.message}"
     Failure(:deepl_error)
   end
-
-  protected
 
   #: (Array[String] texts) -> Array[String]
   def translate(texts)
     # DeepL은 빈 문자열을 거부할 수 있어 공백으로 치환해 인덱스 정렬을 유지한다.
     payload = texts.map { |text| text.presence || " " }
-
-    response = connection.post(endpoint) do |req|
-      req.headers["Authorization"] = "DeepL-Auth-Key #{api_key}"
-      req.headers["Content-Type"] = "application/json"
-      req.body = { text: payload, source_lang: SOURCE_LANG, target_lang: TARGET_LANG }.to_json
-    end
-
-    raise QuotaExceeded if response.status == QUOTA_EXCEEDED_STATUS
-    raise Error, "status #{response.status}: #{response.body}" unless response.success?
-
-    Array(JSON.parse(response.body)["translations"]).map { |t| t["text"].to_s }
-  rescue Faraday::Error => e
-    raise Error, e.message
+    result = DeepL.translate(payload, SOURCE_LANG, TARGET_LANG)
+    Array(result).map(&:text)
   end
 
   private
 
-  # 한 번 한도를 넘기면 그 달 안에는 계속 456이므로, 월말까지 DeepL 호출 자체를 막는다.
+  # 한 번 한도를 넘기면 그 달 안에는 계속 456이므로, 월말까지 DeepL 호출을 막는다.
   #: () -> bool
   def quota_exceeded?
     Rails.cache.exist?(QUOTA_CACHE_KEY)
@@ -89,26 +78,5 @@ class DeeplTranslationService
   #: () -> Float
   def seconds_until_month_reset
     [ Time.current.end_of_month - Time.current, 1.0 ].max
-  end
-
-  #: () -> ActiveSupport::Logger
-  def logger
-    Rails.logger
-  end
-
-  #: () -> Faraday::Connection
-  def connection
-    @connection ||= Faraday.new { |f| f.options.timeout = 30 }
-  end
-
-  #: () -> String
-  def endpoint
-    host = api_key.to_s.end_with?(":fx") ? "https://api-free.deepl.com" : "https://api.deepl.com"
-    "#{host}/v2/translate"
-  end
-
-  #: () -> String?
-  def api_key
-    ENV.fetch("DEEPL_API_KEY", nil)
   end
 end
