@@ -16,15 +16,66 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_user_session_url
   end
 
-  test "creates a longform draft and redirects to edit" do
+  test "opening the new editor does not persist a draft" do
     sign_in @user
-    assert_difference -> { Post.longform.draft.count }, 1 do
-      post longform_posts_url
+
+    assert_no_difference -> { Post.longform.count } do
+      get new_longform_post_url
     end
+
+    assert_response :success
+    assert_select ".post-composer-editor"
+    assert_select "form[action='#{longform_posts_path}']"
+  end
+
+  test "new editor prefills body carried from the composer" do
+    sign_in @user
+
+    assert_no_difference -> { Post.longform.count } do
+      post new_longform_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
+    end
+
+    assert_response :success
+    assert_includes response.body, "이관된 본문"
+  end
+
+  test "first autosave creates the draft and returns the persisted urls" do
+    sign_in @user
+
+    assert_difference -> { Post.longform.draft.count }, 1 do
+      post longform_posts_url, params: { post: { title: "초안", body: "<p>본문</p>" } }, as: :json
+    end
+
+    assert_response :success
     draft = Post.longform.draft.order(:id).last
 
     assert_equal @user, draft.user
-    assert_redirected_to edit_longform_post_url(draft)
+    body = response.parsed_body
+
+    assert_equal longform_post_path(draft, format: :json), body["save_url"]
+    assert_equal publish_longform_post_path(draft), body["publish_url"]
+  end
+
+  test "publishing a new draft creates and publishes in one request" do
+    sign_in @user
+
+    assert_difference -> { Post.longform.published.count }, 1 do
+      post longform_posts_url, params: { post: { title: "제목", body: "<p>본문</p>" }, publish: "1" }
+    end
+
+    published = Post.longform.published.order(:id).last
+
+    assert_redirected_to post_url(published)
+  end
+
+  test "publishing a new draft without a title re-renders the editor" do
+    sign_in @user
+
+    assert_no_difference -> { Post.longform.count } do
+      post longform_posts_url, params: { post: { title: "", body: "<p>본문</p>" }, publish: "1" }
+    end
+
+    assert_response :unprocessable_entity
   end
 
   test "renders edit page for owner draft" do

@@ -3,19 +3,39 @@
 
 class LongformPostsController < ApplicationController
   before_action :authenticate_user!
+  before_action :build_new_post, only: [ :new ]
   before_action :set_post, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
   before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
 
+  # Opens the editor for an unsaved draft. No row is created on entry — the
+  # first autosave (or publish) persists it via #create. A body carried over
+  # from the composer is prefilled so the in-progress text is not lost.
+  def new
+    render Views::LongformPosts::Edit.new(post: @post)
+  end
+
   def create
-    # The composer's "longform" button submits the in-progress short post, so
-    # carry the typed body into the new draft instead of discarding it.
-    post = current_user.posts.create!(
-      post_type: :longform,
-      status: :draft,
-      title: I18n.t("posts.longform.untitled_draft"),
-      body: params.dig(:post, :body).to_s
-    )
-    redirect_to edit_longform_post_path(post)
+    @post = current_user.posts.new(longform_post_params)
+    @post.post_type = :longform
+
+    if publishing?
+      @post.publish!
+      redirect_to post_path(@post), notice: t("posts.longform.published")
+    else
+      @post.status = :draft
+      @post.title = I18n.t("posts.longform.untitled_draft") if @post.title.blank?
+      respond_to do |format|
+        if @post.save
+          format.json { render json: created_draft_payload }
+          format.html { redirect_to edit_longform_post_path(@post) }
+        else
+          format.json { render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity }
+          format.html { render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity }
+        end
+      end
+    end
+  rescue ActiveRecord::RecordInvalid
+    render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity
   end
 
   def edit
@@ -70,6 +90,33 @@ class LongformPostsController < ApplicationController
   end
 
   private
+
+  def build_new_post
+    @post = current_user.posts.new(
+      post_type: :longform,
+      status: :draft,
+      body: params.dig(:post, :body).to_s
+    )
+  end
+
+  # The publish button on an unsaved draft submits to #create with a publish
+  # flag (HTML), so the draft is created and published in one request.
+  def publishing?
+    params[:publish].present? && !request.format.json?
+  end
+
+  # Tells the editor's autosave controller how to address the now-persisted
+  # draft: switch from POST #create to PATCH #update and target the publish
+  # route, all without a page reload.
+  def created_draft_payload
+    {
+      status: "ok",
+      saved_at: l(Time.current, format: :short),
+      save_url: longform_post_path(@post, format: :json),
+      form_url: longform_post_path(@post),
+      publish_url: publish_longform_post_path(@post)
+    }
+  end
 
   # Discard adds no default scope, so undiscard/destroy_permanently must reach
   # soft-deleted rows. Every other action operates on live content only, so

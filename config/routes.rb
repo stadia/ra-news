@@ -46,6 +46,9 @@ Rails.application.routes.draw do
       delete :destroy_permanently
     end
   end
+  # Renders the editor for an unsaved draft (lazy creation). GET opens a blank
+  # editor; POST carries an in-progress body over from the composer.
+  match "longform_posts/new", to: "longform_posts#new", as: :new_longform_post, via: [ :get, :post ]
   resources :articles, only: %i[index show new create] do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Article" }
     resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Article" }
