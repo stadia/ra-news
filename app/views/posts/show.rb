@@ -68,7 +68,7 @@ class Views::Posts::Show < Views::Base
       div(class: "text-sm text-content-muted") do
         plain I18n.l(root.published_at || root.created_at, format: :short)
       end
-      div(class: "prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
+      div(class: "post-content prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
         raw root.body.html_safe
       end
       owner_controls(root)

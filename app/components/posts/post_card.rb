@@ -98,7 +98,7 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def short_body
-    div(class: "text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
+    div(class: "post-content text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
       raw @post.body.html_safe
     end
   end
