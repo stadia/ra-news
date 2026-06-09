@@ -7,11 +7,13 @@ class LongformPostsController < ApplicationController
   before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
 
   def create
+    # The composer's "longform" button submits the in-progress short post, so
+    # carry the typed body into the new draft instead of discarding it.
     post = current_user.posts.create!(
       post_type: :longform,
       status: :draft,
       title: I18n.t("posts.longform.untitled_draft"),
-      body: ""
+      body: params.dig(:post, :body).to_s
     )
     redirect_to edit_longform_post_path(post)
   end
@@ -69,10 +71,13 @@ class LongformPostsController < ApplicationController
 
   private
 
-  # Discard adds no default scope, so find_by! locates kept AND discarded rows.
-  # This lets undiscard/destroy_permanently operate on soft-deleted posts.
+  # Discard adds no default scope, so undiscard/destroy_permanently must reach
+  # soft-deleted rows. Every other action operates on live content only, so
+  # restrict those to kept rows to avoid editing/publishing a trashed post.
   def set_post
-    @post = Post.longform.find_by!(slug: params[:id])
+    scope = Post.longform
+    scope = scope.kept unless %w[undiscard destroy_permanently].include?(action_name)
+    @post = scope.find_by!(slug: params[:id])
   end
 
   def authorize_owner!

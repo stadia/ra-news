@@ -18,6 +18,7 @@ class Components::Posts::LongformEditor < Components::Base
         longform_autosave_url_value: view_context.longform_post_path(@post, format: :json)
       }
     ) do |f|
+      error_summary
       header
       title_field(f)
       body_field(f)
@@ -26,6 +27,16 @@ class Components::Posts::LongformEditor < Components::Base
   end
 
   private
+
+  def error_summary
+    return unless @post.errors.any?
+
+    div(class: "rounded-lg border border-danger-solid/20 bg-danger-solid/10 p-4 text-sm text-danger-text") do
+      ul(class: "list-disc list-inside space-y-1") do
+        @post.errors.full_messages.each { |msg| li { msg } }
+      end
+    end
+  end
 
   def header
     div(class: "flex items-center justify-between gap-3") do
