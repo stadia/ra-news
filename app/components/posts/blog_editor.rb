@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Components::Posts::LongformEditor < Components::Base
+class Components::Posts::BlogEditor < Components::Base
   include Phlex::Rails::Helpers::FormWith
 
   def initialize(post:)
@@ -11,7 +11,7 @@ class Components::Posts::LongformEditor < Components::Base
     form_with(model: @post, url: form_url, method: form_method, class: "space-y-5", data: form_data) do |f|
       # New (unsaved) drafts POST to #create; this hidden field lets the autosave
       # controller flip the form to PATCH #update once the draft is persisted.
-      input(type: "hidden", name: "_method", value: "post", data: { longform_autosave_target: "methodField" }) unless @post.persisted?
+      input(type: "hidden", name: "_method", value: "post", data: { blog_autosave_target: "methodField" }) unless @post.persisted?
 
       error_summary
       header
@@ -24,7 +24,7 @@ class Components::Posts::LongformEditor < Components::Base
   private
 
   def form_url
-    @post.persisted? ? view_context.longform_post_path(@post) : view_context.longform_posts_path
+    @post.persisted? ? view_context.blog_post_path(@post) : view_context.blog_posts_path
   end
 
   def form_method
@@ -33,23 +33,23 @@ class Components::Posts::LongformEditor < Components::Base
 
   def save_url
     if @post.persisted?
-      view_context.longform_post_path(@post, format: :json)
+      view_context.blog_post_path(@post, format: :json)
     else
-      view_context.longform_posts_path(format: :json)
+      view_context.blog_posts_path(format: :json)
     end
   end
 
   def form_data
     {
-      controller: "longform-autosave",
-      action: "submit->longform-autosave#stop",
-      longform_autosave_persisted_value: @post.persisted?,
-      longform_autosave_initial_dirty_value: !@post.persisted? && @post.body.present?,
-      longform_autosave_save_url_value: save_url,
-      longform_autosave_pending_text_value: t("posts.longform.autosave_pending"),
-      longform_autosave_saving_text_value: t("posts.longform.autosave_saving"),
-      longform_autosave_saved_text_value: t("posts.longform.autosave_saved"),
-      longform_autosave_failed_text_value: t("posts.longform.autosave_failed")
+      controller: "blog-autosave",
+      action: "submit->blog-autosave#stop",
+      blog_autosave_persisted_value: @post.persisted?,
+      blog_autosave_initial_dirty_value: !@post.persisted? && @post.body.present?,
+      blog_autosave_save_url_value: save_url,
+      blog_autosave_pending_text_value: t("posts.blog.autosave_pending"),
+      blog_autosave_saving_text_value: t("posts.blog.autosave_saving"),
+      blog_autosave_saved_text_value: t("posts.blog.autosave_saved"),
+      blog_autosave_failed_text_value: t("posts.blog.autosave_failed")
     }
   end
 
@@ -65,12 +65,12 @@ class Components::Posts::LongformEditor < Components::Base
 
   def header
     div(class: "flex items-center justify-between gap-3") do
-      p(class: "text-sm text-content-muted", data: { longform_autosave_target: "status" }) do
-        t("posts.longform.autosave_idle")
+      p(class: "text-sm text-content-muted", data: { blog_autosave_target: "status" }) do
+        t("posts.blog.autosave_idle")
       end
 
       div(class: "flex items-center gap-2") do
-        render RubyUI::Button.new(type: :submit, variant: :secondary) { t("posts.longform.preview") }
+        render RubyUI::Button.new(type: :submit, variant: :secondary) { t("posts.blog.preview") }
         publish_button
       end
     end
@@ -82,26 +82,26 @@ class Components::Posts::LongformEditor < Components::Base
       # it so the request reaches the `patch :publish` member route.
       render RubyUI::Button.new(
         type: :submit,
-        formaction: view_context.publish_longform_post_path(@post),
+        formaction: view_context.publish_blog_post_path(@post),
         formmethod: :post,
         name: "_method",
         value: "patch",
-        data: { longform_autosave_target: "publishButton" },
+        data: { blog_autosave_target: "publishButton" },
         class: "bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground"
-      ) { t("posts.longform.publish") }
+      ) { t("posts.blog.publish") }
     else
       # Unsaved draft: submit to #create with a publish flag so the row is
       # created and published in one request. Once autosave persists the draft,
       # the autosave controller rewires this button to the publish route.
       render RubyUI::Button.new(
         type: :submit,
-        formaction: view_context.longform_posts_path,
+        formaction: view_context.blog_posts_path,
         formmethod: :post,
         name: "publish",
         value: "1",
-        data: { longform_autosave_target: "publishButton" },
+        data: { blog_autosave_target: "publishButton" },
         class: "bg-brand-solid hover:bg-brand-solid-hover text-brand-foreground"
-      ) { t("posts.longform.publish") }
+      ) { t("posts.blog.publish") }
     end
   end
 
@@ -109,8 +109,8 @@ class Components::Posts::LongformEditor < Components::Base
     f.text_field(
       :title,
       class: "w-full bg-transparent border-0 border-b border-border-muted text-3xl font-bold text-content placeholder:text-content-muted focus:ring-0 focus:border-brand",
-      placeholder: t("posts.longform.title_placeholder"),
-      data: { action: "input->longform-autosave#markDirty" }
+      placeholder: t("posts.blog.title_placeholder"),
+      data: { action: "input->blog-autosave#markDirty" }
     )
   end
 
@@ -121,10 +121,10 @@ class Components::Posts::LongformEditor < Components::Base
         class: "post-composer-editor w-full min-h-[520px] text-content",
         rows: 18,
         toolbar: true,
-        placeholder: t("posts.longform.body_placeholder"),
+        placeholder: t("posts.blog.body_placeholder"),
         autocomplete: "off",
         data: {
-          action: "lexxy:change->longform-autosave#markDirty input->longform-autosave#markDirty"
+          action: "lexxy:change->blog-autosave#markDirty input->blog-autosave#markDirty"
         }
       )
     )
@@ -132,8 +132,8 @@ class Components::Posts::LongformEditor < Components::Base
 
   def footer
     div(class: "flex flex-wrap items-center justify-between gap-3 border-t border-border-subtle pt-4 text-sm text-content-muted") do
-      span { @post.tag_list.any? ? @post.tag_list.join(", ") : t("posts.longform.no_tags") }
-      span { @post.published? ? t("posts.longform.status_published") : t("posts.longform.status_draft") }
+      span { @post.tag_list.any? ? @post.tag_list.join(", ") : t("posts.blog.no_tags") }
+      span { @post.published? ? t("posts.blog.status_published") : t("posts.blog.status_draft") }
     end
   end
 end

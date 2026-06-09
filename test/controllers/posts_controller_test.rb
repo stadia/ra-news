@@ -101,8 +101,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "unauthorized", JSON.parse(response.body)["error"]
   end
 
-  test "should show longform post with reading layout" do
-    post = posts(:longform_published)
+  test "should show blog post with reading layout" do
+    post = posts(:blog_published)
     get post_url(post)
 
     assert_response :success
@@ -112,7 +112,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   test "published post is served to anyone" do
     sign_out @user
-    post = posts(:longform_published)
+    post = posts(:blog_published)
     get post_url(post)
 
     assert_response :success
@@ -121,7 +121,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   test "draft is not served to anonymous visitors" do
     sign_out @user
-    draft = posts(:longform_draft)
+    draft = posts(:blog_draft)
     get post_url(draft)
 
     assert_response :not_found
@@ -129,14 +129,14 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
 
   test "draft is not served to a non-owner" do
     sign_in users(:jane)
-    draft = posts(:longform_draft)
+    draft = posts(:blog_draft)
     get post_url(draft)
 
     assert_response :not_found
   end
 
   test "owner can preview their own draft" do
-    draft = posts(:longform_draft)
+    draft = posts(:blog_draft)
 
     assert_equal @user, draft.user
     get post_url(draft)
@@ -145,8 +145,8 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, draft.title
   end
 
-  test "discarded longform is not served publicly" do
-    post = posts(:longform_published)
+  test "discarded blog is not served publicly" do
+    post = posts(:blog_published)
     post.discard!
     get post_url(post)
 

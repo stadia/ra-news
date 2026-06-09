@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Views::Profiles::LongformList < Views::Base
+class Views::Profiles::BlogList < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::TurboFrameTag
   include Phlex::Rails::Helpers::LinkTo
@@ -18,10 +18,10 @@ class Views::Profiles::LongformList < Views::Base
     if @embedded
       list_content
     else
-      content_for :title, "@#{@user.username} — #{t("profiles.activity_tabs.longform")}"
+      content_for :title, "@#{@user.username} — #{t("profiles.activity_tabs.blog")}"
       div(class: "max-w-2xl mx-auto py-10 px-4 sm:px-6") do
         turbo_frame_tag("activity-list", class: "block") do
-          render Components::Profiles::ActivityTabs.new(user: @user, active_tab: :longform)
+          render Components::Profiles::ActivityTabs.new(user: @user, active_tab: :blog)
           div(class: "mt-4") { list_content }
         end
       end
@@ -40,10 +40,10 @@ class Views::Profiles::LongformList < Views::Base
 
   def drafts_section
     section(class: "flex flex-col gap-3") do
-      h2(class: "text-sm font-semibold text-content") { t("profiles.longform_list.drafts_heading") }
+      h2(class: "text-sm font-semibold text-content") { t("profiles.blog_list.drafts_heading") }
       drafts = @drafts.to_a
       if drafts.empty?
-        empty_state(t("profiles.longform_list.drafts_empty"))
+        empty_state(t("profiles.blog_list.drafts_empty"))
       else
         div(class: "flex flex-col gap-2") do
           drafts.each { |draft| draft_row(draft) }
@@ -54,10 +54,10 @@ class Views::Profiles::LongformList < Views::Base
 
   def published_section
     section(class: "flex flex-col gap-3") do
-      h2(class: "text-sm font-semibold text-content") { t("profiles.longform_list.published_heading") }
+      h2(class: "text-sm font-semibold text-content") { t("profiles.blog_list.published_heading") }
       published = @published.to_a
       if published.empty?
-        empty_state(t("profiles.longform_list.published_empty"))
+        empty_state(t("profiles.blog_list.published_empty"))
       else
         div(class: "flex flex-col gap-2") do
           published.each { |post| published_row(post) }
@@ -68,10 +68,10 @@ class Views::Profiles::LongformList < Views::Base
 
   def trash_section
     section(class: "flex flex-col gap-3") do
-      h2(class: "text-sm font-semibold text-content") { t("profiles.longform_list.trash_heading") }
+      h2(class: "text-sm font-semibold text-content") { t("profiles.blog_list.trash_heading") }
       trash = @trash.to_a
       if trash.empty?
-        empty_state(t("profiles.longform_list.trash_empty"))
+        empty_state(t("profiles.blog_list.trash_empty"))
       else
         div(class: "flex flex-col gap-2") do
           trash.each { |post| trash_row(post) }
@@ -92,16 +92,16 @@ class Views::Profiles::LongformList < Views::Base
   def draft_row(draft)
     row do
       link_to(
-        edit_longform_post_path(draft),
+        edit_blog_post_path(draft),
         class: "min-w-0 flex-1 truncate text-sm text-content hover:text-brand-text transition-colors",
         data: { turbo_frame: "_top", turbo_prefetch: false }
       ) do
-        plain draft.title.presence || t("posts.longform.untitled_draft")
+        plain draft.title.presence || t("posts.blog.untitled_draft")
       end
       div(class: "flex items-center gap-2 shrink-0") do
-        button_to t("posts.longform.delete"), longform_post_path(draft),
+        button_to t("posts.blog.delete"), blog_post_path(draft),
           method: :delete,
-          form: { data: { turbo_confirm: t("posts.longform.delete_confirm"), turbo_frame: "_top" } },
+          form: { data: { turbo_confirm: t("posts.blog.delete_confirm"), turbo_frame: "_top" } },
           class: "text-xs font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
       end
     end
@@ -114,15 +114,15 @@ class Views::Profiles::LongformList < Views::Base
         class: "min-w-0 flex-1 truncate text-sm text-content hover:text-brand-text transition-colors",
         data: { turbo_frame: "_top" }
       ) do
-        plain post.title.presence || t("posts.longform.untitled_draft")
+        plain post.title.presence || t("posts.blog.untitled_draft")
       end
       div(class: "flex items-center gap-2 shrink-0") do
-        link_to t("posts.longform.edit"), edit_longform_post_path(post),
+        link_to t("posts.blog.edit"), edit_blog_post_path(post),
           class: "text-xs font-medium text-content-muted hover:text-content transition-colors",
           data: { turbo_frame: "_top", turbo_prefetch: false }
-        button_to t("posts.longform.delete"), longform_post_path(post),
+        button_to t("posts.blog.delete"), blog_post_path(post),
           method: :delete,
-          form: { data: { turbo_confirm: t("posts.longform.delete_confirm"), turbo_frame: "_top" } },
+          form: { data: { turbo_confirm: t("posts.blog.delete_confirm"), turbo_frame: "_top" } },
           class: "text-xs font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
       end
     end
@@ -131,16 +131,16 @@ class Views::Profiles::LongformList < Views::Base
   def trash_row(post)
     row do
       span(class: "min-w-0 flex-1 truncate text-sm text-content") do
-        plain post.title.presence || t("posts.longform.untitled_draft")
+        plain post.title.presence || t("posts.blog.untitled_draft")
       end
       div(class: "flex items-center gap-2 shrink-0") do
-        button_to t("posts.longform.restore"), undiscard_longform_post_path(post),
+        button_to t("posts.blog.restore"), undiscard_blog_post_path(post),
           method: :patch,
           form: { data: { turbo_frame: "_top" } },
           class: "text-xs font-medium text-content-muted hover:text-content transition-colors cursor-pointer"
-        button_to t("posts.longform.destroy_permanently"), destroy_permanently_longform_post_path(post),
+        button_to t("posts.blog.destroy_permanently"), destroy_permanently_blog_post_path(post),
           method: :delete,
-          form: { data: { turbo_confirm: t("posts.longform.destroy_permanently_confirm"), turbo_frame: "_top" } },
+          form: { data: { turbo_confirm: t("posts.blog.destroy_permanently_confirm"), turbo_frame: "_top" } },
           class: "text-xs font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
       end
     end

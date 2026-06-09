@@ -226,10 +226,10 @@ ja:
       heading: パスワードをお忘れですか?
       submit: 再設定メールを送信
   posts:
-    longform:
+    blog:
       untitled_draft: 無題の下書き
-      edit_title: 長文を書く | Ruby-News
-      edit_heading: 長文を書く
+      edit_title: ブログを書く | Ruby-News
+      edit_heading: ブログを書く
       published: 投稿を公開しました。
       updated: 投稿を更新しました。
       deleted: 投稿を削除しました。
@@ -250,7 +250,7 @@ ja:
       preview: プレビュー
       publish: 公開
       title_placeholder: タイトルを入力してください
-      body_placeholder: 長文を入力してください
+      body_placeholder: ブログを入力してください
       no_tags: タグなし
       status_draft: 下書き
       status_published: 公開済み
@@ -267,7 +267,7 @@ ja:
       post_submit: 投稿
       reply_submit: 返信
       replying_to: '返信中 '
-      longform: 長文を書く
+      blog: ブログを書く
     remote_attachment_only_body: 添付メディア
     reply_form:
       cancel: キャンセル
@@ -283,7 +283,7 @@ ja:
       followers: フォロワー
       following: フォロー中
       likes: いいね
-      longform: 長文
+      blog: ブログ
       posts: 投稿
     comment_list:
       empty: まだコメントを書いていません。
@@ -302,12 +302,12 @@ ja:
       empty: まだいいねした記事がありません。
     post_list:
       empty: まだ投稿がありません。
-    longform_list:
+    blog_list:
       drafts_heading: 作成中の下書き
       published_heading: 公開済み
       trash_heading: ゴミ箱
       drafts_empty: 作成中の下書きはありません。
-      published_empty: 公開した長文はありません。
+      published_empty: 公開したブログはありません。
       trash_empty: ゴミ箱は空です。
     show:
       feed: フィード

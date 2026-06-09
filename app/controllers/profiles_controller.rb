@@ -95,16 +95,16 @@ class ProfilesController < ApplicationController
     render_activity_page(:boosts)
   end
 
-  def longform
+  def blog
     unless current_user == @user
       redirect_to(user_profile_base_path(username: @user.username),
                   alert: "본인만 볼 수 있습니다") and return
     end
 
-    @longform_drafts = @user.posts.longform.draft.kept.order(updated_at: :desc)
-    @longform_published = @user.posts.longform.published.kept.order(published_at: :desc)
-    @longform_trash = @user.posts.longform.discarded.order(updated_at: :desc)
-    render_activity_page(:longform)
+    @blog_drafts = @user.posts.blog.draft.kept.order(updated_at: :desc)
+    @blog_published = @user.posts.blog.published.kept.order(published_at: :desc)
+    @blog_trash = @user.posts.blog.discarded.order(updated_at: :desc)
+    render_activity_page(:blog)
   end
 
   private
@@ -151,16 +151,16 @@ class ProfilesController < ApplicationController
         else
           render_show_with_activity(active_tab: :boosts)
         end
-      when :longform
+      when :blog
         if turbo_frame_request?
-          render Views::Profiles::LongformList.new(
+          render Views::Profiles::BlogList.new(
             user: @user,
-            drafts: @longform_drafts,
-            published: @longform_published,
-            trash: @longform_trash
+            drafts: @blog_drafts,
+            published: @blog_published,
+            trash: @blog_trash
           )
         else
-          render_show_with_activity(active_tab: :longform)
+          render_show_with_activity(active_tab: :blog)
         end
       when :followers, :following
         if turbo_frame_request?
@@ -188,9 +188,9 @@ class ProfilesController < ApplicationController
         liked_post_ids: @liked_post_ids,
         boosted_post_ids: @boosted_post_ids,
         follow_actors: @follow_actors,
-        longform_drafts: @longform_drafts || [],
-        longform_published: @longform_published || [],
-        longform_trash: @longform_trash || []
+        blog_drafts: @blog_drafts || [],
+        blog_published: @blog_published || [],
+        blog_trash: @blog_trash || []
       )
     end
 

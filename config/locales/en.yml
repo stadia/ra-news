@@ -226,10 +226,10 @@ en:
       heading: Forgot your password?
       submit: Send reset email
   posts:
-    longform:
+    blog:
       untitled_draft: Untitled draft
-      edit_title: Write longform | Ruby-News
-      edit_heading: Write longform
+      edit_title: Write blog | Ruby-News
+      edit_heading: Write blog
       published: Post published.
       updated: Post updated.
       deleted: Post deleted.
@@ -250,7 +250,7 @@ en:
       preview: Preview
       publish: Publish
       title_placeholder: Enter a title
-      body_placeholder: Write your long post
+      body_placeholder: Write your blog post
       no_tags: No tags
       status_draft: Draft
       status_published: Published
@@ -267,7 +267,7 @@ en:
       post_submit: Post
       reply_submit: Reply
       replying_to: 'Replying to '
-      longform: Write longform
+      blog: Write blog
     remote_attachment_only_body: Attached media
     reply_form:
       cancel: Cancel
@@ -283,7 +283,7 @@ en:
       followers: Followers
       following: Following
       likes: Likes
-      longform: Longform
+      blog: Blog
       posts: Posts
     comment_list:
       empty: No comments yet.
@@ -302,12 +302,12 @@ en:
       empty: No liked articles yet.
     post_list:
       empty: No posts yet.
-    longform_list:
+    blog_list:
       drafts_heading: Drafts in progress
       published_heading: Published
       trash_heading: Trash
       drafts_empty: No drafts in progress.
-      published_empty: No published longform posts.
+      published_empty: No published blog posts.
       trash_empty: Trash is empty.
     show:
       feed: Feed

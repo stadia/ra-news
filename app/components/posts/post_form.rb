@@ -98,18 +98,18 @@ class Components::Posts::PostForm < Components::Base
         plain "/#{::Post::MAX_BODY_LENGTH}"
       end
       div(class: "flex items-center gap-2") do
-        # Opens the longform editor carrying the in-progress body. A GET submit
+        # Opens the blog editor carrying the in-progress body. A GET submit
         # navigates to #new (Turbo renders the page) with the composer fields in
         # the query string, so #new can prefill the body. The draft row is
-        # created lazily on first autosave — switching to longform from an empty
+        # created lazily on first autosave — switching to blog from an empty
         # composer never persists an empty draft.
         render RubyUI::Button.new(
           type: :submit,
-          formaction: view_context.new_longform_post_path,
+          formaction: view_context.new_blog_post_path,
           formmethod: :get,
           variant: :secondary,
           class: "text-content-secondary"
-        ) { t("posts.post_form.longform") }
+        ) { t("posts.post_form.blog") }
         f.submit submit_label,
           class: "inline-flex items-center px-5 py-2 bg-info-solid hover:bg-info-solid-hover text-brand-foreground text-sm font-medium rounded-lg transition-colors duration-200 cursor-pointer"
       end

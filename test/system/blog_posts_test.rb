@@ -2,20 +2,20 @@
 
 require "application_system_test_case"
 
-class LongformPostsTest < ApplicationSystemTestCase
+class BlogPostsTest < ApplicationSystemTestCase
   setup do
     @user = users(:john)
     login_as @user, scope: :user
   end
 
-  test "user creates and publishes a longform post" do
+  test "user creates and publishes a blog post" do
     visit feed_path
 
     # 컴포저의 "장문 쓰기" 버튼이 초안을 만들고 편집기를 연다.
-    click_button I18n.t("posts.post_form.longform")
+    click_button I18n.t("posts.post_form.blog")
 
     # 편집기 진입(헤딩은 sr-only h1, 텍스트로 확인 가능).
-    assert_text I18n.t("posts.longform.edit_heading")
+    assert_text I18n.t("posts.blog.edit_heading")
 
     # 제목 입력: form_with model: @post 가 :title 에 대해 id="post_title" 를 생성.
     fill_in "post_title", with: "시스템 테스트 장문"
@@ -25,7 +25,7 @@ class LongformPostsTest < ApplicationSystemTestCase
     # contenteditable 영역(.lexxy-editor__content)이 나타나길 기다린 뒤 value 를 설정한다.
     fill_lexxy ".post-composer-editor", "<p>시스템 테스트 본문입니다.</p>"
 
-    click_button I18n.t("posts.longform.publish")
+    click_button I18n.t("posts.blog.publish")
 
     # 발행 후 읽기 레이아웃 원문 페이지로 리다이렉트된다.
     assert_text "시스템 테스트 장문"
@@ -38,33 +38,33 @@ class LongformPostsTest < ApplicationSystemTestCase
 
     # 프로필 카드(activity-list 터보 프레임 안)에서 "원문 읽기"를 눌러도
     # data-turbo-frame="_top" 덕분에 전체 페이지로 원문이 정상 열린다.
-    click_link I18n.t("posts.longform.read_more"), match: :first
+    click_link I18n.t("posts.blog.read_more"), match: :first
 
     assert_text "시스템 테스트 본문입니다."
   end
 
   test "owner re-opens a draft, edits, and deletes a published post" do
-    draft = posts(:longform_draft)
+    draft = posts(:blog_draft)
 
     # 초안은 프로필의 "장문" 탭(작성 중 초안 섹션)에 편집기 링크로 노출된다.
     # 이 영역은 프로필의 "activity-list" 터보 프레임 안에 있지만, 링크에
     # data-turbo-frame="_top" 이 있어 클릭 시 전체 페이지 네비게이션으로
     # 편집기가 정상적으로 열린다.
-    visit user_profile_longform_path(username: @user.username)
+    visit user_profile_blog_path(username: @user.username)
     click_link draft.title
 
-    assert_text I18n.t("posts.longform.edit_heading")
+    assert_text I18n.t("posts.blog.edit_heading")
     # 초안 본문이 편집기에 다시 로드된다.
     assert_text "초안 본문입니다."
 
     # 발행 장문을 원문 페이지에서 삭제(soft discard)하면 목록에서 사라진다.
-    visit post_path(posts(:longform_published))
-    accept_confirm { click_button I18n.t("posts.longform.delete") }
+    visit post_path(posts(:blog_published))
+    accept_confirm { click_button I18n.t("posts.blog.delete") }
 
     # 삭제 후 프로필 목록에서 해당 발행 장문이 더 이상 보이지 않는다.
     visit user_profile_posts_path(username: @user.username)
 
-    assert_no_text posts(:longform_published).title
+    assert_no_text posts(:blog_published).title
   end
 
   private

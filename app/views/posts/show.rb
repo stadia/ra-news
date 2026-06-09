@@ -37,8 +37,8 @@ class Views::Posts::Show < Views::Base
     return unless root
 
     # 루트 포스트
-    if root.longform?
-      render_longform(root)
+    if root.blog?
+      render_blog(root)
     else
       render Components::Posts::PostCard.new(
         post: root,
@@ -62,7 +62,7 @@ class Views::Posts::Show < Views::Base
     end
   end
 
-  def render_longform(root)
+  def render_blog(root)
     article(class: "rounded-lg border border-border-muted bg-surface p-5 sm:p-8 space-y-5") do
       h1(class: "text-3xl font-bold text-content") { root.title }
       div(class: "text-sm text-content-muted") do
@@ -79,12 +79,12 @@ class Views::Posts::Show < Views::Base
     return unless view_context.current_user == root.user
 
     div(class: "flex items-center gap-3 pt-4 border-t border-border-muted") do
-      link_to t("posts.longform.edit"), edit_longform_post_path(root),
+      link_to t("posts.blog.edit"), edit_blog_post_path(root),
         class: "text-sm font-medium text-content-muted hover:text-content transition-colors",
         data: { turbo_prefetch: false }
-      button_to t("posts.longform.delete"), longform_post_path(root),
+      button_to t("posts.blog.delete"), blog_post_path(root),
         method: :delete,
-        form: { data: { turbo_confirm: t("posts.longform.delete_confirm") } },
+        form: { data: { turbo_confirm: t("posts.blog.delete_confirm") } },
         class: "text-sm font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
     end
   end

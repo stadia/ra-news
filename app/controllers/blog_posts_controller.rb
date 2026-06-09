@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class LongformPostsController < ApplicationController
+class BlogPostsController < ApplicationController
   before_action :authenticate_user!
   before_action :build_new_post, only: [ :new ]
   before_action :set_post, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
@@ -11,57 +11,57 @@ class LongformPostsController < ApplicationController
   # first autosave (or publish) persists it via #create. A body carried over
   # from the composer is prefilled so the in-progress text is not lost.
   def new
-    render Views::LongformPosts::Edit.new(post: @post)
+    render Views::BlogPosts::Edit.new(post: @post)
   end
 
   def create
-    @post = current_user.posts.new(longform_post_params)
-    @post.post_type = :longform
+    @post = current_user.posts.new(blog_post_params)
+    @post.post_type = :blog
 
     if publishing?
       @post.publish!
-      redirect_to post_path(@post), notice: t("posts.longform.published")
+      redirect_to post_path(@post), notice: t("posts.blog.published")
     else
       @post.status = :draft
-      @post.title = I18n.t("posts.longform.untitled_draft") if @post.title.blank?
+      @post.title = I18n.t("posts.blog.untitled_draft") if @post.title.blank?
       respond_to do |format|
         if @post.save
           format.json { render json: created_draft_payload }
-          format.html { redirect_to edit_longform_post_path(@post) }
+          format.html { redirect_to edit_blog_post_path(@post) }
         else
           format.json { render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity }
-          format.html { render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity }
+          format.html { render Views::BlogPosts::Edit.new(post: @post), status: :unprocessable_entity }
         end
       end
     end
   rescue ActiveRecord::RecordInvalid
-    render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity
+    render Views::BlogPosts::Edit.new(post: @post), status: :unprocessable_entity
   end
 
   def edit
-    render Views::LongformPosts::Edit.new(post: @post)
+    render Views::BlogPosts::Edit.new(post: @post)
   end
 
   def update
-    if @post.update(longform_post_params)
+    if @post.update(blog_post_params)
       respond_to do |format|
-        format.html { redirect_to post_path(@post), notice: t("posts.longform.updated") }
+        format.html { redirect_to post_path(@post), notice: t("posts.blog.updated") }
         format.json { render json: { status: "ok", saved_at: l(Time.current, format: :short) } }
       end
     else
       respond_to do |format|
-        format.html { render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity }
+        format.html { render Views::BlogPosts::Edit.new(post: @post), status: :unprocessable_entity }
         format.json { render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity }
       end
     end
   end
 
   def publish
-    @post.assign_attributes(longform_post_params) if params[:post].present?
+    @post.assign_attributes(blog_post_params) if params[:post].present?
     @post.publish!
-    redirect_to post_path(@post), notice: t("posts.longform.published")
+    redirect_to post_path(@post), notice: t("posts.blog.published")
   rescue ActiveRecord::RecordInvalid
-    render Views::LongformPosts::Edit.new(post: @post), status: :unprocessable_entity
+    render Views::BlogPosts::Edit.new(post: @post), status: :unprocessable_entity
   end
 
   def destroy
@@ -69,14 +69,14 @@ class LongformPostsController < ApplicationController
     # lookups still resolve. The model's `after_discard` callback emits an
     # ActivityPub Delete for published posts; drafts never federated.
     @post.discard
-    redirect_to feed_path, notice: t("posts.longform.deleted")
+    redirect_to feed_path, notice: t("posts.blog.deleted")
   end
 
   def undiscard
     # Restoring a published post re-federates via the model's after_undiscard
     # (Undo); drafts were never federated, so nothing is emitted for them.
     @post.undiscard
-    redirect_to user_profile_longform_path(username: current_user.username), notice: t("posts.longform.restored")
+    redirect_to user_profile_blog_path(username: current_user.username), notice: t("posts.blog.restored")
   end
 
   def destroy_permanently
@@ -86,14 +86,14 @@ class LongformPostsController < ApplicationController
     # is benign — the tombstone already exists remotely, so the second Delete is
     # idempotent.
     @post.destroy
-    redirect_to user_profile_longform_path(username: current_user.username), notice: t("posts.longform.destroyed_permanently")
+    redirect_to user_profile_blog_path(username: current_user.username), notice: t("posts.blog.destroyed_permanently")
   end
 
   private
 
   def build_new_post
     @post = current_user.posts.new(
-      post_type: :longform,
+      post_type: :blog,
       status: :draft,
       body: params.dig(:post, :body).to_s
     )
@@ -112,9 +112,9 @@ class LongformPostsController < ApplicationController
     {
       status: "ok",
       saved_at: l(Time.current, format: :short),
-      save_url: longform_post_path(@post, format: :json),
-      form_url: longform_post_path(@post),
-      publish_url: publish_longform_post_path(@post)
+      save_url: blog_post_path(@post, format: :json),
+      form_url: blog_post_path(@post),
+      publish_url: publish_blog_post_path(@post)
     }
   end
 
@@ -122,17 +122,17 @@ class LongformPostsController < ApplicationController
   # soft-deleted rows. Every other action operates on live content only, so
   # restrict those to kept rows to avoid editing/publishing a trashed post.
   def set_post
-    scope = Post.longform
+    scope = Post.blog
     scope = scope.kept unless %w[undiscard destroy_permanently].include?(action_name)
     @post = scope.find_by!(slug: params[:id])
   end
 
   def authorize_owner!
     return if @post.user == current_user
-    redirect_to feed_path, alert: t("posts.longform.forbidden")
+    redirect_to feed_path, alert: t("posts.blog.forbidden")
   end
 
-  def longform_post_params
+  def blog_post_params
     params.expect(post: [ :title, :body, :tag_list ])
   end
 end

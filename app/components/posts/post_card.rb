@@ -86,8 +86,8 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_body
-    if @post.longform?
-      longform_body
+    if @post.blog?
+      blog_body
     else
       short_body
     end
@@ -103,15 +103,15 @@ class Components::Posts::PostCard < Components::Base
     end
   end
 
-  def longform_body
+  def blog_body
     div(class: "space-y-2") do
       h2(class: "text-xl font-semibold text-content") do
         link_to @post.title, post_path(@post), class: "hover:text-accent-text transition-colors", data: { turbo_frame: "_top" }
       end
       p(class: "text-sm leading-relaxed text-content-secondary wrap-break-word") do
-        plain @post.longform_summary
+        plain @post.blog_summary
       end
-      link_to t("posts.longform.read_more"), post_path(@post), class: "text-sm font-medium text-accent-text hover:underline", data: { turbo_frame: "_top" }
+      link_to t("posts.blog.read_more"), post_path(@post), class: "text-sm font-medium text-accent-text hover:underline", data: { turbo_frame: "_top" }
     end
   end
 

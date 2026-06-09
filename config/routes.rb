@@ -39,7 +39,7 @@ Rails.application.routes.draw do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
     resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Post" }
   end
-  resources :longform_posts, only: [ :create, :edit, :update, :destroy ] do
+  resources :blog_posts, only: [ :create, :edit, :update, :destroy ] do
     member do
       patch :publish
       patch :undiscard
@@ -48,7 +48,7 @@ Rails.application.routes.draw do
   end
   # Renders the editor for an unsaved draft (lazy creation). GET opens a blank
   # editor; POST carries an in-progress body over from the composer.
-  match "longform_posts/new", to: "longform_posts#new", as: :new_longform_post, via: [ :get, :post ]
+  match "blog_posts/new", to: "blog_posts#new", as: :new_blog_post, via: [ :get, :post ]
   resources :articles, only: %i[index show new create] do
     resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Article" }
     resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Article" }
@@ -95,7 +95,7 @@ Rails.application.routes.draw do
   get "/@:username/comments", to: "profiles#comments", as: :user_profile_comments, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/likes",    to: "profiles#likes",    as: :user_profile_likes, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/boosts",   to: "profiles#boosts",   as: :user_profile_boosts, format: false, constraints: { username: /[^\/]+/ }
-  get "/@:username/longform", to: "profiles#longform", as: :user_profile_longform, format: false, constraints: { username: /[^\/]+/ }
+  get "/@:username/blog", to: "profiles#blog", as: :user_profile_blog, format: false, constraints: { username: /[^\/]+/ }
   # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
   direct :user_profile do |user|
     # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.

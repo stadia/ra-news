@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Periodic autosave for the longform editor. Saves on a fixed interval only
+// Periodic autosave for the blog editor. Saves on a fixed interval only
 // when there are unsaved changes — entering the editor or sitting idle never
 // triggers a save. The draft is created lazily: the first save POSTs to
 // #create, then the controller rewires itself to PATCH #update in place.

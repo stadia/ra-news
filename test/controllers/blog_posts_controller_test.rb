@@ -2,16 +2,16 @@
 
 require "test_helper"
 
-class LongformPostsControllerTest < ActionDispatch::IntegrationTest
+class BlogPostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:john)
     @other_user = users(:jane)
-    @draft = posts(:longform_draft)
-    @published = posts(:longform_published)
+    @draft = posts(:blog_draft)
+    @published = posts(:blog_published)
   end
 
   test "requires authentication to create a draft" do
-    post longform_posts_url
+    post blog_posts_url
 
     assert_redirected_to new_user_session_url
   end
@@ -19,20 +19,20 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "opening the new editor does not persist a draft" do
     sign_in @user
 
-    assert_no_difference -> { Post.longform.count } do
-      get new_longform_post_url
+    assert_no_difference -> { Post.blog.count } do
+      get new_blog_post_url
     end
 
     assert_response :success
     assert_select ".post-composer-editor"
-    assert_select "form[action='#{longform_posts_path}']"
+    assert_select "form[action='#{blog_posts_path}']"
   end
 
   test "new editor prefills body carried from the composer" do
     sign_in @user
 
-    assert_no_difference -> { Post.longform.count } do
-      post new_longform_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
+    assert_no_difference -> { Post.blog.count } do
+      post new_blog_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
     end
 
     assert_response :success
@@ -42,28 +42,28 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "first autosave creates the draft and returns the persisted urls" do
     sign_in @user
 
-    assert_difference -> { Post.longform.draft.count }, 1 do
-      post longform_posts_url, params: { post: { title: "초안", body: "<p>본문</p>" } }, as: :json
+    assert_difference -> { Post.blog.draft.count }, 1 do
+      post blog_posts_url, params: { post: { title: "초안", body: "<p>본문</p>" } }, as: :json
     end
 
     assert_response :success
-    draft = Post.longform.draft.order(:id).last
+    draft = Post.blog.draft.order(:id).last
 
     assert_equal @user, draft.user
     body = response.parsed_body
 
-    assert_equal longform_post_path(draft, format: :json), body["save_url"]
-    assert_equal publish_longform_post_path(draft), body["publish_url"]
+    assert_equal blog_post_path(draft, format: :json), body["save_url"]
+    assert_equal publish_blog_post_path(draft), body["publish_url"]
   end
 
   test "publishing a new draft creates and publishes in one request" do
     sign_in @user
 
-    assert_difference -> { Post.longform.published.count }, 1 do
-      post longform_posts_url, params: { post: { title: "제목", body: "<p>본문</p>" }, publish: "1" }
+    assert_difference -> { Post.blog.published.count }, 1 do
+      post blog_posts_url, params: { post: { title: "제목", body: "<p>본문</p>" }, publish: "1" }
     end
 
-    published = Post.longform.published.order(:id).last
+    published = Post.blog.published.order(:id).last
 
     assert_redirected_to post_url(published)
   end
@@ -71,8 +71,8 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "publishing a new draft without a title re-renders the editor" do
     sign_in @user
 
-    assert_no_difference -> { Post.longform.count } do
-      post longform_posts_url, params: { post: { title: "", body: "<p>본문</p>" }, publish: "1" }
+    assert_no_difference -> { Post.blog.count } do
+      post blog_posts_url, params: { post: { title: "", body: "<p>본문</p>" }, publish: "1" }
     end
 
     assert_response :unprocessable_entity
@@ -80,21 +80,21 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
 
   test "renders edit page for owner draft" do
     sign_in @user
-    get edit_longform_post_url(@draft)
+    get edit_blog_post_url(@draft)
 
     assert_response :success
-    assert_select "h1", "긴 글 쓰기"
+    assert_select "h1", "블로그 쓰기"
   end
 
-  test "edit page renders longform editor form" do
+  test "edit page renders blog editor form" do
     sign_in @user
 
-    get edit_longform_post_url(@draft)
+    get edit_blog_post_url(@draft)
 
     assert_response :success
-    assert_select "form[action='#{longform_post_path(@draft)}']"
+    assert_select "form[action='#{blog_post_path(@draft)}']"
     assert_select "input[name='post[title]']"
-    assert_select "[data-controller~='longform-autosave']"
+    assert_select "[data-controller~='blog-autosave']"
     assert_select ".post-composer-editor"
     assert_select "button", "발행"
   end
@@ -102,14 +102,14 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "does not allow editing another user's draft" do
     @draft.update!(user: @other_user)
     sign_in @user
-    get edit_longform_post_url(@draft)
+    get edit_blog_post_url(@draft)
 
     assert_redirected_to feed_url
   end
 
   test "autosaves draft fields" do
     sign_in @user
-    patch longform_post_url(@draft), params: {
+    patch blog_post_url(@draft), params: {
       post: { title: "자동 저장 제목", body: "<p>자동 저장 본문</p>", tag_list: "ruby, rails" }
     }, as: :json
 
@@ -121,7 +121,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "publishes a complete draft" do
     sign_in @user
     @draft.update!(title: "발행 제목", body: "<p>발행 본문</p>")
-    patch publish_longform_post_url(@draft)
+    patch publish_blog_post_url(@draft)
 
     assert_redirected_to post_url(@draft)
     assert_predicate @draft.reload, :published?
@@ -131,15 +131,15 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "does not publish incomplete draft" do
     sign_in @user
     @draft.update!(title: "", body: "<p>본문</p>")
-    patch publish_longform_post_url(@draft)
+    patch publish_blog_post_url(@draft)
 
     assert_response :unprocessable_entity
     assert_predicate @draft.reload, :draft?
   end
 
-  test "updates a published longform post" do
+  test "updates a published blog post" do
     sign_in @user
-    patch longform_post_url(@published), params: {
+    patch blog_post_url(@published), params: {
       post: { title: "수정된 제목", body: "<p>수정된 본문</p>" }
     }
 
@@ -148,7 +148,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "requires authentication to delete" do
-    delete longform_post_url(@draft)
+    delete blog_post_url(@draft)
 
     assert_redirected_to new_user_session_url
   end
@@ -156,7 +156,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "soft-discards a draft and redirects" do
     sign_in @user
 
-    delete longform_post_url(@draft)
+    delete blog_post_url(@draft)
 
     assert_redirected_to feed_url
     assert_predicate @draft.reload, :discarded?
@@ -167,23 +167,23 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     assert_no_difference -> { Federails::Activity.where(action: "Delete").count } do
-      delete longform_post_url(@draft)
+      delete blog_post_url(@draft)
     end
   end
 
-  test "soft-discards a published longform post" do
+  test "soft-discards a published blog post" do
     sign_in @user
 
-    delete longform_post_url(@published)
+    delete blog_post_url(@published)
 
     assert_predicate @published.reload, :discarded?
   end
 
-  test "deleting a published longform federates a Delete activity" do
+  test "deleting a published blog federates a Delete activity" do
     sign_in @user
 
     assert_difference -> { Federails::Activity.where(action: "Delete", entity: @published).count }, 1 do
-      delete longform_post_url(@published)
+      delete blog_post_url(@published)
     end
   end
 
@@ -191,12 +191,12 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     @draft.update!(user: @other_user)
     sign_in @user
 
-    delete longform_post_url(@draft)
+    delete blog_post_url(@draft)
 
     assert_not_predicate @draft.reload, :discarded?
   end
 
-  test "discarded longform is excluded from owner profile list" do
+  test "discarded blog is excluded from owner profile list" do
     sign_in @user
     @published.discard!
 
@@ -209,7 +209,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "undiscard requires authentication" do
     @published.discard!
 
-    patch undiscard_longform_post_url(@published)
+    patch undiscard_blog_post_url(@published)
 
     assert_redirected_to new_user_session_url
     assert_predicate @published.reload, :discarded?
@@ -219,9 +219,9 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     @published.discard!
 
-    patch undiscard_longform_post_url(@published)
+    patch undiscard_blog_post_url(@published)
 
-    assert_redirected_to user_profile_longform_url(username: @user.username)
+    assert_redirected_to user_profile_blog_url(username: @user.username)
     assert_not_predicate @published.reload, :discarded?
     assert_nil @published.deleted_at
   end
@@ -231,7 +231,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     @published.discard!
 
     assert_difference -> { Federails::Activity.where(action: "Undo", entity: @published).count }, 1 do
-      patch undiscard_longform_post_url(@published)
+      patch undiscard_blog_post_url(@published)
     end
   end
 
@@ -240,7 +240,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     @published.discard!
     sign_in @user
 
-    patch undiscard_longform_post_url(@published)
+    patch undiscard_blog_post_url(@published)
 
     assert_predicate @published.reload, :discarded?
   end
@@ -248,7 +248,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
   test "destroy_permanently requires authentication" do
     @published.discard!
 
-    delete destroy_permanently_longform_post_url(@published)
+    delete destroy_permanently_blog_post_url(@published)
 
     assert_redirected_to new_user_session_url
     assert_predicate Post.where(id: @published.id), :exists?
@@ -258,9 +258,9 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     @draft.discard!
 
-    delete destroy_permanently_longform_post_url(@draft)
+    delete destroy_permanently_blog_post_url(@draft)
 
-    assert_redirected_to user_profile_longform_url(username: @user.username)
+    assert_redirected_to user_profile_blog_url(username: @user.username)
     assert_not Post.where(id: @draft.id).exists?
   end
 
@@ -269,7 +269,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     @published.discard!
 
     assert_difference -> { Federails::Activity.where(action: "Delete", entity: @published).count }, 1 do
-      delete destroy_permanently_longform_post_url(@published)
+      delete destroy_permanently_blog_post_url(@published)
     end
   end
 
@@ -278,7 +278,7 @@ class LongformPostsControllerTest < ActionDispatch::IntegrationTest
     @published.discard!
     sign_in @user
 
-    delete destroy_permanently_longform_post_url(@published)
+    delete destroy_permanently_blog_post_url(@published)
 
     assert_predicate Post.where(id: @published.id), :exists?
   end

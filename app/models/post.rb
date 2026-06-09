@@ -11,7 +11,7 @@ class Post < ApplicationRecord
 
   # ── Includes ─────────────────────────────────────────────────────────
   include HtmlSanitizable
-  include Posts::Longform
+  include Posts::Blog
   include Discard::Model
   include Federails::DataEntity
   include FederailsLikeable
@@ -24,7 +24,7 @@ class Post < ApplicationRecord
   acts_as_taggable_on :tags
 
   # ── Enums ────────────────────────────────────────────────────────────
-  enum :post_type, [ :short, :longform, :comment ], default: :short
+  enum :post_type, [ :short, :blog, :comment ], default: :short
   enum :status, [ :draft, :published ], default: :published
 
   # ── Associations ─────────────────────────────────────────────────────
@@ -36,11 +36,11 @@ class Post < ApplicationRecord
   scope :comments, -> { where(post_type: :comment) }
   scope :standalone, -> { where(article_id: nil) }
   scope :visible, -> { where(status: :published).kept }
-  scope :published_longform, -> { longform.published }
+  scope :published_blog, -> { blog.published }
 
   # ── Validations ──────────────────────────────────────────────────────
-  validates :body, presence: true, unless: :draft_longform?
-  validates :title, presence: true, if: :published_longform?
+  validates :body, presence: true, unless: :draft_blog?
+  validates :title, presence: true, if: :published_blog?
   validates :slug, uniqueness: true, allow_nil: true
   validate :validate_user_or_actor
   validate :validate_parent_post
@@ -71,10 +71,10 @@ class Post < ApplicationRecord
                          soft_delete_date_method: :deleted_at,
                          should_federate_method: :should_federate?
 
-  # Only longform posts support soft delete (trash/restore). Short posts and
+  # Only blog posts support soft delete (trash/restore). Short posts and
   # comments hard-destroy, both locally and on inbound federated Delete, so
   # their rows (and counter caches) are removed as before.
-  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; longform? ? discard! : destroy! }
+  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; blog? ? discard! : destroy! }
   on_federails_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────
@@ -115,8 +115,8 @@ class Post < ApplicationRecord
     content = body
     name = nil
 
-    if longform?
-      content = longform_summary
+    if blog?
+      content = blog_summary
       name = title
       custom["url"] = Rails.application.routes.url_helpers.post_url(self)
     end
