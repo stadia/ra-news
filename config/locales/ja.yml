@@ -226,6 +226,37 @@ ja:
       heading: パスワードをお忘れですか?
       submit: 再設定メールを送信
   posts:
+    longform:
+      untitled_draft: 無題の下書き
+      edit_title: 長文を書く | Ruby-News
+      edit_heading: 長文を書く
+      published: 投稿を公開しました。
+      updated: 投稿を更新しました。
+      deleted: 投稿を削除しました。
+      restored: 投稿を復元しました。
+      destroyed_permanently: 投稿を完全に削除しました。
+      edit: 編集
+      delete: 削除
+      restore: 復元
+      destroy_permanently: 完全に削除
+      delete_confirm: この投稿を削除しますか？
+      destroy_permanently_confirm: この投稿を完全に削除しますか？元に戻せません。
+      forbidden: この投稿を編集する権限がありません。
+      autosave_idle: 自動保存の準備完了
+      autosave_pending: 保存待機中
+      autosave_saving: 保存中
+      autosave_saved: 保存しました
+      autosave_failed: 保存に失敗しました
+      preview: プレビュー
+      publish: 公開
+      title_placeholder: タイトルを入力してください
+      body_placeholder: 長文を入力してください
+      no_tags: タグなし
+      status_draft: 下書き
+      status_published: 公開済み
+      read_more: 本文を読む
+      errors:
+        blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
       linked_article: 関連記事
       reply_to: "%{name}さんへの返信"
@@ -236,6 +267,7 @@ ja:
       post_submit: 投稿
       reply_submit: 返信
       replying_to: '返信中 '
+      longform: 長文を書く
     remote_attachment_only_body: 添付メディア
     reply_form:
       cancel: キャンセル
@@ -251,6 +283,7 @@ ja:
       followers: フォロワー
       following: フォロー中
       likes: いいね
+      longform: 長文
       posts: 投稿
     comment_list:
       empty: まだコメントを書いていません。
@@ -269,6 +302,13 @@ ja:
       empty: まだいいねした記事がありません。
     post_list:
       empty: まだ投稿がありません。
+    longform_list:
+      drafts_heading: 作成中の下書き
+      published_heading: 公開済み
+      trash_heading: ゴミ箱
+      drafts_empty: 作成中の下書きはありません。
+      published_empty: 公開した長文はありません。
+      trash_empty: ゴミ箱は空です。
     show:
       feed: フィード
       find_follow: フォロー検索

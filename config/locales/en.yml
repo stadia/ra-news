@@ -226,6 +226,37 @@ en:
       heading: Forgot your password?
       submit: Send reset email
   posts:
+    longform:
+      untitled_draft: Untitled draft
+      edit_title: Write longform | Ruby-News
+      edit_heading: Write longform
+      published: Post published.
+      updated: Post updated.
+      deleted: Post deleted.
+      restored: Post restored.
+      destroyed_permanently: Post permanently deleted.
+      edit: Edit
+      delete: Delete
+      restore: Restore
+      destroy_permanently: Delete permanently
+      delete_confirm: Delete this post?
+      destroy_permanently_confirm: Permanently delete this post? This cannot be undone.
+      forbidden: You do not have permission to edit this post.
+      autosave_idle: Autosave ready
+      autosave_pending: Saving pending
+      autosave_saving: Saving
+      autosave_saved: Saved
+      autosave_failed: Save failed
+      preview: Preview
+      publish: Publish
+      title_placeholder: Enter a title
+      body_placeholder: Write your long post
+      no_tags: No tags
+      status_draft: Draft
+      status_published: Published
+      read_more: Read full post
+      errors:
+        blank_draft: Enter a title or body before saving this draft.
     post_card:
       linked_article: Linked article
       reply_to: Reply to %{name}
@@ -236,6 +267,7 @@ en:
       post_submit: Post
       reply_submit: Reply
       replying_to: 'Replying to '
+      longform: Write longform
     remote_attachment_only_body: Attached media
     reply_form:
       cancel: Cancel
@@ -251,6 +283,7 @@ en:
       followers: Followers
       following: Following
       likes: Likes
+      longform: Longform
       posts: Posts
     comment_list:
       empty: No comments yet.
@@ -269,6 +302,13 @@ en:
       empty: No liked articles yet.
     post_list:
       empty: No posts yet.
+    longform_list:
+      drafts_heading: Drafts in progress
+      published_heading: Published
+      trash_heading: Trash
+      drafts_empty: No drafts in progress.
+      published_empty: No published longform posts.
+      trash_empty: Trash is empty.
     show:
       feed: Feed
       find_follow: Find & Follow
