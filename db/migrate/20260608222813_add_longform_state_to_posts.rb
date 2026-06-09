@@ -13,7 +13,7 @@ class AddLongformStateToPosts < ActiveRecord::Migration[8.1]
       UPDATE posts
       SET post_type = CASE WHEN article_id IS NULL THEN 0 ELSE 2 END,
           status = 1,
-          published_at = COALESCE(created_at, NOW())
+          published_at = COALESCE(created_at, timezone('utc', now()))
     SQL
   end
 

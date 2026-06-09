@@ -35,7 +35,7 @@ module Posts
 
     #: () -> String
     def longform_summary
-      stripped = ActionView::Base.full_sanitizer.sanitize(body.to_s).squish
+      stripped = Rails::Html::FullSanitizer.new.sanitize(body.to_s).squish
       stripped.truncate(LONGFORM_SUMMARY_LENGTH)
     end
 
