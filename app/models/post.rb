@@ -11,13 +11,21 @@ class Post < ApplicationRecord
 
   # ── Includes ─────────────────────────────────────────────────────────
   include HtmlSanitizable
+  include Posts::Longform
+  include Discard::Model
   include Federails::DataEntity
   include FederailsLikeable
   include FederailsBoostable
 
+  self.discard_column = :deleted_at
+
   # ── Framework Macros ─────────────────────────────────────────────────
   acts_as_nested_set
   acts_as_taggable_on :tags
+
+  # ── Enums ────────────────────────────────────────────────────────────
+  enum :post_type, [ :short, :longform, :comment ], default: :short
+  enum :status, [ :draft, :published ], default: :published
 
   # ── Associations ─────────────────────────────────────────────────────
   belongs_to :user, optional: true
@@ -25,11 +33,14 @@ class Post < ApplicationRecord
   belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
 
   # ── Scopes ───────────────────────────────────────────────────────────
-  scope :comments, -> { where.not(article_id: nil) }
+  scope :comments, -> { where(post_type: :comment) }
   scope :standalone, -> { where(article_id: nil) }
+  scope :visible, -> { where(status: :published).kept }
+  scope :published_longform, -> { longform.published }
 
   # ── Validations ──────────────────────────────────────────────────────
-  validates :body, presence: true
+  validates :body, presence: true, unless: :draft_longform?
+  validates :title, presence: true, if: :published_longform?
   validates :slug, uniqueness: true, allow_nil: true
   validate :validate_user_or_actor
   validate :validate_parent_post
@@ -47,12 +58,24 @@ class Post < ApplicationRecord
   after_commit :enqueue_reply_notification, on: :create
   after_commit :enqueue_article_thumbnail, on: :create
 
+  # ── Soft delete ──────────────────────────────────────────────────────
+  # Only published posts were ever federated, so only they emit Delete/Undo.
+  # Drafts are local-only, so discarding/restoring one federates nothing.
+  after_discard { create_federails_activity "Delete" if published? }
+  after_undiscard { create_federails_activity "Undo" if published? }
+
   # ── Federation ───────────────────────────────────────────────────────
   acts_as_federails_data handles: "Note",
                          actor_entity_method: :federation_actor_entity,
+                         soft_deleted_method: :discarded?,
+                         soft_delete_date_method: :deleted_at,
                          should_federate_method: :should_federate?
 
-  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; destroy! }
+  # Only longform posts support soft delete (trash/restore). Short posts and
+  # comments hard-destroy, both locally and on inbound federated Delete, so
+  # their rows (and counter caches) are removed as before.
+  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; longform? ? discard! : destroy! }
+  on_federails_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────
 
@@ -63,7 +86,11 @@ class Post < ApplicationRecord
 
   #: () -> bool
   def should_federate?
-    federation_actor_entity.present?
+    # Only published posts federate. Drafts must stay local — without the
+    # published? gate, Federails' after_create/after_update would push an
+    # unpublished draft (and every autosave) to remote followers. Discarded
+    # posts keep status :published, so after_discard can still emit a Delete.
+    federation_actor_entity.present? && published?
   end
 
   #: () -> Hash[String, untyped]
@@ -85,7 +112,16 @@ class Post < ApplicationRecord
       custom["attachment"] = media_attachments
     end
 
-    Federails::DataTransformer::Note.to_federation(self, content: body, custom: custom)
+    content = body
+    name = nil
+
+    if longform?
+      content = longform_summary
+      name = title
+      custom["url"] = Rails.application.routes.url_helpers.post_url(self)
+    end
+
+    Federails::DataTransformer::Note.to_federation(self, content: content, name: name, custom: custom)
   end
 
   #: () -> Integer
@@ -96,11 +132,6 @@ class Post < ApplicationRecord
   #: () -> Integer
   def boosts_count
     boosters_count.to_i
-  end
-
-  #: () -> bool
-  def comment?
-    article_id.present?
   end
 
   #: () -> (Post | Article)
@@ -135,6 +166,14 @@ class Post < ApplicationRecord
   def create_federails_activity(action, actor: nil, to: nil, cc: nil)
     actor ||= federails_actor || user&.federails_actor
     return if actor.blank?
+
+    # A draft never federated, so its first publish fires an "Update" (via the
+    # after_update callback) that remotes would drop — there's no object to
+    # update yet. Promote that first Update to a "Create" so the post is
+    # actually delivered. Once a Create exists, later edits federate as Updates.
+    if action == "Update" && !Federails::Activity.exists?(entity: self, action: "Create")
+      action = "Create"
+    end
 
     super(action, actor: actor, to: to, cc: cc)
   end
@@ -214,23 +253,7 @@ class Post < ApplicationRecord
         body: extract_body_from_activitypub_object(hash, attachments:)
       }
 
-      if in_reply_to.present?
-        article_id = in_reply_to[%r{/articles/(\d+)}, 1]
-        post_id = in_reply_to[%r{/posts/(\d+)}, 1]
-
-        if article_id.present?
-          object[:article_id] = article_id
-        elsif post_id.present?
-          object[:parent_id] = post_id
-          object[:article_id] = Post.where(id: post_id).pick(:article_id)
-        else
-          parent = Post.find_by(federated_url: in_reply_to)
-          if parent
-            object[:parent_id] = parent.id
-            object[:article_id] = parent.article_id
-          end
-        end
-      end
+      object.merge!(reply_attributes(in_reply_to)) if in_reply_to.present?
 
       # Mastodon 이미지 첨부 파싱
       object[:media_attachments] = attachments.map do |a|
@@ -245,6 +268,30 @@ class Post < ApplicationRecord
     end
 
     private
+
+    # Resolves the reply target (article comment, post reply, or federated
+    # parent) from an inReplyTo URL into attributes for from_activitypub_object.
+    # Inbound replies to an article are typed :comment so they stay in the
+    # `comments` scope instead of defaulting to :short.
+    #: (String) -> Hash[Symbol, untyped]
+    def reply_attributes(in_reply_to)
+      attrs = reply_target_attributes(in_reply_to)
+      attrs[:post_type] = :comment if attrs[:article_id].present?
+      attrs
+    end
+
+    #: (String) -> Hash[Symbol, untyped]
+    def reply_target_attributes(in_reply_to)
+      if (article_id = in_reply_to[%r{/articles/(\d+)}, 1])
+        { article_id: article_id }
+      elsif (post_id = in_reply_to[%r{/posts/(\d+)}, 1])
+        { parent_id: post_id, article_id: Post.where(id: post_id).pick(:article_id) }
+      elsif (parent = Post.find_by(federated_url: in_reply_to))
+        { parent_id: parent.id, article_id: parent.article_id }
+      else
+        {}
+      end
+    end
 
     #: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
     def extract_body_from_activitypub_object(hash, attachments:)

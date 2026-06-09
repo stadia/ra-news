@@ -115,12 +115,23 @@ class PostTest < ActiveSupport::TestCase
 
   # ========== Article Comment Tests ==========
 
-  test "comment?는 article_id가 있으면 true를 반환한다" do
+  test "comment?는 post_type이 comment이면 true를 반환한다" do
     assert_predicate @comment_post, :comment?
   end
 
-  test "comment?는 article_id가 없으면 false를 반환한다" do
+  test "comment?는 post_type이 short이면 false를 반환한다" do
     assert_not @root_post.comment?
+  end
+
+  test "comment?는 post_type이 longform이면 false를 반환한다" do
+    assert_not posts(:longform_published).comment?
+  end
+
+  test "comment?는 article_id가 있어도 post_type이 comment가 아니면 false를 반환한다" do
+    short_with_article = posts(:short_with_article)
+
+    assert_predicate short_with_article.article_id, :present?
+    assert_not short_with_article.comment?
   end
 
   test "reply는 parent가 있으면 parent를 반환한다" do
@@ -160,11 +171,13 @@ class PostTest < ActiveSupport::TestCase
 
   # ========== Scope Tests ==========
 
-  test "comments 스코프는 article_id가 있는 post만 반환한다" do
+  test "comments 스코프는 post_type이 comment인 post만 반환한다" do
     comments = Post.comments
 
     assert_includes comments, @comment_post
     assert_not_includes comments, @root_post
+    assert_not_includes comments, posts(:longform_published)
+    assert_not_includes comments, posts(:short_with_article)
   end
 
   test "standalone 스코프는 article_id가 없는 post만 반환한다" do
@@ -172,6 +185,132 @@ class PostTest < ActiveSupport::TestCase
 
     assert_includes standalone, @root_post
     assert_not_includes standalone, @comment_post
+  end
+
+  # ========== Longform / Enum Tests ==========
+
+  test "post_type enum은 short longform comment를 제공한다" do
+    assert_equal %w[short longform comment], Post.post_types.keys
+  end
+
+  test "status enum은 draft published를 제공한다" do
+    assert_equal %w[draft published], Post.statuses.keys
+  end
+
+  test "삭제는 Discard::Model로 처리한다" do
+    assert_includes Post.included_modules, Discard::Model
+    assert_equal :deleted_at, Post.discard_column
+  end
+
+  test "기존 단문은 제목 없이 published short로 유효하다" do
+    post = Post.new(body: "단문", user: @user)
+
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+    assert_predicate post, :short?
+    assert_predicate post, :published?
+  end
+
+  test "기사 댓글은 comment 타입으로 지정할 수 있다" do
+    post = Post.new(body: "댓글", user: @user, article: @article, post_type: :comment)
+
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+    assert_predicate post, :comment?
+  end
+
+  test "장문 초안은 제목만 있으면 저장할 수 있다" do
+    post = Post.new(title: "초안 제목", body: "", user: @user, post_type: :longform, status: :draft)
+
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+  end
+
+  test "장문 초안은 본문만 있으면 저장할 수 있다" do
+    post = Post.new(title: "", body: "<p>초안 본문</p>", user: @user, post_type: :longform, status: :draft)
+
+    assert_predicate post, :valid?, post.errors.full_messages.join(", ")
+  end
+
+  test "완전히 비어 있는 장문 초안은 유효하지 않다" do
+    post = Post.new(title: "", body: "", user: @user, post_type: :longform, status: :draft)
+
+    assert_not post.valid?
+    assert_predicate post.errors[:base], :any?
+  end
+
+  test "발행 장문은 제목과 본문이 필요하다" do
+    missing_title = Post.new(body: "<p>본문</p>", user: @user, post_type: :longform, status: :published)
+    missing_body = Post.new(title: "제목", body: "", user: @user, post_type: :longform, status: :published)
+
+    assert_not missing_title.valid?
+    assert_predicate missing_title.errors[:title], :any?
+    assert_not missing_body.valid?
+    assert_predicate missing_body.errors[:body], :any?
+  end
+
+  test "published_longform 스코프는 발행된 장문만 반환한다" do
+    draft = posts(:longform_draft)
+    published = posts(:longform_published)
+
+    assert_includes Post.published_longform, published
+    assert_not_includes Post.published_longform, draft
+    assert_not_includes Post.published_longform, @root_post
+  end
+
+  test "longform_summary는 HTML을 제거하고 앞부분을 반환한다" do
+    post = Post.new(body: "<p>Ruby <strong>Rails</strong> 장문입니다.</p>", user: @user, post_type: :longform)
+
+    assert_equal "Ruby Rails 장문입니다.", post.longform_summary
+  end
+
+  test "from_activitypub_object은 기사 답글을 comment 타입으로 지정한다" do
+    host = Rails.application.routes.default_url_options[:host]
+    hash = {
+      "id" => "https://remote.example/notes/comment-1",
+      "content" => "기사에 대한 원격 댓글",
+      "inReplyTo" => "https://#{host}/articles/#{@article.id}"
+    }
+
+    object = Post.from_activitypub_object(hash)
+
+    assert_equal @article.id.to_s, object[:article_id]
+    assert_equal :comment, object[:post_type]
+  end
+
+  test "from_activitypub_object은 기사가 아닌 답글에는 post_type을 지정하지 않는다" do
+    hash = {
+      "id" => "https://remote.example/notes/standalone-1",
+      "content" => "원문 노트"
+    }
+
+    object = Post.from_activitypub_object(hash)
+
+    assert_nil object[:post_type]
+    assert_nil object[:article_id]
+  end
+
+  test "발행된 장문을 discard하면 Delete 활동이 생성된다" do
+    published = posts(:longform_published)
+
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: published).count }, 1 do
+      published.discard!
+    end
+  end
+
+  test "발행된 장문을 undiscard하면 Undo 활동이 생성된다" do
+    published = posts(:longform_published)
+    published.discard!
+
+    assert_difference -> { Federails::Activity.where(action: "Undo", entity: published).count }, 1 do
+      published.undiscard!
+    end
+  end
+
+  test "초안 장문을 undiscard해도 Undo 활동이 생성되지 않는다" do
+    draft = posts(:longform_draft)
+    draft.discard!
+
+    assert_no_difference -> { Federails::Activity.where(action: "Undo").count } do
+      draft.undiscard!
+    end
   end
 
   # ========== handle_federated_object? Tests ==========
@@ -334,7 +473,7 @@ class PostTest < ActiveSupport::TestCase
     post.tag_list = "ruby, rails"
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, custom:) { captured = { record:, content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -350,7 +489,7 @@ class PostTest < ActiveSupport::TestCase
     post = Post.create!(body: "기사 댓글", user: @user, article: @article)
 
     captured = nil
-    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, custom:) { captured = { content:, custom: }; { "ok" => true } }) do
+    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -431,5 +570,139 @@ class PostTest < ActiveSupport::TestCase
     result = Post.from_activitypub_object(hash)
 
     assert_equal "첫 번째 파일 · 두 번째 파일", result[:body]
+  end
+
+  test "to_activitypub_object는 장문을 요약과 제목과 원문 링크로 전달한다" do
+    post = posts(:longform_published)
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
+      post.to_activitypub_object
+    end
+
+    assert_equal post, captured[:record]
+    assert_equal post.longform_summary, captured[:content]
+    assert_equal post.title, captured[:name]
+    assert_equal Rails.application.routes.url_helpers.post_url(post), captured[:custom]["url"]
+  end
+
+  test "to_activitypub_object의 실제 발행 Note에 장문 제목이 채워진다" do
+    post = Post.create!(
+      title: "실제 발행 장문",
+      body: "<p>실제 발행되는 장문 본문입니다.</p>",
+      user: @user,
+      post_type: :longform,
+      status: :published,
+      published_at: Time.current
+    )
+
+    note = post.to_activitypub_object
+
+    assert_equal post.title, note["name"]
+    assert_equal post.longform_summary, note["content"]
+    assert_equal Rails.application.routes.url_helpers.post_url(post), note["url"]
+  end
+
+  test "to_activitypub_object는 단문 본문 전체 발행을 유지한다" do
+    post = @root_post
+
+    captured = nil
+    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
+      post.to_activitypub_object
+    end
+
+    assert_equal post.body, captured[:content]
+    assert_nil captured[:name]
+    assert_nil captured[:custom]["url"]
+    assert_nil captured[:custom]["name"]
+  end
+
+  # 초안은 원격에 객체가 없으므로 첫 발행은 Create로 전달해야 한다. publish!는
+  # save!가 일으키는 자동 Update를 억제하고 Create를 명시적으로 발행한다.
+  test "publish!는 초안 첫 발행 시 Federails Create 활동을 발행한다" do
+    post = posts(:longform_draft)
+
+    assert_difference -> { Federails::Activity.where(action: "Create", entity: post).count }, 1 do
+      assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
+        post.publish!
+      end
+    end
+  end
+
+  # 이미 Create를 발행한(원격에 객체가 존재하는) 글의 수정은 일반 Update 경로를
+  # 유지한다. Create 승격은 Create 활동이 없는 최초 발행에만 적용된다.
+  test "이미 Create가 발행된 글의 수정은 Update 경로를 유지한다" do
+    post = posts(:longform_published)
+    Federails::Activity.create!(actor: federails_actors(:john_actor), entity: post, action: "Create")
+    post.body = "수정된 본문"
+
+    assert_difference -> { Federails::Activity.where(action: "Update", entity: post).count }, 1 do
+      assert_no_difference -> { Federails::Activity.where(action: "Create", entity: post).count } do
+        post.save!
+      end
+    end
+  end
+
+  # discard는 Discard::Model로 처리하고, after_discard에서 Delete를 발행한다.
+  test "발행 장문을 discard하면 Delete 활동을 발행한다" do
+    post = posts(:longform_published)
+
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: post).count }, 1 do
+      post.discard
+    end
+
+    assert_predicate post.reload, :discarded?
+  end
+
+  # soft_deleted_method: :discarded? 설정으로 삭제된 레코드는 federails_tombstoned?가
+  # 참이 되어, deleted_at 갱신이 일으키는 일반 Update 활동은 억제된다.
+  test "발행 장문을 discard하면 Update 활동은 발행하지 않는다" do
+    post = posts(:longform_published)
+
+    assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
+      post.discard
+    end
+  end
+
+  # 초안은 발행 전까지 로컬에만 머물러야 한다. should_federate?가 published?를
+  # 게이트하지 않으면 생성·자동저장마다 미발행 초안이 원격 팔로워에게 새어 나간다.
+  test "장문 초안은 생성 시 연합 활동을 발행하지 않는다" do
+    assert_no_difference -> { Federails::Activity.where(action: [ "Create", "Update" ]).count } do
+      @user.posts.create!(post_type: :longform, status: :draft, title: "비공개 초안", body: "")
+    end
+  end
+
+  test "장문 초안은 자동저장(update) 시 연합 활동을 발행하지 않는다" do
+    draft = posts(:longform_draft)
+
+    assert_no_difference -> { Federails::Activity.where(entity: draft).count } do
+      draft.update!(title: "자동 저장됨", body: "<p>본문</p>")
+    end
+  end
+
+  test "초안을 발행하면 그때 연합된다" do
+    draft = @user.posts.create!(post_type: :longform, status: :draft, title: "초안", body: "<p>본문</p>")
+
+    assert_difference -> { Federails::Activity.where(entity: draft).count }, 1 do
+      draft.publish!
+    end
+  end
+
+  # 소프트 삭제는 장문 전용. 인바운드 연합 Delete도 타입별로 분기한다.
+  test "인바운드 연합 삭제는 장문을 soft discard한다" do
+    post = posts(:longform_published)
+
+    post.run_callbacks(:on_federails_delete_requested)
+
+    assert_predicate post.reload, :discarded?
+    assert Post.exists?(post.id)
+  end
+
+  test "인바운드 연합 삭제는 댓글을 hard destroy한다" do
+    post = @comment_post
+
+    post.run_callbacks(:on_federails_delete_requested)
+
+    assert_not Post.exists?(post.id)
   end
 end
