@@ -103,6 +103,7 @@ class Views::Articles::Show < Views::Base
 
         render Components::Likes::Button.new(likeable: @article)
         render Components::Boosts::Button.new(boostable: @article)
+        render_markdown_copy_button
       end
 
       div(class: "mt-6 p-4 bg-surface-muted rounded-lg") do
@@ -120,6 +121,24 @@ class Views::Articles::Show < Views::Base
           end
         end
       end
+    end
+  end
+
+  def render_markdown_copy_button
+    button(
+      type: "button",
+      class: "inline-flex items-center gap-1 text-sm text-content-muted hover:text-brand transition-colors p-0",
+      aria_label: t("articles.show.copy_markdown"),
+      data: {
+        controller: "markdown-copy",
+        markdown_copy_url_value: article_path(@article, format: :md),
+        action: "markdown-copy#copy"
+      }
+    ) do
+      Hero::ClipboardDocument(variant: :outline, class: "w-4 h-4")
+      span(
+        data: { markdown_copy_target: "label", done_label: t("articles.show.copy_markdown_done") }
+      ) { t("articles.show.copy_markdown") }
     end
   end
 

@@ -75,6 +75,8 @@ ja:
     show:
       author: 投稿者
       conclusion_heading: まとめ
+      copy_markdown: Markdownをコピー
+      copy_markdown_done: コピーしました
       date_format: "%Y年%m月%d日"
       intro_heading: はじめに
       not_available: N/A

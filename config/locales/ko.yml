@@ -75,6 +75,8 @@ ko:
     show:
       author: 작성자
       conclusion_heading: 결론
+      copy_markdown: 마크다운 복사
+      copy_markdown_done: 복사됨
       date_format: "%Y년 %m월 %d일"
       intro_heading: 도입
       not_available: N/A
