@@ -12,7 +12,6 @@ module Search
     #: (Array[Array[Integer]] ranked_lists, ?k: Integer) -> Array[Integer]
     def call(ranked_lists, k: DEFAULT_K)
       scores = Hash.new(0.0)
-      ranks_per_id = Hash.new { |h, k| h[k] = [] }
       first_seen = {}
       order = 0
 
@@ -21,7 +20,6 @@ module Search
 
         list.each_with_index do |id, rank|
           scores[id] += 1.0 / (k + rank)
-          ranks_per_id[id] << rank
           unless first_seen.key?(id)
             first_seen[id] = order
             order += 1
@@ -29,13 +27,7 @@ module Search
         end
       end
 
-      scores.keys.sort_by do |id|
-        ranks = ranks_per_id[id]
-        mean = ranks.sum.to_f / ranks.size
-        variance = ranks.map { |r| (r - mean) ** 2 }.sum / ranks.size
-        consistency = variance.zero? ? Float::INFINITY : 1.0 / variance
-        [-consistency, -scores[id], first_seen[id]]
-      end
+      scores.keys.sort_by { |id| [-scores[id], first_seen[id]] }
     end
   end
 end
