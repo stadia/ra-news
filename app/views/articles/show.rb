@@ -135,7 +135,7 @@ class Views::Articles::Show < Views::Base
         action: "markdown-copy#copy"
       }
     ) do
-      Hero::ClipboardDocument(variant: :outline, class: "w-4 h-4")
+      Tabler::Markdown(variant: :outline, class: "w-4 h-4")
       span(
         data: { markdown_copy_target: "label", done_label: t("articles.show.copy_markdown_done") }
       ) { t("articles.show.copy_markdown") }
