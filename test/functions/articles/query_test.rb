@@ -5,9 +5,16 @@ require "test_helper"
 class Articles::QueryTest < ActiveSupport::TestCase
   test "search branch returns articles in hybrid rank order" do
     a = articles(:ruby_article)
-    Articles::HybridSearch.stub(:call, [a.id]) do
+    b = articles(:korean_content_article)
+    Articles::HybridSearch.stub(:call, [b.id, a.id]) do
       result = Articles::Query.index_html("Ruby")
-      assert_equal [a.id], result.map(&:id)
+      assert_equal [b.id, a.id], result.map(&:id)
+    end
+  end
+
+  test "index_json search uses FTS and does not call HybridSearch" do
+    Articles::HybridSearch.stub(:call, ->(*) { raise "should not be called" }) do
+      assert_nothing_raised { Articles::Query.index_json("Ruby").to_a }
     end
   end
 

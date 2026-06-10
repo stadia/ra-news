@@ -9,11 +9,10 @@ module Articles
 
     class << self
       def index_html(search = nil)
-        scope = index_scope(search)
-        return scope if search.present?
+        return hybrid_search_scope(search) if search.present?
 
-        scope.where.not(id: excluded_related_article_ids(base_scope.related))
-             .order(published_at: :desc)
+        index_scope(nil).where.not(id: excluded_related_article_ids(base_scope.related))
+                        .order(published_at: :desc)
       end
 
       def index_json(search = nil)
@@ -32,14 +31,18 @@ module Articles
 
       def index_scope(search)
         if search.present?
-          ids = Articles::HybridSearch.call(query: search, limit: Articles::HybridSearch::CANDIDATE_POOL)
-          return base_scope.none if ids.empty?
-
-          base_scope.where(id: ids).in_order_of(:id, ids)
-                    .includes(*DEFAULT_INCLUDES).without_toast
+          base_scope.full_text_search_for(search).includes(*DEFAULT_INCLUDES).without_toast
         else
           base_scope.related.includes(*DEFAULT_INCLUDES).without_toast
         end
+      end
+
+      def hybrid_search_scope(search)
+        ids = Articles::HybridSearch.call(query: search, limit: Articles::HybridSearch::CANDIDATE_POOL)
+        return base_scope.none if ids.empty?
+
+        base_scope.where(id: ids).in_order_of(:id, ids)
+                  .includes(*DEFAULT_INCLUDES).without_toast
       end
 
       def excluded_related_article_ids(scope)
