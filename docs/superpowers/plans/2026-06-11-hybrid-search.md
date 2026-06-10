@@ -12,6 +12,24 @@
 
 ---
 
+## TDD 규율: Canon TDD (Kent Beck)
+
+이 플랜은 **Canon TDD**로 실행한다. 각 Task의 테스트 코드 블록은 한꺼번에 작성하는 파일이 아니라
+**테스트 리스트**다. 실행 루프:
+
+1. Task의 테스트 리스트를 확인한다(이미 플랜에 나열됨).
+2. 리스트에서 **정확히 하나**의 테스트만 파일에 추가한다 → 실행해 **Red** 확인.
+3. 그 테스트 + **기존 모든 테스트**가 통과하도록 최소 구현을 추가/수정한다 → **Green** 확인.
+4. (선택) 리팩터링 — 테스트 유지한 채 구조 개선.
+5. 리스트의 다음 테스트로 2로 돌아간다. 구현 중 새 케이스를 발견하면 리스트에 추가한다.
+
+즉 "테스트 파일 전체 작성 → 구현 전체 작성"(배치)은 금지. 한 컴포넌트의 구현은 그 컴포넌트의
+테스트를 하나씩 Green으로 만들며 점진적으로 완성한다. 커밋은 Task 단위(리스트가 비고 전체 Green일 때).
+
+아래 각 Task의 "테스트 리스트"는 추가 순서대로 나열돼 있다. 위에서부터 하나씩 적용하라.
+
+---
+
 ## File Structure
 
 생성:
@@ -40,7 +58,7 @@
 - Create: `app/functions/search/vector_math.rb`
 - Test: `test/functions/search/vector_math_test.rb`
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Test list — add ONE test at a time (Canon TDD), Red→Green each before the next**
 
 ```ruby
 # test/functions/search/vector_math_test.rb
@@ -130,7 +148,7 @@ git commit -m "Add cosine similarity vector math helper"
 - Create: `app/functions/search/reciprocal_rank_fusion.rb`
 - Test: `test/functions/search/reciprocal_rank_fusion_test.rb`
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Test list — add ONE test at a time (Canon TDD), Red→Green each before the next**
 
 ```ruby
 # test/functions/search/reciprocal_rank_fusion_test.rb
@@ -239,7 +257,7 @@ git commit -m "Add reciprocal rank fusion function"
 - Create: `app/functions/search/maximal_marginal_relevance.rb`
 - Test: `test/functions/search/maximal_marginal_relevance_test.rb`
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Test list — add ONE test at a time (Canon TDD), Red→Green each before the next**
 
 ```ruby
 # test/functions/search/maximal_marginal_relevance_test.rb
@@ -361,7 +379,7 @@ git commit -m "Add maximal marginal relevance reranking function"
 테스트용 Struct로 대체한다. 픽스처 `ruby_article`은 `is_related: true`, `slug: "ruby-3-4-features"`이고
 본문/요약에 "Ruby" 텍스트가 있어 FTS로 매칭된다. confirmed(slug+title_ko 존재) 조건도 만족한다.
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Test list — add ONE test at a time (Canon TDD), Red→Green each before the next**
 
 ```ruby
 # test/functions/articles/hybrid_search_test.rb
@@ -567,7 +585,7 @@ git commit -m "Add Articles::HybridSearch orchestrator"
 검색 분기를 HybridSearch ID → `in_order_of`로 교체하고, `published_at` 정렬 책임을
 컨트롤러에서 Query의 비검색 분기로 옮긴다(검색 결과의 RRF 순서가 덮이지 않도록).
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Test list — add ONE test at a time (Canon TDD), Red→Green each before the next**
 
 ```ruby
 # test/functions/articles/query_test.rb
