@@ -84,7 +84,7 @@ ja:
       summary_heading: 要点
     tagged:
       count: "%{count}件の記事があります"
-      item_list_name: 'Ruby-News #%{tag} タグの記事'
+      item_list_name: "Ruby-News #%{tag} タグの記事"
       title: "#%{tag} タグの記事 | Ruby-News"
   comments:
     comment:
@@ -92,19 +92,19 @@ ja:
       delete_confirm: 本当に削除しますか?
       reply: 返信
     comment_form:
-      error_heading: 'エラーが発生しました:'
+      error_heading: "エラーが発生しました:"
       guideline: 丁寧で建設的なコメントを心がけてください。
       login_prompt_after: " が必要です。"
-      login_prompt_before: 'コメントを書くには '
+      login_prompt_before: "コメントを書くには "
       submit: コメントを書く
       title: コメントを書く
     comment_header:
       title: コメント
     comment_reply_form:
       cancel: キャンセル
-      error_heading: 'エラーが発生しました:'
+      error_heading: "エラーが発生しました:"
       login_prompt_after: " してください。"
-      login_prompt_before: '返信を書くには '
+      login_prompt_before: "返信を書くには "
       submit: 返信を書く
       title: 返信を書く
   errors:
@@ -131,7 +131,7 @@ ja:
       following: フォロー中
       incoming_following: "%{username}さんがフォローしています。"
       incoming_request: "%{username}さんからフォローリクエストがあります。"
-      logged_out: 'フォローするにはログインしてください。または他のFediverseサーバーから検索: '
+      logged_out: "フォローするにはログインしてください。または他のFediverseサーバーから検索: "
       own_account: あなた自身のアカウントです。
       requested: リクエスト中
       unfollow: フォロー解除
@@ -258,6 +258,7 @@ ja:
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
+      boosted_by: "%{name}さんがブーストしました"
       linked_article: 関連記事
       reply_to: "%{name}さんへの返信"
       unknown_author: 不明
@@ -266,7 +267,7 @@ ja:
       cancel: キャンセル
       post_submit: 投稿
       reply_submit: 返信
-      replying_to: '返信中 '
+      replying_to: "返信中 "
       longform: 長文を書く
     remote_attachment_only_body: 添付メディア
     reply_form:

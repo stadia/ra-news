@@ -46,7 +46,7 @@ en:
       visit_profile: Visit profile →
   articles:
     form:
-      errors_heading: 'Could not save the article due to %{count} error(s):'
+      errors_heading: "Could not save the article due to %{count} error(s):"
       submit: Submit
     index:
       count: "%{count} articles"
@@ -84,7 +84,7 @@ en:
       summary_heading: Key Takeaways
     tagged:
       count: "%{count} articles"
-      item_list_name: 'Ruby-News #%{tag} Tagged Articles'
+      item_list_name: "Ruby-News #%{tag} Tagged Articles"
       title: "#%{tag} Tagged Articles | Ruby-News"
   comments:
     comment:
@@ -92,19 +92,19 @@ en:
       delete_confirm: Are you sure you want to delete this?
       reply: Reply
     comment_form:
-      error_heading: 'An error occurred:'
+      error_heading: "An error occurred:"
       guideline: Please keep comments respectful and constructive.
       login_prompt_after: " to write a comment."
-      login_prompt_before: 'You need to '
+      login_prompt_before: "You need to "
       submit: Post comment
       title: Write a comment
     comment_header:
       title: Comments
     comment_reply_form:
       cancel: Cancel
-      error_heading: 'An error occurred:'
+      error_heading: "An error occurred:"
       login_prompt_after: " to write a reply."
-      login_prompt_before: 'Please '
+      login_prompt_before: "Please "
       submit: Post reply
       title: Write a reply
   errors:
@@ -131,7 +131,7 @@ en:
       following: Following
       incoming_following: "%{username} is following you."
       incoming_request: "%{username} has sent a follow request."
-      logged_out: 'Sign in to follow. Or search from another Fediverse server: '
+      logged_out: "Sign in to follow. Or search from another Fediverse server: "
       own_account: This is your account.
       requested: Requested
       unfollow: Unfollow
@@ -258,6 +258,7 @@ en:
       errors:
         blank_draft: Enter a title or body before saving this draft.
     post_card:
+      boosted_by: "%{name} boosted"
       linked_article: Linked article
       reply_to: Reply to %{name}
       unknown_author: Unknown
@@ -266,7 +267,7 @@ en:
       cancel: Cancel
       post_submit: Post
       reply_submit: Reply
-      replying_to: 'Replying to '
+      replying_to: "Replying to "
       longform: Write longform
     remote_attachment_only_body: Attached media
     reply_form:
