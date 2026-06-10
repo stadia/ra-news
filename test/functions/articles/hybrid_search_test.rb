@@ -1,0 +1,73 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class Articles::HybridSearchTest < ActiveSupport::TestCase
+  EmbedResult = Struct.new(:vectors)
+
+  setup do
+    # Ensure pg_search_document tsvector is populated for FTS tests
+    ActiveRecord::Base.connection.execute(
+      "UPDATE pg_search_documents SET tsvector_content_tsearch = " \
+      "to_tsvector('english', coalesce(content, '')) WHERE searchable_type = 'Article'"
+    )
+    # Use a real memory cache so embedding cache tests work (test env uses :null_store)
+    @_original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+  end
+
+  teardown do
+    Rails.cache = @_original_cache
+  end
+
+  def stub_embed(vector)
+    RubyLLM.stub(:embed, EmbedResult.new(vector)) { yield }
+  end
+
+  test "blank query returns empty array" do
+    assert_equal [], Articles::HybridSearch.call(query: "")
+    assert_equal [], Articles::HybridSearch.call(query: "   ")
+  end
+
+  test "falls back to FTS-only ids when embedding fails" do
+    RubyLLM.stub(:embed, ->(*) { raise StandardError, "api down" }) do
+      ids = Articles::HybridSearch.call(query: "Ruby")
+      assert_includes ids, articles(:ruby_article).id
+    end
+  end
+
+  test "returns FTS matches when embedding succeeds but no article embeddings exist" do
+    Rails.cache.clear
+    stub_embed(Array.new(1536, 0.0).tap { |v| v[0] = 1.0 }) do
+      ids = Articles::HybridSearch.call(query: "Ruby")
+      assert_includes ids, articles(:ruby_article).id
+    end
+  end
+
+  test "vector-matched article surfaces via embedding similarity" do
+    Rails.cache.clear
+    target = articles(:ruby_article)
+    qvec = Array.new(1536, 0.0)
+    qvec[0] = 1.0
+    target.update_column(:embedding, qvec)
+
+    stub_embed(qvec) do
+      ids = Articles::HybridSearch.call(query: "zzznontextmatch")
+      assert_includes ids, target.id
+    end
+  end
+
+  test "caches the query embedding across calls" do
+    Rails.cache.clear
+    calls = 0
+    embed = lambda do |*|
+      calls += 1
+      EmbedResult.new(Array.new(1536, 0.0).tap { |v| v[0] = 1.0 })
+    end
+    RubyLLM.stub(:embed, embed) do
+      Articles::HybridSearch.call(query: "CacheTerm")
+      Articles::HybridSearch.call(query: "CacheTerm")
+    end
+    assert_equal 1, calls
+  end
+end
