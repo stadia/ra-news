@@ -28,7 +28,7 @@ module Articles
 
         vectors = candidate_vectors(fused)
         kept = threshold_filter(fused, vectors, qvec, fts_ids)
-        ranked = mmr ? rerank(kept, vectors, qvec, limit) : kept
+        ranked = mmr ? rerank(kept, vectors, qvec) : kept
         ranked.first(limit)
       end
 
@@ -81,15 +81,15 @@ module Articles
         end
       end
 
-      #: (Array[Integer] ids, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Integer limit) -> Array[Integer]
-      def rerank(ids, vectors, qvec, limit)
+      #: (Array[Integer] ids, Hash[Integer, Array[Float]] vectors, Array[Float] qvec) -> Array[Integer]
+      def rerank(ids, vectors, qvec)
         candidates = ids.filter_map do |id|
           vec = vectors[id]
           { id: id, vector: vec } if vec
         end
         no_vec = ids - candidates.map { |c| c[:id] }
         reranked = Search::MaximalMarginalRelevance.call(
-          query_vector: qvec, candidates: candidates, lambda: MMR_LAMBDA, limit: limit
+          query_vector: qvec, candidates: candidates, lambda: MMR_LAMBDA, limit: candidates.size
         )
         reranked + no_vec
       end

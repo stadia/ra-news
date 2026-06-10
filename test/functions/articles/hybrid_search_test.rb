@@ -70,4 +70,39 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
     end
     assert_equal 1, calls
   end
+
+  test "excludes vector-only candidate below cosine threshold while keeping aligned one" do
+    Rails.cache.clear
+    qvec = Array.new(1536, 0.0)
+    qvec[0] = 1.0
+
+    aligned = articles(:ruby_article)
+    aligned.update_column(:embedding, qvec)
+
+    orthogonal_vec = Array.new(1536, 0.0)
+    orthogonal_vec[1] = 1.0
+    orthogonal = articles(:korean_content_article)
+    orthogonal.update_column(:embedding, orthogonal_vec)
+
+    # Query term does not FTS-match either article, so survival depends on cosine threshold.
+    stub_embed(qvec) do
+      ids = Articles::HybridSearch.call(query: "zzznontextmatch")
+      assert_includes ids, aligned.id
+      assert_not_includes ids, orthogonal.id
+    end
+  end
+
+  test "mmr reranking path returns aligned article without error" do
+    Rails.cache.clear
+    qvec = Array.new(1536, 0.0)
+    qvec[0] = 1.0
+
+    target = articles(:ruby_article)
+    target.update_column(:embedding, qvec)
+
+    stub_embed(qvec) do
+      ids = Articles::HybridSearch.call(query: "Ruby", mmr: true)
+      assert_includes ids, target.id
+    end
+  end
 end
