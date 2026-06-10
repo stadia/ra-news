@@ -13,6 +13,7 @@ module Articles
         return scope if search.present?
 
         scope.where.not(id: excluded_related_article_ids(base_scope.related))
+             .order(published_at: :desc)
       end
 
       def index_json(search = nil)
@@ -31,7 +32,11 @@ module Articles
 
       def index_scope(search)
         if search.present?
-          base_scope.full_text_search_for(search).includes(*DEFAULT_INCLUDES).without_toast
+          ids = Articles::HybridSearch.call(query: search, limit: Articles::HybridSearch::CANDIDATE_POOL)
+          return base_scope.none if ids.empty?
+
+          base_scope.where(id: ids).in_order_of(:id, ids)
+                    .includes(*DEFAULT_INCLUDES).without_toast
         else
           base_scope.related.includes(*DEFAULT_INCLUDES).without_toast
         end

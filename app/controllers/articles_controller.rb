@@ -24,7 +24,7 @@ class ArticlesController < ApplicationController
       return
     end
 
-    @pagy, @articles = pagy(Articles::Query.index_html(search).order(published_at: :desc))
+    @pagy, @articles = pagy(Articles::Query.index_html(search))
     render Views::Articles::Index.new(
       pagy: @pagy,
       articles: @articles,
