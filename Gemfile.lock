@@ -329,7 +329,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
-    lexxy (0.9.16)
+    lexxy (0.9.17)
       rails (>= 8.0.2)
     link_header (0.0.8)
     lint_roller (1.1.0)
@@ -384,7 +384,7 @@ GEM
       activerecord (>= 7.2)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    net-imap (0.6.4)
+    net-imap (0.6.4.1)
       date
       net-protocol
     net-pop (0.1.2)
@@ -851,7 +851,7 @@ DEPENDENCIES
   jbuilder
   kramdown
   letter_opener
-  lexxy (~> 0.9.16)
+  lexxy (~> 0.9.17)
   madmin (~> 2.3)
   meta-tags
   minitest (~> 6.0)
