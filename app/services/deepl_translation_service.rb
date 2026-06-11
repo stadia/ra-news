@@ -31,7 +31,7 @@ class DeeplTranslationService < OperationService
     }
 
     inputs = scalars.values + keys
-    outputs = translate(inputs)
+    outputs = translate(inputs, context: translation_context(article))
     return Failure(:deepl_error) if outputs.size != inputs.size
 
     scalar_out = scalars.keys.zip(outputs.first(scalars.size)).to_h
@@ -54,12 +54,19 @@ class DeeplTranslationService < OperationService
     Failure(:deepl_error)
   end
 
-  #: (Array[String] texts) -> Array[String]
-  def translate(texts)
+  #: (Array[String] texts, ?context: String?) -> Array[String]
+  def translate(texts, context: nil)
     # DeepL은 빈 문자열을 거부할 수 있어 공백으로 치환해 인덱스 정렬을 유지한다.
     payload = texts.map { |text| text.presence || " " }
-    result = DeepL.translate(payload, SOURCE_LANG, TARGET_LANG)
+    # context는 번역되지 않고 참조용으로만 쓰여(과금 제외) 짧은 키워드의 도메인/중의성을 잡아준다.
+    result = DeepL.translate(payload, SOURCE_LANG, TARGET_LANG, context: context.presence)
     Array(result).map(&:text)
+  end
+
+  # 기사 주제를 맥락으로 전달해 summary_key 등 짧은 텍스트의 용어·어조를 안정화한다.
+  #: (Article article) -> String
+  def translation_context(article)
+    [ "IT·기술 뉴스 기사", article.title_ko.to_s.strip ].reject(&:blank?).join(" / ")
   end
 
   private

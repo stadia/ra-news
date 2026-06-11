@@ -22,9 +22,9 @@ class Article < ApplicationRecord
 
   include FederailsBoostable
 
-  include ArticleClassMethods
+  include Articles::LocalizedDisplay
 
-  include LocalizedDisplay
+  include Articles::Activitypub
 
   # ── Scopes ───────────────────────────────────────────────────────────
   # 하이브리드 전문 검색:
@@ -39,9 +39,6 @@ class Article < ApplicationRecord
 
   # #: () -> String
   def to_markdown: () -> untyped
-
-  # : () -> Hash[String, untyped]
-  def to_activitypub_object: () -> Hash[String, untyped]
 
   def generate_metadata: () -> void
 
@@ -66,6 +63,10 @@ class Article < ApplicationRecord
 
   # : () -> Integer
   def boosts_count: () -> Integer
+
+  # slug로 Article을 찾는 메서드
+  # : (String slug) -> Article?
+  def self.find_by_slug: (String slug) -> Article?
 
   private
 

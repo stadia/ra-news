@@ -58,7 +58,7 @@ class PostsController < ApplicationController
   def create_article_comment
     @post = @article.posts.build(article_comment_params.merge(post_type: :comment, status: :published))
     @post.user = current_user
-    @post.published_at ||= Time.current
+    @post.published_at ||= Time.zone.now
 
     respond_to do |format|
       if @post.save

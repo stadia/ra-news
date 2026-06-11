@@ -19,6 +19,13 @@ class ArticleAgentsService < OperationService
   # : (Article article) -> Dry::Monads::Result
   def run_japanese: (Article article) -> Dry::Monads::Result
 
+  # DeepL을 우선 사용하고, 무료 한도 초과/오류/미설정 시 ArticleJapaneseAgent로 폴백한다.
+  # : (Article article) -> Hash[Symbol, untyped]
+  def japanese_translation: (Article article) -> Hash[Symbol, untyped]
+
+  # : (Article article) -> Hash[Symbol, untyped]
+  def japanese_via_agent: (Article article) -> Hash[Symbol, untyped]
+
   def run_thumbnail: (untyped article) -> untyped
 
   private

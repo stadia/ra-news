@@ -5,11 +5,12 @@ class Components::Posts::PostCard < Components::Base
   include Phlex::Rails::Helpers::LinkTo
   include PhlexIcons
 
-  def initialize(post:, depth: 0, liked: nil, boosted: nil, show_actions: true, show_reply_badge: true)
+  def initialize(post:, depth: 0, liked: nil, boosted: nil, booster: nil, show_actions: true, show_reply_badge: true)
     @post = post
     @depth = depth
     @liked = liked
     @boosted = boosted
+    @booster = booster
     @show_actions = show_actions
     @show_reply_badge = show_reply_badge
   end
@@ -46,6 +47,7 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_header
+    boost_attribution if @booster.present?
     parent_reply_badge if @show_reply_badge && @post.parent.present?
 
     div(class: "flex items-center gap-3") do
@@ -82,6 +84,13 @@ class Components::Posts::PostCard < Components::Base
     ) do
       Hero::ArrowUturnLeft(variant: :outline, class: "w-3 h-3")
       plain t("posts.post_card.reply_to", name: parent_author_name)
+    end
+  end
+
+  def boost_attribution
+    div(class: "flex items-center gap-1.5 text-xs text-content-muted mb-2") do
+      Hero::ArrowsRightLeft(variant: :outline, class: "w-3 h-3")
+      plain t("posts.post_card.boosted_by", name: booster_name)
     end
   end
 
@@ -212,6 +221,10 @@ class Components::Posts::PostCard < Components::Base
 
   def author_name
     @post.user&.name || @post.federails_actor&.name || t("posts.post_card.unknown_author")
+  end
+
+  def booster_name
+    @booster&.name.presence || t("posts.post_card.unknown_author")
   end
 
   def parent_author_name
