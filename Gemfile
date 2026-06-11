@@ -81,7 +81,7 @@ group :development do
   gem "ruby-lsp", "~> 0.27.0.beta3"
   gem "ruby-lsp-brakeman", require: false
   gem "ruby-lsp-i18n", require: false
-  gem "ruby_ui", "~> 1.2"
+  gem "ruby_ui", "~> 1.3"
   gem "sorbet"
   gem "web-console"
 end
