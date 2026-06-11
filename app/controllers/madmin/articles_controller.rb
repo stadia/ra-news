@@ -51,9 +51,9 @@ module Madmin
       resources = resource.model.send(valid_scope)
       resources = if search_term.present?
                     resources.full_text_search_for(search_term).without_toast
-                  else
+      else
                     resources
-                  end
+      end
       resources.includes(:site).reorder(sort_column => sort_direction)
     end
 

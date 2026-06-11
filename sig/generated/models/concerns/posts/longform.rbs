@@ -1,0 +1,31 @@
+# Generated from app/models/concerns/posts/longform.rb with RBS::Inline
+
+# Longform-specific behavior for Post: publishing, draft/published predicates,
+# summary generation, and draft content validation.
+#
+# The post_type/status enums and longform scopes remain on Post itself,
+# since they are referenced as class methods elsewhere.
+module Posts
+  module Longform
+    extend ActiveSupport::Concern
+
+    LONGFORM_SUMMARY_LENGTH: ::Integer
+
+    # : () -> void
+    def publish!: () -> void
+
+    # : () -> bool
+    def draft_longform?: () -> bool
+
+    # : () -> bool
+    def published_longform?: () -> bool
+
+    # : () -> String
+    def longform_summary: () -> String
+
+    private
+
+    # : () -> void
+    def validate_longform_draft_content: () -> void
+  end
+end
