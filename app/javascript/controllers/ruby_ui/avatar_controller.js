@@ -8,11 +8,11 @@ export default class extends Controller {
       return;
     }
 
-    if (this.imageTarget.complete && this.imageTarget.naturalWidth > 0) {
-      this.showImage();
-    } else {
-      // Image not yet loaded (or failed): hide it so the fallback shows.
-      // Image visibility is restored by the load/error handlers.
+    // Only act on an image that has already *failed* to load. A still-loading
+    // image must stay visible — hiding it (display:none) would also stop a
+    // `loading="lazy"` image from loading at all, so it would never appear.
+    // Late load/error events are handled by the load/error actions.
+    if (this.imageTarget.complete && this.imageTarget.naturalWidth === 0) {
       this.showFallback();
     }
   }
