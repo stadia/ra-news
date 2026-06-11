@@ -127,4 +127,125 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, articles(:ruby_article).title_ko
     assert_includes response.body, posts(:root_post).body
   end
+
+  test "posts page shows published blog posts" do
+    sign_in users(:john)
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, "발행된 긴 글"
+  end
+
+  test "posts page does not show drafts to public" do
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    assert_not_includes response.body, "작성 중인 긴 글"
+  end
+
+  test "owner posts page no longer renders drafts" do
+    sign_in users(:john)
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    # 초안은 더 이상 글 탭이 아니라 장문 탭에서 관리한다.
+    assert_not_includes response.body, posts(:blog_draft).title
+    assert_select "a[href=?]", edit_blog_post_path(posts(:blog_draft)), count: 0
+  end
+
+  test "owner blog tab shows draft management entry" do
+    sign_in users(:john)
+    get user_profile_blog_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.blog_list.drafts_heading")
+    assert_includes response.body, posts(:blog_draft).title
+    assert_select "a[href=?]", edit_blog_post_path(posts(:blog_draft))
+  end
+
+  test "owner blog draft entry offers a delete control" do
+    sign_in users(:john)
+    get user_profile_blog_url(username: users(:john).username)
+
+    assert_response :success
+    assert_select "form[action=?]", blog_post_path(posts(:blog_draft))
+  end
+
+  test "blog drafts exclude trashed drafts" do
+    sign_in users(:john)
+    posts(:blog_draft).discard!
+
+    get user_profile_blog_url(username: users(:john).username)
+
+    assert_response :success
+    # 휴지통 복구 컨트롤로 노출되어야 한다 (작성 중 초안에는 없어야 함).
+    assert_select "form[action=?]", undiscard_blog_post_path(posts(:blog_draft))
+    assert_select "a[href=?]", edit_blog_post_path(posts(:blog_draft)), count: 0
+  end
+
+  test "owner blog tab lists published blog posts" do
+    sign_in users(:john)
+
+    get user_profile_blog_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, posts(:blog_published).title
+    assert_select "a[href=?]", post_path(posts(:blog_published))
+  end
+
+  test "comments tab excludes discarded comments" do
+    posts(:comment_post).discard!
+
+    get user_profile_comments_url(username: users(:john).username)
+
+    assert_response :success
+    assert_not_includes response.body, posts(:comment_post).body
+  end
+
+  test "blog tab requires the owner" do
+    sign_in users(:jane)
+
+    get user_profile_blog_url(username: users(:john).username)
+
+    assert_redirected_to user_profile_base_path(username: users(:john).username)
+  end
+
+  test "owner blog trash section lists discarded blog posts" do
+    sign_in users(:john)
+    posts(:blog_published).discard!
+
+    get user_profile_blog_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, "발행된 긴 글"
+    assert_select "form[action=?]", undiscard_blog_post_path(posts(:blog_published))
+    assert_select "form[action=?]", destroy_permanently_blog_post_path(posts(:blog_published))
+  end
+
+  test "owner blog trash section shows empty state when nothing discarded" do
+    sign_in users(:john)
+
+    get user_profile_blog_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.blog_list.trash_empty")
+  end
+
+  test "owner profile shows blog tab" do
+    sign_in users(:john)
+
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.activity_tabs.blog")
+  end
+
+  test "blog tab is hidden from other users" do
+    sign_in users(:jane)
+
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    assert_not_includes response.body, user_profile_blog_path(username: users(:john).username)
+  end
 end
