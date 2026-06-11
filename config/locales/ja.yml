@@ -45,6 +45,9 @@ ja:
       back_to_lookup: フォロー検索に戻る
       visit_profile: プロフィールを開く →
   articles:
+    create:
+      already_exists: すでに登録されている記事です。
+      success: 記事が正常に登録されました。
     form:
       errors_heading: "%{count}件のエラーにより記事を保存できませんでした:"
       submit: 登録
@@ -205,6 +208,11 @@ ja:
       brand_subtitle: Ruby AIニュース
       footer: このメールはアカウント確認のために送信されました。
   oauth:
+    errors:
+      discord_missing_webhook: Discord OAuthレスポンスにwebhook情報がありません。
+      discord_not_configured: Discord連携がまだ設定されていません。管理者にお問い合わせください。
+      slack_not_configured: Slack連携がまだ設定されていません。管理者にお問い合わせください。
+      unsupported_provider: サポートされていない連携です。
     result:
       back_to_home: ホームに戻る
       channel_connected: "%{channel} %{kind}の連携に成功しました。"
@@ -339,6 +347,10 @@ ja:
   sign_in: ログイン
   sign_out: ログアウト
   sign_up: 新規登録
+  social:
+    oauth:
+      error: 'OAuthエラー: %{message}'
+      success: OAuth認証に成功しました！アクセストークンが保存されました。
   tags_sidebar:
     empty: 表示するタグがありません。
     heading: タグ

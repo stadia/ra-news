@@ -8,7 +8,7 @@ class Post < ApplicationRecord
 
   include HtmlSanitizable
 
-  include Posts::Longform
+  include Posts::Blog
 
   include Discard::Model
 

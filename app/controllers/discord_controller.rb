@@ -14,7 +14,7 @@ class DiscordController < ApplicationController
     webhook = oauth[:webhook]
 
     unless guild.present? && webhook.present?
-      raise DiscordClient::ApiError, "Discord OAuth 응답에 webhook 정보가 없습니다."
+      raise DiscordClient::ApiError, t("oauth.errors.discord_missing_webhook")
     end
 
     guild_id = webhook[:guild_id].presence || guild[:id]

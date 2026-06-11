@@ -17,6 +17,8 @@ class ProfilesController < ApplicationController
 
   def boosts: () -> untyped
 
+  def blog: () -> untyped
+
   private
 
   def set_user: () -> untyped

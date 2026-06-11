@@ -45,6 +45,9 @@ ko:
       back_to_lookup: 팔로우 검색으로 돌아가기
       visit_profile: 프로필 방문 →
   articles:
+    create:
+      already_exists: 이미 등록된 글입니다.
+      success: 글이 성공적으로 등록되었습니다.
     form:
       errors_heading: "%{count}건의 오류로 인해 글을 저장할 수 없습니다:"
       submit: 등록
@@ -205,6 +208,11 @@ ko:
       brand_subtitle: 루비 AI 뉴스
       footer: 이 메일은 계정 확인을 위해 발송되었습니다.
   oauth:
+    errors:
+      discord_missing_webhook: Discord OAuth 응답에 webhook 정보가 없습니다.
+      discord_not_configured: Discord 연동이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요.
+      slack_not_configured: Slack 연동이 아직 설정되지 않았습니다. 관리자에게 문의해 주세요.
+      unsupported_provider: 지원하지 않는 연동입니다.
     result:
       back_to_home: 홈으로 돌아가기
       channel_connected: "%{channel} %{kind}가 성공적으로 연결되었습니다."
@@ -339,6 +347,10 @@ ko:
   sign_in: 로그인
   sign_out: 로그아웃
   sign_up: 회원가입
+  social:
+    oauth:
+      error: 'OAuth 에러: %{message}'
+      success: OAuth 인증 성공! Access token이 저장되었습니다.
   tags_sidebar:
     empty: 표시할 태그가 없습니다.
     heading: 태그
