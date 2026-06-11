@@ -18,8 +18,8 @@
   scopes: active, delivery_ready
 - **NotificationDelivery** (table: notification_deliveries) — belongs_to :article, belongs_to :notification_channel [5v]
 - **OauthAccount** (table: oauth_accounts) — belongs_to :user [5v]
-- **Post** (table: posts) — has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor [4v]
-  scopes: comments, standalone
+- **Post** (table: posts) — has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor [5v]
+  scopes: comments, standalone, visible, published_blog
 - **Preference** (table: preferences) [2v]
 - **PushSubscription** (table: push_subscriptions) — belongs_to :user [6v]
 - **RefreshToken** (table: refresh_tokens) — belongs_to :user [1v]

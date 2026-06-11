@@ -45,8 +45,11 @@ en:
       back_to_lookup: Back to Find & Follow
       visit_profile: Visit profile →
   articles:
+    create:
+      already_exists: Article already exists.
+      success: Article was successfully created.
     form:
-      errors_heading: "Could not save the article due to %{count} error(s):"
+      errors_heading: 'Could not save the article due to %{count} error(s):'
       submit: Submit
     index:
       count: "%{count} articles"
@@ -86,7 +89,7 @@ en:
       summary_heading: Key Takeaways
     tagged:
       count: "%{count} articles"
-      item_list_name: "Ruby-News #%{tag} Tagged Articles"
+      item_list_name: 'Ruby-News #%{tag} Tagged Articles'
       title: "#%{tag} Tagged Articles | Ruby-News"
   comments:
     comment:
@@ -94,19 +97,19 @@ en:
       delete_confirm: Are you sure you want to delete this?
       reply: Reply
     comment_form:
-      error_heading: "An error occurred:"
+      error_heading: 'An error occurred:'
       guideline: Please keep comments respectful and constructive.
       login_prompt_after: " to write a comment."
-      login_prompt_before: "You need to "
+      login_prompt_before: 'You need to '
       submit: Post comment
       title: Write a comment
     comment_header:
       title: Comments
     comment_reply_form:
       cancel: Cancel
-      error_heading: "An error occurred:"
+      error_heading: 'An error occurred:'
       login_prompt_after: " to write a reply."
-      login_prompt_before: "Please "
+      login_prompt_before: 'Please '
       submit: Post reply
       title: Write a reply
   errors:
@@ -133,7 +136,7 @@ en:
       following: Following
       incoming_following: "%{username} is following you."
       incoming_request: "%{username} has sent a follow request."
-      logged_out: "Sign in to follow. Or search from another Fediverse server: "
+      logged_out: 'Sign in to follow. Or search from another Fediverse server: '
       own_account: This is your account.
       requested: Requested
       unfollow: Unfollow
@@ -207,6 +210,11 @@ en:
       brand_subtitle: Ruby AI News
       footer: This email was sent for account verification.
   oauth:
+    errors:
+      discord_missing_webhook: Discord OAuth response is missing webhook information.
+      discord_not_configured: Discord integration is not configured yet. Please contact an administrator.
+      slack_not_configured: Slack integration is not configured yet. Please contact an administrator.
+      unsupported_provider: Unsupported integration.
     result:
       back_to_home: Back to home
       channel_connected: "%{channel} %{kind} connected successfully."
@@ -228,10 +236,10 @@ en:
       heading: Forgot your password?
       submit: Send reset email
   posts:
-    longform:
+    blog:
       untitled_draft: Untitled draft
-      edit_title: Write longform | Ruby-News
-      edit_heading: Write longform
+      edit_title: Write blog | Ruby-News
+      edit_heading: Write blog
       published: Post published.
       updated: Post updated.
       deleted: Post deleted.
@@ -252,7 +260,7 @@ en:
       preview: Preview
       publish: Publish
       title_placeholder: Enter a title
-      body_placeholder: Write your long post
+      body_placeholder: Write your blog post
       no_tags: No tags
       status_draft: Draft
       status_published: Published
@@ -260,7 +268,7 @@ en:
       errors:
         blank_draft: Enter a title or body before saving this draft.
     post_card:
-      boosted_by: "%{name} boosted"
+      boosted_by: Boosted by %{name}
       linked_article: Linked article
       reply_to: Reply to %{name}
       unknown_author: Unknown
@@ -269,8 +277,8 @@ en:
       cancel: Cancel
       post_submit: Post
       reply_submit: Reply
-      replying_to: "Replying to "
-      longform: Write longform
+      replying_to: 'Replying to '
+      blog: Write blog
     remote_attachment_only_body: Attached media
     reply_form:
       cancel: Cancel
@@ -286,7 +294,7 @@ en:
       followers: Followers
       following: Following
       likes: Likes
-      longform: Longform
+      blog: Blog
       posts: Posts
     comment_list:
       empty: No comments yet.
@@ -305,12 +313,12 @@ en:
       empty: No liked articles yet.
     post_list:
       empty: No posts yet.
-    longform_list:
+    blog_list:
       drafts_heading: Drafts in progress
       published_heading: Published
       trash_heading: Trash
       drafts_empty: No drafts in progress.
-      published_empty: No published longform posts.
+      published_empty: No published blog posts.
       trash_empty: Trash is empty.
     show:
       feed: Feed
@@ -342,6 +350,10 @@ en:
   sign_in: Sign in
   sign_out: Sign out
   sign_up: Sign up
+  social:
+    oauth:
+      error: 'OAuth error: %{message}'
+      success: OAuth authentication successful! Access token has been saved.
   tags_sidebar:
     empty: No tags to display.
     heading: Tags

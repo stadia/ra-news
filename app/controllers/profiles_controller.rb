@@ -27,7 +27,7 @@ class ProfilesController < ApplicationController
 
   def posts
     @pagy, @posts = pagy(
-      @user.posts.standalone
+      @user.posts.standalone.visible
         .includes(:user, :federails_actor, :article, :tags)
         .order(created_at: :desc)
     )
@@ -38,7 +38,7 @@ class ProfilesController < ApplicationController
 
   def comments
     @pagy, @posts = pagy(
-      @user.posts.comments
+      @user.posts.comments.kept
         .includes(:user, :federails_actor, :article, :tags)
         .order(created_at: :desc)
     )
@@ -95,6 +95,18 @@ class ProfilesController < ApplicationController
     render_activity_page(:boosts)
   end
 
+  def blog
+    unless current_user == @user
+      redirect_to(user_profile_base_path(username: @user.username),
+                  alert: "본인만 볼 수 있습니다") and return
+    end
+
+    @blog_drafts = @user.posts.blog.draft.kept.order(updated_at: :desc)
+    @blog_published = @user.posts.blog.published.kept.order(published_at: :desc)
+    @blog_trash = @user.posts.blog.discarded.order(updated_at: :desc)
+    render_activity_page(:blog)
+  end
+
   private
 
     def set_user
@@ -139,6 +151,17 @@ class ProfilesController < ApplicationController
         else
           render_show_with_activity(active_tab: :boosts)
         end
+      when :blog
+        if turbo_frame_request?
+          render Views::Profiles::BlogList.new(
+            user: @user,
+            drafts: @blog_drafts,
+            published: @blog_published,
+            trash: @blog_trash
+          )
+        else
+          render_show_with_activity(active_tab: :blog)
+        end
       when :followers, :following
         if turbo_frame_request?
           render Views::Profiles::FollowList.new(
@@ -164,7 +187,10 @@ class ProfilesController < ApplicationController
         pagy: @pagy,
         liked_post_ids: @liked_post_ids,
         boosted_post_ids: @boosted_post_ids,
-        follow_actors: @follow_actors
+        follow_actors: @follow_actors,
+        blog_drafts: @blog_drafts || [],
+        blog_published: @blog_published || [],
+        blog_trash: @blog_trash || []
       )
     end
 

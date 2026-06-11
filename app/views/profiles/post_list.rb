@@ -3,6 +3,8 @@
 class Views::Profiles::PostList < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::TurboFrameTag
+  include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::ButtonTo
 
   def initialize(user:, posts:, pagy:, liked_post_ids: [], boosted_post_ids: [], embedded: false)
     @user = user

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class User < ApplicationRecord
   AVATAR_SIZE = [ 400, 400 ].freeze

@@ -42,11 +42,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def handle_oauth_callback
     result = OauthAccounts::Callbacks.handle_callback(auth: request.env["omniauth.auth"], session: session)
 
-    case result[:type]
-    when :sign_in
-      sign_in(resource_name, result[:user])
+    case result
+    when OauthAccounts::Callbacks::SignIn
+      sign_in(resource_name, result.user)
       redirect_to root_path, notice: t("devise.omniauth_callbacks.success", kind: provider_name)
-    when :complete_signup
+    when OauthAccounts::Callbacks::CompleteSignup
       redirect_to new_user_oauth_registration_path
     else
       redirect_to new_user_session_path, alert: t("devise.omniauth_callbacks.failure", kind: provider_name, reason: "OAuth 인증 처리 실패")

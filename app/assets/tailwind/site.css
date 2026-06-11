@@ -60,6 +60,19 @@ lexxy-editor.post-composer-editor.lexxy-editor--empty .lexxy-editor__content::be
     opacity: 0.82;
 }
 
+/* Lexxy stores a blank line as an empty paragraph (<p><br></p>). Tailwind
+   `prose` gives every paragraph symmetric top/bottom margins, so an empty one
+   compounds into a doubled gap (~2 blank lines). Collapse it to a single blank
+   line so rendered posts match what the editor shows. */
+.post-content :where(p):has(> br:only-child) {
+    margin-block: 0;
+    line-height: 1.2;
+}
+
+.post-content :where(p):has(> br:only-child) + * {
+    margin-top: 0;
+}
+
 .feed-scroll-sentinel {
     --feed-scroll-offset: 18;
 }

@@ -1,0 +1,37 @@
+# Generated from app/services/deepl_translation_service.rb with RBS::Inline
+
+# 한국어 기사 결과물을 DeepL API(공식 deepl-rb 젬)로 일본어 번역한다.
+# 무료 한도 초과(HTTP 456)를 받으면 그 달 말까지 캐시 플래그로 DeepL 호출 자체를 막고
+# Failure(:quota_exceeded)를 반환해, 호출 측이 ArticleJapaneseAgent로 폴백하도록 한다.
+class DeeplTranslationService < OperationService
+  QUOTA_CACHE_KEY: ::String
+
+  SOURCE_LANG: ::String
+
+  TARGET_LANG: ::String
+
+  # : (Article article) -> Dry::Monads::Result
+  def call: (Article article) -> Dry::Monads::Result
+
+  # : (Article article) -> Dry::Monads::Result
+  def run_translation: (Article article) -> Dry::Monads::Result
+
+  # : (Array[String] texts, ?context: String?) -> Array[String]
+  def translate: (Array[String] texts, ?context: String?) -> Array[String]
+
+  # 기사 주제를 맥락으로 전달해 summary_key 등 짧은 텍스트의 용어·어조를 안정화한다.
+  # : (Article article) -> String
+  def translation_context: (Article article) -> String
+
+  private
+
+  # 한 번 한도를 넘기면 그 달 안에는 계속 456이므로, 월말까지 DeepL 호출을 막는다.
+  # : () -> bool
+  def quota_exceeded?: () -> bool
+
+  # : () -> void
+  def mark_quota_exceeded!: () -> void
+
+  # : () -> Float
+  def seconds_until_month_reset: () -> Float
+end

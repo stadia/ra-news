@@ -123,8 +123,8 @@ class PostTest < ActiveSupport::TestCase
     assert_not @root_post.comment?
   end
 
-  test "comment?는 post_type이 longform이면 false를 반환한다" do
-    assert_not posts(:longform_published).comment?
+  test "comment?는 post_type이 blog이면 false를 반환한다" do
+    assert_not posts(:blog_published).comment?
   end
 
   test "comment?는 article_id가 있어도 post_type이 comment가 아니면 false를 반환한다" do
@@ -176,7 +176,7 @@ class PostTest < ActiveSupport::TestCase
 
     assert_includes comments, @comment_post
     assert_not_includes comments, @root_post
-    assert_not_includes comments, posts(:longform_published)
+    assert_not_includes comments, posts(:blog_published)
     assert_not_includes comments, posts(:short_with_article)
   end
 
@@ -187,10 +187,10 @@ class PostTest < ActiveSupport::TestCase
     assert_not_includes standalone, @comment_post
   end
 
-  # ========== Longform / Enum Tests ==========
+  # ========== Blog / Enum Tests ==========
 
-  test "post_type enum은 short longform comment를 제공한다" do
-    assert_equal %w[short longform comment], Post.post_types.keys
+  test "post_type enum은 short blog comment를 제공한다" do
+    assert_equal %w[short blog comment], Post.post_types.keys
   end
 
   test "status enum은 draft published를 제공한다" do
@@ -218,27 +218,27 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "장문 초안은 제목만 있으면 저장할 수 있다" do
-    post = Post.new(title: "초안 제목", body: "", user: @user, post_type: :longform, status: :draft)
+    post = Post.new(title: "초안 제목", body: "", user: @user, post_type: :blog, status: :draft)
 
     assert_predicate post, :valid?, post.errors.full_messages.join(", ")
   end
 
   test "장문 초안은 본문만 있으면 저장할 수 있다" do
-    post = Post.new(title: "", body: "<p>초안 본문</p>", user: @user, post_type: :longform, status: :draft)
+    post = Post.new(title: "", body: "<p>초안 본문</p>", user: @user, post_type: :blog, status: :draft)
 
     assert_predicate post, :valid?, post.errors.full_messages.join(", ")
   end
 
   test "완전히 비어 있는 장문 초안은 유효하지 않다" do
-    post = Post.new(title: "", body: "", user: @user, post_type: :longform, status: :draft)
+    post = Post.new(title: "", body: "", user: @user, post_type: :blog, status: :draft)
 
     assert_not post.valid?
     assert_predicate post.errors[:base], :any?
   end
 
   test "발행 장문은 제목과 본문이 필요하다" do
-    missing_title = Post.new(body: "<p>본문</p>", user: @user, post_type: :longform, status: :published)
-    missing_body = Post.new(title: "제목", body: "", user: @user, post_type: :longform, status: :published)
+    missing_title = Post.new(body: "<p>본문</p>", user: @user, post_type: :blog, status: :published)
+    missing_body = Post.new(title: "제목", body: "", user: @user, post_type: :blog, status: :published)
 
     assert_not missing_title.valid?
     assert_predicate missing_title.errors[:title], :any?
@@ -246,19 +246,19 @@ class PostTest < ActiveSupport::TestCase
     assert_predicate missing_body.errors[:body], :any?
   end
 
-  test "published_longform 스코프는 발행된 장문만 반환한다" do
-    draft = posts(:longform_draft)
-    published = posts(:longform_published)
+  test "published_blog 스코프는 발행된 장문만 반환한다" do
+    draft = posts(:blog_draft)
+    published = posts(:blog_published)
 
-    assert_includes Post.published_longform, published
-    assert_not_includes Post.published_longform, draft
-    assert_not_includes Post.published_longform, @root_post
+    assert_includes Post.published_blog, published
+    assert_not_includes Post.published_blog, draft
+    assert_not_includes Post.published_blog, @root_post
   end
 
-  test "longform_summary는 HTML을 제거하고 앞부분을 반환한다" do
-    post = Post.new(body: "<p>Ruby <strong>Rails</strong> 장문입니다.</p>", user: @user, post_type: :longform)
+  test "blog_summary는 HTML을 제거하고 앞부분을 반환한다" do
+    post = Post.new(body: "<p>Ruby <strong>Rails</strong> 장문입니다.</p>", user: @user, post_type: :blog)
 
-    assert_equal "Ruby Rails 장문입니다.", post.longform_summary
+    assert_equal "Ruby Rails 장문입니다.", post.blog_summary
   end
 
   test "from_activitypub_object은 기사 답글을 comment 타입으로 지정한다" do
@@ -288,7 +288,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "발행된 장문을 discard하면 Delete 활동이 생성된다" do
-    published = posts(:longform_published)
+    published = posts(:blog_published)
 
     assert_difference -> { Federails::Activity.where(action: "Delete", entity: published).count }, 1 do
       published.discard!
@@ -296,7 +296,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "발행된 장문을 undiscard하면 Undo 활동이 생성된다" do
-    published = posts(:longform_published)
+    published = posts(:blog_published)
     published.discard!
 
     assert_difference -> { Federails::Activity.where(action: "Undo", entity: published).count }, 1 do
@@ -305,7 +305,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "초안 장문을 undiscard해도 Undo 활동이 생성되지 않는다" do
-    draft = posts(:longform_draft)
+    draft = posts(:blog_draft)
     draft.discard!
 
     assert_no_difference -> { Federails::Activity.where(action: "Undo").count } do
@@ -573,7 +573,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "to_activitypub_object는 장문을 요약과 제목과 원문 링크로 전달한다" do
-    post = posts(:longform_published)
+    post = posts(:blog_published)
 
     captured = nil
     Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
@@ -581,7 +581,7 @@ class PostTest < ActiveSupport::TestCase
     end
 
     assert_equal post, captured[:record]
-    assert_equal post.longform_summary, captured[:content]
+    assert_equal post.blog_summary, captured[:content]
     assert_equal post.title, captured[:name]
     assert_equal Rails.application.routes.url_helpers.post_url(post), captured[:custom]["url"]
   end
@@ -591,7 +591,7 @@ class PostTest < ActiveSupport::TestCase
       title: "실제 발행 장문",
       body: "<p>실제 발행되는 장문 본문입니다.</p>",
       user: @user,
-      post_type: :longform,
+      post_type: :blog,
       status: :published,
       published_at: Time.current
     )
@@ -599,7 +599,7 @@ class PostTest < ActiveSupport::TestCase
     note = post.to_activitypub_object
 
     assert_equal post.title, note["name"]
-    assert_equal post.longform_summary, note["content"]
+    assert_equal post.blog_summary, note["content"]
     assert_equal Rails.application.routes.url_helpers.post_url(post), note["url"]
   end
 
@@ -620,7 +620,7 @@ class PostTest < ActiveSupport::TestCase
   # 초안은 원격에 객체가 없으므로 첫 발행은 Create로 전달해야 한다. publish!는
   # save!가 일으키는 자동 Update를 억제하고 Create를 명시적으로 발행한다.
   test "publish!는 초안 첫 발행 시 Federails Create 활동을 발행한다" do
-    post = posts(:longform_draft)
+    post = posts(:blog_draft)
 
     assert_difference -> { Federails::Activity.where(action: "Create", entity: post).count }, 1 do
       assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
@@ -632,7 +632,7 @@ class PostTest < ActiveSupport::TestCase
   # 이미 Create를 발행한(원격에 객체가 존재하는) 글의 수정은 일반 Update 경로를
   # 유지한다. Create 승격은 Create 활동이 없는 최초 발행에만 적용된다.
   test "이미 Create가 발행된 글의 수정은 Update 경로를 유지한다" do
-    post = posts(:longform_published)
+    post = posts(:blog_published)
     Federails::Activity.create!(actor: federails_actors(:john_actor), entity: post, action: "Create")
     post.body = "수정된 본문"
 
@@ -645,7 +645,7 @@ class PostTest < ActiveSupport::TestCase
 
   # discard는 Discard::Model로 처리하고, after_discard에서 Delete를 발행한다.
   test "발행 장문을 discard하면 Delete 활동을 발행한다" do
-    post = posts(:longform_published)
+    post = posts(:blog_published)
 
     assert_difference -> { Federails::Activity.where(action: "Delete", entity: post).count }, 1 do
       post.discard
@@ -657,7 +657,7 @@ class PostTest < ActiveSupport::TestCase
   # soft_deleted_method: :discarded? 설정으로 삭제된 레코드는 federails_tombstoned?가
   # 참이 되어, deleted_at 갱신이 일으키는 일반 Update 활동은 억제된다.
   test "발행 장문을 discard하면 Update 활동은 발행하지 않는다" do
-    post = posts(:longform_published)
+    post = posts(:blog_published)
 
     assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
       post.discard
@@ -668,12 +668,12 @@ class PostTest < ActiveSupport::TestCase
   # 게이트하지 않으면 생성·자동저장마다 미발행 초안이 원격 팔로워에게 새어 나간다.
   test "장문 초안은 생성 시 연합 활동을 발행하지 않는다" do
     assert_no_difference -> { Federails::Activity.where(action: [ "Create", "Update" ]).count } do
-      @user.posts.create!(post_type: :longform, status: :draft, title: "비공개 초안", body: "")
+      @user.posts.create!(post_type: :blog, status: :draft, title: "비공개 초안", body: "")
     end
   end
 
   test "장문 초안은 자동저장(update) 시 연합 활동을 발행하지 않는다" do
-    draft = posts(:longform_draft)
+    draft = posts(:blog_draft)
 
     assert_no_difference -> { Federails::Activity.where(entity: draft).count } do
       draft.update!(title: "자동 저장됨", body: "<p>본문</p>")
@@ -681,7 +681,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "초안을 발행하면 그때 연합된다" do
-    draft = @user.posts.create!(post_type: :longform, status: :draft, title: "초안", body: "<p>본문</p>")
+    draft = @user.posts.create!(post_type: :blog, status: :draft, title: "초안", body: "<p>본문</p>")
 
     assert_difference -> { Federails::Activity.where(entity: draft).count }, 1 do
       draft.publish!
@@ -690,7 +690,7 @@ class PostTest < ActiveSupport::TestCase
 
   # 소프트 삭제는 장문 전용. 인바운드 연합 Delete도 타입별로 분기한다.
   test "인바운드 연합 삭제는 장문을 soft discard한다" do
-    post = posts(:longform_published)
+    post = posts(:blog_published)
 
     post.run_callbacks(:on_federails_delete_requested)
 

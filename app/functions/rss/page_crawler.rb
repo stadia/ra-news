@@ -28,23 +28,25 @@ module Rss
 
       #: (Array[Hash[Symbol, untyped]] attributes) -> Array[String]
       def collect_links(attributes)
-        links = []
-        attributes.each do |attr|
-          url = attr[:url].to_s.strip
-          next if url.blank? || url.downcase.end_with?("pdf")
+        attributes.flat_map { |attr| hrefs_from(attr) }
+      end
 
-          response = Faraday.get(url)
-          next unless response.status.between?(200, 299)
+      # 단일 attr에서 링크를 수집한다. 실패 시 빈 배열을 반환해 전체 크롤을 막지 않는다.
+      #: (Hash[Symbol, untyped] attr) -> Array[String]
+      def hrefs_from(attr)
+        url = attr[:url].to_s.strip
+        return [] if url.blank? || url.downcase.end_with?("pdf")
 
-          html_doc = Nokogiri::HTML5(response.body)
-          html_doc.css("a[href]").each do |a|
-            href = a["href"]
-            links << href if href.is_a?(String) && href.present?
-          end
-        rescue StandardError => e
-          logger.error "Error collecting links from #{url.presence || attr.inspect}: #{e.message}"
+        response = Faraday.get(url)
+        return [] unless response.status.between?(200, 299)
+
+        Nokogiri::HTML5(response.body).css("a[href]").filter_map do |a|
+          href = a["href"]
+          href if href.is_a?(String) && href.present?
         end
-        links
+      rescue StandardError => e
+        logger.error "Error collecting links from #{url.presence || attr.inspect}: #{e.message}"
+        []
       end
 
       #: (String link, Site site) -> void
