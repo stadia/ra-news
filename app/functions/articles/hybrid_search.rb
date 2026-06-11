@@ -49,15 +49,13 @@ module Articles
         "hybrid_search/embedding/#{EMBED_MODEL}/#{Digest::SHA256.hexdigest(term.downcase)}"
       end
 
-      # 후보 선정은 embedding의 HNSW 인덱스(vector_l2_ops)에 맞춰 euclidean 거리로 한다.
-      # cosine 인덱스가 아니므로 distance: "cosine"으로 바꾸면 인덱스를 타지 못해 느려진다.
-      # 임베딩 norm이 거의 일정해 L2 후보 순위와 cosine 순위는 사실상 동일하며,
-      # 정밀한 cosine 비교는 threshold_filter / rerank 단계에서 수행한다.
+      # 후보 선정은 embedding의 HNSW 인덱스(halfvec_cosine_ops)에 맞춰 cosine 거리로 한다.
+      # threshold_filter / rerank 도 cosine 기준이라 검색~필터~재랭킹이 동일 기준으로 일관된다.
       # RRF는 순위만 사용하므로 neighbor_distance 값 자체는 필요 없다.
       #: (Array[Float] qvec) -> Array[Integer]
       def vector_search(qvec)
         Article.kept.confirmed
-               .nearest_neighbors(:embedding, qvec, distance: "euclidean")
+               .nearest_neighbors(:embedding, qvec, distance: "cosine")
                .limit(CANDIDATE_POOL)
                .select(:id)
                .map(&:id)
