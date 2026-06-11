@@ -86,8 +86,8 @@ Articles::HybridSearch.call(query:, limit: 20, mmr: false) -> Array[Integer]  # 
 
 데이터 흐름:
 1. **정규화/가드** — `query` blank이면 `[]` 반환.
-2. **Embed** — 정규화 쿼리(`query.strip.downcase`)를 캐시 키로 Solid Cache 조회. 미스 시
-   `RubyLLM.embed(query, model: "gemini-embedding-001", dimensions: 1536).vectors.to_a` 후 `EMBED_CACHE_TTL`(12h) 저장.
+2. **Embed** — `query.strip`한 term의 `downcase`를 SHA256 해시한 값을 캐시 키로 Solid Cache 조회(키만 대소문자 무시). 미스 시
+   `RubyLLM.embed(term, model: "gemini-embedding-001", dimensions: 1536).vectors.to_a` 후 `EMBED_CACHE_TTL`(12h) 저장.
    API 실패/타임아웃 → 로그 경고 후 `embedding = nil` 로 진행(FTS 단독 폴백).
 3. **벡터 검색** — 임베딩이 있으면
    `Article.kept.confirmed.nearest_neighbors(:embedding, qvec, distance: "euclidean").limit(CANDIDATE_POOL)` → `[id, neighbor_distance]`.

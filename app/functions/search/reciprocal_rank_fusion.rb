@@ -27,7 +27,7 @@ module Search
         end
       end
 
-      scores.keys.sort_by { |id| [-scores[id], first_seen[id]] }
+      scores.keys.sort_by { |id| [ -scores[id], first_seen[id] ] }
     end
   end
 end

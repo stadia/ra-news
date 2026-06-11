@@ -23,12 +23,12 @@ module Articles
         vector_hits = qvec ? vector_search(qvec) : []
         fts_ids = fts_search(term)
 
-        fused = Search::ReciprocalRankFusion.call([vector_hits.map(&:first), fts_ids], k: RRF_K)
+        fused = Search::ReciprocalRankFusion.call([ vector_hits.map(&:first), fts_ids ], k: RRF_K)
         return fused.first(limit) if fused.empty? || qvec.nil?
 
         vectors = candidate_vectors(fused)
         kept = threshold_filter(fused, vectors, qvec, fts_ids)
-        ranked = mmr ? rerank(kept, vectors, qvec) : kept
+        ranked = mmr ? rerank(kept, vectors, qvec, limit) : kept
         ranked.first(limit)
       end
 
@@ -55,7 +55,7 @@ module Articles
                .nearest_neighbors(:embedding, qvec, distance: "euclidean")
                .limit(CANDIDATE_POOL)
                .select(:id)
-               .map { |a| [a.id, a.neighbor_distance] }
+               .map { |a| [ a.id, a.neighbor_distance ] }
       end
 
       #: (String term) -> Array[Integer]
@@ -67,7 +67,7 @@ module Articles
       def candidate_vectors(ids)
         Article.where(id: ids).where.not(embedding: nil)
                .pluck(:id, :embedding)
-               .to_h { |id, vec| [id, Array(vec).map(&:to_f)] }
+               .to_h { |id, vec| [ id, Array(vec).map(&:to_f) ] }
       end
 
       #: (Array[Integer] fused, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Array[Integer] fts_ids) -> Array[Integer]
@@ -81,15 +81,17 @@ module Articles
         end
       end
 
-      #: (Array[Integer] ids, Hash[Integer, Array[Float]] vectors, Array[Float] qvec) -> Array[Integer]
-      def rerank(ids, vectors, qvec)
+      # MMR은 limit 개까지만 선택하면 충분하다. no_vec(임베딩 없는 FTS 후보)는 항상 뒤에 붙고
+      # 호출부의 first(limit)이 절단하므로, MMR을 limit 으로 제한해도 결과는 동일하며 연산만 줄어든다.
+      #: (Array[Integer] ids, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Integer limit) -> Array[Integer]
+      def rerank(ids, vectors, qvec, limit)
         candidates = ids.filter_map do |id|
           vec = vectors[id]
           { id: id, vector: vec } if vec
         end
         no_vec = ids - candidates.map { |c| c[:id] }
         reranked = Search::MaximalMarginalRelevance.call(
-          query_vector: qvec, candidates: candidates, lambda: MMR_LAMBDA, limit: candidates.size
+          query_vector: qvec, candidates: candidates, lambda: MMR_LAMBDA, limit: limit
         )
         reranked + no_vec
       end
