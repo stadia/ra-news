@@ -1,0 +1,46 @@
+# Generated from app/controllers/blog_posts_controller.rb with RBS::Inline
+
+class BlogPostsController < ApplicationController
+  # Opens the editor for an unsaved draft. No row is created on entry — the
+  # first autosave (or publish) persists it via #create.
+  #
+  # The composer POSTs the in-progress body here so it stays out of the URL; we
+  # stash it in the session and redirect to the GET editor (Turbo follows the
+  # redirect and renders the page). Opening the editor directly (GET) carries
+  # over that stashed body once, then starts fresh.
+  def new: () -> untyped
+
+  def create: () -> untyped
+
+  def edit: () -> untyped
+
+  def update: () -> untyped
+
+  def publish: () -> untyped
+
+  def destroy: () -> untyped
+
+  def undiscard: () -> untyped
+
+  def destroy_permanently: () -> untyped
+
+  private
+
+  # The publish button on an unsaved draft submits to #create with a publish
+  # flag (HTML), so the draft is created and published in one request.
+  def publishing?: () -> untyped
+
+  # Tells the editor's autosave controller how to address the now-persisted
+  # draft: switch from POST #create to PATCH #update and target the publish
+  # route, all without a page reload.
+  def created_draft_payload: () -> untyped
+
+  # Discard adds no default scope, so undiscard/destroy_permanently must reach
+  # soft-deleted rows. Every other action operates on live content only, so
+  # restrict those to kept rows to avoid editing/publishing a trashed post.
+  def set_post: () -> untyped
+
+  def authorize_owner!: () -> untyped
+
+  def blog_post_params: () -> untyped
+end

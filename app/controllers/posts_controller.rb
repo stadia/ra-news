@@ -11,6 +11,7 @@ class PostsController < ApplicationController
 
   def show
     post = Post.includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).find_by!(slug: params[:id])
+    raise ActiveRecord::RecordNotFound unless viewable?(post)
     root = post.root
     @posts = build_thread(root)
     @liked_post_ids = current_user ? Like.liked_ids_for(liker: current_user, likeable_type: "Post", likeable_ids: @posts.map(&:id)) : []
@@ -55,8 +56,9 @@ class PostsController < ApplicationController
   private
 
   def create_article_comment
-    @post = @article.posts.build(article_comment_params)
-    @post.assign_attributes(user: current_user, post_type: :comment)
+    @post = @article.posts.build(article_comment_params.merge(post_type: :comment, status: :published))
+    @post.user = current_user
+    @post.published_at ||= Time.zone.now
 
     respond_to do |format|
       if @post.save
@@ -73,6 +75,9 @@ class PostsController < ApplicationController
 
   def create_standalone_post
     @post = current_user.posts.build(normalized_post_params)
+    @post.post_type = :short
+    @post.status = :published
+    @post.published_at ||= Time.current
 
     respond_to do |format|
       if @post.save
@@ -95,7 +100,17 @@ class PostsController < ApplicationController
   end
 
   def load_article_comments
-    @comments = @article.posts.includes(:user)
+    @comments = @article.posts.kept.includes(:user)
+  end
+
+  # A post is publicly viewable when it is visible (published & kept). The owner
+  # may also preview their own non-published (draft) post. Discarded posts are
+  # never served here — the owner reaches them only via the profile trash tab.
+  def viewable?(post)
+    return true if post.kept? && post.published?
+    return true if post.kept? && current_user && post.user == current_user
+
+    false
   end
 
   def article_comment_params
@@ -145,10 +160,10 @@ class PostsController < ApplicationController
     ids = [ root.id ]
     queue = [ root.id ]
     while queue.any?
-      children = Post.where(parent_id: queue).pluck(:id)
+      children = Post.kept.where(parent_id: queue).pluck(:id)
       ids.concat(children)
       queue = children
     end
-    Post.where(id: ids).includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).sort_by { |p| [ p.depth, p.created_at ] }
+    Post.kept.where(id: ids).includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).sort_by { |p| [ p.depth, p.created_at ] }
   end
 end

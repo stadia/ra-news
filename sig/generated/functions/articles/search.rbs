@@ -1,0 +1,20 @@
+# Generated from app/functions/articles/search.rb with RBS::Inline
+
+module Articles
+  module Search
+    # ── cosine_similarity ──────────────────────────────────────
+    # : (Array[Float]? a, Array[Float]? b) -> Float
+    def self.cosine_similarity: (Array[Float]? a, Array[Float]? b) -> Float
+
+    # 여러 순위 ID 리스트를 RRF 점수로 병합한다. 점수 정규화 없이 순위만 사용한다.
+    # score(id) = Σ_over_lists 1.0 / (k + rank), rank는 0부터.
+    # : (Array[Array[Integer]] ranked_lists, ?k: Integer) -> Array[Integer]
+    def self.fuse: (Array[Array[Integer]] ranked_lists, ?k: Integer) -> Array[Integer]
+
+    # ── rerank (Maximal Marginal Relevance) ────────────────────
+    # 관련도(쿼리 유사도)와 다양성(선택된 후보와의 비유사도)의 균형으로 재순위한다.
+    # 매 단계 argmax: λ·cos(query, d) − (1−λ)·max_{s∈selected} cos(d, s)
+    # : (query_vector: Array[Float], candidates: Array[Hash[Symbol, untyped]], lambda: Float, limit: Integer) -> Array[untyped]
+    def self.rerank: (query_vector: Array[Float], candidates: Array[Hash[Symbol, untyped]], lambda: Float, limit: Integer) -> Array[untyped]
+  end
+end

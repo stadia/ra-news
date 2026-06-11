@@ -35,10 +35,12 @@ _Quick reference — use `rails_get_model_details(model:"Name")` for live data w
   status: sent, failed
 - OauthAccount (table: oauth_accounts) — 1 assocs, 5 validations
   methods: user
-- Post (table: posts) — 10 assocs, 4 validations
+- Post (table: posts) — 10 assocs, 5 validations
   concerns: FederailsBoostable, FederailsLikeable, HtmlSanitizable
-  scopes: comments, standalone
-  methods: federation_actor_entity, should_federate?, to_activitypub_object, likes_count, boosts_count, comment?, reply, federation_reply_recipients, author_name, author_host, acts_as_nested_set_options, acts_as_nested_set_options?, add_custom_context, add_scope_conditions_to_options, after_move_to, all_tags_list, all_tags_list_on, all_tags_on, ancestors, announce!
+  scopes: comments, standalone, visible, published_blog
+  methods: federation_actor_entity, should_federate?, to_activitypub_object, likes_count, boosts_count, reply, federation_reply_recipients, author_name, author_host, acts_as_nested_set_options, acts_as_nested_set_options?, add_custom_context, add_scope_conditions_to_options, after_move_to, all_tags_list, all_tags_list_on, all_tags_on, ancestors, announce!, apply_remote_boost
+  post_type: short, blog, comment
+  status: draft, published
 - Preference (table: preferences) — 0 assocs, 2 validations
   methods: clear_cache
 - PushSubscription (table: push_subscriptions) — 1 assocs, 6 validations

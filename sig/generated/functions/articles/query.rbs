@@ -14,7 +14,14 @@ module Articles
 
     def self.tagged: (untyped keyword) -> untyped
 
-    private def self.index_scope: (untyped search) -> untyped
+    private def self.related_scope: () -> untyped
+
+    # API(JSON) 검색: 하이브리드로 관련 기사 후보 id 집합만 구한다.
+    # 정렬은 호출부(api/v1/articles#index)의 reorder(published_at desc)가 담당하므로
+    # in_order_of로 관련도 순위를 매기지 않는다 — keyset 페이지네이션 호환을 유지한다.
+    private def self.json_candidate_scope: (untyped search) -> untyped
+
+    private def self.hybrid_search_scope: (untyped search) -> untyped
 
     private def self.excluded_related_article_ids: (untyped scope) -> untyped
 

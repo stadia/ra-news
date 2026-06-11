@@ -33,7 +33,7 @@ comment_post:
   rgt: 8
   depth: 0
 
-longform_draft:
+blog_draft:
   title: "작성 중인 긴 글"
   body: "<p>초안 본문입니다.</p>"
   user: john
@@ -44,7 +44,7 @@ longform_draft:
   rgt: 10
   depth: 0
 
-longform_published:
+blog_published:
   title: "발행된 긴 글"
   body: "<p>발행된 장문 본문입니다. Ruby와 Rails에 대한 긴 글입니다.</p>"
   user: john

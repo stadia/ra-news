@@ -57,9 +57,10 @@ class SearchRelatedArticles < RubyLLM::Tool
   end
 
   def search_by_text(query, limit)
-    Article.kept.confirmed
-           .full_text_search_for(query)
-           .limit(limit)
+    ids = Articles::HybridSearch.run(query:, limit:, mmr: true)
+    return [] if ids.empty?
+
+    Article.kept.confirmed.where(id: ids).in_order_of(:id, ids)
            .select(:id, :title_ko, :slug, :summary_key)
            .map { format_result(it) }
   end

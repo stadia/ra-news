@@ -8,7 +8,17 @@ module OauthAccounts
     MIN_LENGTH = 2
     MAX_LENGTH = 30
 
+    # 콜백 처리 결과를 표현하는 불변 sum type.
+    # 기존 user와 매칭되면 SignIn, 신규면 CompleteSignup을 반환한다.
+    SignIn = Data.define(
+      :user #: User
+    )
+    CompleteSignup = Data.define(
+      :suggested_username #: String
+    )
+
     class << self
+      #: (auth: untyped, session: untyped) -> (SignIn | CompleteSignup)
       def handle_callback(auth:, session:)
         oauth_data = build_auth_result(auth:)
         user = match_user(
@@ -20,18 +30,15 @@ module OauthAccounts
         )
 
         if user
-          oauth_account = upsert_oauth_account(user:, oauth_data:)
+          upsert_oauth_account(user:, oauth_data:)
 
           session.delete(:oauth_signup)
-          return { type: :sign_in, user: user }
+          return SignIn.new(user:)
         end
 
         session[:oauth_signup] = oauth_data.slice(:provider, :uid, :email, :email_verified, :relay_email, :name, :raw_info).deep_stringify_keys
 
-        {
-          type: :complete_signup,
-          suggested_username: suggest_username(name: oauth_data[:name], email: oauth_data[:email])
-        }
+        CompleteSignup.new(suggested_username: suggest_username(name: oauth_data[:name], email: oauth_data[:email]))
       end
 
       def suggest_username(name:, email:)

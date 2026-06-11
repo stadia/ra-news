@@ -1,0 +1,6 @@
+ruby_article_doc:
+  searchable_type: Article
+  searchable_id: <%= ActiveRecord::FixtureSet.identify(:ruby_article) %>
+  content: "Ruby 3.4 brings exciting new features including improved performance and better syntax. Ruby 3.4의 주요 개선사항"
+  created_at: 2026-01-01 00:00:00 UTC
+  updated_at: 2026-01-01 00:00:00 UTC

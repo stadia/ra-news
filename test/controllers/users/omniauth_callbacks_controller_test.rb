@@ -7,7 +7,7 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
     Configs::GoogleOauth.stub(:configured?, true) do
       user = users(:john)
 
-      OauthAccounts::Callbacks.stub(:handle_callback, { type: :sign_in, user: user }) do
+      OauthAccounts::Callbacks.stub(:handle_callback, OauthAccounts::Callbacks::SignIn.new(user:)) do
         OmniAuth.config.test_mode = true
         OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(provider: "google_oauth2", uid: "google-123")
 
@@ -23,7 +23,7 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
 
   test "apple callback에서 signup completion 결과면 oauth signup으로 이동한다" do
     Configs::AppleOauth.stub(:configured?, true) do
-      OauthAccounts::Callbacks.stub(:handle_callback, { type: :complete_signup, suggested_username: "new_user" }) do
+      OauthAccounts::Callbacks.stub(:handle_callback, OauthAccounts::Callbacks::CompleteSignup.new(suggested_username: "new_user")) do
         OmniAuth.config.test_mode = true
         OmniAuth.config.mock_auth[:apple] = OmniAuth::AuthHash.new(provider: "apple", uid: "apple-123")
 
@@ -41,7 +41,7 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
     Configs::GithubOauth.stub(:configured?, true) do
       user = users(:john)
 
-      OauthAccounts::Callbacks.stub(:handle_callback, { type: :sign_in, user: user }) do
+      OauthAccounts::Callbacks.stub(:handle_callback, OauthAccounts::Callbacks::SignIn.new(user:)) do
         OmniAuth.config.test_mode = true
         OmniAuth.config.mock_auth[:github] = OmniAuth::AuthHash.new(provider: "github", uid: "github-123")
 

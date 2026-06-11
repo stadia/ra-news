@@ -52,9 +52,9 @@ class SocialController < ApplicationController
       session.delete("#{provider}_code_verifier")
       session.delete("#{provider}_state")
 
-      redirect_to madmin_social_index_path, notice: "OAuth 인증 성공! Access token이 저장되었습니다."
+      redirect_to madmin_social_index_path, notice: t("social.oauth.success")
     rescue OAuth2::Error => e
-      redirect_to madmin_social_index_path, alert: "OAuth 에러: #{e.message}"
+      redirect_to madmin_social_index_path, alert: t("social.oauth.error", message: e.message)
     end
   end
 

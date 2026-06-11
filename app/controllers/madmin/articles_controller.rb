@@ -44,8 +44,17 @@ module Madmin
 
     private
 
+    # Override: full_text_search_for 스코프(tsvector + bigm 인덱스)로
+    # Madmin 기본 LOWER(CAST(...)) LIKE 전체 스캔 검색을 대체한다.
+    # 기본 검색은 body, summary_body 같은 TOAST 컬럼까지 포함해 416ms+ 소요.
     def scoped_resources
-      super.includes(:site)
+      resources = resource.model.send(valid_scope)
+      resources = if search_term.present?
+                    resources.full_text_search_for(search_term).without_toast
+      else
+                    resources
+      end
+      resources.includes(:site).reorder(sort_column => sort_direction)
     end
 
     def resource_params

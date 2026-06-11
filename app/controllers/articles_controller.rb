@@ -24,7 +24,7 @@ class ArticlesController < ApplicationController
       return
     end
 
-    @pagy, @articles = pagy(Articles::Query.index_html(search).order(published_at: :desc))
+    @pagy, @articles = pagy(Articles::Query.index_html(search))
     render Views::Articles::Index.new(
       pagy: @pagy,
       articles: @articles,
@@ -135,17 +135,17 @@ class ArticlesController < ApplicationController
     respond_to do |format|
       if @article.save
         ArticleJob.perform_later(@article.id)
-        format.html { redirect_to article_path(@article), notice: "Article was successfully created." }
+        format.html { redirect_to article_path(@article), notice: t("articles.create.success") }
       else
         if @article.errors.details[:origin_url].any? { |e| e[:error] == :taken } && @article.errors.details[:url].any? { |e| e[:error] == :taken }
-          format.html { redirect_to article_path(existing_article), notice: "Article already exists." }
+          format.html { redirect_to article_path(existing_article), notice: t("articles.create.already_exists") }
         else
           format.html { render Views::Articles::New.new(article: @article), status: :unprocessable_entity }
         end
       end
     rescue ActiveRecord::RecordNotUnique => e
       logger.error e
-      format.html { redirect_to article_path(existing_article), notice: "Article already exists." }
+      format.html { redirect_to article_path(existing_article), notice: t("articles.create.already_exists") }
     end
   end
 

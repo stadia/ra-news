@@ -38,7 +38,8 @@ class ReplyNotificationJob < ApplicationJob
   end
 
   def build_body(reply_post)
-    "#{reply_post.author_name}: #{reply_post.body.to_s.truncate(80)}"
+    plain = Rails::Html::FullSanitizer.new.sanitize(reply_post.body.to_s).squish
+    "#{reply_post.author_name}: #{plain.truncate(80)}"
   end
 
   def notification_path(parent_post)

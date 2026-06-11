@@ -17,6 +17,7 @@ class Components::Profiles::ActivityTabs < Components::Base
         tab_link(t("profiles.activity_tabs.following"), user_profile_following_path(username: @user.username), :following) if own_profile?
         tab_link(t("profiles.activity_tabs.likes"), user_profile_likes_path(username: @user.username), :likes) if own_profile?
         tab_link(t("profiles.activity_tabs.boosts"), user_profile_boosts_path(username: @user.username), :boosts) if own_profile?
+        tab_link(t("profiles.activity_tabs.blog"), user_profile_blog_path(username: @user.username), :blog) if own_profile?
       end
     end
   end

@@ -162,9 +162,9 @@ class Search::ReciprocalRankFusionTest < ActiveSupport::TestCase
   end
 
   test "id appearing high in both lists ranks first" do
-    list_a = [1, 2, 3]
-    list_b = [3, 2, 1]
-    # id 2 is rank-1 in both; ids 1 and 3 are rank-0/rank-2 split -> 2 wins
+    list_a = [2, 1, 3]
+    list_b = [2, 3, 1]
+    # id 2 is rank-0 in both lists -> highest RRF score -> first
     assert_equal 2, Search::ReciprocalRankFusion.call([list_a, list_b]).first
   end
 
@@ -342,7 +342,9 @@ module Search
             else
               selected.map { |s| Search::VectorMath.cosine_similarity(c[:vector], s[:vector]) }.max
             end
-          (lambda * query_sim[c[:id]]) - ((1 - lambda) * diversity_penalty)
+          mmr_score = (lambda * query_sim[c[:id]]) - ((1 - lambda) * diversity_penalty)
+          # 동점 시 다양성(낮은 diversity_penalty) 우선 — 선택을 결정론적으로 만든다.
+          [mmr_score, -diversity_penalty]
         end
 
         selected << best

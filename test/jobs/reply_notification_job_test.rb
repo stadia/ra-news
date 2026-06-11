@@ -49,6 +49,33 @@ class ReplyNotificationJobTest < ActiveSupport::TestCase
     reply_post&.destroy
   end
 
+  test "푸시 본문에서 HTML 태그를 제거하고 평문으로 전달한다" do
+    reply_post = Post.create!(
+      body: %(<p><a href="https://ruby-news.dev/@jeff" class="u-url mention">@jeff</a> 안녕하세요</p>),
+      user: users(:jane),
+      article: @article,
+      parent: @parent_post
+    )
+
+    captured = {}
+    success_result = Struct.new(:success?, :failure).new(true, nil)
+    fake_service = Object.new
+    fake_service.define_singleton_method(:call) do |**kwargs|
+      captured[:body] = kwargs[:body]
+      success_result
+    end
+
+    PushNotificationService.stub(:new, -> { fake_service }) do
+      ReplyNotificationJob.perform_now(@parent_post.id, reply_post.id)
+    end
+
+    assert_includes captured[:body], "@jeff 안녕하세요"
+    refute_includes captured[:body], "<"
+    refute_includes captured[:body], "href"
+  ensure
+    reply_post&.destroy
+  end
+
   test "답글 작성자가 부모 댓글 작성자와 같으면 발송하지 않는다" do
     reply_post = Post.create!(
       body: "내가 단 답글",

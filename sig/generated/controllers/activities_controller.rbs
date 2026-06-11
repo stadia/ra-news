@@ -12,4 +12,10 @@ class ActivitiesController < ApplicationController
   private
 
   def pundit_user: () -> untyped
+
+  # Returns a hash of { post_id => Federails::Actor } for posts that landed in
+  # the feed because someone the current user follows (or the user themselves)
+  # boosted them. Posts authored by the current user or by a followed actor are
+  # excluded — they would have shown up regardless of any boost.
+  def boosters_for_attribution: (untyped posts, untyped actor, untyped following_actor_ids) -> untyped
 end

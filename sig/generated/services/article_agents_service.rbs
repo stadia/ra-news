@@ -19,6 +19,13 @@ class ArticleAgentsService < OperationService
   # : (Article article) -> Dry::Monads::Result
   def run_japanese: (Article article) -> Dry::Monads::Result
 
+  # DeepL을 우선 사용하고, 무료 한도 초과/오류/미설정 시 ArticleJapaneseAgent로 폴백한다.
+  # : (Article article) -> Hash[Symbol, untyped]
+  def japanese_translation: (Article article) -> Hash[Symbol, untyped]
+
+  # : (Article article) -> Hash[Symbol, untyped]
+  def japanese_via_agent: (Article article) -> Hash[Symbol, untyped]
+
   def run_thumbnail: (untyped article) -> untyped
 
   private
@@ -34,4 +41,12 @@ class ArticleAgentsService < OperationService
 
   # : (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
   def extract_humanized: (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
+
+  # 값이 Array일 때만 문자열 배열로 정규화한다. 그 외에는 nil(상위에서 compact 제거).
+  # : (untyped value) -> Array[String]?
+  def array_of_strings: (untyped value) -> Array[String]?
+
+  # 값이 Hash일 때만 값들을 문자열로 정규화한다. 그 외에는 nil(상위에서 compact 제거).
+  # : (untyped value) -> Hash[untyped, String]?
+  def hash_of_strings: (untyped value) -> Hash[untyped, String]?
 end

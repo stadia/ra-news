@@ -57,17 +57,17 @@ group :development, :test do
   gem "bundler-audit", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop", require: false
-  gem "rubocop-i18n", require: false
-  gem "rubocop-minitest", require: false
-  gem "rubocop-rails-omakase", require: false
-  gem "rubocop-rbs_inline", require: false
-  # gem "steep", require: false
   gem "dotenv-rails"
   gem "faker"
   gem "i18n-tasks", "~> 1.1.2"
   gem "minitest", "~> 6.0"
   gem "minitest-mock"
+  gem "rubocop", require: false
+  gem "rubocop-i18n", require: false
+  gem "rubocop-minitest", require: false
+  gem "rubocop-rails-omakase", require: false
+  gem "rubocop-rbs_inline", require: false
+  gem "steep", require: false
 
   # Quality gates
   gem "flog", require: false

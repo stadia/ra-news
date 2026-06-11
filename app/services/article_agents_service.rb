@@ -140,13 +140,12 @@ class ArticleAgentsService < OperationService
 
   #: (Hash[String, untyped] content) -> Hash[Symbol, untyped]
   def build_japanese_attrs(content)
-    result = {}
-    result[:title_ja] = content["title_ja"].to_s.strip if content["title_ja"].present?
-    result[:summary_key_ja] = content["summary_key_ja"].map(&:to_s).reject(&:blank?) if content["summary_key_ja"].is_a?(Array)
-    result[:summary_detail_ja] = content["summary_detail_ja"].transform_values(&:to_s) if content["summary_detail_ja"].is_a?(Hash)
-    body = content["summary_body_ja"].to_s.strip
-    result[:summary_body_ja] = body if body.present?
-    result
+    {
+      title_ja: content["title_ja"].to_s.strip.presence,
+      summary_key_ja: array_of_strings(content["summary_key_ja"]),
+      summary_detail_ja: hash_of_strings(content["summary_detail_ja"]),
+      summary_body_ja: content["summary_body_ja"].to_s.strip.presence
+    }.compact
   end
 
   #: (Article article) -> String
@@ -215,11 +214,26 @@ class ArticleAgentsService < OperationService
     return {} if content.blank?
     return {} if content["over_polish_aborted"]
 
-    result = {}
-    result[:summary_key] = content["summary_key"].map(&:to_s).reject(&:blank?) if content["summary_key"].is_a?(Array)
-    result[:summary_detail] = content["summary_detail"].transform_values(&:to_s) if content["summary_detail"].is_a?(Hash)
-    body = content["summary_body"].to_s.strip
-    result[:summary_body] = body if body.present?
-    result
+    {
+      summary_key: array_of_strings(content["summary_key"]),
+      summary_detail: hash_of_strings(content["summary_detail"]),
+      summary_body: content["summary_body"].to_s.strip.presence
+    }.compact
+  end
+
+  # 값이 Array일 때만 문자열 배열로 정규화한다. 그 외에는 nil(상위에서 compact 제거).
+  #: (untyped value) -> Array[String]?
+  def array_of_strings(value)
+    return unless value.is_a?(Array)
+
+    value.map(&:to_s).reject(&:blank?)
+  end
+
+  # 값이 Hash일 때만 값들을 문자열로 정규화한다. 그 외에는 nil(상위에서 compact 제거).
+  #: (untyped value) -> Hash[untyped, String]?
+  def hash_of_strings(value)
+    return unless value.is_a?(Hash)
+
+    value.transform_values(&:to_s)
   end
 end
