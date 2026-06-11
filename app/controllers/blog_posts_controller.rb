@@ -15,15 +15,19 @@ class BlogPostsController < ApplicationController
   # over that stashed body once, then starts fresh.
   def new
     if request.post?
-      session[:blog_draft_body] = params.dig(:post, :body).to_s
-      return redirect_to new_blog_post_path, status: :see_other
+      draft_key = SecureRandom.hex(8)
+      session[:blog_draft_bodies] ||= {}
+      session[:blog_draft_bodies][draft_key] = params.dig(:post, :body).to_s
+      return redirect_to new_blog_post_path(draft_key: draft_key), status: :see_other
     end
 
+    draft_bodies = session[:blog_draft_bodies] || {}
     @post = current_user.posts.new(
       post_type: :blog,
       status: :draft,
-      body: session.delete(:blog_draft_body).to_s
+      body: draft_bodies.delete(params[:draft_key]).to_s
     )
+    session[:blog_draft_bodies] = draft_bodies
     render Views::BlogPosts::Edit.new(post: @post)
   end
 

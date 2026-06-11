@@ -32,11 +32,12 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     assert_no_difference -> { Post.blog.count } do
-      # POST keeps the body out of the URL; #new stashes it and redirects to the
+      # POST keeps the body out of the URL; #new stashes it with a per-request
+      # nonce so concurrent tabs don't clobber each other, then redirects to the
       # GET editor, which prefills it.
       post new_blog_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
 
-      assert_redirected_to new_blog_post_path
+      assert_response :see_other
       follow_redirect!
     end
 
