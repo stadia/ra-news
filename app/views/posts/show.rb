@@ -13,7 +13,7 @@ class Views::Posts::Show < Views::Base
   end
 
   def view_template
-    content_for :title, t("posts.show.title")
+    content_for :title, page_title
 
     div(class: "max-w-2xl mx-auto space-y-4") do
       back_link
@@ -22,6 +22,13 @@ class Views::Posts::Show < Views::Base
   end
 
   private
+
+  def page_title
+    root = @posts.first
+    return root.title if root&.blog? && root.title.present?
+
+    t("posts.show.title")
+  end
 
   def back_link
     div(class: "mb-2") do
