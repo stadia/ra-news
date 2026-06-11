@@ -20,10 +20,10 @@ module Articles
         return [] if term.blank?
 
         qvec = query_embedding(term)
-        vector_hits = qvec ? vector_search(qvec) : []
+        vector_ids = qvec ? vector_search(qvec) : []
         fts_ids = fts_search(term)
 
-        fused = Articles::Search.fuse([ vector_hits.map(&:first), fts_ids ], k: RRF_K)
+        fused = Articles::Search.fuse([ vector_ids, fts_ids ], k: RRF_K)
         return fused.first(limit) if fused.empty? || qvec.nil?
 
         vectors = candidate_vectors(fused)
@@ -49,13 +49,18 @@ module Articles
         "hybrid_search/embedding/#{EMBED_MODEL}/#{Digest::SHA256.hexdigest(term.downcase)}"
       end
 
-      #: (Array[Float] qvec) -> Array[[Integer, Float]]
+      # 후보 선정은 embedding의 HNSW 인덱스(vector_l2_ops)에 맞춰 euclidean 거리로 한다.
+      # cosine 인덱스가 아니므로 distance: "cosine"으로 바꾸면 인덱스를 타지 못해 느려진다.
+      # 임베딩 norm이 거의 일정해 L2 후보 순위와 cosine 순위는 사실상 동일하며,
+      # 정밀한 cosine 비교는 threshold_filter / rerank 단계에서 수행한다.
+      # RRF는 순위만 사용하므로 neighbor_distance 값 자체는 필요 없다.
+      #: (Array[Float] qvec) -> Array[Integer]
       def vector_search(qvec)
         Article.kept.confirmed
                .nearest_neighbors(:embedding, qvec, distance: "euclidean")
                .limit(CANDIDATE_POOL)
                .select(:id)
-               .map { |a| [ a.id, a.neighbor_distance ] }
+               .map(&:id)
       end
 
       #: (String term) -> Array[Integer]
