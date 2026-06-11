@@ -10,7 +10,7 @@ module Articles
     COSINE_THRESHOLD = 0.6
     MMR_LAMBDA = 0.7
     EMBED_CACHE_TTL = 12.hours
-    EMBED_MODEL = "gemini-embedding-001"
+    EMBED_MODEL = "gemini-embedding-2"
     EMBED_DIMENSIONS = 1536
 
     class << self

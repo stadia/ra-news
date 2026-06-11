@@ -77,8 +77,8 @@ class ArticleThumbnailJob < ApplicationJob
     prompt = build_prompt(summary_key)
     message = ArticleImageAgent.new.ask(prompt)
 
-    attachment = message.content.is_a?(Hash) ? message.content[:attachments]&.first : nil
-    if attachment.blank?
+    attachment = extract_image_attachment(message.content)
+    if attachment.nil?
       logger.warn "ArticleThumbnailJob failed: no image generated for article #{article.id} (content=#{message.content.inspect.truncate(200)})"
       return
     end
@@ -90,6 +90,13 @@ class ArticleThumbnailJob < ApplicationJob
       content_type: attachment.mime_type
     )
     logger.info "ArticleThumbnailJob attached ai thumbnail for article #{article.id}"
+  end
+
+  #: (untyped content) -> RubyLLM::Attachment?
+  def extract_image_attachment(content)
+    return nil unless content.respond_to?(:attachments)
+
+    content.attachments.find(&:image?) || content.attachments.first
   end
 
   #: (Array[String] summary_key) -> String
