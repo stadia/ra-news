@@ -1,0 +1,17 @@
+# lefthook.yml
+pre-commit:
+  # rubocop(stage_fixed)과 rbs(git add)가 동시에 인덱스를 수정하면
+  # .git/index.lock 경합이 발생할 수 있어 순차 실행한다.
+  parallel: false
+  commands:
+    # 스테이징한 .rb 파일만 자동 수정하고, 수정 결과를 이번 커밋에 포함한다.
+    rubocop:
+      glob: "*.{rb,rake,gemspec}"
+      run: bundle exec rubocop -A {staged_files}
+      stage_fixed: true
+    # 인라인 RBS를 생성하고, 생성/변경된 시그니처를 이번 커밋에 포함한다.
+    # stage_fixed는 기존 스테이징 파일의 수정만 다시 스테이징하므로,
+    # 신규 .rb에 대해 새로 생성되는 .rbs 파일은 누락된다.
+    # 따라서 생성 후 sig/generated 전체를 명시적으로 스테이징한다.
+    rbs:
+      run: rbs-inline --output app && git add sig/generated

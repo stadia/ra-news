@@ -78,6 +78,8 @@ en:
     show:
       author: Author
       conclusion_heading: Conclusion
+      copy_markdown: Copy Markdown
+      copy_markdown_done: Copied
       date_format: "%B %d, %Y"
       intro_heading: Introduction
       not_available: N/A
