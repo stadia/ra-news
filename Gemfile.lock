@@ -582,7 +582,7 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     rexml (3.4.4)
-    rss (0.3.2)
+    rss (0.3.3)
       rexml
     rubocop (1.87.0)
       json (~> 2.3)
