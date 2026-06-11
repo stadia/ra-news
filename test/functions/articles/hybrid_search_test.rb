@@ -39,7 +39,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
 
   test "returns FTS matches when embedding succeeds but no article embeddings exist" do
     Rails.cache.clear
-    stub_embed(Array.new(1536, 0.0).tap { |v| v[0] = 1.0 }) do
+    stub_embed(Array.new(Articles::HybridSearch::EMBED_DIMENSIONS, 0.0).tap { |v| v[0] = 1.0 }) do
       ids = Articles::HybridSearch.run(query: "Ruby")
 
       assert_includes ids, articles(:ruby_article).id
@@ -49,7 +49,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
   test "vector-matched article surfaces via embedding similarity" do
     Rails.cache.clear
     target = articles(:ruby_article)
-    qvec = Array.new(1536, 0.0)
+    qvec = Array.new(Articles::HybridSearch::EMBED_DIMENSIONS, 0.0)
     qvec[0] = 1.0
     target.update_column(:embedding, qvec)
 
@@ -65,7 +65,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
     calls = 0
     embed = lambda do |*|
       calls += 1
-      EmbedResult.new(Array.new(1536, 0.0).tap { |v| v[0] = 1.0 })
+      EmbedResult.new(Array.new(Articles::HybridSearch::EMBED_DIMENSIONS, 0.0).tap { |v| v[0] = 1.0 })
     end
     RubyLLM.stub(:embed, embed) do
       Articles::HybridSearch.run(query: "CacheTerm")
@@ -77,13 +77,13 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
 
   test "excludes vector-only candidate below cosine threshold while keeping aligned one" do
     Rails.cache.clear
-    qvec = Array.new(1536, 0.0)
+    qvec = Array.new(Articles::HybridSearch::EMBED_DIMENSIONS, 0.0)
     qvec[0] = 1.0
 
     aligned = articles(:ruby_article)
     aligned.update_column(:embedding, qvec)
 
-    orthogonal_vec = Array.new(1536, 0.0)
+    orthogonal_vec = Array.new(Articles::HybridSearch::EMBED_DIMENSIONS, 0.0)
     orthogonal_vec[1] = 1.0
     orthogonal = articles(:korean_content_article)
     orthogonal.update_column(:embedding, orthogonal_vec)
@@ -99,7 +99,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
 
   test "mmr reranking path returns aligned article without error" do
     Rails.cache.clear
-    qvec = Array.new(1536, 0.0)
+    qvec = Array.new(Articles::HybridSearch::EMBED_DIMENSIONS, 0.0)
     qvec[0] = 1.0
 
     target = articles(:ruby_article)

@@ -11,7 +11,7 @@ module Articles
     MMR_LAMBDA = 0.7
     EMBED_CACHE_TTL = 12.hours
     EMBED_MODEL = "gemini-embedding-2"
-    EMBED_DIMENSIONS = 1536
+    EMBED_DIMENSIONS = 3072
 
     class << self
       #: (query: String, ?limit: Integer, ?mmr: bool) -> Array[Integer]
