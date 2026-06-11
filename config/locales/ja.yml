@@ -268,6 +268,7 @@ ja:
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
+      boosted_by: "%{name}さんがブースト"
       linked_article: 関連記事
       reply_to: "%{name}さんへの返信"
       unknown_author: 不明

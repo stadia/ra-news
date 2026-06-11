@@ -268,6 +268,7 @@ ko:
       errors:
         blank_draft: 제목이나 본문 중 하나는 입력해야 합니다.
     post_card:
+      boosted_by: "%{name}님이 부스트함"
       linked_article: 연결된 기사
       reply_to: "%{name}님에게 답글"
       unknown_author: 알 수 없음

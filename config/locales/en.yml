@@ -268,6 +268,7 @@ en:
       errors:
         blank_draft: Enter a title or body before saving this draft.
     post_card:
+      boosted_by: Boosted by %{name}
       linked_article: Linked article
       reply_to: Reply to %{name}
       unknown_author: Unknown
