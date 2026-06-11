@@ -19,6 +19,9 @@ class ArticleThumbnailJob < ApplicationJob
   # : (Article article) -> void
   def generate_ai_thumbnail: (Article article) -> void
 
+  # : (untyped content) -> RubyLLM::Attachment?
+  def extract_image_attachment: (untyped content) -> RubyLLM::Attachment?
+
   # : (Array[String] summary_key) -> String
   def build_prompt: (Array[String] summary_key) -> String
 end
