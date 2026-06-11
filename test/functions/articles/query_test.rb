@@ -6,20 +6,20 @@ class Articles::QueryTest < ActiveSupport::TestCase
   test "search branch returns articles in hybrid rank order" do
     a = articles(:ruby_article)
     b = articles(:korean_content_article)
-    Articles::HybridSearch.stub(:search, [b.id, a.id]) do
+    Articles::HybridSearch.stub(:run, [b.id, a.id]) do
       result = Articles::Query.index_html("Ruby")
       assert_equal [b.id, a.id], result.map(&:id)
     end
   end
 
   test "index_json search uses FTS and does not call HybridSearch" do
-    Articles::HybridSearch.stub(:search, ->(*) { raise "should not be called" }) do
+    Articles::HybridSearch.stub(:run, ->(*) { raise "should not be called" }) do
       assert_nothing_raised { Articles::Query.index_json("Ruby").to_a }
     end
   end
 
   test "search branch with empty hybrid result is an empty relation" do
-    Articles::HybridSearch.stub(:search, []) do
+    Articles::HybridSearch.stub(:run, []) do
       assert_empty Articles::Query.index_html("nope").to_a
     end
   end

@@ -15,7 +15,7 @@ module Articles
 
     class << self
       #: (query: String, ?limit: Integer, ?mmr: bool) -> Array[Integer]
-      def search(query:, limit: 20, mmr: false)
+      def run(query:, limit: 20, mmr: false)
         term = query.to_s.strip
         return [] if term.blank?
 

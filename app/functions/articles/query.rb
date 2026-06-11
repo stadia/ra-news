@@ -41,7 +41,7 @@ module Articles
 
       def hybrid_search_scope(search)
         page_size = Pagy::DEFAULT[:items] || 10
-        ids = Articles::HybridSearch.search(query: search, limit: page_size * PAGE_FACTOR)
+        ids = Articles::HybridSearch.run(query: search, limit: page_size * PAGE_FACTOR)
         return base_scope.none if ids.empty?
 
         base_scope.where(id: ids).in_order_of(:id, ids)
