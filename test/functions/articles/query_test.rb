@@ -6,9 +6,10 @@ class Articles::QueryTest < ActiveSupport::TestCase
   test "search branch returns articles in hybrid rank order" do
     a = articles(:ruby_article)
     b = articles(:korean_content_article)
-    Articles::HybridSearch.stub(:run, [b.id, a.id]) do
+    Articles::HybridSearch.stub(:run, [ b.id, a.id ]) do
       result = Articles::Query.index_html("Ruby")
-      assert_equal [b.id, a.id], result.map(&:id)
+
+      assert_equal [ b.id, a.id ], result.map(&:id)
     end
   end
 
@@ -27,6 +28,7 @@ class Articles::QueryTest < ActiveSupport::TestCase
   test "non-search branch is ordered by published_at desc" do
     result = Articles::Query.index_html(nil).to_a
     published = result.map(&:published_at).compact
+
     assert_equal published.sort.reverse, published
   end
 end

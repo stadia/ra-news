@@ -32,6 +32,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
   test "falls back to FTS-only ids when embedding fails" do
     RubyLLM.stub(:embed, ->(*) { raise StandardError, "api down" }) do
       ids = Articles::HybridSearch.run(query: "Ruby")
+
       assert_includes ids, articles(:ruby_article).id
     end
   end
@@ -40,6 +41,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
     Rails.cache.clear
     stub_embed(Array.new(1536, 0.0).tap { |v| v[0] = 1.0 }) do
       ids = Articles::HybridSearch.run(query: "Ruby")
+
       assert_includes ids, articles(:ruby_article).id
     end
   end
@@ -53,6 +55,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
 
     stub_embed(qvec) do
       ids = Articles::HybridSearch.run(query: "zzznontextmatch")
+
       assert_includes ids, target.id
     end
   end
@@ -68,6 +71,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
       Articles::HybridSearch.run(query: "CacheTerm")
       Articles::HybridSearch.run(query: "CacheTerm")
     end
+
     assert_equal 1, calls
   end
 
@@ -87,6 +91,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
     # Query term does not FTS-match either article, so survival depends on cosine threshold.
     stub_embed(qvec) do
       ids = Articles::HybridSearch.run(query: "zzznontextmatch")
+
       assert_includes ids, aligned.id
       assert_not_includes ids, orthogonal.id
     end
@@ -102,6 +107,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
 
     stub_embed(qvec) do
       ids = Articles::HybridSearch.run(query: "Ruby", mmr: true)
+
       assert_includes ids, target.id
     end
   end
