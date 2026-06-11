@@ -23,7 +23,7 @@ module Articles
         vector_hits = qvec ? vector_search(qvec) : []
         fts_ids = fts_search(term)
 
-        fused = Search::ReciprocalRankFusion.fuse([ vector_hits.map(&:first), fts_ids ], k: RRF_K)
+        fused = Search.fuse([ vector_hits.map(&:first), fts_ids ], k: RRF_K)
         return fused.first(limit) if fused.empty? || qvec.nil?
 
         vectors = candidate_vectors(fused)
@@ -77,7 +77,7 @@ module Articles
           next true if fts_set.include?(id)
 
           vec = vectors[id]
-          vec && Search::VectorMath.cosine_similarity(qvec, vec) >= COSINE_THRESHOLD
+          vec && Search.cosine_similarity(qvec, vec) >= COSINE_THRESHOLD
         end
       end
 
@@ -90,7 +90,7 @@ module Articles
           { id: id, vector: vec } if vec
         end
         no_vec = ids - candidates.map { |c| c[:id] }
-        reranked = Search::MaximalMarginalRelevance.rerank(
+        reranked = Search.rerank(
           query_vector: qvec, candidates: candidates, lambda: MMR_LAMBDA, limit: limit
         )
         reranked + no_vec
