@@ -13,9 +13,27 @@ class Articles::QueryTest < ActiveSupport::TestCase
     end
   end
 
-  test "index_json search uses FTS and does not call HybridSearch" do
-    Articles::HybridSearch.stub(:run, ->(*) { raise "should not be called" }) do
-      assert_nothing_raised { Articles::Query.index_json("Ruby").to_a }
+  test "index_json search delegates candidate set to HybridSearch" do
+    called = false
+    Articles::HybridSearch.stub(:run, ->(**) { called = true; [] }) do
+      Articles::Query.index_json("Ruby").to_a
+    end
+
+    assert called, "index_json should source its candidate set from HybridSearch"
+  end
+
+  test "index_json search returns the hybrid candidate set" do
+    a = articles(:ruby_article)
+    Articles::HybridSearch.stub(:run, [ a.id ]) do
+      result = Articles::Query.index_json("Ruby")
+
+      assert_includes result.map(&:id), a.id
+    end
+  end
+
+  test "index_json search with empty hybrid result is an empty relation" do
+    Articles::HybridSearch.stub(:run, []) do
+      assert_empty Articles::Query.index_json("nope").to_a
     end
   end
 
