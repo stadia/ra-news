@@ -5,11 +5,13 @@ module Articles
   module HybridSearch
     extend FunctionLogger
 
-    CANDIDATE_POOL = 100
-    RRF_K = 60
-    COSINE_THRESHOLD = 0.6
-    MMR_LAMBDA = 0.7
-    EMBED_CACHE_TTL = 12.hours
+    config = Rails.application.config_for(:hybrid_search)
+
+    CANDIDATE_POOL = config.fetch(:candidate_pool, 100)
+    RRF_K = config.fetch(:rrf_k, 60)
+    COSINE_THRESHOLD = config.fetch(:cosine_threshold, 0.6)
+    MMR_LAMBDA = config.fetch(:mmr_lambda, 0.7)
+    EMBED_CACHE_TTL = config.fetch(:embed_cache_ttl, 43200).seconds
     EMBED_MODEL = "gemini-embedding-001"
     EMBED_DIMENSIONS = 1536
 

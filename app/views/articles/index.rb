@@ -3,7 +3,7 @@
 class Views::Articles::Index < Views::Base
   include Phlex::Rails::Helpers::ContentFor
 
-  def initialize(pagy: nil, articles: [], sidebar_tags: [], search: nil, source: :ruby_news, liked_article_ids: [], boosted_article_ids: [])
+  def initialize(pagy: nil, articles: [], sidebar_tags: [], search: nil, source: :ruby_news, liked_article_ids: [], boosted_article_ids: [], suggestions: [])
     @pagy = pagy
     @articles = articles
     @sidebar_tags = sidebar_tags
@@ -11,6 +11,7 @@ class Views::Articles::Index < Views::Base
     @source = source
     @liked_article_ids = liked_article_ids
     @boosted_article_ids = boosted_article_ids
+    @suggestions = suggestions
   end
 
   def view_template
@@ -43,6 +44,18 @@ class Views::Articles::Index < Views::Base
         end
 
         div(id: "articlesList", class: "space-y-6 lg:space-y-8") do
+          if @articles.empty? && @suggestions.any?
+            div(class: "rounded-lg border border-border p-6") do
+              p(class: "text-content-secondary mb-3") { t("articles.index.no_results") }
+              p(class: "text-sm text-content-secondary") do
+                plain t("articles.index.try_searching")
+                @suggestions.each do |suggestion|
+                  render Components::Articles::SearchSuggestion.new(query: suggestion, search: @search)
+                end
+              end
+            end
+          end
+
           @articles.each do |article|
             render Components::Articles::Article.new(
               article: article,

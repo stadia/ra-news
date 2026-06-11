@@ -56,7 +56,9 @@ en:
         loading: Loading Google search results.
       heading: Past Articles
       item_list_name: Ruby-News Past Articles
+      no_results: No results found.
       search_source: Search source
+      try_searching: "Try searching for:"
       tabs:
         google: Google
         ruby_news: Ruby-News

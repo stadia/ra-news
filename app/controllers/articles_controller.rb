@@ -25,6 +25,11 @@ class ArticlesController < ApplicationController
     end
 
     @pagy, @articles = pagy(Articles::Query.index_html(search))
+    @suggestions = if @articles.empty? && search.present?
+                     Articles::SearchSuggestions.suggest(search)
+                   else
+                     []
+                   end
     render Views::Articles::Index.new(
       pagy: @pagy,
       articles: @articles,
@@ -32,7 +37,8 @@ class ArticlesController < ApplicationController
       search: search,
       source: source,
       liked_article_ids: liked_article_ids(@articles),
-      boosted_article_ids: boosted_article_ids(@articles)
+      boosted_article_ids: boosted_article_ids(@articles),
+      suggestions: @suggestions
     )
   end
 
