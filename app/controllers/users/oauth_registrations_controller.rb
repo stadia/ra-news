@@ -24,16 +24,16 @@ class Users::OauthRegistrationsController < ApplicationController
       signup_host: safe_signup_host
     )
 
-    if result[:success]
+    if result.success?
       session.delete(:oauth_signup)
-      if result[:user].active_for_authentication?
-        sign_in(:user, result[:user])
+      if result.user.active_for_authentication?
+        sign_in(:user, result.user)
         redirect_to root_path, notice: t("devise.omniauth_callbacks.success", kind: oauth_signup["provider"].to_s.humanize)
       else
         redirect_to new_user_session_path, notice: t("devise.registrations.signed_up_but_unconfirmed")
       end
     else
-      @user = result[:user]
+      @user = result.user
       render Views::Users::OauthSignup.new(user: @user, email: oauth_signup["email"], name: oauth_signup["name"]), status: :unprocessable_entity
     end
   end

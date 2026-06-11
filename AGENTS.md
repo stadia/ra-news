@@ -195,6 +195,10 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
   - **`module_function` 유틸리티의 위치는 `app/functions/`다.** `app/services/`는 상태를 가진 서비스 객체, `OperationService` 상속 객체, 또는 인스턴스 기반 협력 객체에만 사용한다. 단순 함수성 모듈을 습관적으로 `services` 아래 두지 않는다.
   - **함수 모듈 이름에 불필요한 `_service` postfix를 붙이지 않는다.** 함수 모듈은 `RegistrationService`, `CallbackService`보다 `Registration`, `Callbacks`, `UserMatcher`처럼 역할이 바로 드러나는 이름을 사용한다.
   - **함수 모듈의 진입점 이름을 무조건 `call`로 짓지 않는다.** `call`은 서비스 객체 관용구에 가깝다. `app/functions/` 아래의 함수 모듈은 `match_user`, `suggest_username`, `build_auth_result`, `register_user`처럼 도메인 의미가 드러나는 메서드명을 우선 사용한다.
+- **여러 값을 묶어 반환·전달할 때는 untyped Hash 대신 불변 값 객체(`Data.define`)를 쓴다.**
+  - `{ success: ..., user: ... }`처럼 결과를 Hash로 반환하지 않는다. `Result = Data.define(:success, :user)`로 정의해 오타 시 `nil` 대신 `NoMethodError`가 나도록 하고, 불변성·값 동등성을 확보한다.
+  - bool 필드는 `success?`처럼 술어 메서드를 블록으로 함께 정의해 호출부에서 `result.success?`로 읽히게 한다.
+  - 가변 상태가 필요 없는 데이터 묶음에는 `Struct`보다 `Data`(불변)를 우선한다. Success/Failure 모나드는 도입하지 않는다(실패는 가드절·예외로 처리).
 
 ## 도구 사용 규칙
 

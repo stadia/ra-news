@@ -5,7 +5,14 @@ module OauthAccounts
   module Registration
     extend FunctionLogger
 
+    # 등록 결과를 담는 불변 값 객체.
+    Result = Data.define(:success, :user) do
+      #: () -> bool
+      def success? = success
+    end
+
     class << self
+      #: (session_data: untyped, username: String, locale: String, signup_host: String) -> Result
       def register_user(session_data:, username:, locale:, signup_host:)
         payload = session_data.with_indifferent_access
         user = build_user(payload:, username:, locale:, signup_host:)
@@ -22,15 +29,15 @@ module OauthAccounts
           )
         end
 
-        { success: true, user: user }
+        Result.new(success: true, user:)
       rescue ActiveRecord::RecordInvalid => e
         unless e.record.is_a?(User)
           user.errors.add(:base, e.record.errors.full_messages.to_sentence)
         end
-        { success: false, user: user }
+        Result.new(success: false, user:)
       rescue ActiveRecord::RecordNotUnique
         user.errors.add(:base, I18n.t("users.oauth_signup.duplicate_account", default: "이미 연결된 OAuth 계정입니다."))
-        { success: false, user: user }
+        Result.new(success: false, user:)
       end
 
       private
