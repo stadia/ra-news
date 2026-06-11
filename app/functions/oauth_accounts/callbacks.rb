@@ -10,8 +10,12 @@ module OauthAccounts
 
     # 콜백 처리 결과를 표현하는 불변 sum type.
     # 기존 user와 매칭되면 SignIn, 신규면 CompleteSignup을 반환한다.
-    SignIn = Data.define(:user)
-    CompleteSignup = Data.define(:suggested_username)
+    SignIn = Data.define(
+      :user #: User
+    )
+    CompleteSignup = Data.define(
+      :suggested_username #: String
+    )
 
     class << self
       #: (auth: untyped, session: untyped) -> (SignIn | CompleteSignup)
