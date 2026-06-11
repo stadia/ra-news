@@ -56,7 +56,7 @@ class PostsController < ApplicationController
 
   def create_article_comment
     @post = @article.posts.build(article_comment_params)
-    @post.user = current_user
+    @post.assign_attributes(user: current_user, post_type: :comment)
 
     respond_to do |format|
       if @post.save

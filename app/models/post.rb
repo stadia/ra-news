@@ -55,6 +55,7 @@ class Post < ApplicationRecord
   skip_callback :validate, :before, federails_actor_presence_validator if federails_actor_presence_validator
 
   # ── Callbacks ────────────────────────────────────────────────────────
+  before_validation :type_article_post_as_comment, on: :create
   after_commit :enqueue_reply_notification, on: :create
   after_commit :enqueue_article_thumbnail, on: :create
 
@@ -176,6 +177,18 @@ class Post < ApplicationRecord
     end
 
     super(action, actor: actor, to: to, cc: cc)
+  end
+
+  # Posts attached to an article are comments and must stay in the `comments`
+  # scope (post_type = :comment). The enum default is :short, so any creation
+  # path that doesn't explicitly type the post (e.g. the local comment UI) would
+  # otherwise leave an article-attached post as :short and drop it from the
+  # comments list. We only promote the default :short here, so an explicitly
+  # typed :longform or already :comment (e.g. federated reply_attributes) is
+  # left untouched. Standalone posts (article_id nil) are never affected.
+  #: () -> void
+  def type_article_post_as_comment
+    self.post_type = :comment if article_id.present? && short?
   end
 
   #: () -> void
