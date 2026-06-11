@@ -39,7 +39,7 @@ module Search
       # 여러 순위 ID 리스트를 RRF 점수로 병합한다. 점수 정규화 없이 순위만 사용한다.
       # score(id) = Σ_over_lists 1.0 / (k + rank), rank는 0부터.
       #: (Array[Array[Integer]] ranked_lists, ?k: Integer) -> Array[Integer]
-      def call(ranked_lists, k: DEFAULT_K)
+      def fuse(ranked_lists, k: DEFAULT_K)
         scores = Hash.new(0.0)
         first_seen = {}
         order = 0
@@ -67,7 +67,7 @@ module Search
       # 관련도(쿼리 유사도)와 다양성(선택된 후보와의 비유사도)의 균형으로 재순위한다.
       # 매 단계 argmax: λ·cos(query, d) − (1−λ)·max_{s∈selected} cos(d, s)
       #: (query_vector: Array[Float], candidates: Array[Hash[Symbol, untyped]], lambda: Float, limit: Integer) -> Array[untyped]
-      def call(query_vector:, candidates:, lambda:, limit:)
+      def rerank(query_vector:, candidates:, lambda:, limit:)
         remaining = candidates.dup
         selected = []
         # 선택된 후보들과의 최대 코사인 유사도(diversity penalty)를 incremental 하게 유지한다.

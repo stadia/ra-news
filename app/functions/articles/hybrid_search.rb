@@ -15,7 +15,7 @@ module Articles
 
     class << self
       #: (query: String, ?limit: Integer, ?mmr: bool) -> Array[Integer]
-      def call(query:, limit: 20, mmr: false)
+      def search(query:, limit: 20, mmr: false)
         term = query.to_s.strip
         return [] if term.blank?
 
@@ -23,7 +23,7 @@ module Articles
         vector_hits = qvec ? vector_search(qvec) : []
         fts_ids = fts_search(term)
 
-        fused = Search::ReciprocalRankFusion.call([ vector_hits.map(&:first), fts_ids ], k: RRF_K)
+        fused = Search::ReciprocalRankFusion.fuse([ vector_hits.map(&:first), fts_ids ], k: RRF_K)
         return fused.first(limit) if fused.empty? || qvec.nil?
 
         vectors = candidate_vectors(fused)
@@ -90,7 +90,7 @@ module Articles
           { id: id, vector: vec } if vec
         end
         no_vec = ids - candidates.map { |c| c[:id] }
-        reranked = Search::MaximalMarginalRelevance.call(
+        reranked = Search::MaximalMarginalRelevance.rerank(
           query_vector: qvec, candidates: candidates, lambda: MMR_LAMBDA, limit: limit
         )
         reranked + no_vec

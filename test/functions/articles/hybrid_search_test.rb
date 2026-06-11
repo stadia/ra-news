@@ -25,13 +25,13 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
   end
 
   test "blank query returns empty array" do
-    assert_equal [], Articles::HybridSearch.call(query: "")
-    assert_equal [], Articles::HybridSearch.call(query: "   ")
+    assert_equal [], Articles::HybridSearch.search(query: "")
+    assert_equal [], Articles::HybridSearch.search(query: "   ")
   end
 
   test "falls back to FTS-only ids when embedding fails" do
     RubyLLM.stub(:embed, ->(*) { raise StandardError, "api down" }) do
-      ids = Articles::HybridSearch.call(query: "Ruby")
+      ids = Articles::HybridSearch.search(query: "Ruby")
       assert_includes ids, articles(:ruby_article).id
     end
   end
@@ -39,7 +39,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
   test "returns FTS matches when embedding succeeds but no article embeddings exist" do
     Rails.cache.clear
     stub_embed(Array.new(1536, 0.0).tap { |v| v[0] = 1.0 }) do
-      ids = Articles::HybridSearch.call(query: "Ruby")
+      ids = Articles::HybridSearch.search(query: "Ruby")
       assert_includes ids, articles(:ruby_article).id
     end
   end
@@ -52,7 +52,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
     target.update_column(:embedding, qvec)
 
     stub_embed(qvec) do
-      ids = Articles::HybridSearch.call(query: "zzznontextmatch")
+      ids = Articles::HybridSearch.search(query: "zzznontextmatch")
       assert_includes ids, target.id
     end
   end
@@ -65,8 +65,8 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
       EmbedResult.new(Array.new(1536, 0.0).tap { |v| v[0] = 1.0 })
     end
     RubyLLM.stub(:embed, embed) do
-      Articles::HybridSearch.call(query: "CacheTerm")
-      Articles::HybridSearch.call(query: "CacheTerm")
+      Articles::HybridSearch.search(query: "CacheTerm")
+      Articles::HybridSearch.search(query: "CacheTerm")
     end
     assert_equal 1, calls
   end
@@ -86,7 +86,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
 
     # Query term does not FTS-match either article, so survival depends on cosine threshold.
     stub_embed(qvec) do
-      ids = Articles::HybridSearch.call(query: "zzznontextmatch")
+      ids = Articles::HybridSearch.search(query: "zzznontextmatch")
       assert_includes ids, aligned.id
       assert_not_includes ids, orthogonal.id
     end
@@ -101,7 +101,7 @@ class Articles::HybridSearchTest < ActiveSupport::TestCase
     target.update_column(:embedding, qvec)
 
     stub_embed(qvec) do
-      ids = Articles::HybridSearch.call(query: "Ruby", mmr: true)
+      ids = Articles::HybridSearch.search(query: "Ruby", mmr: true)
       assert_includes ids, target.id
     end
   end

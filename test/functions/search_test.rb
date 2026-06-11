@@ -31,33 +31,33 @@ end
 
 class Search::ReciprocalRankFusionTest < ActiveSupport::TestCase
   test "single list preserves order" do
-    assert_equal [10, 20, 30], Search::ReciprocalRankFusion.call([[10, 20, 30]])
+    assert_equal [10, 20, 30], Search::ReciprocalRankFusion.fuse([[10, 20, 30]])
   end
 
   test "id appearing high in both lists ranks first" do
     list_a = [2, 1, 3]
     list_b = [2, 3, 1]
     # id 2 is rank-0 in both lists -> highest RRF score -> first
-    assert_equal 2, Search::ReciprocalRankFusion.call([list_a, list_b]).first
+    assert_equal 2, Search::ReciprocalRankFusion.fuse([list_a, list_b]).first
   end
 
   test "deduplicates ids across lists" do
-    result = Search::ReciprocalRankFusion.call([[1, 2], [2, 1]])
+    result = Search::ReciprocalRankFusion.fuse([[1, 2], [2, 1]])
     assert_equal [1, 2].sort, result.sort
     assert_equal 2, result.size
   end
 
   test "ignores empty lists" do
-    assert_equal [5, 6], Search::ReciprocalRankFusion.call([[5, 6], []])
+    assert_equal [5, 6], Search::ReciprocalRankFusion.fuse([[5, 6], []])
   end
 
   test "returns empty for no input" do
-    assert_equal [], Search::ReciprocalRankFusion.call([])
-    assert_equal [], Search::ReciprocalRankFusion.call([[], []])
+    assert_equal [], Search::ReciprocalRankFusion.fuse([])
+    assert_equal [], Search::ReciprocalRankFusion.fuse([[], []])
   end
 
   test "k parameter changes weighting toward larger k flattening" do
-    result = Search::ReciprocalRankFusion.call([[1, 2], [2, 3]], k: 1_000_000)
+    result = Search::ReciprocalRankFusion.fuse([[1, 2], [2, 3]], k: 1_000_000)
     assert_includes result, 1
     assert_includes result, 2
     assert_includes result, 3
@@ -76,7 +76,7 @@ class Search::MaximalMarginalRelevanceTest < ActiveSupport::TestCase
   end
 
   test "first pick is the most relevant to the query" do
-    result = Search::MaximalMarginalRelevance.call(
+    result = Search::MaximalMarginalRelevance.rerank(
       query_vector: [1.0, 0.0], candidates: candidates, lambda: 0.7, limit: 3
     )
     assert_equal :a, result.first
@@ -84,14 +84,14 @@ class Search::MaximalMarginalRelevanceTest < ActiveSupport::TestCase
 
   test "diversity beats a near-duplicate for the second slot" do
     # With lambda 0.5, after picking :a, :c (diverse) should beat :b (near-dup of :a)
-    result = Search::MaximalMarginalRelevance.call(
+    result = Search::MaximalMarginalRelevance.rerank(
       query_vector: [1.0, 0.0], candidates: candidates, lambda: 0.5, limit: 2
     )
     assert_equal [:a, :c], result
   end
 
   test "returns all candidates when limit exceeds candidate count" do
-    result = Search::MaximalMarginalRelevance.call(
+    result = Search::MaximalMarginalRelevance.rerank(
       query_vector: [1.0, 0.0], candidates: candidates, lambda: 0.7, limit: 10
     )
     assert_equal 3, result.size
@@ -99,7 +99,7 @@ class Search::MaximalMarginalRelevanceTest < ActiveSupport::TestCase
   end
 
   test "empty candidates returns empty" do
-    assert_equal [], Search::MaximalMarginalRelevance.call(
+    assert_equal [], Search::MaximalMarginalRelevance.rerank(
       query_vector: [1.0, 0.0], candidates: [], lambda: 0.7, limit: 5
     )
   end
