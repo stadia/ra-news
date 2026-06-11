@@ -72,3 +72,14 @@ Metrics/PerceivedComplexity:
 
 I18n/GetText/DecorateFunctionMessage:
   Enabled: false
+
+# Test assertions legitimately compare literal strings (e.g. expected output of
+# a sanitizer/summary), so these "wrap your string for i18n" cops add noise and
+# false failures there.
+I18n/RailsI18n/DecorateString:
+  Exclude:
+    - "test/**/*"
+
+I18n/GetText/DecorateString:
+  Exclude:
+    - "test/**/*"

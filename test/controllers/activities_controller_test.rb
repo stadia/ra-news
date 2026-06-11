@@ -21,8 +21,8 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "GET feed excludes the current user's draft longform posts" do
-    draft = posts(:longform_draft)
+  test "GET feed excludes the current user's draft blog posts" do
+    draft = posts(:blog_draft)
     sign_in_as(@user)
 
     get feed_path

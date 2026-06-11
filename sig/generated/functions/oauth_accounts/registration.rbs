@@ -4,7 +4,22 @@ module OauthAccounts
   module Registration
     extend FunctionLogger
 
-    def self.register_user: (session_data: untyped, username: untyped, locale: untyped, signup_host: untyped) -> untyped
+    # 등록 결과를 담는 불변 값 객체.
+    class Result < Data
+      attr_reader success(): bool
+
+      attr_reader user(): User
+
+      def self.new: (bool success, User user) -> instance
+                  | (success: bool, user: User) -> instance
+
+      def self.members: () -> [ :success, :user ]
+
+      def members: () -> [ :success, :user ]
+    end
+
+    # : (session_data: untyped, username: String, locale: String, signup_host: String) -> Result
+    def self.register_user: (session_data: untyped, username: String, locale: String, signup_host: String) -> Result
 
     private def self.build_user: (payload: untyped, username: untyped, locale: untyped, signup_host: untyped) -> untyped
   end

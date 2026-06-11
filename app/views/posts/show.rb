@@ -3,6 +3,7 @@
 class Views::Posts::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::ButtonTo
   include PhlexIcons
 
   def initialize(posts:, liked_post_ids: [], boosted_post_ids: [])
@@ -12,7 +13,7 @@ class Views::Posts::Show < Views::Base
   end
 
   def view_template
-    content_for :title, t("posts.show.title")
+    content_for :title, page_title
 
     div(class: "max-w-2xl mx-auto space-y-4") do
       back_link
@@ -21,6 +22,13 @@ class Views::Posts::Show < Views::Base
   end
 
   private
+
+  def page_title
+    root = @posts.first
+    return root.title if root&.blog? && root.title.present?
+
+    t("posts.show.title")
+  end
 
   def back_link
     div(class: "mb-2") do
@@ -36,12 +44,16 @@ class Views::Posts::Show < Views::Base
     return unless root
 
     # 루트 포스트
-    render Components::Posts::PostCard.new(
-      post: root,
-      liked: @liked_post_ids.include?(root.id),
-      boosted: @boosted_post_ids.include?(root.id),
-      show_reply_badge: false
-    )
+    if root.blog?
+      render_blog(root)
+    else
+      render Components::Posts::PostCard.new(
+        post: root,
+        liked: @liked_post_ids.include?(root.id),
+        boosted: @boosted_post_ids.include?(root.id),
+        show_reply_badge: false
+      )
+    end
 
     # 답글 영역
     replies = @posts[1..] || []
@@ -54,6 +66,35 @@ class Views::Posts::Show < Views::Base
           show_reply_badge: false
         )
       end
+    end
+  end
+
+  def render_blog(root)
+    article(class: "rounded-lg border border-border-muted bg-surface p-5 sm:p-8 space-y-5") do
+      h1(class: "text-3xl font-bold text-content") { root.title }
+      div(class: "text-sm text-content-muted") do
+        plain I18n.l(root.published_at || root.created_at, format: :short)
+      end
+      # body is allowlist-sanitized on save (HtmlSanitizable#sanitize_body).
+      # Phlex's `raw` only accepts html_safe input, so the marker is required.
+      div(class: "post-content prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
+        raw root.body.html_safe
+      end
+      owner_controls(root)
+    end
+  end
+
+  def owner_controls(root)
+    return unless view_context.current_user == root.user
+
+    div(class: "flex items-center gap-3 pt-4 border-t border-border-muted") do
+      link_to t("posts.blog.edit"), edit_blog_post_path(root),
+        class: "text-sm font-medium text-content-muted hover:text-content transition-colors",
+        data: { turbo_prefetch: false }
+      button_to t("posts.blog.delete"), blog_post_path(root),
+        method: :delete,
+        form: { data: { turbo_confirm: t("posts.blog.delete_confirm") } },
+        class: "text-sm font-medium text-content-muted hover:text-danger-text transition-colors cursor-pointer"
     end
   end
 end

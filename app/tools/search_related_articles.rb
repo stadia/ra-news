@@ -57,7 +57,7 @@ class SearchRelatedArticles < RubyLLM::Tool
   end
 
   def search_by_text(query, limit)
-    ids = Articles::HybridSearch.call(query:, limit:, mmr: true)
+    ids = Articles::HybridSearch.run(query:, limit:, mmr: true)
     return [] if ids.empty?
 
     Article.kept.confirmed.where(id: ids).in_order_of(:id, ids)

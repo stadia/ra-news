@@ -5,27 +5,25 @@ module Articles
   module HybridSearch
     extend FunctionLogger
 
-    config = Rails.application.config_for(:hybrid_search)
-
-    CANDIDATE_POOL = config.fetch(:candidate_pool, 100)
-    RRF_K = config.fetch(:rrf_k, 60)
-    COSINE_THRESHOLD = config.fetch(:cosine_threshold, 0.6)
-    MMR_LAMBDA = config.fetch(:mmr_lambda, 0.7)
-    EMBED_CACHE_TTL = config.fetch(:embed_cache_ttl, 43200).seconds
+    CANDIDATE_POOL = 100
+    RRF_K = 60
+    COSINE_THRESHOLD = 0.6
+    MMR_LAMBDA = 0.7
+    EMBED_CACHE_TTL = 12.hours
     EMBED_MODEL = "gemini-embedding-001"
     EMBED_DIMENSIONS = 1536
 
     class << self
       #: (query: String, ?limit: Integer, ?mmr: bool) -> Array[Integer]
-      def call(query:, limit: 20, mmr: false)
+      def run(query:, limit: 20, mmr: false)
         term = query.to_s.strip
         return [] if term.blank?
 
         qvec = query_embedding(term)
-        vector_hits = qvec ? vector_search(qvec) : []
+        vector_ids = qvec ? vector_search(qvec) : []
         fts_ids = fts_search(term)
 
-        fused = Search::ReciprocalRankFusion.call([ vector_hits.map(&:first), fts_ids ], k: RRF_K)
+        fused = Articles::Search.fuse([ vector_ids, fts_ids ], k: RRF_K)
         return fused.first(limit) if fused.empty? || qvec.nil?
 
         vectors = candidate_vectors(fused)
@@ -51,13 +49,18 @@ module Articles
         "hybrid_search/embedding/#{EMBED_MODEL}/#{Digest::SHA256.hexdigest(term.downcase)}"
       end
 
-      #: (Array[Float] qvec) -> Array[[Integer, Float]]
+      # 후보 선정은 embedding의 HNSW 인덱스(vector_l2_ops)에 맞춰 euclidean 거리로 한다.
+      # cosine 인덱스가 아니므로 distance: "cosine"으로 바꾸면 인덱스를 타지 못해 느려진다.
+      # 임베딩 norm이 거의 일정해 L2 후보 순위와 cosine 순위는 사실상 동일하며,
+      # 정밀한 cosine 비교는 threshold_filter / rerank 단계에서 수행한다.
+      # RRF는 순위만 사용하므로 neighbor_distance 값 자체는 필요 없다.
+      #: (Array[Float] qvec) -> Array[Integer]
       def vector_search(qvec)
         Article.kept.confirmed
                .nearest_neighbors(:embedding, qvec, distance: "euclidean")
                .limit(CANDIDATE_POOL)
                .select(:id)
-               .map { |a| [ a.id, a.neighbor_distance ] }
+               .map(&:id)
       end
 
       #: (String term) -> Array[Integer]
@@ -68,8 +71,8 @@ module Articles
       #: (Array[Integer] ids) -> Hash[Integer, Array[Float]]
       def candidate_vectors(ids)
         Article.where(id: ids).where.not(embedding: nil)
-               .pluck(:id, :embedding)
-               .to_h { |id, vec| [ id, Array(vec).map(&:to_f) ] }
+               .select(:id, :embedding)
+               .to_h { |a| [ a.id, a.embedding.to_a ] }
       end
 
       #: (Array[Integer] fused, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Array[Integer] fts_ids) -> Array[Integer]
@@ -79,7 +82,7 @@ module Articles
           next true if fts_set.include?(id)
 
           vec = vectors[id]
-          vec && Search::VectorMath.cosine_similarity(qvec, vec) >= COSINE_THRESHOLD
+          vec && Articles::Search.cosine_similarity(qvec, vec) >= COSINE_THRESHOLD
         end
       end
 
@@ -92,7 +95,7 @@ module Articles
           { id: id, vector: vec } if vec
         end
         no_vec = ids - candidates.map { |c| c[:id] }
-        reranked = Search::MaximalMarginalRelevance.call(
+        reranked = Articles::Search.rerank(
           query_vector: qvec, candidates: candidates, lambda: MMR_LAMBDA, limit: limit
         )
         reranked + no_vec

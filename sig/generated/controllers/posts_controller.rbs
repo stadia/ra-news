@@ -21,6 +21,11 @@ class PostsController < ApplicationController
 
   def load_article_comments: () -> untyped
 
+  # A post is publicly viewable when it is visible (published & kept). The owner
+  # may also preview their own non-published (draft) post. Discarded posts are
+  # never served here — the owner reaches them only via the profile trash tab.
+  def viewable?: (untyped post) -> untyped
+
   def article_comment_params: () -> untyped
 
   def post_params: () -> untyped

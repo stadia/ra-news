@@ -60,7 +60,11 @@ class Components::Posts::PostCard < Components::Base
 
       div(class: "flex-1 min-w-0") do
         span(class: "font-semibold text-content text-sm") { author_name }
-        link_to(post_path(@post), class: "block text-xs text-content-muted hover:text-content transition-colors") do
+        # PostCard renders inside the profile "activity-list" turbo frame, so
+        # navigations to a full show page must break out with turbo_frame: "_top"
+        # (otherwise the frame is replaced with "Content missing"). In non-frame
+        # contexts like the feed this is just a normal full-page navigation.
+        link_to(post_path(@post), class: "block text-xs text-content-muted hover:text-content transition-colors", data: { turbo_frame: "_top" }) do
           time(
             datetime: @post.created_at.iso8601,
             title: I18n.l(@post.created_at, format: :long)
@@ -91,12 +95,33 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def post_body
-    div(class: "text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
-      raw @post.body.html_safe
+    if @post.blog?
+      blog_body
+    else
+      short_body
     end
+
     post_tags if post_tag_names.any?
     media_attachments if @post.media_attachments.any?
     article_preview if @post.article.present?
+  end
+
+  def short_body
+    div(class: "post-content text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
+      raw @post.body.html_safe
+    end
+  end
+
+  def blog_body
+    div(class: "space-y-2") do
+      h2(class: "text-xl font-semibold text-content") do
+        link_to @post.title, post_path(@post), class: "hover:text-accent-text transition-colors", data: { turbo_frame: "_top" }
+      end
+      p(class: "text-sm leading-relaxed text-content-secondary wrap-break-word") do
+        plain @post.blog_summary
+      end
+      link_to t("posts.blog.read_more"), post_path(@post), class: "text-sm font-medium text-accent-text hover:underline", data: { turbo_frame: "_top" }
+    end
   end
 
   def post_tags
@@ -165,7 +190,7 @@ class Components::Posts::PostCard < Components::Base
 
         div(class: "space-y-1") do
           h3(class: "text-sm font-semibold text-content leading-snug") do
-            link_to(article.display_title.presence || t("posts.post_card.view_article"), article_path(article), class: "hover:text-link-hover")
+            link_to(article.display_title.presence || t("posts.post_card.view_article"), article_path(article), class: "hover:text-link-hover", data: { turbo_frame: "_top" })
           end
 
           p(class: "text-xs text-content-secondary wrap-break-word") { article.title }

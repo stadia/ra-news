@@ -123,8 +123,8 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
 
     result = OauthAccounts::Callbacks.handle_callback(auth: google_auth_hash(email: user.email), session: session)
 
-    assert_equal :sign_in, result[:type]
-    assert_equal user, result[:user]
+    assert_instance_of OauthAccounts::Callbacks::SignIn, result
+    assert_equal user, result.user
     assert_nil session[:oauth_signup]
   end
 
@@ -134,8 +134,8 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
 
     result = OauthAccounts::Callbacks.handle_callback(auth: google_auth_hash(email: user.email), session: session)
 
-    assert_equal :sign_in, result[:type]
-    assert_equal user, result[:user]
+    assert_instance_of OauthAccounts::Callbacks::SignIn, result
+    assert_equal user, result.user
     account = OauthAccount.find_by(provider: "google_oauth2", uid: "google-123")
 
     assert_equal user, account.user
@@ -162,7 +162,7 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
 
     result = OauthAccounts::Callbacks.handle_callback(auth: apple_auth_hash(email: nil, name: nil), session: session)
 
-    assert_equal :sign_in, result[:type]
+    assert_instance_of OauthAccounts::Callbacks::SignIn, result
 
     account = OauthAccount.find_by!(provider: "apple", uid: "apple-123")
 
@@ -196,7 +196,7 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
 
     result = OauthAccounts::Callbacks.handle_callback(auth:, session:)
 
-    assert_equal :sign_in, result[:type]
+    assert_instance_of OauthAccounts::Callbacks::SignIn, result
     refute OauthAccount.find_by!(provider: "google_oauth2", uid: "google-123").raw_info.dig("info", "email_verified")
   end
 
@@ -205,8 +205,8 @@ class OauthAccounts::CallbacksTest < ActiveSupport::TestCase
 
     result = OauthAccounts::Callbacks.handle_callback(auth: google_auth_hash(email: "new-user@example.com", name: "New User"), session: session)
 
-    assert_equal :complete_signup, result[:type]
-    assert_equal "new_user", result[:suggested_username]
+    assert_instance_of OauthAccounts::Callbacks::CompleteSignup, result
+    assert_equal "new_user", result.suggested_username
     assert_equal "new-user@example.com", session.dig(:oauth_signup, "email")
   end
 

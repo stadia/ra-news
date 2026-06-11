@@ -14,6 +14,10 @@ module Rss
     # : (Array[Hash[Symbol, untyped]] attributes) -> Array[String]
     private def self.collect_links: (Array[Hash[Symbol, untyped]] attributes) -> Array[String]
 
+    # 단일 attr에서 링크를 수집한다. 실패 시 빈 배열을 반환해 전체 크롤을 막지 않는다.
+    # : (Hash[Symbol, untyped] attr) -> Array[String]
+    private def self.hrefs_from: (Hash[Symbol, untyped] attr) -> Array[String]
+
     # : (String link, Site site) -> void
     private def self.process_link: (String link, Site site) -> void
   end

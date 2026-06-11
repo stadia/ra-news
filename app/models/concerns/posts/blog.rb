@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-# Longform-specific behavior for Post: publishing, draft/published predicates,
+# Blog-specific behavior for Post: publishing, draft/published predicates,
 # summary generation, and draft content validation.
 #
-# The post_type/status enums and longform scopes remain on Post itself,
+# The post_type/status enums and blog scopes remain on Post itself,
 # since they are referenced as class methods elsewhere.
 module Posts
-  module Longform
+  module Blog
     extend ActiveSupport::Concern
 
-    LONGFORM_SUMMARY_LENGTH = 280
+    BLOG_SUMMARY_LENGTH = 280
 
     included do
-      validate :validate_longform_draft_content
+      validate :validate_blog_draft_content
     end
 
     #: () -> void
@@ -24,29 +24,29 @@ module Posts
     end
 
     #: () -> bool
-    def draft_longform?
-      longform? && draft?
+    def draft_blog?
+      blog? && draft?
     end
 
     #: () -> bool
-    def published_longform?
-      longform? && published?
+    def published_blog?
+      blog? && published?
     end
 
     #: () -> String
-    def longform_summary
+    def blog_summary
       stripped = Rails::Html::FullSanitizer.new.sanitize(body.to_s).squish
-      stripped.truncate(LONGFORM_SUMMARY_LENGTH)
+      stripped.truncate(BLOG_SUMMARY_LENGTH)
     end
 
     private
 
     #: () -> void
-    def validate_longform_draft_content
-      return unless draft_longform?
+    def validate_blog_draft_content
+      return unless draft_blog?
       return if title.present? || body.present?
 
-      errors.add(:base, I18n.t("posts.longform.errors.blank_draft"))
+      errors.add(:base, I18n.t("posts.blog.errors.blank_draft"))
     end
   end
 end

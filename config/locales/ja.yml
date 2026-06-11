@@ -45,6 +45,9 @@ ja:
       back_to_lookup: フォロー検索に戻る
       visit_profile: プロフィールを開く →
   articles:
+    create:
+      already_exists: すでに登録されている記事です。
+      success: 記事が正常に登録されました。
     form:
       errors_heading: "%{count}件のエラーにより記事を保存できませんでした:"
       submit: 登録
@@ -88,7 +91,7 @@ ja:
       summary_heading: 要点
     tagged:
       count: "%{count}件の記事があります"
-      item_list_name: "Ruby-News #%{tag} タグの記事"
+      item_list_name: 'Ruby-News #%{tag} タグの記事'
       title: "#%{tag} タグの記事 | Ruby-News"
   comments:
     comment:
@@ -96,19 +99,19 @@ ja:
       delete_confirm: 本当に削除しますか?
       reply: 返信
     comment_form:
-      error_heading: "エラーが発生しました:"
+      error_heading: 'エラーが発生しました:'
       guideline: 丁寧で建設的なコメントを心がけてください。
       login_prompt_after: " が必要です。"
-      login_prompt_before: "コメントを書くには "
+      login_prompt_before: 'コメントを書くには '
       submit: コメントを書く
       title: コメントを書く
     comment_header:
       title: コメント
     comment_reply_form:
       cancel: キャンセル
-      error_heading: "エラーが発生しました:"
+      error_heading: 'エラーが発生しました:'
       login_prompt_after: " してください。"
-      login_prompt_before: "返信を書くには "
+      login_prompt_before: '返信を書くには '
       submit: 返信を書く
       title: 返信を書く
   errors:
@@ -135,7 +138,7 @@ ja:
       following: フォロー中
       incoming_following: "%{username}さんがフォローしています。"
       incoming_request: "%{username}さんからフォローリクエストがあります。"
-      logged_out: "フォローするにはログインしてください。または他のFediverseサーバーから検索: "
+      logged_out: 'フォローするにはログインしてください。または他のFediverseサーバーから検索: '
       own_account: あなた自身のアカウントです。
       requested: リクエスト中
       unfollow: フォロー解除
@@ -209,6 +212,11 @@ ja:
       brand_subtitle: Ruby AIニュース
       footer: このメールはアカウント確認のために送信されました。
   oauth:
+    errors:
+      discord_missing_webhook: Discord OAuthレスポンスにwebhook情報がありません。
+      discord_not_configured: Discord連携がまだ設定されていません。管理者にお問い合わせください。
+      slack_not_configured: Slack連携がまだ設定されていません。管理者にお問い合わせください。
+      unsupported_provider: サポートされていない連携です。
     result:
       back_to_home: ホームに戻る
       channel_connected: "%{channel} %{kind}の連携に成功しました。"
@@ -230,10 +238,10 @@ ja:
       heading: パスワードをお忘れですか?
       submit: 再設定メールを送信
   posts:
-    longform:
+    blog:
       untitled_draft: 無題の下書き
-      edit_title: 長文を書く | Ruby-News
-      edit_heading: 長文を書く
+      edit_title: ブログを書く | Ruby-News
+      edit_heading: ブログを書く
       published: 投稿を公開しました。
       updated: 投稿を更新しました。
       deleted: 投稿を削除しました。
@@ -254,7 +262,7 @@ ja:
       preview: プレビュー
       publish: 公開
       title_placeholder: タイトルを入力してください
-      body_placeholder: 長文を入力してください
+      body_placeholder: ブログを入力してください
       no_tags: タグなし
       status_draft: 下書き
       status_published: 公開済み
@@ -262,7 +270,7 @@ ja:
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
-      boosted_by: "%{name}さんがブーストしました"
+      boosted_by: "%{name}さんがブースト"
       linked_article: 関連記事
       reply_to: "%{name}さんへの返信"
       unknown_author: 不明
@@ -271,8 +279,8 @@ ja:
       cancel: キャンセル
       post_submit: 投稿
       reply_submit: 返信
-      replying_to: "返信中 "
-      longform: 長文を書く
+      replying_to: '返信中 '
+      blog: ブログを書く
     remote_attachment_only_body: 添付メディア
     reply_form:
       cancel: キャンセル
@@ -288,7 +296,7 @@ ja:
       followers: フォロワー
       following: フォロー中
       likes: いいね
-      longform: 長文
+      blog: ブログ
       posts: 投稿
     comment_list:
       empty: まだコメントを書いていません。
@@ -307,12 +315,12 @@ ja:
       empty: まだいいねした記事がありません。
     post_list:
       empty: まだ投稿がありません。
-    longform_list:
+    blog_list:
       drafts_heading: 作成中の下書き
       published_heading: 公開済み
       trash_heading: ゴミ箱
       drafts_empty: 作成中の下書きはありません。
-      published_empty: 公開した長文はありません。
+      published_empty: 公開したブログはありません。
       trash_empty: ゴミ箱は空です。
     show:
       feed: フィード
@@ -344,6 +352,10 @@ ja:
   sign_in: ログイン
   sign_out: ログアウト
   sign_up: 新規登録
+  social:
+    oauth:
+      error: 'OAuthエラー: %{message}'
+      success: OAuth認証に成功しました！アクセストークンが保存されました。
   tags_sidebar:
     empty: 表示するタグがありません。
     heading: タグ

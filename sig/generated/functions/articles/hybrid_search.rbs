@@ -1,0 +1,52 @@
+# Generated from app/functions/articles/hybrid_search.rb with RBS::Inline
+
+module Articles
+  module HybridSearch
+    extend FunctionLogger
+
+    CANDIDATE_POOL: ::Integer
+
+    RRF_K: ::Integer
+
+    COSINE_THRESHOLD: ::Float
+
+    MMR_LAMBDA: ::Float
+
+    EMBED_CACHE_TTL: untyped
+
+    EMBED_MODEL: ::String
+
+    EMBED_DIMENSIONS: ::Integer
+
+    # : (query: String, ?limit: Integer, ?mmr: bool) -> Array[Integer]
+    def self.run: (query: String, ?limit: Integer, ?mmr: bool) -> Array[Integer]
+
+    # : (String term) -> Array[Float]?
+    private def self.query_embedding: (String term) -> Array[Float]?
+
+    # : (String term) -> String
+    private def self.cache_key: (String term) -> String
+
+    # 후보 선정은 embedding의 HNSW 인덱스(vector_l2_ops)에 맞춰 euclidean 거리로 한다.
+    # cosine 인덱스가 아니므로 distance: "cosine"으로 바꾸면 인덱스를 타지 못해 느려진다.
+    # 임베딩 norm이 거의 일정해 L2 후보 순위와 cosine 순위는 사실상 동일하며,
+    # 정밀한 cosine 비교는 threshold_filter / rerank 단계에서 수행한다.
+    # RRF는 순위만 사용하므로 neighbor_distance 값 자체는 필요 없다.
+    # : (Array[Float] qvec) -> Array[Integer]
+    private def self.vector_search: (Array[Float] qvec) -> Array[Integer]
+
+    # : (String term) -> Array[Integer]
+    private def self.fts_search: (String term) -> Array[Integer]
+
+    # : (Array[Integer] ids) -> Hash[Integer, Array[Float]]
+    private def self.candidate_vectors: (Array[Integer] ids) -> Hash[Integer, Array[Float]]
+
+    # : (Array[Integer] fused, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Array[Integer] fts_ids) -> Array[Integer]
+    private def self.threshold_filter: (Array[Integer] fused, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Array[Integer] fts_ids) -> Array[Integer]
+
+    # MMR은 limit 개까지만 선택하면 충분하다. no_vec(임베딩 없는 FTS 후보)는 항상 뒤에 붙고
+    # 호출부의 first(limit)이 절단하므로, MMR을 limit 으로 제한해도 결과는 동일하며 연산만 줄어든다.
+    # : (Array[Integer] ids, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Integer limit) -> Array[Integer]
+    private def self.rerank: (Array[Integer] ids, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Integer limit) -> Array[Integer]
+  end
+end

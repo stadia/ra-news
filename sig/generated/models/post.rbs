@@ -8,6 +8,10 @@ class Post < ApplicationRecord
 
   include HtmlSanitizable
 
+  include Posts::Blog
+
+  include Discard::Model
+
   include Federails::DataEntity
 
   include FederailsLikeable
@@ -29,9 +33,6 @@ class Post < ApplicationRecord
   # : () -> Integer
   def boosts_count: () -> Integer
 
-  # : () -> bool
-  def comment?: () -> bool
-
   # : () -> (Post | Article)
   def reply: () -> (Post | Article)
 
@@ -47,6 +48,16 @@ class Post < ApplicationRecord
   private
 
   def create_federails_activity: (untyped action, ?actor: untyped, ?to: untyped, ?cc: untyped) -> untyped
+
+  # Posts attached to an article are comments and must stay in the `comments`
+  # scope (post_type = :comment). The enum default is :short, so any creation
+  # path that doesn't explicitly type the post (e.g. the local comment UI) would
+  # otherwise leave an article-attached post as :short and drop it from the
+  # comments list. We only promote the default :short here, so an explicitly
+  # typed :longform or already :comment (e.g. federated reply_attributes) is
+  # left untouched. Standalone posts (article_id nil) are never affected.
+  # : () -> void
+  def type_article_post_as_comment: () -> void
 
   # : () -> void
   def enqueue_reply_notification: () -> void
@@ -70,6 +81,16 @@ class Post < ApplicationRecord
 
   # : (Hash[String, untyped]) -> Hash[Symbol, untyped]
   def self.from_activitypub_object: (Hash[String, untyped]) -> Hash[Symbol, untyped]
+
+  # Resolves the reply target (article comment, post reply, or federated
+  # parent) from an inReplyTo URL into attributes for from_activitypub_object.
+  # Inbound replies to an article are typed :comment so they stay in the
+  # `comments` scope instead of defaulting to :short.
+  # : (String) -> Hash[Symbol, untyped]
+  private def self.reply_attributes: (String) -> Hash[Symbol, untyped]
+
+  # : (String) -> Hash[Symbol, untyped]
+  private def self.reply_target_attributes: (String) -> Hash[Symbol, untyped]
 
   # : (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
   private def self.extract_body_from_activitypub_object: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String

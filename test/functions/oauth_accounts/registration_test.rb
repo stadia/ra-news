@@ -11,9 +11,9 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
       signup_host: "ruby-news.dev"
     )
 
-    assert result[:success]
+    assert_predicate result, :success?
 
-    user = result[:user]
+    user = result.user
 
     assert_equal "oauth@example.com", user.email
     assert_equal "oauth_user", user.username
@@ -36,8 +36,8 @@ class OauthAccounts::RegistrationTest < ActiveSupport::TestCase
       signup_host: "ruby-news.dev"
     )
 
-    refute result[:success]
-    assert_predicate result[:user].errors[:username], :any?
+    refute_predicate result, :success?
+    assert_predicate result.user.errors[:username], :any?
   end
 
   private
