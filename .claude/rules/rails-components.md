@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (127)
+# Components (128)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -143,8 +143,10 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: options:{}, attrs
 - **PopoverContent** (phlex)
 - **PopoverTrigger** (phlex)
+- **Posts::BlogEditor** (phlex)
+  props: post
 - **Posts::PostCard** (phlex)
-  props: post, depth:0, liked:nil, boosted:nil, show_actions:true, show_reply_badge:true
+  props: post, depth:0, liked:nil, boosted:nil, booster:nil, show_actions:true, show_reply_badge:true
 - **Posts::PostForm** (phlex)
   props: post:Post.new
 - **Posts::PostThread** (phlex)

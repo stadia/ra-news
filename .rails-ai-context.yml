@@ -1,6 +1,5 @@
 ---
 ai_tools:
 - claude
-- copilot
 - codex
 tool_mode: cli
