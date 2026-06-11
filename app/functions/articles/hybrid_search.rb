@@ -66,8 +66,8 @@ module Articles
       #: (Array[Integer] ids) -> Hash[Integer, Array[Float]]
       def candidate_vectors(ids)
         Article.where(id: ids).where.not(embedding: nil)
-               .pluck(:id, :embedding)
-               .to_h { |id, vec| [ id, Array(vec).map(&:to_f) ] }
+               .select(:id, :embedding)
+               .to_h { |a| [ a.id, a.embedding.to_a ] }
       end
 
       #: (Array[Integer] fused, Hash[Integer, Array[Float]] vectors, Array[Float] qvec, Array[Integer] fts_ids) -> Array[Integer]
