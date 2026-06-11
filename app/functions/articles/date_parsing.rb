@@ -91,22 +91,13 @@ module Articles
       #: (untyped payload) -> Time?
       def extract_from_json_ld(payload)
         case payload
-        when Array
-          payload.each do |item|
-            candidate = extract_from_json_ld(item)
-            return candidate if candidate
-          end
-          nil
-        when Hash
-          nodes = []
-          nodes.concat(Array(payload["@graph"])) if payload["@graph"].present?
-          nodes << payload
-
-          prioritized_nodes = nodes.partition { |node| article_json_ld?(node) }.flatten
-          prioritized_nodes.each do |node|
-            candidate = parse_value(node["datePublished"] || node["dateCreated"] || node["uploadDate"])
-            return candidate if candidate
-          end
+        in Array => items
+          items.lazy.filter_map { |item| extract_from_json_ld(item) }.first
+        in Hash => node
+          graph = node["@graph"].present? ? Array(node["@graph"]) : []
+          prioritized = (graph + [ node ]).partition { |n| article_json_ld?(n) }.flatten
+          prioritized.lazy.filter_map { |n| parse_value(n["datePublished"] || n["dateCreated"] || n["uploadDate"]) }.first
+        else
           nil
         end
       end
