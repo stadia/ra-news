@@ -1,0 +1,21 @@
+# Generated from app/jobs/article_reembed_job.rb with RBS::Inline
+
+# 임베딩 모델 교체 후 기존 기사 벡터를 현재 모델로 재생성하는 잡.
+# article_ids 묶음을 받아 in-place 로 embedding 을 덮어쓴다.
+# 모델/차원은 Articles::HybridSearch 의 공개 상수를 단일 출처로 사용한다.
+class ArticleReembedJob < ApplicationJob
+  EMBED_MODEL: untyped
+
+  EMBED_DIMENSIONS: untyped
+
+  # 임베딩 API rate limit 완화를 위한 호출 간 대기(초).
+  THROTTLE: ::Float
+
+  # : (Array[Integer] article_ids) -> void
+  def perform: (Array[Integer] article_ids) -> void
+
+  private
+
+  # : (Article article) -> void
+  def reembed: (Article article) -> void
+end
