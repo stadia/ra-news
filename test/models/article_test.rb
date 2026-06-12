@@ -875,6 +875,18 @@ class ArticleTest < ActiveSupport::TestCase
     assert_match "## 결론\n결론 부분", markdown
   end
 
+  test "grounding_flagged 스코프는 플래그된 기사만 반환한다" do
+    flagged = articles(:one)
+    flagged.update_columns(grounding_flagged: true)
+    clean = articles(:two)
+    clean.update_columns(grounding_flagged: false)
+
+    result = Article.grounding_flagged
+
+    assert_includes result, flagged
+    refute_includes result, clean
+  end
+
   private
 
   def stub_external_requests(article)

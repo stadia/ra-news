@@ -82,6 +82,7 @@ class Article < ApplicationRecord
   end
   scope :related, -> { kept.where(is_related: true) }
   scope :unrelated, -> { kept.where(is_related: false) }
+  scope :grounding_flagged, -> { where(grounding_flagged: true) }
   scope :confirmed, -> { where("slug IS NOT NULL AND title_ko IS NOT NULL") }
 
   # TOAST 컬럼(body, summary_body, embedding) 제외 스코프
