@@ -188,7 +188,7 @@ namespace :search do
     path = Rails.root.join("test/data/search_eval_queries.yml")
     return [] unless path.exist?
 
-    data = YAML.safe_load_file(path, permitted_classes: [Symbol]) || {}
+    data = YAML.safe_load_file(path, permitted_classes: [ Symbol ]) || {}
     data.values.map do |entry|
       titles = Array(entry["relevant_titles"])
       ids = Article.where(title_ko: titles).pluck(:id)

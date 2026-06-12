@@ -33,7 +33,7 @@ module SearchBenchmark
         ideal_set.include?(id) ? 1.0 / Math.log2(i + 2) : 0.0
       end
       # IDCG: ideal_set 항목들이 모두 상위에 정렬된 경우
-      n_ideal = [ideal_set.size, k].min
+      n_ideal = [ ideal_set.size, k ].min
       idcg = (0...n_ideal).sum { |i| 1.0 / Math.log2(i + 2) }
       idcg.zero? ? 0.0 : dcg / idcg
     end
