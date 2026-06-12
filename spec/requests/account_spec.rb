@@ -27,7 +27,7 @@ RSpec.describe 'Current User', type: :request do
                      id: { type: :integer },
                      email: { type: :string, format: 'email' },
                      name: { type: :string, nullable: true },
-                     username: { type: :string, nullable: true },
+                     username: { type: :string },
                      unconfirmed_email: { type: :string, nullable: true },
                      confirmed_at: { type: :string, format: 'date-time', nullable: true },
                      likees_count: { type: :integer },
@@ -35,7 +35,7 @@ RSpec.describe 'Current User', type: :request do
                      updated_at: { type: :string, format: 'date-time' },
                      avatar_url: { type: :string, nullable: true }
                    },
-                   required: %w[id email likees_count created_at updated_at]
+                   required: %w[id email username likees_count created_at updated_at]
                  }
                },
                required: %w[user]
