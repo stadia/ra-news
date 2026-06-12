@@ -258,7 +258,7 @@ GEM
     herb (0.10.1-x86_64-linux-gnu)
     highline (3.1.2)
       reline
-    honeybadger (6.8.0)
+    honeybadger (6.9.0)
       logger
       ostruct
     htmlentities (4.4.2)
