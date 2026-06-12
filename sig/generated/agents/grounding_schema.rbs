@@ -1,0 +1,4 @@
+# Generated from app/agents/grounding_schema.rb with RBS::Inline
+
+class GroundingSchema < RubyLLM::Schema
+end
