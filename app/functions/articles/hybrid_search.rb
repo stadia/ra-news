@@ -5,11 +5,21 @@ module Articles
   module HybridSearch
     extend FunctionLogger
 
-    CANDIDATE_POOL = 100
-    RRF_K = 60
-    COSINE_THRESHOLD = 0.6
-    MMR_LAMBDA = 0.7
-    EMBED_CACHE_TTL = 12.hours
+    # 튜닝 파라미터는 config/hybrid_search.yml 에서 환경별로 로드한다.
+    # 부팅 초기(마이그레이션·에셋 프리컴파일 등)에 Rails.application 이 없을 수 있어 방어한다.
+    config =
+      if defined?(Rails) && Rails.application
+        Rails.application.config_for(:hybrid_search)
+      else
+        {}
+      end
+
+    CANDIDATE_POOL = config.fetch(:candidate_pool, 100)
+    RRF_K = config.fetch(:rrf_k, 60)
+    COSINE_THRESHOLD = config.fetch(:cosine_threshold, 0.6)
+    MMR_LAMBDA = config.fetch(:mmr_lambda, 0.7)
+    EMBED_CACHE_TTL = config.fetch(:embed_cache_ttl, 43200).seconds
+    # 임베딩 모델/차원은 embedding 컬럼(halfvec 3072)·스키마와 결합돼 있어 하드코딩 유지한다.
     EMBED_MODEL = "gemini-embedding-2"
     EMBED_DIMENSIONS = 3072
 

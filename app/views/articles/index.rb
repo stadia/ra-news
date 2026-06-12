@@ -50,7 +50,7 @@ class Views::Articles::Index < Views::Base
               p(class: "text-sm text-content-secondary") do
                 plain t("articles.index.try_searching")
                 @suggestions.each do |suggestion|
-                  render Components::Articles::SearchSuggestion.new(query: suggestion, search: @search)
+                  render Components::Articles::SearchSuggestion.new(query: suggestion)
                 end
               end
             end

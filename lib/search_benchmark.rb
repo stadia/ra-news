@@ -6,14 +6,15 @@ module SearchBenchmark
 
   # Mean Reciprocal Rank — 평균 역순위.
   # 여러 쿼리의 ranked_list 와 relevant_ids 쌍에 대해 MRR을 계산한다.
-  # relevant_ids는 단일 ID 또는 Array. 단일 ID일 때는 해당 ID의 rank 역수를,
-  # Array일 때는 첫 번째 매칭의 rank 역수를 사용한다.
-  #: (Array[Array[Integer]] ranked_lists, Array[Integer] relevant_ids) -> Float
-  def mrr(ranked_lists, relevant_ids)
-    return 0.0 if ranked_lists.empty? || relevant_ids.empty?
+  # 각 쿼리의 정답은 단일 ID 또는 Array 모두 허용한다. 정답이 여러 개일 때는
+  # 결과에서 가장 먼저 등장하는 정답의 rank 역수를 사용한다(표준 MRR 정의).
+  #: (Array[Array[Integer]] ranked_lists, Array[untyped] relevant_ids_list) -> Float
+  def mrr(ranked_lists, relevant_ids_list)
+    return 0.0 if ranked_lists.empty? || relevant_ids_list.empty?
 
-    sum = ranked_lists.zip(relevant_ids).sum do |ranked, relevant|
-      rank = ranked.index(relevant)
+    sum = ranked_lists.zip(relevant_ids_list).sum do |ranked, relevant|
+      ids = Array(relevant).to_set
+      rank = ranked.find_index { |id| ids.include?(id) }
       rank ? 1.0 / (rank + 1) : 0.0
     end
 

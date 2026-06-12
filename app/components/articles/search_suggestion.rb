@@ -3,10 +3,9 @@
 module Components
   module Articles
     class SearchSuggestion < Components::Base
-      #: (String query, String search) -> void
-      def initialize(query:, search:)
+      #: (String query) -> void
+      def initialize(query:)
         @query = query
-        @search = search
       end
 
       def view_template

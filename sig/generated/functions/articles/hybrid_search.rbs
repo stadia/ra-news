@@ -4,16 +4,17 @@ module Articles
   module HybridSearch
     extend FunctionLogger
 
-    CANDIDATE_POOL: ::Integer
+    CANDIDATE_POOL: untyped
 
-    RRF_K: ::Integer
+    RRF_K: untyped
 
-    COSINE_THRESHOLD: ::Float
+    COSINE_THRESHOLD: untyped
 
-    MMR_LAMBDA: ::Float
+    MMR_LAMBDA: untyped
 
     EMBED_CACHE_TTL: untyped
 
+    # 임베딩 모델/차원은 embedding 컬럼(halfvec 3072)·스키마와 결합돼 있어 하드코딩 유지한다.
     EMBED_MODEL: ::String
 
     EMBED_DIMENSIONS: ::Integer

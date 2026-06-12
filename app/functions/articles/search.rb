@@ -109,7 +109,7 @@ module Articles
                .order(Arel.sql(similarity_order(query)))
                .limit(limit)
                .pluck(:title_ko, :title)
-               .flatten
+               .map { |title_ko, title| I18n.locale == :ko ? (title_ko.presence || title) : (title.presence || title_ko) }
                .compact
                .uniq
                .first(limit)
@@ -120,8 +120,9 @@ module Articles
 
       #: (String query) -> String
       def similarity_order(query)
-        quoted = Article.connection.quote(query)
-        "similarity(pg_search_documents.content, #{quoted}) DESC"
+        ActiveRecord::Base.sanitize_sql_array(
+          [ "similarity(pg_search_documents.content, ?) DESC", query ]
+        )
       end
     end
   end
