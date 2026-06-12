@@ -11,6 +11,7 @@ namespace :madmin do
       put :restore
       put :mark_unrelated
       put :reprocess
+      put :regenerate_thumbnail
     end
   end
   resources :sites do

@@ -101,7 +101,7 @@ class ArticlesController < ApplicationController
     # Only load similar articles if embedding exists
     @similar_articles = if @article.embedding.present?
       Article.kept.confirmed.where.not(id: @article.id)
-             .nearest_neighbors(:embedding, @article.embedding, distance: "euclidean")
+             .nearest_neighbors(:embedding, @article.embedding, distance: "cosine")
              .limit(4)
     else
       Article.none

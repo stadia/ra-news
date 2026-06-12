@@ -45,8 +45,8 @@ class ArticleAgentsService < OperationService
     begin
       embedded_body = RubyLLM.embed(
         article.body,
-        model: Articles::HybridSearch::EMBED_MODEL, # Google's model (입력 8192 토큰, MRL 1536차원 출력)
-        dimensions: Articles::HybridSearch::EMBED_DIMENSIONS # 1536차원
+        model: Articles::HybridSearch::EMBED_MODEL, # Google's model (입력 8192 토큰)
+        dimensions: Articles::HybridSearch::EMBED_DIMENSIONS # MRL full 3072차원 (halfvec 컬럼)
       )
       article.update_column(:embedding, embedded_body.vectors.to_a) # Skip callbacks for performance
       Success(article)

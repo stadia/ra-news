@@ -2,8 +2,8 @@
 # rbs_inline: enabled
 
 class ArticleImageAgent < RubyLLM::Agent
-  model "gemini-3.1-flash-image"
-  # model "gemini-3-pro-image-preview"
+  # model "gemini-3.1-flash-image"
+  model "nano-banana-pro-preview"
 
   temperature 0.5
 

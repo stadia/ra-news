@@ -42,6 +42,18 @@ module Madmin
       redirect_to madmin_article_path(@record), alert: "오류가 발생했습니다: #{e.message}"
     end
 
+    def regenerate_thumbnail
+      if @record.discarded?
+        redirect_to madmin_article_path(@record), alert: "폐기된 기사는 썸네일을 재생성할 수 없습니다."
+      else
+        logger.info "Regenerating thumbnail for article #{@record.id}"
+        ArticleThumbnailJob.perform_later(@record.id, force: true)
+        redirect_to madmin_article_path(@record), notice: "썸네일 재생성을 요청했습니다. 완료까지 몇 분 걸릴 수 있습니다."
+      end
+    rescue StandardError => e
+      redirect_to madmin_article_path(@record), alert: "오류가 발생했습니다: #{e.message}"
+    end
+
     private
 
     # Override: full_text_search_for 스코프(tsvector + bigm 인덱스)로

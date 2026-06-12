@@ -26,7 +26,8 @@ class Article < ApplicationRecord
   acts_as_taggable_on :tags
 
   # SQLite는 벡터 임베딩을 지원하지 않으므로 PostgreSQL에서만 활성화
-  has_neighbors :embedding, dimensions: 1536
+  # PostgreSQL은 컬럼 타입(halfvec)을 자동 감지하므로 type: 지정 불필요(SQLite 전용 옵션)
+  has_neighbors :embedding, dimensions: 3072
 
   multisearchable against: [
     :title, :title_ko, :title_ja,

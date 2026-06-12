@@ -50,7 +50,7 @@ class SearchRelatedArticles < RubyLLM::Tool
 
     Article.kept.confirmed
            .where.not(id: article.id)
-           .nearest_neighbors(:embedding, article.embedding, distance: "euclidean")
+           .nearest_neighbors(:embedding, article.embedding, distance: "cosine")
            .limit(limit)
            .select(:id, :title_ko, :slug, :summary_key)
            .map { format_result(it) }
