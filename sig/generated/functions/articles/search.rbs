@@ -16,5 +16,14 @@ module Articles
     # 매 단계 argmax: λ·cos(query, d) − (1−λ)·max_{s∈selected} cos(d, s)
     # : (query_vector: Array[Float], candidates: Array[Hash[Symbol, untyped]], lambda: Float, limit: Integer) -> Array[untyped]
     def self.rerank: (query_vector: Array[Float], candidates: Array[Hash[Symbol, untyped]], lambda: Float, limit: Integer) -> Array[untyped]
+
+    # ── suggest (pg_bigm similarity search suggestions) ─────────
+    # pg_bigm similarity를 활용해 검색 결과가 적을 때 유사 검색어를 제안한다.
+    # pg_search_documents.content 컬럼에서 % 연산자로 유사도 기반 매칭.
+    # : (String query, ?limit: Integer) -> Array[String]
+    def self.suggest: (String query, ?limit: Integer) -> Array[String]
+
+    # : (String query) -> String
+    def self.similarity_order: (String query) -> String
   end
 end
