@@ -24,7 +24,7 @@ class Articles::HybridSearchConfigTest < ActiveSupport::TestCase
   end
 
   test "embed_model and embed_dimensions remain hardcoded" do
-    assert_equal "gemini-embedding-001", Articles::HybridSearch::EMBED_MODEL
-    assert_equal 1536, Articles::HybridSearch::EMBED_DIMENSIONS
+    assert_equal "gemini-embedding-2", Articles::HybridSearch::EMBED_MODEL
+    assert_equal 3072, Articles::HybridSearch::EMBED_DIMENSIONS
   end
 end
