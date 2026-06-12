@@ -8,6 +8,7 @@ class ArticleAgentsService < OperationService
     step run_embed(article)
     step run_agents(article)
     step run_humanize(article)
+    step run_grounding_check(article)
     step run_thumbnail(article)
     step run_japanese(article)
   end
@@ -70,6 +71,20 @@ class ArticleAgentsService < OperationService
   rescue StandardError => e
     logger.error "Failed to humanize article #{article.id}: #{e.message}"
     Failure(:humanize_failed)
+  end
+
+  # 생성·휴머나이즈된 요약이 원문에 근거하는지 LLM-judge로 검증한다.
+  # 비차단: 결과를 grounding_* 컬럼에 기록만 하고, 실패/플래그 여부와 무관하게 항상 Success.
+  #: (Article article) -> Dry::Monads::Result
+  def run_grounding_check(article)
+    return Success(article) if article.discarded?
+
+    updates = Articles::GroundingCheck.run(article)
+    article.update_columns(updates) if updates.present?
+    Success(article)
+  rescue StandardError => e
+    logger.error "Grounding check step failed for article #{article.id}: #{e.message}"
+    Success(article)
   end
 
   #: (Article article) -> Dry::Monads::Result

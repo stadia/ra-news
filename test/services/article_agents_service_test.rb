@@ -142,4 +142,63 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     assert_predicate result, :failure?
     assert_equal "원본 요약", article.reload.summary_body
   end
+
+  test "run_grounding_check는 결과를 컬럼에 기록하고 flagged여도 Success를 반환한다" do
+    article = create_persisted_article_for_grounding
+    updates = {
+      grounding_score: 0.3,
+      grounding_flagged: true,
+      grounding_issues: [ { "claim" => "x", "field" => "summary_body", "reason" => "없음" } ],
+      grounding_checked_at: Time.current
+    }
+
+    result = Articles::GroundingCheck.stub(:run, updates) do
+      ArticleAgentsService.new.send(:run_grounding_check, article)
+    end
+
+    assert_predicate result, :success?
+    article.reload
+
+    assert_in_delta 0.3, article.grounding_score, 1e-9
+    assert article.grounding_flagged
+  end
+
+  test "run_grounding_check는 GroundingCheck가 nil을 반환하면 컬럼을 바꾸지 않고 Success한다" do
+    article = create_persisted_article_for_grounding
+
+    result = Articles::GroundingCheck.stub(:run, nil) do
+      ArticleAgentsService.new.send(:run_grounding_check, article)
+    end
+
+    assert_predicate result, :success?
+    article.reload
+
+    refute article.grounding_flagged
+    assert_nil article.grounding_score
+  end
+
+  test "run_grounding_check는 GroundingCheck가 예외를 던져도 Success를 반환한다(비차단)" do
+    article = create_persisted_article_for_grounding
+
+    raising = ->(_article) { raise "boom" }
+    result = Articles::GroundingCheck.stub(:run, raising) do
+      ArticleAgentsService.new.send(:run_grounding_check, article)
+    end
+
+    assert_predicate result, :success?
+  end
+
+  private
+
+  def create_persisted_article_for_grounding
+    site = Site.first || Site.create!(name: "t", url: "https://e.com")
+    user = User.first || User.new(email: "g@e.com", password: "password123", username: "g", confirmed_at: Time.current).tap { |u| u.save!(validate: false) }
+    article = Article.new(
+      site:, user:, title_ko: "t", slug: "grounding-#{SecureRandom.hex(4)}",
+      body: "원문", summary_body: "요약", published_at: 1.day.ago, is_related: true,
+      origin_url: "grounding://#{SecureRandom.hex(4)}"
+    )
+    article.save!(validate: false)
+    article
+  end
 end

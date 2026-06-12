@@ -16,6 +16,11 @@ class ArticleAgentsService < OperationService
   # : (Article article) -> Dry::Monads::Result
   def run_humanize: (Article article) -> Dry::Monads::Result
 
+  # 생성·휴머나이즈된 요약이 원문에 근거하는지 LLM-judge로 검증한다.
+  # 비차단: 결과를 grounding_* 컬럼에 기록만 하고, 실패/플래그 여부와 무관하게 항상 Success.
+  # : (Article article) -> Dry::Monads::Result
+  def run_grounding_check: (Article article) -> Dry::Monads::Result
+
   # : (Article article) -> Dry::Monads::Result
   def run_japanese: (Article article) -> Dry::Monads::Result
 
