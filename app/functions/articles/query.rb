@@ -9,7 +9,7 @@ module Articles
 
     class << self
       def index_html(search = nil)
-        return hybrid_search_scope(search) if search.present?
+        return html_candidate_scope(search) if search.present?
 
         related_scope.where.not(id: excluded_related_article_ids(base_scope.related))
                      .order(published_at: :desc)
@@ -48,7 +48,7 @@ module Articles
         base_scope.where(id: ids).includes(*DEFAULT_INCLUDES).without_toast
       end
 
-      def hybrid_search_scope(search)
+      def html_candidate_scope(search)
         page_size = Pagy::DEFAULT[:items] || 10
         ids = Articles::HybridSearch.run(query: search, limit: page_size * PAGE_FACTOR)
         return base_scope.none if ids.empty?
