@@ -128,7 +128,7 @@ Rails.application.routes.draw do
     end
   end
 
-  get "/feed", to: "activities#feed", as: :feed
+  get "/feed", to: "feed#show", as: :feed
 
   mount Federails::Engine => "/"
 end

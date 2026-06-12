@@ -3,7 +3,7 @@
 
 require "test_helper"
 
-class ActivitiesControllerTest < ActionDispatch::IntegrationTest
+class FeedControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:john)
   end
