@@ -24,6 +24,10 @@ class ArticleResource < Madmin::Resource
   attribute :summary_introduction, index: false
   attribute :summary_body, index: false
   attribute :summary_conclusion, index: false
+  attribute :grounding_flagged, index: true, form: false
+  attribute :grounding_score, index: true, form: false
+  attribute :grounding_checked_at, index: false, form: false
+  attribute :grounding_issues, index: false, form: false
 
   attribute :twitter_id, index: false, form: false
   attribute :mastodon_id, index: false, form: false
@@ -40,6 +44,7 @@ class ArticleResource < Madmin::Resource
   scope :discarded
   scope :related
   scope :unrelated
+  scope :grounding_flagged
 
   # Add actions to the resource's show page
   member_action do |record|
