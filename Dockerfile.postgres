@@ -1,20 +1,22 @@
 # PostgreSQL + pgvector + pg_bigm + fuzzystrmatch + textsearch_ko
 
-# 빌드 아규먼트: PostgreSQL 버전 (기본값 18)
+# 빌드 아규먼트: PostgreSQL 버전 (기본값 18) + variant (예: -trixie)
 ARG PG_VERSION=18
+ARG PG_VARIANT=-trixie
 
 # 베이스 이미지: pgvector (동적 버전)
-FROM pgvector/pgvector:pg${PG_VERSION}
+FROM pgvector/pgvector:pg${PG_VERSION}${PG_VARIANT}
 
 # FROM 이후에 ARG 재선언 필요
 ARG PG_VERSION
+ARG PG_VARIANT
 
 COPY mecab-ko-dic-2.1.1-20180720.tar.gz /tmp/mecab-ko-dic-2.1.1.tar.gz
 
 # 필수 패키지 설치, 확장 빌드 및 정리
-RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-${PG_VERSION} postgresql-contrib-${PG_VERSION} automake1.11" \
+RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-server-dev-${PG_VERSION} postgresql-contrib-${PG_VERSION} automake" \
     && apt-get update \
-    && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates mecab \
+    && apt-get install -y --no-install-recommends $BUILD_DEPS ca-certificates mecab autotools-dev \
     \
     # pg_bigm 설치 (특정 버전 고정)
     && git clone --branch REL1_2_STABLE --depth 1 https://github.com/pgbigm/pg_bigm.git /tmp/pg_bigm \
@@ -26,12 +28,15 @@ RUN BUILD_DEPS="git build-essential wget curl libicu-dev libxml2-dev postgresql-
     && wget https://bitbucket.org/eunjeon/mecab-ko/get/908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz \
     && tar -xzf 908db8de3cb5f4931b4e3a7a5a3894daefb98c37.tar.gz \
     && cd eunjeon-mecab-ko-908db8de3cb5 \
+    && cp /usr/share/misc/config.guess /usr/share/misc/config.sub . \
     && ./configure && make && make install \
     \
     # mecab-ko-dic 설치
     && cd /tmp \
     && tar -xzf mecab-ko-dic-2.1.1.tar.gz && ls -la \
     && cd mecab-ko-dic-2.1.1-20180720 \
+    && cp /usr/share/misc/config.guess /usr/share/misc/config.sub . \
+    && (touch configure.ac aclocal.m4 Makefile.in configure 2>/dev/null || true) \
     && ./configure && make && make install \
     \
     # textsearch_ko 설치 (특정 커밋 고정)
