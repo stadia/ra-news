@@ -1,0 +1,21 @@
+# Generated from app/functions/articles/grounding_check.rb with RBS::Inline
+
+module Articles
+  module GroundingCheck
+    extend FunctionLogger
+
+    THRESHOLD: ::Float
+
+    # : (untyped article) -> Hash[Symbol, untyped]?
+    def self.run: (untyped article) -> Hash[Symbol, untyped]?
+
+    # : (untyped article) -> Hash[String, untyped]?
+    private def self.summary_payload: (untyped article) -> Hash[String, untyped]?
+
+    # : (String source, Hash[String, untyped] summary) -> Hash[String, untyped]?
+    private def self.judge: (String source, Hash[String, untyped] summary) -> Hash[String, untyped]?
+
+    # : (String source, Hash[String, untyped] summary) -> String
+    private def self.prompt: (String source, Hash[String, untyped] summary) -> String
+  end
+end
