@@ -1,8 +1,27 @@
 # RAG 강화 백로그 (취사선택 결과)
 
-> 상태: **보류** — `feature/hybrid-search` 머지/릴리즈 후 진행
+> 상태: **재측정/재범위 필요** — 2026-06-12 재검토 결과 전제 일부 붕괴 (아래 갱신 노트)
 > 작성일: 2026-06-11
 > 출처: RubyLLM/Rails Agentic RAG 가이드 4편 검토 후 취사선택
+
+## ⚠️ 2026-06-12 갱신 노트 (실행 전 필독)
+
+이 문서 작성 이후 `feature/hybrid-강화` 브랜치에서 임베딩 인프라가 변경되어
+아래 "현재 구조" 서술의 핵심 전제가 무효화됨. 실행 판단 시 이 노트를 우선한다.
+
+- 모델: `gemini-embedding-001`(2,048토큰) → **`gemini-embedding-2`(8,192토큰)**
+- 차원: 1536(잘라 사용) → **full 3072 MRL (`halfvec` 컬럼)**
+- 인덱스: HNSW `vector_l2_ops` → **`halfvec_cosine_ops`** (코사인)
+- 코드: `article_agents_service.rb` run_embed 이 8192토큰/3072차원으로 호출
+
+**항목별 재평가:**
+- **A (청킹) — 최우선 아님**: "54.4% silent truncation"은 2,048토큰 기준치였음.
+  한도 4배(8,192토큰≈32,768자)가 되며 분포상(p90=34,215자) 초과율 ~54% → **대략 10%**로 급감.
+  착수하려면 8,192토큰 기준 + ko/ja 보정 초과율 재측정 선결. 위급성 소멸, long-tail 초장문만 잔존.
+- **D (평가셋) — 상당 부분 이미 구현됨**: PR #769에서 `lib/search_benchmark.rb`(MRR/NDCG/Recall)
+  + `search_eval_queries.yml` + `search:benchmark` rake로 FTS vs Hybrid before/after 구축 완료.
+  남은 건 "4 실패유형 라벨링"뿐 → 신규 spec 불필요, 후속 이슈로 강등.
+- **C (추론기록+근거확인) — 전제 그대로 유효**: 검색과 독립된 에이전트 생성 측. 유일하게 즉시 착수 가능.
 
 ## 배경
 
