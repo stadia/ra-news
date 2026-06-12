@@ -59,7 +59,9 @@ ko:
         loading: Google 검색 결과를 불러오는 중입니다.
       heading: 지난 글들
       item_list_name: Ruby-News 지난 글 모음
+      no_results: 검색 결과가 없습니다.
       search_source: 검색 소스
+      try_searching: "다른 검색어를 시도해보세요:"
       tabs:
         google: Google
         ruby_news: Ruby-News

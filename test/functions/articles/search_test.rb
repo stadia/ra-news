@@ -110,4 +110,30 @@ class Articles::SearchTest < ActiveSupport::TestCase
       query_vector: [ 1.0, 0.0 ], candidates: [], lambda: 0.7, limit: 5
     )
   end
+
+  # ── suggest ─────────────────────────────────────────────────────
+
+  test "suggest returns empty array for blank query" do
+    assert_equal [], Articles::Search.suggest("")
+    assert_equal [], Articles::Search.suggest("   ")
+    assert_equal [], Articles::Search.suggest(nil)
+  end
+
+  test "suggest returns array of strings" do
+    result = Articles::Search.suggest("Ruby")
+
+    assert_kind_of Array, result
+  end
+
+  test "suggest respects limit parameter by returning at most limit results" do
+    result = Articles::Search.suggest("Ruby", limit: 2)
+
+    assert_operator result.size, :<=, 2
+  end
+
+  test "suggest returns unique titles without duplicates" do
+    result = Articles::Search.suggest("Ruby")
+
+    assert_equal result.uniq, result
+  end
 end

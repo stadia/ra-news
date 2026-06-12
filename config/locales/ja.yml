@@ -59,7 +59,9 @@ ja:
         loading: Google 検索結果を読み込んでいます。
       heading: 過去の記事
       item_list_name: Ruby-News 過去の記事
+      no_results: 検索結果がありません。
       search_source: 検索ソース
+      try_searching: "他のキーワードをお試しください:"
       tabs:
         google: Google
         ruby_news: Ruby-News

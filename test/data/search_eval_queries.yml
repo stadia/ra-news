@@ -1,0 +1,48 @@
+# 평가용 검색 쿼리 — hybrid search 벤치마크 데이터
+# 각 항목: query(검색어), relevant_titles(정답 기사 title_ko — DB에서 자동 조회)
+#
+# 추가 방법:
+#   1. 벤치마크용 기사를 seed_benchmark_data! 에 추가
+#   2. 해당 기사의 title_ko를 relevant_titles에 나열
+#
+# --- Type 1: FTS 정확 매칭 (FTS ≈ Hybrid) ---
+ruby_performance:
+  query: "Ruby 3.4 performance"
+  relevant_titles:
+    - "[BENCH] Ruby 3.4 성능 최적화"
+
+# --- Type 2: 동의어·의미 기반 (Vector > FTS) ---
+ruby_speed:
+  query: "Ruby 속도 향상"                    # "속도"는 본문에 없고 "성능"만 있음
+  relevant_titles:
+    - "[BENCH] Ruby 3.4 성능 최적화"
+
+# --- Type 3: 축약어·약어 (FTS 불리) ---
+nlp_trend:
+  query: "NLP 인공지능"                       # "인공지능"은 본문에 없고 "NLP" + "Transformer"로 유추
+  relevant_titles:
+    - "[BENCH] 한국어 NLP 기술 동향"
+
+# --- Type 4: 한국어-영어 크로스 ---
+korean_ai:
+  query: "자연어처리 기술"                    # 본문에 "자연어 처리"(띄어쓰기)로 존재
+  relevant_titles:
+    - "[BENCH] 한국어 NLP 기술 동향"
+
+# --- Type 5: FTS 키워드 매칭 (FTS 강점) ---
+rails_async:
+  query: "Rails async query"
+  relevant_titles:
+    - "[BENCH] Rails 8 비동기 쿼리 가이드"
+
+# --- Type 6: Vector-only 발견 (의미적 유사성으로만 찾을 수 있는 케이스) ---
+yjit:
+  query: "YJIT compiler optimization"       # pg_content에 "YJIT" 있음 → FTS도 잡음. 하지만 embedding 유사도가 더 높을 수 있음
+  relevant_titles:
+    - "[BENCH] Ruby 3.4 성능 최적화"
+
+# --- Type 7: 순수 동의어 — 본문에 없는 단어 (Vector만 가능, FTS는 실패) ---
+speedup:
+  query: "Ruby execution speedup"            # "speedup"은 어떤 pg_content에도 없음 → FTS 완전 실패, 벡터만 가능
+  relevant_titles:
+    - "[BENCH] Ruby 3.4 성능 최적화"

@@ -1,0 +1,16 @@
+default: &default
+  candidate_pool: 100
+  rrf_k: 60
+  cosine_threshold: 0.6
+  mmr_lambda: 0.7
+  embed_cache_ttl: 43200  # seconds (12 hours)
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+  candidate_pool: 10  # test 환경에서는 작은 풀로 빠르게
+
+production:
+  <<: *default
