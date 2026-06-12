@@ -1,0 +1,4 @@
+# Generated from app/agents/grounding_agent.rb with RBS::Inline
+
+class GroundingAgent < RubyLLM::Agent
+end
