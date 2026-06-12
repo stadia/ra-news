@@ -79,9 +79,11 @@ I18n/GetText/DecorateFunctionMessage:
 I18n/RailsI18n/DecorateString:
   Exclude:
     - "test/**/*"
+    - "spec/**/*"
     - "lib/tasks/search_benchmark.rake" # 벤치마크 seed fixture — 번역 대상 UI 문자열 아님
 
 I18n/GetText/DecorateString:
   Exclude:
     - "test/**/*"
+    - "spec/**/*"
     - "lib/tasks/search_benchmark.rake" # 벤치마크 seed fixture — 번역 대상 UI 문자열 아님

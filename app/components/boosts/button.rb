@@ -57,9 +57,9 @@ class Components::Boosts::Button < Components::Base
   def button_path
     case @boostable
     when Post
-      post_boost_path(@boostable)
+      api_v1_post_boost_path(@boostable)
     when Article
-      article_boost_path(@boostable)
+      api_v1_article_boost_path(@boostable)
     else
       raise ArgumentError, "Unsupported boostable: #{@boostable.class.name}"
     end

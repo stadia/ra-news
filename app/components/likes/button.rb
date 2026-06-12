@@ -51,9 +51,9 @@ class Components::Likes::Button < Components::Base
   def button_path
     case @likeable
     when Post
-      post_like_path(@likeable)
+      api_v1_post_like_path(@likeable)
     when Article
-      article_like_path(@likeable)
+      api_v1_article_like_path(@likeable)
     else
       raise ArgumentError, "Unsupported likeable: #{@likeable.class.name}"
     end

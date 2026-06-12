@@ -10,7 +10,8 @@ ruby_article:
   slug: ruby-3-4-features
   published_at: <%= 2.days.ago %>
   body: "Ruby 3.4 brings exciting new features including improved performance and better syntax."
-  summary_key: "Ruby 3.4의 주요 개선사항"
+  summary_key:
+    - "Ruby 3.4의 주요 개선사항"
   summary_detail:
     {
       "body": "성능 향상과 새로운 문법이 Ruby 3.4의 핵심입니다.",
@@ -45,7 +46,8 @@ korean_content_article:
   slug: rails-8-0-release
   published_at: <%= 3.days.ago %>
   body: "레일스 8.0이 출시되었습니다. 새로운 기능들과 개선사항을 확인해보세요."
-  summary_key: "레일스 8.0 주요 변경사항"
+  summary_key:
+    - "레일스 8.0 주요 변경사항"
   is_youtube: false
   is_related: true
   user: korean_user

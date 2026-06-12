@@ -32,7 +32,10 @@ class Api::V1::ArticlesController < Api::V1::BaseController
   private
     def serialize_collection(articles, pagy)
       {
-        articles: ArticleSerializer.new(articles, params: { liked_ids: liked_article_ids(articles) }).serializable_hash,
+        articles: ArticleSerializer.new(articles, params: {
+          liked_ids: liked_article_ids(articles),
+          boosted_ids: boosted_article_ids(articles)
+        }).serializable_hash,
         pagination: {
           page: pagy.page,
           next_page: pagy.next,
@@ -46,6 +49,14 @@ class Api::V1::ArticlesController < Api::V1::BaseController
         liker: current_user,
         likeable_type: "Article",
         likeable_ids: articles.map(&:id)
+      )
+    end
+
+    def boosted_article_ids(articles)
+      Boost.boosted_ids_for(
+        booster: current_user,
+        boostable_type: "Article",
+        boostable_ids: articles.map(&:id)
       )
     end
 end

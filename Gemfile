@@ -50,6 +50,10 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
+  # RSpec for API specs (used alongside minitest)
+  gem "rspec-rails", "~> 7.0"
+  gem "rswag-specs", "~> 2.16"
+
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "brakeman", require: false
 
@@ -138,6 +142,10 @@ gem "phlex-icons"
 gem "phlex-rails", "~> 2.4"
 gem "prosopite"
 gem "rack-cors"
+
+# OpenAPI/Swagger documentation
+gem "rswag-api", "~> 2.16"
+gem "rswag-ui", "~> 2.16"
 gem "rails-ai-context"
 gem "rails_semantic_logger"
 gem "reactionview", "~> 0.3.0"

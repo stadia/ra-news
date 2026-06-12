@@ -1,0 +1,19 @@
+# Generated from app/controllers/api/v1/boosts_controller.rb with RBS::Inline
+
+class Api::V1::BoostsController < ApplicationController
+  BOOSTABLE_CLASSES: untyped
+
+  def create: () -> untyped
+
+  def destroy: () -> untyped
+
+  private
+
+  def set_boostable: () -> untyped
+
+  def fallback_location: () -> untyped
+
+  def boost_status_json: () -> untyped
+
+  def find_boostable: (untyped boostable_class, untyped boostable_id) -> untyped
+end

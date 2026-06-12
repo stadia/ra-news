@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class BoostsController < ApplicationController
+class Api::V1::BoostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_boostable
 

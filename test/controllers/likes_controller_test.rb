@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class LikesControllerTest < ActionDispatch::IntegrationTest
+class Api::V1::LikesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:john)
     @post = posts(:root_post)
@@ -13,7 +13,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
 
     assert_difference("Like.count", 1) do
-      post post_like_path(@post), params: { likeable_type: "Post" }, as: :turbo_stream
+      post api_v1_post_like_path(@post), params: { likeable_type: "Post" }, as: :turbo_stream
     end
 
     assert_response :success
@@ -26,7 +26,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
     @user.like!(@post)
 
-    delete post_like_path(@post), params: { likeable_type: "Post" }, as: :turbo_stream
+    delete api_v1_post_like_path(@post), params: { likeable_type: "Post" }, as: :turbo_stream
 
     assert_response :success
     assert_not @user.likes?(@post)
@@ -35,7 +35,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "POST create requires authentication" do
-    post post_like_path(@post), params: { likeable_type: "Post" }
+    post api_v1_post_like_path(@post), params: { likeable_type: "Post" }
 
     assert_redirected_to new_user_session_path
   end
@@ -44,7 +44,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
 
     assert_difference("Like.count", 1) do
-      post article_like_path(@article), params: { likeable_type: "Article" }, as: :turbo_stream
+      post api_v1_article_like_path(@article), params: { likeable_type: "Article" }, as: :turbo_stream
     end
 
     assert_response :success
@@ -57,7 +57,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
     @user.like!(@article)
 
-    delete article_like_path(@article), params: { likeable_type: "Article" }, as: :turbo_stream
+    delete api_v1_article_like_path(@article), params: { likeable_type: "Article" }, as: :turbo_stream
 
     assert_response :success
     assert_not @user.likes?(@article)
@@ -66,7 +66,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "JSON like create without token returns 401" do
-    post article_like_path(@article, format: :json),
+    post api_v1_article_like_path(@article, format: :json),
          params: { likeable_type: "Article" },
          as: :json
 
@@ -82,7 +82,7 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
 
     assert_predicate token, :present?
 
-    post article_like_path(@article, format: :json),
+    post api_v1_article_like_path(@article, format: :json),
          params: { likeable_type: "Article" },
          headers: { "Authorization" => token },
          as: :json

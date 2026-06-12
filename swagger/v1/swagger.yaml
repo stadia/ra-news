@@ -1,0 +1,924 @@
+---
+openapi: 3.0.1
+info:
+  title: RubyNews API
+  version: v1
+  description: |
+    RubyNews API provides access to curated tech news articles.
+
+    ## Authentication
+    This API uses JWT Bearer token authentication. After signing in via OAuth or email,
+    include the access token in the `Authorization` header:
+    ```
+    Authorization: Bearer <access_token>
+    ```
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+- bearer_auth: []
+paths:
+  "/account/edit":
+    get:
+      summary: 현재 사용자 정보 조회
+      tags:
+      - Account
+      description: 현재 로그인된 사용자의 프로필 정보를 반환합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: 사용자 정보 반환 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                        format: email
+                      name:
+                        type: string
+                        nullable: true
+                      username:
+                        type: string
+                        nullable: true
+                      unconfirmed_email:
+                        type: string
+                        nullable: true
+                      confirmed_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      likees_count:
+                        type: integer
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+                      avatar_url:
+                        type: string
+                        nullable: true
+                    required:
+                    - id
+                    - email
+                    - likees_count
+                    - created_at
+                    - updated_at
+                required:
+                - user
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  "/api/v1/articles":
+    get:
+      summary: 기사 목록 조회
+      tags:
+      - Articles
+      description: 확인된(confirmed) 기사 목록을 페이지네이션과 함께 반환합니다.
+      security: []
+      parameters:
+      - name: search
+        in: query
+        required: false
+        description: 검색 키워드 (제목/내용 기반 풀텍스트 검색)
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 기사 목록 반환 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  articles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        slug:
+                          type: string
+                        title:
+                          type: string
+                        title_ko:
+                          type: string
+                          nullable: true
+                        url:
+                          type: string
+                        host:
+                          type: string
+                        is_related:
+                          type: boolean
+                        likers_count:
+                          type: integer
+                        posts_count:
+                          type: integer
+                        published_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                        summary_key:
+                          type: array
+                          items:
+                            type: string
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                        liked:
+                          type: boolean
+                        boosted:
+                          type: boolean
+                        boosts_count:
+                          type: integer
+                      required:
+                      - slug
+                      - title
+                      - url
+                      - host
+                      - is_related
+                      - likers_count
+                      - posts_count
+                      - created_at
+                      - updated_at
+                      - tags
+                      - liked
+                      - boosted
+                      - boosts_count
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: string
+                        nullable: true
+                        description: keyset 페이지네이션 커서 (nullable)
+                      next_page:
+                        type: string
+                        nullable: true
+                        description: 다음 페이지 keyset 커서
+                      limit:
+                        type: integer
+                    required:
+                    - limit
+                required:
+                - articles
+                - pagination
+  "/api/v1/articles/others":
+    get:
+      summary: 기타 기사 조회
+      tags:
+      - Articles
+      description: 관련(is_related) 기사가 아닌 기사들을 페이지네이션과 함께 반환합니다.
+      security: []
+      responses:
+        '200':
+          description: 기타 기사 목록 반환 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  articles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        slug:
+                          type: string
+                        title:
+                          type: string
+                        title_ko:
+                          type: string
+                          nullable: true
+                        url:
+                          type: string
+                        host:
+                          type: string
+                        is_related:
+                          type: boolean
+                        likers_count:
+                          type: integer
+                        posts_count:
+                          type: integer
+                        published_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                        summary_key:
+                          type: array
+                          items:
+                            type: string
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                        liked:
+                          type: boolean
+                        boosted:
+                          type: boolean
+                        boosts_count:
+                          type: integer
+                      required:
+                      - slug
+                      - title
+                      - url
+                      - host
+                      - is_related
+                      - likers_count
+                      - posts_count
+                      - created_at
+                      - updated_at
+                      - tags
+                      - liked
+                      - boosted
+                      - boosts_count
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: string
+                        nullable: true
+                        description: keyset 페이지네이션 커서 (nullable)
+                      next_page:
+                        type: string
+                        nullable: true
+                        description: 다음 페이지 keyset 커서
+                      limit:
+                        type: integer
+                    required:
+                    - limit
+                required:
+                - articles
+                - pagination
+  "/api/v1/articles/tag/{keyword}":
+    get:
+      summary: 태그로 기사 조회
+      tags:
+      - Articles
+      description: 특정 태그 키워드가 포함된 기사 목록을 페이지네이션과 함께 반환합니다.
+      security: []
+      parameters:
+      - name: keyword
+        in: path
+        required: true
+        description: '검색할 태그 키워드 (예: ruby, rails)'
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 태그 기사 목록 반환 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  articles:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        slug:
+                          type: string
+                        title:
+                          type: string
+                        title_ko:
+                          type: string
+                          nullable: true
+                        url:
+                          type: string
+                        host:
+                          type: string
+                        is_related:
+                          type: boolean
+                        likers_count:
+                          type: integer
+                        posts_count:
+                          type: integer
+                        published_at:
+                          type: string
+                          format: date-time
+                          nullable: true
+                        created_at:
+                          type: string
+                          format: date-time
+                        updated_at:
+                          type: string
+                          format: date-time
+                        summary_key:
+                          type: array
+                          items:
+                            type: string
+                        tags:
+                          type: array
+                          items:
+                            type: string
+                        liked:
+                          type: boolean
+                        boosted:
+                          type: boolean
+                        boosts_count:
+                          type: integer
+                      required:
+                      - slug
+                      - title
+                      - url
+                      - host
+                      - is_related
+                      - likers_count
+                      - posts_count
+                      - created_at
+                      - updated_at
+                      - tags
+                      - liked
+                      - boosted
+                      - boosts_count
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: string
+                        nullable: true
+                        description: keyset 페이지네이션 커서 (nullable)
+                      next_page:
+                        type: string
+                        nullable: true
+                        description: 다음 페이지 keyset 커서
+                      limit:
+                        type: integer
+                    required:
+                    - limit
+                required:
+                - articles
+                - pagination
+  "/api/v1/auth/refresh":
+    post:
+      summary: 액세스 토큰 갱신
+      tags:
+      - Authentication
+      description: |
+        리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+        기존 리프레시 토큰은 폐기(revoke)되고, 새 리프레시 토큰이 함께 발급됩니다.
+
+        ## 응답 필드
+        - `access_token`: 새 JWT 액세스 토큰
+        - `refresh_token`: 새 리프레시 토큰
+        - `expires_in`: 액세스 토큰 만료 시간 (초)
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: 토큰 갱신 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: JWT 액세스 토큰
+                  refresh_token:
+                    type: string
+                    description: 새 리프레시 토큰
+                  expires_in:
+                    type: integer
+                    description: 액세스 토큰 만료 시간(초)
+                required:
+                - access_token
+                - refresh_token
+                - expires_in
+        '401':
+          description: 유효하지 않은 리프레시 토큰
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+                  description: 유효한 리프레시 토큰
+              required:
+              - refresh_token
+  "/api/v1/articles/{article_id}/boost":
+    post:
+      summary: 기사 부스트
+      tags:
+      - Boosts
+      description: 지정된 기사를 부스트(공유)합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        description: 기사 slug
+        schema:
+          type: string
+      responses:
+        '201':
+          description: 부스트 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  boostable_type:
+                    type: string
+                  boostable_slug:
+                    type: string
+                  boosted:
+                    type: boolean
+                  boosts_count:
+                    type: integer
+                required:
+                - boostable_type
+                - boostable_slug
+                - boosted
+                - boosts_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+    delete:
+      summary: 기사 부스트 취소
+      tags:
+      - Boosts
+      description: 지정된 기사의 부스트를 취소합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        description: 기사 slug
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 부스트 취소 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  boostable_type:
+                    type: string
+                  boostable_slug:
+                    type: string
+                  boosted:
+                    type: boolean
+                  boosts_count:
+                    type: integer
+                required:
+                - boostable_type
+                - boostable_slug
+                - boosted
+                - boosts_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  "/api/v1/posts/{post_id}/boost":
+    post:
+      summary: 포스트 부스트
+      tags:
+      - Boosts
+      description: 지정된 포스트를 부스트(공유)합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        description: 포스트 slug
+        schema:
+          type: string
+      responses:
+        '201':
+          description: 부스트 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  boostable_type:
+                    type: string
+                  boostable_slug:
+                    type: string
+                  boosted:
+                    type: boolean
+                  boosts_count:
+                    type: integer
+                required:
+                - boostable_type
+                - boostable_slug
+                - boosted
+                - boosts_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+    delete:
+      summary: 포스트 부스트 취소
+      tags:
+      - Boosts
+      description: 지정된 포스트의 부스트를 취소합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        description: 포스트 slug
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 부스트 취소 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  boostable_type:
+                    type: string
+                  boostable_slug:
+                    type: string
+                  boosted:
+                    type: boolean
+                  boosts_count:
+                    type: integer
+                required:
+                - boostable_type
+                - boostable_slug
+                - boosted
+                - boosts_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  "/api/v1/articles/{article_id}/like":
+    post:
+      summary: 기사 좋아요
+      tags:
+      - Likes
+      description: 지정된 기사에 좋아요를 추가합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        description: 기사 slug
+        schema:
+          type: string
+      responses:
+        '201':
+          description: 좋아요 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  likeable_type:
+                    type: string
+                  likeable_slug:
+                    type: string
+                  liked:
+                    type: boolean
+                  likes_count:
+                    type: integer
+                required:
+                - likeable_type
+                - likeable_slug
+                - liked
+                - likes_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+    delete:
+      summary: 기사 좋아요 취소
+      tags:
+      - Likes
+      description: 지정된 기사의 좋아요를 취소합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: article_id
+        in: path
+        required: true
+        description: 기사 slug
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 좋아요 취소 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  likeable_type:
+                    type: string
+                  likeable_slug:
+                    type: string
+                  liked:
+                    type: boolean
+                  likes_count:
+                    type: integer
+                required:
+                - likeable_type
+                - likeable_slug
+                - liked
+                - likes_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  "/api/v1/posts/{post_id}/like":
+    post:
+      summary: 포스트 좋아요
+      tags:
+      - Likes
+      description: 지정된 포스트에 좋아요를 추가합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        description: 포스트 slug
+        schema:
+          type: string
+      responses:
+        '201':
+          description: 좋아요 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  likeable_type:
+                    type: string
+                  likeable_slug:
+                    type: string
+                  liked:
+                    type: boolean
+                  likes_count:
+                    type: integer
+                required:
+                - likeable_type
+                - likeable_slug
+                - liked
+                - likes_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+    delete:
+      summary: 포스트 좋아요 취소
+      tags:
+      - Likes
+      description: 지정된 포스트의 좋아요를 취소합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        description: 포스트 slug
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 좋아요 취소 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  likeable_type:
+                    type: string
+                  likeable_slug:
+                    type: string
+                  liked:
+                    type: boolean
+                  likes_count:
+                    type: integer
+                required:
+                - likeable_type
+                - likeable_slug
+                - liked
+                - likes_count
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+  "/login":
+    post:
+      summary: 로그인
+      tags:
+      - Authentication
+      description: |
+        이메일과 비밀번호로 로그인하여 JWT 액세스 토큰과 리프레시 토큰을 발급받습니다.
+
+        응답 헤더 `Authorization`에 Bearer 토큰이 포함됩니다.
+      security: []
+      parameters: []
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      email:
+                        type: string
+                      name:
+                        type: string
+                        nullable: true
+                      username:
+                        type: string
+                        nullable: true
+                      unconfirmed_email:
+                        type: string
+                        nullable: true
+                      confirmed_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      likees_count:
+                        type: integer
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+                      avatar_url:
+                        type: string
+                        nullable: true
+                    required:
+                    - id
+                    - email
+                    - likees_count
+                    - created_at
+                    - updated_at
+                  refresh_token:
+                    type: string
+                    description: 리프레시 토큰
+                required:
+                - user
+                - refresh_token
+        '401':
+          description: 로그인 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                - error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                      description: 이메일 주소
+                    password:
+                      type: string
+                      format: password
+                      description: 비밀번호
+                  required:
+                  - email
+                  - password
+              required:
+              - user
+  "/logout":
+    get:
+      summary: 로그아웃
+      tags:
+      - Authentication
+      description: 현재 사용자의 세션을 종료하고 모든 리프레시 토큰을 폐기합니다. 인증이 필요합니다.
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: 미인증 상태에서도 성공 (멱등)
+servers:
+- url: http://localhost:3000
+  description: Development server
+- url: https://ruby-news.dev
+  description: Production server

@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class BoostsControllerTest < ActionDispatch::IntegrationTest
+class Api::V1::BoostsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:john)
     @post = posts(:root_post)
@@ -13,7 +13,7 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
 
     assert_difference("Boost.count", 1) do
-      post post_boost_path(@post), params: { boostable_type: "Post" }, as: :turbo_stream
+      post api_v1_post_boost_path(@post), params: { boostable_type: "Post" }, as: :turbo_stream
     end
 
     assert_response :success
@@ -26,7 +26,7 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
     @user.boost!(@post)
 
-    delete post_boost_path(@post), params: { boostable_type: "Post" }, as: :turbo_stream
+    delete api_v1_post_boost_path(@post), params: { boostable_type: "Post" }, as: :turbo_stream
 
     assert_response :success
     assert_not @user.boosts?(@post)
@@ -35,7 +35,7 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "POST create requires authentication" do
-    post post_boost_path(@post), params: { boostable_type: "Post" }
+    post api_v1_post_boost_path(@post), params: { boostable_type: "Post" }
 
     assert_redirected_to new_user_session_path
   end
@@ -44,7 +44,7 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
 
     assert_difference("Boost.count", 1) do
-      post article_boost_path(@article), params: { boostable_type: "Article" }, as: :turbo_stream
+      post api_v1_article_boost_path(@article), params: { boostable_type: "Article" }, as: :turbo_stream
     end
 
     assert_response :success
@@ -57,7 +57,7 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(@user)
     @user.boost!(@article)
 
-    delete article_boost_path(@article), params: { boostable_type: "Article" }, as: :turbo_stream
+    delete api_v1_article_boost_path(@article), params: { boostable_type: "Article" }, as: :turbo_stream
 
     assert_response :success
     assert_not @user.boosts?(@article)
@@ -66,7 +66,7 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "JSON boost create without token returns 401" do
-    post article_boost_path(@article, format: :json),
+    post api_v1_article_boost_path(@article, format: :json),
          params: { boostable_type: "Article" },
          as: :json
 
@@ -82,7 +82,7 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_predicate token, :present?
 
-    post article_boost_path(@article, format: :json),
+    post api_v1_article_boost_path(@article, format: :json),
          params: { boostable_type: "Article" },
          headers: { "Authorization" => token },
          as: :json

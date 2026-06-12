@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount Rswag::Ui::Engine => "/api-docs"
+  mount Rswag::Api::Engine => "/api-docs"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   draw :madmin
 
@@ -30,15 +32,19 @@ Rails.application.routes.draw do
           get :others
           get "tag/:keyword", action: :tag, as: :tag, format: false, constraints: { keyword: /[^\/]+/ }
         end
+        resource :like, only: %i[create destroy], controller: :likes, defaults: { likeable_type: "Article" }
+        resource :boost, only: %i[create destroy], controller: :boosts, defaults: { boostable_type: "Article" }
+      end
+
+      resources :posts, only: [] do
+        resource :like, only: %i[create destroy], controller: :likes, defaults: { likeable_type: "Post" }
+        resource :boost, only: %i[create destroy], controller: :boosts, defaults: { boostable_type: "Post" }
       end
     end
   end
 
   resource :push_subscription, only: %i[ create destroy ]
-  resources :posts, only: [ :show, :create ] do
-    resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Post" }
-    resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Post" }
-  end
+  resources :posts, only: [ :show, :create ]
   resources :blog_posts, only: [ :create, :edit, :update, :destroy ] do
     member do
       patch :publish
@@ -50,8 +56,6 @@ Rails.application.routes.draw do
   # editor; POST carries an in-progress body over from the composer.
   match "blog_posts/new", to: "blog_posts#new", as: :new_blog_post, via: [ :get, :post ]
   resources :articles, only: %i[index show new create] do
-    resource :like, only: [ :create, :destroy ], controller: :likes, defaults: { likeable_type: "Article" }
-    resource :boost, only: [ :create, :destroy ], controller: :boosts, defaults: { boostable_type: "Article" }
     resources :posts, only: %i[create destroy]
   end
 
