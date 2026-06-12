@@ -61,6 +61,9 @@ class ArticleResource < Madmin::Resource
     actions << button_to("재처리", reprocess_madmin_article_path(record), method: :put, data: { turbo_confirm: "이 기사의 AI 요약을 다시 생성하시겠습니까?" },
       class: "btn btn-primary bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700")
 
+    actions << button_to("썸네일 재생성", regenerate_thumbnail_madmin_article_path(record), method: :put, data: { turbo_confirm: "이 기사의 썸네일을 삭제하고 다시 생성하시겠습니까?" },
+      class: "btn btn-primary bg-indigo-600 text-white rounded px-4 py-2 hover:bg-indigo-700")
+
     safe_join(actions, " ")
   end
 

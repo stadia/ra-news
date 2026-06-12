@@ -5,8 +5,8 @@
 class ArticleThumbnailJob < ApplicationJob
   queue_as :default
 
-  #: (Integer article_id) -> void
-  def perform(article_id)
+  #: (Integer article_id, ?force: bool) -> void
+  def perform(article_id, force: false)
     article = Article.find_by(id: article_id)
 
     if article.nil?
@@ -15,8 +15,13 @@ class ArticleThumbnailJob < ApplicationJob
     end
 
     if article.thumbnail.attached?
-      logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
-      return
+      if force
+        article.thumbnail.purge
+        logger.info "ArticleThumbnailJob purged existing thumbnail for article #{article_id} (force)"
+      else
+        logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
+        return
+      end
     end
 
     if article.is_youtube?
@@ -103,7 +108,7 @@ class ArticleThumbnailJob < ApplicationJob
   def build_prompt(summary_key)
     points = summary_key.each_with_index.map { |s, i| "#{i + 1}. #{s}" }.join("\n")
     <<~PROMPT.strip
-      다음은 기술 뉴스 기사의 핵심 요약이다. 이 요약을 인포그래픽 썸네일 한 장으로 시각화한다.
+      다음은 기술 뉴스 기사의 핵심 요약이다. 이 요약을 인포그래픽 이미지 한 장으로 시각화한다.
 
       [요약]
       #{points}
