@@ -22,6 +22,10 @@ class PostSerializer
     post.author_host
   end
 
+  attribute :author_avatar_url do |post|
+    post.user&.avatar_url || post.federails_actor&.extensions&.dig("icon", "url")
+  end
+
   attribute :article_slug do |post|
     post.article&.slug
   end

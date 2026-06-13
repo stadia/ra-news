@@ -207,6 +207,7 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil own_post_data, "Own post should appear in feed"
     assert own_post_data["liked"], "Own liked post should have liked: true"
     refute own_post_data["boosted"], "Unboosted post should have boosted: false"
+    assert own_post_data.key?("author_avatar_url"), "Post should expose author_avatar_url key"
   end
 
   private

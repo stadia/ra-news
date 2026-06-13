@@ -43,6 +43,7 @@ RSpec.describe 'Feed', type: :request do
                        boosted: { type: :boolean },
                        author_name: { type: :string, nullable: true },
                        author_host: { type: :string, nullable: true },
+                       author_avatar_url: { type: :string, nullable: true },
                        article_slug: { type: :string, nullable: true },
                        parent_slug: { type: :string, nullable: true },
                        boosted_by: { type: :string, nullable: true },
