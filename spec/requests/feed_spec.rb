@@ -45,9 +45,21 @@ RSpec.describe 'Feed', type: :request do
                        author_host: { type: :string, nullable: true },
                        article_slug: { type: :string, nullable: true },
                        parent_slug: { type: :string, nullable: true },
-                       boosted_by: { type: :string, nullable: true }
+                       boosted_by: { type: :string, nullable: true },
+                       media_attachments: {
+                         type: :array,
+                         items: {
+                           type: :object,
+                           properties: {
+                             url: { type: :string },
+                             mediaType: { type: :string, nullable: true },
+                             name: { type: :string, nullable: true }
+                           },
+                           required: %w[url]
+                         }
+                       }
                      },
-                     required: %w[id body post_type created_at updated_at likes_count boosts_count liked boosted]
+                     required: %w[id body post_type created_at updated_at likes_count boosts_count liked boosted media_attachments]
                    }
                  },
                  pagination: {
