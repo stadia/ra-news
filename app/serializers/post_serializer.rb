@@ -33,4 +33,8 @@ class PostSerializer
   attribute :boosted_by do |post|
     params[:boosters_by_post_id]&.dig(post.id)&.username
   end
+
+  attribute :media_attachments do |post|
+    post.media_attachments
+  end
 end
