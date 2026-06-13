@@ -18,15 +18,15 @@ module Articles
       def index_json(search = nil)
         return json_candidate_scope(search) if search.present?
 
-        related_scope
+        related_scope.order(published_at: :desc, id: :desc)
       end
 
       def others
-        others_scope.unrelated
+        others_scope.unrelated.order(published_at: :desc, id: :desc)
       end
 
       def tagged(keyword)
-        others_scope.tagged_with(keyword, on: :tags)
+        others_scope.tagged_with(keyword, on: :tags).order(published_at: :desc, id: :desc)
       end
 
       private
@@ -46,6 +46,7 @@ module Articles
         return base_scope.none if ids.empty?
 
         base_scope.where(id: ids).includes(*DEFAULT_INCLUDES).without_toast
+                .order(published_at: :desc, id: :desc)
       end
 
       def html_candidate_scope(search)

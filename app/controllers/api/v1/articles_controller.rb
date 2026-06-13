@@ -6,26 +6,17 @@ class Api::V1::ArticlesController < Api::V1::BaseController
   skip_before_action :authenticate_user!, only: %i[index others tag]
 
   def index
-    @pagy, @articles = pagy(
-      :keyset,
-      Articles::Query.index_json(params[:search]).reorder(published_at: :desc, id: :desc)
-    )
+    @pagy, @articles = pagy(:keyset, Articles::Query.index_json(params[:search]))
     render json: serialize_collection(@articles, @pagy)
   end
 
   def others
-    @pagy, @articles = pagy(
-      :keyset,
-      Articles::Query.others.reorder(published_at: :desc, id: :desc)
-    )
+    @pagy, @articles = pagy(:keyset, Articles::Query.others)
     render json: serialize_collection(@articles, @pagy)
   end
 
   def tag
-    @pagy, @articles = pagy(
-      :keyset,
-      Articles::Query.tagged(params[:keyword].to_s).reorder(published_at: :desc, id: :desc)
-    )
+    @pagy, @articles = pagy(:keyset, Articles::Query.tagged(params[:keyword].to_s))
     render json: serialize_collection(@articles, @pagy)
   end
 
