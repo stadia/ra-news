@@ -11,6 +11,15 @@ class FeedController < ApplicationController
 
   def pundit_user: () -> untyped
 
+  # : (ActiveRecord::Relation[Post] posts, Pagy pagy, Hash[Integer, Federails::Actor] boosters) -> Hash[Symbol, untyped]
+  def serialize_collection: (ActiveRecord::Relation[Post] posts, Pagy pagy, Hash[Integer, Federails::Actor] boosters) -> Hash[Symbol, untyped]
+
+  # : (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+  def liked_post_ids: (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+
+  # : (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+  def boosted_post_ids: (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+
   # Returns a hash of { post_id => Federails::Actor } for posts that landed in
   # the feed because someone the current user follows (or the user themselves)
   # boosted them. Posts authored by the current user or by a followed actor are

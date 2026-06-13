@@ -21,7 +21,7 @@ module Articles
     # in_order_of로 관련도 순위를 매기지 않는다 — keyset 페이지네이션 호환을 유지한다.
     private def self.json_candidate_scope: (untyped search) -> untyped
 
-    private def self.hybrid_search_scope: (untyped search) -> untyped
+    private def self.html_candidate_scope: (untyped search) -> untyped
 
     private def self.excluded_related_article_ids: (untyped scope) -> untyped
 

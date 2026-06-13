@@ -1,0 +1,36 @@
+# frozen_string_literal: true
+
+class PostSerializer
+  include Alba::Resource
+  attributes :id, :slug, :body, :post_type, :status,
+             :created_at, :updated_at,
+             :likes_count, :boosts_count
+
+  attribute :liked do |post|
+    params[:liked_ids]&.include?(post.id) || false
+  end
+
+  attribute :boosted do |post|
+    params[:boosted_ids]&.include?(post.id) || false
+  end
+
+  attribute :author_name do |post|
+    post.author_name
+  end
+
+  attribute :author_host do |post|
+    post.author_host
+  end
+
+  attribute :article_slug do |post|
+    post.article&.slug
+  end
+
+  attribute :parent_slug do |post|
+    post.parent&.slug
+  end
+
+  attribute :boosted_by do |post|
+    params[:boosters_by_post_id]&.dig(post.id)&.username
+  end
+end

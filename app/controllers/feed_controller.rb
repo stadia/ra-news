@@ -8,6 +8,7 @@ class FeedController < ApplicationController
   after_action :verify_authorized
 
   before_action :authenticate_user!
+  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }, only: [ :show ]
 
   def show
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
@@ -28,31 +29,64 @@ class FeedController < ApplicationController
       .order(created_at: :desc)
 
     @pagy, @posts = pagy(:countless, posts, limit: 20)
-    @liked_post_ids = Like.liked_ids_for(
-      liker: current_user,
-      likeable_type: "Post",
-      likeable_ids: @posts.map(&:id)
-    )
-    @boosted_post_ids = Boost.boosted_ids_for(
-      booster: current_user,
-      boostable_type: "Post",
-      boostable_ids: @posts.map(&:id)
-    )
     @boosters_by_post_id = boosters_for_attribution(@posts, actor, following_actor_ids)
 
-    render Views::Activities::Feed.new(
-      posts: @posts,
-      pagy: @pagy,
-      liked_post_ids: @liked_post_ids,
-      boosted_post_ids: @boosted_post_ids,
-      boosters_by_post_id: @boosters_by_post_id
-    )
+    respond_to do |format|
+      format.html do
+        @liked_post_ids = liked_post_ids(@posts)
+        @boosted_post_ids = boosted_post_ids(@posts)
+
+        render Views::Activities::Feed.new(
+          posts: @posts,
+          pagy: @pagy,
+          liked_post_ids: @liked_post_ids,
+          boosted_post_ids: @boosted_post_ids,
+          boosters_by_post_id: @boosters_by_post_id
+        )
+      end
+      format.json do
+        render json: serialize_collection(@posts, @pagy, @boosters_by_post_id)
+      end
+    end
   end
 
   private
 
   def pundit_user
     current_user
+  end
+
+  #: (ActiveRecord::Relation[Post] posts, Pagy pagy, Hash[Integer, Federails::Actor] boosters) -> Hash[Symbol, untyped]
+  def serialize_collection(posts, pagy, boosters)
+    {
+      posts: PostSerializer.new(posts, params: {
+        liked_ids: liked_post_ids(posts),
+        boosted_ids: boosted_post_ids(posts),
+        boosters_by_post_id: boosters
+      }).serializable_hash,
+      pagination: {
+        next_page: pagy.next,
+        limit: pagy.limit
+      }
+    }
+  end
+
+  #: (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+  def liked_post_ids(posts)
+    Like.liked_ids_for(
+      liker: current_user,
+      likeable_type: "Post",
+      likeable_ids: posts.map(&:id)
+    )
+  end
+
+  #: (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+  def boosted_post_ids(posts)
+    Boost.boosted_ids_for(
+      booster: current_user,
+      boostable_type: "Post",
+      boostable_ids: posts.map(&:id)
+    )
   end
 
   # Returns a hash of { post_id => Federails::Actor } for posts that landed in
