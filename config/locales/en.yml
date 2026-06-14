@@ -66,6 +66,15 @@ en:
         google: Google
         ruby_news: Ruby-News
       title: Past Articles | Ruby-News
+    default_summary: A new Ruby-related article has been posted.
+    markdown:
+      source_url: Source URL
+      ruby_news_url: Ruby-News URL
+      published_at: Published
+      summary_heading: Summary
+      introduction_heading: Introduction
+      body_heading: Body
+      conclusion_heading: Conclusion
     new:
       back_to_list: Back to list
       badge: Article Intake

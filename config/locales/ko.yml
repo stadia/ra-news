@@ -66,6 +66,15 @@ ko:
         google: Google
         ruby_news: Ruby-News
       title: 지난 글 모음 | Ruby-News
+    default_summary: 새로운 Ruby 관련 글이 올라왔습니다.
+    markdown:
+      source_url: 원문 URL
+      ruby_news_url: Ruby-News URL
+      published_at: 발행일
+      summary_heading: 요약
+      introduction_heading: 소개
+      body_heading: 본문
+      conclusion_heading: 결론
     new:
       back_to_list: 목록으로 돌아가기
       badge: Article Intake

@@ -66,6 +66,15 @@ ja:
         google: Google
         ruby_news: Ruby-News
       title: 過去の記事 | Ruby-News
+    default_summary: 新しいRuby関連の記事が投稿されました。
+    markdown:
+      source_url: 元記事URL
+      ruby_news_url: Ruby-News URL
+      published_at: 公開日
+      summary_heading: 要約
+      introduction_heading: はじめに
+      body_heading: 本文
+      conclusion_heading: まとめ
     new:
       back_to_list: 一覧に戻る
       badge: Article Intake

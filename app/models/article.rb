@@ -144,13 +144,13 @@ class Article < ApplicationRecord
   def to_markdown
     [
       "# #{display_title}\n",
-      "- **원문 URL**: #{url}",
-      "- **Ruby-News URL**: #{Rails.application.routes.url_helpers.article_url(self)}",
-      (published_at.present? ? "- **발행일**: #{published_at}" : nil),
-      (display_summary_key.present? ? "\n## 요약\n#{display_summary_key.map { |item| "- #{item}" }.join("\n")}" : nil),
-      (display_summary_detail.is_a?(Hash) && display_summary_detail["introduction"].present? ? "\n## 소개\n#{display_summary_detail['introduction']}" : nil),
-      (display_summary_body.present? ? "\n## 본문\n#{display_summary_body}" : nil),
-      (display_summary_detail.is_a?(Hash) && display_summary_detail["conclusion"].present? ? "\n## 결론\n#{display_summary_detail['conclusion']}" : nil)
+      "- **#{I18n.t('articles.markdown.source_url')}**: #{url}",
+      "- **#{I18n.t('articles.markdown.ruby_news_url')}**: #{Rails.application.routes.url_helpers.article_url(self)}",
+      (published_at.present? ? "- **#{I18n.t('articles.markdown.published_at')}**: #{published_at}" : nil),
+      (display_summary_key.present? ? "\n## #{I18n.t('articles.markdown.summary_heading')}\n#{display_summary_key.map { |item| "- #{item}" }.join("\n")}" : nil),
+      (display_summary_detail.is_a?(Hash) && display_summary_detail["introduction"].present? ? "\n## #{I18n.t('articles.markdown.introduction_heading')}\n#{display_summary_detail['introduction']}" : nil),
+      (display_summary_body.present? ? "\n## #{I18n.t('articles.markdown.body_heading')}\n#{display_summary_body}" : nil),
+      (display_summary_detail.is_a?(Hash) && display_summary_detail["conclusion"].present? ? "\n## #{I18n.t('articles.markdown.conclusion_heading')}\n#{display_summary_detail['conclusion']}" : nil)
     ].compact.join("\n")
   end
 
@@ -205,7 +205,7 @@ class Article < ApplicationRecord
   #: () -> { title: String?, summary: String }
   def base_content
     title = title_ko.presence || self.title
-    summary = summary_key&.first.presence || "새로운 Ruby 관련 글이 올라왔습니다."
+    summary = summary_key&.first.presence || I18n.t("articles.default_summary")
     { title:, summary: }
   end
 
