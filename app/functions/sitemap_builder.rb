@@ -12,7 +12,7 @@ module SitemapBuilder
   # published_at은 원문에서 파싱되므로 비현실적 값(예: 1935년, 미래 날짜)이
   # 들어올 수 있고, 그대로 lastmod에 쓰면 Google Search Console이 "잘못된
   # 날짜"로 사이트맵을 거부한다. Rails 등장(2004) 이전 floor로 사용한다.
-  MIN_LASTMOD = Time.utc(2004, 1, 1)
+  MIN_LASTMOD = Time.zone.local(2004, 1, 1)
 
   class << self
     include Rails.application.routes.url_helpers
