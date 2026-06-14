@@ -40,20 +40,18 @@ module SitemapBuilder
       SitemapGenerator::Sitemap.compress      = true
 
       SitemapGenerator::Sitemap.create do
-        # 각 로케일 호스트(ko=.dev, ja=.jp)를 독립 <loc>로 등재해, 일본어
-        # canonical(ruby-news.jp)도 사이트맵의 1급 항목이 되도록 한다.
-        # 모든 항목은 동일한 hreflang alternates 세트를 함께 싣는다.
+        # 페이지당 <loc>는 1개(canonical=ko, default_host)만 등재하고, ja(.jp)는
+        # hreflang alternates로 연결한다. 양쪽을 모두 <loc>로 넣으면 GSC 발견
+        # 페이지 수가 2배가 되므로 표준 방식(1 loc + alternates)을 따른다.
         # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로
         # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
         index_lastmod = Time.current.iso8601
-        SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
-          add articles_path, host: host,
-              lastmod: index_lastmod,
-              alternates: SitemapBuilder.alternates_for(articles_path)
-          add others_path, host: host,
-              lastmod: index_lastmod,
-              alternates: SitemapBuilder.alternates_for(others_path)
-        end
+        add articles_path,
+            lastmod: index_lastmod,
+            alternates: SitemapBuilder.alternates_for(articles_path)
+        add others_path,
+            lastmod: index_lastmod,
+            alternates: SitemapBuilder.alternates_for(others_path)
 
         # 참고: lastmod는 updated_at 대신 published_at 사용
         # (updated_at은 배경 Job이 건드릴 때마다 갱신되어 Google 오탐 발생)
@@ -62,11 +60,9 @@ module SitemapBuilder
                .find_in_batches(batch_size: 500) do |batch|
           batch.each do |article|
             path = article_path(article.slug)
-            alternates = SitemapBuilder.alternates_for(path)
-            lastmod = SitemapBuilder.lastmod_for(article)
-            SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
-              add path, host: host, lastmod: lastmod, alternates: alternates
-            end
+            add path,
+                lastmod: SitemapBuilder.lastmod_for(article),
+                alternates: SitemapBuilder.alternates_for(path)
           end
         end
       end
