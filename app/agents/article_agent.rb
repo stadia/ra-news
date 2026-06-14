@@ -3,7 +3,7 @@
 
 class ArticleAgent < RubyLLM::Agent
   model "gemini-3-flash-preview"
-  temperature 0.4
+  temperature 0.1
   tools SearchRelatedArticles, GetExistingTags, ValidateSlug
 
   instructions {

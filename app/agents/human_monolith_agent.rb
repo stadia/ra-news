@@ -2,9 +2,9 @@
 # rbs_inline: enabled
 
 class HumanMonolithAgent < RubyLLM::Agent
-  model "deepseek-v4-flash", provider: :openrouter, assume_model_exists: true
-  # model "gemini-3-flash-preview"
-  temperature 0.3
+  model "google/gemma-4-31b-it", provider: :openrouter, assume_model_exists: true
+  # model "deepseek-v4-flash", provider: :openrouter, assume_model_exists: true
+  temperature 0.1
   # skills "app/skills", only: [ "humanize-korean" ]
 
   schema do
