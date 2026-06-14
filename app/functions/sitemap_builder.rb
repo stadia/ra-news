@@ -43,12 +43,15 @@ module SitemapBuilder
         # 각 로케일 호스트(ko=.dev, ja=.jp)를 독립 <loc>로 등재해, 일본어
         # canonical(ruby-news.jp)도 사이트맵의 1급 항목이 되도록 한다.
         # 모든 항목은 동일한 hreflang alternates 세트를 함께 싣는다.
+        # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로
+        # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
+        index_lastmod = Time.current.iso8601
         SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
           add articles_path, host: host,
-              lastmod: Date.current.iso8601,
+              lastmod: index_lastmod,
               alternates: SitemapBuilder.alternates_for(articles_path)
           add others_path, host: host,
-              lastmod: Date.current.iso8601,
+              lastmod: index_lastmod,
               alternates: SitemapBuilder.alternates_for(others_path)
         end
 
