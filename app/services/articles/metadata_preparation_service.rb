@@ -5,9 +5,7 @@ module Articles
   class MetadataPreparationService < OperationService
     #: (Article article) -> Dry::Monads::Result
     def call(article)
-      if article.url.blank? || !article.url.is_a?(String)
-        return Failure(article)
-      end
+      step validate_article_url(article)
 
       step normalize_article_url(article)
       response = step resolve_response(article)
@@ -20,6 +18,16 @@ module Articles
     end
 
     private
+
+    # Dry::Operation의 call에서 return Failure(...)를 직접 반환하면 Success(Failure(...))로 감싸지므로
+    # guard clause는 반드시 step으로 호출되는 별도 메서드에 위치시킨다.
+    #: (Article article) -> Dry::Monads::Result
+    def validate_article_url(article)
+      if article.url.blank? || !article.url.is_a?(String)
+        return Failure(article)
+      end
+      Success(article)
+    end
 
     #: (Article article) -> Dry::Monads::Result
     def resolve_response(article)

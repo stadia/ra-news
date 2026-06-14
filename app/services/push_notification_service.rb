@@ -4,10 +4,7 @@
 class PushNotificationService < OperationService
   #: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
   def call(user:, title:, body:, path:)
-    unless Configs::WebPush.configured?
-      logger.warn "PushNotificationService: VAPID keys not configured"
-      return Failure(:web_push_not_configured)
-    end
+    step validate_push_configured(user:, title:, body:, path:)
 
     payload = build_payload(title: title, body: body, path: path)
     step deliver_to_subscriptions(user:, payload:)
@@ -16,6 +13,19 @@ class PushNotificationService < OperationService
   #: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
   def notify_user(user:, title:, body:, path:)
     call(user:, title:, body:, path:)
+  end
+
+  protected
+
+  # Dry::Operation의 call에서 return Failure(...)를 직접 반환하면 Success(Failure(...))로 감싸지므로
+  # guard clause는 반드시 step으로 호출되는 별도 메서드에 위치시킨다.
+  #: (user: User, title: String, body: String, path: String) -> Dry::Monads::Result
+  def validate_push_configured(user:, title:, body:, path:)
+    unless Configs::WebPush.configured?
+      logger.warn "PushNotificationService: VAPID keys not configured"
+      return Failure(:web_push_not_configured)
+    end
+    Success(user:, title:, body:, path:)
   end
 
   private

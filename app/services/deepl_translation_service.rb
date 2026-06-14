@@ -11,13 +11,21 @@ class DeeplTranslationService < OperationService
 
   #: (Article article) -> Dry::Monads::Result
   def call(article)
-    return Failure(:not_configured) if ENV.fetch("DEEPL_AUTH_KEY", nil).blank?
-    return Failure(:quota_exceeded) if quota_exceeded?
-
+    step validate_deepl_available(article)
     step run_translation(article)
   end
 
   protected
+
+  # Dry::Operation의 call에서 return Failure(...)를 직접 반환하면 Success(Failure(...))로 감싸지므로
+  # guard clause는 반드시 step으로 호출되는 별도 메서드에 위치시킨다.
+  #: (Article article) -> Dry::Monads::Result
+  def validate_deepl_available(article)
+    return Failure(:not_configured) if ENV.fetch("DEEPL_AUTH_KEY", nil).blank?
+    return Failure(:quota_exceeded) if quota_exceeded?
+
+    Success(article)
+  end
 
   #: (Article article) -> Dry::Monads::Result
   def run_translation(article)

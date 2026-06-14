@@ -4,8 +4,7 @@
 class ArticleImageAgent < RubyLLM::Agent
   # model "gemini-3.1-flash-image"
   model "nano-banana-pro-preview"
-
-  temperature 0.5
+  temperature 0.4
 
   instructions {
     <<~PROMPT

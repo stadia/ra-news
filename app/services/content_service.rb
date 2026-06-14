@@ -13,11 +13,7 @@ class ContentService < OperationService
       step execute_youtube(article.url)
     elsif github_url?(article.url)
       # GitHub URL인 경우 README.md 가져오기
-      readme_url = github_readme_url(article.url)
-      return Failure(:no_content) unless readme_url
-
-      logger.info "GitHub README URL: #{readme_url}"
-      step execute_html(readme_url)
+      step execute_github_readme(article)
     else
       # 일반 URL인 경우
       step execute_html(article.url)
@@ -25,6 +21,17 @@ class ContentService < OperationService
   end
 
   protected
+
+  # Dry::Operation의 call에서 return Failure(...)를 직접 반환하면 Success(Failure(...))로 감싸지므로
+  # guard clause는 반드시 step으로 호출되는 별도 메서드에 위치시킨다.
+  #: (Article article) -> Dry::Monads::Result
+  def execute_github_readme(article)
+    readme_url = github_readme_url(article.url)
+    return Failure(:no_content) unless readme_url
+
+    logger.info "GitHub README URL: #{readme_url}"
+    execute_html(readme_url)
+  end
 
   #: (url: String) -> String?
   def execute_html(url)

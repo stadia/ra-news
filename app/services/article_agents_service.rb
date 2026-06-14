@@ -91,7 +91,10 @@ class ArticleAgentsService < OperationService
   #: (Article article) -> Hash[Symbol, untyped]
   def japanese_translation(article)
     result = DeeplTranslationService.new.call(article)
-    return result.value! if result.success?
+    if result.success?
+      attrs = result.value!
+      return attrs if attrs.is_a?(Hash)
+    end
 
     logger.warn "DeepL unavailable (#{result.failure}); falling back to ArticleJapaneseAgent for article #{article.id}"
     japanese_via_agent(article)

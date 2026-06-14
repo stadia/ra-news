@@ -144,11 +144,11 @@ gem "prosopite"
 gem "rack-cors"
 
 # OpenAPI/Swagger documentation
-gem "rswag-api", "~> 2.16"
-gem "rswag-ui", "~> 2.16"
 gem "rails-ai-context"
 gem "rails_semantic_logger"
 gem "reactionview", "~> 0.3.0"
+gem "rswag-api", "~> 2.16"
+gem "rswag-ui", "~> 2.16"
 gem "ruby_llm", "~> 1.16"
 gem "ruby_llm-schema"
 gem "ruby_llm-skills"
