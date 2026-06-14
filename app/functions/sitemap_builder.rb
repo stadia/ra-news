@@ -9,12 +9,28 @@ module SitemapBuilder
     "ja" => "https://ruby-news.jp"
   }.freeze
 
+  # published_at은 원문에서 파싱되므로 비현실적 값(예: 1935년, 미래 날짜)이
+  # 들어올 수 있고, 그대로 lastmod에 쓰면 Google Search Console이 "잘못된
+  # 날짜"로 사이트맵을 거부한다. Rails 등장(2004) 이전 floor로 사용한다.
+  MIN_LASTMOD = Time.utc(2004, 1, 1)
+
   class << self
     include Rails.application.routes.url_helpers
 
     #: (String) -> Array[Hash[Symbol, String]]
     def alternates_for(path)
       HREFLANG_HOSTS.map { |lang, host| { href: "#{host}#{path}", lang: lang } }
+    end
+
+    # lastmod 안전값: published_at이 비현실적(2004년 이전 또는 미래)이거나
+    # 없으면 신뢰 가능한 updated_at으로 대체한다.
+    #: (Article) -> String?
+    def lastmod_for(article)
+      candidate = article.published_at
+      if candidate.nil? || candidate < MIN_LASTMOD || candidate > Time.current
+        candidate = article.updated_at
+      end
+      candidate&.iso8601
     end
 
     #: () -> void
@@ -44,7 +60,7 @@ module SitemapBuilder
           batch.each do |article|
             path = article_path(article.slug)
             alternates = SitemapBuilder.alternates_for(path)
-            lastmod = (article.published_at || article.updated_at)&.iso8601
+            lastmod = SitemapBuilder.lastmod_for(article)
             SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
               add path, host: host, lastmod: lastmod, alternates: alternates
             end
