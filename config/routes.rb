@@ -75,6 +75,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#index"
 
+  # 관용 경로 /sitemap.xml → 실제 사이트맵 인덱스로 301 리다이렉트
+  # (실제 파일은 SitemapBuilder가 public/sitemaps/ 에 생성)
+  get "sitemap.xml", to: redirect("/sitemaps/sitemap.xml.gz", status: 301)
+
   get "rss"            => "home#rss",            as: :rss
   get "about"          => "home#about",          as: :about
   get "privacy-policy" => "home#privacy_policy", as: :privacy_policy
