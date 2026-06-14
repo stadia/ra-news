@@ -40,18 +40,21 @@ module SitemapBuilder
       SitemapGenerator::Sitemap.compress      = true
 
       SitemapGenerator::Sitemap.create do
-        # 페이지당 <loc>는 1개(canonical=ko, default_host)만 등재하고, ja(.jp)는
-        # hreflang alternates로 연결한다. 양쪽을 모두 <loc>로 넣으면 GSC 발견
-        # 페이지 수가 2배가 되므로 표준 방식(1 loc + alternates)을 따른다.
+        # 각 로케일 호스트(ko=.dev, ja=.jp)를 개별 <url> 블록으로 등재한다.
+        # 각 블록은 자신의 <loc> 1개 + ko/ja hreflang alternates를 모두 포함하는
+        # Google 권장 다국어 사이트맵 구조다. ko·ja가 각각 색인 대상이므로
+        # GSC 발견 페이지 수가 2배가 되는 것은 정상이다.
         # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로
         # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
         index_lastmod = Time.current.iso8601
-        add articles_path,
-            lastmod: index_lastmod,
-            alternates: SitemapBuilder.alternates_for(articles_path)
-        add others_path,
-            lastmod: index_lastmod,
-            alternates: SitemapBuilder.alternates_for(others_path)
+        SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
+          add articles_path, host: host,
+              lastmod: index_lastmod,
+              alternates: SitemapBuilder.alternates_for(articles_path)
+          add others_path, host: host,
+              lastmod: index_lastmod,
+              alternates: SitemapBuilder.alternates_for(others_path)
+        end
 
         # 참고: lastmod는 updated_at 대신 published_at 사용
         # (updated_at은 배경 Job이 건드릴 때마다 갱신되어 Google 오탐 발생)
@@ -60,9 +63,11 @@ module SitemapBuilder
                .find_in_batches(batch_size: 500) do |batch|
           batch.each do |article|
             path = article_path(article.slug)
-            add path,
-                lastmod: SitemapBuilder.lastmod_for(article),
-                alternates: SitemapBuilder.alternates_for(path)
+            alternates = SitemapBuilder.alternates_for(path)
+            lastmod = SitemapBuilder.lastmod_for(article)
+            SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
+              add path, host: host, lastmod: lastmod, alternates: alternates
+            end
           end
         end
       end
