@@ -3,8 +3,8 @@
 
 class ArticleJapaneseAgent < RubyLLM::Agent
   model "google/gemma-4-31b-it", provider: :openrouter, assume_model_exists: true
-  # model "gemini-3-flash-preview"
-  temperature 0.1
+  # model "qwen/qwen3.7-plus", provider: :openrouter, assume_model_exists: true
+  temperature 0.2
   tools SearchRelatedArticles, GetExistingTags, ValidateSlug
 
   instructions {
