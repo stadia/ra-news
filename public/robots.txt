@@ -1,7 +1,7 @@
 # https://www.robotstxt.org/robotstxt.html
-Content-Signal: search=yes, ai-input=yes, ai-train=no
 
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Disallow: /login
 Disallow: /logout
 Disallow: /signup
@@ -11,11 +11,24 @@ Disallow: /madmin
 Disallow: /jobs
 Disallow: /pg_reports
 
+# SEO 분석 봇 - 차단
 User-agent: SemrushBot
 Disallow: /
 
-# AI 인용 크롤러 (Perplexity 등) - 허용
+# AI 인용/검색 크롤러 (학습하지 않음) - 허용
 User-agent: PerplexityBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
 Allow: /
 
 # AI 학습 데이터 크롤러 - 차단
