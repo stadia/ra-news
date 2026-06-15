@@ -19,7 +19,9 @@ module SitemapBuilder
 
     #: (String) -> Array[Hash[Symbol, String]]
     def alternates_for(path)
-      HREFLANG_HOSTS.map { |lang, host| { href: "#{host}#{path}", lang: lang } }
+      alternate_path = path == root_path ? "" : path
+
+      HREFLANG_HOSTS.map { |lang, host| { href: "#{host}#{alternate_path}", lang: lang } }
     end
 
     # lastmod 안전값: published_at이 비현실적(2004년 이전 또는 미래)이거나
@@ -38,6 +40,7 @@ module SitemapBuilder
       SitemapGenerator::Sitemap.default_host  = "https://ruby-news.dev"
       SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/"
       SitemapGenerator::Sitemap.compress      = true
+      SitemapGenerator::Sitemap.include_root  = false
 
       SitemapGenerator::Sitemap.create do
         # 각 로케일 호스트(ko=.dev, ja=.jp)를 개별 <url> 블록으로 등재한다.
@@ -48,6 +51,9 @@ module SitemapBuilder
         # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
         index_lastmod = Time.current.iso8601
         SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
+          add root_path, host: host,
+              lastmod: index_lastmod,
+              alternates: SitemapBuilder.alternates_for(root_path)
           add articles_path, host: host,
               lastmod: index_lastmod,
               alternates: SitemapBuilder.alternates_for(articles_path)

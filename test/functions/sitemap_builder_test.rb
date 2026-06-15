@@ -19,6 +19,31 @@ class SitemapBuilderTest < ActiveSupport::TestCase
     assert create_called, "SitemapGenerator::Sitemap.create가 호출되어야 합니다"
   end
 
+  test "홈 URL은 ko와 ja URL 노드와 hreflang alternates를 모두 가진다" do
+    add_calls = []
+    sitemap_dsl = Class.new do
+      include Rails.application.routes.url_helpers
+
+      define_method(:add) do |path, options|
+        add_calls << [ path, options ]
+      end
+    end.new
+
+    SitemapGenerator::Sitemap.stub(:create, ->(&block) { sitemap_dsl.instance_eval(&block) }) do
+      SitemapBuilder.build
+    end
+
+    root_calls = add_calls.select { |path, _options| path == "/" }
+
+    assert_equal [ "https://ruby-news.dev", "https://ruby-news.jp" ], root_calls.map { |_path, options| options.fetch(:host) }
+    root_calls.each do |_path, options|
+      assert_equal [
+        { href: "https://ruby-news.dev", lang: "ko" },
+        { href: "https://ruby-news.jp", lang: "ja" }
+      ], options.fetch(:alternates)
+    end
+  end
+
   test "call 메서드는 블록을 create에 전달한다" do
     block_passed = false
 
