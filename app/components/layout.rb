@@ -109,6 +109,9 @@ class Components::Layout < Components::Base
     base = vc.request.base_url
     current_url = "#{base}#{path}"
 
+    # 현재 로케일 번역이 없어 원문(한국어)으로 폴백된 페이지는 색인 제외.
+    meta(name: "robots", content: "noindex, follow") if vc.instance_variable_get(:@robots_noindex)
+
     vc.set_meta_tags canonical: current_url
     page_title = content_for(:title).presence || vc.t("layout.default_title")
     page_desc = vc.instance_variable_get(:@page_description) || vc.t("layout.default_description")
@@ -141,10 +144,15 @@ class Components::Layout < Components::Base
   end
 
   def render_hreflang_links(path)
-    HREFLANG_HOSTS.each do |locale, host|
+    # 기본은 전체 로케일. 기사 페이지 등에서 @hreflang_locales 로 가용 로케일만
+    # 한정하면, 번역이 없는 로케일은 alternate 로 광고하지 않는다.
+    only = view_context.instance_variable_get(:@hreflang_locales)
+    hosts = only ? HREFLANG_HOSTS.slice(*only.map(&:to_s)) : HREFLANG_HOSTS
+    hosts.each do |locale, host|
       link(rel: "alternate", hreflang: locale, href: "#{host}#{path}")
     end
-    link(rel: "alternate", hreflang: "x-default", href: "#{HREFLANG_HOSTS['ko']}#{path}")
+    default_host = hosts["ko"] || hosts.values.first
+    link(rel: "alternate", hreflang: "x-default", href: "#{default_host}#{path}")
   end
 
   def render_rss_link

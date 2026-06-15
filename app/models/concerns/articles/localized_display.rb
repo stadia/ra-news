@@ -43,6 +43,18 @@ module Articles
       end
     end
 
+    # Whether a genuine translation exists for the given locale (vs. falling back
+    # to the Korean source). :ja requires title_ja; :ko (base content) is always
+    # available. Used to noindex / exclude untranslated articles from the .jp
+    # locale so we never advertise Korean fallback content as Japanese.
+    #: (Symbol?) -> bool
+    def available_in?(locale = I18n.locale)
+      case locale.to_sym
+      when :ja then title_ja.present?
+      else          true
+      end
+    end
+
     # Whether to show the original (source) title below the display title.
     # :ja — true when title_ja exists and differs from what display_title returns
     # :ko — true when title_ko exists and differs from the raw title

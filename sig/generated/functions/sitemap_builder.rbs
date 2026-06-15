@@ -11,8 +11,8 @@ module SitemapBuilder
   # 날짜"로 사이트맵을 거부한다. Rails 등장(2004) 이전 floor로 사용한다.
   MIN_LASTMOD: untyped
 
-  # : (String) -> Array[Hash[Symbol, String]]
-  def self.alternates_for: (String) -> Array[Hash[Symbol, String]]
+  # : (String, ?Array[String]) -> Array[Hash[Symbol, String]]
+  def self.alternates_for: (String, ?Array[String]) -> Array[Hash[Symbol, String]]
 
   # lastmod 안전값: published_at이 비현실적(2004년 이전 또는 미래)이거나
   # 없으면 신뢰 가능한 updated_at으로 대체한다.

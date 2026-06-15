@@ -15,11 +15,11 @@ module SitemapBuilder
   class << self
     include Rails.application.routes.url_helpers
 
-    #: (String) -> Array[Hash[Symbol, String]]
-    def alternates_for(path)
+    #: (String, ?Array[String]) -> Array[Hash[Symbol, String]]
+    def alternates_for(path, locales = HREFLANG_HOSTS.keys)
       alternate_path = path == root_path ? "" : path
 
-      HREFLANG_HOSTS.map { |lang, host| { href: "#{host}#{alternate_path}", lang: lang } }
+      HREFLANG_HOSTS.slice(*locales).map { |lang, host| { href: "#{host}#{alternate_path}", lang: lang } }
     end
 
     # lastmod 안전값: published_at이 비현실적(2004년 이전 또는 미래)이거나
@@ -67,9 +67,14 @@ module SitemapBuilder
                .find_in_batches(batch_size: 500) do |batch|
           batch.each do |article|
             path = article_path(article.slug)
-            alternates = SitemapBuilder.alternates_for(path)
             lastmod = SitemapBuilder.lastmod_for(article)
-            SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
+            # 번역이 존재하는 로케일 호스트만 등재한다. 일본어 번역이 없는
+            # 기사는 .jp(<loc>·hreflang alternate) 에서 제외 → 한국어 폴백을
+            # 일본어로 색인시키지 않는다. 번역되면 다음 빌드에서 자동 포함.
+            available = SitemapBuilder::HREFLANG_HOSTS.keys.select { |loc| article.available_in?(loc) }
+            alternates = SitemapBuilder.alternates_for(path, available)
+            SitemapBuilder::HREFLANG_HOSTS.each do |locale, host|
+              next unless article.available_in?(locale)
               add path, host: host, lastmod: lastmod, alternates: alternates
             end
           end

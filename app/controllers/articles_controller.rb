@@ -71,6 +71,12 @@ class ArticlesController < ApplicationController
   def show
     @comments = @article.posts.comments.kept.includes(:user)
 
+    # 현재 로케일(.jp=ja) 번역이 없으면 한국어 원문으로 폴백된 상태이므로,
+    # 검색/AI에 "한국어를 일본어로" 노출하지 않도록 noindex 처리하고
+    # ja hreflang alternate 도 광고하지 않는다(번역 완료 시 자동 색인 복귀).
+    @robots_noindex = !@article.available_in?(I18n.locale)
+    @hreflang_locales = Hosts::FOR_LOCALE.keys.select { |loc| @article.available_in?(loc) }
+
     @page_title = @article.display_title
     @page_description = @article.summary_key_preview
     @page_keywords = @article.tags.map(&:name).join(",") unless @article.tags.empty?
