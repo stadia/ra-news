@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (128)
+# Components (129)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -133,8 +133,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **OauthButton::Google** (phlex)
   props: path, label
 - **Pagination** (phlex)
-  props: pagy
 - **Pagination** (phlex)
+  props: pagy
 - **PaginationContent** (phlex)
 - **PaginationEllipsis** (phlex)
 - **PaginationItem** (phlex)
@@ -161,6 +161,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **RadioButton** (phlex)
 - **RecentCommentsSidebar** (phlex)
   props: recent_comments
+- **SearchSuggestion** (phlex)
+  props: query
 - **Select** (phlex)
 - **SelectContent** (phlex)
   props: attrs

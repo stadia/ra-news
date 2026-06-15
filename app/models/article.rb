@@ -3,7 +3,7 @@
 
 class Article < ApplicationRecord
   # ── Constants ────────────────────────────────────────────────────────
-  TITLE_MAX_LENGTH = 120
+  TITLE_MAX_LENGTH = 200
   TITLE_OMISSION = "..."
   TITLE_BOUNDARY_MIN_RATIO = 0.6
   TITLE_BOUNDARY_PATTERN = /[\s[:punct:]、。，．！？；：·|｜-]/
