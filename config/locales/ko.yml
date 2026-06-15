@@ -100,7 +100,7 @@ ko:
       summary_heading: 핵심 요약
     tagged:
       count: "%{count}개의 글이 있습니다"
-      item_list_name: 'Ruby-News #%{tag} 태그 글'
+      item_list_name: "Ruby-News #%{tag} 태그 글"
       title: "#%{tag} 태그 글 | Ruby-News"
   comments:
     comment:
@@ -108,19 +108,19 @@ ko:
       delete_confirm: 정말 삭제하시겠습니까?
       reply: 답글
     comment_form:
-      error_heading: '오류가 발생했습니다:'
+      error_heading: "오류가 발생했습니다:"
       guideline: 정중하고 건설적인 댓글을 작성해 주세요.
       login_prompt_after: " 이 필요합니다."
-      login_prompt_before: '댓글을 작성하려면 '
+      login_prompt_before: "댓글을 작성하려면 "
       submit: 댓글 작성
       title: 댓글 작성
     comment_header:
       title: 댓글
     comment_reply_form:
       cancel: 취소
-      error_heading: '오류가 발생했습니다:'
+      error_heading: "오류가 발생했습니다:"
       login_prompt_after: " 하세요."
-      login_prompt_before: '답글을 작성하려면 '
+      login_prompt_before: "답글을 작성하려면 "
       submit: 답글 작성
       title: 답글 작성
   errors:
@@ -147,7 +147,7 @@ ko:
       following: 팔로잉
       incoming_following: "%{username}이(가) 팔로우 중입니다."
       incoming_request: "%{username}이(가) 팔로우 요청했습니다."
-      logged_out: '팔로우하려면 로그인하세요. 또는 다른 Fediverse 서버에서 검색: '
+      logged_out: "팔로우하려면 로그인하세요. 또는 다른 Fediverse 서버에서 검색: "
       own_account: 내 계정입니다.
       requested: 요청 중
       unfollow: 언팔로우
@@ -288,7 +288,7 @@ ko:
       cancel: 취소
       post_submit: 게시
       reply_submit: 답글
-      replying_to: '답글 작성 중 '
+      replying_to: "답글 작성 중 "
       blog: 블로그 쓰기
     remote_attachment_only_body: 첨부된 미디어
     reply_form:
@@ -363,7 +363,7 @@ ko:
   sign_up: 회원가입
   social:
     oauth:
-      error: 'OAuth 에러: %{message}'
+      error: "OAuth 에러: %{message}"
       success: OAuth 인증 성공! Access token이 저장되었습니다.
   tags_sidebar:
     empty: 표시할 태그가 없습니다.
