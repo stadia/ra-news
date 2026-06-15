@@ -51,7 +51,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
   # RSpec for API specs (used alongside minitest)
-  gem "rspec-rails", "~> 7.0"
+  gem "rspec-rails", "~> 8.0"
   gem "rswag-specs", "~> 2.16"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
