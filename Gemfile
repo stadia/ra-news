@@ -146,6 +146,7 @@ gem "rails_semantic_logger"
 gem "reactionview", "~> 0.3.0"
 # OpenAPI/Swagger documentation
 gem "discordrb-webhooks"
+gem "resend"
 gem "rswag-api", "~> 2.16"
 gem "rswag-ui", "~> 2.16"
 gem "ruby_llm", "~> 1.16"

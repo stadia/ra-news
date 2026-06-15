@@ -86,16 +86,17 @@ Rails.application.configure do
   Rails.application.routes.default_url_options = { host: "ruby-news.dev" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
-  config.action_mailer.smtp_settings = {
-    address: "smtp.sendgrid.net",
-    port: 587,
-    user_name: "apikey",
-    password: Rails.application.credentials.dig(:smtp, :password),
-    authentication: :plain,
-    enable_starttls_auto: true,
-    enable_starttls: true,
-    domain: "ruby-news.dev"
-  }
+  # config.action_mailer.smtp_settings = {
+  #   address: "smtp.sendgrid.net",
+  #   port: 587,
+  #   user_name: "apikey",
+  #   password: Rails.application.credentials.dig(:smtp, :password),
+  #   authentication: :plain,
+  #   enable_starttls_auto: true,
+  #   enable_starttls: true,
+  #   domain: "ruby-news.dev"
+  # }
+  config.action_mailer.delivery_method = :resend
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
