@@ -31,7 +31,7 @@ production:
     schedule: "0 4 * * 0"
   japanese_temp_job:
     class: "JapaneseTempJob"
-    schedule: "0 */1 * * *"
+    schedule: "*/20 * * * *"
   federails_sync_hosts:
     command: "Federails::Maintenance::HostsUpdater.run"
     schedule: "15 3 * * *"
