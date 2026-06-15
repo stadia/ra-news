@@ -141,6 +141,7 @@ gem "phlex-rails", "~> 2.4"
 gem "prosopite"
 gem "rack-cors"
 
+gem "mcp", "0.19.0"
 gem "rails-ai-context"
 gem "rails_semantic_logger"
 gem "reactionview", "~> 0.3.0"

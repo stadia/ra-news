@@ -22,15 +22,21 @@ module SitemapBuilder
       HREFLANG_HOSTS.slice(*locales).map { |lang, host| { href: "#{host}#{alternate_path}", lang: lang } }
     end
 
-    # lastmod 안전값: published_at이 비현실적(2004년 이전 또는 미래)이거나
-    # 없으면 신뢰 가능한 updated_at으로 대체한다.
+    # lastmod는 실제 문서 변경 시점을 나타내야 하므로 published_at만 쓰면
+    # 발행 이후 제목/요약/번역 수정이 검색엔진에 전달되지 않는다.
+    # 별도 content_updated_at이 없으므로 안전한 published_at/updated_at 중 최신값을 사용한다.
     #: (Article) -> String?
     def lastmod_for(article)
-      candidate = article.published_at
-      if candidate.nil? || candidate < MIN_LASTMOD || candidate > Time.current
-        candidate = article.updated_at
-      end
-      candidate&.iso8601
+      [ article.published_at, article.updated_at ]
+        .compact
+        .select { |candidate| realistic_lastmod?(candidate) }
+        .max
+        &.iso8601
+    end
+
+    #: (Time) -> bool
+    def realistic_lastmod?(candidate)
+      candidate >= MIN_LASTMOD && candidate <= Time.current
     end
 
     #: () -> void
@@ -45,8 +51,7 @@ module SitemapBuilder
         # 각 블록은 자신의 <loc> 1개 + ko/ja hreflang alternates를 모두 포함하는
         # Google 권장 다국어 사이트맵 구조다. ko·ja가 각각 색인 대상이므로
         # GSC 발견 페이지 수가 2배가 되는 것은 정상이다.
-        # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로
-        # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
+        # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
         index_lastmod = Time.current.iso8601
         SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
           add root_path, host: host,
@@ -60,8 +65,6 @@ module SitemapBuilder
               alternates: SitemapBuilder.alternates_for(others_path)
         end
 
-        # 참고: lastmod는 updated_at 대신 published_at 사용
-        # (updated_at은 배경 Job이 건드릴 때마다 갱신되어 Google 오탐 발생)
         Article.kept
                .confirmed
                .find_in_batches(batch_size: 500) do |batch|

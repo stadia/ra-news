@@ -79,6 +79,33 @@ class SitemapBuilderTest < ActiveSupport::TestCase
     ], SitemapBuilder.alternates_for("/articles")
   end
 
+  test "lastmod는 발행 이후 업데이트 시각을 반영한다" do
+    article = Article.new(
+      published_at: Time.zone.local(2026, 1, 1, 10, 0, 0),
+      updated_at: Time.zone.local(2026, 1, 2, 10, 0, 0)
+    )
+
+    assert_equal "2026-01-02T10:00:00+09:00", SitemapBuilder.lastmod_for(article)
+  end
+
+  test "lastmod는 비현실적인 published_at 대신 안전한 updated_at을 사용한다" do
+    article = Article.new(
+      published_at: Time.zone.local(1935, 1, 1, 10, 0, 0),
+      updated_at: Time.zone.local(2026, 1, 2, 10, 0, 0)
+    )
+
+    assert_equal "2026-01-02T10:00:00+09:00", SitemapBuilder.lastmod_for(article)
+  end
+
+  test "lastmod는 미래 시각을 제외한다" do
+    article = Article.new(
+      published_at: 1.day.from_now,
+      updated_at: Time.zone.local(2026, 1, 2, 10, 0, 0)
+    )
+
+    assert_equal "2026-01-02T10:00:00+09:00", SitemapBuilder.lastmod_for(article)
+  end
+
   test "사이트맵 경로는 sitemaps/이다" do
     captured_path = nil
 

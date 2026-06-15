@@ -252,7 +252,6 @@ GEM
       activerecord (>= 6.0, < 9)
       ruby2ruby (~> 2.4)
       ruby_parser (~> 3.10)
-    hana (1.3.7)
     hashie (5.1.0)
       logger
     herb (0.10.1-aarch64-linux-gnu)
@@ -326,11 +325,6 @@ GEM
     json-schema (6.2.0)
       addressable (~> 2.8)
       bigdecimal (>= 3.1, < 5)
-    json_schemer (2.5.0)
-      bigdecimal
-      hana (~> 1.3)
-      regexp_parser (~> 2.0)
-      simpleidn (~> 0.2)
     jwt (3.2.0)
       base64
     language_server-protocol (3.17.0.5)
@@ -367,8 +361,8 @@ GEM
       net-smtp
     marcel (1.2.1)
     matrix (0.4.3)
-    mcp (0.20.0)
-      json_schemer (>= 2.4)
+    mcp (0.19.0)
+      json-schema (>= 4.1)
     meta-tags (2.23.0)
       actionpack (>= 6.0.0)
     mime-types (3.7.0)
@@ -740,7 +734,6 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
-    simpleidn (0.2.3)
     sin_lru_redux (2.5.2)
     sitemap_generator (7.0.1)
       builder (~> 3.0)
@@ -919,6 +912,7 @@ DEPENDENCIES
   letter_opener
   lexxy (~> 0.9.18)
   madmin (~> 2.3)
+  mcp (= 0.19.0)
   meta-tags
   minitest (~> 6.0)
   minitest-mock
