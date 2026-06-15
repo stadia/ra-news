@@ -46,7 +46,6 @@ class ContentService < OperationService
     return Failure(:no_content) if html_content.blank?
 
     # Readability를 사용하여 주요 콘텐츠 HTML 추출. Readability::Document는 전체 HTML 문자열을 인자로 받습니다.
-    # github_url?(url) ? Success(Kramdown::Document.new(html_content).to_html) : Success(Readability::Document.new(html_content).content)
     github_url?(url) ? Success(Inkmark.to_html(html_content, options: { preset: :recommended })) : Success(Readability::Document.new(html_content).content)
   end
 

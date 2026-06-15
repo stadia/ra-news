@@ -183,7 +183,6 @@ class Views::Articles::Show < Views::Base
           if @article.display_summary_body.present?
             div(class: "mb-8 article-content", id: "article-detail-body") do
               div(class: "prose dark:prose-invert max-w-none prose-headings:text-prose-heading-accent prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-h4:text-base prose-strong:text-prose-strong-accent text-content-secondary leading-loose") do
-                # raw sanitize(Kramdown::Document.new(downshift_headings(@article.display_summary_body)).to_html)
                 raw sanitize(Inkmark.to_html(@article.display_summary_body, options: { preset: :trusted }))
               end
             end

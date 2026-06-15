@@ -51,7 +51,7 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 
   # RSpec for API specs (used alongside minitest)
-  gem "rspec-rails", "~> 7.0"
+  gem "rspec-rails", "~> 8.0"
   gem "rswag-specs", "~> 2.16"
 
   # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
@@ -106,7 +106,6 @@ gem "awesome_nested_set"
 gem "discard"
 gem "hairtrigger"
 gem "inkmark"
-gem "kramdown"
 gem "madmin", "~> 2.3"
 gem "meta-tags"
 gem "mission_control-jobs"
@@ -133,7 +132,6 @@ gem "amazing_print"
 gem "federails", github: "stadia/federails"
 # gem "federails", path: "../federails"
 gem "deepl-rb", require: "deepl"
-gem "discordrb-webhooks"
 gem "friendly_id"
 gem "lexxy", "~> 0.9.18"
 gem "oj"
@@ -143,10 +141,11 @@ gem "phlex-rails", "~> 2.4"
 gem "prosopite"
 gem "rack-cors"
 
-# OpenAPI/Swagger documentation
 gem "rails-ai-context"
 gem "rails_semantic_logger"
 gem "reactionview", "~> 0.3.0"
+# OpenAPI/Swagger documentation
+gem "discordrb-webhooks"
 gem "rswag-api", "~> 2.16"
 gem "rswag-ui", "~> 2.16"
 gem "ruby_llm", "~> 1.16"
