@@ -40,7 +40,7 @@ In `config/initializers/devise.rb`, set:
 ```ruby
 config.case_insensitive_keys = [:email]
 config.strip_whitespace_keys = [:email]
-config.mailer_sender = 'noreply@ruby-news.kr'
+config.mailer_sender = 'noreply@ruby-news.dev'
 config.sign_out_via = :get  # Match existing GET /logout
 ```
 

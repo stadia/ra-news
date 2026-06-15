@@ -23,8 +23,8 @@ module SchemaDotOrg
   #     is_based_on:    article.url,
   #     publisher:      SchemaDotOrg::Organization.new(
   #                       name: "Ruby-News",
-  #                       url:  "https://ruby-news.kr",
-  #                       logo: "https://ruby-news.kr/icon.png"
+  #                       url:  "https://ruby-news.dev",
+  #                       logo: "https://ruby-news.dev/icon.png"
   #                     )
   #   )
   #

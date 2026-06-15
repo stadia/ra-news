@@ -48,3 +48,4 @@ User-agent: ClaudeBot
 Disallow: /
 
 Sitemap: https://ruby-news.dev/sitemaps/sitemap.xml.gz
+Sitemap: https://ruby-news.jp/sitemaps/sitemap.xml.gz
