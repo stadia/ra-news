@@ -3,6 +3,7 @@
 module SitemapBuilder
   extend FunctionLogger
 
+  # 단일 소스: app/functions/hosts.rb (Hosts::FOR_LOCALE)
   HREFLANG_HOSTS: untyped
 
   # published_at은 원문에서 파싱되므로 비현실적 값(예: 1935년, 미래 날짜)이

@@ -79,6 +79,10 @@ Rails.application.routes.draw do
   # (실제 파일은 SitemapBuilder가 public/sitemaps/ 에 생성)
   get "sitemap.xml", to: redirect("/sitemaps/sitemap.xml.gz", status: 301)
 
+  # llms.txt 는 로케일(호스트)별로 다른 본문을 서빙해야 하므로 동적 라우트로 처리한다.
+  # (기존 정적 public/llms.txt 는 삭제됨 — 정적 파일이 라우트보다 우선 매칭되기 때문)
+  get "llms.txt"       => "home#llms",           as: :llms, defaults: { format: "text" }
+
   get "rss"            => "home#rss",            as: :rss
   get "about"          => "home#about",          as: :about
   get "privacy-policy" => "home#privacy_policy", as: :privacy_policy

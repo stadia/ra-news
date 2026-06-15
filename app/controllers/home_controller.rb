@@ -6,14 +6,24 @@ require "schema_dot_org/news_media_organization"
 class HomeController < ApplicationController
   skip_before_action :authenticate_user!
 
-  # Shared publisher schema — reused in ArticlesController as well
-  PUBLISHER_SCHEMA = SchemaDotOrg::NewsMediaOrganization.new(
-    name:     "Ruby-News",
-    url:      "https://ruby-news.dev",
-    logo:     "https://ruby-news.dev/icon.png",
-    same_as:  [ "https://ruby-news.dev/@bot", "https://ruby.social/@news_kr", "https://x.com/rubynewskr" ],
-    masthead: "https://ruby-news.dev/about"
-  )
+  # Locale-aware publisher (NewsMediaOrganization) schema — reused in
+  # ArticlesController as well. url/logo/masthead 는 현재 호스트 도메인 기준이고
+  # same_as 는 양 도메인(.dev/.jp)의 핸들을 모두 포함해 동일 발행 주체임을 표현한다.
+  #: (String | Symbol) -> SchemaDotOrg::NewsMediaOrganization
+  def self.publisher_schema(locale)
+    host = Hosts.for_locale(locale)
+    SchemaDotOrg::NewsMediaOrganization.new(
+      name:     "Ruby-News",
+      url:      host,
+      logo:     "#{host}/icon.png",
+      same_as:  [
+        "https://ruby-news.dev/@bot",
+        "https://ruby.social/@news_kr",
+        "https://x.com/rubynewskr"
+      ],
+      masthead: "#{host}/about"
+    )
+  end
 
   def index
     cacheable_page!
@@ -23,7 +33,7 @@ class HomeController < ApplicationController
     @articles = build_recent_articles(scope, excluded_ids: @featured_articles.map(&:id))
     @liked_article_ids = liked_article_ids_for(@articles, @featured_articles)
     @boosted_article_ids = boosted_article_ids_for(@articles, @featured_articles)
-    @news_media_organization = PUBLISHER_SCHEMA
+    @news_media_organization = self.class.publisher_schema(Hosts.locale_for_host(request.host))
     @recent_comments = recent_comments
     @sidebar_tags = sidebar_tags
     render Views::Home::Index.new(
@@ -64,7 +74,22 @@ class HomeController < ApplicationController
     render "rss", formats: [ :rss ], layout: false
   end
 
+  # GET /llms.txt — 요청 호스트별 llms.txt 동적 서빙.
+  # public 캐시(max-age=1day)이므로 쿠키·사용자 로케일이 아니라 request.host 로
+  # 본문을 결정해야 캐시 오염(다른 방문자에게 잘못된 언어 제공)을 방지한다.
+  def llms
+    cacheable_page!(max_age: 1.day)
+    body = LLMS_TXT.fetch(Hosts.locale_for_host(request.host))
+    render plain: body, content_type: "text/plain"
+  end
+
   private
+
+  # llms.txt 본문은 정적 텍스트 파일에서 로드한다 (app/views/home/llms/{ko,ja}.txt).
+  LLMS_TXT = {
+    ko: Rails.root.join("app/views/home/llms/ko.txt").read.freeze,
+    ja: Rails.root.join("app/views/home/llms/ja.txt").read.freeze
+  }.freeze
 
   def article_scope
     Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related

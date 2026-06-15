@@ -37,4 +37,9 @@ class ArticlesController < ApplicationController
   def sidebar_tags: () -> untyped
 
   def normalized_search_term: () -> untyped
+
+  # 음성 비서(Google Assistant 등)가 읽어줄 핵심 영역을 가리키는
+  # SpeakableSpecification. 기사 헤드라인(h1)과 본문 요약 블록
+  # (#article-detail-body, app/views/articles/show.rb) 을 대상으로 한다.
+  def article_speakable: () -> untyped
 end

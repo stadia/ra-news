@@ -4,10 +4,8 @@
 module SitemapBuilder
   extend FunctionLogger
 
-  HREFLANG_HOSTS = {
-    "ko" => "https://ruby-news.dev",
-    "ja" => "https://ruby-news.jp"
-  }.freeze
+  # 단일 소스: app/functions/hosts.rb (Hosts::FOR_LOCALE)
+  HREFLANG_HOSTS = Hosts::FOR_LOCALE
 
   # published_at은 원문에서 파싱되므로 비현실적 값(예: 1935년, 미래 날짜)이
   # 들어올 수 있고, 그대로 lastmod에 쓰면 Google Search Console이 "잘못된

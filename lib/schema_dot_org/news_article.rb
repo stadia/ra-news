@@ -3,6 +3,8 @@
 require "schema_dot_org"
 require "schema_dot_org/organization"
 require "schema_dot_org/person"
+require "schema_dot_org/speakable_specification"
+require "schema_dot_org/creative_work"
 
 module SchemaDotOrg
   ##
@@ -43,6 +45,11 @@ module SchemaDotOrg
     # isBasedOn accepts CreativeWork, Product, or URL (schema.org/URL = plain String)
     validated_attr :is_based_on,    type: String,                      allow_nil: true
     validated_attr :keywords,       type: union(String, [ String ]),     allow_nil: true
+    # speakable: SpeakableSpecification → JSON key `speakable`
+    validated_attr :speakable,      type: SpeakableSpecification,        allow_nil: true
+    # translationOfWork: 원문(번역 출처). schema.org 범위가 CreativeWork 이므로
+    # 원문 URL 을 가진 CreativeWork 객체로 모델링한다 (plain String 금지).
+    validated_attr :translation_of_work, type: CreativeWork,             allow_nil: true
 
     ##
     # Required by Google for NewsArticle rich results

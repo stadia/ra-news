@@ -87,10 +87,8 @@ class Components::Layout < Components::Base
     end
   end
 
-  HREFLANG_HOSTS = {
-    "ko" => "https://ruby-news.dev",
-    "ja" => "https://ruby-news.jp"
-  }.freeze
+  # 단일 소스: app/functions/hosts.rb (Hosts::FOR_LOCALE)
+  HREFLANG_HOSTS = Hosts::FOR_LOCALE
 
   OG_LOCALES = {
     ko: "ko_KR",

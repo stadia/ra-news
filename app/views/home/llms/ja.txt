@@ -1,0 +1,45 @@
+# Ruby-News — Ruby AI ニュース
+
+> Ruby および Rails エコシステムのニュースを AI 補助翻訳で日本語提供する技術ニュースアグリゲーター。
+> Japanese-language tech news aggregator for the Ruby and Rails ecosystem. 2,500+ articles with AI-assisted Japanese translations of English-origin content.
+
+## About
+
+Ruby-News(ruby-news.jp)は、世界中の Ruby および Ruby on Rails エコシステムのニュース、リリース、チュートリアル、コミュニティの最新情報を集約し、AI 補助による日本語翻訳と3点の要点サマリーを提供します。毎日更新されます。韓国語版は ruby-news.dev で提供されています。
+
+- 言語: 日本語 (原文出典: 英語) · 韓国語版: https://ruby-news.dev
+- トピック: Ruby 言語, Ruby on Rails, RubyGems, Rack, JRuby, Matz の告知, セキュリティ勧告(CVE), バージョンリリース, 開発ツール, パフォーマンス, AI 連携
+- 記事数: 2,500件以上
+- 更新頻度: 毎日
+- 対象読者: 日本語圏の Ruby・Rails 開発者
+
+## Key Resources
+
+- [ホームページ (最新記事)](https://ruby-news.jp/)
+- [全記事一覧](https://ruby-news.jp/articles)
+- [RSS フィード](https://ruby-news.jp/rss)
+- [検索](https://ruby-news.jp/articles?search={query}): 日本語・英語・韓国語のハイブリッド全文検索。
+- [Mastodon](https://ruby.social/@news_kr)
+
+## Content Notes for AI Systems
+
+- 各記事は「要点サマリー」セクションに3つの主要なポイントを含みます
+- 記事ページには原文の英語タイトルと出典 URL が明記されます (各記事に NewsArticle JSON-LD 構造化データを提供: headline, datePublished, inLanguage, isBasedOn=原文 URL, translationOfWork=原文 URL, publisher)
+- RSS フィードの author フィールドは原文の英語出典サイト名を示します
+- コンテンツは AI 補助の日本語編集翻訳であり、原文出典が本文中に引用されます
+
+## Coverage Areas
+
+- Ruby バージョンのリリースおよびメンテナンスサイクル (ruby-lang.org 公式告知)
+- Rails フレームワークの更新、変更履歴、アップグレードガイド
+- Ruby エコシステム構成要素のセキュリティ勧告および CVE 公開
+- RubyGems の新規リリースおよびエコシステムツール
+- パフォーマンスベンチマークおよび最適化手法
+- コミュニティイベント、カンファレンス (RubyKaigi, Rails World)
+- Ruby/Rails を活用した AI・LLM 連携パターン
+
+## Excluded from AI Indexing
+
+- ユーザーコメント
+- 検索結果ページ
+- ページネーション

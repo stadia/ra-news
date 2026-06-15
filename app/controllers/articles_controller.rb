@@ -3,6 +3,7 @@
 
 require "schema_dot_org/news_article"
 require "schema_dot_org/breadcrumb_list"
+require "schema_dot_org/creative_work"
 
 class ArticlesController < ApplicationController
   skip_before_action :authenticate_user!, only: %i[ index show others tag ]
@@ -81,15 +82,22 @@ class ArticlesController < ApplicationController
       tag:            @article.tags.map(&:name).presence
     }.compact
     if @article.display_title.present?
+      # publisher(발행 주체 = 어느 사이트냐)는 쿠키·사용자 로케일이 아니라
+      # 실제 요청 호스트로 결정한다. in_language 는 실제 렌더 콘텐츠 언어이므로
+      # I18n.locale 기준을 유지한다.
+      publisher = HomeController.publisher_schema(Hosts.locale_for_host(request.host))
       news_article_attrs = {
-        headline:       @article.display_title,
-        description:    @article.summary_key_preview,
-        url:            article_url(@article),
-        date_published: @article.published_at&.iso8601,
-        date_modified:  @article.updated_at.iso8601,
-        in_language:    I18n.locale == :ja ? "ja-JP" : "ko-KR",
-        is_based_on:    @article.url,
-        publisher: HomeController::PUBLISHER_SCHEMA
+        headline:            @article.display_title,
+        description:         @article.summary_key_preview,
+        url:                 article_url(@article),
+        date_published:      @article.published_at&.iso8601,
+        date_modified:       @article.updated_at.iso8601,
+        in_language:         I18n.locale == :ja ? "ja-JP" : "ko-KR",
+        is_based_on:         @article.url,
+        translation_of_work: SchemaDotOrg::CreativeWork.new(url: @article.url),
+        speakable:           article_speakable,
+        author:              publisher,
+        publisher:           publisher
       }
       news_article_attrs[:image] = @og_image if @og_image
       @news_article = SchemaDotOrg::NewsArticle.new(**news_article_attrs)
@@ -194,5 +202,14 @@ class ArticlesController < ApplicationController
 
     def normalized_search_term
       params[:search].to_s.strip.first(SEARCH_TERM_MAX_LENGTH).presence
+    end
+
+    # 음성 비서(Google Assistant 등)가 읽어줄 핵심 영역을 가리키는
+    # SpeakableSpecification. 기사 헤드라인(h1)과 본문 요약 블록
+    # (#article-detail-body, app/views/articles/show.rb) 을 대상으로 한다.
+    def article_speakable
+      SchemaDotOrg::SpeakableSpecification.new(
+        css_selector: [ "h1", "#article-detail-body" ]
+      )
     end
 end

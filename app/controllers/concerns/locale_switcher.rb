@@ -3,10 +3,9 @@
 module LocaleSwitcher
   extend ActiveSupport::Concern
 
-  HOST_LOCALES = {
-    "ruby-news.jp" => :ja,
-    "ruby-news.dev" => :ko
-  }.freeze
+  # 도메인↔로케일 매핑은 Hosts(app/functions/hosts.rb)가 단일 정본.
+  # 여기서는 host→locale 역방향을 파생 상수로 가져온다.
+  HOST_LOCALES = Hosts::LOCALE_FOR_HOST
 
   included do
     around_action :switch_locale
