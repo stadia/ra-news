@@ -19,6 +19,7 @@ AllCops:
     - "app/components/**/*"
     - "app/views/**/*"
     - "config/**/*"
+    - "lib/**/*"
 
 Layout/LeadingCommentSpace:
   Enabled: false

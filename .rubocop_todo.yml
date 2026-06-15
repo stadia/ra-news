@@ -12,10 +12,8 @@ I18n/GetText/DecorateString:
   Exclude:
     - 'app/controllers/articles_controller.rb'
     - 'app/controllers/discord_controller.rb'
-    - 'app/controllers/madmin/sites_controller.rb'
     - 'app/controllers/oauth_controller.rb'
     - 'app/controllers/social_controller.rb'
-    - 'app/madmin/resources/site_resource.rb'
     - 'lib/protobuf/message_type.rb'
     - 'test/controllers/discord_controller_test.rb'
     - 'test/controllers/slack_controller_test.rb'
@@ -27,10 +25,8 @@ I18n/RailsI18n/DecorateString:
   Exclude:
     - 'app/controllers/articles_controller.rb'
     - 'app/controllers/discord_controller.rb'
-    - 'app/controllers/madmin/sites_controller.rb'
     - 'app/controllers/oauth_controller.rb'
     - 'app/controllers/social_controller.rb'
-    - 'app/madmin/resources/site_resource.rb'
     - 'lib/protobuf/message_type.rb'
     - 'test/controllers/discord_controller_test.rb'
     - 'test/controllers/slack_controller_test.rb'
