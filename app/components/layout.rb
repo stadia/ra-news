@@ -222,8 +222,8 @@ class Components::Layout < Components::Base
       aria_label: t("layout.nav.aria_label")
     ) do
       div(class: "max-w-[1400px] flex flex-wrap md:flex-nowrap items-center justify-between mx-auto p-4") do
-        link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group" do
-          span(class: "self-center text-2xl font-semibold whitespace-nowrap text-content group-hover:text-link-hover transition-colors duration-200") do
+        link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group min-w-0" do
+          span(class: "self-center text-xl md:text-2xl font-semibold text-content group-hover:text-link-hover transition-colors duration-200") do
             plain "Ruby-News || "
             span(class: "text-accent-text") { t("layout.brand_subtitle") }
           end
