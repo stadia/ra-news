@@ -70,9 +70,6 @@ class Views::Profiles::Show < Views::Base
                 link_to t("profiles.show.settings"), edit_user_registration_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
                 span(class: "text-content-disabled") { "·" }
-                link_to t("profiles.show.feed"), feed_path,
-                  class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
-                span(class: "text-content-disabled") { "·" }
                 link_to t("profiles.show.find_follow"), lookup_actors_path,
                   class: "inline-flex items-center gap-1 mt-2 text-sm text-content-muted hover:text-content transition-colors"
               end
