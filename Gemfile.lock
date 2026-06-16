@@ -840,7 +840,7 @@ GEM
     useragent (0.16.11)
     validated_object (2.3.4)
       activemodel (>= 3.2.21)
-    version_gem (1.1.11)
+    version_gem (1.1.12)
     warden (1.2.9)
       rack (>= 2.0.9)
     warden-jwt_auth (0.12.0)
