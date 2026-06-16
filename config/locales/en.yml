@@ -208,6 +208,7 @@ en:
       other_news: Other News
       past_articles: Past Articles
       profile: My Profile
+      settings: Settings
     rss_feed_title: Ruby-News RSS Feed
     search:
       aria_label: Search articles

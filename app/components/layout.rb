@@ -222,8 +222,8 @@ class Components::Layout < Components::Base
       aria_label: t("layout.nav.aria_label")
     ) do
       div(class: "max-w-[1400px] flex flex-wrap md:flex-nowrap items-center justify-between mx-auto p-4") do
-        link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group min-w-0" do
-          span(class: "self-center text-xl md:text-2xl font-semibold text-content group-hover:text-link-hover transition-colors duration-200") do
+        link_to root_path, class: "flex items-center space-x-3 rtl:space-x-reverse group min-w-0 md:min-w-fit" do
+          span(class: "self-center text-xl md:text-2xl font-semibold text-content group-hover:text-link-hover transition-colors duration-200 md:whitespace-nowrap") do
             plain "Ruby-News || "
             span(class: "text-accent-text") { t("layout.brand_subtitle") }
           end
@@ -253,7 +253,9 @@ class Components::Layout < Components::Base
       class: "items-center justify-between w-full md:flex md:w-auto md:order-1 hidden peer-checked:block transition-all duration-300 ease-in-out md:transition-none",
       id: "navbar-search"
     ) do
-      ul(class: "flex flex-col gap-y-3 md:gap-y-0 p-4 md:p-0 mt-4 font-medium border border-border-strong rounded-lg bg-surface-muted md:space-x-8 rtl:space-x-reverse md:flex-row md:items-center md:mt-0 md:border-0 md:bg-surface animate-in slide-in-from-top-2 fade-in duration-200 md:animate-none") do
+      # 일본어는 메뉴 텍스트 폭이 넓어 데스크탑 간격을 좁힌다.
+      nav_spacing = (I18n.locale == :ja) ? "md:space-x-4" : "md:space-x-8"
+      ul(class: "flex flex-col gap-y-3 md:gap-y-0 p-4 md:p-0 mt-4 font-medium border border-border-strong rounded-lg bg-surface-muted #{nav_spacing} rtl:space-x-reverse md:flex-row md:items-center md:mt-0 md:border-0 md:bg-surface animate-in slide-in-from-top-2 fade-in duration-200 md:animate-none") do
         li { raw vc.nav_link_to(t("layout.nav.home"), root_path) }
         li { raw vc.nav_link_to(t("layout.nav.past_articles"), articles_path) }
         li { raw vc.nav_link_to(t("layout.nav.other_news"), others_path) }
@@ -324,9 +326,19 @@ class Components::Layout < Components::Base
       DropdownMenuContent do
         DropdownMenuLabel { name }
         DropdownMenuSeparator()
-        DropdownMenuItem(href: user_profile_path(user)) { t("layout.nav.profile") }
+        DropdownMenuItem(href: user_profile_path(user)) do
+          render PhlexIcons::Hero::User.new(variant: :outline, class: "w-4 h-4 mr-2 shrink-0 text-content-secondary")
+          plain t("layout.nav.profile")
+        end
+        DropdownMenuItem(href: edit_user_registration_path) do
+          render PhlexIcons::Hero::Cog6Tooth.new(variant: :outline, class: "w-4 h-4 mr-2 shrink-0 text-content-secondary")
+          plain t("layout.nav.settings")
+        end
         DropdownMenuSeparator()
-        DropdownMenuItem(href: destroy_user_session_path) { t("sign_out") }
+        DropdownMenuItem(href: destroy_user_session_path) do
+          render PhlexIcons::Hero::ArrowRightOnRectangle.new(variant: :outline, class: "w-4 h-4 mr-2 shrink-0 text-content-secondary")
+          plain t("sign_out")
+        end
       end
     end
   end

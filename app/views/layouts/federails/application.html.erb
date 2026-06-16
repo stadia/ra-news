@@ -103,10 +103,10 @@
       aria-label="<%= t("federails_layout.nav_aria_label") %>"
     >
       <div class="max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4">
-        <%= link_to main_app.root_path, class: "flex items-center space-x-3 group min-w-0" do %>
+        <%= link_to main_app.root_path, class: "flex items-center space-x-3 group min-w-0 md:min-w-fit" do %>
           <span
             class="
-              self-center text-xl md:text-2xl font-semibold text-content
+              self-center text-xl md:text-2xl font-semibold text-content md:whitespace-nowrap
               group-hover:text-brand-soft transition-colors duration-200
             "
           >

@@ -208,6 +208,7 @@ ko:
       other_news: 그 밖의 뉴스
       past_articles: 지난 글
       profile: 내 프로필
+      settings: 설정
     rss_feed_title: Ruby-News RSS 피드
     search:
       aria_label: 기사 검색

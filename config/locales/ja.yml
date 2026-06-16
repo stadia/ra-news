@@ -208,6 +208,7 @@ ja:
       other_news: その他のニュース
       past_articles: 過去の記事
       profile: マイプロフィール
+      settings: 設定
     rss_feed_title: Ruby-News RSSフィード
     search:
       aria_label: 記事を検索
