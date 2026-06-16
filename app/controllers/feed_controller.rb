@@ -14,6 +14,7 @@ class FeedController < ApplicationController
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
     actor = current_user.federails_actor
     following_actor_ids = Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
+    local_actor_ids = Federails::Actor.local.select(:id)
 
     boosted_post_ids = Boost
       .where(boostable_type: "Post", actor_id: following_actor_ids)
@@ -23,6 +24,7 @@ class FeedController < ApplicationController
     posts = Post
       .includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ])
       .where(federails_actor_id: following_actor_ids)
+      .or(Post.where(federails_actor_id: local_actor_ids))
       .or(Post.where(user_id: current_user.id))
       .or(Post.where(id: boosted_post_ids))
       .visible
@@ -91,8 +93,8 @@ class FeedController < ApplicationController
 
   # Returns a hash of { post_id => Federails::Actor } for posts that landed in
   # the feed because someone the current user follows (or the user themselves)
-  # boosted them. Posts authored by the current user or by a followed actor are
-  # excluded — they would have shown up regardless of any boost.
+  # boosted them. Posts authored by the current user, by a followed actor, or by
+  # a local actor are excluded — they would have shown up regardless of any boost.
   def boosters_for_attribution(posts, actor, following_actor_ids) #: Hash[Integer, Federails::Actor]
     return {} if posts.blank?
 
@@ -101,6 +103,7 @@ class FeedController < ApplicationController
 
     attribution_post_ids = posts.reject { |post|
       post.user_id == current_user.id ||
+        post.federails_actor&.local? ||
         (post.federails_actor_id.present? && candidate_actor_ids.include?(post.federails_actor_id))
     }.map(&:id)
 

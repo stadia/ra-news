@@ -63,7 +63,6 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
   test "GET feed includes current user and accepted followings in reverse chronological order" do
     john_actor = federails_actors(:john_actor)
     jane_actor = federails_actors(:jane_actor)
-    admin_actor = federails_actors(:admin_actor)
 
     older_post = Post.create!(body: "older followed post", user: users(:jane))
     Federails::Activity.create!(
@@ -83,11 +82,23 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
       updated_at: 1.hour.ago
     )
 
-    excluded_post = Post.create!(body: "excluded unfollowed post", user: users(:admin))
-    Federails::Activity.create!(
-      actor: admin_actor,
-      entity: excluded_post,
-      action: "Create",
+    remote_actor = Federails::Actor.create!(
+      federated_url: "https://remote.example/users/stranger",
+      username: "stranger",
+      name: "Stranger",
+      server: "remote.example",
+      inbox_url: "https://remote.example/users/stranger/inbox",
+      outbox_url: "https://remote.example/users/stranger/outbox",
+      followers_url: "https://remote.example/users/stranger/followers",
+      followings_url: "https://remote.example/users/stranger/following",
+      profile_url: "https://remote.example/@stranger",
+      actor_type: "Person",
+      local: false
+    )
+    excluded_post = Post.create!(
+      body: "excluded unfollowed remote post",
+      federails_actor: remote_actor,
+      federated_url: "https://remote.example/notes/excluded",
       created_at: 30.minutes.ago,
       updated_at: 30.minutes.ago
     )
@@ -98,10 +109,32 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes @response.body, "newest own post"
     assert_includes @response.body, "older followed post"
-    assert_not_includes @response.body, "excluded unfollowed post"
+    assert_not_includes @response.body, excluded_post.body
     assert_operator @response.body.index("newest own post"), :<, @response.body.index("older followed post")
     assert_includes @response.body, john_actor.name
     assert_includes @response.body, jane_actor.name
+  end
+
+  test "GET feed includes posts from local actors even when not followed" do
+    admin_actor = federails_actors(:admin_actor)
+
+    local_unfollowed_post = Post.create!(body: "local unfollowed post", user: users(:admin))
+    Federails::Activity.create!(
+      actor: admin_actor,
+      entity: local_unfollowed_post,
+      action: "Create",
+      created_at: 30.minutes.ago,
+      updated_at: 30.minutes.ago
+    )
+
+    refute Federails::Following.accepted.exists?(actor: @user.federails_actor, target_actor: admin_actor),
+      "test premise: john must not follow admin"
+
+    sign_in_as(@user)
+    get feed_path
+
+    assert_response :success
+    assert_includes @response.body, "local unfollowed post"
   end
 
   test "GET feed renders article preview for posts linked to an article" do
