@@ -200,18 +200,21 @@ ja:
     loading: 読み込み中...
     nav:
       aria_label: メインナビゲーション
+      feed: フィード
       home: ホーム
       menu_toggle: メニュー開閉
       new_article: 記事を投稿
       open_main_menu: メインメニューを開く
       other_news: その他のニュース
       past_articles: 過去の記事
+      profile: マイプロフィール
     rss_feed_title: Ruby-News RSSフィード
     search:
       aria_label: 記事を検索
       submit: 検索
     site_name: Ruby-News | Ruby AIニュース
     skip_to_content: 本文へスキップ
+    theme: テーマ
   login_required:
     go_to_login: ログインへ
     message: コメントを書いたり会話に参加するにはログインが必要です。

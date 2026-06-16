@@ -200,18 +200,21 @@ en:
     loading: Loading...
     nav:
       aria_label: Main navigation
+      feed: Feed
       home: Home
       menu_toggle: Toggle menu
       new_article: Submit Article
       open_main_menu: Open main menu
       other_news: Other News
       past_articles: Past Articles
+      profile: My Profile
     rss_feed_title: Ruby-News RSS Feed
     search:
       aria_label: Search articles
       submit: Search
     site_name: Ruby-News | Ruby AI News
     skip_to_content: Skip to content
+    theme: Theme
   login_required:
     go_to_login: Go to sign in
     message: You need to sign in to write comments or join conversations.

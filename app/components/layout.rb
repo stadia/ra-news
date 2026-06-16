@@ -253,61 +253,80 @@ class Components::Layout < Components::Base
       class: "items-center justify-between w-full md:flex md:w-auto md:order-1 hidden peer-checked:block transition-all duration-300 ease-in-out md:transition-none",
       id: "navbar-search"
     ) do
-      ul(class: "flex flex-col p-4 md:p-0 mt-4 font-medium border border-border-strong rounded-lg bg-surface-muted md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-surface animate-in slide-in-from-top-2 fade-in duration-200 md:animate-none") do
+      ul(class: "flex flex-col gap-y-3 md:gap-y-0 p-4 md:p-0 mt-4 font-medium border border-border-strong rounded-lg bg-surface-muted md:space-x-8 rtl:space-x-reverse md:flex-row md:items-center md:mt-0 md:border-0 md:bg-surface animate-in slide-in-from-top-2 fade-in duration-200 md:animate-none") do
         li { raw vc.nav_link_to(t("layout.nav.home"), root_path) }
         li { raw vc.nav_link_to(t("layout.nav.past_articles"), articles_path) }
         li { raw vc.nav_link_to(t("layout.nav.other_news"), others_path) }
-        li(class: "flex items-center") { render_search_form }
+        li { raw vc.nav_link_to(t("layout.nav.feed"), feed_path) } if vc.user_signed_in?
+        li { raw vc.nav_link_to(t("layout.nav.new_article"), new_article_path) } if vc.user_signed_in?
+        li(class: "flex items-center px-4 md:px-0") { render_search_form }
 
         if vc.user_signed_in?
-          li { raw vc.nav_link_to(t("layout.nav.new_article"), new_article_path) }
-          li { raw vc.nav_link_to(vc.current_user.username ||vc.current_user.name, user_profile_path(vc.current_user)) }
+          li(class: "flex items-center px-4 md:px-0") { render_user_menu(vc) }
+        else
+          li { raw vc.nav_link_to(t("sign_in"), new_user_session_path) }
         end
 
-        li do
-          if vc.user_signed_in?
-            raw vc.nav_link_to(t("sign_out"), destroy_user_session_path)
-          else
-            raw vc.nav_link_to(t("sign_in"), new_user_session_path)
-          end
-        end
+      end
+    end
+  end
 
-        li(class: "flex items-center") do
-          ThemeToggle do |toggle|
-            SetLightMode do
-              Button(variant: :ghost, icon: true) do
-                svg(
-                  xmlns: "http://www.w3.org/2000/svg",
-                  viewbox: "0 0 24 24",
-                  fill: "currentColor",
-                  class: "w-4 h-4"
-                ) do |s|
-                  s.path(
-                    d:
-                      "M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"
-                  )
-                end
-              end
-            end
-            SetDarkMode do
-              Button(variant: :ghost, icon: true) do
-                svg(
-                  xmlns: "http://www.w3.org/2000/svg",
-                  viewbox: "0 0 24 24",
-                  fill: "currentColor",
-                  class: "w-4 h-4"
-                ) do |s|
-                  s.path(
-                    fill_rule: "evenodd",
-                    d:
-                      "M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z",
-                    clip_rule: "evenodd"
-                  )
-                end
-              end
-            end
+  def render_theme_toggle
+    ThemeToggle do |toggle|
+      SetLightMode do
+        Button(variant: :ghost, icon: true) do
+          svg(
+            xmlns: "http://www.w3.org/2000/svg",
+            viewbox: "0 0 24 24",
+            fill: "currentColor",
+            class: "w-4 h-4"
+          ) do |s|
+            s.path(
+              d:
+                "M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"
+            )
           end
         end
+      end
+      SetDarkMode do
+        Button(variant: :ghost, icon: true) do
+          svg(
+            xmlns: "http://www.w3.org/2000/svg",
+            viewbox: "0 0 24 24",
+            fill: "currentColor",
+            class: "w-4 h-4"
+          ) do |s|
+            s.path(
+              fill_rule: "evenodd",
+              d:
+                "M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 003.463-.69.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.701-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 01.818.162z",
+              clip_rule: "evenodd"
+            )
+          end
+        end
+      end
+    end
+  end
+
+  def render_user_menu(vc)
+    user = vc.current_user
+    name = user.username || user.name
+    DropdownMenu(options: { placement: "bottom-end" }) do
+      DropdownMenuTrigger do
+        button(
+          type: "button",
+          class: "flex items-center rounded-full focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-surface cursor-pointer",
+          aria_label: name
+        ) do
+          render Components::UserAvatar.new(user: user, name: name)
+        end
+      end
+      DropdownMenuContent do
+        DropdownMenuLabel { name }
+        DropdownMenuSeparator()
+        DropdownMenuItem(href: user_profile_path(user)) { t("layout.nav.profile") }
+        DropdownMenuSeparator()
+        DropdownMenuItem(href: destroy_user_session_path) { t("sign_out") }
       end
     end
   end
@@ -363,6 +382,15 @@ class Components::Layout < Components::Base
   def render_footer
     footer(class: "bg-surface text-content-secondary rounded-lg shadow-sm m-4 border border-border-strong border-t-2 border-t-brand") do
       div(class: "w-full mx-auto max-w-7xl p-4 flex flex-col items-center gap-3") do
+        ul(class: "flex flex-wrap justify-center items-center text-sm font-medium text-content-secondary gap-x-4 gap-y-2") do
+          li { render_mastodon_link }
+          li { render_twitter_link }
+          li { render_github_link }
+          li { render_slack_link }
+          li { render_discord_link }
+          li { render_rss_footer_link }
+        end
+
         span(class: "text-sm text-content-secondary text-center") do
           plain "© 2025 "
           a(
@@ -373,14 +401,13 @@ class Components::Layout < Components::Base
         end
 
         ul(class: "flex flex-wrap justify-center items-center text-sm font-medium text-content-secondary gap-x-4 gap-y-2") do
-          li { render_mastodon_link }
-          li { render_twitter_link }
-          li { render_github_link }
-          li { render_slack_link }
-          li { render_discord_link }
-          li { render_rss_footer_link }
           li { render_privacy_policy_link }
           li { render_terms_link }
+        end
+
+        div(class: "flex items-center gap-2 text-sm text-content-secondary") do
+          span { t("layout.theme") }
+          render_theme_toggle
         end
       end
     end

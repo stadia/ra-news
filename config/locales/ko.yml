@@ -200,18 +200,21 @@ ko:
     loading: 로딩 중...
     nav:
       aria_label: 주 네비게이션
+      feed: 피드
       home: 홈
       menu_toggle: 메뉴 열기/닫기
       new_article: 글 등록
       open_main_menu: 메인 메뉴 열기
       other_news: 그 밖의 뉴스
       past_articles: 지난 글
+      profile: 내 프로필
     rss_feed_title: Ruby-News RSS 피드
     search:
       aria_label: 기사 검색
       submit: 검색
     site_name: Ruby-News | 루비 AI 뉴스
     skip_to_content: 본문으로 건너뛰기
+    theme: 테마
   login_required:
     go_to_login: 로그인 하러 가기
     message: 댓글을 작성하거나 대화에 참여하려면 로그인이 필요합니다.
