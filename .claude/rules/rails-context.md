@@ -1,8 +1,8 @@
-# RubyNews — Overview
+# RubyNews - Overview
 
 Rails 8.1.3 | Ruby 4.0.5
 
-- Database: static_parse — 28 tables
+- Database: static_parse - 28 tables
 - Models: 21
 - Routes: 191
 - Auth: Devise
@@ -15,4 +15,5 @@ Rails 8.1.3 | Ruby 4.0.5
 
 **Global before_actions:** authenticate_user!
 
+ALWAYS use MCP tools for context - do NOT read reference files directly.
 Start with `detail:"summary"`. Read files ONLY when you will Edit them.
