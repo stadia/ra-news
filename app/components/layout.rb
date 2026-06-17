@@ -77,16 +77,6 @@ class Components::Layout < Components::Base
         gtag('config', '#{ga_id}');
       JS
     end
-
-    script(type: "text/javascript") do
-      raw(<<~JS.html_safe)
-        (function(c,l,a,r,i,t,y){
-            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-        })(window, document, "clarity", "script", "u4rt68vefo");
-      JS
-    end
   end
 
   # 단일 소스: app/functions/hosts.rb (Hosts::FOR_LOCALE)
