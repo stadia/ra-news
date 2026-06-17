@@ -66,13 +66,15 @@ class Components::Layout < Components::Base
   end
 
   def render_analytics_scripts
-    script(async: true, src: "https://www.googletagmanager.com/gtag/js?id=G-56PSNXG7QG")
+    ga_id = Hosts::GA_ID_FOR_HOST.fetch(view_context.request.host, "G-LQJR05LHW6")
+
+    script(async: true, src: "https://www.googletagmanager.com/gtag/js?id=#{ga_id}")
     script do
       raw(<<~JS.html_safe)
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-56PSNXG7QG');
+        gtag('config', '#{ga_id}');
       JS
     end
 

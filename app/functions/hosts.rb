@@ -14,6 +14,12 @@ module Hosts
 
   DEFAULT = "https://ruby-news.dev"
 
+  # host(스킴 제외) → Google Analytics 4 측정 ID.
+  GA_ID_FOR_HOST = {
+    "ruby-news.dev" => "G-LQJR05LHW6",
+    "ruby-news.jp"  => "G-C3YSZY1HB7"
+  }.freeze
+
   # host(스킴 제외) → locale 심볼. FOR_LOCALE 에서 자동 파생되는 역방향 매핑.
   # LocaleSwitcher 가 이 상수를 참조하므로 도메인 추가 시 FOR_LOCALE 한 곳만 고치면 된다.
   LOCALE_FOR_HOST = FOR_LOCALE.to_h { |locale, url| [ URI(url).host, locale.to_sym ] }.freeze
