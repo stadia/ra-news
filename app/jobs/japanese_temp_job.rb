@@ -9,6 +9,10 @@ class JapaneseTempJob < ApplicationJob
     end
 
     article = Article.kept.confirmed.where(title_ja: nil).order("created_at desc").limit(1).first
+    return if article.nil?
+
+    article.discard! and return if article.title.nil?
+
     article.title = Articles::Utils.truncate_title(article.title) if article.title.size > 120
     ArticleAgentsService.new.send(:run_japanese, article)
     run_similar(article)
@@ -19,7 +23,7 @@ class JapaneseTempJob < ApplicationJob
     similar_articles.each { |item|
       next if item.title_ja.present?
 
-      item.title = Articles::Utils.truncate_title(item.title)
+      item.title = Articles::Utils.truncate_title(item.title) if item.title.present? && item.title.size > 120
       ArticleAgentsService.new.send(:run_japanese, item)
     }
   end
