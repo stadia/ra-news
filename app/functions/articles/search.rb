@@ -103,16 +103,18 @@ module Articles
       def suggest(query, limit: 5)
         return [] if query.blank?
 
-        Article.joins(:pg_search_document)
-               .kept.confirmed
-               .where("pg_search_documents.content % ?", query)
-               .order(Arel.sql(similarity_order(query)))
-               .limit(limit)
-               .pluck(:title_ko, :title)
-               .map { |title_ko, title| I18n.locale == :ko ? (title_ko.presence || title) : (title.presence || title_ko) }
-               .compact
-               .uniq
-               .first(limit)
+        ApplicationRecord.transaction(requires_new: true) do
+          Article.joins(:pg_search_document)
+                 .kept.confirmed
+                 .where("pg_search_documents.content % ?", query)
+                 .order(Arel.sql(similarity_order(query)))
+                 .limit(limit)
+                 .pluck(:title_ko, :title)
+                 .map { |title_ko, title| I18n.locale == :ko ? (title_ko.presence || title) : (title.presence || title_ko) }
+                 .compact
+                 .uniq
+                 .first(limit)
+        end
       rescue ActiveRecord::StatementInvalid
         # pg_bigm 확장이 설치되지 않은 환경에서는 빈 배열 반환
         []
