@@ -59,14 +59,12 @@ Metrics/AbcSize:
 
 Metrics/CyclomaticComplexity:
   Enabled: true
-  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
 
 Metrics/PerceivedComplexity:
   Enabled: true
-  Max: 100
   Exclude:
     - "test/**/*"
     - "db/**/*"
@@ -88,3 +86,12 @@ I18n/GetText/DecorateString:
     - "test/**/*"
     - "spec/**/*"
     - "lib/tasks/search_benchmark.rake" # 벤치마크 seed fixture — 번역 대상 UI 문자열 아님
+
+Style/SelectByKind:
+  Enabled: true
+
+Style/SelectByRange:
+  Enabled: true
+
+Style/PartitionInsteadOfDoubleSelect:
+  Enabled: true
