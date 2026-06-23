@@ -103,13 +103,13 @@ class HomeController < ApplicationController
       featured_articles.concat(fallback_featured_articles(featured_scope, featured_articles))
     end
 
-    featured_articles.sort_by { [ -it.likers_count, -it.posts_count, -it.published_at.to_i, -it.created_at.to_i ] }
+    featured_articles.sort_by { [ -it.likers_count, -it.boosters_count, -it.posts_count, -it.published_at.to_i, -it.created_at.to_i ] }
   end
 
   def primary_featured_articles(featured_scope)
     featured_scope
-      .where("likers_count > ? OR posts_count > ?", 0, 0)
-      .order(likers_count: :desc, posts_count: :desc, created_at: :desc)
+      .where("likers_count > ? OR posts_count > ? OR boosters_count > ?", 0, 0, 0)
+      .order(likers_count: :desc, posts_count: :desc, boosters_count: :desc, created_at: :desc)
       .limit(3)
       .to_a
   end
