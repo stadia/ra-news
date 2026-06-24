@@ -3,6 +3,8 @@
 require "test_helper"
 
 class BoostTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   setup do
     @user = users(:john)
     @local_post = posts(:root_post)
@@ -141,6 +143,32 @@ class BoostTest < ActiveSupport::TestCase
   test "duplicate boost by the same actor is rejected" do
     @user.boost!(@local_post)
     assert_no_difference("Boost.count") do
+      @user.boost!(@local_post)
+    end
+  end
+
+  test "boosting an article without a thumbnail enqueues ArticleThumbnailJob" do
+    refute @local_article.thumbnail.attached?
+
+    assert_enqueued_with(job: ArticleThumbnailJob, args: [ @local_article.id ]) do
+      @user.boost!(@local_article)
+    end
+  end
+
+  test "boosting an article that already has a thumbnail does not enqueue ArticleThumbnailJob" do
+    @local_article.thumbnail.attach(
+      io: StringIO.new("thumbnail-bytes"),
+      filename: "thumb.png",
+      content_type: "image/png"
+    )
+
+    assert_no_enqueued_jobs(only: ArticleThumbnailJob) do
+      @user.boost!(@local_article)
+    end
+  end
+
+  test "boosting a post does not enqueue ArticleThumbnailJob" do
+    assert_no_enqueued_jobs(only: ArticleThumbnailJob) do
       @user.boost!(@local_post)
     end
   end
