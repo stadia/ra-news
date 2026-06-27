@@ -14,11 +14,10 @@ module Hosts
 
   DEFAULT = "https://ruby-news.dev"
 
-  # host(스킴 제외) → Google Analytics 4 측정 ID.
-  GA_ID_FOR_HOST = {
-    "ruby-news.dev" => "G-56PSNXG7QG",
-    "ruby-news.jp"  => "G-56PSNXG7QG"
-  }.freeze
+  # Google Analytics 4 측정 ID.
+  # dev·jp 두 속성이 하나의 Google 태그(스트림 2개)를 공유하므로 호스트와 무관하게 동일하다.
+  # 호스트별로 분리해야 할 일이 생기면 host→ID 매핑으로 되돌린다.
+  GA_ID = "G-56PSNXG7QG"
 
   # host(스킴 제외) → locale 심볼. FOR_LOCALE 에서 자동 파생되는 역방향 매핑.
   # LocaleSwitcher 가 이 상수를 참조하므로 도메인 추가 시 FOR_LOCALE 한 곳만 고치면 된다.
