@@ -16,8 +16,8 @@ module Hosts
 
   # host(스킴 제외) → Google Analytics 4 측정 ID.
   GA_ID_FOR_HOST = {
-    "ruby-news.dev" => "G-LQJR05LHW6",
-    "ruby-news.jp"  => "G-C3YSZY1HB7"
+    "ruby-news.dev" => "G-56PSNXG7QG",
+    "ruby-news.jp"  => "G-56PSNXG7QG"
   }.freeze
 
   # host(스킴 제외) → locale 심볼. FOR_LOCALE 에서 자동 파생되는 역방향 매핑.

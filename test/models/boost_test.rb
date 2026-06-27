@@ -148,7 +148,7 @@ class BoostTest < ActiveSupport::TestCase
   end
 
   test "boosting an article without a thumbnail enqueues ArticleThumbnailJob" do
-    refute @local_article.thumbnail.attached?
+    refute_predicate @local_article.thumbnail, :attached?
 
     assert_enqueued_with(job: ArticleThumbnailJob, args: [ @local_article.id ]) do
       @user.boost!(@local_article)

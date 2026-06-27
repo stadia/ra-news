@@ -66,7 +66,7 @@ class Components::Layout < Components::Base
   end
 
   def render_analytics_scripts
-    ga_id = Hosts::GA_ID_FOR_HOST.fetch(view_context.request.host, "G-LQJR05LHW6")
+    ga_id = Hosts::GA_ID_FOR_HOST.fetch(view_context.request.host, "G-56PSNXG7QG")
 
     script(async: true, src: "https://www.googletagmanager.com/gtag/js?id=#{ga_id}")
     script do
@@ -260,7 +260,6 @@ class Components::Layout < Components::Base
         else
           li { raw vc.nav_link_to(t("sign_in"), new_user_session_path) }
         end
-
       end
     end
   end
