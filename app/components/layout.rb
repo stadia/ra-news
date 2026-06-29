@@ -66,7 +66,7 @@ class Components::Layout < Components::Base
   end
 
   def render_analytics_scripts
-    ga_id = Hosts::GA_ID
+    ga_id = Hosts::GA_ID_FOR_HOST.fetch(view_context.request.host, Hosts::DEFAULT_GA_ID)
 
     script(async: true, src: "https://www.googletagmanager.com/gtag/js?id=#{ga_id}")
     script do
