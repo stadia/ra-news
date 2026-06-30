@@ -743,7 +743,7 @@ GEM
     simplecov_json_formatter (0.1.4)
     simpleidn (0.2.3)
     sin_lru_redux (2.5.2)
-    sitemap_generator (7.0.1)
+    sitemap_generator (7.0.2)
       builder (~> 3.0)
     slack-ruby-client (3.1.0)
       faraday (>= 2.0.1)
