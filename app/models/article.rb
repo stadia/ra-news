@@ -116,6 +116,10 @@ class Article < ApplicationRecord
     end
   end
 
+  # title 이 일본어(가나 포함)인 경우 title_ja 에도 함께 저장한다.
+  # 판별 기준은 검색 스코프와 동일하게 JAPANESE_KANA_REGEX 를 재사용한다.
+  before_save :assign_japanese_title
+
   after_commit :clear_rss_cache, on: [ :create, :update, :destroy ]
 
   after_discard do
@@ -234,6 +238,14 @@ class Article < ApplicationRecord
 
   # ── Private Instance Methods ─────────────────────────────────────────
   private
+
+  #: () -> void
+  def assign_japanese_title
+    return if title.blank?
+    return unless title.match?(JAPANESE_KANA_REGEX)
+
+    self.title_ja = title
+  end
 
   #: () -> User?
   def bot_user

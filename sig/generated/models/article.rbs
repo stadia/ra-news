@@ -70,6 +70,9 @@ class Article < ApplicationRecord
 
   private
 
+  # : () -> void
+  def assign_japanese_title: () -> void
+
   # : () -> User?
   def bot_user: () -> User?
 

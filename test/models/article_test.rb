@@ -378,6 +378,36 @@ class ArticleTest < ActiveSupport::TestCase
     assert_nil article.deleted_at
   end
 
+  test "title이 일본어(가나 포함)이면 저장 시 title_ja에도 함께 저장해야 한다" do
+    article = Article.new(
+      title: "Rubyの新しい機能について",
+      url: "https://example.com/japanese-title-test",
+      origin_url: "https://example.com/japanese-title-test-origin",
+      user: @user
+    )
+
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
+
+    assert_equal "Rubyの新しい機能について", article.title_ja
+  end
+
+  test "title이 일본어가 아니면 title_ja를 채우지 않아야 한다" do
+    article = Article.new(
+      title: "A regular English title",
+      url: "https://example.com/non-japanese-title-test",
+      origin_url: "https://example.com/non-japanese-title-test-origin",
+      user: @user
+    )
+
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
+
+    assert_nil article.title_ja
+  end
+
   test "생성 전에 메타데이터를 생성해야 한다" do
     article = Article.new(
       title: "Test",
