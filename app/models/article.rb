@@ -8,6 +8,11 @@ class Article < ApplicationRecord
   TITLE_BOUNDARY_MIN_RATIO = 0.6
   TITLE_BOUNDARY_PATTERN = /[\s[:punct:]、。，．！？；：·|｜-]/
 
+  # title 이 일본어인지 판별한다. 가나(かな) 또는 한자(漢字) 포함 여부로 본다.
+  # 한국어 제목에는 한자가 들어가지 않는다는 전제이며, 검색용 판별인
+  # JAPANESE_KANA_REGEX 와 달리 한자까지 일본어로 취급한다.
+  JAPANESE_TITLE_REGEX = /[\p{Hiragana}\p{Katakana}\p{Han}･-ﾟ]/
+
   # ── Extend ───────────────────────────────────────────────────────────
   extend FriendlyId
   friendly_id :slug, use: :slugged
@@ -116,8 +121,8 @@ class Article < ApplicationRecord
     end
   end
 
-  # title 이 일본어(가나 포함)인 경우 title_ja 에도 함께 저장한다.
-  # 판별 기준은 검색 스코프와 동일하게 JAPANESE_KANA_REGEX 를 재사용한다.
+  # title 이 일본어(가나 또는 한자 포함)인 경우 title_ja 에도 함께 저장한다.
+  # 판별 기준은 JAPANESE_TITLE_REGEX 를 사용한다.
   before_save :assign_japanese_title
 
   after_commit :clear_rss_cache, on: [ :create, :update, :destroy ]
@@ -242,7 +247,7 @@ class Article < ApplicationRecord
   #: () -> void
   def assign_japanese_title
     return if title.blank?
-    return unless title.match?(JAPANESE_KANA_REGEX)
+    return unless title.match?(JAPANESE_TITLE_REGEX)
 
     self.title_ja = title
   end

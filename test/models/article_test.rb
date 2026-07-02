@@ -393,6 +393,21 @@ class ArticleTest < ActiveSupport::TestCase
     assert_equal "Rubyの新しい機能について", article.title_ja
   end
 
+  test "title이 한자(漢字)로만 이루어져도 일본어로 취급해 title_ja에 저장해야 한다" do
+    article = Article.new(
+      title: "日本語処理",
+      url: "https://example.com/kanji-only-title-test",
+      origin_url: "https://example.com/kanji-only-title-test-origin",
+      user: @user
+    )
+
+    article.stub(:generate_metadata, nil) do
+      article.save!
+    end
+
+    assert_equal "日本語処理", article.title_ja
+  end
+
   test "title이 일본어가 아니면 title_ja를 채우지 않아야 한다" do
     article = Article.new(
       title: "A regular English title",
