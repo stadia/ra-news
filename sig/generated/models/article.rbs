@@ -10,6 +10,11 @@ class Article < ApplicationRecord
 
   TITLE_BOUNDARY_PATTERN: ::Regexp
 
+  # title 이 일본어인지 판별한다. 가나(かな) 또는 한자(漢字) 포함 여부로 본다.
+  # 한국어 제목에는 한자가 들어가지 않는다는 전제이며, 검색용 판별인
+  # JAPANESE_KANA_REGEX 와 달리 한자까지 일본어로 취급한다.
+  JAPANESE_TITLE_REGEX: ::Regexp
+
   extend FriendlyId
 
   include PgSearch::Model
@@ -69,6 +74,9 @@ class Article < ApplicationRecord
   def self.find_by_slug: (String slug) -> Article?
 
   private
+
+  # : () -> void
+  def assign_japanese_title: () -> void
 
   # : () -> User?
   def bot_user: () -> User?
