@@ -45,6 +45,11 @@ module SitemapBuilder
       SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/"
       SitemapGenerator::Sitemap.compress      = true
       SitemapGenerator::Sitemap.include_root  = false
+      # 링크를 5,000개마다 디스크로 flush하고 버퍼를 비운다. 기본값(50,000)이면
+      # 전체 링크(<50k)를 한 버퍼에 통째로 물고 있다가 flush해 순간 메모리 peak가
+      # 컸다. 이 빌드는 장수명 solid_queue 워커 안에서 돌므로 그 스파이크가 워커
+      # 컨테이너 OOM을 유발했다. 값이 낮을수록 peak↓·사이트맵 파일수↑(둘 다 무해).
+      SitemapGenerator::Sitemap.max_sitemap_links = 5_000
 
       SitemapGenerator::Sitemap.create do
         # 각 로케일 호스트(ko=.dev, ja=.jp)를 개별 <url> 블록으로 등재한다.

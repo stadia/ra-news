@@ -137,4 +137,24 @@ class SitemapBuilderTest < ActiveSupport::TestCase
 
     assert compress_set
   end
+
+  # max_sitemap_links를 낮춰 gem이 더 자주 디스크로 flush하게 하면, 메모리에 동시에
+  # 쥐는 Link 버퍼가 줄어 사이트맵 빌드의 순간 메모리 peak가 내려간다.
+  test "max_sitemap_links를 5,000으로 낮춘다" do
+    captured = nil
+
+    SitemapGenerator::Sitemap.stub(:default_host=, nil) do
+      SitemapGenerator::Sitemap.stub(:sitemaps_path=, nil) do
+        SitemapGenerator::Sitemap.stub(:compress=, nil) do
+          SitemapGenerator::Sitemap.stub(:max_sitemap_links=, ->(v) { captured = v }) do
+            SitemapGenerator::Sitemap.stub(:create, ->(&_) { }) do
+              SitemapBuilder.build
+            end
+          end
+        end
+      end
+    end
+
+    assert_equal 5_000, captured
+  end
 end
