@@ -44,13 +44,18 @@ module Articles
     end
 
     # Whether a genuine translation exists for the given locale (vs. falling back
-    # to the Korean source). :ja requires title_ja; :ko (base content) is always
-    # available. Used to noindex / exclude untranslated articles from the .jp
-    # locale so we never advertise Korean fallback content as Japanese.
+    # to the Korean source). :ja requires summary_key_ja; :ko (base content) is
+    # always available. Used to noindex / exclude untranslated articles from the
+    # .jp locale so we never advertise Korean fallback content as Japanese.
+    #
+    # summary_key_ja (not title_ja) is the completion signal: title_ja may be
+    # pre-filled from a Japanese source title before the article body/summary is
+    # translated, whereas summary_key_ja is only set by the Japanese translation
+    # pipeline (ArticleAgentsService#run_japanese / DeeplTranslationService).
     #: (Symbol?) -> bool
     def available_in?(locale = I18n.locale)
       case locale.to_sym
-      when :ja then title_ja.present?
+      when :ja then summary_key_ja.present?
       else          true
       end
     end

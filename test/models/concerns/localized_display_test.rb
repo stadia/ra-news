@@ -102,6 +102,28 @@ class LocalizedDisplayTest < ActiveSupport::TestCase
     assert_not @article.show_original_title?(locale: :ja)
   end
 
+  # ── available_in? ──────────────────────────────────────────────────
+
+  test "available_in? for ja is true when summary_key_ja present" do
+    @article.update_columns(summary_key_ja: [ "要約1" ])
+
+    assert @article.available_in?(:ja)
+  end
+
+  # 번역 완료 신호는 summary_key_ja 이므로, 일본어 원문 제목으로 title_ja 가
+  # 미리 채워졌더라도 실제 번역(summary_key_ja) 전에는 :ja 로 노출하지 않는다.
+  test "available_in? for ja is false when only title_ja present without summary_key_ja" do
+    @article.update_columns(title_ja: "日本語タイトル", summary_key_ja: nil)
+
+    assert_not @article.available_in?(:ja)
+  end
+
+  test "available_in? for ko is always true regardless of ja translation" do
+    @article.update_columns(summary_key_ja: nil)
+
+    assert @article.available_in?(:ko)
+  end
+
   # ── summary_key_preview ────────────────────────────────────────────
 
   test "summary_key_preview returns first item of array" do
