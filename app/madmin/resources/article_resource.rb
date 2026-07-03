@@ -3,6 +3,7 @@ class ArticleResource < Madmin::Resource
   attribute :id, form: false
   attribute :title, new: false
   attribute :title_ko, index: true, new: false
+  attribute :title_ja, index: false, form: false
   attribute :slug, index: false, form: false
   attribute :deleted_at, index: false, form: false
   attribute :discarded?, index: true, form: false
@@ -20,6 +21,7 @@ class ArticleResource < Madmin::Resource
   attribute :is_posted, index: false, form: true
 
   attribute :summary_key, index: false, form: false
+  attribute :summary_key_ja, index: false, form: false
   attribute :summary_detail, index: false, form: false
   attribute :summary_introduction, index: false
   attribute :summary_body, index: false
