@@ -2,7 +2,7 @@
 
 Rails 8.1.3 | Ruby 4.0.5
 
-- Database: static_parse - 28 tables
+- Database: PostgreSQL - 28 tables
 - Models: 21
 - Routes: 191
 - Auth: Devise
