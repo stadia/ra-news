@@ -150,6 +150,7 @@ class ArticlesController < ApplicationController
 
     respond_to do |format|
       if @article.save
+        current_user.like!(@article)
         ArticleJob.perform_later(@article.id)
         format.html { redirect_to article_path(@article), notice: t("articles.create.success") }
       else

@@ -218,6 +218,26 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_select "#error_explanation li", text: /URL/
   end
 
+  test "POST create automatically likes the article as the submitting user" do
+    user = users(:john)
+    response = Struct.new(:body, :status, :headers).new("<html><title>Submitted article</title></html>", 200, {})
+    sign_in_as(user)
+
+    Faraday.stub(:get, ->(*) { response }) do
+      assert_difference("Article.count", 1) do
+        assert_difference("Like.count", 1) do
+          post articles_path, params: { article: { url: "https://example.com/submitted-by-user" } }
+        end
+      end
+    end
+
+    article = Article.find_by!(url: "https://example.com/submitted-by-user")
+    assert_redirected_to article_path(article)
+    assert_equal User.first_bot, article.user
+    assert user.likes?(article)
+    assert_equal 1, article.reload.likers_count
+  end
+
   test "GET others renders pagination and push notification modal when multiple pages exist" do
     user = users(:john)
 
