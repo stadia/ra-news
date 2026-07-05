@@ -75,9 +75,12 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#index"
 
-  # 관용 경로 /sitemap.xml → 실제 사이트맵 인덱스로 301 리다이렉트
-  # (실제 파일은 SitemapBuilder가 public/sitemaps/ 에 생성)
-  get "sitemap.xml", to: redirect("/sitemaps/sitemap.xml.gz", status: 301)
+  # 관용 경로 /sitemap.xml → 요청 호스트의 로케일별 사이트맵 인덱스로 301 리다이렉트.
+  # 사이트맵은 도메인별로 분리 생성되므로(.dev=ko, .jp=ja) 호스트에 맞는 경로로 보낸다.
+  # (실제 파일은 SitemapBuilder가 public/sitemaps/<locale>/ 에 생성)
+  get "sitemap.xml", to: redirect(status: 301) { |_params, request|
+    "/sitemaps/#{Hosts.locale_for_host(request.host)}/sitemap.xml.gz"
+  }
 
   # llms.txt 는 로케일(호스트)별로 다른 본문을 서빙해야 하므로 동적 라우트로 처리한다.
   # (기존 정적 public/llms.txt 는 삭제됨 — 정적 파일이 라우트보다 우선 매칭되기 때문)
