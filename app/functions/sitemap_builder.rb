@@ -12,6 +12,12 @@ module SitemapBuilder
   # 날짜"로 사이트맵을 거부한다. Rails 등장(2004) 이전 floor로 사용한다.
   MIN_LASTMOD = Time.zone.local(2004, 1, 1)
 
+  # 링크를 5,000개마다 디스크로 flush하고 버퍼를 비운다. 기본값(50,000)이면
+  # 전체 링크(<50k)를 한 버퍼에 통째로 물고 있다가 flush해 순간 메모리 peak가
+  # 컸다. 이 빌드는 장수명 solid_queue 워커 안에서 돌므로 그 스파이크가 워커
+  # 컨테이너 OOM을 유발했다. 값이 낮을수록 peak↓·사이트맵 파일수↑(둘 다 무해).
+  MAX_SITEMAP_LINKS = 5_000
+
   class << self
     include Rails.application.routes.url_helpers
 
@@ -39,53 +45,61 @@ module SitemapBuilder
       candidate >= MIN_LASTMOD && candidate <= Time.current
     end
 
+    # 도메인별로 자기 완결적인 사이트맵을 생성한다. 로케일마다 별도 LinkSet을
+    # 만들어 인덱스·자식 사이트맵·<loc>가 모두 자기 호스트(ko=.dev, ja=.jp)에
+    # 속하도록 한다. 이전에는 단일 LinkSet(default_host 하드코딩)이 양 도메인에
+    # 공유돼, .jp 인덱스가 .dev 자식을 가리키는 크로스도메인 참조가 생겼고
+    # GSC가 사이트맵 귀속을 하지 못했다(참조 페이지가 반대 도메인으로 잡힘).
+    # Sitemaps.org 프로토콜의 "한 사이트맵의 URL은 단일 호스트" 원칙도 준수한다.
     #: () -> void
     def build
-      SitemapGenerator::Sitemap.default_host  = "https://ruby-news.dev"
-      SitemapGenerator::Sitemap.sitemaps_path = "sitemaps/"
-      SitemapGenerator::Sitemap.compress      = true
-      SitemapGenerator::Sitemap.include_root  = false
-      # 링크를 5,000개마다 디스크로 flush하고 버퍼를 비운다. 기본값(50,000)이면
-      # 전체 링크(<50k)를 한 버퍼에 통째로 물고 있다가 flush해 순간 메모리 peak가
-      # 컸다. 이 빌드는 장수명 solid_queue 워커 안에서 돌므로 그 스파이크가 워커
-      # 컨테이너 OOM을 유발했다. 값이 낮을수록 peak↓·사이트맵 파일수↑(둘 다 무해).
-      SitemapGenerator::Sitemap.max_sitemap_links = 5_000
+      HREFLANG_HOSTS.each { |locale, host| build_locale(locale, host) }
+    end
 
-      SitemapGenerator::Sitemap.create do
-        # 각 로케일 호스트(ko=.dev, ja=.jp)를 개별 <url> 블록으로 등재한다.
-        # 각 블록은 자신의 <loc> 1개 + ko/ja hreflang alternates를 모두 포함하는
-        # Google 권장 다국어 사이트맵 구조다. ko·ja가 각각 색인 대상이므로
-        # GSC 발견 페이지 수가 2배가 되는 것은 정상이다.
-        # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
-        index_lastmod = Time.current.iso8601
-        SitemapBuilder::HREFLANG_HOSTS.each_value do |host|
-          add root_path, host: host,
-              lastmod: index_lastmod,
-              alternates: SitemapBuilder.alternates_for(root_path)
-          add articles_path, host: host,
-              lastmod: index_lastmod,
-              alternates: SitemapBuilder.alternates_for(articles_path)
-          add others_path, host: host,
-              lastmod: index_lastmod,
-              alternates: SitemapBuilder.alternates_for(others_path)
-        end
+    # 단일 로케일/호스트에 대한 자기 완결 사이트맵(인덱스 + 샤드)을 생성한다.
+    # 출력: public/sitemaps/<locale>/sitemap.xml.gz (+ sitemap1..N.xml.gz)
+    #: (String, String) -> void
+    def build_locale(locale, host)
+      link_set = SitemapGenerator::LinkSet.new(
+        default_host: host,
+        sitemaps_path: "sitemaps/#{locale}/",
+        include_root: false,
+        compress: true,
+        max_sitemap_links: MAX_SITEMAP_LINKS
+      )
 
-        Article.kept
-               .confirmed
-               .find_in_batches(batch_size: 500) do |batch|
-          batch.each do |article|
-            path = article_path(article.slug)
-            lastmod = SitemapBuilder.lastmod_for(article)
-            # 번역이 존재하는 로케일 호스트만 등재한다. 일본어 번역이 없는
-            # 기사는 .jp(<loc>·hreflang alternate) 에서 제외 → 한국어 폴백을
-            # 일본어로 색인시키지 않는다. 번역되면 다음 빌드에서 자동 포함.
-            available = SitemapBuilder::HREFLANG_HOSTS.keys.select { |loc| article.available_in?(loc) }
-            alternates = SitemapBuilder.alternates_for(path, available)
-            SitemapBuilder::HREFLANG_HOSTS.each do |locale, host|
-              next unless article.available_in?(locale)
-              add path, host: host, lastmod: lastmod, alternates: alternates
-            end
-          end
+      # create 블록은 Interpreter 컨텍스트에서 instance_eval 되므로 self가 DSL
+      # (add 응답)이 된다. 실제 링크 등재 로직은 populate 로 분리해 테스트를
+      # 용이하게 하고, locale/host 는 클로저로 캡처된다.
+      link_set.create { SitemapBuilder.populate(self, locale, host) }
+    end
+
+    # 주어진 로케일/호스트의 모든 URL을 DSL(add 응답 객체)에 등재한다.
+    # 각 <url>은 자기 호스트 <loc> 1개 + ko/ja hreflang alternates를 포함하는
+    # Google 권장 다국어 구조다(상호 참조 유지).
+    #: (untyped, String, String) -> void
+    def populate(dsl, locale, host)
+      # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로
+      # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
+      index_lastmod = Time.current.iso8601
+      [ root_path, articles_path, others_path ].each do |path|
+        dsl.add path, host: host, lastmod: index_lastmod, alternates: alternates_for(path)
+      end
+
+      Article.kept
+             .confirmed
+             .find_in_batches(batch_size: 500) do |batch|
+        batch.each do |article|
+          # 이 사이트맵의 로케일 번역이 없는 기사는 제외한다. 일본어 번역이
+          # 없는 기사는 .jp(ja) 사이트맵의 <loc>·alternate 에서 빠져 한국어
+          # 폴백을 일본어로 색인시키지 않는다. 번역되면 다음 빌드에서 자동 포함.
+          next unless article.available_in?(locale)
+
+          path = article_path(article.slug)
+          available = HREFLANG_HOSTS.keys.select { |loc| article.available_in?(loc) }
+          dsl.add path, host: host,
+                  lastmod: lastmod_for(article),
+                  alternates: alternates_for(path, available)
         end
       end
     end
