@@ -36,7 +36,6 @@ class SitemapBuilderTest < ActiveSupport::TestCase
 
     captured.each do |opts|
       assert_equal SitemapBuilder::MAX_SITEMAP_LINKS, opts[:max_sitemap_links]
-      assert_equal 5_000, opts[:max_sitemap_links]
       assert opts[:compress]
       refute opts[:include_root]
     end
@@ -44,7 +43,7 @@ class SitemapBuilderTest < ActiveSupport::TestCase
 
   test "populate(ko)는 정적 페이지를 .dev 호스트로 등재하고 hreflang alternates를 붙인다" do
     dsl = FakeDsl.new
-    SitemapBuilder.populate(dsl, "ko", "https://ruby-news.dev")
+    SitemapBuilder.populate(dsl, "ko", "https://ruby-news.dev", [])
 
     root = dsl.calls.find { |path, _options| path == "/" }
 
@@ -58,11 +57,30 @@ class SitemapBuilderTest < ActiveSupport::TestCase
 
   test "populate(ja)의 <loc>는 .jp 호스트만 가진다" do
     dsl = FakeDsl.new
-    SitemapBuilder.populate(dsl, "ja", "https://ruby-news.jp")
+    SitemapBuilder.populate(dsl, "ja", "https://ruby-news.jp", [])
 
     hosts = dsl.calls.map { |_path, options| options.fetch(:host) }.uniq
 
     assert_equal [ "https://ruby-news.jp" ], hosts, "ja 사이트맵의 <loc>는 .jp 호스트만 가진다"
+  end
+
+  test "populate는 해당 로케일 번역이 있는 Entry만 등재한다" do
+    ko_only = SitemapBuilder::Entry.new(
+      path: "/articles/x",
+      lastmod: "2026-01-01T00:00:00+09:00",
+      available: [ "ko" ],
+      alternates: [ { href: "https://ruby-news.dev/articles/x", lang: "ko" } ]
+    )
+
+    ko_dsl = FakeDsl.new
+    SitemapBuilder.populate(ko_dsl, "ko", "https://ruby-news.dev", [ ko_only ])
+
+    assert_includes ko_dsl.calls.map(&:first), "/articles/x", "ko 번역이 있으면 ko 사이트맵에 등재"
+
+    ja_dsl = FakeDsl.new
+    SitemapBuilder.populate(ja_dsl, "ja", "https://ruby-news.jp", [ ko_only ])
+
+    refute_includes ja_dsl.calls.map(&:first), "/articles/x", "ja 번역이 없으면 ja 사이트맵에서 제외"
   end
 
   test "보조 도메인은 hreflang alternates로 포함한다" do

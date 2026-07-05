@@ -18,6 +18,11 @@ module SitemapBuilder
   # 컨테이너 OOM을 유발했다. 값이 낮을수록 peak↓·사이트맵 파일수↑(둘 다 무해).
   MAX_SITEMAP_LINKS = 5_000
 
+  # 사이트맵에 등재할 기사 1건의 경량 표현. DB를 한 번만 순회해 이 값들을 모아
+  # ko/ja 빌드가 공유한다(AR 객체를 로케일마다 다시 읽지 않는다).
+  #   available: 번역이 존재하는 로케일 키 배열(예: ["ko", "ja"] 또는 ["ko"])
+  Entry = Data.define(:path, :lastmod, :available, :alternates)
+
   class << self
     include Rails.application.routes.url_helpers
 
@@ -53,13 +58,45 @@ module SitemapBuilder
     # Sitemaps.org 프로토콜의 "한 사이트맵의 URL은 단일 호스트" 원칙도 준수한다.
     #: () -> void
     def build
-      HREFLANG_HOSTS.each { |locale, host| build_locale(locale, host) }
+      # 기사는 DB를 한 번만 순회해 수집하고, 그 배열을 ko/ja 빌드가 공유한다.
+      # (로케일마다 기사 테이블을 전체 스캔하던 것을 1회로.)
+      entries = collect_article_entries
+      HREFLANG_HOSTS.each { |locale, host| build_locale(locale, host, entries) }
+    end
+
+    # 사이트맵에 등재할 기사를 DB에서 한 번만 순회해 경량 Entry 배열로 수집한다.
+    # AR 객체가 아니라 값(경로·lastmod·가용 로케일·alternates)만 담으므로 메모리
+    # 부담이 작다. alternates 는 로케일과 무관(path+available에만 의존)하므로 여기서
+    # 한 번만 계산해 양 로케일이 재사용한다.
+    #: () -> Array[Entry]
+    def collect_article_entries
+      entries = []
+      Article.kept
+             .confirmed
+             .find_in_batches(batch_size: 500) do |batch|
+        batch.each do |article|
+          # 번역이 존재하는 로케일만 등재 대상. 일본어 번역이 없는 기사는
+          # .jp(ja) 사이트맵의 <loc>·alternate 에서 빠져 한국어 폴백을 일본어로
+          # 색인시키지 않는다. 번역되면 다음 빌드에서 자동 포함.
+          available = HREFLANG_HOSTS.keys.select { |loc| article.available_in?(loc) }
+          next if available.empty?
+
+          path = article_path(article.slug)
+          entries << Entry.new(
+            path: path,
+            lastmod: lastmod_for(article),
+            available: available,
+            alternates: alternates_for(path, available)
+          )
+        end
+      end
+      entries
     end
 
     # 단일 로케일/호스트에 대한 자기 완결 사이트맵(인덱스 + 샤드)을 생성한다.
     # 출력: public/sitemaps/<locale>/sitemap.xml.gz (+ sitemap1..N.xml.gz)
-    #: (String, String) -> void
-    def build_locale(locale, host)
+    #: (String, String, Array[Entry]) -> void
+    def build_locale(locale, host, entries)
       link_set = SitemapGenerator::LinkSet.new(
         default_host: host,
         sitemaps_path: "sitemaps/#{locale}/",
@@ -70,15 +107,15 @@ module SitemapBuilder
 
       # create 블록은 Interpreter 컨텍스트에서 instance_eval 되므로 self가 DSL
       # (add 응답)이 된다. 실제 링크 등재 로직은 populate 로 분리해 테스트를
-      # 용이하게 하고, locale/host 는 클로저로 캡처된다.
-      link_set.create { SitemapBuilder.populate(self, locale, host) }
+      # 용이하게 하고, locale/host/entries 는 클로저로 캡처된다.
+      link_set.create { SitemapBuilder.populate(self, locale, host, entries) }
     end
 
-    # 주어진 로케일/호스트의 모든 URL을 DSL(add 응답 객체)에 등재한다.
-    # 각 <url>은 자기 호스트 <loc> 1개 + ko/ja hreflang alternates를 포함하는
-    # Google 권장 다국어 구조다(상호 참조 유지).
-    #: (untyped, String, String) -> void
-    def populate(dsl, locale, host)
+    # 주어진 로케일/호스트의 URL을 DSL(add 응답 객체)에 등재한다. 정적 페이지와,
+    # 미리 수집된 기사 Entry 중 해당 로케일 번역이 있는 것만 자기 호스트 <loc>로
+    # 넣고 각 <url>에 ko/ja hreflang alternates를 붙인다(상호 참조 유지).
+    #: (untyped, String, String, Array[Entry]) -> void
+    def populate(dsl, locale, host, entries)
       # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로
       # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
       index_lastmod = Time.current.iso8601
@@ -86,21 +123,10 @@ module SitemapBuilder
         dsl.add path, host: host, lastmod: index_lastmod, alternates: alternates_for(path)
       end
 
-      Article.kept
-             .confirmed
-             .find_in_batches(batch_size: 500) do |batch|
-        batch.each do |article|
-          # 이 사이트맵의 로케일 번역이 없는 기사는 제외한다. 일본어 번역이
-          # 없는 기사는 .jp(ja) 사이트맵의 <loc>·alternate 에서 빠져 한국어
-          # 폴백을 일본어로 색인시키지 않는다. 번역되면 다음 빌드에서 자동 포함.
-          next unless article.available_in?(locale)
+      entries.each do |entry|
+        next unless entry.available.include?(locale)
 
-          path = article_path(article.slug)
-          available = HREFLANG_HOSTS.keys.select { |loc| article.available_in?(loc) }
-          dsl.add path, host: host,
-                  lastmod: lastmod_for(article),
-                  alternates: alternates_for(path, available)
-        end
+        dsl.add entry.path, host: host, lastmod: entry.lastmod, alternates: entry.alternates
       end
     end
   end
