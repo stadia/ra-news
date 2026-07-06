@@ -23,10 +23,16 @@ blog 글을 계정별로 모아 보여주는 공개 페이지가 필요하다. U
 
 - **`/@계정/blog`** = 해당 계정의 **공개** blog index. 발행된 blog 글만, 읽기 전용,
   카드 리스트. posts/comments 탭과 UX 일관.
+- **`/@계정/blog/:slug`** = blog 글 **상세 보기**. blog을 계정 아래로 완전히
+  네임스페이스화한다. 기존 `/posts/:slug`는 blog 글에 대해 **더 이상 열리지 않는다**
+  (파괴적 변경, C안). short 글만 `/posts/:slug` 유지.
 - 기존 **본인 전용 관리**(초안/발행/휴지통 + 수정/삭제/복원)는 **`/account/blog`**로
   이동. 진입점은 계정 설정 페이지(`/account/edit` → `Views::Users::Edit`)에 링크.
 - 기존 프로필 탭 인프라(`ActivityTabs`, `render_activity_page`)를 그대로 재사용해
   변경을 최소화한다. blog 전용 매거진 레이아웃은 **추후 리뉴얼** 대상(범위 밖).
+
+> **파괴적 변경 근거**: 현재 발행된 blog 글이 1개뿐이라 기존 `/posts/:slug` 링크
+> 보존(리다이렉트)이 불필요. 깔끔한 새 구조를 택한다.
 
 ## 비목표 (YAGNI)
 
@@ -39,6 +45,13 @@ blog 글을 계정별로 모아 보여주는 공개 페이지가 필요하다. U
 ### 1. 라우트 (`config/routes.rb`)
 
 - `get "/@:username/blog" → profiles#blog` **유지** (동작만 공개로 변경).
+- blog 상세 신규 추가 (index 라우트 바로 뒤, 더 구체적 경로):
+
+  ```ruby
+  get "/@:username/blog/:slug", to: "posts#show", as: :user_profile_blog_post,
+      format: false, constraints: { username: /[^\/]+/ }
+  ```
+
 - 관리 index 신규 추가 (인증 필요):
 
   ```ruby
@@ -101,15 +114,69 @@ blog 글을 계정별로 모아 보여주는 공개 페이지가 필요하다. U
   end
   ```
 
-- 리다이렉트 대상 변경 (`user_profile_blog_path` → `account_blog_path`):
-  - `undiscard`(복원) — 현재 96행
-  - `destroy_permanently`(영구삭제) — 현재 106행
+- 리다이렉트 대상 변경:
+  - `undiscard`(복원, 96행) / `destroy_permanently`(영구삭제, 106행):
+    `user_profile_blog_path` → `account_blog_path`
+  - `publish`(40행) / `update`(65행) / `publish`(79행):
+    `post_path(@post)` → `user_profile_blog_post_path` (6c 참조)
 
 ### 6. `Views::Profiles::Show` (`show.rb:134` `when :blog`)
 
 - blog 탭 인라인 렌더를 공개 BlogList 인터페이스에 맞춤: drafts/published/trash 대신
   `posts:` + `pagy:` + liked/boosted ids 전달. `#blog`가 세팅하는 인스턴스 변수와
   일치시킨다.
+
+### 6b. `PostsController#show` — blog 상세 분기
+
+slug은 `friendly_id :random_slug`로 **전역 고유**하므로 username은 vanity/검증용이다.
+`show`의 조회를 라우트에 따라 분기한다:
+
+```ruby
+def show
+  post =
+    if params[:username] # /@:username/blog/:slug
+      User.find_by!(username: params[:username])
+          .posts.published_blog.kept
+          .includes(POST_SHOW_INCLUDES)
+          .find_by!(slug: params[:slug])
+    else                 # /posts/:slug — blog 글은 여기서 열리지 않음
+      Post.where.not(post_type: :blog)
+          .includes(POST_SHOW_INCLUDES)
+          .find_by!(slug: params[:id])
+    end
+  # 이하 스레드 구성/렌더는 기존 그대로
+end
+```
+
+- 잘못된 username·미발행·discarded blog → `RecordNotFound`(404).
+- `/posts/:slug`에서 blog 글 → `where.not(post_type: :blog)`로 404 (C안 파괴적).
+- 기존 `.includes(...)` eager load는 상수 등으로 공유.
+
+### 6c. blog 글 링크 헬퍼
+
+blog 글은 새 URL, 그 외는 기존 `post_path`. 앱 레벨 URL 헬퍼 신설
+(예: `ApplicationHelper#post_permalink_path(post)`):
+
+```ruby
+def post_permalink_path(post)
+  if post.blog?
+    user_profile_blog_post_path(username: post.user.username, slug: post)
+  else
+    post_path(post)
+  end
+end
+```
+
+교체 대상:
+
+- `Components::Posts::PostCard` — `post_path(@post)` 3곳(67 타임스탬프, 118 blog
+  제목, 123 더보기) → `post_permalink_path(@post)`.
+- `BlogPostsController` 리다이렉트 3곳(40 publish, 65 update, 79 publish) →
+  `user_profile_blog_post_path(username: @post.user.username, slug: @post)`
+  (항상 blog이므로 직접 호출).
+- `Views::BlogPosts::Index`의 발행 글 미리보기 링크 → `post_permalink_path`.
+- `ReplyNotificationJob`(52행) — parent_post가 blog일 수 있음. 동일 분기의
+  `*_url` 버전 사용(알림은 절대 URL 필요).
 
 ### 7. 관리 진입점 — 계정 설정 페이지
 
@@ -129,6 +196,11 @@ blog 글을 계정별로 모아 보여주는 공개 페이지가 필요하다. U
 - **request spec `blog_posts#index` (관리)**: 인증 필요, current_user의
   drafts/published/trash만 노출. 항상 current_user 스코프라 타인 것 노출 불가.
 - **request spec 리다이렉트**: undiscard/destroy_permanently 후 `account_blog_path`로.
+  publish/update 후 `user_profile_blog_post_path`로.
+- **request spec blog 상세**: `/@user/blog/:slug`가 발행 blog 글 렌더. 미발행/타인
+  slug → 404. `/posts/:slug`에 blog slug → 404. short 글은 `/posts/:slug` 정상.
+- **헬퍼 spec**: `post_permalink_path` — blog은 `/@user/blog/:slug`, short은
+  `/posts/:slug`.
 - **뷰 spec**: 공개 `Views::Profiles::BlogList`가 PostCard로 발행 글을 렌더, 관리
   UI(수정/삭제) 미포함.
 
@@ -136,10 +208,14 @@ blog 글을 계정별로 모아 보여주는 공개 페이지가 필요하다. U
 
 | 파일 | 변경 |
 |------|------|
-| `config/routes.rb` | `account/blog` 라우트 추가 |
+| `config/routes.rb` | `/@:username/blog/:slug`, `account/blog` 라우트 추가 |
+| `app/controllers/posts_controller.rb` | `#show` blog/short 조회 분기 |
 | `app/controllers/profiles_controller.rb` | `#blog` 공개화, `render_activity_page(:blog)` 분기 인자 |
-| `app/controllers/blog_posts_controller.rb` | `#index` 추가, 2곳 리다이렉트 변경 |
+| `app/controllers/blog_posts_controller.rb` | `#index` 추가, 리다이렉트 5곳(publish/update/undiscard/destroy_permanently) 변경 |
+| `app/helpers/application_helper.rb` | `post_permalink_path` 신설 |
 | `app/components/profiles/activity_tabs.rb` | blog 탭 항상 노출 |
+| `app/components/posts/post_card.rb` | `post_path` → `post_permalink_path` 3곳 |
+| `app/jobs/reply_notification_job.rb` | blog parent 링크 분기 |
 | `app/views/profiles/blog_list.rb` | 공개 읽기 리스트로 재작성 |
 | `app/views/blog_posts/index.rb` | 신설 (관리 화면) |
 | `app/views/profiles/show.rb` | blog 탭 렌더 인자 변경 |
