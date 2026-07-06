@@ -63,6 +63,7 @@ short_with_article:
   article: ruby_article
   post_type: 0
   status: 1
+  slug: "lf-short-fixture"
   lft: 13
   rgt: 14
   depth: 0

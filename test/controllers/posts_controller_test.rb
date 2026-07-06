@@ -101,56 +101,20 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "unauthorized", JSON.parse(response.body)["error"]
   end
 
-  test "should show blog post with reading layout" do
-    post = posts(:blog_published)
-    get post_url(post)
+  test "blog post is not served at legacy /posts/:slug" do
+    blog = posts(:blog_published)
 
-    assert_response :success
-    assert_includes response.body, post.title
-    assert_includes response.body, "발행된 장문 본문"
-  end
-
-  test "published post is served to anyone" do
-    sign_out @user
-    post = posts(:blog_published)
-    get post_url(post)
-
-    assert_response :success
-    assert_includes response.body, post.title
-  end
-
-  test "draft is not served to anonymous visitors" do
-    sign_out @user
-    draft = posts(:blog_draft)
-    get post_url(draft)
+    get post_url(blog)
 
     assert_response :not_found
   end
 
-  test "draft is not served to a non-owner" do
-    sign_in users(:jane)
-    draft = posts(:blog_draft)
-    get post_url(draft)
+  test "short post is still served at /posts/:slug" do
+    short = posts(:short_with_article)
 
-    assert_response :not_found
-  end
-
-  test "owner can preview their own draft" do
-    draft = posts(:blog_draft)
-
-    assert_equal @user, draft.user
-    get post_url(draft)
+    get post_url(short)
 
     assert_response :success
-    assert_includes response.body, draft.title
-  end
-
-  test "discarded blog is not served publicly" do
-    post = posts(:blog_published)
-    post.discard!
-    get post_url(post)
-
-    assert_response :not_found
   end
 
   test "discarded comment does not appear in article comments" do

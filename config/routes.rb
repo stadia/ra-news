@@ -23,6 +23,8 @@ Rails.application.routes.draw do
     post "account/oauth-signup", to: "users/oauth_registrations#create", as: :user_oauth_registration
   end
 
+  get "account/blog", to: "blog_posts#index", as: :account_blog
+
   namespace :api do
     namespace :v1 do
       namespace :auth do
@@ -113,6 +115,7 @@ Rails.application.routes.draw do
   get "/@:username/likes",    to: "profiles#likes",    as: :user_profile_likes, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/boosts",   to: "profiles#boosts",   as: :user_profile_boosts, format: false, constraints: { username: /[^\/]+/ }
   get "/@:username/blog", to: "profiles#blog", as: :user_profile_blog, format: false, constraints: { username: /[^\/]+/ }
+  get "/@:username/blog/:slug", to: "blogs#show", as: :user_profile_blog_post, format: false, constraints: { username: /[^\/]+/ }
   # 2. 헬퍼 메서드 오버라이드 (URL 생성 로직)
   direct :user_profile do |user|
     # user 객체에서 username을 뽑아 위에서 정의한 경로로 보냅니다.
