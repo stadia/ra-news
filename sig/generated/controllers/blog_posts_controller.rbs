@@ -1,6 +1,8 @@
 # Generated from app/controllers/blog_posts_controller.rb with RBS::Inline
 
 class BlogPostsController < ApplicationController
+  def index: () -> untyped
+
   # Opens the editor for an unsaved draft. No row is created on entry — the
   # first autosave (or publish) persists it via #create.
   #

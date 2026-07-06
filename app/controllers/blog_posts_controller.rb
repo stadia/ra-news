@@ -6,6 +6,15 @@ class BlogPostsController < ApplicationController
   before_action :set_post, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
   before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
 
+  def index
+    @drafts    = current_user.posts.blog.draft.kept.order(updated_at: :desc)
+    @published = current_user.posts.blog.published.kept.order(published_at: :desc)
+    @trash     = current_user.posts.blog.discarded.order(updated_at: :desc)
+    render Views::BlogPosts::Index.new(
+      user: current_user, drafts: @drafts, published: @published, trash: @trash
+    )
+  end
+
   # Opens the editor for an unsaved draft. No row is created on entry — the
   # first autosave (or publish) persists it via #create.
   #
@@ -93,7 +102,7 @@ class BlogPostsController < ApplicationController
     # Restoring a published post re-federates via the model's after_undiscard
     # (Undo); drafts were never federated, so nothing is emitted for them.
     @post.undiscard
-    redirect_to user_profile_blog_path(username: current_user.username), notice: t("posts.blog.restored")
+    redirect_to account_blog_path, notice: t("posts.blog.restored")
   end
 
   def destroy_permanently
@@ -103,7 +112,7 @@ class BlogPostsController < ApplicationController
     # is benign — the tombstone already exists remotely, so the second Delete is
     # idempotent.
     @post.destroy
-    redirect_to user_profile_blog_path(username: current_user.username), notice: t("posts.blog.destroyed_permanently")
+    redirect_to account_blog_path, notice: t("posts.blog.destroyed_permanently")
   end
 
   private

@@ -227,7 +227,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
 
     patch undiscard_blog_post_url(@published)
 
-    assert_redirected_to user_profile_blog_url(username: @user.username)
+    assert_redirected_to account_blog_url
     assert_not_predicate @published.reload, :discarded?
     assert_nil @published.deleted_at
   end
@@ -266,7 +266,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
 
     delete destroy_permanently_blog_post_url(@draft)
 
-    assert_redirected_to user_profile_blog_url(username: @user.username)
+    assert_redirected_to account_blog_url
     assert_not Post.where(id: @draft.id).exists?
   end
 
@@ -287,5 +287,64 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
     delete destroy_permanently_blog_post_url(@published)
 
     assert_predicate Post.where(id: @published.id), :exists?
+  end
+
+  test "index requires authentication" do
+    get account_blog_url
+
+    assert_redirected_to new_user_session_url
+  end
+
+  test "index shows the owner's drafts with edit and delete controls" do
+    sign_in @user
+
+    get account_blog_url
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.blog_list.drafts_heading")
+    assert_includes response.body, @draft.title
+    assert_select "a[href=?]", edit_blog_post_path(@draft)
+    assert_select "form[action=?]", blog_post_path(@draft)
+  end
+
+  test "index lists published posts linking to the public permalink" do
+    sign_in @user
+
+    get account_blog_url
+
+    assert_response :success
+    assert_includes response.body, @published.title
+    assert_select "a[href=?]", user_profile_blog_post_path(username: @user.username, slug: @published)
+  end
+
+  test "index drafts exclude trashed drafts and offer restore" do
+    sign_in @user
+    @draft.discard!
+
+    get account_blog_url
+
+    assert_response :success
+    assert_select "form[action=?]", undiscard_blog_post_path(@draft)
+    assert_select "a[href=?]", edit_blog_post_path(@draft), count: 0
+  end
+
+  test "index trash section lists discarded published posts with restore and destroy" do
+    sign_in @user
+    @published.discard!
+
+    get account_blog_url
+
+    assert_response :success
+    assert_select "form[action=?]", undiscard_blog_post_path(@published)
+    assert_select "form[action=?]", destroy_permanently_blog_post_path(@published)
+  end
+
+  test "index trash section shows empty state when nothing discarded" do
+    sign_in @user
+
+    get account_blog_url
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.blog_list.trash_empty")
   end
 end
