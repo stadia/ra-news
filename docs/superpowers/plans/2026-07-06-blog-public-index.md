@@ -4,7 +4,7 @@
 
 **Goal:** `/@user/blog` becomes the public blog index and `/@user/blog/:slug` the public blog detail; blog authoring/management moves to `/account/blog`.
 
-**Architecture:** Reuse the existing profile activity-tab infrastructure (`ActivityTabs`, `render_activity_page`) — the `blog` tab flips from owner-only to public and renders published posts with `PostCard`, mirroring the `posts` tab. Blog detail is served by the existing `PostsController#show`, now branching on a nested `/@:username/blog/:slug` route (slugs are globally unique via `friendly_id`). A single `post_permalink_path` helper routes blog links to the new URL. Legacy `/posts/:slug` no longer serves blog posts (destructive — only 1 blog post exists today).
+**Architecture:** Reuse the existing profile activity-tab infrastructure (`ActivityTabs`, `render_activity_page`) — the `blog` tab flips from owner-only to public and renders published posts with `PostCard`, mirroring the `posts` tab. Blog detail is served by a dedicated `BlogsController#show` on the nested `/@:username/blog/:slug` route (slugs are globally unique via `friendly_id`), with the shared thread-rendering logic extracted into a `PostViewing` concern; `PostsController#show` is simplified to non-blog posts only. A single `post_permalink_path` helper routes blog links to the new URL. Legacy `/posts/:slug` no longer serves blog posts (destructive — only 1 blog post exists today). (See Task 1b for the final controller split.)
 
 **Tech Stack:** Rails 8.1 / Ruby 4.0, Phlex views/components, Devise auth, Minitest + fixtures (`test/`), Discard soft-delete, FriendlyId slugs, Federails.
 

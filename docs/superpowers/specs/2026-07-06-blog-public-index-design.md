@@ -126,10 +126,17 @@ blog 글을 계정별로 모아 보여주는 공개 페이지가 필요하다. U
   `posts:` + `pagy:` + liked/boosted ids 전달. `#blog`가 세팅하는 인스턴스 변수와
   일치시킨다.
 
-### 6b. `PostsController#show` — blog 상세 분기
+### 6b. blog 상세 조회
+
+> **최종 구조 (구현 시 반영):** 아래는 초기 설계로, blog 상세를 `PostsController#show`
+> 분기로 처리했다. 실제 구현은 blog 상세를 **`BlogsController#show`**로 분리하고
+> 공유 로직(`viewable?`/`build_thread`)을 `PostViewing` concern으로 추출했으며,
+> `PostsController#show`는 non-blog 전용으로 단순화했다. 라우팅/조회 규칙(username
+> 스코프, 전역 고유 slug, `where.not(post_type: :blog)`로 legacy 404)은 동일하다.
+> 자세한 최종 구조는 구현 계획의 Task 1b 참조.
 
 slug은 `friendly_id :random_slug`로 **전역 고유**하므로 username은 vanity/검증용이다.
-`show`의 조회를 라우트에 따라 분기한다:
+초기 설계(참고용)에서는 `PostsController#show`의 조회를 라우트에 따라 분기했다:
 
 ```ruby
 def show
@@ -186,8 +193,8 @@ end
 ### 8. i18n (en / ja / ko)
 
 - 기존 `profiles.activity_tabs.blog`, `profiles.blog_list.*` 재사용.
-- 신규: `account.blog.title`(관리 페이지 제목), 설정 페이지의 관리 링크 라벨.
-  3개 로케일 모두 추가.
+- 신규: `posts.blog.manage_title`/`posts.blog.manage_heading`(관리 페이지 제목/헤딩),
+  `users.edit.blog_link`(설정 페이지의 관리 링크 라벨). 3개 로케일 모두 추가.
 
 ## 테스트
 

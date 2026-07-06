@@ -280,7 +280,7 @@ ko:
       status_draft: 초안
       status_published: 발행됨
       read_more: 원문 읽기
-      manage_title: 블로그 글 관리
+      manage_title: 블로그 글 관리 | Ruby-News
       manage_heading: 블로그 글 관리
       errors:
         blank_draft: 제목이나 본문 중 하나는 입력해야 합니다.

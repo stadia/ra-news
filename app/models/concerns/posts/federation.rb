@@ -44,7 +44,7 @@ module Posts::Federation
   # namespace (/@user/blog/:slug); everything else at /posts/:slug.
   #: () -> String
   def public_url
-    if blog?
+    if blog? && user
       Rails.application.routes.url_helpers.user_profile_blog_post_url(username: user.username, slug: self)
     else
       Rails.application.routes.url_helpers.post_url(self)

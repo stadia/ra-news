@@ -280,7 +280,7 @@ en:
       status_draft: Draft
       status_published: Published
       read_more: Read full post
-      manage_title: Manage blog posts
+      manage_title: Manage blog posts | Ruby-News
       manage_heading: Manage blog posts
       errors:
         blank_draft: Enter a title or body before saving this draft.
