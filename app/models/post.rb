@@ -12,6 +12,7 @@ class Post < ApplicationRecord
   # ── Includes ─────────────────────────────────────────────────────────
   include HtmlSanitizable
   include Posts::Blog
+  include Posts::Federation
   include Discard::Model
   include Federails::DataEntity
   include FederailsLikeable
@@ -94,36 +95,6 @@ class Post < ApplicationRecord
     federation_actor_entity.present? && published?
   end
 
-  #: () -> Hash[String, untyped]
-  def to_activitypub_object
-    custom = {}
-    if parent.present?
-      custom["inReplyTo"] = parent.federated_url || Rails.application.routes.url_helpers.post_url(parent)
-    elsif article.present?
-      custom["inReplyTo"] = article.federated_url || Rails.application.routes.url_helpers.article_url(article)
-    end
-
-    if tag_list.any?
-      custom["tag"] = tag_list.map do |name|
-        { "type" => "Hashtag", "name" => "##{name}", "href" => "#{Rails.application.routes.default_url_options[:host]}/tags/#{name}" }
-      end
-    end
-
-    if media_attachments.any?
-      custom["attachment"] = media_attachments
-    end
-
-    content = body
-    name = nil
-
-    if blog?
-      content = blog_summary
-      name = title
-      custom["url"] = Rails.application.routes.url_helpers.post_url(self)
-    end
-
-    Federails::DataTransformer::Note.to_federation(self, content: content, name: name, custom: custom)
-  end
 
   #: () -> Integer
   def likes_count

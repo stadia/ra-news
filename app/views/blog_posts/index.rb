@@ -5,8 +5,7 @@ class Views::BlogPosts::Index < Views::Base
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ButtonTo
 
-  def initialize(user:, drafts: [], published: [], trash: [])
-    @user = user
+  def initialize(drafts: [], published: [], trash: [])
     @drafts = drafts
     @published = published
     @trash = trash

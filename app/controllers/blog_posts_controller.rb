@@ -7,11 +7,10 @@ class BlogPostsController < ApplicationController
   before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
 
   def index
-    @drafts    = current_user.posts.blog.draft.kept.order(updated_at: :desc)
-    @published = current_user.posts.blog.published.kept.order(published_at: :desc)
-    @trash     = current_user.posts.blog.discarded.order(updated_at: :desc)
     render Views::BlogPosts::Index.new(
-      user: current_user, drafts: @drafts, published: @published, trash: @trash
+      drafts: current_user.posts.blog.draft.kept.order(updated_at: :desc),
+      published: current_user.posts.blog.published.kept.order(published_at: :desc),
+      trash: current_user.posts.blog.discarded.order(updated_at: :desc)
     )
   end
 

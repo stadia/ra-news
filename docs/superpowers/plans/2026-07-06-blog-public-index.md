@@ -135,6 +135,201 @@ git commit -m "feat: serve blog detail at /@user/blog/:slug, add account/blog ro
 
 ---
 
+### Task 1b: Extract blog detail into `BlogsController#show` (revises Task 1's show branch)
+
+> **Consolidated commit:** Task 1 was soft-reset (its changes remain staged in the working tree: routes, `post_permalink_path`, fixture slug, legacy-404 tests, and the now-obsolete `posts#show` branch). This task is applied ON TOP of that staged tree and the whole thing lands as ONE clean commit — no add-then-remove churn in history. The obsolete `posts#show` blog branch / `find_show_post` are rolled back here as part of Step 4.
+
+**Decision (post-Task-1):** blog *detail* gets its own controller for isolation and as the future home of a magazine renewal. The blog *index* stays a profile tab (`profiles#blog`, Task 3) — moving it would duplicate profile-page assembly. `PostsController#show` reverts to non-blog only. Shared show logic (`viewable?`, `build_thread`) moves to a controller concern.
+
+**Files:**
+- Create: `app/controllers/concerns/post_viewing.rb`
+- Create: `app/controllers/blogs_controller.rb`
+- Modify: `config/routes.rb` (blog-detail route target → `blogs#show`)
+- Modify: `app/controllers/posts_controller.rb` (include concern; simplify `#show`; delete `find_show_post`, `viewable?`, `build_thread`)
+- Create: `test/controllers/blogs_controller_test.rb` (blog-show tests moved from posts test + wrong-username 404)
+- Modify: `test/controllers/posts_controller_test.rb` (remove the moved blog-show tests; keep legacy-404 + short-post tests)
+
+**Interfaces:**
+- Consumes: route helper `user_profile_blog_post_path` (unchanged name — Task 2 links stay valid); `Views::Posts::Show`.
+- Produces: concern `PostViewing` (private `render_post_show(post)`, `viewable?(post)`, `build_thread(root)`, `POST_SHOW_INCLUDES`); `BlogsController#show`.
+
+- [ ] **Step 1: Create the `PostViewing` concern**
+
+Create `app/controllers/concerns/post_viewing.rb`:
+
+```ruby
+# frozen_string_literal: true
+
+# Shared "render a post thread" behavior for the two controllers that serve a
+# single post's reading page: PostsController (short/comment posts at
+# /posts/:slug) and BlogsController (blog posts at /@user/blog/:slug).
+module PostViewing
+  extend ActiveSupport::Concern
+
+  POST_SHOW_INCLUDES = [ :user, :federails_actor, :article, :tags, { parent: [ :user, :federails_actor ] } ].freeze
+
+  private
+
+  # Renders the reading page for +post+, or 404s if it is not viewable.
+  def render_post_show(post)
+    raise ActiveRecord::RecordNotFound unless viewable?(post)
+    @posts = build_thread(post.root)
+    @liked_post_ids = current_user ? Like.liked_ids_for(liker: current_user, likeable_type: "Post", likeable_ids: @posts.map(&:id)) : []
+    @boosted_post_ids = current_user ? Boost.boosted_ids_for(booster: current_user, boostable_type: "Post", boostable_ids: @posts.map(&:id)) : []
+    render Views::Posts::Show.new(posts: @posts, liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids)
+  end
+
+  # A post is publicly viewable when visible (published & kept). The owner may
+  # also preview their own draft. Discarded posts are never served here.
+  def viewable?(post)
+    return true if post.kept? && post.published?
+    return true if post.kept? && current_user && post.user == current_user
+
+    false
+  end
+
+  def build_thread(root)
+    # parent_id 기반으로 안전하게 스레드 수집
+    ids = [ root.id ]
+    queue = [ root.id ]
+    while queue.any?
+      children = Post.kept.where(parent_id: queue).pluck(:id)
+      ids.concat(children)
+      queue = children
+    end
+    Post.kept.where(id: ids).includes(POST_SHOW_INCLUDES).sort_by { |p| [ p.depth, p.created_at ] }
+  end
+end
+```
+
+- [ ] **Step 2: Create `BlogsController`**
+
+Create `app/controllers/blogs_controller.rb`:
+
+```ruby
+# frozen_string_literal: true
+# rbs_inline: enabled
+
+class BlogsController < ApplicationController
+  include PostViewing
+
+  skip_before_action :authenticate_user!, only: [ :show ]
+
+  # GET /@:username/blog/:slug — public blog detail. Scopes by username so the
+  # URL is canonical, but slugs are globally unique so this never ambiguates.
+  def show
+    post = User.find_by!(username: params[:username])
+               .posts.blog.includes(POST_SHOW_INCLUDES)
+               .find_by!(slug: params[:slug])
+    render_post_show(post)
+  end
+end
+```
+
+- [ ] **Step 3: Point the blog-detail route at `blogs#show`**
+
+In `config/routes.rb`, change the blog-detail route target from `posts#show` to `blogs#show` (keep the helper name `user_profile_blog_post`):
+
+```ruby
+  get "/@:username/blog/:slug", to: "blogs#show", as: :user_profile_blog_post, format: false, constraints: { username: /[^\/]+/ }
+```
+
+- [ ] **Step 4: Simplify `PostsController#show` and remove the moved methods**
+
+In `app/controllers/posts_controller.rb`:
+
+- Add `include PostViewing` near the top (after `include RateLimiting` on line 5).
+- Replace `#show` (currently delegating to `find_show_post`) with:
+
+```ruby
+  def show
+    post = Post.where.not(post_type: :blog).includes(POST_SHOW_INCLUDES).find_by!(slug: params[:id])
+    render_post_show(post)
+  end
+```
+
+- Delete the now-unused private methods from this controller: `find_show_post` (lines ~106-113), `viewable?` (lines ~115-123), and `build_thread` (lines ~167-177) — they now live in `PostViewing`.
+
+- [ ] **Step 5: Move blog-show tests to a new `BlogsControllerTest`**
+
+Create `test/controllers/blogs_controller_test.rb` with the six blog-detail tests (moved out of `posts_controller_test.rb`) plus a wrong-username 404 test:
+
+```ruby
+# frozen_string_literal: true
+
+require "test_helper"
+
+class BlogsControllerTest < ActionDispatch::IntegrationTest
+  test "shows a published blog post with the reading layout to anyone" do
+    post = posts(:blog_published)
+
+    get user_profile_blog_post_url(username: post.user.username, slug: post)
+
+    assert_response :success
+    assert_includes response.body, post.title
+  end
+
+  test "draft blog post is not served to anonymous visitors" do
+    draft = posts(:blog_draft)
+
+    get user_profile_blog_post_url(username: draft.user.username, slug: draft)
+
+    assert_response :not_found
+  end
+
+  test "draft blog post is not served to a non-owner" do
+    draft = posts(:blog_draft)
+    sign_in users(:jane)
+
+    get user_profile_blog_post_url(username: draft.user.username, slug: draft)
+
+    assert_response :not_found
+  end
+
+  test "owner can preview their own draft blog post" do
+    draft = posts(:blog_draft)
+    sign_in draft.user
+
+    get user_profile_blog_post_url(username: draft.user.username, slug: draft)
+
+    assert_response :success
+  end
+
+  test "discarded blog post is not served publicly" do
+    post = posts(:blog_published)
+    post.discard!
+
+    get user_profile_blog_post_url(username: post.user.username, slug: post)
+
+    assert_response :not_found
+  end
+
+  test "correct slug under the wrong username is not found" do
+    post = posts(:blog_published)
+
+    get user_profile_blog_post_url(username: users(:jane).username, slug: post)
+
+    assert_response :not_found
+  end
+end
+```
+
+Then in `test/controllers/posts_controller_test.rb`, DELETE the six blog-detail tests that Task 1 pointed at `user_profile_blog_post_url` ("should show blog post with reading layout", "published post is served to anyone", "draft is not served to anonymous visitors", "draft is not served to a non-owner", "owner can preview their own draft", "discarded blog is not served publicly"). KEEP the two legacy tests added in Task 1: "blog post is not served at legacy /posts/:slug" and "short post is still served at /posts/:slug".
+
+- [ ] **Step 6: Run the affected tests**
+
+Run: `mise x -- bin/rails test test/controllers/blogs_controller_test.rb test/controllers/posts_controller_test.rb`
+Expected: PASS (blog detail served by BlogsController; legacy /posts/:slug 404s blog, serves short).
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add app/controllers/concerns/post_viewing.rb app/controllers/blogs_controller.rb config/routes.rb app/controllers/posts_controller.rb test/controllers/blogs_controller_test.rb test/controllers/posts_controller_test.rb
+git commit -m "refactor: serve blog detail from BlogsController#show via PostViewing concern"
+```
+
+---
+
 ### Task 2: Route blog links through `post_permalink_path` (PostCard, controller redirects, reply job)
 
 Every blog link/redirect must target the new URL. Legacy `post_path` for blog posts now 404s, so this task prevents broken links introduced by Task 1.

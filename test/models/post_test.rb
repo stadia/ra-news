@@ -583,7 +583,7 @@ class PostTest < ActiveSupport::TestCase
     assert_equal post, captured[:record]
     assert_equal post.blog_summary, captured[:content]
     assert_equal post.title, captured[:name]
-    assert_equal Rails.application.routes.url_helpers.post_url(post), captured[:custom]["url"]
+    assert_equal Rails.application.routes.url_helpers.user_profile_blog_post_url(username: post.user.username, slug: post), captured[:custom]["url"]
   end
 
   test "to_activitypub_object의 실제 발행 Note에 장문 제목이 채워진다" do
@@ -600,7 +600,7 @@ class PostTest < ActiveSupport::TestCase
 
     assert_equal post.title, note["name"]
     assert_equal post.blog_summary, note["content"]
-    assert_equal Rails.application.routes.url_helpers.post_url(post), note["url"]
+    assert_equal Rails.application.routes.url_helpers.user_profile_blog_post_url(username: post.user.username, slug: post), note["url"]
   end
 
   test "to_activitypub_object는 단문 본문 전체 발행을 유지한다" do

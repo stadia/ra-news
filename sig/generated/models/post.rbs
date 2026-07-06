@@ -10,6 +10,8 @@ class Post < ApplicationRecord
 
   include Posts::Blog
 
+  include Posts::Federation
+
   include Discard::Model
 
   include Federails::DataEntity
@@ -23,9 +25,6 @@ class Post < ApplicationRecord
 
   # : () -> bool
   def should_federate?: () -> bool
-
-  # : () -> Hash[String, untyped]
-  def to_activitypub_object: () -> Hash[String, untyped]
 
   # : () -> Integer
   def likes_count: () -> Integer
