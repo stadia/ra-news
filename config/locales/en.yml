@@ -335,6 +335,7 @@ en:
       drafts_empty: No drafts in progress.
       published_empty: No published blog posts.
       trash_empty: Trash is empty.
+      empty: No published blog posts yet.
     show:
       feed: Feed
       find_follow: Find & Follow

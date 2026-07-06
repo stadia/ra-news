@@ -10,8 +10,7 @@ class Views::Profiles::Show < Views::Base
   def initialize(user:, actor:, followers_count: 0, following_count: 0,
                  follow_actors: nil,
                  active_tab: :posts, posts: nil, likeables: nil, boostables: nil, pagy: nil,
-                 liked_post_ids: [], boosted_post_ids: [],
-                 blog_drafts: [], blog_published: [], blog_trash: [])
+                 liked_post_ids: [], boosted_post_ids: [])
     @user = user
     @actor = actor
     @followers_count = followers_count
@@ -24,9 +23,6 @@ class Views::Profiles::Show < Views::Base
     @pagy = pagy
     @liked_post_ids = liked_post_ids
     @boosted_post_ids = boosted_post_ids
-    @blog_drafts = blog_drafts
-    @blog_published = blog_published
-    @blog_trash = blog_trash
   end
 
   def view_template
@@ -133,8 +129,9 @@ class Views::Profiles::Show < Views::Base
       )
     when :blog
       render Views::Profiles::BlogList.new(
-        user: @user, drafts: @blog_drafts, published: @blog_published,
-        trash: @blog_trash, embedded: true
+        user: @user, posts: @posts || [], pagy: @pagy,
+        liked_post_ids: @liked_post_ids,
+        boosted_post_ids: @boosted_post_ids, embedded: true
       )
     when :followers, :following
       render Views::Profiles::FollowList.new(

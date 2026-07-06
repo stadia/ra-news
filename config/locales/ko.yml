@@ -335,6 +335,7 @@ ko:
       drafts_empty: 작성 중인 초안이 없습니다.
       published_empty: 발행한 블로그가 없습니다.
       trash_empty: 휴지통이 비어 있습니다.
+      empty: 아직 발행한 블로그 글이 없습니다.
     show:
       feed: Feed
       find_follow: 팔로우 검색

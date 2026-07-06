@@ -335,6 +335,7 @@ ja:
       drafts_empty: 作成中の下書きはありません。
       published_empty: 公開したブログはありません。
       trash_empty: ゴミ箱は空です。
+      empty: まだ公開されたブログ記事がありません。
     show:
       feed: フィード
       find_follow: フォロー検索
