@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class Users::OauthRegistrationsController < ApplicationController
   skip_before_action :authenticate_user!

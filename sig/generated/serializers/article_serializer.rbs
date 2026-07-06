@@ -1,0 +1,5 @@
+# Generated from app/serializers/article_serializer.rb with RBS::Inline
+
+class ArticleSerializer
+  include Alba::Resource
+end

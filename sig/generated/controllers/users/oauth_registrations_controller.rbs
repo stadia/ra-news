@@ -1,0 +1,15 @@
+# Generated from app/controllers/users/oauth_registrations_controller.rb with RBS::Inline
+
+class Users::OauthRegistrationsController < ApplicationController
+  def new: () -> untyped
+
+  def create: () -> untyped
+
+  private
+
+  def oauth_registration_params: () -> untyped
+
+  def safe_locale: () -> untyped
+
+  def safe_signup_host: () -> untyped
+end

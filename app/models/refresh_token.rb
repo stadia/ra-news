@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class RefreshToken < ApplicationRecord
   REFRESH_TTL = 30.days

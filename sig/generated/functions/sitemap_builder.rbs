@@ -21,16 +21,16 @@ module SitemapBuilder
   # ko/ja 빌드가 공유한다(AR 객체를 로케일마다 다시 읽지 않는다).
   #   available: 번역이 존재하는 로케일 키 배열(예: ["ko", "ja"] 또는 ["ko"])
   class Entry < Data
-    attr_reader path(): untyped
+    attr_reader path(): String
 
-    attr_reader lastmod(): untyped
+    attr_reader lastmod(): String?
 
-    attr_reader available(): untyped
+    attr_reader available(): bool
 
-    attr_reader alternates(): untyped
+    attr_reader alternates(): Array[Hash[Symbol, String]]
 
-    def self.new: (untyped path, untyped lastmod, untyped available, untyped alternates) -> instance
-                | (path: untyped, lastmod: untyped, available: untyped, alternates: untyped) -> instance
+    def self.new: (String path, String? lastmod, bool available, Array[Hash[Symbol, String]] alternates) -> instance
+                | (path: String, lastmod: String?, available: bool, alternates: Array[Hash[Symbol, String]]) -> instance
 
     def self.members: () -> [ :path, :lastmod, :available, :alternates ]
 

@@ -1,0 +1,17 @@
+# Generated from app/models/concerns/federails_boostable.rb with RBS::Inline
+
+module FederailsBoostable
+  extend ActiveSupport::Concern
+
+  include Federails::HandlesSocialActivities
+
+  # : (untyped actor_reference) -> void
+  def apply_remote_boost: (untyped actor_reference) -> void
+
+  # : (untyped actor_reference) -> void
+  def apply_remote_unboost: (untyped actor_reference) -> void
+
+  private
+
+  def resolve_federails_actor: (untyped actor_reference) -> untyped
+end

@@ -1,8 +1,7 @@
 # Generated from app/services/social_media_service.rb with RBS::Inline
 
 class SocialMediaService < OperationService
-  # : (Article article, Symbol command) -> void
-  def call: (Article article, Symbol command) -> void
+  def call: (untyped article, ?command: untyped) -> untyped
 
   private
 

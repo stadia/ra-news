@@ -1,0 +1,25 @@
+# Generated from app/controllers/concerns/locale_switcher.rb with RBS::Inline
+
+module LocaleSwitcher
+  extend ActiveSupport::Concern
+
+  # 도메인↔로케일 매핑은 Hosts(app/functions/hosts.rb)가 단일 정본.
+  # 여기서는 host→locale 역방향을 파생 상수로 가져온다.
+  HOST_LOCALES: untyped
+
+  private
+
+  def switch_locale: () ?{ (?) -> untyped } -> untyped
+
+  def resolved_locale: () -> untyped
+
+  def user_locale: () -> untyped
+
+  def cookie_locale: () -> untyped
+
+  def accept_language_locale: () -> untyped
+
+  def host_locale: () -> untyped
+
+  def permitted_locale: (untyped value) -> untyped
+end

@@ -95,3 +95,45 @@ Style/SelectByRange:
 
 Style/PartitionInsteadOfDoubleSelect:
   Enabled: true
+
+# Omakase disables the entire `Style` department (`Style: Enabled: false`),
+# which silently turns off every `Style/RbsInline/*` cop shipped by the
+# rubocop-rbs_inline plugin. The plugin defaults set each cop to `Enabled: true`,
+# but `inherit_gem` config wins over plugin defaults, so we override the plugin
+# cops back on explicitly.
+Style/RbsInline:
+  Enabled: true
+Style/RbsInline/DataClassCommentAlignment:
+  Enabled: true
+Style/RbsInline/DataDefineWithBlock:
+  Enabled: true
+Style/RbsInline/EmbeddedRbsSpacing:
+  Enabled: true
+Style/RbsInline/InvalidComment:
+  Enabled: true
+Style/RbsInline/InvalidTypes:
+  Enabled: false
+Style/RbsInline/KeywordSeparator:
+  Enabled: true
+Style/RbsInline/MethodCommentSpacing:
+  Enabled: true
+Style/RbsInline/MissingDataClassAnnotation:
+  Enabled: true
+Style/RbsInline/MissingTypeAnnotation:
+  Enabled: false
+Style/RbsInline/ParametersSeparator:
+  Enabled: true
+Style/RbsInline/RedundantAnnotationWithSkip:
+  Enabled: true
+Style/RbsInline/RedundantInstanceVariableAnnotation:
+  Enabled: true
+Style/RbsInline/RedundantTypeAnnotation:
+  Enabled: true
+Style/RbsInline/RequireRbsInlineComment:
+  Enabled: false
+Style/RbsInline/UnmatchedAnnotations:
+  Enabled: true
+Style/RbsInline/UntypedInstanceVariable:
+  Enabled: false
+Style/RbsInline/VariableCommentSpacing:
+  Enabled: true

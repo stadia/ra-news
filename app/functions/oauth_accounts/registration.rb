@@ -7,8 +7,8 @@ module OauthAccounts
 
     # 등록 결과를 담는 불변 값 객체.
     Result = Data.define(
-      :success, #: bool
-      :user     #: User
+      :success,  #: bool
+      :user      #: User
     ) do
       #: () -> bool
       def success? = success

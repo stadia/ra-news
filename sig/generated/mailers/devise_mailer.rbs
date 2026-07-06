@@ -1,0 +1,7 @@
+# Generated from app/mailers/devise_mailer.rb with RBS::Inline
+
+class DeviseMailer < Devise::Mailer
+  include RecipientHostRouting
+
+  def confirmation_instructions: (untyped record, untyped token, ?untyped opts) -> untyped
+end

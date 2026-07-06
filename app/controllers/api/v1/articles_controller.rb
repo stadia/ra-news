@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class Api::V1::ArticlesController < Api::V1::BaseController
   include Pagy::Method

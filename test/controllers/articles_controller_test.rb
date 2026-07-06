@@ -232,6 +232,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     end
 
     article = Article.find_by!(url: "https://example.com/submitted-by-user")
+
     assert_redirected_to article_path(article)
     assert_equal User.first_bot, article.user
     assert user.likes?(article)

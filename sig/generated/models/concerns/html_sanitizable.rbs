@@ -1,0 +1,11 @@
+# Generated from app/models/concerns/html_sanitizable.rb with RBS::Inline
+
+module HtmlSanitizable
+  extend ActiveSupport::Concern
+
+  ALLOWED_TAGS: untyped
+
+  private
+
+  def sanitize_body: () -> untyped
+end

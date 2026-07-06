@@ -1,0 +1,7 @@
+# Generated from app/models/configs/discord.rb with RBS::Inline
+
+module Configs
+  class Discord < OauthBase
+    def self.configured?: () -> untyped
+  end
+end

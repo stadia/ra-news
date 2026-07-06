@@ -1,0 +1,4 @@
+# Generated from app/models/oauth_account.rb with RBS::Inline
+
+class OauthAccount < ApplicationRecord
+end

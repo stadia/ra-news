@@ -1,0 +1,17 @@
+# Generated from app/models/concerns/federails_likeable.rb with RBS::Inline
+
+module FederailsLikeable
+  extend ActiveSupport::Concern
+
+  include Federails::HandlesSocialActivities
+
+  # : (untyped actor_reference) -> void
+  def apply_remote_like: (untyped actor_reference) -> void
+
+  # : (untyped actor_reference) -> void
+  def apply_remote_unlike: (untyped actor_reference) -> void
+
+  private
+
+  def resolve_federails_actor: (untyped actor_reference) -> untyped
+end

@@ -1,0 +1,5 @@
+# Generated from app/serializers/post_serializer.rb with RBS::Inline
+
+class PostSerializer
+  include Alba::Resource
+end

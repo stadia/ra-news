@@ -4,8 +4,7 @@
 class SocialMediaService < OperationService
   include Rails.application.routes.url_helpers
 
-  #: (Article article, Symbol command) -> void
-  def call(article, command: :post) #: void
+  def call(article, command: :post)
     case command
     when :post
       step should_post_article?(article)

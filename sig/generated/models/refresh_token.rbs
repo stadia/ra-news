@@ -1,0 +1,13 @@
+# Generated from app/models/refresh_token.rb with RBS::Inline
+
+class RefreshToken < ApplicationRecord
+  REFRESH_TTL: untyped
+
+  def self.issue: (untyped user) -> untyped
+
+  def self.find_active_by_raw: (untyped raw) -> untyped
+
+  def self.digest: (untyped raw) -> untyped
+
+  def revoke!: () -> untyped
+end

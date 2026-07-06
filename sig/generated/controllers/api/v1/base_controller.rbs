@@ -1,0 +1,4 @@
+# Generated from app/controllers/api/v1/base_controller.rb with RBS::Inline
+
+class Api::V1::BaseController < ApplicationController
+end

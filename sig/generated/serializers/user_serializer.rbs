@@ -1,0 +1,5 @@
+# Generated from app/serializers/user_serializer.rb with RBS::Inline
+
+class UserSerializer
+  include Alba::Resource
+end
