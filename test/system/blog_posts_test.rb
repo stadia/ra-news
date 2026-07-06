@@ -50,7 +50,7 @@ class BlogPostsTest < ApplicationSystemTestCase
     # 이 영역은 프로필의 "activity-list" 터보 프레임 안에 있지만, 링크에
     # data-turbo-frame="_top" 이 있어 클릭 시 전체 페이지 네비게이션으로
     # 편집기가 정상적으로 열린다.
-    visit user_profile_blog_path(username: @user.username)
+    visit account_blog_path
     click_link draft.title
 
     assert_text I18n.t("posts.blog.edit_heading")
@@ -58,7 +58,7 @@ class BlogPostsTest < ApplicationSystemTestCase
     assert_text "초안 본문입니다."
 
     # 발행 장문을 원문 페이지에서 삭제(soft discard)하면 목록에서 사라진다.
-    visit post_path(posts(:blog_published))
+    visit user_profile_blog_post_path(username: @user.username, slug: posts(:blog_published))
     accept_confirm { click_button I18n.t("posts.blog.delete") }
 
     # 삭제 후 프로필 목록에서 해당 발행 장문이 더 이상 보이지 않는다.
