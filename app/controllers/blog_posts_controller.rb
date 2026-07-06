@@ -37,7 +37,7 @@ class BlogPostsController < ApplicationController
 
     if publishing?
       @post.publish!
-      redirect_to post_path(@post), notice: t("posts.blog.published")
+      redirect_to user_profile_blog_post_path(username: @post.user.username, slug: @post), notice: t("posts.blog.published")
     else
       @post.status = :draft
       @post.title = I18n.t("posts.blog.untitled_draft") if @post.title.blank?
@@ -62,7 +62,7 @@ class BlogPostsController < ApplicationController
   def update
     if @post.update(blog_post_params)
       respond_to do |format|
-        format.html { redirect_to post_path(@post), notice: t("posts.blog.updated") }
+        format.html { redirect_to user_profile_blog_post_path(username: @post.user.username, slug: @post), notice: t("posts.blog.updated") }
         format.json { render json: { status: "ok", saved_at: l(Time.current, format: :short) } }
       end
     else
@@ -76,7 +76,7 @@ class BlogPostsController < ApplicationController
   def publish
     @post.assign_attributes(blog_post_params) if params[:post].present?
     @post.publish!
-    redirect_to post_path(@post), notice: t("posts.blog.published")
+    redirect_to user_profile_blog_post_path(username: @post.user.username, slug: @post), notice: t("posts.blog.published")
   rescue ActiveRecord::RecordInvalid
     render Views::BlogPosts::Edit.new(post: @post), status: :unprocessable_entity
   end

@@ -71,7 +71,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
 
     published = Post.blog.published.order(:id).last
 
-    assert_redirected_to post_url(published)
+    assert_redirected_to user_profile_blog_post_url(username: published.user.username, slug: published)
   end
 
   test "publishing a new draft without a title re-renders the editor" do
@@ -129,7 +129,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
     @draft.update!(title: "발행 제목", body: "<p>발행 본문</p>")
     patch publish_blog_post_url(@draft)
 
-    assert_redirected_to post_url(@draft)
+    assert_redirected_to user_profile_blog_post_url(username: @draft.user.username, slug: @draft)
     assert_predicate @draft.reload, :published?
     assert_not_nil @draft.published_at
   end
@@ -149,7 +149,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
       post: { title: "수정된 제목", body: "<p>수정된 본문</p>" }
     }
 
-    assert_redirected_to post_url(@published)
+    assert_redirected_to user_profile_blog_post_url(username: @published.user.username, slug: @published)
     assert_equal "수정된 제목", @published.reload.title
   end
 
