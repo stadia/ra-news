@@ -48,6 +48,10 @@ class ReplyNotificationJob < ApplicationJob
         parent_post.article,
         anchor: "post_#{parent_post.id}"
       )
+    elsif parent_post.blog?
+      Rails.application.routes.url_helpers.user_profile_blog_post_path(
+        username: parent_post.user.username, slug: parent_post
+      )
     else
       Rails.application.routes.url_helpers.post_path(parent_post)
     end

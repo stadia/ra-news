@@ -6,6 +6,14 @@ class BlogPostsController < ApplicationController
   before_action :set_post, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
   before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
 
+  def index
+    render Views::BlogPosts::Index.new(
+      drafts: current_user.posts.blog.draft.kept.order(updated_at: :desc),
+      published: current_user.posts.blog.published.kept.order(published_at: :desc),
+      trash: current_user.posts.blog.discarded.order(updated_at: :desc)
+    )
+  end
+
   # Opens the editor for an unsaved draft. No row is created on entry — the
   # first autosave (or publish) persists it via #create.
   #
@@ -37,7 +45,7 @@ class BlogPostsController < ApplicationController
 
     if publishing?
       @post.publish!
-      redirect_to post_path(@post), notice: t("posts.blog.published")
+      redirect_to user_profile_blog_post_path(username: @post.user.username, slug: @post), notice: t("posts.blog.published")
     else
       @post.status = :draft
       @post.title = I18n.t("posts.blog.untitled_draft") if @post.title.blank?
@@ -62,7 +70,7 @@ class BlogPostsController < ApplicationController
   def update
     if @post.update(blog_post_params)
       respond_to do |format|
-        format.html { redirect_to post_path(@post), notice: t("posts.blog.updated") }
+        format.html { redirect_to user_profile_blog_post_path(username: @post.user.username, slug: @post), notice: t("posts.blog.updated") }
         format.json { render json: { status: "ok", saved_at: l(Time.current, format: :short) } }
       end
     else
@@ -76,7 +84,7 @@ class BlogPostsController < ApplicationController
   def publish
     @post.assign_attributes(blog_post_params) if params[:post].present?
     @post.publish!
-    redirect_to post_path(@post), notice: t("posts.blog.published")
+    redirect_to user_profile_blog_post_path(username: @post.user.username, slug: @post), notice: t("posts.blog.published")
   rescue ActiveRecord::RecordInvalid
     render Views::BlogPosts::Edit.new(post: @post), status: :unprocessable_entity
   end
@@ -93,7 +101,7 @@ class BlogPostsController < ApplicationController
     # Restoring a published post re-federates via the model's after_undiscard
     # (Undo); drafts were never federated, so nothing is emitted for them.
     @post.undiscard
-    redirect_to user_profile_blog_path(username: current_user.username), notice: t("posts.blog.restored")
+    redirect_to account_blog_path, notice: t("posts.blog.restored")
   end
 
   def destroy_permanently
@@ -103,7 +111,7 @@ class BlogPostsController < ApplicationController
     # is benign — the tombstone already exists remotely, so the second Delete is
     # idempotent.
     @post.destroy
-    redirect_to user_profile_blog_path(username: current_user.username), notice: t("posts.blog.destroyed_permanently")
+    redirect_to account_blog_path, notice: t("posts.blog.destroyed_permanently")
   end
 
   private

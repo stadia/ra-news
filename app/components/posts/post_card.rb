@@ -64,7 +64,7 @@ class Components::Posts::PostCard < Components::Base
         # navigations to a full show page must break out with turbo_frame: "_top"
         # (otherwise the frame is replaced with "Content missing"). In non-frame
         # contexts like the feed this is just a normal full-page navigation.
-        link_to(post_path(@post), class: "block text-xs text-content-muted hover:text-content transition-colors", data: { turbo_frame: "_top" }) do
+        link_to(post_permalink_path(@post), class: "block text-xs text-content-muted hover:text-content transition-colors", data: { turbo_frame: "_top" }) do
           time(
             datetime: @post.created_at.iso8601,
             title: I18n.l(@post.created_at, format: :long)
@@ -115,12 +115,12 @@ class Components::Posts::PostCard < Components::Base
   def blog_body
     div(class: "space-y-2") do
       h2(class: "text-xl font-semibold text-content") do
-        link_to @post.title, post_path(@post), class: "hover:text-accent-text transition-colors", data: { turbo_frame: "_top" }
+        link_to @post.title, post_permalink_path(@post), class: "hover:text-accent-text transition-colors", data: { turbo_frame: "_top" }
       end
       p(class: "text-sm leading-relaxed text-content-secondary wrap-break-word") do
         plain @post.blog_summary
       end
-      link_to t("posts.blog.read_more"), post_path(@post), class: "text-sm font-medium text-accent-text hover:underline", data: { turbo_frame: "_top" }
+      link_to t("posts.blog.read_more"), post_permalink_path(@post), class: "text-sm font-medium text-accent-text hover:underline", data: { turbo_frame: "_top" }
     end
   end
 

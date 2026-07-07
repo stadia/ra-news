@@ -280,6 +280,8 @@ ko:
       status_draft: 초안
       status_published: 발행됨
       read_more: 원문 읽기
+      manage_title: 블로그 글 관리 | Ruby-News
+      manage_heading: 블로그 글 관리
       errors:
         blank_draft: 제목이나 본문 중 하나는 입력해야 합니다.
     post_card:
@@ -335,6 +337,7 @@ ko:
       drafts_empty: 작성 중인 초안이 없습니다.
       published_empty: 발행한 블로그가 없습니다.
       trash_empty: 휴지통이 비어 있습니다.
+      empty: 아직 발행한 블로그 글이 없습니다.
     show:
       feed: Feed
       find_follow: 팔로우 검색
@@ -377,6 +380,7 @@ ko:
       heading: 사용자 정보 수정
       subtitle: 계정 정보를 업데이트합니다.
       title: 사용자 정보 수정
+      blog_link: 블로그 글 관리
     form:
       avatar_alt_default: 프로필 이미지
       avatar_hint: 정사각형 대표 썸네일로 400x400 크롭되어 외부에 공개됩니다.

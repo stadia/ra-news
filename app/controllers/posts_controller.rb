@@ -3,6 +3,7 @@
 
 class PostsController < ApplicationController
   include RateLimiting
+  include PostViewing
 
   before_action :authenticate_user!, only: [ :create, :destroy ]
   before_action :set_article, only: [ :create, :destroy ], if: -> { params[:article_id].present? }
@@ -10,13 +11,8 @@ class PostsController < ApplicationController
   before_action :check_rate_limit, only: [ :create ]
 
   def show
-    post = Post.includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).find_by!(slug: params[:id])
-    raise ActiveRecord::RecordNotFound unless viewable?(post)
-    root = post.root
-    @posts = build_thread(root)
-    @liked_post_ids = current_user ? Like.liked_ids_for(liker: current_user, likeable_type: "Post", likeable_ids: @posts.map(&:id)) : []
-    @boosted_post_ids = current_user ? Boost.boosted_ids_for(booster: current_user, boostable_type: "Post", boostable_ids: @posts.map(&:id)) : []
-    render Views::Posts::Show.new(posts: @posts, liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids)
+    post = Post.where.not(post_type: :blog).includes(POST_SHOW_INCLUDES).find_by!(slug: params[:id])
+    render_post_show(post)
   end
 
   def create
@@ -103,16 +99,6 @@ class PostsController < ApplicationController
     @comments = @article.posts.kept.includes(:user)
   end
 
-  # A post is publicly viewable when it is visible (published & kept). The owner
-  # may also preview their own non-published (draft) post. Discarded posts are
-  # never served here — the owner reaches them only via the profile trash tab.
-  def viewable?(post)
-    return true if post.kept? && post.published?
-    return true if post.kept? && current_user && post.user == current_user
-
-    false
-  end
-
   def article_comment_params
     params.expect(post: [ :body, :parent_id ])
   end
@@ -153,17 +139,5 @@ class PostsController < ApplicationController
 
   def default_mention_text_for(actor)
     actor.local? ? actor.short_at_address : actor.at_address
-  end
-
-  def build_thread(root)
-    # parent_id 기반으로 안전하게 스레드 수집
-    ids = [ root.id ]
-    queue = [ root.id ]
-    while queue.any?
-      children = Post.kept.where(parent_id: queue).pluck(:id)
-      ids.concat(children)
-      queue = children
-    end
-    Post.kept.where(id: ids).includes(:user, :federails_actor, :article, :tags, parent: [ :user, :federails_actor ]).sort_by { |p| [ p.depth, p.created_at ] }
   end
 end

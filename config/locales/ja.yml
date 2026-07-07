@@ -280,6 +280,8 @@ ja:
       status_draft: 下書き
       status_published: 公開済み
       read_more: 本文を読む
+      manage_title: ブログ記事の管理 | Ruby-News
+      manage_heading: ブログ記事の管理
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
@@ -335,6 +337,7 @@ ja:
       drafts_empty: 作成中の下書きはありません。
       published_empty: 公開したブログはありません。
       trash_empty: ゴミ箱は空です。
+      empty: まだ公開されたブログ記事がありません。
     show:
       feed: フィード
       find_follow: フォロー検索
@@ -377,6 +380,7 @@ ja:
       heading: ユーザー情報を編集
       subtitle: アカウント情報を更新します。
       title: ユーザー情報を編集
+      blog_link: ブログ記事の管理
     form:
       avatar_alt_default: プロフィール画像
       avatar_hint: 正方形の代表サムネイルとして400x400にクロップされ、外部に公開されます。

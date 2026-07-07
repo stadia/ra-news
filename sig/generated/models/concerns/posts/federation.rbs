@@ -1,0 +1,18 @@
+# Generated from app/models/concerns/posts/federation.rb with RBS::Inline
+
+# ActivityPub serialization for Post: builds the outgoing Note object and the
+# canonical public URL advertised to remote servers.
+#
+# Kept out of Post itself so the model stays focused; the enums, scopes, and
+# federation callbacks remain on Post.
+module Posts::Federation
+  extend ActiveSupport::Concern
+
+  # : () -> Hash[String, untyped]
+  def to_activitypub_object: () -> Hash[String, untyped]
+
+  # Public, human-readable URL for this post. Blog posts live under the account
+  # namespace (/@user/blog/:slug); everything else at /posts/:slug.
+  # : () -> String
+  def public_url: () -> String
+end

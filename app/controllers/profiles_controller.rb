@@ -4,7 +4,7 @@
 class ProfilesController < ApplicationController
   include Pagy::Method
 
-  skip_before_action :authenticate_user!, only: [ :show, :posts, :comments ]
+  skip_before_action :authenticate_user!, only: [ :show, :posts, :comments, :blog ]
 
   before_action :set_user
   before_action :require_own_profile, only: [ :followers, :following ]
@@ -96,14 +96,13 @@ class ProfilesController < ApplicationController
   end
 
   def blog
-    unless current_user == @user
-      redirect_to(user_profile_base_path(username: @user.username),
-                  alert: "본인만 볼 수 있습니다") and return
-    end
-
-    @blog_drafts = @user.posts.blog.draft.kept.order(updated_at: :desc)
-    @blog_published = @user.posts.blog.published.kept.order(published_at: :desc)
-    @blog_trash = @user.posts.blog.discarded.order(updated_at: :desc)
+    @pagy, @posts = pagy(
+      @user.posts.published_blog.kept
+        .includes(:user, :federails_actor, :article, :tags)
+        .order(published_at: :desc)
+    )
+    @liked_post_ids = liked_ids_for_posts(@posts)
+    @boosted_post_ids = boosted_ids_for_posts(@posts)
     render_activity_page(:blog)
   end
 
@@ -154,10 +153,9 @@ class ProfilesController < ApplicationController
       when :blog
         if turbo_frame_request?
           render Views::Profiles::BlogList.new(
-            user: @user,
-            drafts: @blog_drafts,
-            published: @blog_published,
-            trash: @blog_trash
+            user: @user, posts: @posts, pagy: @pagy,
+            liked_post_ids: @liked_post_ids,
+            boosted_post_ids: @boosted_post_ids
           )
         else
           render_show_with_activity(active_tab: :blog)
@@ -187,10 +185,7 @@ class ProfilesController < ApplicationController
         pagy: @pagy,
         liked_post_ids: @liked_post_ids,
         boosted_post_ids: @boosted_post_ids,
-        follow_actors: @follow_actors,
-        blog_drafts: @blog_drafts || [],
-        blog_published: @blog_published || [],
-        blog_trash: @blog_trash || []
+        follow_actors: @follow_actors
       )
     end
 

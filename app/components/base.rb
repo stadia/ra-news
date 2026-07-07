@@ -15,6 +15,14 @@ class Components::Base < Phlex::HTML
     nil
   end
 
+  def post_permalink_path(post)
+    if post.blog? && post.user
+      user_profile_blog_post_path(username: post.user.username, slug: post)
+    else
+      post_path(post)
+    end
+  end
+
   if Rails.env.development?
     def before_template
       comment { "Before #{self.class.name}" }
