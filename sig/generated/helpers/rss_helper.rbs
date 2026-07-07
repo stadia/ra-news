@@ -1,0 +1,17 @@
+# Generated from app/helpers/rss_helper.rb with RBS::Inline
+
+module RssHelper
+  def create_article: (untyped attributes) -> untyped
+
+  # Fetches and parses the RSS feed for a site.
+  # : (Site site) -> RSS::Rss || RSS::Atom::Feed | nil
+  def fetch_feed: (Site site) -> RSS::Rss
+
+  # Returns the items from an RSS or Atom feed.
+  # : (RSS::Rss || RSS::Atom::Feed feed) -> Array[RSS::Rss::Channel::Item || RSS::Atom::Feed::Entry]
+  def feed_items: (untyped feed) -> untyped
+
+  # Extracts attributes from a feed item.
+  # : (RSS::Rss::Channel::Item || RSS::Atom::Feed::Entry item) -> Hash?
+  def extract_item_attributes: (untyped item) -> untyped
+end

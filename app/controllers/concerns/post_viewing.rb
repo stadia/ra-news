@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 # Shared "render a post thread" behavior for the two controllers that serve a
 # single post's reading page: PostsController (short/comment posts at

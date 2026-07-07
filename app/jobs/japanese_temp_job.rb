@@ -1,3 +1,5 @@
+# rbs_inline: enabled
+
 class JapaneseTempJob < ApplicationJob
   def perform(id: nil, slug: nil)
     if id.present? || slug.present?

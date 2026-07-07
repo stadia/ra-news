@@ -130,7 +130,14 @@ Style/RbsInline/RedundantInstanceVariableAnnotation:
 Style/RbsInline/RedundantTypeAnnotation:
   Enabled: true
 Style/RbsInline/RequireRbsInlineComment:
-  Enabled: false
+  Enabled: true
+  Exclude:
+    - "app/controllers/madmin/**/*"
+    - "app/madmin/**/*"
+    - "db/**/*"
+    - "script/*"
+    - "*file"
+    - "config.ru"
 Style/RbsInline/UnmatchedAnnotations:
   Enabled: true
 Style/RbsInline/UntypedInstanceVariable:

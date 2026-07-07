@@ -1,0 +1,21 @@
+# Generated from app/controllers/concerns/post_viewing.rb with RBS::Inline
+
+# Shared "render a post thread" behavior for the two controllers that serve a
+# single post's reading page: PostsController (short/comment posts at
+# /posts/:slug) and BlogsController (blog posts at /@user/blog/:slug).
+module PostViewing
+  extend ActiveSupport::Concern
+
+  POST_SHOW_INCLUDES: untyped
+
+  private
+
+  # Renders the reading page for +post+, or 404s if it is not viewable.
+  def render_post_show: (untyped post) -> untyped
+
+  # A post is publicly viewable when visible (published & kept). The owner may
+  # also preview their own draft. Discarded posts are never served here.
+  def viewable?: (untyped post) -> untyped
+
+  def build_thread: (untyped root) -> untyped
+end

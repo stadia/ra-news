@@ -1,3 +1,5 @@
+# rbs_inline: enabled
+
 module ApplicationHelper
   def responsive_image_tag(source, options = {})
     # 반응형 이미지를 위한 헬퍼
