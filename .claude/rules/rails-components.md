@@ -96,7 +96,7 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: options:{}, attrs
 - **DropdownMenuContent** (phlex)
 - **DropdownMenuItem** (phlex)
-  props: href:"#", attrs
+  props: as::a, href:"#", attrs
 - **DropdownMenuLabel** (phlex)
 - **DropdownMenuSeparator** (phlex)
 - **DropdownMenuTrigger** (phlex)
