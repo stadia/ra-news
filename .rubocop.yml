@@ -105,22 +105,16 @@ Style/RbsInline:
   Enabled: true
 Style/RbsInline/DataClassCommentAlignment:
   Enabled: true
-Style/RbsInline/DataDefineWithBlock:
-  Enabled: true
 Style/RbsInline/EmbeddedRbsSpacing:
   Enabled: true
 Style/RbsInline/InvalidComment:
   Enabled: true
-Style/RbsInline/InvalidTypes:
-  Enabled: false
 Style/RbsInline/KeywordSeparator:
   Enabled: true
 Style/RbsInline/MethodCommentSpacing:
   Enabled: true
 Style/RbsInline/MissingDataClassAnnotation:
   Enabled: true
-Style/RbsInline/MissingTypeAnnotation:
-  Enabled: false
 Style/RbsInline/ParametersSeparator:
   Enabled: true
 Style/RbsInline/RedundantAnnotationWithSkip:
@@ -140,7 +134,14 @@ Style/RbsInline/RequireRbsInlineComment:
     - "config.ru"
 Style/RbsInline/UnmatchedAnnotations:
   Enabled: true
-Style/RbsInline/UntypedInstanceVariable:
-  Enabled: false
 Style/RbsInline/VariableCommentSpacing:
   Enabled: true
+
+Style/RbsInline/UntypedInstanceVariable:
+  Enabled: false
+Style/RbsInline/DataDefineWithBlock:
+  Enabled: false
+Style/RbsInline/InvalidTypes:
+  Enabled: false
+Style/RbsInline/MissingTypeAnnotation:
+  Enabled: false
