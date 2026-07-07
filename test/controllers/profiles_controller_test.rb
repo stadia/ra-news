@@ -197,4 +197,25 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, user_profile_blog_path(username: users(:john).username)
   end
+
+  test "GET boosts as anonymous user renders boosted articles and posts" do
+    user = users(:john)
+    Boost.create!(actor: user.federails_actor, boostable: articles(:ruby_article), created_at: Time.current)
+    Boost.create!(actor: user.federails_actor, boostable: posts(:root_post), created_at: 1.minute.ago)
+
+    get "/@#{user.username}/boosts"
+
+    assert_response :success
+    assert_includes response.body, articles(:ruby_article).title_ko
+    assert_includes response.body, posts(:root_post).body
+  end
+
+  test "boosts tab is visible to other users" do
+    sign_in users(:jane)
+
+    get user_profile_posts_url(username: users(:john).username)
+
+    assert_response :success
+    assert_includes response.body, user_profile_boosts_path(username: users(:john).username)
+  end
 end

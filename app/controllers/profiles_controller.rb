@@ -4,7 +4,7 @@
 class ProfilesController < ApplicationController
   include Pagy::Method
 
-  skip_before_action :authenticate_user!, only: [ :show, :posts, :comments, :blog ]
+  skip_before_action :authenticate_user!, only: [ :show, :posts, :comments, :blog, :boosts ]
 
   before_action :set_user
   before_action :require_own_profile, only: [ :followers, :following ]
@@ -72,11 +72,6 @@ class ProfilesController < ApplicationController
   end
 
   def boosts
-    unless current_user == @user
-      redirect_to(user_profile_base_path(username: @user.username),
-                  alert: "본인만 볼 수 있습니다") and return
-    end
-
     boosts = Boost.where(actor: @user.federails_actor, boostable_type: %w[Article Post])
                   .order(created_at: :desc)
     @pagy, page_boosts = pagy(boosts)

@@ -14,10 +14,10 @@ class Components::Profiles::ActivityTabs < Components::Base
         tab_link(t("profiles.activity_tabs.posts"), user_profile_posts_path(username: @user.username), :posts)
         tab_link(t("profiles.activity_tabs.comments"), user_profile_comments_path(username: @user.username), :comments)
         tab_link(t("profiles.activity_tabs.blog"), user_profile_blog_path(username: @user.username), :blog)
+        tab_link(t("profiles.activity_tabs.boosts"), user_profile_boosts_path(username: @user.username), :boosts)
         tab_link(t("profiles.activity_tabs.followers"), user_profile_followers_path(username: @user.username), :followers) if own_profile?
         tab_link(t("profiles.activity_tabs.following"), user_profile_following_path(username: @user.username), :following) if own_profile?
         tab_link(t("profiles.activity_tabs.likes"), user_profile_likes_path(username: @user.username), :likes) if own_profile?
-        tab_link(t("profiles.activity_tabs.boosts"), user_profile_boosts_path(username: @user.username), :boosts) if own_profile?
       end
     end
   end
