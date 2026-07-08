@@ -16,10 +16,16 @@ class ArticleBatchJobTest < ActiveSupport::TestCase
       Struct.new(:success?).new(true)
     end
 
+    service_called = []
+    indexnow_service = Object.new
+    indexnow_service.define_singleton_method(:call) do |host:, urls:|
+      service_called << { host:, urls: }
+    end
+
     PgSearch::Multisearch.stub(:rebuild, ->(*, **_) { raise "should not be called" }) do
       ArticleAgentsService.stub(:new, -> { fake_service }) do
-        job = ArticleBatchJob.new
-        job.stub(:ping_index_now, nil) do
+        IndexNowService.stub(:new, -> { indexnow_service }) do
+          job = ArticleBatchJob.new
           job.stub(:check_rate_limit, true) do
             job.stub(:sleep, nil) do
               job.perform(1.hour.from_now)
@@ -30,5 +36,7 @@ class ArticleBatchJobTest < ActiveSupport::TestCase
     end
 
     assert_equal [ article ], called_articles
+    pinged_hosts = service_called.map { |c| c[:host] }
+    assert_includes pinged_hosts, "ruby-news.dev" if service_called.any?
   end
 end
