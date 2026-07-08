@@ -965,8 +965,9 @@ class ArticleTest < ActiveSupport::TestCase
     clear_index_now_jobs!
 
     assert_no_enqueues_index_now do
-      article.update!(is_related: true)
+      article.update!(title: "바뀐 제목")
     end
+    assert_nil article.title_ko
   end
 
   test "watched 속성 변경 시 confirmed 기사는 예약한다" do
