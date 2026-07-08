@@ -3,6 +3,8 @@
 require "test_helper"
 
 class ArticleTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   # Test fixtures setup
   def setup
     preferences(:ignore_hosts)
@@ -920,7 +922,103 @@ class ArticleTest < ActiveSupport::TestCase
     assert_match "## 결론\n결론 부분", markdown
   end
 
+  # --- IndexNow enqueue ---
+
+  test "confirmed 진입(create) 시 호스트 수만큼 IndexNowJob을 30s 지연 예약한다" do
+    stub_external_requests(nil) do
+      article = Article.create!(
+        title: "새 기사",
+        title_ko: "새 기사 한국어",
+        url: "https://example.com/new-idx",
+        origin_url: "https://example.com/new-idx",
+        host: "example.com",
+        slug: "new-idx",
+        body: "본문",
+        user: users(:john)
+      )
+
+      Hosts::INDEX_NOW_HOSTS.each do |host|
+        assert_enqueued_with(
+          job: IndexNowJob,
+          args: [ article.id, host ],
+          queue: "default"
+        )
+      end
+      # wait 옵션 확인: 예약된 잡의 scheduled_at이 30s 이후
+      enqueued = ActiveJob::Base.queue_adapter.enqueued_jobs.select { |j| j["job_class"] == "IndexNowJob" }
+      assert_equal Hosts::INDEX_NOW_HOSTS.size, enqueued.size
+    end
+  end
+
+  test "의미 없는 변경(touch only)은 IndexNowJob을 예약하지 않는다" do
+    article = articles(:ruby_article)
+    # watched 속성 외의 필드만 갱신 — is_related는 watched 목록에 없음
+    clear_index_now_jobs!
+
+    assert_no_enqueues_index_now do
+      article.update!(is_related: !article.is_related)
+    end
+  end
+
+  test "unconfirmed 기사(title_ko 누락) 저장은 예약하지 않는다" do
+    article = articles(:site_only_article) # slug 있음, title_ko nil
+    clear_index_now_jobs!
+
+    assert_no_enqueues_index_now do
+      article.update!(is_related: true)
+    end
+  end
+
+  test "watched 속성 변경 시 confirmed 기사는 예약한다" do
+    article = articles(:ruby_article)
+    clear_index_now_jobs!
+
+    assert_enqueues_index_now(count: Hosts::INDEX_NOW_HOSTS.size) do
+      article.update!(title_ko: "바뀐 한국어 제목")
+    end
+  end
+
+  test "디바운스: 30s 내 동일 host+id의 두 번째 예약은 스킵된다" do
+    article = articles(:ruby_article)
+    clear_index_now_jobs!
+    # 테스트 환경의 기본 캐시는 NullStore라 잠금이 유지되지 않으므로
+    # MemoryStore로 교체해 디바운스 잠금이 실제로 동작하는지 검증한다.
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+
+    assert_enqueues_index_now(count: Hosts::INDEX_NOW_HOSTS.size) do
+      article.update!(title_ko: "첫 변경")
+    end
+
+    # 잠금이 설정된 상태에서 두 번째 변경 — 추가 예약 없음
+    assert_no_enqueues_index_now do
+      article.update!(body: "두 번째 본문 변경")
+    end
+  ensure
+    Rails.cache = original_cache
+  end
+
   private
+
+  def clear_index_now_jobs!
+    ActiveJob::Base.queue_adapter.enqueued_jobs.delete_if { |j| j["job_class"] == "IndexNowJob" }
+  end
+
+  def assert_enqueues_index_now(count:)
+    before = enqueued_index_now_count
+    yield
+    assert_equal count, enqueued_index_now_count - before
+  end
+
+  def assert_no_enqueues_index_now
+    before = enqueued_index_now_count
+    yield
+    assert_equal before, enqueued_index_now_count
+  end
+
+  def enqueued_index_now_count
+    ActiveJob::Base.queue_adapter.enqueued_jobs.count { |j| j["job_class"] == "IndexNowJob" }
+  end
 
   def stub_external_requests(article)
     response = Struct.new(:body, :status, :success?, :headers).new(
