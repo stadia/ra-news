@@ -39,6 +39,13 @@ cloudflare:
   request_checksum_calculation: when_required
   response_checksum_validation: when_required
   public: true
+  # 업로드하는 R2 오브젝트에 Cache-Control을 직접 심는다. 썸네일 변형 키는
+  # fingerprint(불변)라 브라우저/엣지가 오래 캐시해도 안전하다. Cloudflare Cache
+  # Rule이 엣지 TTL을 이미 오버라이드하지만, 오브젝트 헤더로 브라우저 캐시와
+  # 오리진 응답까지 일관되게 만든다. ActiveStorage S3 서비스는 upload 옵션을
+  # put_object에 그대로 전달한다(신규 업로드에만 적용, 기존 오브젝트는 백필 필요).
+  upload:
+    cache_control: "public, max-age=31536000, immutable"
 
 # mirror:
 #   service: Mirror
