@@ -11,6 +11,7 @@ class Components::Layout < Components::Base
     doctype
     html(lang: I18n.locale, class: "light theme-light") do
       head do
+        render_asset_preconnect
         render_theme_init_script
         render_analytics_scripts
         render_meta_tags
@@ -163,18 +164,32 @@ class Components::Layout < Components::Base
     link(rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png")
   end
 
+  # asset_host(예: assets.ruby-news.dev)는 cross-origin이라, 렌더 차단
+  # app.css와 LCP 이미지 첫 요청 전에 DNS+TLS 연결을 예열한다.
+  # asset_host 람다를 그대로 호출해 호스트 판별 로직(단일 진실원)을 재사용한다.
+  # ruby-news.jp(same-origin)나 개발환경(asset_host nil)에서는 아무것도 렌더하지 않는다.
+  def render_asset_preconnect
+    resolver = ActionController::Base.asset_host
+    return unless resolver.respond_to?(:call)
+
+    origin = resolver.call(nil, view_context.request)
+    return if origin.blank?
+
+    link(rel: "preconnect", href: origin)
+    link(rel: "dns-prefetch", href: origin)
+  rescue StandardError
+    nil
+  end
+
   def render_google_fonts
+    href = "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
     link(rel: "preconnect", href: "https://fonts.googleapis.com")
     link(rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: true)
-    link(
-      rel: "preload",
-      href: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap",
-      as: "style"
-    )
-    link(
-      rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
-    )
+    # 폰트 CSS를 렌더 차단에서 제외한다: preload로 받아온 뒤 onload에서 rel을
+    # stylesheet로 전환하고, display=swap으로 로드 중 텍스트가 숨지 않게 한다.
+    # Phlex는 onload 인라인 핸들러를 막으므로 정적 문자열을 raw로 렌더한다.
+    raw(%(<link rel="preload" href="#{href.gsub('&', '&amp;')}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
+    noscript { link(rel: "stylesheet", href: href) }
   end
 
   def render_schema_org
