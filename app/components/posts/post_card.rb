@@ -142,7 +142,7 @@ class Components::Posts::PostCard < Components::Base
 
     grid_class = attachments.size == 1 ? "grid-cols-1" : "grid-cols-2"
     div(
-      data: { controller: "lightbox" },
+      data: { controller: "lightbox", lightbox_stylesheet: helpers.asset_path("vendor/lightgallery.css") },
       class: "grid #{grid_class} gap-1 rounded-xl overflow-hidden mt-2"
     ) do
       attachments.each do |attachment|
