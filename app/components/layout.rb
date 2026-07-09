@@ -22,7 +22,8 @@ class Components::Layout < Components::Base
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
         stylesheet_link_tag "lexxy", data_turbo_track: "reload"
-        stylesheet_link_tag "vendor/lightgallery", data_turbo_track: "reload"
+        # vendor/lightgallery.css는 렌더 차단을 피하려고 head에서 제거했다.
+        # lightbox 컨트롤러가 연결될 때(=갤러리가 있는 페이지)만 주입한다.
         javascript_importmap_tags
         render_schema_org
       end
