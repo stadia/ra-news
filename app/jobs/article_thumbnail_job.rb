@@ -34,15 +34,15 @@ class ArticleThumbnailJob < ApplicationJob
     end
 
     process_thumbnail_variants(article) if article.thumbnail.attached?
-  rescue ActiveRecord::RecordNotFound
-    logger.info "ArticleThumbnailJob skip: article #{article_id} not found"
   end
 
   private
 
   # 렌더 시 직접 CDN URL을 쓰려면 변형이 미리 처리돼 있어야 한다(미처리면 리다이렉트 폴백).
   # 이미 async 잡이므로 여기서 동기 처리해 첫 페이지 렌더의 지연/리다이렉트를 없앤다.
-  # 에러를 잡지 않고 전파시켜 ActiveJob 재시도가 변형 처리를 다시 시도하게 한다.
+  # 에러는 잡지 않고 전파시킨다 — 변형 에러(Vips/S3 등)는 ApplicationJob의 retry_on
+  # 대상이 아니라 잡이 실패로 남고(rescue_from이 로깅 후 re-raise), MissionControl에서
+  # 수동 재시도하면 위 already-attached 분기가 썸네일 재생성 없이 변형만 다시 처리한다.
   #: (Article article) -> void
   def process_thumbnail_variants(article)
     Article::THUMBNAIL_VARIANTS.each_key do |name|

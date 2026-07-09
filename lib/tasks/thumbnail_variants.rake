@@ -32,6 +32,9 @@ namespace :thumbnails do
       end
       processed += 1
       puts "  진행: #{processed}/#{total}" if (processed % batch_size).zero?
+    rescue ActiveRecord::ConnectionNotEstablished, ActiveRecord::StatementInvalid
+      # 시스템 장애(DB 연결 끊김 등)는 건별 실패로 세지 말고 즉시 중단한다.
+      raise
     rescue StandardError => e
       failed += 1
       warn "  실패 article=#{article.id}: #{e.class} - #{e.message}"
