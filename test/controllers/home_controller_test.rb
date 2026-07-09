@@ -18,6 +18,20 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='https://github.com/stadia/ruby-news']", text: /GitHub/
   end
 
+  test "GET root gives like/boost buttons an accessible name via sr-only text" do
+    # 아이콘만 있는 버튼은 스크린리더가 "버튼"으로만 읽는다(button-name). sr-only
+    # 텍스트로 접근명을 부여하되, aria-label 대신 sr-only를 써서 보이는 카운트가
+    # 접근명에 포함되게 한다(label-content-name-mismatch 회피).
+    get root_path
+
+    assert_response :success
+    assert_select "span.sr-only", text: /좋아요/
+    assert_select "span.sr-only", text: /부스트/
+    # boost 버튼에 aria-label을 두면 접근명이 카운트를 배제하므로, 부스트 aria용
+    # 텍스트는 sr-only로만 노출되어야 한다(카운트 표시 span은 aria-hidden 아님).
+    assert_select "form.inline-flex button[aria-label]", false
+  end
+
   test "GET root preloads liked articles for signed in user" do
     user = users(:john)
     Like.create!(actor: user.federails_actor, likeable: articles(:ruby_article), created_at: Time.current)

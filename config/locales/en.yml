@@ -5,6 +5,11 @@ en:
       aria_label:
         boost: Boost
         undo: Undo boost
+  likes:
+    button:
+      aria_label:
+        like: Like
+        undo: Unlike
   activerecord:
     attributes:
       article:

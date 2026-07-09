@@ -22,7 +22,7 @@ class Components::Layout < Components::Base
         render_pwa_and_icons
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
-        stylesheet_link_tag "lexxy", data_turbo_track: "reload"
+        render_lexxy_stylesheet
         # vendor/lightgallery.css는 렌더 차단을 피하려고 head에서 제거했다.
         # lightbox 컨트롤러가 연결될 때(=갤러리가 있는 페이지)만 주입한다.
         javascript_importmap_tags
@@ -91,7 +91,9 @@ class Components::Layout < Components::Base
   }.freeze
 
   def render_meta_tags
-    meta(name: "viewport", content: "width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1.0")
+    # user-scalable=no / maximum-scale는 저시력 사용자의 확대를 막아 접근성(WCAG 1.4.4)을
+    # 위반하므로 두지 않는다. 사용자가 핀치 줌으로 확대할 수 있어야 한다.
+    meta(name: "viewport", content: "width=device-width,initial-scale=1,viewport-fit=cover")
     meta(name: "apple-mobile-web-app-capable", content: "yes")
     meta(name: "mobile-web-app-capable", content: "yes")
     meta(name: "apple-mobile-web-app-status-bar-style", content: "black-translucent")
@@ -205,6 +207,16 @@ class Components::Layout < Components::Base
     # 폰트 CSS를 렌더 차단에서 제외한다: preload로 받아온 뒤 onload에서 rel을
     # stylesheet로 전환하고, display=swap으로 로드 중 텍스트가 숨지 않게 한다.
     # Phlex는 onload 인라인 핸들러를 막으므로 정적 문자열을 raw로 렌더한다.
+    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
+    noscript { link(rel: "stylesheet", href: href) }
+  end
+
+  # lexxy(리치텍스트 에디터) CSS는 에디터 폼에서만 필요하고 그 폼은 어느 페이지에서든
+  # 스크롤 아래(below-the-fold)에 있다. 렌더 차단 stylesheet로 두면 전 페이지 FCP를
+  # 지연시키므로, Google Fonts와 동일하게 preload→onload에서 rel=stylesheet로 전환해
+  # 비동기 로드한다. (에디터 스크립트 자체도 <lexxy-editor> 존재 시에만 동적 import된다.)
+  def render_lexxy_stylesheet
+    href = view_context.stylesheet_path("lexxy")
     raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
     noscript { link(rel: "stylesheet", href: href) }
   end

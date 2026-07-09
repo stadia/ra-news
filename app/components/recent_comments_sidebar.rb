@@ -38,7 +38,7 @@ class Components::RecentCommentsSidebar < Components::Base
         )
         span(class: "text-sm font-medium text-content-secondary truncate") { comment.author_name }
         if comment.author_host.present?
-          span(class: "text-xs text-content-disabled shrink-0") { comment&.author_host }
+          span(class: "text-xs text-content-muted shrink-0") { comment&.author_host }
         end
       end
 
@@ -46,7 +46,9 @@ class Components::RecentCommentsSidebar < Components::Base
         plain truncate(view_context.strip_tags(comment.body.to_s).squish, length: 80)
       end
 
-      div(class: "flex items-center justify-between text-xs text-content-disabled") do
+      # content-disabled(neutral-400)는 밝은 표면에서 대비 2.34로 WCAG AA 미달.
+      # 타임스탬프/호스트는 '비활성'이 아니라 보조 정보이므로 content-muted를 쓴다.
+      div(class: "flex items-center justify-between text-xs text-content-muted") do
         span(class: "flex items-center gap-1") do
           Hero::Clock(variant: :outline, class: "w-3 h-3")
           plain view_context.time_ago_in_words(comment.created_at)
