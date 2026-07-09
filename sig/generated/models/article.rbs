@@ -31,6 +31,11 @@ class Article < ApplicationRecord
 
   include Articles::Activitypub
 
+  # 명명된 변형: 렌더 시 직접 CDN URL(cdn.ruby-news.dev)을 쓰기 위해 미리 처리해 둔다.
+  # (기존 인라인 변형과 동일한 resize_to_fill 이라 digest/key가 같아 재사용된다.)
+  #   :hero → 히어로/기사 상세, :card → 작은 카드 및 히어로 모바일 srcset
+  THUMBNAIL_VARIANTS: untyped
+
   # ── Scopes ───────────────────────────────────────────────────────────
   # 하이브리드 전문 검색:
   #   1) tsvector_content_tsearch(textsearch_ko, 'korean') — 한국어 형태소 + 한자

@@ -170,6 +170,11 @@ class Components::Layout < Components::Base
   # 재사용한다. ruby-news.jp(same-origin)나 개발환경(asset_host nil)에서는 아무것도
   # 렌더하지 않는다.
   def render_asset_preconnect
+    # 이미지 CDN(cdn.ruby-news.dev): LCP 히어로 썸네일이 여기서 직접 서빙되므로
+    # 가장 먼저 연결을 예열한다(<img>는 비-CORS라 crossorigin 없이).
+    image_cdn = ENV["ACTIVE_STORAGE_CDN_HOST"].presence
+    link(rel: "preconnect", href: image_cdn.delete_suffix("/")) if image_cdn
+
     origin = asset_preconnect_origin
     return if origin.blank?
 
