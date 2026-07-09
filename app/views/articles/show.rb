@@ -55,8 +55,10 @@ class Views::Articles::Show < Views::Base
 
     div(class: "w-full overflow-hidden") do
       image_tag(
-        @article.thumbnail.variant(resize_to_fill: [ 1200, 675 ]),
+        cdn_variant_url(@article.thumbnail, :hero),
         class: "w-full aspect-video object-cover",
+        srcset: "#{cdn_variant_url(@article.thumbnail, :card)} 600w, #{cdn_variant_url(@article.thumbnail, :hero)} 1200w",
+        sizes: "(min-width: 768px) 768px, 100vw",
         loading: "eager",
         decoding: "auto",
         fetchpriority: "high",

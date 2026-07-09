@@ -54,7 +54,16 @@ class Article < ApplicationRecord
   has_many :posts, dependent: :nullify
   has_many :notification_deliveries, dependent: :destroy
 
-  has_one_attached :thumbnail
+  # 명명된 변형: 렌더 시 직접 CDN URL(cdn.ruby-news.dev)을 쓰기 위해 미리 처리해 둔다.
+  # (기존 인라인 변형과 동일한 resize_to_fill 이라 digest/key가 같아 재사용된다.)
+  #   :hero → 히어로/기사 상세, :card → 작은 카드 및 히어로 모바일 srcset
+  THUMBNAIL_VARIANTS = { hero: [ 1200, 675 ], card: [ 600, 338 ] }.freeze
+
+  has_one_attached :thumbnail do |attachable|
+    THUMBNAIL_VARIANTS.each do |name, dimensions|
+      attachable.variant name, resize_to_fill: dimensions
+    end
+  end
 
   # ── Scopes ───────────────────────────────────────────────────────────
   # 하이브리드 전문 검색:

@@ -29,11 +29,25 @@ class ArticleThumbnailJob < ApplicationJob
     else
       generate_ai_thumbnail(article)
     end
+
+    process_thumbnail_variants(article) if article.thumbnail.attached?
   rescue ActiveRecord::RecordNotFound
     logger.info "ArticleThumbnailJob skip: article #{article_id} not found"
   end
 
   private
+
+  # 렌더 시 직접 CDN URL을 쓰려면 변형이 미리 처리돼 있어야 한다(미처리면 리다이렉트 폴백).
+  # 이미 async 잡이므로 여기서 동기 처리해 첫 페이지 렌더의 지연/리다이렉트를 없앤다.
+  #: (Article article) -> void
+  def process_thumbnail_variants(article)
+    Article::THUMBNAIL_VARIANTS.each_key do |name|
+      article.thumbnail.variant(name).processed
+    end
+    logger.info "ArticleThumbnailJob processed thumbnail variants for article #{article.id}"
+  rescue StandardError => e
+    logger.warn "ArticleThumbnailJob variant processing failed for article #{article.id}: #{e.class} - #{e.message}"
+  end
 
   # YouTube 썸네일 해상도 후보 (높은 순)
   YOUTUBE_THUMBNAIL_QUALITIES = %w[maxresdefault sddefault hqdefault mqdefault default].freeze
