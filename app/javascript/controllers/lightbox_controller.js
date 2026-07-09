@@ -16,6 +16,13 @@ export default class extends Lightbox {
     link.rel = "stylesheet";
     link.href = href;
     link.dataset.lightgalleryCss = "";
+    // 로드 실패를 삼키지 않는다: 마커 link를 제거해 이후 네비게이션에서
+    // 재시도할 수 있게 하고(안 그러면 dedup 가드가 영구 차단), 신호를 남긴다.
+    link.onerror = () => {
+      console.error("Failed to load lightgallery stylesheet:", href);
+      window.Sentry?.captureException?.(new Error(`lightgallery CSS load failed: ${href}`));
+      link.remove();
+    };
     document.head.appendChild(link);
   }
 
