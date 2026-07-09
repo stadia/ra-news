@@ -37,6 +37,7 @@ class ArticleBatchJobTest < ActiveSupport::TestCase
 
     assert_equal [ article ], called_articles
     pinged_hosts = service_called.map { |c| c[:host] }
+
     refute_empty service_called
     assert_includes pinged_hosts, "ruby-news.dev"
   end

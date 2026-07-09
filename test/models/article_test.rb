@@ -946,6 +946,7 @@ class ArticleTest < ActiveSupport::TestCase
       end
       # wait 옵션 확인: 예약된 잡의 scheduled_at이 30s 이후
       enqueued = ActiveJob::Base.queue_adapter.enqueued_jobs.select { |j| j["job_class"] == "IndexNowJob" }
+
       assert_equal Hosts::INDEX_NOW_HOSTS.size, enqueued.size
     end
   end
@@ -1008,12 +1009,14 @@ class ArticleTest < ActiveSupport::TestCase
   def assert_enqueues_index_now(count:)
     before = enqueued_index_now_count
     yield
+
     assert_equal count, enqueued_index_now_count - before
   end
 
   def assert_no_enqueues_index_now
     before = enqueued_index_now_count
     yield
+
     assert_equal before, enqueued_index_now_count
   end
 

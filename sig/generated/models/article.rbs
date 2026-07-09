@@ -87,6 +87,11 @@ class Article < ApplicationRecord
   # : () -> void
   def clear_rss_cache: () -> void
 
+  INDEX_NOW_WATCHED_ATTRIBUTES: untyped
+
+  # : () -> void
+  def enqueue_index_now: () -> void
+
   def should_generate_new_friendly_id?: () -> bool
 
   def random_slug: () -> String

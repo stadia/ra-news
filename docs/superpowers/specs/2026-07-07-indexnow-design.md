@@ -103,7 +103,8 @@ end
 #: (Integer article_id, String host) -> void
 def perform(article_id, host)
   article = Article.kept.find_by(id: article_id)
-  return unless article&.confirmed?
+  return unless article
+  return if article.slug.blank? || article.title_ko.blank?
   url = Rails.application.routes.url_helpers.article_url(article, host:, protocol: "https")
   IndexNowService.new.call(host:, urls: [url])
 ensure
@@ -111,12 +112,14 @@ ensure
 end
 ```
 
+> 인스턴스 `confirmed?` predicate는 없으므로(모델은 `scope :confirmed`만 제공) 잡 내부에서 `slug`/`title_ko` 인라인 검사로 confirmed 여부를 재확인한다.
+
 - `article_id`(레코드가 아닌 id) 인자 — `discard_on RecordNotFound` 회피, 지연 중 삭제 케이스 안전.
 - 명시적 `host:` 오버라이드로 로케일별 호스트 보장.
 
 ### `ArticleBatchJob` 변경
 
-`ping_index_now` 삭제. 배치 끝에서 `index_now_urls`를 호스트별로 분할해 `IndexNowService.new.call(host:, urls:)` 직접 호출.
+`ping_index_now` 삭제. 배치는 ko(`ruby-news.dev`)만 담당하므로, 배치 끝에서 `index_now_urls`(모두 `ruby-news.dev` URL)를 `IndexNowService.new.call(host: "ruby-news.dev", urls:)`로 직접 호출한다. `.jp` 호스트는 `Article` after_commit 콜백이 커버한다.
 
 ## 테스트 전략
 

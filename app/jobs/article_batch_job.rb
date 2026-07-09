@@ -29,7 +29,7 @@ class ArticleBatchJob < ApplicationJob
 
     return unless reload
 
-    ping_index_now_via_service(index_now_urls.uniq)
+    IndexNowService.new.call(host: "ruby-news.dev", urls: index_now_urls.uniq)
   end
 
   private
@@ -49,11 +49,5 @@ class ArticleBatchJob < ApplicationJob
       host: "ruby-news.dev",
       protocol: "https"
     )
-  end
-
-  #: (Array[String] urls) -> void
-  def ping_index_now_via_service(urls)
-    return if urls.blank?
-    IndexNowService.new.call(host: "ruby-news.dev", urls: urls)
   end
 end

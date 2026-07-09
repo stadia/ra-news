@@ -295,8 +295,7 @@ class Article < ApplicationRecord
 
     Hosts::INDEX_NOW_HOSTS.each do |host|
       lock_key = "index_now:enqueue:#{host}:#{id}"
-      next if Rails.cache.exist?(lock_key)
-      Rails.cache.write(lock_key, true, expires_in: 60.seconds)
+      next unless Rails.cache.write(lock_key, true, expires_in: 60.seconds, unless_exist: true)
       IndexNowJob.set(wait: 30.seconds).perform_later(id, host)
     end
   end

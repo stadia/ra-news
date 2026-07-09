@@ -25,9 +25,12 @@ class IndexNowService
       ENDPOINT,
       payload.to_json,
       { "Content-Type" => "application/json; charset=utf-8" }
-    )
+    ) do |req|
+      req.options.open_timeout = 5
+      req.options.timeout = 10
+    end
 
-    if response.status.to_i.between?(200, 299)
+    if response.status.between?(200, 299)
       Rails.logger.info("IndexNow ping success: host=#{host} urls=#{urls.size}")
     else
       Rails.logger.error("IndexNow ping failed: host=#{host} status=#{response.status} body=#{response.body}")

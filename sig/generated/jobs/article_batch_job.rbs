@@ -14,7 +14,4 @@ class ArticleBatchJob < ApplicationJob
 
   # : (Article article) -> String
   def article_public_url: (Article article) -> String
-
-  # : (Array[String] urls) -> void
-  def ping_index_now: (Array[String] urls) -> void
 end
