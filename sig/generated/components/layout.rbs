@@ -1,0 +1,92 @@
+# Generated from app/components/layout.rb with RBS::Inline
+
+class Components::Layout < Components::Base
+  include Phlex::Rails::Layout
+
+  include Phlex::Rails::Helpers::ContentFor
+
+  include Phlex::Rails::Helpers::FormWith
+
+  include Phlex::Rails::Helpers::LinkTo
+
+  include Phlex::Rails::Helpers::ImageURL
+
+  def view_template: () -> untyped
+
+  private
+
+  def render_theme_init_script: () -> untyped
+
+  def render_analytics_scripts: () -> untyped
+
+  # 단일 소스: app/functions/hosts.rb (Hosts::FOR_LOCALE)
+  HREFLANG_HOSTS: untyped
+
+  OG_LOCALES: untyped
+
+  def render_meta_tags: () -> untyped
+
+  def render_hreflang_links: (untyped path) -> untyped
+
+  def render_rss_link: () -> untyped
+
+  def render_pwa_and_icons: () -> untyped
+
+  # asset_host(예: assets.ruby-news.dev)는 cross-origin이라, 렌더 차단
+  # app.css와 preload되는 코어 JS 모듈의 첫 요청 전에 DNS+TLS 연결을 예열한다.
+  # asset_host 설정(람다 또는 문자열)을 그대로 사용해 호스트 판별 로직(단일 진실원)을
+  # 재사용한다. ruby-news.jp(same-origin)나 개발환경(asset_host nil)에서는 아무것도
+  # 렌더하지 않는다.
+  def render_asset_preconnect: () -> untyped
+
+  # asset_host 설정을 그대로 해석해 preconnect 대상 origin을 반환한다(단일 진실원).
+  # 람다(request 기반)와 문자열 설정을 모두 지원하고, 미설정(dev)이면 nil.
+  # : (?untyped request) -> String?
+  def asset_preconnect_origin: (?untyped request) -> String?
+
+  def render_google_fonts: () -> untyped
+
+  # lexxy(리치텍스트 에디터) CSS는 에디터 폼에서만 필요하고 그 폼은 어느 페이지에서든
+  # 스크롤 아래(below-the-fold)에 있다. 렌더 차단 stylesheet로 두면 전 페이지 FCP를
+  # 지연시키므로, Google Fonts와 동일하게 preload→onload에서 rel=stylesheet로 전환해
+  # 비동기 로드한다. (에디터 스크립트 자체도 <lexxy-editor> 존재 시에만 동적 import된다.)
+  def render_lexxy_stylesheet: () -> untyped
+
+  def render_schema_org: () -> untyped
+
+  def render_skip_link: () -> untyped
+
+  def render_loading_indicator: () -> untyped
+
+  def render_navigation: () -> untyped
+
+  def render_mobile_menu_toggle: () -> untyped
+
+  def render_nav_menu: () -> untyped
+
+  def render_theme_toggle: () -> untyped
+
+  def render_user_menu: (untyped vc) -> untyped
+
+  def render_search_form: () -> untyped
+
+  def render_main: () -> untyped
+
+  def render_footer: () -> untyped
+
+  def render_mastodon_link: () -> untyped
+
+  def render_twitter_link: () -> untyped
+
+  def render_rss_footer_link: () -> untyped
+
+  def render_github_link: () -> untyped
+
+  def render_slack_link: () -> untyped
+
+  def render_privacy_policy_link: () -> untyped
+
+  def render_terms_link: () -> untyped
+
+  def render_discord_link: () -> untyped
+end

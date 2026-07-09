@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class Components::Layout < Components::Base
   include Phlex::Rails::Layout
@@ -217,8 +218,11 @@ class Components::Layout < Components::Base
   # 비동기 로드한다. (에디터 스크립트 자체도 <lexxy-editor> 존재 시에만 동적 import된다.)
   def render_lexxy_stylesheet
     href = view_context.stylesheet_path("lexxy")
-    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
-    noscript { link(rel: "stylesheet", href: href) }
+    # propshaft가 fingerprint한 로컬 에셋이므로 배포마다 href 해시가 바뀐다.
+    # app.css와 마찬가지로 data-turbo-track="reload"를 붙여 Turbo가 변경을
+    # 감지해 전체 새로고침하도록 한다(Google Fonts는 고정 CDN URL이라 제외).
+    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'" data-turbo-track="reload">).html_safe)
+    noscript { link(rel: "stylesheet", href: href, "data-turbo-track": "reload") }
   end
 
   def render_schema_org
