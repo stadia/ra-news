@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 namespace :thumbnails do
   desc "기존 기사 썸네일의 명명 변형(hero/card)을 미리 생성해 렌더 시 직접 CDN URL을 쓰게 한다. " \
@@ -25,7 +26,7 @@ namespace :thumbnails do
 
     processed = 0
     failed = 0
-    scope.find_each(batch_size: batch_size) do |article|
+    scope.with_attached_thumbnail.find_each(batch_size: batch_size) do |article|
       variant_names.each do |name|
         article.thumbnail.variant(name).processed
       end

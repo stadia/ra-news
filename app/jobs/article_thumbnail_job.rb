@@ -19,6 +19,9 @@ class ArticleThumbnailJob < ApplicationJob
         article.thumbnail.purge
         logger.info "ArticleThumbnailJob purged existing thumbnail for article #{article_id} (force)"
       else
+        # 썸네일은 이미 있지만 변형이 아직 처리 안 됐을 수 있다(이전 잡이 변형 처리
+        # 단계에서 실패해 재시도된 경우 등). 생성은 건너뛰되 변형 처리를 다시 시도한다.
+        process_thumbnail_variants(article)
         logger.info "ArticleThumbnailJob skip: article #{article_id} already has thumbnail"
         return
       end
@@ -39,14 +42,13 @@ class ArticleThumbnailJob < ApplicationJob
 
   # 렌더 시 직접 CDN URL을 쓰려면 변형이 미리 처리돼 있어야 한다(미처리면 리다이렉트 폴백).
   # 이미 async 잡이므로 여기서 동기 처리해 첫 페이지 렌더의 지연/리다이렉트를 없앤다.
+  # 에러를 잡지 않고 전파시켜 ActiveJob 재시도가 변형 처리를 다시 시도하게 한다.
   #: (Article article) -> void
   def process_thumbnail_variants(article)
     Article::THUMBNAIL_VARIANTS.each_key do |name|
       article.thumbnail.variant(name).processed
     end
     logger.info "ArticleThumbnailJob processed thumbnail variants for article #{article.id}"
-  rescue StandardError => e
-    logger.warn "ArticleThumbnailJob variant processing failed for article #{article.id}: #{e.class} - #{e.message}"
   end
 
   # YouTube 썸네일 해상도 후보 (높은 순)
