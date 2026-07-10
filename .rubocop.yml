@@ -128,8 +128,10 @@ Style/RbsInline/RedundantTypeAnnotation:
 Style/RbsInline/RequireRbsInlineComment:
   Enabled: true
   Exclude:
+    - "app/components/**/*"
     - "app/controllers/madmin/**/*"
     - "app/madmin/**/*"
+    - "app/views/**/*"
     - "db/**/*"
     - "script/*"
     - "*file"

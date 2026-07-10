@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# rbs_inline: enabled
 
 class Components::Home::Feature < Components::Base
   include Phlex::Rails::Helpers::DOMID
