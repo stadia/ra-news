@@ -231,7 +231,10 @@
         --semantic-brand-solid-hover: var(--brand-primary-deep);
         --semantic-info-solid: oklch(0.546 0.215 263); /* blue-600 */
         --semantic-info-solid-hover: oklch(0.488 0.217 264); /* blue-700 */
-        --semantic-info-text: var(--semantic-info-solid);
+        /* info-text는 배지(bg-info-solid/10 위)와 info 링크에 쓰인다. blue-600은
+           연한 파랑 배경 위에서 대비 4.11로 WCAG AA(4.5)에 미달하므로, 텍스트 전용
+           토큰만 blue-700로 낮춰 대비를 확보한다(solid 배경/링은 그대로 유지). */
+        --semantic-info-text: var(--semantic-info-solid-hover);
         --semantic-info-text-hover: var(--semantic-info-solid-hover);
         --semantic-danger-solid: oklch(0.577 0.215 27); /* red-600 */
         --semantic-danger-solid-hover: oklch(0.505 0.191 28); /* red-700 */

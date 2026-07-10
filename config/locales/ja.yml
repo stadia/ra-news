@@ -5,6 +5,11 @@ ja:
       aria_label:
         boost: ブースト
         undo: ブースト取り消し
+  likes:
+    button:
+      aria_label:
+        like: いいね
+        undo: いいね取り消し
   activerecord:
     attributes:
       article:

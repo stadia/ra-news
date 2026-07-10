@@ -5,6 +5,11 @@ ko:
       aria_label:
         boost: 부스트
         undo: 부스트 취소
+  likes:
+    button:
+      aria_label:
+        like: 좋아요
+        undo: 좋아요 취소
   activerecord:
     attributes:
       article:

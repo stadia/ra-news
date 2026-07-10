@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# rbs_inline: enabled
 
 class Components::Base < Phlex::HTML
   include RubyUI
