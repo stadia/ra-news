@@ -25,8 +25,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     get root_path
 
     assert_response :success
-    assert_select "span.sr-only", text: /좋아요/
-    assert_select "span.sr-only", text: /부스트/
+    assert_select "button span.sr-only", text: /좋아요/
+    assert_select "button span.sr-only", text: /부스트/
     # boost 버튼에 aria-label을 두면 접근명이 카운트를 배제하므로, 부스트 aria용
     # 텍스트는 sr-only로만 노출되어야 한다(카운트 표시 span은 aria-hidden 아님).
     assert_select "form.inline-flex button[aria-label]", false
