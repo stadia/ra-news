@@ -1,0 +1,11 @@
+# Generated from app/services/index_now_service.rb with RBS::Inline
+
+# IndexNow API로 URL 리스트를 전송한다.
+# 호스트별 keyLocation(https://<host>/<key>.txt)를 포함해 POST.
+# 성공/실패 모두 로그만 남기고 raise하지 않는다(비재시도 정책).
+class IndexNowService
+  ENDPOINT: ::String
+
+  # : (host: String, urls: Array[String]) -> void
+  def call: (host: String, urls: Array[String]) -> void
+end

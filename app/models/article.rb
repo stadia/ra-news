@@ -135,6 +135,7 @@ class Article < ApplicationRecord
   before_save :assign_japanese_title
 
   after_commit :clear_rss_cache, on: [ :create, :update, :destroy ]
+  after_commit :enqueue_index_now, on: [ :create, :update ]
 
   after_discard do
     clear_rss_cache
@@ -291,6 +292,22 @@ class Article < ApplicationRecord
   #: () -> void
   def clear_rss_cache
     Rails.cache.delete("rss_articles")
+  end
+
+  INDEX_NOW_WATCHED_ATTRIBUTES = %w[slug title title_ko title_ja body summary_body summary_body_ja published_at].freeze
+
+  #: () -> void
+  def enqueue_index_now
+    return unless kept?
+    return if slug.blank? || title_ko.blank?
+    return unless INDEX_NOW_WATCHED_ATTRIBUTES.any? { |attr| saved_change_to_attribute?(attr) }
+
+    # 호스트별 ping은 IndexNowJob이 담당한다(IndexNow는 host 1개 = POST 1개).
+    # 여기선 기사당 잡 1개만 예약하고 per-article 잠금으로 60s 디바운스한다.
+    lock_key = "index_now:enqueue:#{id}"
+    return unless Rails.cache.write(lock_key, true, expires_in: 60.seconds, unless_exist: true)
+
+    IndexNowJob.set(wait: 30.seconds).perform_later(id)
   end
 
   def should_generate_new_friendly_id? #: bool

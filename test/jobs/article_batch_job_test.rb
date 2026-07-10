@@ -19,11 +19,9 @@ class ArticleBatchJobTest < ActiveSupport::TestCase
     PgSearch::Multisearch.stub(:rebuild, ->(*, **_) { raise "should not be called" }) do
       ArticleAgentsService.stub(:new, -> { fake_service }) do
         job = ArticleBatchJob.new
-        job.stub(:ping_index_now, nil) do
-          job.stub(:check_rate_limit, true) do
-            job.stub(:sleep, nil) do
-              job.perform(1.hour.from_now)
-            end
+        job.stub(:check_rate_limit, true) do
+          job.stub(:sleep, nil) do
+            job.perform(1.hour.from_now)
           end
         end
       end

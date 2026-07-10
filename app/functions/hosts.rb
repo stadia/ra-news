@@ -14,6 +14,13 @@ module Hosts
 
   DEFAULT = "https://ruby-news.dev"
 
+  # IndexNow 인증 키. public/<key>.txt 파일이 같은 키값으로 서빙된다.
+  # 두 도메인(.dev/.jp)이 같은 Rails 앱·같은 public/을 공유하므로 단일 파일로 충분.
+  INDEX_NOW_KEY = "187d5ed120cc45f8869b89302011d43a".freeze
+
+  # IndexNow ping 대상 호스트(스킴 제외). FOR_LOCALE에서 자동 파생.
+  INDEX_NOW_HOSTS = FOR_LOCALE.values.map { |url| URI(url).host }.freeze
+
   # host(스킴 제외) → Google Analytics 4 측정 ID.
   # dev·jp 가 각자 별도의 Google 태그를 쓰므로 호스트별로 분기한다.
   GA_ID_FOR_HOST = {
