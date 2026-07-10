@@ -217,11 +217,12 @@ class Components::Layout < Components::Base
   # 비동기 로드한다. (에디터 스크립트 자체도 <lexxy-editor> 존재 시에만 동적 import된다.)
   def render_lexxy_stylesheet
     href = view_context.stylesheet_path("lexxy")
-    # propshaft가 fingerprint한 로컬 에셋이므로 배포마다 href 해시가 바뀐다.
-    # app.css와 마찬가지로 data-turbo-track="reload"를 붙여 Turbo가 변경을
-    # 감지해 전체 새로고침하도록 한다(Google Fonts는 고정 CDN URL이라 제외).
-    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'" data-turbo-track="reload">).html_safe)
-    noscript { link(rel: "stylesheet", href: href, "data-turbo-track": "reload") }
+    # data-turbo-track은 붙이지 않는다: 이 링크는 onload에서 rel을 preload→stylesheet로
+    # 전환하므로, Turbo가 tracked 요소를 비교할 때 라이브 DOM(rel=stylesheet)과 서버
+    # 응답(rel=preload)의 outerHTML이 매 방문마다 달라져 전체 리로드가 반복된다.
+    # 배포 시 에셋 갱신 감지는 app.css의 data-turbo-track이 이미 담당한다.
+    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
+    noscript { link(rel: "stylesheet", href: href) }
   end
 
   def render_schema_org
