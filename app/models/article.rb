@@ -302,11 +302,12 @@ class Article < ApplicationRecord
     return if slug.blank? || title_ko.blank?
     return unless INDEX_NOW_WATCHED_ATTRIBUTES.any? { |attr| saved_change_to_attribute?(attr) }
 
-    Hosts::INDEX_NOW_HOSTS.each do |host|
-      lock_key = "index_now:enqueue:#{host}:#{id}"
-      next unless Rails.cache.write(lock_key, true, expires_in: 60.seconds, unless_exist: true)
-      IndexNowJob.set(wait: 30.seconds).perform_later(id, host)
-    end
+    # 호스트별 ping은 IndexNowJob이 담당한다(IndexNow는 host 1개 = POST 1개).
+    # 여기선 기사당 잡 1개만 예약하고 per-article 잠금으로 60s 디바운스한다.
+    lock_key = "index_now:enqueue:#{id}"
+    return unless Rails.cache.write(lock_key, true, expires_in: 60.seconds, unless_exist: true)
+
+    IndexNowJob.set(wait: 30.seconds).perform_later(id)
   end
 
   def should_generate_new_friendly_id? #: bool

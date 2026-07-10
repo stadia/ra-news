@@ -924,7 +924,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   # --- IndexNow enqueue ---
 
-  test "confirmed 진입(create) 시 호스트 수만큼 IndexNowJob을 30s 지연 예약한다" do
+  test "confirmed 진입(create) 시 IndexNowJob을 30s 지연 예약한다" do
     stub_external_requests(nil) do
       article = Article.create!(
         title: "새 기사",
@@ -937,17 +937,15 @@ class ArticleTest < ActiveSupport::TestCase
         user: users(:john)
       )
 
-      Hosts::INDEX_NOW_HOSTS.each do |host|
-        assert_enqueued_with(
-          job: IndexNowJob,
-          args: [ article.id, host ],
-          queue: "default"
-        )
-      end
+      assert_enqueued_with(
+        job: IndexNowJob,
+        args: [ article.id ],
+        queue: "default"
+      )
       # wait 옵션 확인: 예약된 잡의 scheduled_at이 30s 이후
       enqueued = ActiveJob::Base.queue_adapter.enqueued_jobs.select { |j| j["job_class"] == "IndexNowJob" }
 
-      assert_equal Hosts::INDEX_NOW_HOSTS.size, enqueued.size
+      assert_equal 1, enqueued.size
     end
   end
 
@@ -975,12 +973,12 @@ class ArticleTest < ActiveSupport::TestCase
     article = articles(:ruby_article)
     clear_index_now_jobs!
 
-    assert_enqueues_index_now(count: Hosts::INDEX_NOW_HOSTS.size) do
+    assert_enqueues_index_now(count: 1) do
       article.update!(title_ko: "바뀐 한국어 제목")
     end
   end
 
-  test "디바운스: 30s 내 동일 host+id의 두 번째 예약은 스킵된다" do
+  test "디바운스: 30s 내 동일 id의 두 번째 예약은 스킵된다" do
     article = articles(:ruby_article)
     clear_index_now_jobs!
     # 테스트 환경의 기본 캐시는 NullStore라 잠금이 유지되지 않으므로
@@ -988,7 +986,7 @@ class ArticleTest < ActiveSupport::TestCase
     original_cache = Rails.cache
     Rails.cache = ActiveSupport::Cache::MemoryStore.new
 
-    assert_enqueues_index_now(count: Hosts::INDEX_NOW_HOSTS.size) do
+    assert_enqueues_index_now(count: 1) do
       article.update!(title_ko: "첫 변경")
     end
 
