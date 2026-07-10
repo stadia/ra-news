@@ -23,6 +23,7 @@ class IndexNowJobTest < ActiveSupport::TestCase
     by_host = called.to_h { |c| [ c[:host], c ] }
     Hosts::INDEX_NOW_HOSTS.each do |host|
       url = by_host[host][:urls].first
+
       assert_includes url, "#{host}/articles/"
       assert_includes url, @article.slug
     end
@@ -39,6 +40,7 @@ class IndexNowJobTest < ActiveSupport::TestCase
     IndexNowService.stub(:new, -> { fake_service }) do
       IndexNowJob.new.perform(@article.id)
     end
+
     assert_empty called
   end
 
@@ -48,6 +50,7 @@ class IndexNowJobTest < ActiveSupport::TestCase
     fake_service.define_singleton_method(:call) do |host:, urls:|
       called << { host:, urls: }
     end
+
     IndexNowService.stub(:new, -> { fake_service }) do
       assert_nothing_raised { IndexNowJob.new.perform(-999_999) }
     end

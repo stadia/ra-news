@@ -12,6 +12,7 @@ class IndexNowServiceTest < ActiveSupport::TestCase
     Faraday.stub(:post, ->(*) { called = true; Struct.new(:status, :body).new(200, "") }) do
       @service.call(host: "ruby-news.dev", urls: [])
     end
+
     assert_not called, "빈 urls로 Faraday.post가 호출되면 안 됨"
   end
 
@@ -28,6 +29,7 @@ class IndexNowServiceTest < ActiveSupport::TestCase
         Hosts.const_set(:INDEX_NOW_KEY, original)
       end
     end
+
     assert_not called
   end
 
@@ -58,6 +60,7 @@ class IndexNowServiceTest < ActiveSupport::TestCase
     }) do
       @service.call(host: "ruby-news.jp", urls: [ "https://ruby-news.jp/articles/x" ])
     end
+
     assert_equal "ruby-news.jp", captured["host"]
     assert_equal Hosts::INDEX_NOW_KEY, captured["key"]
     assert_equal "https://ruby-news.jp/#{Hosts::INDEX_NOW_KEY}.txt", captured["keyLocation"]
