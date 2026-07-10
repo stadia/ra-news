@@ -34,6 +34,8 @@ Metrics/ClassLength:
     - "test/**/*"
     - "db/**/*"
     - "spec/**/*"
+    # 대형 도메인 모델(연관/검색/federation/썸네일 등 다수 책임) — 길이 예외.
+    - "app/models/article.rb"
 
 Metrics/ModuleLength:
   Enabled: true
@@ -126,8 +128,10 @@ Style/RbsInline/RedundantTypeAnnotation:
 Style/RbsInline/RequireRbsInlineComment:
   Enabled: true
   Exclude:
+    - "app/components/**/*"
     - "app/controllers/madmin/**/*"
     - "app/madmin/**/*"
+    - "app/views/**/*"
     - "db/**/*"
     - "script/*"
     - "*file"

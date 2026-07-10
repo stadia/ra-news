@@ -11,6 +11,7 @@ class Components::Layout < Components::Base
     doctype
     html(lang: I18n.locale, class: "light theme-light") do
       head do
+        render_asset_preconnect
         render_theme_init_script
         render_analytics_scripts
         render_meta_tags
@@ -21,8 +22,9 @@ class Components::Layout < Components::Base
         render_pwa_and_icons
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
-        stylesheet_link_tag "lexxy", data_turbo_track: "reload"
-        stylesheet_link_tag "vendor/lightgallery", data_turbo_track: "reload"
+        render_lexxy_stylesheet
+        # vendor/lightgallery.css는 렌더 차단을 피하려고 head에서 제거했다.
+        # lightbox 컨트롤러가 연결될 때(=갤러리가 있는 페이지)만 주입한다.
         javascript_importmap_tags
         render_schema_org
       end
@@ -89,7 +91,9 @@ class Components::Layout < Components::Base
   }.freeze
 
   def render_meta_tags
-    meta(name: "viewport", content: "width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no,maximum-scale=1.0")
+    # user-scalable=no / maximum-scale는 저시력 사용자의 확대를 막아 접근성(WCAG 1.4.4)을
+    # 위반하므로 두지 않는다. 사용자가 핀치 줌으로 확대할 수 있어야 한다.
+    meta(name: "viewport", content: "width=device-width,initial-scale=1,viewport-fit=cover")
     meta(name: "apple-mobile-web-app-capable", content: "yes")
     meta(name: "mobile-web-app-capable", content: "yes")
     meta(name: "apple-mobile-web-app-status-bar-style", content: "black-translucent")
@@ -162,18 +166,63 @@ class Components::Layout < Components::Base
     link(rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png")
   end
 
+  # asset_host(예: assets.ruby-news.dev)는 cross-origin이라, 렌더 차단
+  # app.css와 preload되는 코어 JS 모듈의 첫 요청 전에 DNS+TLS 연결을 예열한다.
+  # asset_host 설정(람다 또는 문자열)을 그대로 사용해 호스트 판별 로직(단일 진실원)을
+  # 재사용한다. ruby-news.jp(same-origin)나 개발환경(asset_host nil)에서는 아무것도
+  # 렌더하지 않는다.
+  def render_asset_preconnect
+    # 이미지 CDN(cdn.ruby-news.dev): LCP 히어로 썸네일이 여기서 직접 서빙되므로
+    # 가장 먼저 연결을 예열한다(<img>는 비-CORS라 crossorigin 없이).
+    image_cdn = ENV["ACTIVE_STORAGE_CDN_HOST"].presence
+    link(rel: "preconnect", href: image_cdn.delete_suffix("/")) if image_cdn
+
+    origin = asset_preconnect_origin
+    return if origin.blank?
+
+    # asset_host는 CSS/이미지(비-CORS)와 ES 모듈(CORS)을 모두 서빙하므로
+    # 두 연결 풀을 각각 예열한다(fonts.googleapis/gstatic 패턴과 동일).
+    link(rel: "preconnect", href: origin)
+    link(rel: "preconnect", href: origin, crossorigin: true)
+  rescue StandardError => e
+    # preconnect는 성능 최적화일 뿐이라 페이지 렌더는 계속하되,
+    # "no silent failures" 원칙에 따라 삼키지 않고 신호를 남긴다.
+    Rails.logger.error("render_asset_preconnect failed: #{e.class} - #{e.message}")
+    Sentry.capture_exception(e) if defined?(Sentry)
+    nil
+  end
+
+  # asset_host 설정을 그대로 해석해 preconnect 대상 origin을 반환한다(단일 진실원).
+  # 람다(request 기반)와 문자열 설정을 모두 지원하고, 미설정(dev)이면 nil.
+  #: (?untyped request) -> String?
+  def asset_preconnect_origin(request = view_context.request)
+    host = ActionController::Base.asset_host
+    host.respond_to?(:call) ? host.call(nil, request) : host
+  end
+
   def render_google_fonts
+    href = "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
     link(rel: "preconnect", href: "https://fonts.googleapis.com")
     link(rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: true)
-    link(
-      rel: "preload",
-      href: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap",
-      as: "style"
-    )
-    link(
-      rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
-    )
+    # 폰트 CSS를 렌더 차단에서 제외한다: preload로 받아온 뒤 onload에서 rel을
+    # stylesheet로 전환하고, display=swap으로 로드 중 텍스트가 숨지 않게 한다.
+    # Phlex는 onload 인라인 핸들러를 막으므로 정적 문자열을 raw로 렌더한다.
+    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
+    noscript { link(rel: "stylesheet", href: href) }
+  end
+
+  # lexxy(리치텍스트 에디터) CSS는 에디터 폼에서만 필요하고 그 폼은 어느 페이지에서든
+  # 스크롤 아래(below-the-fold)에 있다. 렌더 차단 stylesheet로 두면 전 페이지 FCP를
+  # 지연시키므로, Google Fonts와 동일하게 preload→onload에서 rel=stylesheet로 전환해
+  # 비동기 로드한다. (에디터 스크립트 자체도 <lexxy-editor> 존재 시에만 동적 import된다.)
+  def render_lexxy_stylesheet
+    href = view_context.stylesheet_path("lexxy")
+    # data-turbo-track은 붙이지 않는다: 이 링크는 onload에서 rel을 preload→stylesheet로
+    # 전환하므로, Turbo가 tracked 요소를 비교할 때 라이브 DOM(rel=stylesheet)과 서버
+    # 응답(rel=preload)의 outerHTML이 매 방문마다 달라져 전체 리로드가 반복된다.
+    # 배포 시 에셋 갱신 감지는 app.css의 data-turbo-track이 이미 담당한다.
+    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
+    noscript { link(rel: "stylesheet", href: href) }
   end
 
   def render_schema_org

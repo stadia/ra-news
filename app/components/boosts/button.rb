@@ -19,11 +19,13 @@ class Components::Boosts::Button < Components::Base
   private
 
   def boost_button
+    # aria-label을 두면 접근명이 "부스트"로 고정돼 화면에 보이는 카운트("1")를
+    # 포함하지 않아 WCAG 2.5.3(label-content-name-mismatch)을 위반한다. sr-only
+    # 텍스트 + 카운트로 접근명("부스트 1")이 구성되게 두어 보이는 텍스트를 포함시킨다.
     button_to(
       button_path,
       method: button_method,
       form: { data: { turbo_stream: true }, class: "inline-flex items-center m-0" },
-      aria: { label: aria_label },
       class: button_classes
     ) do
       span(class: "sr-only") { plain aria_label }

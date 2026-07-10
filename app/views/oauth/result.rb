@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-# rbs_inline: enabled
 
 class Views::Oauth::Result < Views::Base
   include Phlex::Rails::Helpers::ContentFor

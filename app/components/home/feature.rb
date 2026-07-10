@@ -41,7 +41,7 @@ class Components::Home::Feature < Components::Base
       id: dom_id(article, :feature),
       class: "relative bg-surface border-border-muted hover:border-border-strong hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full"
     ) do
-      thumbnail(article, size: [ 1200, 675 ], aspect: "aspect-video", eager: true)
+      thumbnail(article, variant: :hero, aspect: "aspect-video", eager: true, responsive: true)
       div(class: "p-6 flex flex-col flex-1") do
         title_block(article, size: :large)
         render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-4 self-start") { article.host }
@@ -56,7 +56,7 @@ class Components::Home::Feature < Components::Base
       id: dom_id(article, :feature),
       class: "relative bg-surface border-border-muted hover:border-border-strong hover:shadow-sm transition-all duration-300 overflow-hidden flex flex-col h-full"
     ) do
-      thumbnail(article, size: [ 600, 338 ], aspect: "aspect-video")
+      thumbnail(article, variant: :card, aspect: "aspect-video")
       div(class: "p-4 flex flex-col flex-1") do
         title_block(article, size: :small)
         render RubyUI::Badge.new(variant: :blue, size: :sm, class: "mb-3 self-start") { article.host }
@@ -65,18 +65,28 @@ class Components::Home::Feature < Components::Base
     end
   end
 
-  def thumbnail(article, size:, aspect:, eager: false)
+  def thumbnail(article, variant:, aspect:, eager: false, responsive: false)
     return unless article.thumbnail.attached?
 
+    thumbnail_url = cdn_variant_url(article.thumbnail, variant)
+
+    attrs = {
+      class: "w-full #{aspect} object-cover",
+      loading: eager ? "eager" : "lazy",
+      decoding: eager ? "auto" : "async",
+      fetchpriority: eager ? "high" : "auto",
+      alt: article.display_title
+    }
+    # 히어로는 반응형 srcset으로 모바일에 작은 변형(600px)을 제공해 LCP 바이트를 줄인다.
+    if responsive
+      card_url = (variant == :card) ? thumbnail_url : cdn_variant_url(article.thumbnail, :card)
+      hero_url = (variant == :hero) ? thumbnail_url : cdn_variant_url(article.thumbnail, :hero)
+      attrs[:srcset] = "#{card_url} 600w, #{hero_url} 1200w"
+      attrs[:sizes] = "(min-width: 1024px) 66vw, 100vw"
+    end
+
     link_to(article_path(article), class: "block overflow-hidden relative z-10") do
-      image_tag(
-        article.thumbnail.variant(resize_to_fill: size),
-        class: "w-full #{aspect} object-cover",
-        loading: eager ? "eager" : "lazy",
-        decoding: eager ? "auto" : "async",
-        fetchpriority: eager ? "high" : "auto",
-        alt: article.display_title
-      )
+      image_tag(thumbnail_url, **attrs)
     end
   end
 
