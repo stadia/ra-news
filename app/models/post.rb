@@ -278,6 +278,10 @@ class Post < ApplicationRecord
       elsif (parent = Post.find_by(federated_url: in_reply_to))
         { parent_id: parent.id, article_id: parent.article_id }
       else
+        # inReplyTo was present but resolved to neither a local target nor a
+        # known federated_url. The reply is stored standalone (no parent/article);
+        # log it so these orphaned replies are observable rather than invisible.
+        logger.debug { "reply_target_attributes: unresolved inReplyTo #{in_reply_to.inspect}; storing reply without parent/article" }
         {}
       end
     end
@@ -291,7 +295,14 @@ class Post < ApplicationRecord
     #: (String) -> bool
     def local_reply_target?(in_reply_to)
       local_host = Rails.application.routes.default_url_options[:host]
-      return false if local_host.blank?
+      if local_host.blank?
+        # A blank host is a misconfiguration (e.g. a job/console without the URL
+        # host initialized), not a normal "remote" case. Without this log, every
+        # genuinely-local reply would be silently reclassified as remote and
+        # stored orphaned (no parent/article) with no trace.
+        logger.error { "local_reply_target? cannot classify #{in_reply_to.inspect}: default_url_options[:host] is blank" }
+        return false
+      end
 
       URI.parse(in_reply_to).host == local_host
     rescue URI::InvalidURIError
