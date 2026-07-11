@@ -268,9 +268,10 @@ class Post < ApplicationRecord
     def reply_target_attributes(in_reply_to)
       # The /articles/(\d+) and /posts/(\d+) branches reference LOCAL records by
       # numeric id, so they must only run for local-host URLs. A remote reply
-      # target (e.g. a hackers.pub article at /articles/<uuid>) would otherwise
-      # have the leading digits of its UUID captured as a bogus local id,
-      # producing an article_id/parent_id that doesn't exist and a FK violation.
+      # target whose id segment begins with digits (e.g. a hackers.pub article at
+      # /articles/019f...) would otherwise have those leading digits captured as a
+      # bogus local id, producing an article_id/parent_id that doesn't exist and a
+      # FK violation.
       if local_reply_target?(in_reply_to) && (article_id = in_reply_to[%r{/articles/(\d+)}, 1])
         { article_id: article_id }
       elsif local_reply_target?(in_reply_to) && (post_id = in_reply_to[%r{/posts/(\d+)}, 1])

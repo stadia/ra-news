@@ -446,6 +446,18 @@ class PostTest < ActiveSupport::TestCase
     assert_nil result[:post_type]
   end
 
+  test "from_activitypub_object는 리모트 UUID post URL의 앞자리 숫자를 parent_id로 오인하지 않는다" do
+    hash = {
+      "id" => "https://hackers.pub/ap/notes/019f4f48-6021-76fa-8193-0dbf3f1a9f40",
+      "content" => "리모트 포스트에 대한 답글",
+      "inReplyTo" => "https://hackers.pub/ap/posts/019f4f28-dc1a-7d42-9e95-2ea7da505e1f"
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_nil result[:parent_id]
+    assert_nil result[:article_id]
+  end
+
   test "from_activitypub_object는 로컬 호스트를 부분문자열로 포함한 원격 호스트를 로컬로 오인하지 않는다" do
     local_host = Rails.application.routes.default_url_options[:host]
     hash = {
