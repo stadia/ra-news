@@ -91,15 +91,10 @@ class Post < ApplicationRecord
   # : (String) -> Hash[Symbol, untyped]
   private def self.reply_target_attributes: (String) -> Hash[Symbol, untyped]
 
-  # Must be an exact host match, not a substring. `include?` would treat a
-  # remote URL that merely embeds a local host (e.g.
-  # https://ruby-news.dev.attacker.example/articles/123 or
-  # https://not-ruby-news.dev/...) as local, re-triggering the numeric-id
-  # capture / FK violation this guard exists to prevent. The app serves both
-  # locale hosts (ruby-news.dev/.jp), so Hosts.local_host? — not the single
-  # default_url_options[:host] — is the source of truth; the configured host is
-  # a fallback for envs served elsewhere (test/preview on example.com). URI#host
-  # excludes any port, and parse errors on hostile input degrade to "not local".
+  # Exact host match, not substring: a URL merely embedding a local host
+  # (ruby-news.dev.attacker.example) must not count as local. The app serves
+  # both locale hosts, so Hosts.local_host? is authoritative; the configured
+  # routing host is a fallback for envs served elsewhere (test on example.com).
   # : (String) -> bool
   private def self.local_reply_target?: (String) -> bool
 

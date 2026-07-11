@@ -50,10 +50,7 @@ module Hosts
       LOCALE_FOR_HOST.fetch(request_host, :ko)
     end
 
-    # host(스킴 제외)가 이 앱이 서빙하는 로케일 호스트(.dev/.jp)인지 여부.
-    # 인바운드 연합 URL이 로컬 대상을 가리키는지 판정하는 등, 단일
-    # default_url_options[:host]로는 다중 로케일 호스트를 모두 인식하지 못하는
-    # 곳에서 사용한다.
+    # host(스킴 제외)가 이 앱의 로케일 호스트(.dev/.jp)인지 여부.
     #: (String) -> bool
     def local_host?(host)
       LOCALE_FOR_HOST.key?(host)

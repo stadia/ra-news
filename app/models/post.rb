@@ -266,12 +266,9 @@ class Post < ApplicationRecord
 
     #: (String) -> Hash[Symbol, untyped]
     def reply_target_attributes(in_reply_to)
-      # The /articles/(\d+) and /posts/(\d+) branches reference LOCAL records by
-      # numeric id, so they must only run for local-host URLs. A remote reply
-      # target whose id segment begins with digits (e.g. a hackers.pub article at
-      # /articles/019f...) would otherwise have those leading digits captured as a
-      # bogus local id, producing an article_id/parent_id that doesn't exist and a
-      # FK violation.
+      # Numeric-id branches only for local hosts: a remote UUID like
+      # /articles/019f... would otherwise capture leading digits as a bogus
+      # local id → FK violation.
       if local_reply_target?(in_reply_to) && (article_id = in_reply_to[%r{/articles/(\d+)}, 1])
         { article_id: article_id }
       elsif local_reply_target?(in_reply_to) && (post_id = in_reply_to[%r{/posts/(\d+)}, 1])
@@ -279,23 +276,16 @@ class Post < ApplicationRecord
       elsif (parent = Post.find_by(federated_url: in_reply_to))
         { parent_id: parent.id, article_id: parent.article_id }
       else
-        # inReplyTo was present but resolved to neither a local target nor a
-        # known federated_url. The reply is stored standalone (no parent/article);
-        # log it so these orphaned replies are observable rather than invisible.
+        # Unresolved inReplyTo: stored standalone — log so orphans are visible.
         logger.debug { "reply_target_attributes: unresolved inReplyTo #{in_reply_to.inspect}; storing reply without parent/article" }
         {}
       end
     end
 
-    # Must be an exact host match, not a substring. `include?` would treat a
-    # remote URL that merely embeds a local host (e.g.
-    # https://ruby-news.dev.attacker.example/articles/123 or
-    # https://not-ruby-news.dev/...) as local, re-triggering the numeric-id
-    # capture / FK violation this guard exists to prevent. The app serves both
-    # locale hosts (ruby-news.dev/.jp), so Hosts.local_host? — not the single
-    # default_url_options[:host] — is the source of truth; the configured host is
-    # a fallback for envs served elsewhere (test/preview on example.com). URI#host
-    # excludes any port, and parse errors on hostile input degrade to "not local".
+    # Exact host match, not substring: a URL merely embedding a local host
+    # (ruby-news.dev.attacker.example) must not count as local. The app serves
+    # both locale hosts, so Hosts.local_host? is authoritative; the configured
+    # routing host is a fallback for envs served elsewhere (test on example.com).
     #: (String) -> bool
     def local_reply_target?(in_reply_to)
       host = URI.parse(in_reply_to).host
@@ -305,10 +295,8 @@ class Post < ApplicationRecord
       configured_host = Rails.application.routes.default_url_options[:host]
       return host == configured_host if configured_host.present?
 
-      # host is not a known app host AND no routing host is configured — a
-      # misconfiguration (e.g. a job/console without the URL host initialized),
-      # not a normal "remote" case. Without this log a genuinely-local reply could
-      # be silently reclassified as remote and stored orphaned with no trace.
+      # Blank routing host is a misconfiguration; log so local replies aren't
+      # silently reclassified as remote and orphaned.
       logger.error { "local_reply_target? cannot classify #{in_reply_to.inspect}: #{host.inspect} is not a known app host and default_url_options[:host] is blank" }
       false
     rescue URI::InvalidURIError
