@@ -15,6 +15,9 @@ module OauthClient
     }
   }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
+  OPEN_TIMEOUT = 5 #: Integer
+  REQUEST_TIMEOUT = 10 #: Integer
+
   module_function
 
   def build(oauth_preference) #: (Preference oauth_preference) -> OAuth2::Client
@@ -30,7 +33,8 @@ module OauthClient
       oauth_preference.client_secret,
       site: oauth_preference.site || config[:default_site],
       authorize_url: config[:authorize_url],
-      token_url: config[:token_url]
+      token_url: config[:token_url],
+      connection_opts: { request: { open_timeout: OPEN_TIMEOUT, timeout: REQUEST_TIMEOUT } }
     )
   end
 

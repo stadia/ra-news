@@ -7,6 +7,9 @@ require "nokogiri"
 module RssClient
   module_function
 
+  OPEN_TIMEOUT = 5 #: Integer
+  REQUEST_TIMEOUT = 10 #: Integer
+
   # RSS/Atom 피드에서 자주 누락되는 XML 네임스페이스
   KNOWN_NAMESPACES = {
     "content" => "http://purl.org/rss/1.0/modules/content/",
@@ -24,9 +27,9 @@ module RssClient
 
   #: (String url) -> RSS::Rss | RSS::Atom::Feed | nil
   def feed(url)
-    response = Faraday.get(url)
+    response = Faraday.get(url) { |req| apply_timeouts(req) }
     if response.status.between?(300, 399) && response.headers["location"]
-      response = Faraday.get(response.headers["location"])
+      response = Faraday.get(response.headers["location"]) { |req| apply_timeouts(req) }
     end
     raise Faraday::ForbiddenError, response.body if response.status == 403
     raise Faraday::UnauthorizedError, response.body if response.status == 401
@@ -62,4 +65,11 @@ module RssClient
 
     doc.to_xml
   end
+
+  #: (untyped req) -> void
+  def apply_timeouts(req)
+    req.options.open_timeout = OPEN_TIMEOUT
+    req.options.timeout = REQUEST_TIMEOUT
+  end
+  private_class_method :apply_timeouts
 end

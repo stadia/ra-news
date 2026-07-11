@@ -6,6 +6,10 @@ class Gmail
 
   DEFAULT_GMAIL_ADDRESS: ::String
 
+  # mail gem은 Net::IMAP.new를 위치 인자로 하드코딩해 타임아웃 주입 훅이 없으므로
+  # Faraday 표준 패턴 대신 실제 IMAP 조회를 Timeout.timeout으로 감싼다.
+  NETWORK_TIMEOUT: Integer
+
   def initialize: () -> Gmail
 
   def fetch_emails: (?untyped options) -> untyped

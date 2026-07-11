@@ -5,6 +5,9 @@ module Rss
   module PageCrawler
     extend FunctionLogger
 
+    OPEN_TIMEOUT = 5 #: Integer
+    REQUEST_TIMEOUT = 10 #: Integer
+
     class << self
       include RssHelper
       include LinkHelper
@@ -37,7 +40,10 @@ module Rss
         url = attr[:url].to_s.strip
         return [] if url.blank? || url.downcase.end_with?("pdf")
 
-        response = Faraday.get(url)
+        response = Faraday.get(url) do |req|
+          req.options.open_timeout = OPEN_TIMEOUT
+          req.options.timeout = REQUEST_TIMEOUT
+        end
         return [] unless response.status.between?(200, 299)
 
         Nokogiri::HTML5(response.body).css("a[href]").filter_map do |a|

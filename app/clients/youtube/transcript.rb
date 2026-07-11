@@ -5,6 +5,9 @@ require "protobuf/message_type"
 
 module Youtube
   class Transcript
+    OPEN_TIMEOUT = 5 #: Integer
+    REQUEST_TIMEOUT = 10 #: Integer
+
     attr_reader :response
 
     #: (String video_id, ?lang: String) -> Hash
@@ -28,7 +31,7 @@ module Youtube
         params: params
       }
 
-      @response = Faraday.new(headers:) do
+      @response = Faraday.new(headers:, request: { open_timeout: OPEN_TIMEOUT, timeout: REQUEST_TIMEOUT }) do
         it.request :json
         it.response :json
       end.post(url) do

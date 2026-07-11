@@ -8,6 +8,8 @@ module Reddit
   SUBREDDIT = "ruby+rails"
   USER_AGENT = "ruby-news/1.0 (by /u/ruby-news-bot)"
   REDDIT_HOSTS = %w[reddit.com www.reddit.com old.reddit.com new.reddit.com redd.it].freeze
+  OPEN_TIMEOUT = 5 #: Integer
+  REQUEST_TIMEOUT = 10 #: Integer
 
   class << self
     # Reddit JSON API를 우선 사용하고, 인증 없는 JSON 요청이 차단되면 Atom feed로 fallback한다.
@@ -31,6 +33,7 @@ module Reddit
       response = Faraday.get("#{BASE_URL}/r/#{SUBREDDIT}/#{sort}.json") do |req|
         apply_headers(req)
         apply_params(req, sort:, period:, limit:)
+        apply_timeouts(req)
       end
 
       return nil unless response.success?
@@ -43,6 +46,7 @@ module Reddit
       response = Faraday.get("#{BASE_URL}/r/#{SUBREDDIT}/#{sort}.rss") do |req|
         apply_headers(req)
         apply_params(req, sort:, period:, limit:)
+        apply_timeouts(req)
         req.headers["Accept"] = "application/atom+xml, application/rss+xml, application/xml, text/xml"
       end
 
@@ -98,6 +102,12 @@ module Reddit
     def apply_params(req, sort:, period:, limit:)
       req.params["t"] = period.to_s if %i[top controversial].include?(sort)
       req.params["limit"] = limit
+    end
+
+    #: (untyped req) -> void
+    def apply_timeouts(req)
+      req.options.open_timeout = OPEN_TIMEOUT
+      req.options.timeout = REQUEST_TIMEOUT
     end
   end
 end
