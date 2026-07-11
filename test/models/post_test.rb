@@ -446,6 +446,18 @@ class PostTest < ActiveSupport::TestCase
     assert_nil result[:post_type]
   end
 
+  test "from_activitypub_object는 .jp 로케일 호스트의 article URL도 로컬로 인식한다" do
+    hash = {
+      "id" => "https://remote.example.com/notes/jp-reply",
+      "content" => "일본 로케일 기사 댓글",
+      "inReplyTo" => "https://ruby-news.jp/articles/#{@article.id}"
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal @article.id.to_s, result[:article_id]
+    assert_nil result[:parent_id]
+  end
+
   test "from_activitypub_object는 리모트 UUID post URL의 앞자리 숫자를 parent_id로 오인하지 않는다" do
     hash = {
       "id" => "https://hackers.pub/ap/notes/019f4f48-6021-76fa-8193-0dbf3f1a9f40",

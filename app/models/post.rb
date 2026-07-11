@@ -288,24 +288,29 @@ class Post < ApplicationRecord
     end
 
     # Must be an exact host match, not a substring. `include?` would treat a
-    # remote URL that merely embeds the local host (e.g.
+    # remote URL that merely embeds a local host (e.g.
     # https://ruby-news.dev.attacker.example/articles/123 or
     # https://not-ruby-news.dev/...) as local, re-triggering the numeric-id
-    # capture / FK violation this guard exists to prevent. URI#host excludes any
-    # port, and parse errors on hostile input degrade to "not local".
+    # capture / FK violation this guard exists to prevent. The app serves both
+    # locale hosts (ruby-news.dev/.jp), so Hosts.local_host? — not the single
+    # default_url_options[:host] — is the source of truth; the configured host is
+    # a fallback for envs served elsewhere (test/preview on example.com). URI#host
+    # excludes any port, and parse errors on hostile input degrade to "not local".
     #: (String) -> bool
     def local_reply_target?(in_reply_to)
-      local_host = Rails.application.routes.default_url_options[:host]
-      if local_host.blank?
-        # A blank host is a misconfiguration (e.g. a job/console without the URL
-        # host initialized), not a normal "remote" case. Without this log, every
-        # genuinely-local reply would be silently reclassified as remote and
-        # stored orphaned (no parent/article) with no trace.
-        logger.error { "local_reply_target? cannot classify #{in_reply_to.inspect}: default_url_options[:host] is blank" }
-        return false
-      end
+      host = URI.parse(in_reply_to).host
+      return false if host.blank?
+      return true if Hosts.local_host?(host)
 
-      URI.parse(in_reply_to).host == local_host
+      configured_host = Rails.application.routes.default_url_options[:host]
+      return host == configured_host if configured_host.present?
+
+      # host is not a known app host AND no routing host is configured — a
+      # misconfiguration (e.g. a job/console without the URL host initialized),
+      # not a normal "remote" case. Without this log a genuinely-local reply could
+      # be silently reclassified as remote and stored orphaned with no trace.
+      logger.error { "local_reply_target? cannot classify #{in_reply_to.inspect}: #{host.inspect} is not a known app host and default_url_options[:host] is blank" }
+      false
     rescue URI::InvalidURIError
       false
     end
