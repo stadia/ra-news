@@ -91,6 +91,12 @@ class Post < ApplicationRecord
   # : (String) -> Hash[Symbol, untyped]
   private def self.reply_target_attributes: (String) -> Hash[Symbol, untyped]
 
+  # Must be an exact host match, not a substring. `include?` would treat a
+  # remote URL that merely embeds the local host (e.g.
+  # https://ruby-news.dev.attacker.example/articles/123 or
+  # https://not-ruby-news.dev/...) as local, re-triggering the numeric-id
+  # capture / FK violation this guard exists to prevent. URI#host excludes any
+  # port, and parse errors on hostile input degrade to "not local".
   # : (String) -> bool
   private def self.local_reply_target?: (String) -> bool
 

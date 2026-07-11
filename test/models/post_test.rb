@@ -392,7 +392,7 @@ class PostTest < ActiveSupport::TestCase
     hash = {
       "id" => "https://remote.example.com/notes/999",
       "content" => "로컬 답글",
-      "inReplyTo" => "http://www.example.com/posts/#{@root_post.id}"
+      "inReplyTo" => "http://example.com/posts/#{@root_post.id}"
     }
     result = Post.from_activitypub_object(hash)
 
@@ -403,7 +403,7 @@ class PostTest < ActiveSupport::TestCase
     hash = {
       "id" => "https://remote.example.com/notes/1000",
       "content" => "기사 댓글에 대한 답글",
-      "inReplyTo" => "http://www.example.com/posts/#{@comment_post.id}"
+      "inReplyTo" => "http://example.com/posts/#{@comment_post.id}"
     }
     result = Post.from_activitypub_object(hash)
 
@@ -426,7 +426,7 @@ class PostTest < ActiveSupport::TestCase
     hash = {
       "id" => "https://remote.example.com/notes/art1",
       "content" => "기사 댓글",
-      "inReplyTo" => "http://www.example.com/articles/#{@article.id}"
+      "inReplyTo" => "http://example.com/articles/#{@article.id}"
     }
     result = Post.from_activitypub_object(hash)
 
@@ -444,6 +444,19 @@ class PostTest < ActiveSupport::TestCase
 
     assert_nil result[:article_id]
     assert_nil result[:post_type]
+  end
+
+  test "from_activitypub_object는 로컬 호스트를 부분문자열로 포함한 원격 호스트를 로컬로 오인하지 않는다" do
+    local_host = Rails.application.routes.default_url_options[:host]
+    hash = {
+      "id" => "https://remote.example.com/notes/spoof",
+      "content" => "스푸핑 호스트 답글",
+      "inReplyTo" => "https://#{local_host}.attacker.example/articles/#{@article.id}"
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_nil result[:article_id]
+    assert_nil result[:parent_id]
   end
 
   test "from_activitypub_object는 리모트 article URL이 미러링된 post를 가리키면 parent_id로 연결한다" do

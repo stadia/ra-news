@@ -282,10 +282,20 @@ class Post < ApplicationRecord
       end
     end
 
+    # Must be an exact host match, not a substring. `include?` would treat a
+    # remote URL that merely embeds the local host (e.g.
+    # https://ruby-news.dev.attacker.example/articles/123 or
+    # https://not-ruby-news.dev/...) as local, re-triggering the numeric-id
+    # capture / FK violation this guard exists to prevent. URI#host excludes any
+    # port, and parse errors on hostile input degrade to "not local".
     #: (String) -> bool
     def local_reply_target?(in_reply_to)
       local_host = Rails.application.routes.default_url_options[:host]
-      local_host.present? && in_reply_to.include?(local_host)
+      return false if local_host.blank?
+
+      URI.parse(in_reply_to).host == local_host
+    rescue URI::InvalidURIError
+      false
     end
 
     #: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
