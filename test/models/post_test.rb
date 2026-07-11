@@ -434,6 +434,35 @@ class PostTest < ActiveSupport::TestCase
     assert_nil result[:parent_id]
   end
 
+  test "from_activitypub_object는 리모트 UUID article URL의 앞자리 숫자를 article_id로 오인하지 않는다" do
+    hash = {
+      "id" => "https://hackers.pub/ap/notes/019f4f48-6021-76fa-8193-0dbf3f1a9f40",
+      "content" => "리모트 기사에 대한 답글",
+      "inReplyTo" => "https://hackers.pub/ap/articles/019f4f28-dc1a-7d42-9e95-2ea7da505e1f"
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_nil result[:article_id]
+    assert_nil result[:post_type]
+  end
+
+  test "from_activitypub_object는 리모트 article URL이 미러링된 post를 가리키면 parent_id로 연결한다" do
+    mirrored = Post.create!(
+      body: "미러링된 리모트 기사",
+      federails_actor: federails_actors(:john_actor),
+      federated_url: "https://hackers.pub/ap/articles/019f4f28-dc1a-7d42-9e95-2ea7da505e1f"
+    )
+    hash = {
+      "id" => "https://hackers.pub/ap/notes/019f4f48-6021-76fa-8193-0dbf3f1a9f40",
+      "content" => "리모트 기사에 대한 답글",
+      "inReplyTo" => "https://hackers.pub/ap/articles/019f4f28-dc1a-7d42-9e95-2ea7da505e1f"
+    }
+    result = Post.from_activitypub_object(hash)
+
+    assert_equal mirrored.id, result[:parent_id]
+    assert_nil result[:article_id]
+  end
+
   test "from_activitypub_object는 contentMap 본문을 우선 사용한다" do
     hash = {
       "id" => "https://remote.example.com/notes/with-content-map",

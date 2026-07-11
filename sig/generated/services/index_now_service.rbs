@@ -2,10 +2,19 @@
 
 # IndexNow API로 URL 리스트를 전송한다.
 # 호스트별 keyLocation(https://<host>/<key>.txt)를 포함해 POST.
-# 성공/실패 모두 로그만 남기고 raise하지 않는다(비재시도 정책).
-class IndexNowService
+# 성공/실패를 Dry::Monads::Result로 반환한다(비재시도 정책 — raise하지 않고 Failure로 전달).
+# 호출 측은 result.success? / result.failure로 받되, 로그는 이 서비스가 남긴다.
+class IndexNowService < OperationService
   ENDPOINT: ::String
 
-  # : (host: String, urls: Array[String]) -> void
-  def call: (host: String, urls: Array[String]) -> void
+  # : (host: String, urls: Array[String]) -> Dry::Monads::Result
+  def call: (host: String, urls: Array[String]) -> Dry::Monads::Result
+
+  # Dry::Operation의 call에서 return Failure(...)를 직접 반환하면 Success(Failure(...))로 감싸지므로
+  # guard clause는 반드시 step으로 호출되는 별도 메서드에 위치시킨다.
+  # : (String host, Array[String] urls) -> Dry::Monads::Result
+  def validate: (String host, Array[String] urls) -> Dry::Monads::Result
+
+  # : (String host, Array[String] urls) -> Dry::Monads::Result
+  def ping: (String host, Array[String] urls) -> Dry::Monads::Result
 end

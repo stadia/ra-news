@@ -266,15 +266,26 @@ class Post < ApplicationRecord
 
     #: (String) -> Hash[Symbol, untyped]
     def reply_target_attributes(in_reply_to)
-      if (article_id = in_reply_to[%r{/articles/(\d+)}, 1])
+      # The /articles/(\d+) and /posts/(\d+) branches reference LOCAL records by
+      # numeric id, so they must only run for local-host URLs. A remote reply
+      # target (e.g. a hackers.pub article at /articles/<uuid>) would otherwise
+      # have the leading digits of its UUID captured as a bogus local id,
+      # producing an article_id/parent_id that doesn't exist and a FK violation.
+      if local_reply_target?(in_reply_to) && (article_id = in_reply_to[%r{/articles/(\d+)}, 1])
         { article_id: article_id }
-      elsif (post_id = in_reply_to[%r{/posts/(\d+)}, 1])
+      elsif local_reply_target?(in_reply_to) && (post_id = in_reply_to[%r{/posts/(\d+)}, 1])
         { parent_id: post_id, article_id: Post.where(id: post_id).pick(:article_id) }
       elsif (parent = Post.find_by(federated_url: in_reply_to))
         { parent_id: parent.id, article_id: parent.article_id }
       else
         {}
       end
+    end
+
+    #: (String) -> bool
+    def local_reply_target?(in_reply_to)
+      local_host = Rails.application.routes.default_url_options[:host]
+      local_host.present? && in_reply_to.include?(local_host)
     end
 
     #: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
@@ -299,8 +310,7 @@ class Post < ApplicationRecord
       return true if in_reply_to.blank?
 
       # inReplyTo가 로컬 post 또는 article을 가리키면 수락
-      local_host = Rails.application.routes.default_url_options[:host]
-      if local_host.present? && in_reply_to.include?(local_host)
+      if local_reply_target?(in_reply_to)
         return true if in_reply_to.include?("/posts/") || in_reply_to.include?("/articles/")
       end
 
