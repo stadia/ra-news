@@ -1,0 +1,8 @@
+# Generated from app/models/profiles/polymorphic_activity.rb with RBS::Inline
+
+module Profiles
+  module PolymorphicActivity
+    # : (Array[[String, Integer]]) -> Array[Article | Post]
+    def self.resolve: (Array[[ String, Integer ]]) -> Array[Article | Post]
+  end
+end

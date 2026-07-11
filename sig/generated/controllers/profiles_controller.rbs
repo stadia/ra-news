@@ -25,6 +25,12 @@ class ProfilesController < ApplicationController
 
   def render_activity_page: (untyped tab) -> untyped
 
+  # : (Symbol) -> Views::Base
+  def activity_list_component: (Symbol) -> Views::Base
+
+  # : () -> Hash[Symbol, untyped]
+  def post_list_args: () -> Hash[Symbol, untyped]
+
   def render_show_with_activity: (active_tab: untyped) -> untyped
 
   def require_own_profile: () -> untyped
