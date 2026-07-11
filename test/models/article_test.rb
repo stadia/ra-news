@@ -513,7 +513,15 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "user_name은 bot 사용자인 경우 site 정보를 반환해야 한다" do
-    assert_equal "Ruby Weekly", @article.user_name
+    # 전제 명시: user_name 이 site 이름으로 갈리는 이유는 작성자가 bot 롤이기 때문이다.
+    assert @article.user.has_role?(:bot), "전제: 작성자가 bot 이어야 site 이름으로 폴백한다"
+
+    # 기대값은 픽스처에서 파생해 "Ruby Weekly" 하드코딩 의존을 줄인다.
+    expected_site_name = @article.site.name
+
+    assert_equal "Ruby Weekly", expected_site_name, "전제: ruby_weekly 픽스처의 site 이름"
+
+    assert_equal expected_site_name, @article.user_name
   end
 
   test "user_name은 bot 사용자이면서 site가 있으면 site 정보를 반환해야 한다" do
