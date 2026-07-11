@@ -91,6 +91,13 @@ class Post < ApplicationRecord
   # : (String) -> Hash[Symbol, untyped]
   private def self.reply_target_attributes: (String) -> Hash[Symbol, untyped]
 
+  # Exact host match, not substring: a URL merely embedding a local host
+  # (ruby-news.dev.attacker.example) must not count as local. The app serves
+  # both locale hosts, so Hosts.local_host? is authoritative; the configured
+  # routing host is a fallback for envs served elsewhere (test on example.com).
+  # : (String) -> bool
+  private def self.local_reply_target?: (String) -> bool
+
   # : (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
   private def self.extract_body_from_activitypub_object: (Hash[String, untyped], attachments: Array[Hash[String, untyped]]) -> String
 

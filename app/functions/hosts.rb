@@ -49,5 +49,11 @@ module Hosts
     def locale_for_host(request_host)
       LOCALE_FOR_HOST.fetch(request_host, :ko)
     end
+
+    # host(스킴 제외)가 이 앱의 로케일 호스트(.dev/.jp)인지 여부.
+    #: (String) -> bool
+    def local_host?(host)
+      LOCALE_FOR_HOST.key?(host)
+    end
   end
 end
