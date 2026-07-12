@@ -1,10 +1,6 @@
 # Generated from app/clients/mastodon_client.rb with RBS::Inline
 
 class MastodonClient
-  OPEN_TIMEOUT: Integer
-
-  REQUEST_TIMEOUT: Integer
-
   attr_reader client: untyped
 
   def initialize: () -> untyped

@@ -2,10 +2,6 @@
 
 module Youtube
   class Transcript
-    OPEN_TIMEOUT: Integer
-
-    REQUEST_TIMEOUT: Integer
-
     attr_reader response: untyped
 
     # : (String video_id, ?lang: String) -> Hash

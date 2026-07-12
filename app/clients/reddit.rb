@@ -8,8 +8,6 @@ module Reddit
   SUBREDDIT = "ruby+rails"
   USER_AGENT = "ruby-news/1.0 (by /u/ruby-news-bot)"
   REDDIT_HOSTS = %w[reddit.com www.reddit.com old.reddit.com new.reddit.com redd.it].freeze
-  OPEN_TIMEOUT = 5 #: Integer
-  REQUEST_TIMEOUT = 10 #: Integer
 
   class << self
     # Reddit JSON API를 우선 사용하고, 인증 없는 JSON 요청이 차단되면 Atom feed로 fallback한다.
@@ -106,8 +104,8 @@ module Reddit
 
     #: (untyped req) -> void
     def apply_timeouts(req)
-      req.options.open_timeout = OPEN_TIMEOUT
-      req.options.timeout = REQUEST_TIMEOUT
+      req.options.open_timeout = HttpTimeouts::OPEN
+      req.options.timeout = HttpTimeouts::REQUEST
     end
   end
 end

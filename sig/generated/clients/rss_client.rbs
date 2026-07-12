@@ -1,10 +1,6 @@
 # Generated from app/clients/rss_client.rb with RBS::Inline
 
 module RssClient
-  OPEN_TIMEOUT: Integer
-
-  REQUEST_TIMEOUT: Integer
-
   # RSS/Atom 피드에서 자주 누락되는 XML 네임스페이스
   KNOWN_NAMESPACES: untyped
 

@@ -7,9 +7,6 @@ require "nokogiri"
 module RssClient
   module_function
 
-  OPEN_TIMEOUT = 5 #: Integer
-  REQUEST_TIMEOUT = 10 #: Integer
-
   # RSS/Atom 피드에서 자주 누락되는 XML 네임스페이스
   KNOWN_NAMESPACES = {
     "content" => "http://purl.org/rss/1.0/modules/content/",
@@ -70,8 +67,8 @@ module RssClient
 
   #: (untyped req) -> void
   def apply_timeouts(req)
-    req.options.open_timeout = OPEN_TIMEOUT
-    req.options.timeout = REQUEST_TIMEOUT
+    req.options.open_timeout = HttpTimeouts::OPEN
+    req.options.timeout = HttpTimeouts::REQUEST
   end
   private_class_method :apply_timeouts
 end

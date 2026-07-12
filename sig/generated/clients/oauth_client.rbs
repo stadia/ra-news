@@ -3,10 +3,6 @@
 module OauthClient
   OAUTH_CONFIG: Hash[Symbol, Hash[Symbol, String]]
 
-  OPEN_TIMEOUT: Integer
-
-  REQUEST_TIMEOUT: Integer
-
   def self?.build: (untyped oauth_preference) -> untyped
 
   def self?.extract_provider_from_preference_name: (untyped name) -> untyped

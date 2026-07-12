@@ -9,10 +9,6 @@ module Reddit
 
   REDDIT_HOSTS: untyped
 
-  OPEN_TIMEOUT: Integer
-
-  REQUEST_TIMEOUT: Integer
-
   # Reddit JSON API를 우선 사용하고, 인증 없는 JSON 요청이 차단되면 Atom feed로 fallback한다.
   #
   # sort: :hot, :new, :top, :rising, :controversial

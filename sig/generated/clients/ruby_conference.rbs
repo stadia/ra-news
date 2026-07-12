@@ -3,10 +3,6 @@
 module RubyConference
   BASE_URL: ::String
 
-  OPEN_TIMEOUT: Integer
-
-  REQUEST_TIMEOUT: Integer
-
   def self?.conferences: () -> Array[untyped]
 
   def self?.conferences_cached: () -> Array[untyped]

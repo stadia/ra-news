@@ -5,8 +5,6 @@ module HackerNews
   module_function
 
   BASE_URL = "https://hacker-news.firebaseio.com/v0"
-  OPEN_TIMEOUT = 5 #: Integer
-  REQUEST_TIMEOUT = 10 #: Integer
 
   def top_stories
     fetch_json("#{BASE_URL}/topstories.json")
@@ -26,8 +24,8 @@ module HackerNews
 
   def fetch_json(url)
     response = Faraday.get(url) do |req|
-      req.options.open_timeout = OPEN_TIMEOUT
-      req.options.timeout = REQUEST_TIMEOUT
+      req.options.open_timeout = HttpTimeouts::OPEN
+      req.options.timeout = HttpTimeouts::REQUEST
     end
     return nil unless response&.success?
 

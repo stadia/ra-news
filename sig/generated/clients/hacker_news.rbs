@@ -3,10 +3,6 @@
 module HackerNews
   BASE_URL: ::String
 
-  OPEN_TIMEOUT: Integer
-
-  REQUEST_TIMEOUT: Integer
-
   def self?.top_stories: () -> untyped
 
   def self?.new_stories: () -> untyped

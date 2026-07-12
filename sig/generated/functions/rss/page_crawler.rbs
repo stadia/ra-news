@@ -4,10 +4,6 @@ module Rss
   module PageCrawler
     extend FunctionLogger
 
-    OPEN_TIMEOUT: Integer
-
-    REQUEST_TIMEOUT: Integer
-
     include RssHelper
 
     include LinkHelper
