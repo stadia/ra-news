@@ -8,6 +8,9 @@ class Gmail
 
   # mail gem은 Net::IMAP.new를 위치 인자로 하드코딩해 타임아웃 주입 훅이 없으므로
   # Faraday 표준 패턴 대신 실제 IMAP 조회를 Timeout.timeout으로 감싼다.
+  # 주의: Timeout.timeout은 임의 지점에서 스레드를 인터럽트해 소켓을 정리하지 못할 수
+  # 있으나, gem이 소켓 레벨 타임아웃 훅을 주지 않아 차선책으로 사용한다.
+  # 15초 = open(5)+read(10)에 대응하는 단일 wall-clock 예산(open/read 구분 불가).
   NETWORK_TIMEOUT: Integer
 
   def initialize: () -> Gmail
