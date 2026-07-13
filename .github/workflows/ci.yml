@@ -89,6 +89,17 @@ jobs:
           TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/ra-news_test
         run: bin/rails db:create db:migrate
 
+      # RSpec를 먼저 실행해 커버리지를 계측하고, 이어서 Minitest를 실행한다.
+      # 두 스텝은 같은 job의 동일한 coverage/ 디렉토리를 공유하므로 결과가 병합되며,
+      # Minitest의 at_exit(persist_result!)가 마지막에 돌아 병합된 최종 스냅샷을 저장한다.
+      - name: Run RSpec with coverage
+        env:
+          RAILS_ENV: test
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/ra-news_test
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          PGGSSENCMODE: disable
+        run: bundle exec rspec
+
       - name: Run tests with coverage
         env:
           RAILS_ENV: test
