@@ -38,4 +38,7 @@ module Reddit
 
   # : (untyped req, sort: Symbol, period: Symbol, limit: Integer) -> void
   private def self.apply_params: (untyped req, sort: Symbol, period: Symbol, limit: Integer) -> void
+
+  # : (untyped req) -> void
+  private def self.apply_timeouts: (untyped req) -> void
 end

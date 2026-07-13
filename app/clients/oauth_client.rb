@@ -30,7 +30,8 @@ module OauthClient
       oauth_preference.client_secret,
       site: oauth_preference.site || config[:default_site],
       authorize_url: config[:authorize_url],
-      token_url: config[:token_url]
+      token_url: config[:token_url],
+      connection_opts: { request: { open_timeout: HttpTimeouts::OPEN, timeout: HttpTimeouts::REQUEST } }
     )
   end
 

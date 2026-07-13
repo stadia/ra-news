@@ -12,4 +12,7 @@ module RssClient
 
   # : (String xml) -> String
   def self?.repair_xml: (String xml) -> String
+
+  # : (untyped req) -> void
+  def self?.apply_timeouts: (untyped req) -> void
 end

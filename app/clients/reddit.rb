@@ -31,6 +31,7 @@ module Reddit
       response = Faraday.get("#{BASE_URL}/r/#{SUBREDDIT}/#{sort}.json") do |req|
         apply_headers(req)
         apply_params(req, sort:, period:, limit:)
+        apply_timeouts(req)
       end
 
       return nil unless response.success?
@@ -43,6 +44,7 @@ module Reddit
       response = Faraday.get("#{BASE_URL}/r/#{SUBREDDIT}/#{sort}.rss") do |req|
         apply_headers(req)
         apply_params(req, sort:, period:, limit:)
+        apply_timeouts(req)
         req.headers["Accept"] = "application/atom+xml, application/rss+xml, application/xml, text/xml"
       end
 
@@ -98,6 +100,12 @@ module Reddit
     def apply_params(req, sort:, period:, limit:)
       req.params["t"] = period.to_s if %i[top controversial].include?(sort)
       req.params["limit"] = limit
+    end
+
+    #: (untyped req) -> void
+    def apply_timeouts(req)
+      req.options.open_timeout = HttpTimeouts::OPEN
+      req.options.timeout = HttpTimeouts::REQUEST
     end
   end
 end

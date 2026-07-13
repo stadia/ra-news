@@ -1,10 +1,18 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
+require "timeout"
+
 class Gmail
   # Constants for default email and imap
   DEFAULT_IMAP_ADDRESS = "imap.gmail.com"
   DEFAULT_GMAIL_ADDRESS = "admin@example.com"
+  # mail gem은 Net::IMAP.new를 위치 인자로 하드코딩해 타임아웃 주입 훅이 없으므로
+  # Faraday 표준 패턴 대신 실제 IMAP 조회를 Timeout.timeout으로 감싼다.
+  # 주의: Timeout.timeout은 임의 지점에서 스레드를 인터럽트해 소켓을 정리하지 못할 수
+  # 있으나, gem이 소켓 레벨 타임아웃 훅을 주지 않아 차선책으로 사용한다.
+  # 15초 = open(5)+read(10)에 대응하는 단일 wall-clock 예산(open/read 구분 불가).
+  NETWORK_TIMEOUT = 15 #: Integer
 
   def initialize #: Gmail
     password = ENV["MAIL_PASSWORD"]
@@ -32,7 +40,7 @@ class Gmail
     end
     logger.debug "IMAP 검색 쿼리: #{query}"
 
-    emails = Mail.find(order: :desc, keys: query)
+    emails = Timeout.timeout(NETWORK_TIMEOUT) { Mail.find(order: :desc, keys: query) }
     logger.info "검색된 이메일 수: #{emails.length}"
     emails
   end
