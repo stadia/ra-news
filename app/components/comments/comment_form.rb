@@ -12,11 +12,8 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def view_template
-    # id를 기사별로 스코프한다: "new_comment" 하나로 고정했다면 data-turbo-permanent가
-    # 다른 기사로 넘어가도 이전 기사에서 쓰다 만 댓글 내용을 그대로 남겨버린다.
-    # (post_form.rb와 동일한 이유로 permanent 처리 — turbo:before-cache에서 lexxy가
-    # 에디터 DOM을 지우고 캐시하는 문제. 기사 페이지를 재방문(뒤로가기 등)할 때 같은
-    # 기사라면 작성 중이던 댓글이 유지되고, 다른 기사라면 id가 달라 보존되지 않는다.)
+    # permanent 처리 이유는 post_form.rb 참고. id를 기사별로 스코프해야 다른
+    # 기사로 넘어갈 때 이전 기사의 쓰다 만 댓글이 남지 않는다.
     turbo_frame_tag("new_comment_#{@article.id}", data: { turbo_permanent: true }) do
       render RubyUI::Card.new(
         class: "bg-surface-muted border-border-muted p-6",

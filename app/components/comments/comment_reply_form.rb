@@ -14,8 +14,7 @@ class Components::Comments::CommentReplyForm < Components::Base
   end
 
   def view_template
-    # id가 댓글마다 고유해서 안전하게 permanent 처리 가능(post_form.rb 주석 참고 —
-    # turbo:before-cache에서 lexxy가 에디터 DOM을 지우고 캐시하는 문제 방지).
+    # permanent 처리 이유는 post_form.rb 참고. id가 댓글마다 고유해 안전하다.
     turbo_frame_tag(
       "reply_form_#{@parent_comment.id}",
       class: (@visible ? "" : "hidden"),

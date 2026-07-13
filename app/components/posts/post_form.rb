@@ -16,11 +16,8 @@ class Components::Posts::PostForm < Components::Base
         controller: "character-counter post-form",
         character_counter_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
         action: "turbo:submit-end->post-form#reset post-form:reply@window->post-form#activateReply",
-        # lexxy는 turbo:before-cache에서 에디터 DOM을 지우고 캐시한다(data-turbo-permanent
-        # 조상이 없으면). 그 상태 그대로 캐시 스냅샷이 저장되므로, /feed를 재방문(뒤로가기 등)하면
-        # Turbo가 그 "비워진" 스냅샷을 프리뷰로 먼저 보여주고 새 응답으로 교체하기까지 에디터가
-        # 순간적으로 빈 화면으로 보인다. id가 페이지 간 고정이므로 data-turbo-permanent로 표시해
-        # Turbo가 재렌더 시 이 엘리먼트를 그대로 보존하게 한다 — lexxy도 리셋을 건너뛴다.
+        # lexxy가 turbo:before-cache에서 에디터 DOM을 지우고 캐시해, /feed 재방문 시
+        # 그 빈 스냅샷이 잠깐 보인다. id가 고정이라 permanent로 보존해 막는다.
         turbo_permanent: true
       }
     ) do
