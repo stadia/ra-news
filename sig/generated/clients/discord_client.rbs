@@ -10,10 +10,6 @@ class DiscordClient
 
   API_BASE: String
 
-  OPEN_TIMEOUT: Integer
-
-  REQUEST_TIMEOUT: Integer
-
   MANAGE_WEBHOOKS_PERMISSION: Integer
 
   # : (DiscordChannel channel) -> void

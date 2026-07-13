@@ -19,8 +19,10 @@ RSpec.describe "Articles show noindex / hreflang by translation availability", t
     body.scan(%r{<link rel="alternate" hreflang="([^"]+)" href}).flatten
   end
 
-  context "일본어 번역이 없는 기사 (title_ja 없음)" do
-    before { article.update!(title_ja: nil) }
+  context "일본어 번역이 없는 기사 (summary_key_ja 없음)" do
+    # 번역 완료 신호는 summary_key_ja(번역 파이프라인이 세팅). title_ja는
+    # 일본어 원문 제목으로 미리 채워질 수 있어 신호로 쓰지 않는다(#809).
+    before { article.update!(title_ja: nil, summary_key_ja: nil) }
 
     it ".jp 호스트에서 noindex 이고 ja hreflang alternate 가 없다" do
       host! "ruby-news.jp"
@@ -43,8 +45,8 @@ RSpec.describe "Articles show noindex / hreflang by translation availability", t
     end
   end
 
-  context "일본어 번역이 있는 기사 (title_ja 존재)" do
-    before { article.update!(title_ja: "Ruby 3.4 の新機能") }
+  context "일본어 번역이 있는 기사 (summary_key_ja 존재)" do
+    before { article.update!(title_ja: "Ruby 3.4 の新機能", summary_key_ja: [ "Ruby 3.4 の主な改善点" ]) }
 
     it ".jp 호스트에서 색인 가능하고 ja/ko hreflang 을 모두 광고한다" do
       host! "ruby-news.jp"

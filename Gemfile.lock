@@ -932,7 +932,7 @@ DEPENDENCIES
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
   ostruct
-  pagy (~> 43.5)
+  pagy (~> 43.6)
   pg (~> 1.6)
   pg_query
   pg_search

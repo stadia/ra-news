@@ -28,7 +28,7 @@ module Youtube
         params: params
       }
 
-      @response = Faraday.new(headers:) do
+      @response = Faraday.new(headers:, request: { open_timeout: HttpTimeouts::OPEN, timeout: HttpTimeouts::REQUEST }) do
         it.request :json
         it.response :json
       end.post(url) do

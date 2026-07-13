@@ -24,7 +24,7 @@ class HackerNewsSiteJob < ApplicationJob
       url = item["url"]
       begin
         parsed_url = URI.parse(url)
-      rescue => e
+      rescue URI::InvalidURIError => e
         logger.error "Failed to parse URL #{url}: #{e.message}"
         next
       end
