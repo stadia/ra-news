@@ -42,27 +42,28 @@ class Components::Base < Phlex::HTML
   #     응답은 layout head를 거치지 않아 누락된다. 컴포넌트에 심으면 렌더 경로와
   #     무관하게 항상 함께 나간다.
   #
-  # modulepreload: 브라우저가 이 <link>를 파싱하는 즉시 lexxy.js를 병렬로 받아
+  # modulepreload: 브라우저가 이 <link>를 파싱하는 즉시 lexxy.min.js를 병렬로 받아
   #   모듈 그래프에 캐시한다. application.js의 turbo:load 후 import("lexxy")는
   #   같은 URL을 요청하므로 네트워크 왕복 없이 캐시에서 즉시 해석된다 → 에디터가
   #   뒤늦게 나타나는 지연 제거. import 로직 자체는 유지되므로 Sentry 에러 핸들링과
   #   Turbo 네비게이션 모듈 캐시 동작이 보존된다.
   #
   # stylesheet: 에디터 페이지에서는 동기 로드로 FOUC를 없앤다. 에디터 없는 페이지는
-  #   이 힌트가 전혀 나가지 않으므로 전 페이지 917KB/CSS 비용을 지지 않는다.
+  #   이 힌트가 전혀 나가지 않으므로 전 페이지 604KB/CSS 비용을 지지 않는다.
   #   data-turbo-track은 붙이지 않는다(layout.rb render_lexxy_stylesheet 주석 참고:
   #   rel 전환/방문 비교로 인한 전체 리로드 함정). 에셋 갱신 감지는 app.css가 담당.
   #
-  # importmap의 bare specifier "lexxy"는 asset_path("lexxy.js")와 동일한 digested
-  # URL로 매핑되므로 modulepreload href와 import() 대상이 정확히 일치한다.
-  # 한 페이지에 lexxy 에디터 폼이 여러 번 렌더될 수 있어(예: 댓글마다 반복되는
-  # reply form) 요청당 한 번만 태그를 내보내도록 컨트롤러 인스턴스에 플래그를 둔다.
+  # importmap의 bare specifier "lexxy"는 asset_path("lexxy.min.js")와 동일한
+  # digested URL로 매핑되므로(config/importmap.rb 참고) modulepreload href와
+  # import() 대상이 정확히 일치한다. 한 페이지에 lexxy 에디터 폼이 여러 번
+  # 렌더될 수 있어(예: 댓글마다 반복되는 reply form) 요청당 한 번만 태그를
+  # 내보내도록 컨트롤러 인스턴스에 플래그를 둔다.
   def lexxy_editor_asset_tags
     controller = helpers.controller
     return if controller.instance_variable_get(:@lexxy_editor_assets_rendered)
 
     controller.instance_variable_set(:@lexxy_editor_assets_rendered, true)
-    js_href = helpers.asset_path("lexxy.js")
+    js_href = helpers.asset_path("lexxy.min.js")
     css_href = helpers.stylesheet_path("lexxy")
     link(rel: "modulepreload", href: js_href)
     link(rel: "stylesheet", href: css_href)

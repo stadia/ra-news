@@ -24,8 +24,10 @@ pin "embla-carousel", preload: false # @8.6.0
 # preload: false 유지(전 페이지 modulepreload 금지). 에디터가 있는 페이지에서만
 # 폼 컴포넌트(Components::Base#lexxy_editor_asset_tags)가 페이지별
 # <link rel="modulepreload">를 심어 eager 로드한다 — 여기를 preload: true로
-# 바꾸면 에디터 없는 페이지에서도 917KB를 modulepreload하게 되므로 금지.
-pin "lexxy", to: "lexxy.js", preload: false
+# 바꾸면 에디터 없는 페이지에서도 604KB를 modulepreload하게 되므로 금지.
+# lexxy.js(비압축, 917KB)가 아니라 lexxy.min.js(604KB)를 명시적으로 지정한다 —
+# turbo/stimulus 등 다른 pin은 전부 .min.js를 쓰는데 lexxy만 빠져 있던 기존 버그.
+pin "lexxy", to: "lexxy.min.js", preload: false
 pin "@rails/activestorage", to: "activestorage.esm.js"
 pin "chart.js", preload: false # @4.5.1
 pin "@kurkle/color", to: "@kurkle--color.js", preload: false # @0.3.4
