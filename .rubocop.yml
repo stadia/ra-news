@@ -36,6 +36,8 @@ Metrics/ClassLength:
     - "spec/**/*"
     # 대형 도메인 모델(연관/검색/federation/썸네일 등 다수 책임) — 길이 예외.
     - "app/models/article.rb"
+    # 전역 레이아웃(head/CSP/asset preload/PWA 등 다수 책임) — 기존 부채, 길이 예외.
+    - "app/components/layout.rb"
 
 Metrics/ModuleLength:
   Enabled: true

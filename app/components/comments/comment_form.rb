@@ -70,6 +70,7 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def body_field(f)
+    lexxy_editor_asset_tags
     render RubyUI::FormField.new do
       render RubyUI::FormFieldLabel.new(for: :comment_body) { Post.human_attribute_name(:body) }
       raw(
@@ -110,5 +111,4 @@ class Components::Comments::CommentForm < Components::Base
       ) { t("comments.comment_form.submit") }
     end
   end
-
 end

@@ -1,4 +1,5 @@
 # Pin npm packages by running ./bin/importmap
+# rbs_inline: enabled
 
 pin "application"
 pin "@hotwired/turbo-rails", to: "turbo.min.js"
@@ -20,6 +21,10 @@ pin "@floating-ui/core", to: "@floating-ui--core.js", preload: false # @1.7.5
 pin "@floating-ui/utils", to: "@floating-ui--utils.js", preload: false # @0.2.11
 pin "@floating-ui/utils/dom", to: "@floating-ui--utils--dom.js", preload: false # @0.2.11
 pin "embla-carousel", preload: false # @8.6.0
+# preload: false 유지(전 페이지 modulepreload 금지). 에디터가 있는 페이지에서만
+# 폼 컴포넌트(Components::Base#lexxy_editor_asset_tags)가 페이지별
+# <link rel="modulepreload">를 심어 eager 로드한다 — 여기를 preload: true로
+# 바꾸면 에디터 없는 페이지에서도 917KB를 modulepreload하게 되므로 금지.
 pin "lexxy", to: "lexxy.js", preload: false
 pin "@rails/activestorage", to: "activestorage.esm.js"
 pin "chart.js", preload: false # @4.5.1

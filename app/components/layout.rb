@@ -22,7 +22,9 @@ class Components::Layout < Components::Base
         render_pwa_and_icons
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
-        render_lexxy_stylesheet
+        # lexxy(에디터) CSS는 head에서 전역 로드하지 않는다: 에디터가 있는 페이지에서만
+        # 해당 폼 컴포넌트(Components::Base#lexxy_editor_asset_tags)가 <lexxy-editor>
+        # 옆에 동기 stylesheet를 심으므로, 에디터 없는 페이지는 CSS 비용을 지지 않는다.
         # vendor/lightgallery.css는 렌더 차단을 피하려고 head에서 제거했다.
         # lightbox 컨트롤러가 연결될 때(=갤러리가 있는 페이지)만 주입한다.
         javascript_importmap_tags
@@ -207,20 +209,6 @@ class Components::Layout < Components::Base
     # 폰트 CSS를 렌더 차단에서 제외한다: preload로 받아온 뒤 onload에서 rel을
     # stylesheet로 전환하고, display=swap으로 로드 중 텍스트가 숨지 않게 한다.
     # Phlex는 onload 인라인 핸들러를 막으므로 정적 문자열을 raw로 렌더한다.
-    raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
-    noscript { link(rel: "stylesheet", href: href) }
-  end
-
-  # lexxy(리치텍스트 에디터) CSS는 에디터 폼에서만 필요하고 그 폼은 어느 페이지에서든
-  # 스크롤 아래(below-the-fold)에 있다. 렌더 차단 stylesheet로 두면 전 페이지 FCP를
-  # 지연시키므로, Google Fonts와 동일하게 preload→onload에서 rel=stylesheet로 전환해
-  # 비동기 로드한다. (에디터 스크립트 자체도 <lexxy-editor> 존재 시에만 동적 import된다.)
-  def render_lexxy_stylesheet
-    href = view_context.stylesheet_path("lexxy")
-    # data-turbo-track은 붙이지 않는다: 이 링크는 onload에서 rel을 preload→stylesheet로
-    # 전환하므로, Turbo가 tracked 요소를 비교할 때 라이브 DOM(rel=stylesheet)과 서버
-    # 응답(rel=preload)의 outerHTML이 매 방문마다 달라져 전체 리로드가 반복된다.
-    # 배포 시 에셋 갱신 감지는 app.css의 data-turbo-track이 이미 담당한다.
     raw(%(<link rel="preload" href="#{CGI.escapeHTML(href)}" as="style" onload="this.onload=null;this.rel='stylesheet'">).html_safe)
     noscript { link(rel: "stylesheet", href: href) }
   end

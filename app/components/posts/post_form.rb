@@ -46,6 +46,7 @@ class Components::Posts::PostForm < Components::Base
   end
 
   def body_field(f)
+    lexxy_editor_asset_tags
     raw(
       f.lexxy_rich_textarea(
         :body,
