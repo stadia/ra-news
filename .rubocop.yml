@@ -136,6 +136,7 @@ Style/RbsInline/RequireRbsInlineComment:
     - "script/*"
     - "*file"
     - "config.ru"
+    - ".*"
 Style/RbsInline/UnmatchedAnnotations:
   Enabled: true
 Style/RbsInline/VariableCommentSpacing:
