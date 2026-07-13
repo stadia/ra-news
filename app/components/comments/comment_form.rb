@@ -12,9 +12,7 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def view_template
-    # permanent 처리 이유는 post_form.rb 참고. id를 기사별로 스코프해야 다른
-    # 기사로 넘어갈 때 이전 기사의 쓰다 만 댓글이 남지 않는다.
-    turbo_frame_tag("new_comment_#{@article.id}", data: { turbo_permanent: true }) do
+    turbo_frame_tag("new_comment") do
       render RubyUI::Card.new(
         class: "bg-surface-muted border-border-muted p-6",
         data: {
@@ -72,7 +70,6 @@ class Components::Comments::CommentForm < Components::Base
   end
 
   def body_field(f)
-    lexxy_editor_asset_tags
     render RubyUI::FormField.new do
       render RubyUI::FormFieldLabel.new(for: :comment_body) { Post.human_attribute_name(:body) }
       raw(

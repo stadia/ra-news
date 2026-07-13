@@ -15,10 +15,7 @@ class Components::Posts::PostForm < Components::Base
       data: {
         controller: "character-counter post-form",
         character_counter_max_length_value: ::Post::MAX_BODY_LENGTH.to_s,
-        action: "turbo:submit-end->post-form#reset post-form:reply@window->post-form#activateReply",
-        # lexxy가 turbo:before-cache에서 에디터 DOM을 지우고 캐시해, /feed 재방문 시
-        # 그 빈 스냅샷이 잠깐 보인다. id가 고정이라 permanent로 보존해 막는다.
-        turbo_permanent: true
+        action: "turbo:submit-end->post-form#reset post-form:reply@window->post-form#activateReply"
       }
     ) do
       render RubyUI::Card.new(class: "bg-surface border-border-muted shadow-sm") do
@@ -49,7 +46,6 @@ class Components::Posts::PostForm < Components::Base
   end
 
   def body_field(f)
-    lexxy_editor_asset_tags
     raw(
       f.lexxy_rich_textarea(
         :body,

@@ -22,8 +22,7 @@ class Components::Layout < Components::Base
         render_pwa_and_icons
         render_google_fonts
         stylesheet_link_tag :app, data_turbo_track: "reload"
-        # lexxy CSS는 head에서 전역 로드하지 않는다 — 에디터 폼 컴포넌트가
-        # Components::Base#lexxy_editor_asset_tags로 필요한 페이지에서만 심는다.
+        stylesheet_link_tag "lexxy", data_turbo_track: "reload"
         # vendor/lightgallery.css는 렌더 차단을 피하려고 head에서 제거했다.
         # lightbox 컨트롤러가 연결될 때(=갤러리가 있는 페이지)만 주입한다.
         javascript_importmap_tags

@@ -32,22 +32,6 @@ class Components::Base < Phlex::HTML
     direct.presence || helpers.url_for(variant)
   end
 
-  # <lexxy-editor>가 렌더되는 폼 컴포넌트 옆에서 호출: 에디터 있는 페이지에서만
-  # JS/CSS를 eager 로드해 뒤늦게 나타나는 지연을 없앤다(에디터 없는 페이지는 힌트가
-  # 안 나가 lazy 유지). 컨트롤러 액션이 아니라 컴포넌트에 두는 이유는 turbo_stream
-  # 응답이 layout head를 거치지 않기 때문. 한 페이지에 폼이 여러 번 렌더될 수 있어
-  # (댓글 reply form 등) 컨트롤러 인스턴스 플래그로 요청당 한 번만 출력한다.
-  def lexxy_editor_asset_tags
-    controller = helpers.controller
-    return if controller.instance_variable_get(:@lexxy_editor_assets_rendered)
-
-    controller.instance_variable_set(:@lexxy_editor_assets_rendered, true)
-    js_href = helpers.asset_path("lexxy.min.js")
-    css_href = helpers.stylesheet_path("lexxy")
-    link(rel: "modulepreload", href: js_href)
-    link(rel: "stylesheet", href: css_href)
-  end
-
   def safe_url(url)
     uri = URI.parse(url.to_s)
     %w[http https].include?(uri.scheme) ? url : nil

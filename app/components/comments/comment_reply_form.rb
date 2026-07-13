@@ -14,11 +14,10 @@ class Components::Comments::CommentReplyForm < Components::Base
   end
 
   def view_template
-    # permanent 처리 이유는 post_form.rb 참고. id가 댓글마다 고유해 안전하다.
     turbo_frame_tag(
       "reply_form_#{@parent_comment.id}",
       class: (@visible ? "" : "hidden"),
-      data: { reply_form_target: "form", turbo_permanent: true }
+      data: { reply_form_target: "form" }
     ) do
       div(
         class: "p-4 lg:p-5",
@@ -84,7 +83,6 @@ class Components::Comments::CommentReplyForm < Components::Base
   end
 
   def body_field(f)
-    lexxy_editor_asset_tags
     render RubyUI::FormField.new do
       raw(
         f.lexxy_rich_textarea(
