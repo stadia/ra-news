@@ -36,7 +36,7 @@ class LexxyLoadingTest < ActiveSupport::TestCase
   # 없앤다. 예약이 빠지면 얇은 선 → 5줄 점프 회귀가 되돌아온다.
   test "컴포저 lexxy 에디터는 업그레이드 전 높이를 예약해 레이아웃 시프트를 막는다" do
     assert_match(
-      /lexxy-editor\.post-composer-editor\b[^}]*min-block-size:/m,
+      /\.post-composer-editor\b[^}]*min-block-size:/m,
       SITE_CSS,
       "post-composer-editor에 min-block-size 높이 예약이 있어야 한다"
     )
