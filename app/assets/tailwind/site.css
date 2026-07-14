@@ -45,6 +45,12 @@ lexxy-editor.post-composer-editor {
     --lexxy-radius: 0.75rem;
 
     @apply overflow-hidden rounded-lg border border-border-muted bg-surface text-content shadow-none transition-colors duration-200;
+
+    /* <lexxy-editor>는 커스텀 엘리먼트라 JS가 실행되기 전에는 내부 content div가
+       없어 0 높이로 접힌다. 마운트되면 .lexxy-editor__content가 5줄(5 × leading-6)로
+       펼쳐지므로, 마운트 전에도 같은 높이를 예약해 "시간차로 그려짐"(얇은 선 → 5줄
+       점프)을 없앤다. 값이 content의 min-block-size와 일치해 마운트 후에도 시프트 없음. */
+    min-block-size: calc(5 * 1.5rem);
 }
 
 lexxy-editor.post-composer-editor:focus-within {
