@@ -20,9 +20,12 @@ module Youtube
       @channel = Yt::Channel.new(id:)
     end
 
+    #: () -> Array[Yt::Video]
     def videos
-      # yt는 lazy하므로 .to_a 시점에 네트워크 호출이 발생한다.
-      Timeout.timeout(NETWORK_TIMEOUT) { channel.videos.to_a }
+      # Yt::Collections::Videos는 Enumerable을 include하지 않아 to_a가 없다.
+      # 대신 List 액션이 위임하는 map으로 lazy 컬렉션을 materialize하여 배열로 만든다.
+      # (materialize 시점에 실제 네트워크 호출이 발생하므로 Timeout으로 감싼다.)
+      Timeout.timeout(NETWORK_TIMEOUT) { channel.videos.map { |video| video } }
     end
   end
 end
