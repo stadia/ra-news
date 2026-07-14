@@ -13,6 +13,7 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
   concerns: FederailsBoostable, FederailsLikeable
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
   methods: to_markdown, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, likes_count, boosts_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, announce!, apply_remote_boost, apply_remote_like, apply_remote_unboost, apply_remote_unlike, available_in?, base_tags
+  INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
 - Boost (table: boosts) - 2 assocs, 2 validations
   methods: actor, boostable
 - DiscordChannel (table: notification_channels) - 1 assocs, 3 validations

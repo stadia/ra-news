@@ -1,6 +1,6 @@
-## Tools (38) - MANDATORY, Use Before Read
+## Tools (39) - MANDATORY, Use Before Read
 
-This project has 38 introspection tools. **MANDATORY - use these instead of reading files.**
+This project has 39 introspection tools. **MANDATORY - use these instead of reading files.**
 They return ground truth from the running app: real schema, real associations, real filters - not guesses.
 Read files ONLY when you are about to Edit them.
 
@@ -95,7 +95,7 @@ Use individual tools only when you need deeper detail on a specific layer.
 5. **Validate EVERY edit** - `rails 'ai:tool[validate]' files=... level=rails`
 6. **Follow _Next:_ hints** - tool responses suggest the best follow-up call
 
-### All 38 Tools
+### All 39 Tools
 
 | CLI | What it does |
 |-----|-------------|
@@ -128,6 +128,7 @@ Use individual tools only when you need deeper detail on a specific layer.
 | `rails 'ai:tool[dependency_graph]' model=X` | Model association graph as Mermaid diagram |
 | `rails 'ai:tool[migration_advisor]' action=X table=Y` | Generate migration code, flag irreversible ops |
 | `rails 'ai:tool[frontend_stack]'` | React/Vue/Svelte/Angular, Inertia, TypeScript, package manager |
+| `rails 'ai:tool[api]'` | API layer: api_only mode, serializers, GraphQL, versioning, rate limiting, CORS, pagination |
 | `rails 'ai:tool[search_docs]' query=X` | Bundled topic index with weighted keyword search, on-demand GitHub fetch |
 | `rails 'ai:tool[query]' sql=X` | Safe read-only SQL queries with timeout, row limit, column redaction |
 | `rails 'ai:tool[read_logs]' level=X` | Reverse file tail with level filtering and sensitive data redaction |
