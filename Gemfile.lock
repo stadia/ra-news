@@ -304,7 +304,7 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    json (2.21.0)
+    json (2.21.1)
     json-canonicalization (1.0.0)
     json-jwt (1.17.1)
       activesupport (>= 4.2)
@@ -341,7 +341,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
-    lexxy (0.9.23)
+    lexxy (0.9.24)
       rails (>= 8.0.2)
     link_header (0.0.8)
     lint_roller (1.1.0)
@@ -911,7 +911,7 @@ DEPENDENCIES
   inkmark
   jbuilder
   letter_opener
-  lexxy (~> 0.9.23)
+  lexxy (~> 0.9.24)
   madmin (~> 2.3)
   meta-tags
   minitest (~> 6.0)
