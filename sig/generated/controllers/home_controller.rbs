@@ -26,10 +26,19 @@ class HomeController < ApplicationController
   # 본문을 결정해야 캐시 오염(다른 방문자에게 잘못된 언어 제공)을 방지한다.
   def llms: () -> untyped
 
+  # GET /robots.txt — 요청 호스트별 robots.txt 동적 서빙.
+  # .dev/.jp 를 독립 사이트로 취급하므로 각 도메인은 자기 로케일 사이트맵만
+  # 광고한다(정적 robots.txt 하나가 양 도메인 사이트맵을 함께 노출하던 것을 분리).
+  # llms.txt 와 마찬가지로 request.host 기준으로 본문을 결정해 public 캐시 오염을 막는다.
+  def robots: () -> untyped
+
   private
 
   # llms.txt 본문은 정적 텍스트 파일에서 로드한다 (app/views/home/llms/{ko,ja}.txt).
   LLMS_TXT: untyped
+
+  # robots.txt 템플릿(%{sitemap} 자리표시자). 호스트별 Sitemap 만 치환한다.
+  ROBOTS_TXT: untyped
 
   def article_scope: () -> untyped
 

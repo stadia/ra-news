@@ -83,6 +83,18 @@ class HomeController < ApplicationController
     render plain: body, content_type: "text/plain"
   end
 
+  # GET /robots.txt — 요청 호스트별 robots.txt 동적 서빙.
+  # .dev/.jp 를 독립 사이트로 취급하므로 각 도메인은 자기 로케일 사이트맵만
+  # 광고한다(정적 robots.txt 하나가 양 도메인 사이트맵을 함께 노출하던 것을 분리).
+  # llms.txt 와 마찬가지로 request.host 기준으로 본문을 결정해 public 캐시 오염을 막는다.
+  def robots
+    cacheable_page!(max_age: 1.day)
+    locale = Hosts.locale_for_host(request.host)
+    host = Hosts.for_locale(locale)
+    body = format(ROBOTS_TXT, sitemap: "#{host}/sitemaps/#{locale}/sitemap.xml.gz")
+    render plain: body, content_type: "text/plain"
+  end
+
   private
 
   # llms.txt 본문은 정적 텍스트 파일에서 로드한다 (app/views/home/llms/{ko,ja}.txt).
@@ -90,6 +102,9 @@ class HomeController < ApplicationController
     ko: Rails.root.join("app/views/home/llms/ko.txt").read.freeze,
     ja: Rails.root.join("app/views/home/llms/ja.txt").read.freeze
   }.freeze
+
+  # robots.txt 템플릿(%{sitemap} 자리표시자). 호스트별 Sitemap 만 치환한다.
+  ROBOTS_TXT = Rails.root.join("app/views/home/robots.txt").read.freeze
 
   def article_scope
     Article.includes(:user, :site).with_attached_thumbnail.kept.confirmed.related

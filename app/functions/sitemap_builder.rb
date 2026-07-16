@@ -24,19 +24,11 @@ module SitemapBuilder
   Entry = Data.define(
     :path,       #: String
     :lastmod,    #: String?
-    :available,  #: bool
-    :alternates  #: Array[Hash[Symbol, String]]
+    :available   #: bool
   )
 
   class << self
     include Rails.application.routes.url_helpers
-
-    #: (String, ?Array[String]) -> Array[Hash[Symbol, String]]
-    def alternates_for(path, locales = HREFLANG_HOSTS.keys)
-      alternate_path = path == root_path ? "" : path
-
-      HREFLANG_HOSTS.slice(*locales).map { |lang, host| { href: "#{host}#{alternate_path}", lang: lang } }
-    end
 
     # lastmod는 실제 문서 변경 시점을 나타내야 하므로 published_at만 쓰면
     # 발행 이후 제목/요약/번역 수정이 검색엔진에 전달되지 않는다.
@@ -70,9 +62,7 @@ module SitemapBuilder
     end
 
     # 사이트맵에 등재할 기사를 DB에서 한 번만 순회해 경량 Entry 배열로 수집한다.
-    # AR 객체가 아니라 값(경로·lastmod·가용 로케일·alternates)만 담으므로 메모리
-    # 부담이 작다. alternates 는 로케일과 무관(path+available에만 의존)하므로 여기서
-    # 한 번만 계산해 양 로케일이 재사용한다.
+    # AR 객체가 아니라 값(경로·lastmod·가용 로케일)만 담으므로 메모리 부담이 작다.
     #: () -> Array[Entry]
     def collect_article_entries
       entries = []
@@ -90,8 +80,7 @@ module SitemapBuilder
           entries << Entry.new(
             path: path,
             lastmod: lastmod_for(article),
-            available: available,
-            alternates: alternates_for(path, available)
+            available: available
           )
         end
       end
@@ -118,20 +107,21 @@ module SitemapBuilder
 
     # 주어진 로케일/호스트의 URL을 DSL(add 응답 객체)에 등재한다. 정적 페이지와,
     # 미리 수집된 기사 Entry 중 해당 로케일 번역이 있는 것만 자기 호스트 <loc>로
-    # 넣고 각 <url>에 ko/ja hreflang alternates를 붙인다(상호 참조 유지).
+    # 넣는다. 두 도메인(.dev/.jp)은 완전히 독립적인 사이트로 취급하므로 로케일 간
+    # hreflang 상호 참조(alternates)는 붙이지 않는다.
     #: (untyped, String, String, Array[Entry]) -> void
     def populate(dsl, locale, host, entries)
       # 목록 페이지 lastmod: 맨 날짜(Date)는 타임존이 없어 파서가 UTC 자정으로
       # 해석 → KST 오늘이 UTC 기준 미래로 보인다. 오프셋이 붙는 Time을 사용.
       index_lastmod = Time.current.iso8601
       [ root_path, articles_path, others_path ].each do |path|
-        dsl.add path, host: host, lastmod: index_lastmod, alternates: alternates_for(path)
+        dsl.add path, host: host, lastmod: index_lastmod
       end
 
       entries.each do |entry|
         next unless entry.available.include?(locale)
 
-        dsl.add entry.path, host: host, lastmod: entry.lastmod, alternates: entry.alternates
+        dsl.add entry.path, host: host, lastmod: entry.lastmod
       end
     end
   end
