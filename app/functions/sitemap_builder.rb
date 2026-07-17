@@ -24,7 +24,7 @@ module SitemapBuilder
   Entry = Data.define(
     :path,       #: String
     :lastmod,    #: String?
-    :available   #: bool
+    :available   #: Array[String]
   )
 
   class << self

@@ -91,7 +91,9 @@ class HomeController < ApplicationController
     cacheable_page!(max_age: 1.day)
     locale = Hosts.locale_for_host(request.host)
     host = Hosts.for_locale(locale)
-    body = format(ROBOTS_TXT, sitemap: "#{host}/sitemaps/#{locale}/sitemap.xml.gz")
+    # gsub(리터럴 치환)을 쓴다. format 은 robots.txt 에 URL 인코딩(%20) 등
+    # 다른 % 가 유입되면 ArgumentError(malformed format string)로 렌더가 깨진다.
+    body = ROBOTS_TXT.gsub("%{sitemap}", "#{host}/sitemaps/#{locale}/sitemap.xml.gz")
     render plain: body, content_type: "text/plain"
   end
 

@@ -25,10 +25,10 @@ module SitemapBuilder
 
     attr_reader lastmod(): String?
 
-    attr_reader available(): bool
+    attr_reader available(): Array[String]
 
-    def self.new: (String path, String? lastmod, bool available) -> instance
-                | (path: String, lastmod: String?, available: bool) -> instance
+    def self.new: (String path, String? lastmod, Array[String] available) -> instance
+                | (path: String, lastmod: String?, available: Array[String]) -> instance
 
     def self.members: () -> [ :path, :lastmod, :available ]
 
