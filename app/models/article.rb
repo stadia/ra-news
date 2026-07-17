@@ -235,6 +235,16 @@ class Article < ApplicationRecord
     title_ko.present?
   end
 
+  # 기사의 ActivityPub actor 는 항상 발행 봇 user 의 actor 다.
+  # federails_actor_id 컬럼은 과거에 비워진 채 생성된 기사가 많아
+  # (create_federails_activity 와 동일하게) 봇 actor 로 폴백한다.
+  # federails published 엔드포인트의 직렬화(Note.to_federation / PublishableResource)가
+  # federails_actor 를 직접 참조하므로 nil 이면 500 이 발생한다.
+  #: () -> Federails::Actor?
+  def federails_actor
+    super || bot_user&.federails_actor
+  end
+
   #: () -> Integer
   def likes_count
     likers_count.to_i
