@@ -30,5 +30,20 @@ class YoutubeSiteJob < ApplicationJob
 
     site.update(last_checked_at: Time.zone.now)
     YoutubeSiteJob.perform_later(ids) unless ids.empty?
+  rescue Yt::Errors::RequestError => e
+    raise unless youtube_quota_exceeded?(e)
+
+    logger.warn("YoutubeSiteJob stopped because YouTube API quota was exceeded: #{e.message}")
+  end
+
+  private
+
+  #: (Yt::Errors::RequestError error) -> bool
+  def youtube_quota_exceeded?(error)
+    response_error = error.response_body.fetch("error", {})
+
+    response_error["code"] == 429 ||
+      response_error["status"] == "RESOURCE_EXHAUSTED" ||
+      error.reasons.include?("rateLimitExceeded")
   end
 end

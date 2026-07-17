@@ -8,4 +8,9 @@ class YoutubeSiteJob < ApplicationJob
 
   # : (Array[Integer] ids) -> void
   def perform: (Array[Integer] ids) -> void
+
+  private
+
+  # : (Yt::Errors::RequestError error) -> bool
+  def youtube_quota_exceeded?: (Yt::Errors::RequestError error) -> bool
 end
