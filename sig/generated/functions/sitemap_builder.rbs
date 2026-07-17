@@ -25,20 +25,15 @@ module SitemapBuilder
 
     attr_reader lastmod(): String?
 
-    attr_reader available(): bool
+    attr_reader available(): Array[String]
 
-    attr_reader alternates(): Array[Hash[Symbol, String]]
+    def self.new: (String path, String? lastmod, Array[String] available) -> instance
+                | (path: String, lastmod: String?, available: Array[String]) -> instance
 
-    def self.new: (String path, String? lastmod, bool available, Array[Hash[Symbol, String]] alternates) -> instance
-                | (path: String, lastmod: String?, available: bool, alternates: Array[Hash[Symbol, String]]) -> instance
+    def self.members: () -> [ :path, :lastmod, :available ]
 
-    def self.members: () -> [ :path, :lastmod, :available, :alternates ]
-
-    def members: () -> [ :path, :lastmod, :available, :alternates ]
+    def members: () -> [ :path, :lastmod, :available ]
   end
-
-  # : (String, ?Array[String]) -> Array[Hash[Symbol, String]]
-  def self.alternates_for: (String, ?Array[String]) -> Array[Hash[Symbol, String]]
 
   # lastmod는 실제 문서 변경 시점을 나타내야 하므로 published_at만 쓰면
   # 발행 이후 제목/요약/번역 수정이 검색엔진에 전달되지 않는다.
@@ -59,9 +54,7 @@ module SitemapBuilder
   def self.build: () -> void
 
   # 사이트맵에 등재할 기사를 DB에서 한 번만 순회해 경량 Entry 배열로 수집한다.
-  # AR 객체가 아니라 값(경로·lastmod·가용 로케일·alternates)만 담으므로 메모리
-  # 부담이 작다. alternates 는 로케일과 무관(path+available에만 의존)하므로 여기서
-  # 한 번만 계산해 양 로케일이 재사용한다.
+  # AR 객체가 아니라 값(경로·lastmod·가용 로케일)만 담으므로 메모리 부담이 작다.
   # : () -> Array[Entry]
   def self.collect_article_entries: () -> Array[Entry]
 
@@ -72,7 +65,8 @@ module SitemapBuilder
 
   # 주어진 로케일/호스트의 URL을 DSL(add 응답 객체)에 등재한다. 정적 페이지와,
   # 미리 수집된 기사 Entry 중 해당 로케일 번역이 있는 것만 자기 호스트 <loc>로
-  # 넣고 각 <url>에 ko/ja hreflang alternates를 붙인다(상호 참조 유지).
+  # 넣는다. 두 도메인(.dev/.jp)은 완전히 독립적인 사이트로 취급하므로 로케일 간
+  # hreflang 상호 참조(alternates)는 붙이지 않는다.
   # : (untyped, String, String, Array[Entry]) -> void
   def self.populate: (untyped, String, String, Array[Entry]) -> void
 end

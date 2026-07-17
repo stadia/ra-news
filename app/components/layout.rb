@@ -81,9 +81,6 @@ class Components::Layout < Components::Base
     end
   end
 
-  # 단일 소스: app/functions/hosts.rb (Hosts::FOR_LOCALE)
-  HREFLANG_HOSTS = Hosts::FOR_LOCALE
-
   OG_LOCALES = {
     ko: "ko_KR",
     ja: "ja_JP",
@@ -135,19 +132,6 @@ class Components::Layout < Components::Base
       }
     )
 
-    render_hreflang_links(path)
-  end
-
-  def render_hreflang_links(path)
-    # 기본은 전체 로케일. 기사 페이지 등에서 @hreflang_locales 로 가용 로케일만
-    # 한정하면, 번역이 없는 로케일은 alternate 로 광고하지 않는다.
-    only = view_context.instance_variable_get(:@hreflang_locales)
-    hosts = only ? HREFLANG_HOSTS.slice(*only.map(&:to_s)) : HREFLANG_HOSTS
-    hosts.each do |locale, host|
-      link(rel: "alternate", hreflang: locale, href: "#{host}#{path}")
-    end
-    default_host = hosts["ko"] || hosts.values.first
-    link(rel: "alternate", hreflang: "x-default", href: "#{default_host}#{path}")
   end
 
   def render_rss_link

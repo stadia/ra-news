@@ -88,6 +88,10 @@ Rails.application.routes.draw do
   # (기존 정적 public/llms.txt 는 삭제됨 — 정적 파일이 라우트보다 우선 매칭되기 때문)
   get "llms.txt"       => "home#llms",           as: :llms, defaults: { format: "text" }
 
+  # robots.txt 도 호스트별로 자기 사이트맵만 광고해야 하므로 동적 라우트로 처리한다.
+  # (기존 정적 public/robots.txt 는 삭제됨 — 정적 파일이 라우트보다 우선 매칭되기 때문)
+  get "robots.txt"     => "home#robots",         as: :robots, defaults: { format: "text" }
+
   get "rss"            => "home#rss",            as: :rss
   get "about"          => "home#about",          as: :about
   get "privacy-policy" => "home#privacy_policy", as: :privacy_policy

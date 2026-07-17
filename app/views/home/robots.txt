@@ -47,5 +47,4 @@ Disallow: /
 User-agent: ClaudeBot
 Disallow: /
 
-Sitemap: https://ruby-news.dev/sitemaps/ko/sitemap.xml.gz
-Sitemap: https://ruby-news.jp/sitemaps/ja/sitemap.xml.gz
+Sitemap: %{sitemap}
