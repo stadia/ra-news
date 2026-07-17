@@ -1,7 +1,0 @@
-# Generated from app/jobs/japanese_temp_job.rb with RBS::Inline
-
-class JapaneseTempJob < ApplicationJob
-  def perform: (?id: untyped, ?slug: untyped) -> untyped
-
-  def run_similar: (untyped article) -> untyped
-end
