@@ -92,15 +92,24 @@ class ProfilesController < ApplicationController
 
     #: (Symbol) -> Views::Base
     def activity_list_component(tab)
-      {
-        posts:     -> { Views::Profiles::PostList.new(**post_list_args) },
-        comments:  -> { Views::Profiles::CommentList.new(**post_list_args) },
-        blog:      -> { Views::Profiles::BlogList.new(**post_list_args) },
-        likes:     -> { Views::Profiles::LikeList.new(user: @user, likeables: @likeables, pagy: @pagy) },
-        boosts:    -> { Views::Profiles::BoostList.new(user: @user, boostables: @boostables, pagy: @pagy) },
-        followers: -> { Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: :followers) },
-        following: -> { Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: :following) }
-      }.fetch(tab).call
+      case tab
+      when :posts
+        Views::Profiles::PostList.new(**post_list_args)
+      when :comments
+        Views::Profiles::CommentList.new(**post_list_args)
+      when :blog
+        Views::Profiles::BlogList.new(**post_list_args)
+      when :likes
+        Views::Profiles::LikeList.new(user: @user, likeables: @likeables, pagy: @pagy)
+      when :boosts
+        Views::Profiles::BoostList.new(user: @user, boostables: @boostables, pagy: @pagy)
+      when :followers
+        Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: :followers)
+      when :following
+        Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: :following)
+      else
+        raise ArgumentError, "Unknown tab: #{tab}"
+      end
     end
 
     #: () -> Hash[Symbol, untyped]
