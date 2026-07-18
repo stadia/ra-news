@@ -4,6 +4,7 @@ class Views::Posts::Show < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::LinkTo
   include Phlex::Rails::Helpers::ButtonTo
+  include Phlex::Rails::Helpers::Sanitize
   include PhlexIcons
 
   def initialize(posts:, liked_post_ids: [], boosted_post_ids: [])
@@ -75,10 +76,11 @@ class Views::Posts::Show < Views::Base
       div(class: "text-sm text-content-muted") do
         plain I18n.l(root.published_at || root.created_at, format: :short)
       end
-      # body is allowlist-sanitized on save (HtmlSanitizable#sanitize_body).
-      # Phlex's `raw` only accepts html_safe input, so the marker is required.
+      # body is allowlist-sanitized on save (HtmlSanitizable#sanitize_body); we
+      # sanitize again at render time as defense in depth. `sanitize` returns a
+      # SafeBuffer, so `raw` accepts it without an explicit html_safe marker.
       div(class: "post-content prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
-        raw root.body.html_safe
+        raw sanitize(root.body, tags: HtmlSanitizable::ALLOWED_TAGS)
       end
       owner_controls(root)
     end

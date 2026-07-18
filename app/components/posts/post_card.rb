@@ -3,6 +3,7 @@
 class Components::Posts::PostCard < Components::Base
   include Phlex::Rails::Helpers::DOMID
   include Phlex::Rails::Helpers::LinkTo
+  include Phlex::Rails::Helpers::Sanitize
   include PhlexIcons
 
   def initialize(post:, depth: 0, liked: nil, boosted: nil, booster: nil, show_actions: true, show_reply_badge: true)
@@ -108,7 +109,7 @@ class Components::Posts::PostCard < Components::Base
 
   def short_body
     div(class: "post-content text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
-      raw @post.body.html_safe
+      raw sanitize(@post.body, tags: HtmlSanitizable::ALLOWED_TAGS)
     end
   end
 

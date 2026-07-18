@@ -18,24 +18,25 @@ class BlogPostsController < ApplicationController
   # first autosave (or publish) persists it via #create.
   #
   # The composer POSTs the in-progress body here so it stays out of the URL; we
-  # stash it in the session and redirect to the GET editor (Turbo follows the
-  # redirect and renders the page). Opening the editor directly (GET) carries
-  # over that stashed body once, then starts fresh.
+  # stash it in the cache under a per-request nonce and redirect to the GET
+  # editor (Turbo follows the redirect and renders the page). Opening the editor
+  # directly (GET) carries over that stashed body once, then starts fresh. The
+  # nonce travels in the redirect URL query, so no session state is needed.
   def new
     if request.post?
       draft_key = SecureRandom.hex(8)
-      session[:blog_draft_bodies] ||= {}
-      session[:blog_draft_bodies][draft_key] = params.dig(:post, :body).to_s
+      # User-scoped key so one user can't read another's stashed body, plus a
+      # TTL so abandoned drafts don't linger. The nonce keeps concurrent tabs
+      # from clobbering each other.
+      Rails.cache.write(blog_draft_cache_key(draft_key), params.dig(:post, :body).to_s, expires_in: 1.day)
       return redirect_to new_blog_post_path(draft_key: draft_key), status: :see_other
     end
 
-    draft_bodies = session[:blog_draft_bodies] || {}
     @post = current_user.posts.new(
       post_type: :blog,
       status: :draft,
-      body: draft_bodies.delete(params[:draft_key]).to_s
+      body: carried_over_draft_body
     )
-    session[:blog_draft_bodies] = draft_bodies
     render Views::BlogPosts::Edit.new(post: @post)
   end
 
@@ -115,6 +116,25 @@ class BlogPostsController < ApplicationController
   end
 
   private
+
+  # Reads and consumes (one-shot) the body stashed by the composer's POST. A
+  # missing nonce or cache miss (expired/consumed) yields a blank body so the
+  # editor starts fresh.
+  def carried_over_draft_body
+    draft_key = params[:draft_key]
+    return "" if draft_key.blank?
+
+    key = blog_draft_cache_key(draft_key)
+    body = Rails.cache.read(key)
+    Rails.cache.delete(key)
+    body.to_s
+  end
+
+  # Namespaced under the current user so a stashed body is only ever readable by
+  # the account that wrote it (defense in depth against nonce guessing).
+  def blog_draft_cache_key(draft_key)
+    "blog_draft:#{current_user.id}:#{draft_key}"
+  end
 
   # The publish button on an unsaved draft submits to #create with a publish
   # flag (HTML), so the draft is created and published in one request.

@@ -31,18 +31,22 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
   test "new editor prefills body carried from the composer" do
     sign_in @user
 
-    assert_no_difference -> { Post.blog.count } do
-      # POST keeps the body out of the URL; #new stashes it with a per-request
-      # nonce so concurrent tabs don't clobber each other, then redirects to the
-      # GET editor, which prefills it.
-      post new_blog_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
+    # The test env uses :null_store, which never retains writes. Swap in a real
+    # in-memory store just for this case so the stash-then-read round-trips.
+    with_memory_cache do
+      assert_no_difference -> { Post.blog.count } do
+        # POST keeps the body out of the URL; #new stashes it in the cache with a
+        # per-request nonce so concurrent tabs don't clobber each other, then
+        # redirects to the GET editor, which prefills it.
+        post new_blog_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
 
-      assert_response :see_other
-      follow_redirect!
+        assert_response :see_other
+        follow_redirect!
+      end
+
+      assert_response :success
+      assert_includes response.body, "이관된 본문"
     end
-
-    assert_response :success
-    assert_includes response.body, "이관된 본문"
   end
 
   test "first autosave creates the draft and returns the persisted urls" do
@@ -346,5 +350,17 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, I18n.t("profiles.blog_list.trash_empty")
+  end
+
+  private
+
+  # test.rb pins the cache to :null_store, so any code under test that relies on
+  # Rails.cache round-tripping needs a real store for the duration of the block.
+  def with_memory_cache
+    original = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    yield
+  ensure
+    Rails.cache = original
   end
 end
