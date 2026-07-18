@@ -22,9 +22,9 @@ module SitemapBuilder
   # ko/ja 빌드가 공유한다(AR 객체를 로케일마다 다시 읽지 않는다).
   #   available: 번역이 존재하는 로케일 키 배열(예: ["ko", "ja"] 또는 ["ko"])
   Entry = Data.define(
-    :path,       #: String
-    :lastmod,    #: String?
-    :available   #: Array[String]
+    :path,      #: String
+    :lastmod,   #: String?
+    :available  #: Array[String]
   )
 
   class << self
