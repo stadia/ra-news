@@ -80,7 +80,7 @@ class Views::Posts::Show < Views::Base
       # sanitize again at render time as defense in depth. `sanitize` returns a
       # SafeBuffer, so `raw` accepts it without an explicit html_safe marker.
       div(class: "post-content prose prose-lg dark:prose-invert max-w-none text-content wrap-break-word") do
-        raw sanitize(root.body, tags: HtmlSanitizable::ALLOWED_TAGS)
+        raw sanitize(root.body.to_s, tags: HtmlSanitizable::ALLOWED_TAGS)
       end
       owner_controls(root)
     end

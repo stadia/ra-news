@@ -109,7 +109,7 @@ class Components::Posts::PostCard < Components::Base
 
   def short_body
     div(class: "post-content text-content leading-relaxed wrap-break-word prose prose-sm dark:prose-invert max-w-none") do
-      raw sanitize(@post.body, tags: HtmlSanitizable::ALLOWED_TAGS)
+      raw sanitize(@post.body.to_s, tags: HtmlSanitizable::ALLOWED_TAGS)
     end
   end
 

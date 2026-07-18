@@ -287,6 +287,8 @@ en:
       read_more: Read full post
       manage_title: Manage blog posts | Ruby-News
       manage_heading: Manage blog posts
+      draft_stash_failed: We couldn't hand your draft to the editor. Please try again.
+      draft_expired: Your carried-over draft was no longer available, so the editor opened blank.
       errors:
         blank_draft: Enter a title or body before saving this draft.
     post_card:
