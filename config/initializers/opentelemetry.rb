@@ -1,6 +1,6 @@
 # config/initializers/opentelemetry.rb
 
-unless Rails.env.development?
+if Rails.env.production?
   require "opentelemetry/sdk"
   require "opentelemetry-exporter-otlp"
   require "opentelemetry/instrumentation/aws_sdk"
