@@ -4,7 +4,7 @@ require "test_helper"
 
 class LayoutAssetPreconnectTest < ActiveSupport::TestCase
   def setup
-    @layout = Components::Layout.allocate
+    @layout = Components::Layout::AssetPreloads.allocate
     @original_asset_host = ActionController::Base.asset_host
   end
 
