@@ -50,6 +50,6 @@ class DiscordController < ApplicationController
 
     DiscordClient.delete_webhook(webhook_url)
   rescue DiscordClient::ApiError => e
-    Rails.logger.warn("Failed to cleanup Discord webhook #{webhook_url}: #{e.message}")
+    logger.warn("Failed to cleanup Discord webhook #{webhook_url}: #{e.message}")
   end
 end
