@@ -1,4 +1,4 @@
-# Generated from app/models/profiles/polymorphic_activity.rb with RBS::Inline
+# Generated from app/functions/profiles/polymorphic_activity.rb with RBS::Inline
 
 module Profiles
   module PolymorphicActivity
