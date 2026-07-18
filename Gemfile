@@ -97,7 +97,7 @@ group :test do
 end
 
 gem "google-protobuf", require: false
-gem "pagy", "~> 43.5" # omit patch digit
+gem "pagy", "~> 43.6" # omit patch digit
 gem "sorbet-runtime"
 # silence Ruby 3.4 warnings
 gem "acts-as-taggable-on"
@@ -132,7 +132,7 @@ gem "federails", github: "stadia/federails"
 # gem "federails", path: "../federails"
 gem "deepl-rb", require: "deepl"
 gem "friendly_id"
-gem "lexxy", "~> 0.9.23"
+gem "lexxy", "~> 0.9.24"
 gem "oj"
 gem "pg_query"
 gem "phlex-icons"
@@ -160,3 +160,16 @@ gem "honeybadger"
 gem "newrelic_rpm"
 gem "sentry-rails"
 gem "sentry-ruby"
+gem "opentelemetry-sdk"
+gem "opentelemetry-exporter-otlp"
+# gem "opentelemetry-instrumentation-all"
+gem "opentelemetry-instrumentation-aws_sdk"
+gem "opentelemetry-instrumentation-concurrent_ruby"
+gem "opentelemetry-instrumentation-faraday"
+gem "opentelemetry-instrumentation-grpc"
+gem "opentelemetry-instrumentation-net_http"
+gem "opentelemetry-instrumentation-pg"
+gem "opentelemetry-instrumentation-rack"
+gem "opentelemetry-instrumentation-rails"
+gem "opentelemetry-instrumentation-rake"
+gem "opentelemetry-instrumentation-ruby_llm"

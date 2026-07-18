@@ -11,6 +11,7 @@ module Youtube
       @channel = Yt::Channel.new(id:)
     end
 
+    #: () -> Array[Yt::Video]
     def videos
       channel.videos
     end

@@ -27,7 +27,7 @@ class ArticleResource < Madmin::Resource
   attribute :summary_body, index: false
   attribute :summary_conclusion, index: false
 
-  attribute :twitter_id, index: false, form: false
+  # attribute :twitter_id, index: false, form: false
   attribute :mastodon_id, index: false, form: false
 
   # ActiveStorage

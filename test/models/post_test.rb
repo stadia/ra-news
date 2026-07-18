@@ -116,21 +116,31 @@ class PostTest < ActiveSupport::TestCase
   # ========== Article Comment Tests ==========
 
   test "comment?는 post_type이 comment이면 true를 반환한다" do
+    # 전제 명시: comment? 결과는 픽스처의 post_type 숫자 기본값에 직결된다.
+    assert_equal "comment", @comment_post.post_type, "전제: comment_post 픽스처는 post_type=comment"
+
     assert_predicate @comment_post, :comment?
   end
 
   test "comment?는 post_type이 short이면 false를 반환한다" do
+    assert_equal "short", @root_post.post_type, "전제: root_post 픽스처는 post_type=short"
+
     assert_not @root_post.comment?
   end
 
   test "comment?는 post_type이 blog이면 false를 반환한다" do
+    assert_equal "blog", posts(:blog_published).post_type, "전제: blog_published 픽스처는 post_type=blog"
+
     assert_not posts(:blog_published).comment?
   end
 
   test "comment?는 article_id가 있어도 post_type이 comment가 아니면 false를 반환한다" do
     short_with_article = posts(:short_with_article)
 
+    # 전제 명시: article_id 는 있지만 post_type 이 comment 가 아니라는 조합이 핵심이다.
     assert_predicate short_with_article.article_id, :present?
+    assert_equal "short", short_with_article.post_type, "전제: short_with_article 픽스처는 post_type=short"
+
     assert_not short_with_article.comment?
   end
 

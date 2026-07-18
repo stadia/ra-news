@@ -7,8 +7,6 @@ class DiscordClient
   AUTHORIZE_URL = "https://discord.com/api/oauth2/authorize" #: String
   TOKEN_URL = "https://discord.com/api/oauth2/token" #: String
   API_BASE = "https://discord.com/api/v10" #: String
-  OPEN_TIMEOUT = 5 #: Integer
-  REQUEST_TIMEOUT = 10 #: Integer
   MANAGE_WEBHOOKS_PERMISSION = 536870912 #: Integer
 
   #: (DiscordChannel channel) -> void
@@ -104,8 +102,8 @@ class DiscordClient
 
     #: (untyped req) -> void
     def apply_timeouts(req)
-      req.options.open_timeout = OPEN_TIMEOUT
-      req.options.timeout = REQUEST_TIMEOUT
+      req.options.open_timeout = HttpTimeouts::OPEN
+      req.options.timeout = HttpTimeouts::REQUEST
     end
   end
 end

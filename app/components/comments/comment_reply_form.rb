@@ -117,5 +117,4 @@ class Components::Comments::CommentReplyForm < Components::Base
         class: "inline-flex items-center px-4 py-1.5 bg-info-solid hover:bg-info-solid-hover text-brand-foreground text-xs font-medium rounded-md transition-colors duration-200"
     end
   end
-
 end

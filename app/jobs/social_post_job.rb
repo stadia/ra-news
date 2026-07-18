@@ -23,7 +23,7 @@ class SocialPostJob < ApplicationJob
         break
       end
 
-      TwitterService.new.call(article)
+      # TwitterService.new.call(article)
       MastodonService.new.call(article)
       SlackNotifier.notify(article)
       DiscordNotifier.notify(article)

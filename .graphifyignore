@@ -3,4 +3,9 @@ vendor/
 node_modules/
 public/
 app/components/
+# graphify mis-anchors a bare `*` in nested .gitignore files (e.g. .ruby-lsp,
+# .superpowers/sdd) and treats it as repo-wide, yielding 0 detected files.
+# Prune these tool-cache dirs from the walk so their `*` gitignore never loads.
+.ruby-lsp/
+.superpowers/sdd/
 *.generated.py

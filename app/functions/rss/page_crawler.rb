@@ -37,7 +37,10 @@ module Rss
         url = attr[:url].to_s.strip
         return [] if url.blank? || url.downcase.end_with?("pdf")
 
-        response = Faraday.get(url)
+        response = Faraday.get(url) do |req|
+          req.options.open_timeout = HttpTimeouts::OPEN
+          req.options.timeout = HttpTimeouts::REQUEST
+        end
         return [] unless response.status.between?(200, 299)
 
         Nokogiri::HTML5(response.body).css("a[href]").filter_map do |a|

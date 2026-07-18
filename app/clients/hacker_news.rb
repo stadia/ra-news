@@ -23,7 +23,10 @@ module HackerNews
   end
 
   def fetch_json(url)
-    response = Faraday.get(url)
+    response = Faraday.get(url) do |req|
+      req.options.open_timeout = HttpTimeouts::OPEN
+      req.options.timeout = HttpTimeouts::REQUEST
+    end
     return nil unless response&.success?
 
     body = response.body

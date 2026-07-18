@@ -1,4 +1,5 @@
 # Pin npm packages by running ./bin/importmap
+# rbs_inline: enabled
 
 pin "application"
 pin "@hotwired/turbo-rails", to: "turbo.min.js"
@@ -11,7 +12,7 @@ pin_all_from "app/javascript/controllers", under: "controllers", preload: false
 # utils(form_helpers)의 소비자(post_form/reply_form 컨트롤러)가 모두 lazy이므로
 # 함께 preload에서 제외한다.
 pin_all_from "app/javascript/utils", under: "utils", preload: false
-# 아래 라이브러리들은 lazy 로드되는 Stimulus 컨트롤러(또는 조건부 lexxy)에서만
+# 아래 라이브러리들은 lazy 로드되는 Stimulus 컨트롤러에서만
 # 쓰인다. importmap-rails의 pin 기본값은 preload: true라서, 그대로 두면
 # <link rel="modulepreload">로 전 페이지에서 즉시 다운로드된다. preload: false로
 # 명시해 실제로 필요한 페이지에서 동적 import될 때만 fetch되게 한다.
@@ -20,7 +21,7 @@ pin "@floating-ui/core", to: "@floating-ui--core.js", preload: false # @1.7.5
 pin "@floating-ui/utils", to: "@floating-ui--utils.js", preload: false # @0.2.11
 pin "@floating-ui/utils/dom", to: "@floating-ui--utils--dom.js", preload: false # @0.2.11
 pin "embla-carousel", preload: false # @8.6.0
-pin "lexxy", to: "lexxy.js", preload: false
+pin "lexxy", to: "lexxy.min.js"
 pin "@rails/activestorage", to: "activestorage.esm.js"
 pin "chart.js", preload: false # @4.5.1
 pin "@kurkle/color", to: "@kurkle--color.js", preload: false # @0.3.4

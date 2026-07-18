@@ -10,7 +10,7 @@ class MastodonClient
 
     oauth_client = OauthClient.build(oauth_config)
     token = check_token(oauth_client, oauth_config)
-    @client = Faraday.new(url: oauth_config.site) do |faraday|
+    @client = Faraday.new(url: oauth_config.site, request: { open_timeout: HttpTimeouts::OPEN, timeout: HttpTimeouts::REQUEST }) do |faraday|
       faraday.headers["Authorization"] = "Bearer #{token.token}"
       faraday.response :logger, nil, { bodies: true, log_level: :info }
       faraday.request :json

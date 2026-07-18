@@ -110,5 +110,4 @@ class Components::Comments::CommentForm < Components::Base
       ) { t("comments.comment_form.submit") }
     end
   end
-
 end

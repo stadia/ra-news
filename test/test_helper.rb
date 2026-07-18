@@ -2,31 +2,9 @@
 
 require_relative "../lib/quality/coverage_snapshot"
 require "simplecov"
-SimpleCov.start "rails" do
-  enable_coverage :branch
-  add_filter "/test/"
-  add_filter "/config/"
-  add_filter "/db/"
-  add_filter "/lib/tasks/"
-  add_filter "/vendor/"
-
-  # UI 라이브러리 컴포넌트: 벤더 코드 성격으로 앱에서 테스트하지 않음
-  add_filter "/app/components/ruby_ui/"
-
-  # 관리자 백오피스: madmin 자동 생성 코드
-  add_filter "/app/controllers/madmin/"
-
-  # AI 에이전트/도구: LLM 호출 코드로 단위 테스트가 불가능
-  add_filter "/app/agents/"
-  add_filter "/app/tools/"
-
-  # 인프라: 채널/제약조건은 프레임워크 수준
-  add_filter "/app/channels/"
-  add_filter "/app/constraints/"
-
-  # 품질 관리: Rake 태스크에서만 사용
-  add_filter "/lib/quality/"
-end
+# 공용 설정은 프로젝트 루트의 `.simplecov`가 담당한다(자동 로드).
+# command_name을 분리해 RSpec 결과와 병합되게 한다(서로 덮어쓰지 않음).
+SimpleCov.command_name "Minitest"
 
 SimpleCov.at_exit do
   result = SimpleCov.result
