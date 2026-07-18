@@ -25,17 +25,18 @@ class Youtube::ChannelTest < ActiveSupport::TestCase
     assert_raises(ArgumentError) { Youtube::Channel.new(id: nil) }
   end
 
-  test "videos는 to_a 없는 lazy 컬렉션을 배열로 materialize한다" do
+  test "videos는 지연 컬렉션을 그대로 반환한다" do
     fake_video = Object.new
     channel = Youtube::Channel.new(id: "UC123")
     fake_channel = Object.new
-    fake_channel.define_singleton_method(:videos) { FakeVideos.new([ fake_video ]) }
+    fake_videos = FakeVideos.new([ fake_video ])
+    fake_channel.define_singleton_method(:videos) { fake_videos }
 
     channel.stub(:channel, fake_channel) do
       result = channel.videos
 
-      assert_kind_of Array, result
-      assert_equal [ fake_video ], result
+      assert_same fake_videos, result
+      assert_equal [ fake_video ], result.map { _1 }
     end
   end
 end

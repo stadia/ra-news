@@ -148,7 +148,7 @@ PriceCalculator.compute(pick: pick, plan: plan)
 - 키워드 인자 권장 (호출부 가독성)
 - **로깅**: 프로젝트에 로거 mixin 컨벤션이 있는지 먼저 확인. 있으면 `extend`해서 `logger.warn` 형태로 호출. 다른 모듈과 호출 패턴을 일치시킨다.
 - **헬퍼가 `protected` 인스턴스 메서드 모듈이면** `extend`로는 못 부른다. `class << self` 블록 안에 `include RssHelper` 형태로 들여와 singleton class의 인스턴스 메서드로 만든다.
-- **`class << self` vs `extend self`**: 강연은 `extend self`를 선호한다. 둘 다 동등한 효과이며 프로젝트 컨벤션에 맞춰 한 가지로 통일한다.
+- **`class << self` vs `extend self` vs `module_function`**: 강연은 `extend self`를 선호하지만, **이 프로젝트의 컨벤션은 `class << self`로 통일**한다(`extend self`·`module_function`은 쓰지 않는다). 함수 모듈은 `app/functions/`에 두고 `class << self` 블록으로 작성한다. (ref: AGENTS.md "class 대신 module 우선 원칙")
 
 ### B. 상태가 있지만 단일 호출만 있는 클래스 → 모듈 함수 + 인자 명시
 

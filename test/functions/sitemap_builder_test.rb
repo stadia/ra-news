@@ -41,7 +41,7 @@ class SitemapBuilderTest < ActiveSupport::TestCase
     end
   end
 
-  test "populate(ko)는 정적 페이지를 .dev 호스트로 등재하고 hreflang alternates를 붙인다" do
+  test "populate(ko)는 정적 페이지를 .dev 호스트로 등재한다" do
     dsl = FakeDsl.new
     SitemapBuilder.populate(dsl, "ko", "https://ruby-news.dev", [])
 
@@ -49,10 +49,6 @@ class SitemapBuilderTest < ActiveSupport::TestCase
 
     assert root, "홈 URL이 등재되어야 한다"
     assert_equal "https://ruby-news.dev", root[1].fetch(:host)
-    assert_equal [
-      { href: "https://ruby-news.dev", lang: "ko" },
-      { href: "https://ruby-news.jp", lang: "ja" }
-    ], root[1].fetch(:alternates)
   end
 
   test "populate(ja)의 <loc>는 .jp 호스트만 가진다" do
@@ -68,8 +64,7 @@ class SitemapBuilderTest < ActiveSupport::TestCase
     ko_only = SitemapBuilder::Entry.new(
       path: "/articles/x",
       lastmod: "2026-01-01T00:00:00+09:00",
-      available: [ "ko" ],
-      alternates: [ { href: "https://ruby-news.dev/articles/x", lang: "ko" } ]
+      available: [ "ko" ]
     )
 
     ko_dsl = FakeDsl.new
@@ -81,13 +76,6 @@ class SitemapBuilderTest < ActiveSupport::TestCase
     SitemapBuilder.populate(ja_dsl, "ja", "https://ruby-news.jp", [ ko_only ])
 
     refute_includes ja_dsl.calls.map(&:first), "/articles/x", "ja 번역이 없으면 ja 사이트맵에서 제외"
-  end
-
-  test "보조 도메인은 hreflang alternates로 포함한다" do
-    assert_equal [
-      { href: "https://ruby-news.dev/articles", lang: "ko" },
-      { href: "https://ruby-news.jp/articles", lang: "ja" }
-    ], SitemapBuilder.alternates_for("/articles")
   end
 
   test "lastmod는 발행 이후 업데이트 시각을 반영한다" do

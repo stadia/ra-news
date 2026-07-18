@@ -7,7 +7,7 @@ class ProfilesController < ApplicationController
   skip_before_action :authenticate_user!, only: [ :show, :posts, :comments, :blog, :boosts ]
 
   before_action :set_user
-  before_action :require_own_profile, only: [ :followers, :following ]
+  before_action :require_own_profile, only: [ :likes, :followers, :following ]
 
   def show
     posts
@@ -48,26 +48,11 @@ class ProfilesController < ApplicationController
   end
 
   def likes
-    unless current_user == @user
-      redirect_to(user_profile_base_path(username: @user.username),
-                  alert: "본인만 볼 수 있습니다") and return
-    end
-
     likes = Like.where(actor: @user.federails_actor, likeable_type: %w[Article Post])
                 .order(created_at: :desc)
     @pagy, page_likes = pagy(likes)
 
-    article_ids = page_likes.select { |l| l.likeable_type == "Article" }.map(&:likeable_id)
-    post_ids = page_likes.select { |l| l.likeable_type == "Post" }.map(&:likeable_id)
-
-    articles_by_id = Article.kept.where(id: article_ids)
-                            .includes(:user, :site, :tags).index_by(&:id)
-    posts_by_id = Post.where(id: post_ids)
-                      .includes(:user, :federails_actor, :article, :tags).index_by(&:id)
-
-    @likeables = page_likes.map { |l|
-      l.likeable_type == "Article" ? articles_by_id[l.likeable_id] : posts_by_id[l.likeable_id]
-    }.compact
+    @likeables = Profiles::PolymorphicActivity.resolve(page_likes.map { |l| [ l.likeable_type, l.likeable_id ] })
     render_activity_page(:likes)
   end
 
@@ -76,17 +61,7 @@ class ProfilesController < ApplicationController
                   .order(created_at: :desc)
     @pagy, page_boosts = pagy(boosts)
 
-    article_ids = page_boosts.select { |b| b.boostable_type == "Article" }.map(&:boostable_id)
-    post_ids = page_boosts.select { |b| b.boostable_type == "Post" }.map(&:boostable_id)
-
-    articles_by_id = Article.kept.where(id: article_ids)
-                            .includes(:user, :site, :tags).index_by(&:id)
-    posts_by_id = Post.where(id: post_ids)
-                      .includes(:user, :federails_actor, :article, :tags).index_by(&:id)
-
-    @boostables = page_boosts.map { |b|
-      b.boostable_type == "Article" ? articles_by_id[b.boostable_id] : posts_by_id[b.boostable_id]
-    }.compact
+    @boostables = Profiles::PolymorphicActivity.resolve(page_boosts.map { |b| [ b.boostable_type, b.boostable_id ] })
     render_activity_page(:boosts)
   end
 
@@ -108,62 +83,39 @@ class ProfilesController < ApplicationController
     end
 
     def render_activity_page(tab)
+      if turbo_frame_request?
+        render activity_list_component(tab)
+      else
+        render_show_with_activity(active_tab: tab)
+      end
+    end
+
+    #: (Symbol) -> Views::Base
+    def activity_list_component(tab)
       case tab
       when :posts
-        if turbo_frame_request?
-          render Views::Profiles::PostList.new(
-            user: @user, posts: @posts, pagy: @pagy,
-            liked_post_ids: @liked_post_ids,
-            boosted_post_ids: @boosted_post_ids
-          )
-        else
-          render_show_with_activity(active_tab: :posts)
-        end
+        Views::Profiles::PostList.new(**post_list_args)
       when :comments
-        if turbo_frame_request?
-          render Views::Profiles::CommentList.new(
-            user: @user, posts: @posts, pagy: @pagy,
-            liked_post_ids: @liked_post_ids,
-            boosted_post_ids: @boosted_post_ids
-          )
-        else
-          render_show_with_activity(active_tab: :comments)
-        end
-      when :likes
-        if turbo_frame_request?
-          render Views::Profiles::LikeList.new(
-            user: @user, likeables: @likeables, pagy: @pagy
-          )
-        else
-          render_show_with_activity(active_tab: :likes)
-        end
-      when :boosts
-        if turbo_frame_request?
-          render Views::Profiles::BoostList.new(
-            user: @user, boostables: @boostables, pagy: @pagy
-          )
-        else
-          render_show_with_activity(active_tab: :boosts)
-        end
+        Views::Profiles::CommentList.new(**post_list_args)
       when :blog
-        if turbo_frame_request?
-          render Views::Profiles::BlogList.new(
-            user: @user, posts: @posts, pagy: @pagy,
-            liked_post_ids: @liked_post_ids,
-            boosted_post_ids: @boosted_post_ids
-          )
-        else
-          render_show_with_activity(active_tab: :blog)
-        end
-      when :followers, :following
-        if turbo_frame_request?
-          render Views::Profiles::FollowList.new(
-            user: @user, followings: @follow_actors, type: tab
-          )
-        else
-          render_show_with_activity(active_tab: tab)
-        end
+        Views::Profiles::BlogList.new(**post_list_args)
+      when :likes
+        Views::Profiles::LikeList.new(user: @user, likeables: @likeables, pagy: @pagy)
+      when :boosts
+        Views::Profiles::BoostList.new(user: @user, boostables: @boostables, pagy: @pagy)
+      when :followers
+        Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: :followers)
+      when :following
+        Views::Profiles::FollowList.new(user: @user, followings: @follow_actors, type: :following)
+      else
+        raise ArgumentError, "Unknown tab: #{tab}"
       end
+    end
+
+    #: () -> Hash[Symbol, untyped]
+    def post_list_args
+      { user: @user, posts: @posts, pagy: @pagy,
+        liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids }
     end
 
     def render_show_with_activity(active_tab:)

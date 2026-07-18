@@ -128,6 +128,26 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, posts(:root_post).body
   end
 
+  test "GET likes as other user redirects to profile with alert" do
+    user = users(:john)
+    other = users(:jane)
+    sign_in other
+
+    get "/@#{user.username}/likes"
+
+    assert_redirected_to user_profile_base_path(username: user.username)
+    assert_equal "본인만 볼 수 있습니다", flash[:alert]
+  end
+
+  test "GET likes requires login" do
+    user = users(:john)
+
+    get "/@#{user.username}/likes"
+
+    assert_response :redirect
+    assert_redirected_to new_user_session_path
+  end
+
   test "posts page shows published blog posts" do
     sign_in users(:john)
     get user_profile_posts_url(username: users(:john).username)
