@@ -3,7 +3,11 @@
 
 module Articles
   module Search
-    Index = Data.define(:pagy, :articles, :suggestions)
+    Index = Data.define(
+      :pagy,        #: untyped
+      :articles,    #: untyped
+      :suggestions  #: untyped
+    )
 
     class << self
       #: (String? search, ^(ActiveRecord::Relation) -> [Pagy, Array[Article]] pagy) -> Index
