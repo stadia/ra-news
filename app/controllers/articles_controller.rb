@@ -25,17 +25,16 @@ class ArticlesController < ApplicationController
       return
     end
 
-    @pagy, @articles = pagy(Articles::Query.index_html(search))
-    suggestions = @articles.empty? && search.present? ? Articles::Search.suggest(search) : []
+    search_result = Articles::Search.index_html(search:, pagy: method(:pagy))
     render Views::Articles::Index.new(
-      pagy: @pagy,
-      articles: @articles,
+      pagy: search_result.pagy,
+      articles: search_result.articles,
       sidebar_tags: sidebar_tags,
       search: search,
       source: source,
-      liked_article_ids: liked_article_ids(@articles),
-      boosted_article_ids: boosted_article_ids(@articles),
-      suggestions: suggestions
+      liked_article_ids: liked_article_ids(search_result.articles),
+      boosted_article_ids: boosted_article_ids(search_result.articles),
+      suggestions: search_result.suggestions
     )
   end
 

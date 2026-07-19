@@ -3,7 +3,17 @@
 
 module Articles
   module Search
+    Index = Data.define(:pagy, :articles, :suggestions)
+
     class << self
+      #: (String? search, ^(ActiveRecord::Relation) -> [Pagy, Array[Article]] pagy) -> Index
+      def index_html(search:, pagy:)
+        pagy_result, articles = pagy.call(Articles::Query.index_html(search))
+        suggestions = articles.empty? && search.present? ? suggest(search) : []
+
+        Index.new(pagy: pagy_result, articles:, suggestions:)
+      end
+
       # ── cosine_similarity ──────────────────────────────────────
       #: (Array[Float]? a, Array[Float]? b) -> Float
       def cosine_similarity(a, b)
