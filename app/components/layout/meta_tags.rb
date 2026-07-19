@@ -27,17 +27,18 @@ class Components::Layout::MetaTags < Components::Base
     meta(name: "slack-app-id", content: "A0AS9BX8B7U")
 
     vc = view_context
+    assigns = vc.assigns
     path = vc.request.path
     base = vc.request.base_url
     current_url = "#{base}#{path}"
 
     # 현재 로케일 번역이 없어 원문(한국어)으로 폴백된 페이지는 색인 제외.
-    meta(name: "robots", content: "noindex, follow") if vc.instance_variable_get(:@robots_noindex)
+    meta(name: "robots", content: "noindex, follow") if assigns["robots_noindex"]
 
     vc.set_meta_tags canonical: current_url
     page_title = content_for(:title).presence || vc.t("layout.default_title")
-    page_desc = vc.instance_variable_get(:@page_description) || vc.t("layout.default_description")
-    og_image = vc.instance_variable_get(:@og_image) || image_url("og_main.png")
+    page_desc = assigns["page_description"] || vc.t("layout.default_description")
+    og_image = assigns["og_image"] || image_url("og_main.png")
     og_locale = OG_LOCALES.fetch(I18n.locale, "ko_KR")
 
     raw vc.display_meta_tags(
@@ -48,11 +49,11 @@ class Components::Layout::MetaTags < Components::Base
         description: page_desc,
         site_name: vc.t("layout.site_name"),
         image: og_image,
-        type: vc.instance_variable_get(:@og_type) || "website",
+        type: assigns["og_type"] || "website",
         url: current_url,
         locale: og_locale
       },
-      article: vc.instance_variable_get(:@og_article),
+      article: assigns["og_article"],
       twitter: {
         card: "summary_large_image",
         site: "@rubynewskr",
@@ -61,7 +62,6 @@ class Components::Layout::MetaTags < Components::Base
         image: og_image
       }
     )
-
   end
 
   def render_rss_link
