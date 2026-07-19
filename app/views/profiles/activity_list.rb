@@ -1,24 +1,28 @@
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 class Views::Profiles::ActivityList < Views::Base
   include Phlex::Rails::Helpers::ContentFor
   include Phlex::Rails::Helpers::TurboFrameTag
 
   # Maps an activity tab to its empty-state i18n key.
-  # Explicit hash avoids the posts -> post_list singular/plural interpolation trap.
+  # Explicit hash: tab names (posts, comments) are plural but the i18n keys are
+  # singular (post_list, comment_list), so a naive "#{tab}_list" interpolation
+  # would miss them. blog matches by coincidence — don't rely on that.
   EMPTY_KEYS = {
     posts: "profiles.post_list.empty",
     comments: "profiles.comment_list.empty",
     blog: "profiles.blog_list.empty"
   }.freeze
 
-  def initialize(user:, posts:, pagy:, active_tab:, empty_key:,
+  #: (user: User, posts: Array[Post] | ActiveRecord::Relation, pagy: Pagy, active_tab: Symbol, ?liked_post_ids: Array[Integer], ?boosted_post_ids: Array[Integer], ?embedded: bool) -> void
+  def initialize(user:, posts:, pagy:, active_tab:,
                  liked_post_ids: [], boosted_post_ids: [], embedded: false)
     @user = user
     @posts = posts
     @pagy = pagy
     @active_tab = active_tab
-    @empty_key = empty_key
+    @empty_key = EMPTY_KEYS.fetch(active_tab)
     @liked_post_ids = liked_post_ids
     @boosted_post_ids = boosted_post_ids
     @embedded = embedded

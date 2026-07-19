@@ -96,8 +96,7 @@ class ProfilesController < ApplicationController
       when :posts, :comments, :blog
         Views::Profiles::ActivityList.new(
           **post_list_args,
-          active_tab: tab,
-          empty_key: Views::Profiles::ActivityList::EMPTY_KEYS.fetch(tab)
+          active_tab: tab
         )
       when :likes
         Views::Profiles::LikeList.new(user: @user, likeables: @likeables, pagy: @pagy)

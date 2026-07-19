@@ -115,6 +115,26 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, I18n.t("profiles.activity_tabs.comments")
   end
 
+  test "GET posts as Turbo frame renders post list" do
+    user = users(:john)
+
+    get "/@#{user.username}/posts", headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_includes response.body, posts(:blog_published).title
+    assert_includes response.body, I18n.t("profiles.activity_tabs.posts")
+  end
+
+  test "GET blog as Turbo frame renders blog list" do
+    user = users(:john)
+
+    get "/@#{user.username}/blog", headers: { "Turbo-Frame" => "true" }
+
+    assert_response :success
+    assert_includes response.body, posts(:blog_published).title
+    assert_includes response.body, I18n.t("profiles.activity_tabs.blog")
+  end
+
   test "GET likes as owner Turbo frame renders liked articles and posts" do
     user = users(:john)
     sign_in user
@@ -189,6 +209,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not_includes response.body, posts(:blog_draft).title
     assert_not_includes response.body, posts(:blog_published).title
+    assert_includes response.body, I18n.t("profiles.blog_list.empty")
   end
 
   test "comments tab excludes discarded comments" do
@@ -198,6 +219,17 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_not_includes response.body, posts(:comment_post).body
+    assert_includes response.body, I18n.t("profiles.comment_list.empty")
+  end
+
+  test "posts tab shows empty state when user has no standalone posts" do
+    user = User.create!(email: "empty-posts@example.com", username: "empty_posts",
+                        name: "Empty", password: "password123", confirmed_at: Time.current)
+
+    get user_profile_posts_url(username: user.username)
+
+    assert_response :success
+    assert_includes response.body, I18n.t("profiles.post_list.empty")
   end
 
   test "owner profile shows blog tab" do

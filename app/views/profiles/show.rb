@@ -111,7 +111,6 @@ class Views::Profiles::Show < Views::Base
       render Views::Profiles::ActivityList.new(
         user: @user, posts: @posts || [], pagy: @pagy,
         active_tab: @active_tab,
-        empty_key: Views::Profiles::ActivityList::EMPTY_KEYS.fetch(@active_tab),
         liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids,
         embedded: true
       )
