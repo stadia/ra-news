@@ -1,0 +1,23 @@
+# Generated from app/functions/articles/markdown.rb with RBS::Inline
+
+# Renders an Article as Markdown (used by the `.md` response format). Kept out of
+# the Article model so its I18n-heavy display formatting doesn't add to the
+# model's surface; reads only the article's public locale-aware display methods.
+module Articles
+  module Markdown
+    # : (Article article) -> String
+    def self.render: (Article article) -> String
+
+    # : (Article article) -> String?
+    private def self.summary_key_section: (Article article) -> String?
+
+    # : (Article article) -> String?
+    private def self.introduction_section: (Article article) -> String?
+
+    # : (Article article) -> String?
+    private def self.body_section: (Article article) -> String?
+
+    # : (Article article) -> String?
+    private def self.conclusion_section: (Article article) -> String?
+  end
+end

@@ -3,13 +3,10 @@
 class BlogPostsController < ApplicationController
   def index: () -> untyped
 
-  # Opens the editor for an unsaved draft. No row is created on entry — the
-  # first autosave (or publish) persists it via #create.
-  #
-  # The composer POSTs the in-progress body here so it stays out of the URL; we
-  # stash it in the session and redirect to the GET editor (Turbo follows the
-  # redirect and renders the page). Opening the editor directly (GET) carries
-  # over that stashed body once, then starts fresh.
+  # Opens the editor for an unsaved draft (no row until the first autosave via
+  # #create). The composer POSTs the body so it stays out of the URL; we stash it
+  # in the cache under a per-request nonce, then redirect to the GET editor, which
+  # carries the body over once. The nonce rides the redirect query — no session.
   def new: () -> untyped
 
   def create: () -> untyped
@@ -27,6 +24,17 @@ class BlogPostsController < ApplicationController
   def destroy_permanently: () -> untyped
 
   private
+
+  # Reads and consumes the body stashed by the composer's POST. No nonce opens a
+  # fresh editor; a nonce with no stash (expired/consumed/failed write) surfaces
+  # a notice instead of silently dropping the in-progress body. Consumption is
+  # best-effort — concurrent GETs may both read before deleting, but that only
+  # duplicates a user's own body into their own tabs.
+  def carried_over_draft_body: () -> untyped
+
+  # Namespaced under the current user so a stashed body is only ever readable by
+  # the account that wrote it (defense in depth against nonce guessing).
+  def blog_draft_cache_key: (untyped draft_key) -> untyped
 
   # The publish button on an unsaved draft submits to #create with a publish
   # flag (HTML), so the draft is created and published in one request.

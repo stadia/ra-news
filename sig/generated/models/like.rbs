@@ -1,6 +1,11 @@
 # Generated from app/models/like.rb with RBS::Inline
 
 class Like < ApplicationRecord
+  # Article/Post likes for a profile activity feed, newest first.
+  # A class method (not a scope) so the nil early-return is unambiguous.
+  # : ((User | Federails::Actor)?) -> ActiveRecord::Relation
+  def self.for_actor: ((User | Federails::Actor)?) -> ActiveRecord::Relation
+
   # : (liker: (User | Federails::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
   def self.liked_ids_for: (liker: (User | Federails::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
 

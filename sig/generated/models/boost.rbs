@@ -1,6 +1,11 @@
 # Generated from app/models/boost.rb with RBS::Inline
 
 class Boost < ApplicationRecord
+  # Article/Post boosts for a profile activity feed, newest first.
+  # A class method (not a scope) so the nil early-return is unambiguous.
+  # : ((User | Federails::Actor)?) -> ActiveRecord::Relation
+  def self.for_actor: ((User | Federails::Actor)?) -> ActiveRecord::Relation
+
   # : (booster: (User | Federails::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
   def self.boosted_ids_for: (booster: (User | Federails::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
 
