@@ -50,14 +50,14 @@ class ProfilesController < ApplicationController
   def likes
     @pagy, page_likes = pagy(Like.for_actor(@user.federails_actor))
 
-    @likeables = Profiles::PolymorphicActivity.resolve(page_likes.map { |l| [ l.likeable_type, l.likeable_id ] })
+    @likeables = Profiles::PolymorphicActivity.resolve(page_likes.pluck(:likeable_type, :likeable_id))
     render_activity_page(:likes)
   end
 
   def boosts
     @pagy, page_boosts = pagy(Boost.for_actor(@user.federails_actor))
 
-    @boostables = Profiles::PolymorphicActivity.resolve(page_boosts.map { |b| [ b.boostable_type, b.boostable_id ] })
+    @boostables = Profiles::PolymorphicActivity.resolve(page_boosts.pluck(:boostable_type, :boostable_id))
     render_activity_page(:boosts)
   end
 
