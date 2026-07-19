@@ -14,6 +14,15 @@ class Boost < ApplicationRecord
   after_destroy_commit :publish_undo_activity,  if: :local_actor?
 
   class << self
+    # Article/Post boosts for a profile activity feed, newest first.
+    # A class method (not a scope) so the nil early-return is unambiguous.
+    #: ((User | Federails::Actor)?) -> ActiveRecord::Relation
+    def for_actor(actor)
+      return none if actor.nil?
+
+      where(actor: actor, boostable_type: %w[Article Post]).order(created_at: :desc)
+    end
+
     #: (booster: (User | Federails::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
     def boosted_ids_for(booster:, boostable_type:, boostable_ids:)
       actor = resolve_actor(booster)
