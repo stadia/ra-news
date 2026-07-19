@@ -159,18 +159,9 @@ class Article < ApplicationRecord
 
   # ── Public Instance Methods ──────────────────────────────────────────
 
-  # #: () -> String
+  #: () -> String
   def to_markdown
-    [
-      "# #{display_title}\n",
-      "- **#{I18n.t('articles.markdown.source_url')}**: #{url}",
-      "- **#{I18n.t('articles.markdown.ruby_news_url')}**: #{Rails.application.routes.url_helpers.article_url(self)}",
-      (published_at.present? ? "- **#{I18n.t('articles.markdown.published_at')}**: #{published_at}" : nil),
-      (display_summary_key.present? ? "\n## #{I18n.t('articles.markdown.summary_heading')}\n#{display_summary_key.map { |item| "- #{item}" }.join("\n")}" : nil),
-      (display_summary_detail.is_a?(Hash) && display_summary_detail["introduction"].present? ? "\n## #{I18n.t('articles.markdown.introduction_heading')}\n#{display_summary_detail['introduction']}" : nil),
-      (display_summary_body.present? ? "\n## #{I18n.t('articles.markdown.body_heading')}\n#{display_summary_body}" : nil),
-      (display_summary_detail.is_a?(Hash) && display_summary_detail["conclusion"].present? ? "\n## #{I18n.t('articles.markdown.conclusion_heading')}\n#{display_summary_detail['conclusion']}" : nil)
-    ].compact.join("\n")
+    Articles::Markdown.call(self)
   end
 
   def generate_metadata #: void
