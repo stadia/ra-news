@@ -107,17 +107,12 @@ class Views::Profiles::Show < Views::Base
 
   def activity_content
     case @active_tab
-    when :posts
-      render Views::Profiles::PostList.new(
+    when :posts, :comments, :blog
+      render Views::Profiles::ActivityList.new(
         user: @user, posts: @posts || [], pagy: @pagy,
+        active_tab: @active_tab,
         liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids,
         embedded: true
-      )
-    when :comments
-      render Views::Profiles::CommentList.new(
-        user: @user, posts: @posts || [], pagy: @pagy,
-        liked_post_ids: @liked_post_ids,
-        boosted_post_ids: @boosted_post_ids, embedded: true
       )
     when :likes
       render Views::Profiles::LikeList.new(
@@ -126,12 +121,6 @@ class Views::Profiles::Show < Views::Base
     when :boosts
       render Views::Profiles::BoostList.new(
         user: @user, boostables: @boostables || [], pagy: @pagy, embedded: true
-      )
-    when :blog
-      render Views::Profiles::BlogList.new(
-        user: @user, posts: @posts || [], pagy: @pagy,
-        liked_post_ids: @liked_post_ids,
-        boosted_post_ids: @boosted_post_ids, embedded: true
       )
     when :followers, :following
       render Views::Profiles::FollowList.new(
