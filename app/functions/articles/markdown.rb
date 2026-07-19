@@ -8,7 +8,7 @@ module Articles
   module Markdown
     class << self
       #: (Article article) -> String
-      def call(article)
+      def render(article)
         [
           "# #{article.display_title}\n",
           "- **#{I18n.t('articles.markdown.source_url')}**: #{article.url}",

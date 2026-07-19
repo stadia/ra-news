@@ -161,7 +161,7 @@ class Article < ApplicationRecord
 
   #: () -> String
   def to_markdown
-    Articles::Markdown.call(self)
+    Articles::Markdown.render(self)
   end
 
   def generate_metadata #: void

@@ -22,48 +22,48 @@ class Articles::MarkdownTest < ActiveSupport::TestCase
     }.merge(overrides))
   end
 
-  test "call renders title, source url and ruby-news url" do
-    markdown = Articles::Markdown.call(build_article)
+  test "render includes title, source url and ruby-news url" do
+    markdown = Articles::Markdown.render(build_article)
 
     assert_match "# 테스트 제목", markdown
     assert_match "- **원문 URL**: https://example.com/test", markdown
     assert_match "- **Ruby-News URL**: #{Rails.application.routes.url_helpers.article_url(build_article)}", markdown
   end
 
-  test "call includes published_at line when present" do
-    markdown = Articles::Markdown.call(build_article(published_at: Time.zone.parse("2026-01-02 03:04:05")))
+  test "render includes published_at line when present" do
+    markdown = Articles::Markdown.render(build_article(published_at: Time.zone.parse("2026-01-02 03:04:05")))
 
     assert_match(/- \*\*발행일\*\*: .*2026/, markdown)
   end
 
-  test "call omits published_at line when blank" do
-    markdown = Articles::Markdown.call(build_article(published_at: nil))
+  test "render omits published_at line when blank" do
+    markdown = Articles::Markdown.render(build_article(published_at: nil))
 
     assert_no_match(/\*\*발행일\*\*/, markdown)
   end
 
-  test "call omits summary section when summary_key is blank" do
-    markdown = Articles::Markdown.call(build_article(summary_key: nil, summary_key_ja: nil))
+  test "render omits summary section when summary_key is blank" do
+    markdown = Articles::Markdown.render(build_article(summary_key: nil, summary_key_ja: nil))
 
     assert_no_match(/## 요약/, markdown)
   end
 
-  test "call omits body section when summary_body is blank" do
-    markdown = Articles::Markdown.call(build_article(summary_body: nil, summary_body_ja: nil))
+  test "render omits body section when summary_body is blank" do
+    markdown = Articles::Markdown.render(build_article(summary_body: nil, summary_body_ja: nil))
 
     assert_no_match(/## 본문/, markdown)
   end
 
   # summary_detail is polymorphic; introduction/conclusion only render for a Hash.
-  test "call omits introduction and conclusion when summary_detail is not a Hash" do
-    markdown = Articles::Markdown.call(build_article(summary_detail: "플레인 문자열"))
+  test "render omits introduction and conclusion when summary_detail is not a Hash" do
+    markdown = Articles::Markdown.render(build_article(summary_detail: "플레인 문자열"))
 
     assert_no_match(/## 소개/, markdown)
     assert_no_match(/## 결론/, markdown)
   end
 
-  test "call omits introduction when the introduction key is blank" do
-    markdown = Articles::Markdown.call(build_article(summary_detail: { "conclusion" => "결론만" }))
+  test "render omits introduction when the introduction key is blank" do
+    markdown = Articles::Markdown.render(build_article(summary_detail: { "conclusion" => "결론만" }))
 
     assert_no_match(/## 소개/, markdown)
     assert_match(/## 결론\n결론만/, markdown)
