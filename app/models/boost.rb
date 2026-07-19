@@ -13,6 +13,13 @@ class Boost < ApplicationRecord
   after_create_commit  :enqueue_thumbnail_generation
   after_destroy_commit :publish_undo_activity,  if: :local_actor?
 
+  # Article/Post boosts for a profile activity feed, newest first.
+  scope :for_actor, ->(actor) {
+    return none if actor.nil?
+
+    where(actor: actor, boostable_type: %w[Article Post]).order(created_at: :desc)
+  }
+
   class << self
     #: (booster: (User | Federails::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
     def boosted_ids_for(booster:, boostable_type:, boostable_ids:)

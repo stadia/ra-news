@@ -13,6 +13,13 @@ class Like < ApplicationRecord
   after_create_commit  :enqueue_thumbnail_generation
   after_destroy_commit :publish_undo_activity,  if: :local_actor?
 
+  # Article/Post likes for a profile activity feed, newest first.
+  scope :for_actor, ->(actor) {
+    return none if actor.nil?
+
+    where(actor: actor, likeable_type: %w[Article Post]).order(created_at: :desc)
+  }
+
   class << self
     #: (liker: (User | Federails::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
     def liked_ids_for(liker:, likeable_type:, likeable_ids:)
