@@ -14,28 +14,29 @@ class BlogPostsController < ApplicationController
     )
   end
 
-  # Opens the editor for an unsaved draft. No row is created on entry — the
-  # first autosave (or publish) persists it via #create.
-  #
-  # The composer POSTs the in-progress body here so it stays out of the URL; we
-  # stash it in the session and redirect to the GET editor (Turbo follows the
-  # redirect and renders the page). Opening the editor directly (GET) carries
-  # over that stashed body once, then starts fresh.
+  # Opens the editor for an unsaved draft (no row until the first autosave via
+  # #create). The composer POSTs the body so it stays out of the URL; we stash it
+  # in the cache under a per-request nonce, then redirect to the GET editor, which
+  # carries the body over once. The nonce rides the redirect query — no session.
   def new
     if request.post?
       draft_key = SecureRandom.hex(8)
-      session[:blog_draft_bodies] ||= {}
-      session[:blog_draft_bodies][draft_key] = params.dig(:post, :body).to_s
+      body = params.dig(:post, :body).to_s
+      # SolidCache returns false (not raise) on a failed write; redirect without
+      # the nonce and alert rather than hand the editor a dead key.
+      unless Rails.cache.write(blog_draft_cache_key(draft_key), body, expires_in: 1.week)
+        logger.warn("[BlogPosts#new] draft stash write failed for user=#{current_user.id}")
+        flash[:alert] = t("posts.blog.draft_stash_failed")
+        return redirect_to new_blog_post_path, status: :see_other
+      end
       return redirect_to new_blog_post_path(draft_key: draft_key), status: :see_other
     end
 
-    draft_bodies = session[:blog_draft_bodies] || {}
     @post = current_user.posts.new(
       post_type: :blog,
       status: :draft,
-      body: draft_bodies.delete(params[:draft_key]).to_s
+      body: carried_over_draft_body
     )
-    session[:blog_draft_bodies] = draft_bodies
     render Views::BlogPosts::Edit.new(post: @post)
   end
 
@@ -115,6 +116,33 @@ class BlogPostsController < ApplicationController
   end
 
   private
+
+  # Reads and consumes the body stashed by the composer's POST. No nonce opens a
+  # fresh editor; a nonce with no stash (expired/consumed/failed write) surfaces
+  # a notice instead of silently dropping the in-progress body. Consumption is
+  # best-effort — concurrent GETs may both read before deleting, but that only
+  # duplicates a user's own body into their own tabs.
+  def carried_over_draft_body
+    draft_key = params[:draft_key]
+    return "" if draft_key.blank?
+
+    key = blog_draft_cache_key(draft_key)
+    body = Rails.cache.read(key)
+    if body.nil?
+      logger.warn("[BlogPosts#new] draft stash miss for user=#{current_user.id} key=#{draft_key}")
+      flash.now[:notice] = t("posts.blog.draft_expired")
+      return ""
+    end
+
+    Rails.cache.delete(key)
+    body
+  end
+
+  # Namespaced under the current user so a stashed body is only ever readable by
+  # the account that wrote it (defense in depth against nonce guessing).
+  def blog_draft_cache_key(draft_key)
+    "blog_draft:#{current_user.id}:#{draft_key}"
+  end
 
   # The publish button on an unsaved draft submits to #create with a publish
   # flag (HTML), so the draft is created and published in one request.

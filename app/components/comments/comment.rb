@@ -4,6 +4,7 @@ class Components::Comments::Comment < Components::Base
   include Phlex::Rails::Helpers::ButtonTo
   include PhlexIcons
   include Phlex::Rails::Helpers::DOMID
+  include Phlex::Rails::Helpers::Sanitize
 
   def initialize(comment:, article:, depth: 0, children: {})
     @comment = comment
@@ -84,7 +85,7 @@ class Components::Comments::Comment < Components::Base
 
   def comment_body
     div(class: "text-content-secondary leading-relaxed prose prose-sm dark:prose-invert max-w-none") do
-      raw @comment.body.html_safe
+      raw sanitize(@comment.body.to_s, tags: HtmlSanitizable::ALLOWED_TAGS)
     end
   end
 

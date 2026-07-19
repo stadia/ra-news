@@ -31,18 +31,74 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
   test "new editor prefills body carried from the composer" do
     sign_in @user
 
-    assert_no_difference -> { Post.blog.count } do
-      # POST keeps the body out of the URL; #new stashes it with a per-request
-      # nonce so concurrent tabs don't clobber each other, then redirects to the
-      # GET editor, which prefills it.
-      post new_blog_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
+    # The test env uses :null_store, which never retains writes. Swap in a real
+    # in-memory store just for this case so the stash-then-read round-trips.
+    with_memory_cache do
+      assert_no_difference -> { Post.blog.count } do
+        # POST keeps the body out of the URL; #new stashes it in the cache with a
+        # per-request nonce so concurrent tabs don't clobber each other, then
+        # redirects to the GET editor, which prefills it.
+        post new_blog_post_url, params: { post: { body: "<p>이관된 본문</p>" } }
+
+        assert_response :see_other
+        follow_redirect!
+      end
+
+      assert_response :success
+      assert_includes response.body, "이관된 본문"
+    end
+  end
+
+  test "a stashed draft body is not readable by another user" do
+    # The cache key is namespaced by current_user.id, so the nonce alone must not
+    # let a different account read the body user A stashed. This is the single
+    # property that distinguishes the user-scoped cache from a shared stash.
+    with_memory_cache do
+      sign_in @user
+      post new_blog_post_url, params: { post: { body: "<p>john의 비밀 초안</p>" } }
 
       assert_response :see_other
-      follow_redirect!
+      draft_key = Rack::Utils.parse_query(URI(response.location).query)["draft_key"]
+
+      assert_predicate draft_key, :present?
+
+      sign_out @user
+      sign_in @other_user
+
+      assert_no_difference -> { Post.blog.count } do
+        get new_blog_post_url(draft_key: draft_key)
+      end
+
+      assert_response :success
+      assert_not_includes response.body, "john의 비밀 초안"
+    end
+  end
+
+  test "opening the editor with an unknown draft key notifies instead of silently blanking" do
+    sign_in @user
+
+    # A nonce with no matching stash (expired, consumed, or a failed write) must
+    # not drop the user into a blank editor with no explanation.
+    with_memory_cache do
+      get new_blog_post_url(draft_key: "deadbeef")
     end
 
     assert_response :success
-    assert_includes response.body, "이관된 본문"
+    assert_includes response.body, I18n.t("posts.blog.draft_expired")
+  end
+
+  test "a failed stash write redirects to a blank editor with an alert instead of a dead nonce" do
+    sign_in @user
+
+    # SolidCache returns false (not raise) when a write can't land; the composer
+    # must not hand the editor a nonce that resolves to nothing.
+    Rails.cache.stub(:write, false) do
+      post new_blog_post_url, params: { post: { body: "<p>본문</p>" } }
+    end
+
+    assert_response :see_other
+    assert_nil Rack::Utils.parse_query(URI(response.location).query)["draft_key"]
+    assert_equal I18n.t("posts.blog.draft_stash_failed"), flash[:alert]
   end
 
   test "first autosave creates the draft and returns the persisted urls" do
@@ -346,5 +402,15 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, I18n.t("profiles.blog_list.trash_empty")
+  end
+
+  private
+
+  # test.rb pins the cache to :null_store, so any code under test that relies on
+  # Rails.cache round-tripping needs a real store for the duration of the block.
+  # Rails.stub restores the original store on block exit and avoids the global
+  # reassignment footgun if the suite ever moves to thread-based parallelism.
+  def with_memory_cache(&)
+    Rails.stub(:cache, ActiveSupport::Cache::MemoryStore.new, &)
   end
 end

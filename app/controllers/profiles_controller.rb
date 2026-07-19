@@ -93,12 +93,11 @@ class ProfilesController < ApplicationController
     #: (Symbol) -> Views::Base
     def activity_list_component(tab)
       case tab
-      when :posts
-        Views::Profiles::PostList.new(**post_list_args)
-      when :comments
-        Views::Profiles::CommentList.new(**post_list_args)
-      when :blog
-        Views::Profiles::BlogList.new(**post_list_args)
+      when :posts, :comments, :blog
+        Views::Profiles::ActivityList.new(
+          **post_list_args,
+          active_tab: tab
+        )
       when :likes
         Views::Profiles::LikeList.new(user: @user, likeables: @likeables, pagy: @pagy)
       when :boosts

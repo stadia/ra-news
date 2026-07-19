@@ -287,6 +287,8 @@ ja:
       read_more: 本文を読む
       manage_title: ブログ記事の管理 | Ruby-News
       manage_heading: ブログ記事の管理
+      draft_stash_failed: 下書きをエディタに引き継げませんでした。もう一度お試しください。
+      draft_expired: 引き継ぐ下書きが見つからなかったため、空のエディタで開きました。
       errors:
         blank_draft: 下書きを保存するにはタイトルまたは本文を入力してください。
     post_card:
