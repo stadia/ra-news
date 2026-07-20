@@ -3,6 +3,27 @@
 require "test_helper"
 
 class ArticlesControllerTest < ActionDispatch::IntegrationTest
+  test "Articles::Search exposes the HTML index composition API" do
+    assert_respond_to Articles::Search, :index_html
+  end
+
+  test "GET index delegates Ruby-News result composition to Articles::Search" do
+    calls = []
+    original_index_html = Articles::Search.method(:index_html)
+
+    Articles::Search.stub(:index_html, lambda { |**arguments|
+      calls << arguments
+      original_index_html.call(**arguments)
+    }) do
+      get articles_path, params: { search: "  Ruby  " }
+    end
+
+    assert_response :success
+    assert_equal 1, calls.size
+    assert_equal "Ruby", calls.first[:search]
+    assert_respond_to calls.first[:pagy], :call
+  end
+
   test "GET index defaults to Ruby-News search results" do
     get articles_path
 

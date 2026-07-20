@@ -111,6 +111,49 @@ class Articles::SearchTest < ActiveSupport::TestCase
     )
   end
 
+  # ── index_html ──────────────────────────────────────────────────
+
+  test "index_html returns an IndexResult with empty suggestions when search is nil" do
+    pagy = Pagy.new(count: 0, page: 1)
+    result = Articles::Search.index_html(search: nil, pagy: ->(_relation) { [ pagy, [] ] })
+
+    assert_instance_of Articles::Search::IndexResult, result
+    assert_equal pagy, result.pagy
+    assert_equal [], result.articles
+    assert_equal [], result.suggestions
+  end
+
+  test "index_html fills suggestions from suggest when articles empty and search present" do
+    pagy = Pagy.new(count: 0, page: 1)
+    suggest_calls = []
+    Articles::Search.stub(:suggest, ->(query, **) {
+      suggest_calls << query
+      [ "루비", "ruby on rails" ]
+    }) do
+      result = Articles::Search.index_html(search: "루비", pagy: ->(_relation) { [ pagy, [] ] })
+
+      assert_equal [ "루비" ], suggest_calls
+      assert_equal [ "루비", "ruby on rails" ], result.suggestions
+      assert_equal [], result.articles
+    end
+  end
+
+  test "index_html skips suggest when articles present" do
+    pagy = Pagy.new(count: 1, page: 1)
+    article = articles(:ruby_article)
+    suggest_calls = []
+    Articles::Search.stub(:suggest, ->(*) {
+      suggest_calls << :called
+      []
+    }) do
+      result = Articles::Search.index_html(search: "ruby", pagy: ->(_relation) { [ pagy, [ article ] ] })
+
+      assert_equal [], suggest_calls
+      assert_equal [], result.suggestions
+      assert_equal [ article ], result.articles
+    end
+  end
+
   # ── suggest ─────────────────────────────────────────────────────
 
   test "suggest returns empty array for blank query" do

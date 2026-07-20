@@ -2,6 +2,27 @@
 
 module Articles
   module Search
+    # 검색 화면 조합 결과. 모듈명 Search 안에서 `Index`는 "검색 인덱스(데이터 구조)"로
+    # 오독되므로 IndexResult로 명명한다.
+    # 불변식: suggestions는 articles가 비어있고 search가 존재할 때만 비-빈이다.
+    class IndexResult < Data
+      attr_reader pagy(): Pagy
+
+      attr_reader articles(): Array[Article]
+
+      attr_reader suggestions(): Array[String]
+
+      def self.new: (Pagy pagy, Array[Article] articles, Array[String] suggestions) -> instance
+                  | (pagy: Pagy, articles: Array[Article], suggestions: Array[String]) -> instance
+
+      def self.members: () -> [ :pagy, :articles, :suggestions ]
+
+      def members: () -> [ :pagy, :articles, :suggestions ]
+    end
+
+    # : (String? search, ^(ActiveRecord::Relation) -> [Pagy, Array[Article]] pagy) -> IndexResult
+    def self.index_html: (String? search, ^(ActiveRecord::Relation) -> [ Pagy, Array[Article] ] pagy) -> IndexResult
+
     # ── cosine_similarity ──────────────────────────────────────
     # : (Array[Float]? a, Array[Float]? b) -> Float
     def self.cosine_similarity: (Array[Float]? a, Array[Float]? b) -> Float
