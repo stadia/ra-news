@@ -3,19 +3,25 @@
 
 module Articles
   module Search
-    Index = Data.define(
-      :pagy,        #: untyped
-      :articles,    #: untyped
-      :suggestions  #: untyped
+    # 검색 화면 조합 결과. 모듈명 Search 안에서 `Index`는 "검색 인덱스(데이터 구조)"로
+    # 오독되므로 IndexResult로 명명한다.
+    # 불변식: suggestions는 articles가 비어있고 search가 존재할 때만 비-빈이다.
+    IndexResult = Data.define(
+      :pagy,        #: Pagy
+      :articles,    #: Array[Article]
+      :suggestions  #: Array[String]
     )
 
     class << self
-      #: (String? search, ^(ActiveRecord::Relation) -> [Pagy, Array[Article]] pagy) -> Index
+      #: (String? search, ^(ActiveRecord::Relation) -> [Pagy, Array[Article]] pagy) -> IndexResult
       def index_html(search:, pagy:)
         pagy_result, articles = pagy.call(Articles::Query.index_html(search))
+        # to_a로 미리 로드: empty? 검사(COUNT)와 이후 map(&:id)·뷰 렌더링(SELECT)의
+        # 쿼리 중복을 없애고 RBS 선언(Array[Article])과 일치시킨다.
+        articles = articles.to_a
         suggestions = articles.empty? && search.present? ? suggest(search) : []
 
-        Index.new(pagy: pagy_result, articles:, suggestions:)
+        IndexResult.new(pagy: pagy_result, articles:, suggestions:)
       end
 
       # ── cosine_similarity ──────────────────────────────────────

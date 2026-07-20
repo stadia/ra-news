@@ -43,6 +43,8 @@ Expected: FAIL because `Articles::Search.index_html` does not exist and the cont
 
 Add `Articles::Search.index_html(search:, page:, pagy:)`, returning immutable index state that contains `pagy`, `articles`, and `suggestions`. Call it from `ArticlesController#index` only for the Ruby-News source.
 
+> **구현 드리프트:** 실제 구현은 `index_html(search:, pagy:)`로 `page:` 파라미터를 받지 않는다. Pagy가 `request`에서 페이지를 암묵적으로 읽으므로 명시 전달이 불필요하다. 이 문서는 작성 시점의 계획(historical)이다.
+
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `bin/rails test test/controllers/articles_controller_test.rb -n /delegates/`
