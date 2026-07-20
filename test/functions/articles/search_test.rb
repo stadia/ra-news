@@ -112,9 +112,11 @@ class Articles::SearchTest < ActiveSupport::TestCase
   end
 
   # ── index_html ──────────────────────────────────────────────────
+  # index_html은 pagy callable을 투명하게 호출해 결과를 그대로 전달만 하므로,
+  # 실제 Pagy 인스턴스(Pagy 9 생성자 호환성 부담) 대신 sentinel 객체로 검증한다.
 
   test "index_html returns an IndexResult with empty suggestions when search is nil" do
-    pagy = Pagy.new(count: 0, page: 1)
+    pagy = Object.new
     result = Articles::Search.index_html(search: nil, pagy: ->(_relation) { [ pagy, [] ] })
 
     assert_instance_of Articles::Search::IndexResult, result
@@ -124,7 +126,7 @@ class Articles::SearchTest < ActiveSupport::TestCase
   end
 
   test "index_html fills suggestions from suggest when articles empty and search present" do
-    pagy = Pagy.new(count: 0, page: 1)
+    pagy = Object.new
     suggest_calls = []
     Articles::Search.stub(:suggest, ->(query, **) {
       suggest_calls << query
@@ -139,7 +141,7 @@ class Articles::SearchTest < ActiveSupport::TestCase
   end
 
   test "index_html skips suggest when articles present" do
-    pagy = Pagy.new(count: 1, page: 1)
+    pagy = Object.new
     article = articles(:ruby_article)
     suggest_calls = []
     Articles::Search.stub(:suggest, ->(*) {
