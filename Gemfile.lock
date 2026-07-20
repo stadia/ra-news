@@ -468,6 +468,15 @@ GEM
       opentelemetry-common (~> 0.20)
       opentelemetry-sdk (~> 1.10)
       opentelemetry-semantic_conventions
+    opentelemetry-exporter-otlp-logs (0.5.1)
+      google-protobuf (>= 3.18)
+      googleapis-common-protos-types (~> 1.3)
+      opentelemetry-api (~> 1.1)
+      opentelemetry-common (~> 0.20)
+      opentelemetry-logs-api (~> 0.1)
+      opentelemetry-logs-sdk (~> 0.1)
+      opentelemetry-sdk
+      opentelemetry-semantic_conventions
     opentelemetry-helpers-sql (0.4.0)
       opentelemetry-api (~> 1.7)
     opentelemetry-helpers-sql-processor (0.5.0)
@@ -521,6 +530,12 @@ GEM
     opentelemetry-instrumentation-ruby_llm (0.7.0)
       opentelemetry-api (~> 1.0)
       opentelemetry-instrumentation-base (~> 0.23)
+    opentelemetry-logs-api (0.4.1)
+      opentelemetry-api (~> 1.0)
+    opentelemetry-logs-sdk (0.6.1)
+      opentelemetry-api (~> 1.2)
+      opentelemetry-logs-api (~> 0.1)
+      opentelemetry-sdk (~> 1.3)
     opentelemetry-registry (0.6.3)
       opentelemetry-api (~> 1.1)
     opentelemetry-sdk (1.12.1)
@@ -1002,6 +1017,7 @@ DEPENDENCIES
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
   opentelemetry-exporter-otlp
+  opentelemetry-exporter-otlp-logs
   opentelemetry-instrumentation-aws_sdk
   opentelemetry-instrumentation-concurrent_ruby
   opentelemetry-instrumentation-faraday
@@ -1012,6 +1028,7 @@ DEPENDENCIES
   opentelemetry-instrumentation-rails
   opentelemetry-instrumentation-rake
   opentelemetry-instrumentation-ruby_llm
+  opentelemetry-logs-sdk
   opentelemetry-sdk
   ostruct
   pagy (~> 43.6)
