@@ -66,7 +66,7 @@
       "w": 6,
       "x": 0,
       "y": 18,
-      "i": "ba27811a-2716-4a25-9f84-dbf30896b2e8",
+      "i": "a11272e1-9bd4-4539-80df-a28b3125f8b6",
       "moved": false,
       "static": false
     },
@@ -75,7 +75,7 @@
       "w": 6,
       "x": 6,
       "y": 18,
-      "i": "e3b48480-d15c-44eb-a054-13ffa59a9227",
+      "i": "3770c2f2-cb20-4f15-a68f-1d6ae44c9c7b",
       "moved": false,
       "static": false
     },
@@ -84,7 +84,7 @@
       "w": 6,
       "x": 0,
       "y": 24,
-      "i": "7522011f-7111-4707-9686-bb052dd827a7",
+      "i": "89aaf332-a649-4689-8b1f-d984cfaf9b1f",
       "moved": false,
       "static": false
     },
@@ -195,7 +195,7 @@
                 }
               ],
               "filter": {
-                "expression": "(serviceName = 'ruby-news' AND httpMethod EXISTS AND spanKind = 'Server') httpRoute EXISTS AND httpMethod EXISTS"
+                "expression": "(serviceName = 'ruby-news' AND httpMethod EXISTS AND spanKind = 'Server') AND httpRoute EXISTS AND httpMethod EXISTS"
               }
             },
             {
@@ -234,7 +234,7 @@
                 }
               ],
               "filter": {
-                "expression": "(serviceName = 'ruby-news' AND httpMethod EXISTS AND spanKind = 'Server') httpRoute EXISTS AND httpMethod EXISTS"
+                "expression": "(serviceName = 'ruby-news' AND httpMethod EXISTS AND spanKind = 'Server') AND httpRoute EXISTS AND httpMethod EXISTS"
               }
             }
           ],
@@ -485,7 +485,7 @@
                 }
               ],
               "filter": {
-                "expression": "(spanKind = 'Server' AND httpMethod EXISTS AND serviceName = 'ruby-news') httpRoute EXISTS AND httpMethod EXISTS"
+                "expression": "(spanKind = 'Server' AND httpMethod EXISTS AND serviceName = 'ruby-news') AND httpRoute EXISTS AND httpMethod EXISTS"
               }
             }
           ],
@@ -623,7 +623,7 @@
                 }
               ],
               "filter": {
-                "expression": "(httpMethod EXISTS AND serviceName = 'ruby-news' AND spanKind = 'Server') responseStatusCode EXISTS AND httpRoute EXISTS"
+                "expression": "(httpMethod EXISTS AND serviceName = 'ruby-news' AND spanKind = 'Server') AND responseStatusCode EXISTS AND httpRoute EXISTS"
               }
             }
           ],
@@ -763,7 +763,7 @@
                 }
               ],
               "filter": {
-                "expression": "serviceName = 'ruby-news' externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
+                "expression": "serviceName = 'ruby-news' AND externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
               }
             },
             {
@@ -801,7 +801,7 @@
                 }
               ],
               "filter": {
-                "expression": "serviceName = 'ruby-news' externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
+                "expression": "serviceName = 'ruby-news' AND externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
               }
             },
             {
@@ -839,7 +839,7 @@
                 }
               ],
               "filter": {
-                "expression": "serviceName = 'ruby-news' externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
+                "expression": "serviceName = 'ruby-news' AND externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
               }
             }
           ],
@@ -1066,7 +1066,7 @@
       },
       "description": "",
       "fillSpans": false,
-      "id": "ba27811a-2716-4a25-9f84-dbf30896b2e8",
+      "id": "a11272e1-9bd4-4539-80df-a28b3125f8b6",
       "isStacked": false,
       "mergeAllActiveQueries": false,
       "nullZeroValues": "zero",
@@ -1111,7 +1111,7 @@
                 }
               ],
               "filter": {
-                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS AND db.statement EXISTS"
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') AND dbName EXISTS AND db.statement EXISTS"
               }
             },
             {
@@ -1150,7 +1150,7 @@
                 }
               ],
               "filter": {
-                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS AND db.statement EXISTS"
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') AND dbName EXISTS AND db.statement EXISTS"
               }
             },
             {
@@ -1189,7 +1189,7 @@
                 }
               ],
               "filter": {
-                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS AND db.statement EXISTS"
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') AND dbName EXISTS AND db.statement EXISTS"
               }
             }
           ],
@@ -1284,7 +1284,7 @@
       },
       "description": "",
       "fillSpans": false,
-      "id": "e3b48480-d15c-44eb-a054-13ffa59a9227",
+      "id": "3770c2f2-cb20-4f15-a68f-1d6ae44c9c7b",
       "isStacked": false,
       "mergeAllActiveQueries": false,
       "nullZeroValues": "zero",
@@ -1410,7 +1410,7 @@
       },
       "description": "",
       "fillSpans": false,
-      "id": "7522011f-7111-4707-9686-bb052dd827a7",
+      "id": "89aaf332-a649-4689-8b1f-d984cfaf9b1f",
       "isStacked": false,
       "mergeAllActiveQueries": false,
       "nullZeroValues": "zero",
@@ -1421,7 +1421,7 @@
           "queryData": [
             {
               "dataSource": "traces",
-              "disabled": true,
+              "disabled": false,
               "expression": "A",
               "functions": [],
               "groupBy": [
@@ -1448,12 +1448,12 @@
                 }
               ],
               "filter": {
-                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news' AND hasError = 'true') dbName EXISTS"
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news' AND hasError = 'true') AND dbName EXISTS"
               }
             },
             {
               "dataSource": "traces",
-              "disabled": true,
+              "disabled": false,
               "expression": "B",
               "functions": [],
               "groupBy": [
@@ -1480,7 +1480,7 @@
                 }
               ],
               "filter": {
-                "expression": "dbSystem EXISTS dbName EXISTS"
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') AND dbName EXISTS"
               }
             }
           ],
@@ -1620,7 +1620,7 @@
                 }
               ],
               "filter": {
-                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS"
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') AND dbName EXISTS"
               }
             }
           ],
