@@ -759,7 +759,7 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
-    rubocop-rbs_inline (1.6.1)
+    rubocop-rbs_inline (1.7.0)
       lint_roller (~> 1.1)
       rbs-inline
       rubocop (>= 1.72.1, < 2.0)
