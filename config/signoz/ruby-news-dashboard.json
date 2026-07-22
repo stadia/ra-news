@@ -1,0 +1,2247 @@
+{
+  "title": "Ruby News — APM (HTTP · DB · Logs · Jobs)",
+  "description": "OpenTelemetry APM for the ruby-news service. Built from SigNoz official APM panels (traces) plus logs/jobs panels. All panels are hardcoded to serviceName = 'ruby-news' and require no span-metrics pipeline.",
+  "tags": [
+    "ruby-news",
+    "apm",
+    "opentelemetry"
+  ],
+  "layout": [
+    {
+      "h": 6,
+      "w": 6,
+      "x": 0,
+      "y": 0,
+      "i": "ba27811a-2716-4a25-9f84-dbf30896b2e8",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 6,
+      "y": 0,
+      "i": "e3b48480-d15c-44eb-a054-13ffa59a9227",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 0,
+      "y": 6,
+      "i": "7522011f-7111-4707-9686-bb052dd827a7",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 6,
+      "y": 6,
+      "i": "c1f9db31-4cef-48ba-9ed1-109dcfa01f8b",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 0,
+      "y": 12,
+      "i": "9d8edd39-4fa6-4fdc-acc4-a23df0baa650",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 6,
+      "y": 12,
+      "i": "470f834c-fa5e-457f-a85f-a0571767fa43",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 0,
+      "y": 18,
+      "i": "ba27811a-2716-4a25-9f84-dbf30896b2e8",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 6,
+      "y": 18,
+      "i": "e3b48480-d15c-44eb-a054-13ffa59a9227",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 0,
+      "y": 24,
+      "i": "7522011f-7111-4707-9686-bb052dd827a7",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 6,
+      "y": 24,
+      "i": "057b5e82-35ca-40fa-b8a3-c6f5d23433c0",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 0,
+      "y": 30,
+      "i": "ebeb4f0d-4fe6-432e-980d-35cfed5a1abb",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 6,
+      "y": 30,
+      "i": "0b5efdb1-66f0-4e5f-acb2-94fd728600ae",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 0,
+      "y": 36,
+      "i": "d3aae3a7-8002-4edf-af27-66786bc5a395",
+      "moved": false,
+      "static": false
+    },
+    {
+      "h": 6,
+      "w": 6,
+      "x": 6,
+      "y": 36,
+      "i": "e29f4910-26db-441c-9454-ce1bca04aeec",
+      "moved": false,
+      "static": false
+    }
+  ],
+  "panelMap": {},
+  "variables": {},
+  "widgets": [
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "ba27811a-2716-4a25-9f84-dbf30896b2e8",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "table",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "httpRoute--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpRoute",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "id": "httpMethod--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpMethod"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "Count",
+              "limit": null,
+              "orderBy": [
+                {
+                  "columnName": "count()",
+                  "order": "desc"
+                }
+              ],
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "(serviceName = 'ruby-news' AND httpMethod EXISTS AND spanKind = 'Server') httpRoute EXISTS AND httpMethod EXISTS"
+              }
+            },
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "httpRoute--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpRoute",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "id": "httpMethod--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpMethod"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "Avg Duration",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "B",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "avg(durationNano)"
+                }
+              ],
+              "filter": {
+                "expression": "(serviceName = 'ruby-news' AND httpMethod EXISTS AND spanKind = 'Server') httpRoute EXISTS AND httpMethod EXISTS"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "2c7b8007-a4cd-4d96-80dd-027f5c66f6b8",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Top HTTP Endpoints",
+      "yAxisUnit": "none"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "e3b48480-d15c-44eb-a054-13ffa59a9227",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "list",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "offset": 0,
+              "orderBy": [
+                {
+                  "columnName": "durationNano",
+                  "order": "desc"
+                }
+              ],
+              "pageSize": 10,
+              "queryName": "B",
+              "stepInterval": 60,
+              "filter": {
+                "expression": "(serviceName = 'ruby-news' AND httpMethod EXISTS AND spanKind = 'Server')"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "280531a8-ae53-43c4-b932-cbf68b311583",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Slowest HTTP Calls",
+      "yAxisUnit": "none"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "7522011f-7111-4707-9686-bb052dd827a7",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "httpRoute--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpRoute",
+                  "type": "tag"
+                },
+                {
+                  "dataType": "string",
+                  "id": "httpMethod--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpMethod"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{httpRoute}} - {{httpMethod}}",
+              "limit": null,
+              "orderBy": [],
+              "pageSize": 10,
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "p90(durationNano)"
+                }
+              ],
+              "filter": {
+                "expression": "(spanKind = 'Server' AND httpMethod EXISTS AND serviceName = 'ruby-news') httpRoute EXISTS AND httpMethod EXISTS"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "6efa5876-0c53-4ff2-8465-9fdd767917f2",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "HTTP Endpoint Latency - P90",
+      "yAxisUnit": "ns"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "description": "",
+      "fillSpans": false,
+      "id": "c1f9db31-4cef-48ba-9ed1-109dcfa01f8b",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "responseStatusCode--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "responseStatusCode"
+                },
+                {
+                  "dataType": "string",
+                  "id": "httpRoute--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpRoute",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{httpRoute}} - {{responseStatusCode}}",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "rate()"
+                }
+              ],
+              "filter": {
+                "expression": "(httpMethod EXISTS AND serviceName = 'ruby-news' AND spanKind = 'Server') responseStatusCode EXISTS AND httpRoute EXISTS"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "af26dc59-8995-4024-8521-bb2eb5db8392",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "HTTP Status Code distribution",
+      "yAxisUnit": "none"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "reqps",
+        "C": "ns"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "9d8edd39-4fa6-4fdc-acc4-a23df0baa650",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "table",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "externalHttpUrl--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "externalHttpUrl"
+                },
+                {
+                  "dataType": "string",
+                  "id": "externalHttpMethod--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "externalHttpMethod"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "Total Calls",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "serviceName = 'ruby-news' externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
+              }
+            },
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "externalHttpUrl--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "externalHttpUrl"
+                },
+                {
+                  "dataType": "string",
+                  "id": "externalHttpMethod--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "externalHttpMethod"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "Request Rate",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "B",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "rate()"
+                }
+              ],
+              "filter": {
+                "expression": "serviceName = 'ruby-news' externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
+              }
+            },
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "C",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "externalHttpUrl--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "externalHttpUrl"
+                },
+                {
+                  "dataType": "string",
+                  "id": "externalHttpMethod--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "externalHttpMethod"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "P90 Duration",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "C",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "p90(durationNano)"
+                }
+              ],
+              "filter": {
+                "expression": "serviceName = 'ruby-news' externalHttpUrl EXISTS AND externalHttpMethod EXISTS"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "54240805-b23b-4d9c-8af4-a39124b8f60a",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "External HTTP APIs",
+      "yAxisUnit": "none"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {},
+      "description": "Rate of HTTP 5xx server errors per endpoint",
+      "fillSpans": false,
+      "id": "470f834c-fa5e-457f-a85f-a0571767fa43",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "httpRoute--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "httpRoute",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{httpRoute}}",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "rate()"
+                }
+              ],
+              "filter": {
+                "expression": "serviceName = 'ruby-news' AND spanKind = 'Server' AND httpRoute EXISTS AND responseStatusCode LIKE '5%'"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "e90c2095-229e-4c0e-ac77-93873c549a25",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "5xx Error Rate by Endpoint",
+      "yAxisUnit": "reqps"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns",
+        "C": "reqps"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "ba27811a-2716-4a25-9f84-dbf30896b2e8",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "table",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "dbName--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "dbName"
+                },
+                {
+                  "dataType": "string",
+                  "id": "db.statement--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "db.statement",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "Total Calls",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS AND db.statement EXISTS"
+              }
+            },
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "dbName--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "dbName"
+                },
+                {
+                  "dataType": "string",
+                  "id": "db.statement--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "db.statement",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "Average Duration",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "B",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "p50(durationNano)"
+                }
+              ],
+              "filter": {
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS AND db.statement EXISTS"
+              }
+            },
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "C",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "dbName--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "dbName"
+                },
+                {
+                  "dataType": "string",
+                  "id": "db.statement--string--tag--false",
+                  "isColumn": false,
+                  "isJSON": false,
+                  "key": "db.statement",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "Rate",
+              "limit": null,
+              "orderBy": [],
+              "queryName": "C",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "rate()"
+                }
+              ],
+              "filter": {
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS AND db.statement EXISTS"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "9f83ebf2-7e19-4099-8f1c-67ab3dc9e434",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Top DB Statements",
+      "yAxisUnit": "none"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "e3b48480-d15c-44eb-a054-13ffa59a9227",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "list",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "offset": 0,
+              "orderBy": [
+                {
+                  "columnName": "durationNano",
+                  "order": "desc"
+                }
+              ],
+              "pageSize": 10,
+              "queryName": "B",
+              "stepInterval": 60,
+              "filter": {
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news')"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "3f21290e-98a8-4952-8469-89caef7f48bb",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "db.statement--string--tag--false",
+          "isColumn": false,
+          "isJSON": false,
+          "key": "db.statement",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "dbOperation--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "dbOperation",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Slowest DB Calls",
+      "yAxisUnit": "none"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "7522011f-7111-4707-9686-bb052dd827a7",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": true,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "dbName--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "dbName"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "pageSize": 10,
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news' AND hasError = 'true') dbName EXISTS"
+              }
+            },
+            {
+              "dataSource": "traces",
+              "disabled": true,
+              "expression": "B",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "dbName--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "dbName"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "",
+              "limit": null,
+              "orderBy": [],
+              "pageSize": 10,
+              "queryName": "B",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "dbSystem EXISTS dbName EXISTS"
+              }
+            }
+          ],
+          "queryFormulas": [
+            {
+              "disabled": false,
+              "expression": "(A/B)",
+              "legend": "{{dbName}}",
+              "queryName": "F1"
+            }
+          ]
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "2d618591-b379-4647-be65-a1700243a2a5",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "DB Error rate",
+      "yAxisUnit": "percent"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "",
+      "fillSpans": false,
+      "id": "057b5e82-35ca-40fa-b8a3-c6f5d23433c0",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "dbName--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "dbName"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{dbName}}",
+              "limit": null,
+              "orderBy": [],
+              "pageSize": 10,
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "rate()"
+                }
+              ],
+              "filter": {
+                "expression": "(dbSystem EXISTS AND serviceName = 'ruby-news') dbName EXISTS"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "dfd48c10-650d-4150-9ab9-0234fe01ce73",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "DB Transaction Rate",
+      "yAxisUnit": "reqps"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "OTLP log records grouped by severity (from rails_semantic_logger → OTLP appender).",
+      "fillSpans": false,
+      "id": "ebeb4f0d-4fe6-432e-980d-35cfed5a1abb",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "logs",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "severity_text--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "severity_text",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{severity_text}}",
+              "limit": null,
+              "pageSize": 10,
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": ""
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "d4cd0176-940c-429c-ba26-d1db8a70e6db",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Log volume by level",
+      "yAxisUnit": "short"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "Rate of WARN/ERROR/FATAL log records. Adjust severity values in the filter if your severity_text casing differs.",
+      "fillSpans": false,
+      "id": "0b5efdb1-66f0-4e5f-acb2-94fd728600ae",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "logs",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "severity_text--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "severity_text",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{severity_text}}",
+              "limit": null,
+              "pageSize": 10,
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "severity_text IN ('WARN','ERROR','FATAL')"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "b45167e8-dba8-47d4-945c-abceeea16182",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Error / Warn log rate",
+      "yAxisUnit": "short"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "active_job/solid_queue spans (CONSUMER kind) grouped by span name. Verify spanKind mapping in SigNoz if empty.",
+      "fillSpans": false,
+      "id": "d3aae3a7-8002-4edf-af27-66786bc5a395",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "name--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "name",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{name}}",
+              "limit": null,
+              "pageSize": 10,
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "rate()"
+                }
+              ],
+              "filter": {
+                "expression": "serviceName = 'ruby-news' AND spanKind = 'Consumer'"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "aefb110e-4db0-4d87-b314-53f898663882",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Background job throughput",
+      "yAxisUnit": "short"
+    },
+    {
+      "bucketCount": 30,
+      "bucketWidth": 0,
+      "columnUnits": {
+        "B": "ns"
+      },
+      "description": "Errored background job spans. Uses hasError flag on CONSUMER spans.",
+      "fillSpans": false,
+      "id": "e29f4910-26db-441c-9454-ce1bca04aeec",
+      "isStacked": false,
+      "mergeAllActiveQueries": false,
+      "nullZeroValues": "zero",
+      "opacity": "1",
+      "panelTypes": "graph",
+      "query": {
+        "builder": {
+          "queryData": [
+            {
+              "dataSource": "traces",
+              "disabled": false,
+              "expression": "A",
+              "functions": [],
+              "groupBy": [
+                {
+                  "dataType": "string",
+                  "id": "name--string--tag--true",
+                  "isColumn": true,
+                  "isJSON": false,
+                  "key": "name",
+                  "type": "tag"
+                }
+              ],
+              "having": {
+                "expression": ""
+              },
+              "legend": "{{name}}",
+              "limit": null,
+              "pageSize": 10,
+              "queryName": "A",
+              "stepInterval": 60,
+              "aggregations": [
+                {
+                  "expression": "count()"
+                }
+              ],
+              "filter": {
+                "expression": "serviceName = 'ruby-news' AND spanKind = 'Consumer' AND hasError = 'true'"
+              }
+            }
+          ],
+          "queryFormulas": []
+        },
+        "clickhouse_sql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "id": "0ec3362e-9e63-4e85-9f9a-07cc67ce5d89",
+        "promql": [
+          {
+            "disabled": false,
+            "legend": "",
+            "name": "A",
+            "query": ""
+          }
+        ],
+        "queryType": "builder"
+      },
+      "selectedLogFields": [
+        {
+          "dataType": "string",
+          "name": "body",
+          "type": ""
+        },
+        {
+          "dataType": "string",
+          "name": "timestamp",
+          "type": ""
+        }
+      ],
+      "selectedTracesFields": [
+        {
+          "dataType": "string",
+          "id": "serviceName--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "serviceName",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "name--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "name",
+          "type": "tag"
+        },
+        {
+          "dataType": "float64",
+          "id": "durationNano--float64--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "durationNano",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "httpMethod--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "httpMethod",
+          "type": "tag"
+        },
+        {
+          "dataType": "string",
+          "id": "responseStatusCode--string--tag--true",
+          "isColumn": true,
+          "isJSON": false,
+          "key": "responseStatusCode",
+          "type": "tag"
+        }
+      ],
+      "softMax": 0,
+      "softMin": 0,
+      "stackedBarChart": false,
+      "thresholds": [],
+      "timePreferance": "GLOBAL_TIME",
+      "title": "Background job errors",
+      "yAxisUnit": "short"
+    }
+  ],
+  "version": "v5",
+  "dotMigrated": true,
+  "uploadedGrafana": false,
+  "uuid": "a5edab2b-7d90-444c-a331-63870c0646b7"
+}
