@@ -2,7 +2,7 @@
 # rbs_inline: enabled
 
 class ArticleAgent < RubyLLM::Agent
-  model "gemini-3-flash-preview"
+  model "gemini-3.6-flash"
   temperature 0.2
   tools SearchRelatedArticles, GetExistingTags, ValidateSlug
 
