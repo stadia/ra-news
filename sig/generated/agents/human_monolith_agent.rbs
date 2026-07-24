@@ -1,5 +1,4 @@
 # Generated from app/agents/human_monolith_agent.rb with RBS::Inline
 
 class HumanMonolithAgent < RubyLLM::Agent
-  QUICK_RULES_PATH: untyped
 end

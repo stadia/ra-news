@@ -2,7 +2,7 @@
 
 LLM(ChatGPT·Claude·Gemini 등)이 생성한 한글 글에서 반복적으로 관찰되는 "AI 티" 패턴을 10개 대분류 × 서브 패턴으로 정리한다. 윤문 파이프라인의 진단·윤문·마무리 콜(diagnostician·monolith·finalizer)이 공유하는 단일 진실 원천(SSOT). 각 패턴마다 (1) 정의, (2) 시그니처 예문, (3) 심각도(S1 결정적 / S2 강함 / S3 약함), (4) 윤문 처방을 제공한다.
 
-> **v2.0 추가 (2026-05-07):** 한국 번역학계 8대 번역투 정통성 계보(이영옥 2001·김도훈 2009·김정우 2007·김혜영 2019 등) + 보고서 §III.3(8유형) 통합. **본진 신규 4건** — `A-16` 영어 대명사 직역 [S1] · `A-18` 관계절 좌향 수식 [S2] · `A-19` 이중 조사 결합 [S2] · `E-7` 청자 경어법 일관성 손실 [S2 · estimated]. **본진 보강 4건** — `A-15` 인지·발화 동사 분리 구문 처방 · `A-7` light verb construction 일반화(have/make/take/give) · `F-4` 영어 명사화 접미사(-tion·-ment·-ness·-ity) 통합 · `E-2` 진행형 '~고 있다' 자동 매핑 처방. **본진 hold 1건** — `A-17` 무정물·추상명사 '-들' 부착 [학술 강함, 외부 회차 양성 0건 → NMT 원본 회차 후 v2.1 재평가]. **post-editese 3축은 metric-only 트랙** — caveat C3(한국어 정량 검증 부재)에 따라 본진 ID 미부여, `metrics_v2.py` 14개 신규 함수로 운영(`deul_overuse_rate` 포함, A-17 hold 검증용). 학술 전문은 외부 SSOT `references/scholarship.md`에 보존(본진 슬림성). valid as of 2026-05.
+> **v2.0 추가 (2026-05-07):** 한국 번역학계 8대 번역투 정통성 계보(이영옥 2001·김도훈 2009·김정우 2007·김혜영 2019 등) + 보고서 §III.3(8유형) 통합. **본진 신규 4건** — `A-16` 영어 대명사 직역 [S1] · `A-18` 관계절 좌향 수식 [S2] · `A-19` 이중 조사 결합 [S2] · `E-7` 청자 경어법 일관성 손실 [S2 · estimated]. **본진 보강 4건** — `A-15` 인지·발화 동사 분리 구문 처방 · `A-7` light verb construction 일반화(have/make/take/give) · `F-4` 영어 명사화 접미사(-tion·-ment·-ness·-ity) 통합 · `E-2` 진행형 '~고 있다' 자동 매핑 처방. **본진 hold 1건** — `A-17` 무정물·추상명사 '-들' 부착 [학술 강함, 외부 회차 양성 0건 → NMT 원본 회차 후 v2.1 재평가]. **post-editese 3축은 metric-only 트랙** — caveat C3(한국어 정량 검증 부재)에 따라 본진 ID 미부여, `metrics_v2.rb` 14개 신규 함수로 운영(`deul_overuse_rate` 포함, A-17 hold 검증용). 학술 전문은 외부 SSOT `references/scholarship.md`에 보존(본진 슬림성). valid as of 2026-05.
 >
 > **v1.6 추가 (2026-05-06):** KatFish(Park et al.) + LREAD 외부 정량 연구 기반 본진 신규 5건 — `C-11` 연결어미 뒤 쉼표 [S1, 4.84배 분리도] · `C-12` 쉼표 포함률 [S2] · `E-5` 쉼표 분절 평균 길이 [S2] · `E-6` 쉼표 전후 POS 다양성 [S2, 에세이·뉴스 한정] · `G-3` 안전 균형 lexicon [S2]. 본진 보강 2건 — `D-1`에 KatFish 검증 결산 lexicon 4종("결론적으로·따라서·이를 통해·그러므로") 정식 인용 + 임계, `F-4`에 한자어 명사화 접미사 3종("-성·-적·-화") 정식 명시 + 한 문서 12회 초과 임계. hold 2건(BN/VX 띄어쓰기 규칙성·페르소나-레지스터 불일치)은 본진 미등재 — `_workspace/v1.6-2026-05-06/`에 후보 발자취 보존.
 >
@@ -620,7 +620,7 @@ J. 시각 장식 남용 — J-1~J-4
 
 > **중요**: post-editese 3축(simplification·normalisation·interference)은 본진 패턴 ID 미부여 상태로 운영한다. 이유는 **caveat C3** verbatim — "Toral(2019)은 en→de, de→en, es→de, en→fr, zh→en의 5개 언어쌍을 다뤘고, **한국어는 포함되지 않았다**. 한국어에 대한 동일 결론은 합리적 추론이지만 정량적 검증은 미수행 상태다." 따라서 본진 패턴 ID는 토큰·구문 매칭 가능한 검증 시그널만 담고, 3축 합성 신호는 metric-only로 분리한다.
 
-`references/metrics_v2.py` 14개 신규 함수가 3축을 운영한다(모든 metric에 `speculative: true` 플래그 권고):
+`references/metrics_v2.rb` 14개 신규 함수가 3축을 운영한다(모든 metric에 `speculative: true` 플래그 권고):
 
 - **simplification 축**: `lexical_diversity_ttr` · `lexical_density` · `ending_diversity` (Baker 1993; Toral 2019).
 - **normalisation 축**: `normalisation_score`(평서형 -다/된다/이다 집중률) · `da_streak_rate`(-다 4문장 연속 streak 카운트) (Baker 1993).
@@ -641,7 +641,7 @@ J. 시각 장식 남용 — J-1~J-4
   - **본진 신규 4건**: `A-16` 영어 대명사 직역 [S1, 김도훈 2009 + Cho et al. 2019 ACL] · `A-18` 관계절 좌향 수식 [S2, 박옥수 2018 + 김채은 2021] · `A-19` 이중 조사 결합 [S2, 김정우 2007 + 김순영 2012, caveat C5로 단순 ~의 명시 제외] · `E-7` 청자 경어법 일관성 손실 [S2 estimated, 김혜영 2019, caveat C1로 estimated 플래그]
   - **본진 hold 1건**: `A-17` 무정물·추상명사 '-들' 부착 [학술 anchor 곽은주·진실로 2011 + 전영철 2007 + 김순영 2012 강함, 다만 외부 회차(2026-05-07 위키 6편) + v1.6 input 5편 모두 양성 0건 → NMT 원본 출력 회차 후 v2.1 재평가. ID 비워둠 — patternID 안정성 보존. metric `deul_overuse_rate` + 사전 25종은 검증용 보존]
   - **본진 보강**: `A-15`에 사역 타동사형·인지·발화 동사·이중주어 구문 3축 처방 추가(이영옥 2001 + 김정우 2007) · `A-7`에 light verb construction 일반화(have/make/take/give + 명사) 처방 + 5건 verbatim 예문(김정우 2007 + 이근희 2005) · `F-4`에 영어 명사화 접미사 4종(-tion/-ment/-ness/-ity) 한국어 명사 직역 통합 처방(김정우 2007) · `E-2`에 진행형 '~고 있다' 자동 매핑 처방 추가(김혜영 2019)
-  - **post-editese metric-only 트랙**: simplification·normalisation·interference 3축은 본진 ID 미부여, `metrics_v2.py` 14개 신규 함수로 운영. caveat C3에 따라 모든 metric에 `speculative: true` 플래그 권고. 본진 패턴 → metric 양방향 연계
+  - **post-editese metric-only 트랙**: simplification·normalisation·interference 3축은 본진 ID 미부여, `metrics_v2.rb` 14개 신규 함수로 운영. caveat C3에 따라 모든 metric에 `speculative: true` 플래그 권고. 본진 패턴 → metric 양방향 연계
   - **외부 SSOT scholarship.md**: 학술 전문(8유형 한국 번역학계 계보 + Baker·Toury·Laviosa·Chesterman·Toral 등 국제 이론 + 보고서 caveat 6건 verbatim)을 외부 파일로 분리. 본진 SSOT는 패턴 행마다 `source_anchor` + `see_scholarship` 한 줄 메타로 가리킴 — 본진 슬림성 유지
   - **카테고리 호환성**: A·E 카테고리만 확장(A-15→A-19, E-6→E-7). 기존 A-1~A-15·E-1~E-6 본문 무수정. 새 K 카테고리 신설 거부 — 본진 패턴 ID 참조 안정성 보존
   - **caveat 적용 게이트**: C1(김혜영 2019 정량 미확인 → E-7 estimated 플래그) · C2(NMT 마케팅 편향 → 모델별 가중치 거부) · C3(post-editese 한국어 미검증 → metric-only 트랙) · C5(단순 ~의 학계 합의 부재 → A-19 정의에서 명시 제외) · C6(LLM 빠른 진화 → 'valid as of 2026-05' 명기)

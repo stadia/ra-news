@@ -9,7 +9,7 @@
 - **v1.5 (2026-04-26)** — v1.1 5인 파이프라인 위에 단일 호출 `humanize-monolith` fast path 신설. voice profile·candidate pool·권한 위계 §1~§6은 핫패스 비용 문제로 삭제.
 - **v1.6 (2026-05-07)** — KatFish·LREAD 기반 정량 점수 레이어 도입. `scripts/prepare_monolith_input.py`(입력 shim)가 monolith 호출 *전* 외부 사전 처리로 점수를 산출해 결합 입력 파일에 prepend.
 - **v1.6.1 (2026-05-07)** — fast 산출물을 `final.md` 1개로 통합(본문 끝 `<!-- HUMANIZE-SUMMARY -->` HTML 주석 블록). monolith 도구 호출 캡 4회 → **3회**.
-- **v2.0 (2026-05-07)** — 한국 번역학계 8유형 + post-editese metric 트랙(`metrics_v2.py`) 흡수. 분류 체계 본진 v2.0(활성 패턴 70건 + A-17 hold 1건).
+- **v2.0 (2026-05-07)** — 한국 번역학계 8유형 + post-editese metric 트랙(`metrics_v2.rb`) 흡수. 분류 체계 본진 v2.0(활성 패턴 70건 + A-17 hold 1건).
 - **v2.0.1** — 패치 릴리스: shim 실행 절차 명문화, 실사용 백포트(격식 상향 금지·구조/각주 보존·과윤문 게이트 코드화), quick-rules 빌드 생성.
 - **v2.1.0** — 정밀 모드를 5인 파이프라인 → **3콜 구조**(진단→겨냥 윤문→finalize)로 재편. 옛 4종+web-architect 은퇴. 8,000자 strict 자동 승급 폐지.
 - **v2.2.0** — **경량 경로 재설계.** shim이 산출하는 `route_hint`(light|standard|heavy)로 디폴트 경로를 3단 분기. **단일 콜 우선 원칙** 명문화 — 1만자급도 청킹 없이 단일 콜(실측: 청킹 7콜 610K 토큰 → 단일 콜 134K, 품질 동등). 청킹은 shim이 실제로 청크를 2개 이상 만들 때만. finalize는 heavy·의심·사용자 요청 시로 한정.
