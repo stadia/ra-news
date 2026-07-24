@@ -4,7 +4,7 @@ paths:
   - "app/views/components/**"
 ---
 
-# Components (129)
+# Components (140)
 
 ViewComponent and Phlex components available for reuse.
 Use `rails_get_component_catalog(component:"Name")` for full details.
@@ -118,6 +118,12 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **Input** (phlex)
   props: type::string, attrs
 - **Layout** (phlex)
+- **Layout::AssetPreloads** (phlex)
+  props: section
+- **Layout::Footer** (phlex)
+- **Layout::MetaTags** (phlex)
+- **Layout::NavBar** (phlex)
+- **Layout::StructuredData** (phlex)
 - **Likes::Button** (phlex)
   props: likeable, liked:nil
 - **Link** (phlex)
@@ -133,8 +139,8 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **OauthButton::Google** (phlex)
   props: path, label
 - **Pagination** (phlex)
-- **Pagination** (phlex)
   props: pagy
+- **Pagination** (phlex)
 - **PaginationContent** (phlex)
 - **PaginationEllipsis** (phlex)
 - **PaginationItem** (phlex)
@@ -199,6 +205,18 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: user:nil, federails_actor:nil, name, size:"h-8 w-8", fallback_class:"bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold"
 - **Users::Form** (phlex)
   props: user
+- **Users::Form::Actions** (phlex)
+  props: user
+- **Users::Form::ErrorMessages** (phlex)
+  props: user
+- **Users::Form::Header** (phlex)
+  props: user
+- **Users::Form::NewFields** (phlex)
+  props: form, user
+- **Users::Form::PasswordFields** (phlex)
+  props: form, user
+- **Users::Form::PersistedFields** (phlex)
+  props: form, user
 - **Users::PwdForm** (phlex)
   props: user
 - **Users::User** (phlex)

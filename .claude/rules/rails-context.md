@@ -10,7 +10,7 @@ Rails 8.1.3 | Ruby 4.0.6
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 129 components, 129 Phlex
+- Components: 140 components, 140 Phlex
 - Performance: 2 issues detected
 
 **Global before_actions:** authenticate_user!

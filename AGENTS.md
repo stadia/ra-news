@@ -7,13 +7,13 @@
 - Models: 21
 - Routes: 157 app routes across 33 controllers (186 total incl. framework)
 - Async: 2 jobs, 2 mailers
-- Migrations: 42 total, 0 pending
+- Migrations: 43 total, 0 pending
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
 - Assets: propshaft, importmap, tailwindcss
 - Databases: 3 (primary, cache, queue)
-- Components: 129 components, 129 Phlex
+- Components: 140 components, 140 Phlex
 - Performance: 2 issues detected
 ## Key models (21 total)
 - **ActsAsTaggableOn::Tag** (1a, 3v) - has_many :taggings
