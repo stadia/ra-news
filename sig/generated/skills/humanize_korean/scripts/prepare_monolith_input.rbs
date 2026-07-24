@@ -1,0 +1,44 @@
+# Generated from app/skills/humanize_korean/scripts/prepare_monolith_input.rb with RBS::Inline
+
+HERE: untyped
+
+PROJECT_ROOT: untyped
+
+METRICS_DIR: untyped
+
+METRICS_PROVIDER: untyped
+
+METRICS_PROVIDER: untyped
+
+METRICS_PROVIDER: untyped
+
+ROUTE_LIGHT_MAX_TELLS: ::Integer
+
+ROUTE_HEAVY_MIN_TELLS: ::Integer
+
+ROUTE_HEAVY_MIN_CHARS: ::Integer
+
+ROUTE_TELL_KEYS_V16: untyped
+
+ROUTE_TELL_KEYS_V2: untyped
+
+V2_COUNT_METRICS: untyped
+
+TARGET_CHUNK_CHARS: ::Integer
+
+MAX_CHUNK_CHARS: ::Integer
+
+SENT_SPLIT_TRIGGER_CHARS: ::Integer
+
+CHUNK_RECOMMEND_MIN_CHARS: untyped
+
+HEADING_LINE_RE: ::Regexp
+
+FOOTNOTE_LINE_RE: ::Regexp
+
+PARA_SEP_RE: ::Regexp
+
+SENT_END_RE: ::Regexp
+
+class ChunkingError < RuntimeError
+end
