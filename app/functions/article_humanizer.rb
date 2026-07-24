@@ -18,8 +18,7 @@ module ArticleHumanizer
       }
 
       <<~PROMPT
-        다음 JSON의 각 필드를 윤문하여 동일한 구조로 반환하라.
-
+        다음 JSON의 각 필드를 사람이 쓴 것처럼 윤문하여 동일한 구조로 반환하라.
         #{JSON.pretty_generate(payload)}
       PROMPT
     end

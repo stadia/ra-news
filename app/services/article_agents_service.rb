@@ -59,7 +59,7 @@ class ArticleAgentsService < OperationService
   #: (Article article) -> Dry::Monads::Result
   def run_humanize(article)
     prompt = ArticleHumanizer.prompt(article)
-    message = HumanMonolithAgent.chat.ask(prompt)
+    message = HumanMonolithAgent.chat.with_skills.ask(prompt)
     humanized = extract_humanized(message.content)
 
     return Failure(:humanize_failed) if humanized.blank? || humanized[:summary_body].blank?
