@@ -33,12 +33,6 @@ class HumanMonolithAgent < RubyLLM::Agent
 
   instructions {
     <<~PROMPT
-      #{File.read(File.join(__dir__, "humanize-monolith.md"))}
-
-      ---
-
-      # Quick Rules (slim rulebook — S1·S2 핵심 패턴)
-
       #{File.read(QUICK_RULES_PATH)}
     PROMPT
   }
