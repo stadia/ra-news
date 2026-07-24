@@ -6,7 +6,7 @@ description: AI(ChatGPT·Claude·Gemini 등)가 쓴 한글 텍스트를 "사람�
 
 # Humanize Korean — AI 한글 티 제거 오케스트레이터 (v2.3)
 
-> **v2.3.0** — 구조 수렴 게이트(`verify_gates.py` 4축: 목표달성·대구 전멸·수치·golden) + 진단 슬림 인덱스(`diagnosis-rules.md`, taxonomy 83%↓). (v2.2: route_hint 3경로 + 단일 콜 우선)
+> **v2.3.0** — 구조 수렴 게이트(`verify_gates.rb` 4축: 목표달성·대구 전멸·수치·golden) + 진단 슬림 인덱스(`diagnosis-rules.md`, taxonomy 83%↓). (v2.2: route_hint 3경로 + 단일 콜 우선)
 > 버전 히스토리·실측 근거·테스트 시나리오: [`references/design-notes.md`](references/design-notes.md)
 
 ## Phase 0: 컨텍스트 확인 및 경로 결정
@@ -42,7 +42,7 @@ humanize-korean v2.3 — 경로: {light|standard|heavy} ({route_hint|사용자 �
 3. 첫 300자로 장르 자동 추정 (사용자 명시 시 우선)
 4. 사전 처리 shim을 Bash로 1회 실행:
    ```
-   python3 scripts/prepare_monolith_input.py --run-dir _workspace/{run_id} --genre {genre}
+   ruby scripts/prepare_monolith_input.rb --run-dir _workspace/{run_id} --genre {genre}
    ```
    - `--genre` 값은 영문 키: `essay | column | report | blog | abstract` (생략 시 `essay`). 장르 힌트 매핑: 칼럼→`column`, 리포트→`report`, 블로그→`blog`, 공적/기타→`essay`.
    - `--run-dir`는 프로젝트 루트 기준 상대 경로 허용 (스크립트가 절대화). 그 외 인자: `--text`(run-dir 없이 즉석 실행 시 새 run 디렉토리 자동 생성), `--baseline`(baseline JSON 경로 override, 평소 불필요), `--diagnosis`(진단 텍스트 파일을 점수 블록 앞에 prepend — standard·heavy의 진단 결합용).
@@ -73,12 +73,12 @@ humanize-korean v2.3 — 경로: {light|standard|heavy} ({route_hint|사용자 �
    - 진단은 span을 세지 않는다. "무엇이 이 글을 지배하는가"를 판단한다(안정적).
 2. shim으로 진단을 monolith 입력 앞에 결합 (Bash — LLM 콜 아님):
    ```
-   python3 scripts/prepare_monolith_input.py --run-dir _workspace/{run_id} --genre {genre} --diagnosis _workspace/{run_id}/02_diagnosis.md
+   ruby scripts/prepare_monolith_input.rb --run-dir _workspace/{run_id} --genre {genre} --diagnosis _workspace/{run_id}/02_diagnosis.md
    ```
    → `01_input_with_metrics.txt`가 [진단 → 정량 블록 → 원문] 순으로 재생성된다.
 3. **윤문 1콜**: `humanize-monolith` 1회 호출 — **청킹 없음. 1만자급도 단일 콜이다.** → `final.md`.
 4. Phase 2.5 변경률 게이트(Bash).
-5. **finalize 생략이 기본.** 과윤문은 `verify_gates.py`의 결정적 게이트가 잡는다. finalize 승급 조건(아래 표)에 걸릴 때만 `humanize-finalizer` 1콜 추가(이 경우 총 3콜).
+5. **finalize 생략이 기본.** 과윤문은 `verify_gates.rb`의 결정적 게이트가 잡는다. finalize 승급 조건(아래 표)에 걸릴 때만 `humanize-finalizer` 1콜 추가(이 경우 총 3콜).
 
 **콜 수: 2 (finalize 승급·게이트 롤백 시 3).**
 
@@ -92,28 +92,28 @@ Standard의 1과 동일 — `humanize-diagnostician` 1콜 → `02_diagnosis.md`.
 ### Phase P2: 겨냥 윤문
 1. shim으로 진단 결합 (Bash). **heavy에서만** `--chunk`를 함께 줄 수 있다:
    ```
-   python3 scripts/prepare_monolith_input.py --run-dir _workspace/{run_id} --genre {genre} --diagnosis _workspace/{run_id}/02_diagnosis.md --chunk
+   ruby scripts/prepare_monolith_input.rb --run-dir _workspace/{run_id} --genre {genre} --diagnosis _workspace/{run_id}/02_diagnosis.md --chunk
    ```
-   - 분할 여부·경계는 100% shim(Python)이 정한다(문단·문장 경계, 헤딩 승격, 말미 각주 passthrough — 청킹 임계는 shim 관리).
+   - 분할 여부·경계는 100% Ruby shim이 정한다(문단·문장 경계, 헤딩 승격, 말미 각주 passthrough — 청킹 임계는 shim 관리).
    - 산출: `01_chunk_{NN}_input_with_metrics.txt` N개 + `chunk_manifest.json`.
 2. **청크 경로 판정**: `chunk_manifest.json`의 body 청크(passthrough 제외)가 **2개 이상일 때만** 청크 경로. **1개면 단일 monolith 콜로 처리한다** — 청킹은 shim의 결정이지 오케스트레이터의 추측이 아니다. 단일 콜로 처리할 때의 입력 파일도 manifest가 있으면 그 청크의 `input_file` 값을, 없으면 `01_input_with_metrics.txt`를 쓴다.
 3. **단일 콜(기본)**: `humanize-monolith` 1회 호출(`input_path=01_input_with_metrics.txt`). monolith는 진단문을 앞머리에서 읽고 지배 패턴을 겨냥해 윤문한다. → `final.md`.
 4. **청크 병렬(shim이 실제로 쪼갠 경우만)**:
    - 각 body 청크를 monolith로 **병렬 호출**(동시 최대 4). 입력·출력 파일명은 manifest의 **`input_file`·`rewritten_file` 필드를 그대로** 사용한다 — 파일명을 직접 조립하지 않는다(인덱싱 불일치 사고 방지).
    - 각 청크 콜은 같은 `quick_rules_path`(파일 참조)와 같은 `02_diagnosis.md`를 공유한다. **룰북·진단 전문을 청크 프롬프트에 복붙하지 않는다** — 재로드 비용이 청킹 토큰 폭발의 주범이었다(§설계 노트).
-   - 재조립: `python3 scripts/reassemble_chunks.py --run-dir _workspace/{run_id}` → `03_reassembled.md`(passthrough 원문 삽입 + 문자수 대사). 이걸 `final.md`로 삼는다.
+   - 재조립: `ruby scripts/reassemble_chunks.rb --run-dir _workspace/{run_id}` → `03_reassembled.md`(passthrough 원문 삽입 + 문자수 대사). 이걸 `final.md`로 삼는다.
    - 청크 경계 문체 이음매가 어색하면 경계 전후 2문단만 monolith로 국소 패치(전역 재작성 금지 — 의미 드리프트 유발).
    - **재청킹 주의**: `--chunk` 재실행 시 경계가 바뀌므로 기존 `02_chunk_*_rewritten.txt`는 shim이 자동 삭제한다(`stale_removed`). 청킹 후 입력을 수정하면 재청킹부터 다시 한다.
 
 ### Phase P2.5: 구조 게이트
-Phase 2.5(공통)와 동일 — `verify_gates.py --genre {genre}`. Bash 1회 — LLM 콜 아님.
+Phase 2.5(공통)와 동일 — `verify_gates.rb --genre {genre}`. Bash 1회 — LLM 콜 아님.
 
 ### Phase P3: finalize (heavy는 항상)
 `humanize-finalizer`를 `Agent` 도구로 1회 호출.
 - 입력: `original_path=01_input.txt`, `rewritten_path=final.md`, `diagnosis_path=02_diagnosis.md`
 - 원문↔윤문본 **직접 대조**로 의미 보존 15항(각주·제목·없던 주장 주입 포함) + 자연성(잔존 + 과윤문 양방향)을 판정하고 **문제 구간만 국소 보정**(전체 재작성 금지).
 - 출력: 보정된 `final.md`(원본은 `final_pre_finalize.md` 백업) + `09_finalize.json`.
-- `verdict=hold_and_report`면 사람 검토 안내. 그 외 finalize 후 `verify_gates.py`를 한 번 더 돌려 최종 변경률 확정.
+`verdict=hold_and_report`면 사람 검토 안내. 그 외 finalize 후 `verify_gates.rb`를 한 번 더 돌려 최종 변경률 확정.
 
 **콜 수: 3 (진단 1 + 윤문 1 + finalize 1). 청크 병렬 시 2 + N + 국소 패치.**
 
@@ -127,16 +127,16 @@ finalize는 추가 LLM 콜이다. 다음 조건에서만 실행한다:
 | 변경률 게이트 exit 1(경고 30~50%) | 실행 — 과윤문·의미 드리프트 의심 |
 | monolith 자체검증 실패(6항 중 2+ 위반) | 실행 |
 | 사용자가 검증·증적을 명시 요청 | 실행 |
-| light·standard의 그 외 모든 경우 | **생략** — `verify_gates.py` 결정적 게이트가 과윤문을 확인 |
+| light·standard의 그 외 모든 경우 | **생략** — `verify_gates.rb` 결정적 게이트가 과윤문을 확인 |
 
 ## Phase 2.5: 구조 게이트 (철칙 #4 — 결정적 검증, 전 경로 공통)
 
 monolith가 자체 보고한 변경률은 **참고값**이다. 철칙 #4의 게이트 판정은 코드가 한다.
-문자 기반 변경률은 구조 편집에 눈이 없다(실측: change_rate 2.77% 뒤에 문장 터치율 29.7%·대구 -75%가 은닉). `verify_gates.py`는 문자율에 목표 달성·대구 전멸·golden+수치 3축을 더해 이 사각지대를 보완한다.
+문자 기반 변경률은 구조 편집에 눈이 없다(실측: change_rate 2.77% 뒤에 문장 터치율 29.7%·대구 -75%가 은닉). `verify_gates.rb`는 문자율에 목표 달성·대구 전멸·golden+수치 3축을 더해 이 사각지대를 보완한다.
 윤문본이 나온 직후 Bash로 1회 실행:
 
 ```
-python3 scripts/verify_gates.py \
+ruby scripts/verify_gates.rb \
     --before _workspace/{run_id}/01_input.txt \
     --after  _workspace/{run_id}/final.md \
     --genre {genre}
@@ -186,21 +186,21 @@ exit code로 분기한다 (0/1/2/3 의미는 기존 게이트와 동일):
 
 ```
 01_input.txt
-    ↓ [scripts/prepare_monolith_input.py — 정량 점수 shim, Bash 1회]
+    ↓ [scripts/prepare_monolith_input.rb — 정량 점수 shim, Bash 1회]
 00_metrics.json (route_hint 포함) + 01_input_with_metrics.txt
     ↓ route_hint (사용자 명시가 오버라이드)
-    ├─ light ──→ [humanize-monolith ×1, 보수] ──→ final.md ──→ [verify_gates.py]
+    ├─ light ──→ [humanize-monolith ×1, 보수] ──→ final.md ──→ [verify_gates.rb]
     │             (변경률 <5%면 "이미 좋습니다" 조기 종료 보고)
     ├─ standard → [humanize-diagnostician ×1] → 02_diagnosis.md
     │             ↓ [shim --diagnosis, Bash]
     │             [humanize-monolith ×1 — 단일 콜, 1만자급 포함] → final.md
-    │             ↓ [verify_gates.py] (finalize는 승급 조건 시만)
+    │             ↓ [verify_gates.rb] (finalize는 승급 조건 시만)
     └─ heavy ───→ [humanize-diagnostician ×1] → 02_diagnosis.md
                   ↓ [shim --diagnosis (--chunk 가능), Bash]
                   [humanize-monolith ×1 — 또는 shim이 2+청크를 쪼갠 경우만 병렬 ×N]
-                  ↓ [verify_gates.py]
+                  ↓ [verify_gates.rb]
                   [humanize-finalizer ×1] → final.md(보정) + 09_finalize.json
-                  ↓ [verify_gates.py — 최종 확정]
+                  ↓ [verify_gates.rb — 최종 확정]
 ```
 
 ## 설계 노트 (요약 — 전문은 design-notes.md)
@@ -250,7 +250,7 @@ exit code로 분기한다 (0/1/2/3 의미는 기존 게이트와 동일):
 
 - 슬림 룰북 (monolith 전용): [`references/quick-rules.md`](references/quick-rules.md) — S1·S2 핵심 패턴 + 자체검증 체크리스트
 - 진단 인덱스 (diagnostician 전용): [`references/diagnosis-rules.md`](references/diagnosis-rules.md) — 71패턴 전수 ID·정의·시그니처. `build_diagnosis_rules.py`가 taxonomy에서 자동 생성(직접 편집 금지)
-- 정량 점수 shim: `scripts/prepare_monolith_input.py` — `references/metrics_v2.rb`(실패 시 `metrics.rb` fallback) + `references/baseline.json` 기반 사전 점수 + `route_hint` 산출
+- 정량 점수 shim: `scripts/prepare_monolith_input.rb` — `references/metrics_v2.rb`(실패 시 `metrics.rb` fallback) + `references/baseline.json` 기반 사전 점수 + `route_hint` 산출
 - 분류 체계 본진 (SSOT — 유지보수·taxonomist 전용): [`references/ai-tell-taxonomy.md`](references/ai-tell-taxonomy.md) — 10대분류 × 활성 70 패턴 (+A-17 hold 1건) 전수. 런타임 콜은 이 파일을 직접 읽지 않는다
 - 윤문 처방 (진단 전용): [`references/rewriting-playbook.md`](references/rewriting-playbook.md) — 카테고리별 치환 레시피·장르별 허용 표
 - 학술 인용 외부 SSOT: [`references/scholarship.md`](references/scholarship.md) — v2.0 학자 인용·caveat verbatim 보존

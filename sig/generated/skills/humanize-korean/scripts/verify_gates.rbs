@@ -1,0 +1,31 @@
+# Generated from app/skills/humanize-korean/scripts/verify_gates.rb with RBS::Inline
+
+# rubocop:disable Metrics/ModuleLength
+module HumanizeKoreanVerifyGates
+  SUMMARY_BLOCK_RE: ::Regexp
+
+  S1_CANDIDATE_METRICS: untyped
+
+  S1_SELECT_Z: ::Float
+
+  S1_ACHIEVED_Z: ::Float
+
+  S1_MISSED_Z: ::Float
+
+  S1_OVERCORRECT_Z: ::Float
+
+  ANNIHILATION_MIN_BEFORE: ::Integer
+
+  def self.strip_summary_block: (untyped text) -> untyped
+
+  def self.normalize_sentence: (untyped sentence) -> untyped
+
+  def self.split_sentences: (untyped text) -> untyped
+
+  def self.sentence_touch_rate: (untyped before, untyped after) -> untyped
+
+  def self.judge_s1_targets: (untyped z_before, untyped z_after) -> untyped
+
+  # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+  def self.main: (?untyped argv) -> untyped
+end

@@ -1,0 +1,25 @@
+# Generated from app/skills/humanize-korean/scripts/reassemble_chunks.rb with RBS::Inline
+
+module HumanizeKoreanReassembleChunks
+  def self.run: (untyped argv) -> untyped
+
+  private def self.parse_options: (untyped argv) -> untyped
+
+  private def self.load_manifest: (untyped run_dir) -> untyped
+
+  private def self.load_source: (untyped run_dir, untyped manifest) -> untyped
+
+  private def self.verify_source!: (untyped text, untyped manifest, untyped chunks) -> untyped
+
+  private def self.verify_rewritten_files!: (untyped run_dir, untyped chunks) -> untyped
+
+  private def self.reassemble: (untyped run_dir, untyped text, untyped chunks) -> untyped
+
+  private def self.build_piece: (untyped original, untyped core_original, untyped core_rewritten) -> untyped
+
+  private def self.add_ratio_warning: (untyped warnings, untyped index, untyped original, untyped rewritten, untyped ratio) -> untyped
+
+  private def self.build_report: (untyped text, untyped result) -> untyped
+
+  private def self.print_result: (untyped output_path, untyped chunks, untyped text, untyped result, untyped report) -> untyped
+end

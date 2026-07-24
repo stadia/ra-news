@@ -7,7 +7,7 @@ class HumanMonolithAgent < RubyLLM::Agent
   # model "qwen3.5", provider: :ollama, assume_model_exists: true
   # model "glm-5.2", provider: :ollama, assume_model_exists: true
   temperature 0.2
-  skills "app/skills", only: [ "humanize-korean" ]
+  skills "app/skills", only: [ "humanize_korean" ]
 
   schema do
     array :summary_key, of: :string, description: "윤문된 핵심 요약 배열 (원본 길이·항목 수 유지)"
