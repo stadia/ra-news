@@ -1,3 +1,5 @@
+# rbs_inline: enabled
+
 require_relative "boot"
 
 require "rails/all"
@@ -15,6 +17,12 @@ module RubyNews
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks protobuf])
+
+    # app/skills holds standalone CLI scripts and reference material for the
+    # humanize_korean skill, not autoloadable constants. Rails treats every
+    # app/* subdirectory as an autoload root, so Zeitwerk must be told to skip
+    # it or eager loading raises NameError on boot.
+    Rails.autoloaders.main.ignore(Rails.root.join("app/skills"))
 
     # Configuration for the application, engines, and railties goes here.
     #
