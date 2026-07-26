@@ -1,0 +1,29 @@
+# This migration comes from ruby_llm_monitoring (originally 20251208171258)
+class CreateRubyLLMMonitoringEvents < ActiveRecord::Migration[7.2]
+  include RubyLLM::Monitoring::MigrationHelpers
+
+  def change
+    create_table :ruby_llm_monitoring_events do |t|
+      t.integer :allocations
+      t.float :cost
+      t.float :cpu_time
+      t.float :duration
+      t.float :end
+      t.float :gc_time
+      t.float :idle_time
+      t.string :name
+      t.json :payload
+      t.float :time
+      t.string :transaction_id
+
+      t.virtual :provider, type: :string, as: json_extract("provider"), stored: true
+      t.virtual :model, type: :string, as: json_extract("model"), stored: true
+      t.virtual :input_tokens, type: :integer, as: json_extract("input_tokens", as: :integer), stored: true
+      t.virtual :output_tokens, type: :integer, as: json_extract("output_tokens", as: :integer), stored: true
+      t.virtual :exception_class, type: :string, as: json_extract_array("exception", 0), stored: true
+      t.virtual :exception_message, type: :string, as: json_extract_array("exception", 1), stored: true
+
+      t.timestamps
+    end
+  end
+end
