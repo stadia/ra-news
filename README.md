@@ -90,8 +90,8 @@ RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집
   - awesome_nested_set 기반 **중첩 댓글** 구조
   - 깊이 제한(`Comment::MAX_DEPTH`)으로 트리 폭 관리
 - **User**
-  - 커스텀 인증 시스템(Devise 미사용)
-  - 세션 토큰 관리, 관리자 여부(`admin?`) 등
+  - Devise 기반 인증(세션, JWT, OmniAuth)
+  - 현재 사용자 관리, 관리자 여부(`admin?`) 등
 
 ---
 
@@ -246,9 +246,9 @@ vapid_key.private_key
 
 ### 인증 패턴
 
-- Devise 미사용, 커스텀 세션 기반 인증
-- `Current.user`를 통해 요청 컨텍스트에서 현재 사용자 관리
-- 일부 컨트롤러는 `allow_unauthenticated_access`로 비로그인 접근 허용
+- Devise 기반 인증을 사용하며 `current_user`, `user_signed_in?` 헬퍼로 현재 로그인 상태를 확인
+- `ApplicationController`에서 `authenticate_user!`를 기본 적용
+- 공개 액션은 `skip_before_action :authenticate_user!`로 비로그인 접근 허용
 
 ### 소프트 삭제(Soft Delete)
 
