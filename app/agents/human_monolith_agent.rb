@@ -2,7 +2,8 @@
 # rbs_inline: enabled
 
 class HumanMonolithAgent < RubyLLM::Agent
-  model "qwen/qwen3.7-plus", provider: :openrouter, assume_model_exists: true
+  # model "qwen/qwen3.7-plus", provider: :openrouter, assume_model_exists: true
+  model "google/gemma-4-31b-it", provider: :openrouter
   temperature 0.2
   skills "app/skills", only: [ "humanize_korean" ]
 
