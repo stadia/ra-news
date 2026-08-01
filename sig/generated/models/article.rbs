@@ -47,6 +47,13 @@ class Article < ApplicationRecord
   # LIKE 는 gin_bigm_ops 인덱스를 타지만 ILIKE 는 타지 않으므로 LIKE 를 사용한다.
   JAPANESE_KANA_REGEX: ::Regexp
 
+  # ── 일본어 번역 결손 탐지 ─────────────────────────────────────────────
+  # summary_body_ja 안의 한글 비율. 고유명사·인용 병기 정도는 이 값 아래에 머무르고,
+  # 번역이 중간에 끊긴 글만 이 값을 넘는다.
+  JA_HANGUL_RATIO_THRESHOLD: ::Float
+
+  JA_HANGUL_RATIO_SQL: untyped
+
   # : () -> String
   def to_markdown: () -> String
 

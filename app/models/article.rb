@@ -103,6 +103,30 @@ class Article < ApplicationRecord
     select(column_names - %w[body summary_body embedding])
   }
 
+  # ── 일본어 번역 결손 탐지 ─────────────────────────────────────────────
+  # summary_body_ja 안의 한글 비율. 고유명사·인용 병기 정도는 이 값 아래에 머무르고,
+  # 번역이 중간에 끊긴 글만 이 값을 넘는다.
+  JA_HANGUL_RATIO_THRESHOLD = 0.08
+  JA_HANGUL_RATIO_SQL = <<~SQL.squish
+    length(regexp_replace(summary_body_ja, '[^가-힣]', '', 'g'))::numeric
+      / nullif(length(summary_body_ja), 0)
+  SQL
+
+  # 한국어 요약은 있는데 일본어 요약이 비어 있는 아티클
+  scope :missing_japanese, -> {
+    kept.where("summary_body_ja IS NULL OR btrim(summary_body_ja) = ''")
+        .where("summary_body IS NOT NULL AND btrim(summary_body) <> ''")
+  }
+
+  # 일본어 요약에 한글이 임계값 넘게 남아 있는(=번역이 덜 된) 아티클
+  scope :hangul_leftover_japanese, ->(threshold = JA_HANGUL_RATIO_THRESHOLD) {
+    kept.where("summary_body_ja ~ '[가-힣]'")
+        .where("#{JA_HANGUL_RATIO_SQL} > ?", threshold)
+  }
+
+  # 일본어 재번역이 필요한 아티클 전체
+  scope :needs_japanese, -> { missing_japanese.or(hangul_leftover_japanese) }
+
   # ID + 필수 컬럼만 선택 (Admin용)
   scope :for_admin_index, -> {
     select(:id, :title_ko, :slug, :host, :is_related, :published_at, :created_at, :updated_at)
