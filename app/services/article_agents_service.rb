@@ -7,7 +7,7 @@ class ArticleAgentsService < OperationService
     step ensure_body(article)
     step run_embed(article)
     step Articles::AgentRunner.run(article:, prompt: user_prompt(article))
-    step run_humanize(article)
+    run_humanize(article) # 실패해도 원문 요약은 유효하므로 이후 단계를 계속 진행한다
     step run_thumbnail(article)
     step run_japanese(article)
   end
