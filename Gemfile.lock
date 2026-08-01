@@ -804,6 +804,8 @@ GEM
       ruby_llm (>= 1.16)
       stimulus-rails
       turbo-rails
+    ruby_llm-responses_api (0.6.1)
+      ruby_llm (>= 1.13)
     ruby_llm-schema (0.4.0)
     ruby_llm-skills (0.3.0)
       ruby_llm (~> 1.12)
@@ -1073,6 +1075,7 @@ DEPENDENCIES
   ruby-vips (~> 2.0)
   ruby_llm (~> 1.16)
   ruby_llm-monitoring
+  ruby_llm-responses_api
   ruby_llm-schema
   ruby_llm-skills
   ruby_ui (~> 1.2)
