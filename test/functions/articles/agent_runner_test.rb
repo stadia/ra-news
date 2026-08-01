@@ -55,7 +55,8 @@ class Articles::AgentRunnerTest < ActiveSupport::TestCase
     ArticleAgent.stub(:new, AgentStub.new(message)) do
       result = Articles::AgentRunner.run(article:, prompt: "prompt")
 
-      assert_equal article, result
+      assert_predicate result, :success?
+      assert_equal article, result.value!
     end
 
     assert_equal [ "ruby" ], article.tag_list.added
@@ -70,11 +71,29 @@ class Articles::AgentRunnerTest < ActiveSupport::TestCase
     ArticleAgent.stub(:new, AgentStub.new(message)) do
       result = Articles::AgentRunner.run(article:, prompt: "prompt")
 
-      assert_equal article, result
+      assert_predicate result, :success?
+      assert_equal article, result.value!
     end
 
     assert_equal %w[ruby rails], article.tag_list.added
     assert_equal({ "summary_body" => "body" }, article.updated_content)
     refute article.discarded
+  end
+
+  # 성공 판별을 Article 클래스 검사로 하면 개발 환경 리로딩 시 is_a?(Article)이 false가 되어
+  # 정상 결과가 Failure(article)로 뒤집힌다. 그래서 Result 타입으로 성공/실패를 구분한다.
+  test "content가 비어 있으면 기사를 discard하고 finish_reason으로 Failure를 반환한다" do
+    article = ArticleStub.new
+    message = Message.new(nil, "length")
+
+    ArticleAgent.stub(:new, AgentStub.new(message)) do
+      result = Articles::AgentRunner.run(article:, prompt: "prompt")
+
+      assert_predicate result, :failure?
+      assert_equal "length", result.failure
+    end
+
+    assert article.discarded
+    assert_nil article.updated_content
   end
 end

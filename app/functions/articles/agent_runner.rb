@@ -4,8 +4,10 @@
 module Articles
   module AgentRunner
     extend FunctionLogger
+    extend Dry::Monads[:result]
 
     class << self
+      #: (article: Article, prompt: String) -> Dry::Monads::Result
       def run(article:, prompt:)
         message = ArticleAgent.new.ask(prompt)
         raw_content = message.content
@@ -13,7 +15,7 @@ module Articles
 
         if raw_content.blank?
           article.discard!
-          return message.finish_reason
+          return Failure(message.finish_reason)
         end
 
         content = raw_content.deep_stringify_keys
@@ -23,7 +25,7 @@ module Articles
         article.update!(content)
         article.discard! if discard_unrelated_article?(article, content)
 
-        article
+        Success(article)
       end
 
       private

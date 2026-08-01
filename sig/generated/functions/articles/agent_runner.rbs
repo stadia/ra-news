@@ -4,7 +4,8 @@ module Articles
   module AgentRunner
     extend FunctionLogger
 
-    def self.run: (article: untyped, prompt: untyped) -> untyped
+    # : (article: Article, prompt: String) -> Dry::Monads::Result
+    def self.run: (article: Article, prompt: String) -> Dry::Monads::Result
 
     private def self.apply_tags: (untyped article, untyped content) -> untyped
 
