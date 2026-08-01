@@ -8,9 +8,6 @@ class ArticleAgentsService < OperationService
   def ensure_body: (Article article) -> Dry::Monads::Result
 
   # : (Article article) -> Dry::Monads::Result
-  def run_agents: (Article article) -> Dry::Monads::Result
-
-  # : (Article article) -> Dry::Monads::Result
   def run_embed: (Article article) -> Dry::Monads::Result
 
   # : (Article article) -> Dry::Monads::Result

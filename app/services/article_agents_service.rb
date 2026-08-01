@@ -6,7 +6,7 @@ class ArticleAgentsService < OperationService
   def call(article)
     step ensure_body(article)
     step run_embed(article)
-    step run_agents(article)
+    step Articles::AgentRunner.run(article:, prompt: user_prompt(article))
     step run_humanize(article)
     step run_thumbnail(article)
     step run_japanese(article)
@@ -29,11 +29,6 @@ class ArticleAgentsService < OperationService
   rescue StandardError => e
     article.discard!
     Failure(e.message)
-  end
-
-  #: (Article article) -> Dry::Monads::Result
-  def run_agents(article)
-    Articles::AgentRunner.run(article:, prompt: user_prompt(article))
   end
 
   #: (Article article) -> Dry::Monads::Result
