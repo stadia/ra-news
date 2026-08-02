@@ -1,8 +1,9 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
 class SocialMediaService < OperationService
-  include Rails.application.routes.url_helpers
+  T.unsafe(self).include(Rails.application.routes.url_helpers)
 
   def call(article, command: :post)
     case command
@@ -50,7 +51,8 @@ class SocialMediaService < OperationService
     raise NotImplementedError, "Subclass must implement build_post_text"
   end
 
-  def platform_name #: String
+  #: () -> String
+  def platform_name
     raise NotImplementedError, "Subclass must implement platform_name"
   end
 

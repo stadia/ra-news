@@ -9,13 +9,13 @@ class YoutubeSiteJob
   class << self
     sig do
       params(
-        id: T.untyped,
+        ids: T::Array[::Integer],
         block: T.nilable(T.proc.params(job: YoutubeSiteJob).void)
       ).returns(T.any(YoutubeSiteJob, FalseClass))
     end
-    def perform_later(id = T.unsafe(nil), &block); end
+    def perform_later(ids, &block); end
 
-    sig { params(id: T.untyped).returns(T.untyped) }
-    def perform_now(id = T.unsafe(nil)); end
+    sig { params(ids: T::Array[::Integer]).void }
+    def perform_now(ids); end
   end
 end

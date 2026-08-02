@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -28,7 +29,7 @@ module SitemapBuilder
   )
 
   class << self
-    include Rails.application.routes.url_helpers
+    T.unsafe(self).include(Rails.application.routes.url_helpers)
 
     # lastmod는 실제 문서 변경 시점을 나타내야 하므로 published_at만 쓰면
     # 발행 이후 제목/요약/번역 수정이 검색엔진에 전달되지 않는다.

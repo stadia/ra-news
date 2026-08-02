@@ -10,6 +10,13 @@ class Article
   include GeneratedAttributeMethods
   extend CommonRelationMethods
   extend GeneratedRelationMethods
+  include GeneratedStoredAttributesMethods
+
+  sig { returns(ActiveStorage::Attached::One) }
+  def thumbnail; end
+
+  sig { params(attachable: T.untyped).returns(T.untyped) }
+  def thumbnail=(attachable); end
 
   private
 
@@ -83,8 +90,34 @@ class Article
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Article).void)).returns(::Article) }
     def create_or_find_by!(attributes, &block); end
 
+    sig do
+      params(
+        records: T.any(::Article, Integer, String, T::Enumerable[T.any(::Article, Integer, String, T::Enumerable[::Article])])
+      ).returns(Integer)
+    end
+    def delete(*records); end
+
+    sig { returns(Integer) }
+    def delete_all; end
+
+    sig { params(args: T.untyped).returns(Integer) }
+    def delete_by(*args); end
+
+    sig do
+      params(
+        records: T.any(::Article, Integer, String, T::Enumerable[T.any(::Article, Integer, String, T::Enumerable[::Article])])
+      ).returns(T::Array[::Article])
+    end
+    def destroy(*records); end
+
     sig { returns(T::Array[::Article]) }
     def destroy_all; end
+
+    sig { returns(T::Array[::Article]) }
+    def destroy_all; end
+
+    sig { params(args: T.untyped).returns(T::Array[::Article]) }
+    def destroy_by(*args); end
 
     sig { params(conditions: T.untyped).returns(T::Boolean) }
     def exists?(conditions = :none); end
@@ -120,7 +153,8 @@ class Article
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         block: T.proc.params(object: ::Article).void
       ).void
     end
@@ -130,10 +164,11 @@ class Article
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol])
       ).returns(T::Enumerator[::Article])
     end
-    def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+    def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, cursor: primary_key, order: :asc, &block); end
 
     sig do
       params(
@@ -141,7 +176,8 @@ class Article
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         block: T.proc.params(object: T::Array[::Article]).void
       ).void
     end
@@ -151,10 +187,11 @@ class Article
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol
-      ).returns(T::Enumerator[T::Enumerator[::Article]])
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol])
+      ).returns(T::Enumerator[T::Array[::Article]])
     end
-    def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+    def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, cursor: primary_key, order: :asc, &block); end
 
     sig do
       params(
@@ -211,7 +248,7 @@ class Article
     sig { returns(::Article) }
     def fourth!; end
 
-    sig { returns(Array) }
+    sig { returns(T::Array[::Integer]) }
     def ids; end
 
     sig do
@@ -221,7 +258,8 @@ class Article
         finish: T.untyped,
         load: T.untyped,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         use_ranges: T.untyped,
         block: T.proc.params(object: PrivateRelation).void
       ).void
@@ -233,11 +271,12 @@ class Article
         finish: T.untyped,
         load: T.untyped,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         use_ranges: T.untyped
       ).returns(::ActiveRecord::Batches::BatchEnumerator)
     end
-    def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, order: :asc, use_ranges: nil, &block); end
+    def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, cursor: primary_key, order: :asc, use_ranges: nil, &block); end
 
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
@@ -343,14 +382,43 @@ class Article
     sig { params(value: T::Enumerable[::ActsAsTaggableOn::Tag]).void }
     def base_tags=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def boost_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def boost_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Article` class because it declared `has_many :boosts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Boost::PrivateCollectionProxy) }
+    def boosts; end
+
+    sig { params(value: T::Enumerable[::Boost]).void }
+    def boosts=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
+    def build_federails_actor(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::PgSearch::Document) }
     def build_pg_search_document(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::Site) }
     def build_site(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
+    def build_thumbnail_attachment(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
+    def build_thumbnail_blob(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def build_user(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
+    def create_federails_actor(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
+    def create_federails_actor!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::PgSearch::Document) }
     def create_pg_search_document(*args, &blk); end
@@ -364,11 +432,49 @@ class Article
     sig { params(args: T.untyped, blk: T.untyped).returns(::Site) }
     def create_site!(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
+    def create_thumbnail_attachment(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Attachment) }
+    def create_thumbnail_attachment!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
+    def create_thumbnail_blob(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(::ActiveStorage::Blob) }
+    def create_thumbnail_blob!(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def create_user(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def create_user!(*args, &blk); end
+
+    sig { returns(T.nilable(::Federails::Actor)) }
+    def federails_actor; end
+
+    sig { params(value: T.nilable(::Federails::Actor)).void }
+    def federails_actor=(value); end
+
+    sig { returns(T::Boolean) }
+    def federails_actor_changed?; end
+
+    sig { returns(T::Boolean) }
+    def federails_actor_previously_changed?; end
+
+    # This method is created by ActiveRecord on the `Article` class because it declared `has_many :notification_deliveries`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::NotificationDelivery::PrivateCollectionProxy) }
+    def notification_deliveries; end
+
+    sig { params(value: T::Enumerable[::NotificationDelivery]).void }
+    def notification_deliveries=(value); end
+
+    sig { returns(T::Array[T.untyped]) }
+    def notification_delivery_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def notification_delivery_ids=(ids); end
 
     sig { returns(T.nilable(::PgSearch::Document)) }
     def pg_search_document; end
@@ -376,20 +482,52 @@ class Article
     sig { params(value: T.nilable(::PgSearch::Document)).void }
     def pg_search_document=(value); end
 
+    sig { returns(T::Array[T.untyped]) }
+    def post_ids; end
+
+    sig { params(ids: T::Array[T.untyped]).returns(T::Array[T.untyped]) }
+    def post_ids=(ids); end
+
+    # This method is created by ActiveRecord on the `Article` class because it declared `has_many :posts`.
+    # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
+    sig { returns(::Post::PrivateCollectionProxy) }
+    def posts; end
+
+    sig { params(value: T::Enumerable[::Post]).void }
+    def posts=(value); end
+
+    sig { returns(T.nilable(::Federails::Actor)) }
+    def reload_federails_actor; end
+
     sig { returns(T.nilable(::PgSearch::Document)) }
     def reload_pg_search_document; end
 
     sig { returns(T.nilable(::Site)) }
     def reload_site; end
 
+    sig { returns(T.nilable(::ActiveStorage::Attachment)) }
+    def reload_thumbnail_attachment; end
+
+    sig { returns(T.nilable(::ActiveStorage::Blob)) }
+    def reload_thumbnail_blob; end
+
     sig { returns(T.nilable(::User)) }
     def reload_user; end
+
+    sig { void }
+    def reset_federails_actor; end
 
     sig { void }
     def reset_pg_search_document; end
 
     sig { void }
     def reset_site; end
+
+    sig { void }
+    def reset_thumbnail_attachment; end
+
+    sig { void }
+    def reset_thumbnail_blob; end
 
     sig { void }
     def reset_user; end
@@ -448,6 +586,18 @@ class Article
     sig { params(value: T::Enumerable[::ActsAsTaggableOn::Tag]).void }
     def tags=(value); end
 
+    sig { returns(T.nilable(::ActiveStorage::Attachment)) }
+    def thumbnail_attachment; end
+
+    sig { params(value: T.nilable(::ActiveStorage::Attachment)).void }
+    def thumbnail_attachment=(value); end
+
+    sig { returns(T.nilable(::ActiveStorage::Blob)) }
+    def thumbnail_blob; end
+
+    sig { params(value: T.nilable(::ActiveStorage::Blob)).void }
+    def thumbnail_blob=(value); end
+
     sig { returns(T.nilable(::User)) }
     def user; end
 
@@ -475,10 +625,16 @@ class Article
     def arel_columns(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def confirmed(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def discarded(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def distant_federails_entities(*args, &blk); end
 
     sig { params(value: T::Boolean).returns(PrivateAssociationRelation) }
     def distinct(value = true); end
@@ -499,6 +655,9 @@ class Article
     def extract_associated(association); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def for_admin_index(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def from(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -506,6 +665,9 @@ class Article
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationGroupChain) }
     def group(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def hangul_leftover_japanese(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def having(*args, &blk); end
@@ -535,10 +697,22 @@ class Article
     def limit(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def local_federails_entities(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def lock(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def merge(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def missing_japanese(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def nearest_neighbors(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def needs_japanese(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def none(*args, &blk); end
@@ -574,6 +748,9 @@ class Article
     def regroup(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def related(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def reorder(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -602,7 +779,14 @@ class Article
     def uniq!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def unrelated(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def unscope(*args, &blk); end
+
+    sig { returns(PrivateAssociationRelation) }
+    sig { type_parameters(:U).params(block: T.proc.returns(T.type_parameter(:U))).returns(T.type_parameter(:U)) }
+    def unscoped(&block); end
 
     sig { returns(PrivateAssociationRelationWhereChain) }
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -612,6 +796,9 @@ class Article
     def with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def with_attached_thumbnail(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with_discarded(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -619,9 +806,102 @@ class Article
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def without(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def without_toast(*args, &blk); end
   end
 
   module GeneratedAttributeMethods
+    sig { returns(T.nilable(::String)) }
+    def body; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def body=(value); end
+
+    sig { returns(T::Boolean) }
+    def body?; end
+
+    sig { returns(T.nilable(::String)) }
+    def body_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def body_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def body_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def body_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def body_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def body_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def body_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def body_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def body_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def body_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def body_was; end
+
+    sig { void }
+    def body_will_change!; end
+
+    sig { returns(::Integer) }
+    def boosters_count; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def boosters_count=(value); end
+
+    sig { returns(T::Boolean) }
+    def boosters_count?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def boosters_count_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def boosters_count_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def boosters_count_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def boosters_count_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def boosters_count_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def boosters_count_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def boosters_count_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def boosters_count_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def boosters_count_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def boosters_count_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def boosters_count_was; end
+
+    sig { void }
+    def boosters_count_will_change!; end
+
     sig { returns(::ActiveSupport::TimeWithZone) }
     def created_at; end
 
@@ -646,7 +926,7 @@ class Article
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change_to_be_saved; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def created_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -655,7 +935,7 @@ class Article
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_previous_change; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def created_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -691,12 +971,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def deleted_at_change_to_be_saved; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def deleted_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -705,12 +980,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def deleted_at_previous_change; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def deleted_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -721,6 +991,141 @@ class Article
 
     sig { void }
     def deleted_at_will_change!; end
+
+    sig { returns(T.untyped) }
+    def embedding; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def embedding=(value); end
+
+    sig { returns(T::Boolean) }
+    def embedding?; end
+
+    sig { returns(T.untyped) }
+    def embedding_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def embedding_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def embedding_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def embedding_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def embedding_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def embedding_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def embedding_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def embedding_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def embedding_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def embedding_previously_was; end
+
+    sig { returns(T.untyped) }
+    def embedding_was; end
+
+    sig { void }
+    def embedding_will_change!; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def federails_actor_id; end
+
+    sig { params(value: T.nilable(::Integer)).returns(T.nilable(::Integer)) }
+    def federails_actor_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def federails_actor_id?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def federails_actor_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def federails_actor_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def federails_actor_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def federails_actor_id_change; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def federails_actor_id_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def federails_actor_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def federails_actor_id_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def federails_actor_id_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def federails_actor_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def federails_actor_id_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def federails_actor_id_was; end
+
+    sig { void }
+    def federails_actor_id_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def federated_url; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def federated_url=(value); end
+
+    sig { returns(T::Boolean) }
+    def federated_url?; end
+
+    sig { returns(T.nilable(::String)) }
+    def federated_url_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def federated_url_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def federated_url_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def federated_url_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def federated_url_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def federated_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def federated_url_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def federated_url_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def federated_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def federated_url_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def federated_url_was; end
+
+    sig { void }
+    def federated_url_will_change!; end
 
     sig { returns(T.nilable(::String)) }
     def host; end
@@ -746,7 +1151,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def host_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def host_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -755,7 +1160,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def host_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def host_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -791,7 +1196,7 @@ class Article
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change_to_be_saved; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -800,7 +1205,7 @@ class Article
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_previous_change; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -830,7 +1235,7 @@ class Article
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change_to_be_saved; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_value_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -839,7 +1244,7 @@ class Article
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_previous_change; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_value_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -856,6 +1261,96 @@ class Article
 
     sig { void }
     def id_will_change!; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_posted; end
+
+    sig { params(value: T.nilable(T::Boolean)).returns(T.nilable(T::Boolean)) }
+    def is_posted=(value); end
+
+    sig { returns(T::Boolean) }
+    def is_posted?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_posted_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def is_posted_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def is_posted_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def is_posted_change; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def is_posted_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def is_posted_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_posted_in_database; end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def is_posted_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def is_posted_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_posted_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_posted_was; end
+
+    sig { void }
+    def is_posted_will_change!; end
+
+    sig { returns(T::Boolean) }
+    def is_related; end
+
+    sig { params(value: T::Boolean).returns(T::Boolean) }
+    def is_related=(value); end
+
+    sig { returns(T::Boolean) }
+    def is_related?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_related_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def is_related_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def is_related_came_from_user?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def is_related_change; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def is_related_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def is_related_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_related_in_database; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def is_related_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def is_related_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_related_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def is_related_was; end
+
+    sig { void }
+    def is_related_will_change!; end
 
     sig { returns(T::Boolean) }
     def is_youtube; end
@@ -881,7 +1376,7 @@ class Article
     sig { returns(T.nilable([T::Boolean, T::Boolean])) }
     def is_youtube_change_to_be_saved; end
 
-    sig { params(from: T::Boolean, to: T::Boolean).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def is_youtube_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(T::Boolean)) }
@@ -890,7 +1385,7 @@ class Article
     sig { returns(T.nilable([T::Boolean, T::Boolean])) }
     def is_youtube_previous_change; end
 
-    sig { params(from: T::Boolean, to: T::Boolean).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def is_youtube_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(T::Boolean)) }
@@ -901,6 +1396,51 @@ class Article
 
     sig { void }
     def is_youtube_will_change!; end
+
+    sig { returns(::Integer) }
+    def likers_count; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def likers_count=(value); end
+
+    sig { returns(T::Boolean) }
+    def likers_count?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def likers_count_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def likers_count_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def likers_count_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def likers_count_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def likers_count_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def likers_count_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def likers_count_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def likers_count_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def likers_count_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def likers_count_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def likers_count_was; end
+
+    sig { void }
+    def likers_count_will_change!; end
 
     sig { returns(::String) }
     def origin_url; end
@@ -926,7 +1466,7 @@ class Article
     sig { returns(T.nilable([::String, ::String])) }
     def origin_url_change_to_be_saved; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def origin_url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -935,7 +1475,7 @@ class Article
     sig { returns(T.nilable([::String, ::String])) }
     def origin_url_previous_change; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def origin_url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -946,6 +1486,51 @@ class Article
 
     sig { void }
     def origin_url_will_change!; end
+
+    sig { returns(::Integer) }
+    def posts_count; end
+
+    sig { params(value: ::Integer).returns(::Integer) }
+    def posts_count=(value); end
+
+    sig { returns(T::Boolean) }
+    def posts_count?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def posts_count_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def posts_count_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def posts_count_came_from_user?; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def posts_count_change; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def posts_count_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def posts_count_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def posts_count_in_database; end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def posts_count_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def posts_count_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def posts_count_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def posts_count_was; end
+
+    sig { void }
+    def posts_count_will_change!; end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
     def published_at; end
@@ -971,12 +1556,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def published_at_change_to_be_saved; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def published_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -985,12 +1565,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def published_at_previous_change; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def published_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -1003,10 +1578,25 @@ class Article
     def published_at_will_change!; end
 
     sig { void }
+    def restore_body!; end
+
+    sig { void }
+    def restore_boosters_count!; end
+
+    sig { void }
     def restore_created_at!; end
 
     sig { void }
     def restore_deleted_at!; end
+
+    sig { void }
+    def restore_embedding!; end
+
+    sig { void }
+    def restore_federails_actor_id!; end
+
+    sig { void }
+    def restore_federated_url!; end
 
     sig { void }
     def restore_host!; end
@@ -1018,10 +1608,22 @@ class Article
     def restore_id_value!; end
 
     sig { void }
+    def restore_is_posted!; end
+
+    sig { void }
+    def restore_is_related!; end
+
+    sig { void }
     def restore_is_youtube!; end
 
     sig { void }
+    def restore_likers_count!; end
+
+    sig { void }
     def restore_origin_url!; end
+
+    sig { void }
+    def restore_posts_count!; end
 
     sig { void }
     def restore_published_at!; end
@@ -1033,16 +1635,34 @@ class Article
     def restore_slug!; end
 
     sig { void }
+    def restore_social_post_ids!; end
+
+    sig { void }
+    def restore_summary_body!; end
+
+    sig { void }
+    def restore_summary_body_ja!; end
+
+    sig { void }
     def restore_summary_detail!; end
 
     sig { void }
+    def restore_summary_detail_ja!; end
+
+    sig { void }
     def restore_summary_key!; end
+
+    sig { void }
+    def restore_summary_key_ja!; end
 
     sig { void }
     def restore_tag_list!; end
 
     sig { void }
     def restore_title!; end
+
+    sig { void }
+    def restore_title_ja!; end
 
     sig { void }
     def restore_title_ko!; end
@@ -1056,118 +1676,208 @@ class Article
     sig { void }
     def restore_user_id!; end
 
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_body; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_body?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_boosters_count; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_boosters_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_created_at; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_created_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_created_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_deleted_at; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_deleted_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_deleted_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_embedding; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_embedding?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def saved_change_to_federails_actor_id; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_federails_actor_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_federated_url; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_federated_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_host; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_host?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_host?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id_value; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_id_value?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_id_value?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(T::Boolean), T.nilable(T::Boolean)])) }
+    def saved_change_to_is_posted; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_is_posted?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def saved_change_to_is_related; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_is_related?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T::Boolean, T::Boolean])) }
     def saved_change_to_is_youtube; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_is_youtube?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_is_youtube?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_likers_count; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_likers_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_origin_url; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_origin_url?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_origin_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([::Integer, ::Integer])) }
+    def saved_change_to_posts_count; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_posts_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_published_at; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_published_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_published_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.nilable([::Integer, ::Integer])) }
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def saved_change_to_site_id; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_site_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_site_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_slug; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_slug?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_slug?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_social_post_ids; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_social_post_ids?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_summary_body; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_summary_body?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_summary_body_ja; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_summary_body_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_summary_detail; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_summary_detail?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_summary_detail?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_summary_detail_ja; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_summary_detail_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_summary_key; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_summary_key?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_summary_key?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_summary_key_ja; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_summary_key_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def saved_change_to_tag_list; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_tag_list?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_tag_list?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_title; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_title?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_title?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_title_ja; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_title_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_title_ko; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_title_ko?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_title_ko?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_updated_at; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_updated_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_updated_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_url; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_url?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def saved_change_to_user_id; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_user_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_user_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(::Integer) }
+    sig { returns(T.nilable(::Integer)) }
     def site_id; end
 
-    sig { params(value: ::Integer).returns(::Integer) }
+    sig { params(value: T.nilable(::Integer)).returns(T.nilable(::Integer)) }
     def site_id=(value); end
 
     sig { returns(T::Boolean) }
@@ -1182,22 +1892,22 @@ class Article
     sig { returns(T::Boolean) }
     def site_id_came_from_user?; end
 
-    sig { returns(T.nilable([::Integer, ::Integer])) }
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def site_id_change; end
 
-    sig { returns(T.nilable([::Integer, ::Integer])) }
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def site_id_change_to_be_saved; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def site_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
     def site_id_in_database; end
 
-    sig { returns(T.nilable([::Integer, ::Integer])) }
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def site_id_previous_change; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def site_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -1233,7 +1943,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def slug_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def slug_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -1242,7 +1952,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def slug_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def slug_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -1253,6 +1963,141 @@ class Article
 
     sig { void }
     def slug_will_change!; end
+
+    sig { returns(T.untyped) }
+    def social_post_ids; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def social_post_ids=(value); end
+
+    sig { returns(T::Boolean) }
+    def social_post_ids?; end
+
+    sig { returns(T.untyped) }
+    def social_post_ids_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def social_post_ids_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def social_post_ids_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def social_post_ids_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def social_post_ids_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def social_post_ids_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def social_post_ids_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def social_post_ids_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def social_post_ids_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def social_post_ids_previously_was; end
+
+    sig { returns(T.untyped) }
+    def social_post_ids_was; end
+
+    sig { void }
+    def social_post_ids_will_change!; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def summary_body=(value); end
+
+    sig { returns(T::Boolean) }
+    def summary_body?; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_body_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def summary_body_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_body_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_body_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_body_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_in_database; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_ja; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def summary_body_ja=(value); end
+
+    sig { returns(T::Boolean) }
+    def summary_body_ja?; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_ja_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_body_ja_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def summary_body_ja_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_body_ja_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_body_ja_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_body_ja_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_ja_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_body_ja_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_body_ja_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_ja_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_ja_was; end
+
+    sig { void }
+    def summary_body_ja_will_change!; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def summary_body_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_body_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def summary_body_was; end
+
+    sig { void }
+    def summary_body_will_change!; end
 
     sig { returns(T.untyped) }
     def summary_detail; end
@@ -1283,6 +2128,51 @@ class Article
 
     sig { returns(T.untyped) }
     def summary_detail_in_database; end
+
+    sig { returns(T.untyped) }
+    def summary_detail_ja; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_detail_ja=(value); end
+
+    sig { returns(T::Boolean) }
+    def summary_detail_ja?; end
+
+    sig { returns(T.untyped) }
+    def summary_detail_ja_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_detail_ja_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def summary_detail_ja_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_detail_ja_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_detail_ja_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_detail_ja_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_detail_ja_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_detail_ja_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_detail_ja_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_detail_ja_previously_was; end
+
+    sig { returns(T.untyped) }
+    def summary_detail_ja_was; end
+
+    sig { void }
+    def summary_detail_ja_will_change!; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def summary_detail_previous_change; end
@@ -1328,6 +2218,51 @@ class Article
 
     sig { returns(T.untyped) }
     def summary_key_in_database; end
+
+    sig { returns(T.untyped) }
+    def summary_key_ja; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_key_ja=(value); end
+
+    sig { returns(T::Boolean) }
+    def summary_key_ja?; end
+
+    sig { returns(T.untyped) }
+    def summary_key_ja_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_key_ja_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def summary_key_ja_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_key_ja_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_key_ja_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_key_ja_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_key_ja_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def summary_key_ja_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def summary_key_ja_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def summary_key_ja_previously_was; end
+
+    sig { returns(T.untyped) }
+    def summary_key_ja_was; end
+
+    sig { void }
+    def summary_key_ja_will_change!; end
 
     sig { returns(T.nilable([T.untyped, T.untyped])) }
     def summary_key_previous_change; end
@@ -1413,11 +2348,56 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def title_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def title_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
     def title_in_database; end
+
+    sig { returns(T.nilable(::String)) }
+    def title_ja; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def title_ja=(value); end
+
+    sig { returns(T::Boolean) }
+    def title_ja?; end
+
+    sig { returns(T.nilable(::String)) }
+    def title_ja_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def title_ja_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def title_ja_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def title_ja_change; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def title_ja_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def title_ja_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def title_ja_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def title_ja_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def title_ja_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::String)) }
+    def title_ja_previously_was; end
+
+    sig { returns(T.nilable(::String)) }
+    def title_ja_was; end
+
+    sig { void }
+    def title_ja_will_change!; end
 
     sig { returns(T.nilable(::String)) }
     def title_ko; end
@@ -1443,7 +2423,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def title_ko_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def title_ko_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -1452,7 +2432,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def title_ko_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def title_ko_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -1467,7 +2447,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def title_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def title_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -1503,7 +2483,7 @@ class Article
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change_to_be_saved; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def updated_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -1512,7 +2492,7 @@ class Article
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_previous_change; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def updated_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -1548,7 +2528,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def url_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -1557,7 +2537,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def url_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -1593,7 +2573,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def user_id_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::Integer), to: T.nilable(::Integer)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def user_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -1602,7 +2582,7 @@ class Article
     sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
     def user_id_previous_change; end
 
-    sig { params(from: T.nilable(::Integer), to: T.nilable(::Integer)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def user_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -1614,59 +2594,104 @@ class Article
     sig { void }
     def user_id_will_change!; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_created_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_body?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_deleted_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_boosters_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_host?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_created_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_deleted_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_id_value?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_embedding?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_is_youtube?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_federails_actor_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_origin_url?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_federated_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_published_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_host?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_site_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_slug?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_id_value?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_summary_detail?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_is_posted?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_summary_key?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_is_related?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_tag_list?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_is_youtube?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_title?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_likers_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_title_ko?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_origin_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_updated_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_posts_count?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_url?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_published_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_user_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_site_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_slug?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_social_post_ids?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_summary_body?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_summary_body_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_summary_detail?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_summary_detail_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_summary_key?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_summary_key_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_tag_list?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_title?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_title_ja?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_title_ko?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_updated_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_user_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
   end
 
   module GeneratedRelationMethods
@@ -1683,10 +2708,16 @@ class Article
     def arel_columns(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def confirmed(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def discarded(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def distant_federails_entities(*args, &blk); end
 
     sig { params(value: T::Boolean).returns(PrivateRelation) }
     def distinct(value = true); end
@@ -1707,6 +2738,9 @@ class Article
     def extract_associated(association); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def for_admin_index(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def from(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1714,6 +2748,9 @@ class Article
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationGroupChain) }
     def group(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def hangul_leftover_japanese(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def having(*args, &blk); end
@@ -1743,10 +2780,22 @@ class Article
     def limit(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def local_federails_entities(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def lock(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def merge(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def missing_japanese(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def nearest_neighbors(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def needs_japanese(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def none(*args, &blk); end
@@ -1782,6 +2831,9 @@ class Article
     def regroup(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def related(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def reorder(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1810,7 +2862,14 @@ class Article
     def uniq!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def unrelated(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
+
+    sig { returns(PrivateRelation) }
+    sig { type_parameters(:U).params(block: T.proc.returns(T.type_parameter(:U))).returns(T.type_parameter(:U)) }
+    def unscoped(&block); end
 
     sig { returns(PrivateRelationWhereChain) }
     sig { params(args: T.untyped).returns(PrivateRelation) }
@@ -1820,6 +2879,9 @@ class Article
     def with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def with_attached_thumbnail(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with_discarded(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1827,6 +2889,155 @@ class Article
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def without(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def without_toast(*args, &blk); end
+  end
+
+  module GeneratedStoredAttributesMethods
+    sig { returns(T.untyped) }
+    def mastodon_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def mastodon_id=(value); end
+
+    sig { returns(T.untyped) }
+    def mastodon_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def mastodon_id_change; end
+
+    sig { returns(T::Boolean) }
+    def mastodon_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def mastodon_id_was; end
+
+    sig { returns(T.untyped) }
+    def saved_change_to_mastodon_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_mastodon_id?; end
+
+    sig { returns(T.untyped) }
+    def saved_change_to_summary_conclusion; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_summary_conclusion?; end
+
+    sig { returns(T.untyped) }
+    def saved_change_to_summary_introduction; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_summary_introduction?; end
+
+    sig { returns(T.untyped) }
+    def saved_change_to_summary_ja_conclusion; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_summary_ja_conclusion?; end
+
+    sig { returns(T.untyped) }
+    def saved_change_to_summary_ja_introduction; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_summary_ja_introduction?; end
+
+    sig { returns(T.untyped) }
+    def saved_change_to_twitter_id; end
+
+    sig { returns(T::Boolean) }
+    def saved_change_to_twitter_id?; end
+
+    sig { returns(T.untyped) }
+    def summary_conclusion; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_conclusion=(value); end
+
+    sig { returns(T.untyped) }
+    def summary_conclusion_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_conclusion_change; end
+
+    sig { returns(T::Boolean) }
+    def summary_conclusion_changed?; end
+
+    sig { returns(T.untyped) }
+    def summary_conclusion_was; end
+
+    sig { returns(T.untyped) }
+    def summary_introduction; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_introduction=(value); end
+
+    sig { returns(T.untyped) }
+    def summary_introduction_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_introduction_change; end
+
+    sig { returns(T::Boolean) }
+    def summary_introduction_changed?; end
+
+    sig { returns(T.untyped) }
+    def summary_introduction_was; end
+
+    sig { returns(T.untyped) }
+    def summary_ja_conclusion; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_ja_conclusion=(value); end
+
+    sig { returns(T.untyped) }
+    def summary_ja_conclusion_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_ja_conclusion_change; end
+
+    sig { returns(T::Boolean) }
+    def summary_ja_conclusion_changed?; end
+
+    sig { returns(T.untyped) }
+    def summary_ja_conclusion_was; end
+
+    sig { returns(T.untyped) }
+    def summary_ja_introduction; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def summary_ja_introduction=(value); end
+
+    sig { returns(T.untyped) }
+    def summary_ja_introduction_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def summary_ja_introduction_change; end
+
+    sig { returns(T::Boolean) }
+    def summary_ja_introduction_changed?; end
+
+    sig { returns(T.untyped) }
+    def summary_ja_introduction_was; end
+
+    sig { returns(T.untyped) }
+    def twitter_id; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def twitter_id=(value); end
+
+    sig { returns(T.untyped) }
+    def twitter_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def twitter_id_change; end
+
+    sig { returns(T::Boolean) }
+    def twitter_id_changed?; end
+
+    sig { returns(T.untyped) }
+    def twitter_id_was; end
   end
 
   class PrivateAssociationRelation < ::ActiveRecord::AssociationRelation

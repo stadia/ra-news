@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -10,7 +11,8 @@ class Role < ApplicationRecord
 
   private
 
-  def remove_role_from_users #: () -> void
+  #: () -> void
+  def remove_role_from_users
     User.with_role(name).update_all([ "roles = array_remove(roles, ?)", name ])
   end
 end

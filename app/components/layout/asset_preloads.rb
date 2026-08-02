@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 # head 안에서 서로 떨어진 위치에 렌더되는 자산 프리로드 관련 마크업을 한 곳에 모은다.

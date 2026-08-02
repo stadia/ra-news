@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -14,7 +15,8 @@ class Gmail
   # 15초 = open(5)+read(10)에 대응하는 단일 wall-clock 예산(open/read 구분 불가).
   NETWORK_TIMEOUT = 15 #: Integer
 
-  def initialize #: Gmail
+  #: () -> void
+  def initialize
     password = ENV["MAIL_PASSWORD"]
 
     Mail.defaults do

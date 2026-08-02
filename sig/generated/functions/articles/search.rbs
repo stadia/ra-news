@@ -20,8 +20,8 @@ module Articles
       def members: () -> [ :pagy, :articles, :suggestions ]
     end
 
-    # : (String? search, ^(ActiveRecord::Relation) -> [Pagy, Array[Article]] pagy) -> IndexResult
-    def self.index_html: (String? search, ^(ActiveRecord::Relation) -> [ Pagy, Array[Article] ] pagy) -> IndexResult
+    # : (search: String?, pagy: ^(ActiveRecord::Relation) -> [Pagy, Array[Article]]) -> IndexResult
+    def self.index_html: (search: String?, pagy: ^(ActiveRecord::Relation) -> [ Pagy, Array[Article] ]) -> IndexResult
 
     # ── cosine_similarity ──────────────────────────────────────
     # : (Array[Float]? a, Array[Float]? b) -> Float

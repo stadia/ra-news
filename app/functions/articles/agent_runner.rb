@@ -1,10 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
 module Articles
   module AgentRunner
     extend FunctionLogger
-    extend Dry::Monads[:result]
+    T.unsafe(self).extend(Dry::Monads[:result])
 
     class << self
       #: (article: Article, prompt: String) -> Dry::Monads::Result

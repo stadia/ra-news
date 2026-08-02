@@ -11,11 +11,11 @@ class ContentService < OperationService
   # : (Article article) -> Dry::Monads::Result
   def execute_github_readme: (Article article) -> Dry::Monads::Result
 
-  # : (url: String) -> String?
-  def execute_html: (url: String) -> String?
+  # : (String url) -> String?
+  def execute_html: (String url) -> String?
 
-  # : (url: String) -> String?
-  def execute_youtube: (url: String) -> String?
+  # : (String url) -> String?
+  def execute_youtube: (String url) -> String?
 
   private
 

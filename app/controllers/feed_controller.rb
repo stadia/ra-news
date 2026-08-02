@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -95,7 +96,8 @@ class FeedController < ApplicationController
   # the feed because someone the current user follows (or the user themselves)
   # boosted them. Posts authored by the current user, by a followed actor, or by
   # a local actor are excluded — they would have shown up regardless of any boost.
-  def boosters_for_attribution(posts, actor, following_actor_ids) #: Hash[Integer, Federails::Actor]
+  #: (untyped posts, Federails::Actor actor, untyped following_actor_ids) -> Hash[Integer, Federails::Actor]
+  def boosters_for_attribution(posts, actor, following_actor_ids)
     return {} if posts.blank?
 
     following_id_list = following_actor_ids.to_a

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -14,7 +15,8 @@ class MastodonService < SocialMediaService
 
   private
 
-  def platform_name #: String
+  #: () -> String
+  def platform_name
     "Mastodon"
   end
 
@@ -74,7 +76,8 @@ class MastodonService < SocialMediaService
     "#{truncated_content}\n\n#{tags}\n#{link}"
   end
 
-  def platform_client #: MastodonClient
+  #: () -> MastodonClient
+  def platform_client
     MastodonClient.new
   end
 end

@@ -16,6 +16,7 @@ class TwitterService < SocialMediaService
 
   private
 
+  # : () -> String
   def platform_name: () -> String
 
   # : (Article article) -> Dry::Monads::Result
@@ -27,5 +28,6 @@ class TwitterService < SocialMediaService
   # : (Article article) -> String
   def build_post_text: (Article article) -> String
 
+  # : () -> TwitterClient
   def platform_client: () -> TwitterClient
 end

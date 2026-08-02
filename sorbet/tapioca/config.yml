@@ -1,13 +1,19 @@
 gem:
-  # Add your `gem` command parameters here:
-  #
-  # exclude:
-  # - gem_name
-  # doc: true
-  # workers: 5
+  exclude:
+    # 45k icon classes / 187MB of source. Reflecting over it takes >15 minutes
+    # and yields an RBI large enough to slow `srb tc` down for no benefit --
+    # the app references no Phlex::Icons constants.
+    - phlex-icons
+    # A Ruby 4.0 default gem: Sorbet's own payload already declares Net::IMAP,
+    # and tapioca's version disagrees about class parents (Literal, QuotedString).
+    - net-imap
+    # tapioca emits `params(path: T.untyped, _arg1: )` -- a syntactically
+    # invalid sig -- for Herb.lex_file/parse_file.
+    - herb
+  workers: 8
 dsl:
   # Add your `dsl` command parameters here:
   #
   # exclude:
   # - SomeGeneratorName
-  # workers: 5
+  workers: 8

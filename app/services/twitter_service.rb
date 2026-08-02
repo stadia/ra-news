@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -12,7 +13,8 @@ class TwitterService < SocialMediaService
 
   private
 
-  def platform_name #: String
+  #: () -> String
+  def platform_name
     "X.com"
   end
 
@@ -71,7 +73,8 @@ class TwitterService < SocialMediaService
     "#{truncated_content} #{tags}\n#{link}"
   end
 
-  def platform_client #: TwitterClient
+  #: () -> TwitterClient
+  def platform_client
     TwitterClient.new
   end
 end

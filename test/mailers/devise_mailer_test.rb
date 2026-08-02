@@ -3,7 +3,7 @@
 require "test_helper"
 
 class DeviseMailerTest < ActionMailer::TestCase
-  include Rails.application.routes.url_helpers
+  T.unsafe(self).include(Rails.application.routes.url_helpers)
 
   test "confirmation_instructions renders html from phlex and keeps text part" do
     user = users(:john)

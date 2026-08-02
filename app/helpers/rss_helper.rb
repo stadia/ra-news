@@ -1,3 +1,4 @@
+# typed: false
 # rbs_inline: enabled
 
 module RssHelper
@@ -21,7 +22,7 @@ module RssHelper
   end
 
   # Fetches and parses the RSS feed for a site.
-  #: (Site site) -> RSS::Rss || RSS::Atom::Feed | nil
+  #: (Site site) -> (RSS::Rss | RSS::Atom::Feed)?
   def fetch_feed(site)
     RssClient.feed(site.url)
   rescue RSS::NotWellFormedError, RSS::Error, REXML::ParseException => e
@@ -33,7 +34,7 @@ module RssHelper
   end
 
   # Returns the items from an RSS or Atom feed.
-  #: (RSS::Rss || RSS::Atom::Feed feed) -> Array[RSS::Rss::Channel::Item || RSS::Atom::Feed::Entry]
+  #: ((RSS::Rss | RSS::Atom::Feed) feed) -> Array[RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry]
   def feed_items(feed)
     case feed
     when RSS::Rss
@@ -46,7 +47,7 @@ module RssHelper
   end
 
   # Extracts attributes from a feed item.
-  #: (RSS::Rss::Channel::Item || RSS::Atom::Feed::Entry item) -> Hash?
+  #: ((RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry) item) -> Hash?
   def extract_item_attributes(item)
     attrs = case item
     when RSS::Atom::Feed::Entry

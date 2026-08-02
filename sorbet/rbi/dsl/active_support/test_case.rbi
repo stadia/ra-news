@@ -11,10 +11,105 @@ class ActiveSupport::TestCase
   sig { params(fixture_name: T.any(String, Symbol), other_fixtures: T.any(String, Symbol)).returns(T::Array[Article]) }
   def articles(fixture_name = nil, *other_fixtures); end
 
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Federails::Actor]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Federails::Actor) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[Federails::Actor])
+  end
+  def federails_actors(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Federails::Following]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Federails::Following) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[Federails::Following])
+  end
+  def federails_followings(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[NotificationChannel]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(NotificationChannel) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[NotificationChannel])
+  end
+  def notification_channels(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[NotificationDelivery]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(NotificationDelivery) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[NotificationDelivery])
+  end
+  def notification_deliveries(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[T.untyped]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(T.untyped) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[T.untyped])
+  end
+  def pg_search_documents(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Post]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Post) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: T.any(String, Symbol)).returns(T::Array[Post]) }
+  def posts(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Preference]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Preference) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[Preference])
+  end
+  def preferences(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[PushSubscription]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(PushSubscription) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[PushSubscription])
+  end
+  def push_subscriptions(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[RefreshToken]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(RefreshToken) }
+  sig do
+    params(
+      fixture_name: T.any(String, Symbol),
+      other_fixtures: T.any(String, Symbol)
+    ).returns(T::Array[RefreshToken])
+  end
+  def refresh_tokens(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Role]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Role) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: T.any(String, Symbol)).returns(T::Array[Role]) }
+  def roles(fixture_name = nil, *other_fixtures); end
+
   sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Site]) }
   sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Site) }
   sig { params(fixture_name: T.any(String, Symbol), other_fixtures: T.any(String, Symbol)).returns(T::Array[Site]) }
   def sites(fixture_name = nil, *other_fixtures); end
+
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Tag]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Tag) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: T.any(String, Symbol)).returns(T::Array[Tag]) }
+  def tags(fixture_name = nil, *other_fixtures); end
 
   sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[User]) }
   sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(User) }

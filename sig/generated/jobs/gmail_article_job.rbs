@@ -12,12 +12,12 @@ class GmailArticleJob < ApplicationJob
   private
 
   # Fetches new email links from the site's email account.
-  # : (Site site) -> Array<String>
-  def fetch_new_email_links: (Site site) -> Array
+  # : (Site site) -> Array[String]
+  def fetch_new_email_links: (Site site) -> Array[String]
 
   # Iterates over links and creates articles.
-  # : (Array<String> links, Site site) -> void
-  def create_articles_from_links: (untyped links, untyped site) -> untyped
+  # : (Array[String] links, Site site) -> void
+  def create_articles_from_links: (Array[String] links, Site site) -> void
 
   # Creates an article for a given link.
   # : (String link, Site site) -> void

@@ -8,7 +8,9 @@ class ArticleBatchJob < ApplicationJob
 
   private
 
+  # : () -> Integer
   def rate_limit_threshold: () -> Integer
 
+  # : () -> ActiveSupport::Duration
   def rate_limit_window: () -> ActiveSupport::Duration
 end

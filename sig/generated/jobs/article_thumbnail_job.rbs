@@ -1,6 +1,6 @@
 # Generated from app/jobs/article_thumbnail_job.rb with RBS::Inline
 
-# : Article의 summary_key를 기반으로 썸네일 이미지를 생성하여 ActiveStorage에 첨부한다
+# Article의 summary_key를 기반으로 썸네일 이미지를 생성하여 ActiveStorage에 첨부한다
 class ArticleThumbnailJob < ApplicationJob
   # : (Integer article_id, ?force: bool) -> void
   def perform: (Integer article_id, ?force: bool) -> void

@@ -18,6 +18,7 @@ class MastodonService < SocialMediaService
 
   private
 
+  # : () -> String
   def platform_name: () -> String
 
   # : (Article article) -> Dry::Monads::Result
@@ -29,5 +30,6 @@ class MastodonService < SocialMediaService
   # : (Article article) -> String
   def build_post_text: (Article article) -> String
 
+  # : () -> MastodonClient
   def platform_client: () -> MastodonClient
 end

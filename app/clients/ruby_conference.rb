@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -6,7 +7,8 @@ module RubyConference
 
   BASE_URL = "https://raw.githubusercontent.com/ruby-conferences/ruby-conferences.github.io/refs/heads/main"
 
-  def conferences #: Array[untyped]
+  #: () -> Array[untyped]
+  def conferences
     response = Faraday.get("#{BASE_URL}/_data/conferences.yml") do |req|
       req.options.open_timeout = HttpTimeouts::OPEN
       req.options.timeout = HttpTimeouts::REQUEST
@@ -20,7 +22,8 @@ module RubyConference
     YAML.load(response.body, permitted_classes: [ Date ]) || []
   end
 
-  def conferences_cached #: Array[untyped]
+  #: () -> Array[untyped]
+  def conferences_cached
     Rails.cache.fetch("ruby-conferences/_data/conferences.yml", expires_in: 1.day) do
       conferences
     end

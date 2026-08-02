@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -17,7 +18,8 @@ module OauthClient
 
   module_function
 
-  def build(oauth_preference) #: (Preference oauth_preference) -> OAuth2::Client
+  #: (Preference oauth_preference) -> OAuth2::Client
+  def build(oauth_preference)
     raise ArgumentError, "OAuth 설정이 비어있습니다" if oauth_preference.blank?
     raise ArgumentError, "OAuth 설정 이름이 비어있습니다" if oauth_preference.name.blank?
 
@@ -35,7 +37,8 @@ module OauthClient
     )
   end
 
-  def extract_provider_from_preference_name(name) #: (String name) -> String
+  #: (String name) -> String
+  def extract_provider_from_preference_name(name)
     name.gsub(/_oauth$/, "")
   end
 

@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -15,7 +16,7 @@ class Preference < ApplicationRecord
     end
   end
 
-  #: (String name) -> Hash[String, untyped] || Array[untyped]
+  #: (String name) -> (Hash[String, untyped] | Array[untyped])?
   def self.get_value(name)
     get_object(name)&.value
   end
@@ -33,7 +34,8 @@ class Preference < ApplicationRecord
     resolving&.delete(name)
   end
 
-  def self.ignore_hosts #: Array[String]
+  #: () -> Array[String]
+  def self.ignore_hosts
     get_value("ignore_hosts") || []
   end
 

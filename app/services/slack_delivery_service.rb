@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -36,7 +37,7 @@ class SlackDeliveryService < OperationService
     Success(delivery)
   end
 
-  #: (Article article, SlackChannel channel, SlackDelivery delivery) -> Dry::Monads::Result
+  #: (Article article, SlackChannel channel, delivery: SlackDelivery) -> Dry::Monads::Result
   def send_message(article, channel, delivery:)
     message = SlackArticlePresenter.new(article)
 

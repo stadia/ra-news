@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -25,11 +26,13 @@ class ArticleBatchJob < ApplicationJob
 
   private
 
-  def rate_limit_threshold #: Integer
+  #: () -> Integer
+  def rate_limit_threshold
     1
   end
 
-  def rate_limit_window #: ActiveSupport::Duration
+  #: () -> ActiveSupport::Duration
+  def rate_limit_window
     5.minutes
   end
 end

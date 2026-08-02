@@ -23,17 +23,14 @@ class ApplicationController
     include ::Turbo::Streams::ActionHelper
     include ::ActionText::ContentHelper
     include ::ActionText::TagHelper
+    include ::Lexxy::TagHelper
     include ::Importmap::ImportmapTagsHelper
+    include ::DeviseI18n::ViewHelpers
     include ::ActionController::Base::HelperMethods
     include ::ApplicationHelper
-    include ::Pagy::UrlHelpers
-    include ::Pagy::Frontend
-    include ::Pagy::I18nExtra::FrontendOverride
-    include ::ArticlesHelper
-    include ::UsersHelper
-
-    sig { returns(T.untyped) }
-    def authenticated?; end
+    include ::LinkHelper
+    include ::RssHelper
+    include ::DeviseHelper
   end
 
   class HelperProxy < ::ActionView::Base

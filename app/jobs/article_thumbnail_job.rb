@@ -1,7 +1,8 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-#: Article의 summary_key를 기반으로 썸네일 이미지를 생성하여 ActiveStorage에 첨부한다
+# Article의 summary_key를 기반으로 썸네일 이미지를 생성하여 ActiveStorage에 첨부한다
 class ArticleThumbnailJob < ApplicationJob
   queue_as :default
 

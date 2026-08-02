@@ -3,9 +3,11 @@
 class Site < ApplicationRecord
   include Discard::Model
 
+  # : () -> (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
   def init_client: () -> (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
 
   private
 
+  # : () -> void
   def parse_url_to_uri_parts: () -> void
 end
