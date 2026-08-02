@@ -20,7 +20,7 @@ module Articles
       end
     end
 
-    #: (?locale: Symbol) -> Array?
+    #: (?locale: Symbol) -> Array[String]?
     def display_summary_key(locale: I18n.locale)
       case locale
       when :ja then summary_key_ja.presence || summary_key
@@ -28,7 +28,7 @@ module Articles
       end
     end
 
-    #: (?locale: Symbol) -> Hash?
+    #: (?locale: Symbol) -> Hash[String, untyped]?
     def display_summary_detail(locale: I18n.locale)
       case locale
       when :ja then summary_detail_ja.presence || summary_detail

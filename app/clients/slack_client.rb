@@ -67,7 +67,7 @@ class SlackClient
       "#{AUTHORIZE_URL}?#{query}"
     end
 
-    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
+    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess[untyped, untyped]
     def exchange_code(code, redirect_uri:)
       response = oauth_client.oauth_v2_access(
         client_id: Configs::Slack.client_id,

@@ -27,8 +27,8 @@ class SlackClient
   # : (redirect_uri: String, state: String) -> String
   def self.authorize_url: (redirect_uri: String, state: String) -> String
 
-  # : (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
-  def self.exchange_code: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
+  # : (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess[untyped, untyped]
+  def self.exchange_code: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess[untyped, untyped]
 
   # : (?String? token) -> Slack::Web::Client
   def self.oauth_client: (?String? token) -> Slack::Web::Client

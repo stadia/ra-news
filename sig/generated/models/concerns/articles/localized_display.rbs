@@ -13,11 +13,11 @@ module Articles
     # : (?locale: Symbol) -> String
     def display_title: (?locale: Symbol) -> String
 
-    # : (?locale: Symbol) -> Array?
-    def display_summary_key: (?locale: Symbol) -> Array?
+    # : (?locale: Symbol) -> Array[String]?
+    def display_summary_key: (?locale: Symbol) -> Array[String]?
 
-    # : (?locale: Symbol) -> Hash?
-    def display_summary_detail: (?locale: Symbol) -> Hash?
+    # : (?locale: Symbol) -> Hash[String, untyped]?
+    def display_summary_detail: (?locale: Symbol) -> Hash[String, untyped]?
 
     # : (?locale: Symbol) -> String?
     def display_summary_body: (?locale: Symbol) -> String?

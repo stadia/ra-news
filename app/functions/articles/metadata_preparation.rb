@@ -47,7 +47,7 @@ module Articles
         follow_redirection(article, next_response, count + 1)
       end
 
-      #: (String url) -> DateTime?
+      #: (String url) -> ActiveSupport::TimeWithZone?
       def url_to_published_at(url)
         match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{1,2})[/-](\d{1,2})})
         return unless match_data
@@ -61,7 +61,7 @@ module Articles
         nil
       end
 
-      #: (String body) -> DateTime?
+      #: (String body) -> ActiveSupport::TimeWithZone?
       def extract_published_at_from_content(body)
         doc = Nokogiri::HTML(body)
         Articles::DateParsing.meta_published_at(doc) ||
@@ -73,7 +73,7 @@ module Articles
         nil
       end
 
-      #: (Article article, String body) -> Time
+      #: (Article article, String body) -> ActiveSupport::TimeWithZone
       def published_at_for(article, body)
         candidate =
           article.published_at ||
@@ -108,7 +108,7 @@ module Articles
           Articles::Utils.should_ignore_url?(parsed_url.to_s)
       end
 
-      #: (DateTime? candidate) -> Time
+      #: (ActiveSupport::TimeWithZone? candidate) -> ActiveSupport::TimeWithZone
       def normalize_published_at(candidate)
         return Time.zone.now if candidate.nil?
         return Time.zone.now if candidate.future?

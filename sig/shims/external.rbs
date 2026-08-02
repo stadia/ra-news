@@ -1,0 +1,175 @@
+# Minimal declarations for gems that do not publish usable RBS signatures.
+
+module RubyLLM
+  class Agent
+  end
+
+  class Attachment
+  end
+
+  class Schema
+  end
+
+  class Tool
+  end
+end
+
+module Pundit
+  module Authorization
+  end
+end
+
+class Pagy
+  module Method
+  end
+end
+
+module Madmin
+  class ApplicationController < ActionController::Base
+  end
+end
+
+module Devise
+  class FailureApp < ActionController::Metal
+  end
+
+  class Mailer < ActionMailer::Base
+  end
+
+  module JWT
+    module RevocationStrategies
+      module Denylist
+      end
+    end
+  end
+end
+
+module PgSearch
+  module Model
+  end
+end
+
+module FriendlyId
+end
+
+module Federails
+  class Actor
+  end
+
+  module ActorEntity
+  end
+
+  module DataEntity
+  end
+
+  module HandlesSocialActivities
+  end
+end
+
+module Discard
+  module Model
+  end
+end
+
+module Alba
+  module Resource
+  end
+end
+
+module Dry
+  class Operation
+  end
+
+  module Monads
+    class Result
+    end
+  end
+end
+
+module ActsAsTaggableOn
+  class Tag < ActiveRecord::Base
+  end
+end
+
+module Views
+  class Base
+  end
+
+  module Profiles
+  end
+end
+
+module Api
+  module V1
+    module Auth
+    end
+  end
+end
+
+module Users
+end
+
+module RSS
+  class Rss
+    class Channel
+      class Item
+      end
+    end
+  end
+
+  module Atom
+    class Feed
+      class Entry
+      end
+    end
+  end
+end
+
+module Yt
+  class Channel
+  end
+
+  class Video
+  end
+
+  module Errors
+    class RequestError < StandardError
+    end
+  end
+end
+
+module Slack
+  module Web
+    class Client
+    end
+  end
+end
+
+class MessageType
+  def self.new: (Hash[untyped, untyped]) -> MessageType
+  def to_proto: () -> String
+end
+
+module SchemaDotOrg
+  class NewsMediaOrganization
+  end
+end
+
+module Nokogiri
+  module HTML4
+    class Document
+    end
+  end
+end
+
+module Phlex
+  module Rails
+    module Helpers
+      module ContentFor
+      end
+
+      module TurboFrameTag
+      end
+    end
+  end
+end

@@ -26,8 +26,10 @@ begin
 rescue StandardError, LoadError
   begin
     require File.join(METRICS_DIR, "metrics")
+    # @rbs skip
     METRICS_PROVIDER = HumanizeKoreanMetrics
   rescue StandardError, LoadError
+    # @rbs skip
     METRICS_PROVIDER = nil
   end
 end

@@ -8,10 +8,6 @@ METRICS_DIR: untyped
 
 METRICS_PROVIDER: untyped
 
-METRICS_PROVIDER: untyped
-
-METRICS_PROVIDER: untyped
-
 ROUTE_LIGHT_MAX_TELLS: ::Integer
 
 ROUTE_HEAVY_MIN_TELLS: ::Integer

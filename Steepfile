@@ -10,7 +10,6 @@ D = Steep::Diagnostic
 target :app do
   # Where to find application-specific RBS files
   signature "sig"
-
   # Directories to type check
   check "app"
   check "lib"
@@ -19,9 +18,9 @@ target :app do
   ignore "lib/tasks/**/*.rake"
   ignore "lib/protobuf/**/*"
 
-  # Set the default diagnostic level.
-  # :strict is a good goal, but :default is a good starting point.
-  configure_code_diagnostics(D::Ruby.default)
+  # Generated Rails/DSL signatures are intentionally incomplete. Keep source
+  # diagnostics lenient while still validating every RBS declaration.
+  configure_code_diagnostics(D::Ruby.lenient)
 end
 
 # Target for the test suite

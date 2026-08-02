@@ -34,4 +34,10 @@ class PreferenceTest < ActiveSupport::TestCase
     assert_equal "persisted-id", fresh.client_id
     assert_equal "persisted-secret", fresh.client_secret
   end
+
+  test "ignore_hosts 설정이 배열이 아니면 빈 배열을 반환한다" do
+    Preference.find_or_initialize_by(name: "ignore_hosts").update!(value: { "unexpected" => "value" })
+
+    assert_equal [], Preference.ignore_hosts
+  end
 end

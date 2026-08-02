@@ -13,7 +13,8 @@ sources:
 # A directory to install the downloaded RBSs
 path: .gem_rbs_collection
 
-# gems:
-#   # If you want to avoid installing rbs files for gems, you can specify them here.
-#   - name: GEM_NAME
-#     ignore: true
+gems:
+  # The git checkout includes generated signatures that are not part of the
+  # packaged gem and reference undeclared Pagy/Alba types.
+  - name: federails
+    ignore: true

@@ -36,7 +36,8 @@ class Preference < ApplicationRecord
 
   #: () -> Array[String]
   def self.ignore_hosts
-    get_value("ignore_hosts") || []
+    value = get_value("ignore_hosts")
+    value.is_a?(Array) ? value.grep(String) : []
   end
 
   #: () -> void
