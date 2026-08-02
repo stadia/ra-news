@@ -5,21 +5,21 @@
 require "test_helper"
 
 class ArticleAgentsServiceTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   AgentResult = Struct.new(:finish_reason, :content)
   HumanizeResult = Struct.new(:content)
 
-  def build_success_content(tags: [ "rubyconf", "keynote" ], is_related: true)
-    {
-      title_ko: "테스트 제목",
-      summary_key: [ "요약 1", "요약 2" ],
-      summary_detail: {
-        introduction: "서론",
-        body: "본문",
-        conclusion: "결론"
-      },
-      tags: tags,
-      is_related: is_related
-    }
+  # run_humanize는 HumanMonolithAgent.chat.with_skills.ask 체인을 타므로
+  # 스텁도 with_skills를 지원해야 실제 호출 경로를 검증한다.
+  def build_humanize_chat(response, &capture)
+    chat = Object.new
+    chat.define_singleton_method(:with_skills) { self }
+    chat.define_singleton_method(:ask) do |prompt|
+      capture&.call(prompt)
+      response
+    end
+    chat
   end
 
   test "서비스는 OperationService를 상속한다" do
@@ -62,11 +62,7 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     })
 
     captured_prompt = nil
-    chat = Object.new
-    chat.define_singleton_method(:ask) do |prompt|
-      captured_prompt = prompt
-      humanize_response
-    end
+    chat = build_humanize_chat(humanize_response) { |prompt| captured_prompt = prompt }
 
     result = nil
     HumanMonolithAgent.stub(:chat, chat) do
@@ -81,43 +77,102 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     assert_equal "### 공격 개요\n\n운문 결과 본문입니다.", article.summary_body
   end
 
-  test "run_agents는 태그를 적용하고 escaped summary_body를 정규화한다" do
-    article = articles(:ruby_article)
-    article.update!(summary_body: nil)
+  # 에이전트 호출 자체(태그 적용·summary_body 정규화·빈 응답 시 discard)는
+  # test/functions/articles/agent_runner_test.rb가 담당한다.
 
-    agent_response = AgentResult.new(nil, build_success_content(tags: [ "RubyConf", "Keynote" ]).merge(
-      "summary_body" => "첫 줄\\n둘째 줄"
-    ))
+  test "썸네일 단계가 실패해도 일본어 번역 단계까지 진행한다" do
+    article = articles(:ruby_article)
+    article.update!(
+      body: "본문 문장입니다. " * 10,
+      summary_key: [], # 썸네일 단계가 :no_summary_key로 실패하는 조건
+      title_ko: "테스트 제목",
+      summary_body: "요약 본문"
+    )
 
     agent = Object.new
-    agent.define_singleton_method(:ask) { |_| agent_response }
+    agent.define_singleton_method(:ask) { |_| AgentResult.new(nil, { "is_related" => true }) }
 
-    result = nil
-    ArticleAgent.stub(:new, agent) do
-      result = ArticleAgentsService.new.send(:run_agents, article)
+    humanize_chat = build_humanize_chat(HumanizeResult.new({}))
+
+    japanese_called = false
+    service = ArticleAgentsService.new
+    service.define_singleton_method(:japanese_translation) do |_article|
+      japanese_called = true
+      { title_ja: "テスト", summary_body_ja: "要約" }
     end
 
+    embed_result = Struct.new(:vectors).new(Array.new(3072, 0.0))
+
+    result = nil
+    RubyLLM.stub(:embed, ->(*, **) { embed_result }) do
+      ArticleAgent.stub(:new, agent) do
+        HumanMonolithAgent.stub(:chat, humanize_chat) do
+          result = service.call(article)
+        end
+      end
+    end
+
+    assert japanese_called, "썸네일 실패가 파이프라인을 중단시켜 일본어 번역이 호출되지 않았다"
     assert_predicate result, :success?
-    assert_equal "첫 줄\n둘째 줄", article.reload.summary_body
-    assert_includes article.tag_list, "rubyconf"
-    assert_includes article.tag_list, "keynote"
+    assert_equal "テスト", article.reload.title_ja
   end
 
-  test "run_agents는 agent content가 nil이면 article을 discard하고 Failure를 반환한다" do
-    article = articles(:ruby_article)
-    agent_response = AgentResult.new("length", nil)
+  test "discard_unrelated는 자동 수집 기사이면서 is_related=false이면 discard한다" do
+    article = articles(:ruby_article) # site.client == "rss"
+    article.update!(is_related: false)
 
-    agent = Object.new
-    agent.define_singleton_method(:ask) { |_| agent_response }
+    result = ArticleAgentsService.new.send(:discard_unrelated, article)
+
+    assert_predicate result, :success?
+    assert_predicate article.reload, :discarded?
+  end
+
+  test "discard_unrelated는 is_related=true이거나 자동 정리 대상 수집원이 아니면 유지한다" do
+    related = articles(:ruby_article)
+    manual = articles(:youtube_ruby_talk) # site.client == "youtube"
+    manual.update!(is_related: false)
+
+    service = ArticleAgentsService.new
+
+    assert_predicate service.send(:discard_unrelated, related), :success?
+    refute_predicate related.reload, :discarded?
+
+    assert_predicate service.send(:discard_unrelated, manual), :success?
+    refute_predicate manual.reload, :discarded?
+  end
+
+  test "run_thumbnail은 정리 예정인 무관 기사에 썸네일을 만들지 않는다" do
+    article = articles(:ruby_article)
+    article.update!(is_related: false, summary_key: [ "요점" ])
 
     result = nil
-    ArticleAgent.stub(:new, agent) do
-      result = ArticleAgentsService.new.send(:run_agents, article)
+    assert_no_enqueued_jobs(only: ArticleThumbnailJob) do
+      result = ArticleAgentsService.new.send(:run_thumbnail, article)
     end
 
-    assert_predicate article.reload, :discarded?
     assert_predicate result, :failure?
-    assert_equal "length", result.failure
+    assert_equal :unrelated_article, result.failure
+  end
+
+  test "일본어 번역이 실패해도 무관 기사 정리는 실행된다" do
+    article = articles(:ruby_article)
+    article.update!(is_related: false, title_ko: "제목", summary_body: "요약")
+
+    service = ArticleAgentsService.new
+    service.define_singleton_method(:run_japanese) { |_a| Dry::Monads::Failure(:japanese_agent_failed) }
+    service.define_singleton_method(:ensure_body) { |a| Dry::Monads::Success(a) }
+    service.define_singleton_method(:run_embed) { |a| Dry::Monads::Success(a) }
+    service.define_singleton_method(:run_humanize) { |a| Dry::Monads::Success(a) }
+    service.define_singleton_method(:run_thumbnail) { |a| Dry::Monads::Success(a) }
+
+    result = nil
+    Articles::AgentRunner.stub(:run, ->(**) { Dry::Monads::Success(article) }) do
+      result = service.call(article)
+    end
+
+    assert_predicate result, :failure?
+    assert_equal :japanese_agent_failed, result.failure
+    assert_predicate article.reload, :discarded?
   end
 
   test "run_humanize는 over_polish_aborted=true이면 article을 갱신하지 않고 실패를 반환한다" do
@@ -131,8 +186,7 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
       "over_polish_aborted" => true
     })
 
-    chat = Object.new
-    chat.define_singleton_method(:ask) { |_| aborted_response }
+    chat = build_humanize_chat(aborted_response)
 
     result = nil
     HumanMonolithAgent.stub(:chat, chat) do

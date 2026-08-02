@@ -23,7 +23,6 @@ module Articles
         apply_tags(article, content)
         normalize_summary_body(content)
         article.update!(content)
-        article.discard! if discard_unrelated_article?(article, content)
 
         Success(article)
       end
@@ -53,10 +52,6 @@ module Articles
           .gsub("\\r", "\r")
           .gsub("\\\\", "\\")
           .gsub('\"', '"')
-      end
-
-      def discard_unrelated_article?(article, content)
-        content["is_related"] == false && %w[hacker_news rss gmail rss_page].include?(article.site&.client)
       end
     end
   end

@@ -1,8 +1,23 @@
 # Generated from app/services/article_agents_service.rb with RBS::Inline
 
 class ArticleAgentsService < OperationService
+  # 에이전트가 무관하다고 판정하면 자동 정리하는 수집원. 사람이 직접 등록하는 경로는
+  # 오판으로 지우면 안 되므로 제외한다.
+  AUTO_DISCARD_CLIENTS: untyped
+
   # : (Article article) -> Dry::Monads::Result
   def call: (Article article) -> Dry::Monads::Result
+
+  # 무관 기사 정리. 중간에 discard하면 이후 단계들이 discarded? 가드에 걸려 건너뛰므로
+  # 파이프라인 맨 끝에서 처리한다. is_related는 ArticleSchema의 필수 필드라
+  # AgentRunner가 성공하면 항상 컬럼에 반영돼 있다.
+  # : (Article article) -> Dry::Monads::Result
+  def discard_unrelated: (Article article) -> Dry::Monads::Result
+
+  # 파이프라인 끝에서 정리될 기사인지 미리 판정한다. 비용이 큰 썸네일 생성을
+  # 건너뛰는 데도 쓰이므로 정리 조건과 반드시 같은 곳에서 나와야 한다.
+  # : (Article article) -> bool
+  def unrelated_auto_discard?: (Article article) -> bool
 
   # : (Article article) -> Dry::Monads::Result
   def ensure_body: (Article article) -> Dry::Monads::Result

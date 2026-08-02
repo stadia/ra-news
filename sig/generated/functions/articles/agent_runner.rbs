@@ -10,7 +10,5 @@ module Articles
     private def self.apply_tags: (untyped article, untyped content) -> untyped
 
     private def self.normalize_summary_body: (untyped content) -> untyped
-
-    private def self.discard_unrelated_article?: (untyped article, untyped content) -> untyped
   end
 end

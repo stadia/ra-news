@@ -2,17 +2,44 @@
 # rbs_inline: enabled
 
 class ArticleAgentsService < OperationService
+  # 에이전트가 무관하다고 판정하면 자동 정리하는 수집원. 사람이 직접 등록하는 경로는
+  # 오판으로 지우면 안 되므로 제외한다.
+  AUTO_DISCARD_CLIENTS = %w[hacker_news rss gmail rss_page].freeze
+
   #: (Article article) -> Dry::Monads::Result
   def call(article)
     step ensure_body(article)
     step run_embed(article)
     step Articles::AgentRunner.run(article:, prompt: user_prompt(article))
     run_humanize(article) # 실패해도 원문 요약은 유효하므로 이후 단계를 계속 진행한다
-    step run_thumbnail(article)
-    step run_japanese(article)
+    run_thumbnail(article) # 썸네일은 부가 산출물이라 실패해도 일본어 번역까지 진행한다
+    japanese_result = run_japanese(article)
+    discard_unrelated(article) # 정리는 모든 산출물 생성이 끝난 뒤 마지막에 한다
+    step japanese_result
   end
 
   protected
+
+  # 무관 기사 정리. 중간에 discard하면 이후 단계들이 discarded? 가드에 걸려 건너뛰므로
+  # 파이프라인 맨 끝에서 처리한다. is_related는 ArticleSchema의 필수 필드라
+  # AgentRunner가 성공하면 항상 컬럼에 반영돼 있다.
+  #: (Article article) -> Dry::Monads::Result
+  def discard_unrelated(article)
+    return Success(article) unless unrelated_auto_discard?(article)
+
+    article.discard!
+    logger.info "Discarded unrelated article #{article.id}"
+    Success(article)
+  end
+
+  # 파이프라인 끝에서 정리될 기사인지 미리 판정한다. 비용이 큰 썸네일 생성을
+  # 건너뛰는 데도 쓰이므로 정리 조건과 반드시 같은 곳에서 나와야 한다.
+  #: (Article article) -> bool
+  def unrelated_auto_discard?(article)
+    return false if article.discarded? || article.is_related
+
+    AUTO_DISCARD_CLIENTS.include?(article.site&.client)
+  end
 
   #: (Article article) -> Dry::Monads::Result
   def ensure_body(article)
@@ -116,6 +143,12 @@ class ArticleAgentsService < OperationService
     if article.discarded? || (article.slug.blank? || article.title_ko.blank?)
       logger.info "ArticleThumbnailJob skip: article #{article.id} is discarded or has no slug or title_ko"
       return Failure(:invalid_article)
+    end
+
+    # 어차피 파이프라인 끝에서 정리될 기사에는 AI 이미지 생성 비용을 쓰지 않는다.
+    if unrelated_auto_discard?(article)
+      logger.info "ArticleThumbnailJob skip: article #{article.id} will be discarded as unrelated"
+      return Failure(:unrelated_article)
     end
 
     summary_key = article.summary_key
