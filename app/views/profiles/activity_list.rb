@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -32,7 +33,9 @@ class Views::Profiles::ActivityList < Views::Base
     if @embedded
       list_content
     else
+      # rubocop:disable I18n/RailsI18n/DecorateStringFormattingUsingInterpolation dynamic tab scope
       content_for :title, "@#{@user.username} — #{t("profiles.activity_tabs.#{@active_tab}")}"
+      # rubocop:enable I18n/RailsI18n/DecorateStringFormattingUsingInterpolation
       div(class: "max-w-2xl mx-auto py-10 px-4 sm:px-6") do
         turbo_frame_tag("activity-list", class: "block") do
           render Components::Profiles::ActivityTabs.new(user: @user, active_tab: @active_tab)

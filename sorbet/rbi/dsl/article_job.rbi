@@ -9,13 +9,13 @@ class ArticleJob
   class << self
     sig do
       params(
-        id: T.untyped,
+        id: ::Integer,
         block: T.nilable(T.proc.params(job: ArticleJob).void)
       ).returns(T.any(ArticleJob, FalseClass))
     end
     def perform_later(id, &block); end
 
-    sig { params(id: T.untyped).returns(T.untyped) }
+    sig { params(id: ::Integer).void }
     def perform_now(id); end
   end
 end

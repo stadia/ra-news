@@ -52,6 +52,29 @@ jobs:
       - name: Lint code for consistent style
         run: bin/rubocop -f github
 
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      # Static only -- no database or credentials needed. The RBI files under
+      # sorbet/rbi are committed, so this never regenerates them; if they drift
+      # from Gemfile.lock, run `bundle exec tapioca gem` and commit the result.
+      # All app/lib files declare `# typed: false` (or omit the sigil, which
+      # defaults to false), so this gate currently catches syntax errors,
+      # RBI/sigil drift, and autoload/require issues -- not type errors. Bump
+      # files to `# typed: true` incrementally to start enforcing signatures.
+      - name: Type check with Sorbet
+        run: bundle exec srb tc
+
   test:
     runs-on: ubuntu-latest
 

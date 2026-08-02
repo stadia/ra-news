@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -32,13 +33,13 @@ class GmailArticleJob < ApplicationJob
   private
 
   # Fetches new email links from the site's email account.
-  #: (Site site) -> Array<String>
+  #: (Site site) -> Array[String]
   def fetch_new_email_links(site)
     site.init_client.fetch_email_links(from: site.email, since: site.last_checked_at - 1.day)
   end
 
   # Iterates over links and creates articles.
-  #: (Array<String> links, Site site) -> void
+  #: (Array[String] links, Site site) -> void
   def create_articles_from_links(links, site)
     links.each do |link|
       processed_link = extract_link(link)

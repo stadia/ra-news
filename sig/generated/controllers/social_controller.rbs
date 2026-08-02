@@ -2,10 +2,12 @@
 
 class SocialController < ApplicationController
   # provider OAuth2 인증 시작
-  def provider_authorize: () -> untyped
+  # : () -> void
+  def provider_authorize: () -> void
 
   # provider OAuth2 콜백 처리
-  def provider_callback: () -> untyped
+  # : () -> void
+  def provider_callback: () -> void
 
   private
 

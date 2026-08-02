@@ -1,9 +1,11 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
 class SocialController < ApplicationController
   # provider OAuth2 인증 시작
-  def provider_authorize #: () -> void
+  #: () -> void
+  def provider_authorize
     oauth_config = Preference.get_object("#{provider}_oauth")
     client = OauthClient.build(oauth_config)
 
@@ -20,7 +22,8 @@ class SocialController < ApplicationController
   end
 
   # provider OAuth2 콜백 처리
-  def provider_callback #: () -> void
+  #: () -> void
+  def provider_callback
     # State 검증
     if params[:state] != session["#{provider}_state"]
       redirect_to madmin_social_index_path, alert: "OAuth state 불일치 에러"

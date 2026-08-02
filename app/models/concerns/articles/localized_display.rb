@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -11,7 +12,7 @@ module Articles
   module LocalizedDisplay
     extend ActiveSupport::Concern
 
-    #: (Symbol? locale) -> String
+    #: (?locale: Symbol) -> String
     def display_title(locale: I18n.locale)
       case locale
       when :ja then title_ja.presence || title_ko.presence || title
@@ -19,7 +20,7 @@ module Articles
       end
     end
 
-    #: (Symbol? locale) -> Array?
+    #: (?locale: Symbol) -> Array?
     def display_summary_key(locale: I18n.locale)
       case locale
       when :ja then summary_key_ja.presence || summary_key
@@ -27,7 +28,7 @@ module Articles
       end
     end
 
-    #: (Symbol? locale) -> Hash?
+    #: (?locale: Symbol) -> Hash?
     def display_summary_detail(locale: I18n.locale)
       case locale
       when :ja then summary_detail_ja.presence || summary_detail
@@ -35,7 +36,7 @@ module Articles
       end
     end
 
-    #: (Symbol? locale) -> String?
+    #: (?locale: Symbol) -> String?
     def display_summary_body(locale: I18n.locale)
       case locale
       when :ja then summary_body_ja.presence || summary_body
@@ -52,7 +53,7 @@ module Articles
     # pre-filled from a Japanese source title before the article body/summary is
     # translated, whereas summary_key_ja is only set by the Japanese translation
     # pipeline (ArticleAgentsService#run_japanese / DeeplTranslationService).
-    #: (Symbol?) -> bool
+    #: (?Symbol) -> bool
     def available_in?(locale = I18n.locale)
       case locale.to_sym
       when :ja then summary_key_ja.present?
@@ -63,7 +64,7 @@ module Articles
     # Whether to show the original (source) title below the display title.
     # :ja — true when title_ja exists and differs from what display_title returns
     # :ko — true when title_ko exists and differs from the raw title
-    #: (Symbol? locale) -> bool
+    #: (?locale: Symbol) -> bool
     def show_original_title?(locale: I18n.locale)
       case locale
       when :ja then title_ja.present? && title_ja != display_title(locale: locale)
@@ -73,7 +74,7 @@ module Articles
 
     # First item of summary_key, or the whole string if it's a String.
     # Commonly used in card previews and meta descriptions.
-    #: (Symbol? locale) -> String?
+    #: (?locale: Symbol) -> String?
     def summary_key_preview(locale: I18n.locale)
       key = display_summary_key(locale: locale)
       case key

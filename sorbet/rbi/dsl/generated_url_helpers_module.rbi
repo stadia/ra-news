@@ -10,13 +10,88 @@ module GeneratedUrlHelpersModule
   include ::ActionDispatch::Routing::PolymorphicRoutes
 
   sig { params(args: T.untyped).returns(String) }
+  def about_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def accept_following_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def account_blog_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def account_password_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def actor_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_article_boost_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_article_like_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_articles_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_auth_refresh_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_post_boost_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_post_like_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_posts_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def article_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def articles_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def blog_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def blog_posts_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def cancel_user_registration_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def destroy_permanently_blog_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def destroy_user_session_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def discard_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def discard_madmin_site_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def discord_oauth_callback_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_blog_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_active_storage_attachment_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def edit_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_preference_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def edit_madmin_role_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def edit_madmin_site_url(*args); end
@@ -28,19 +103,55 @@ module GeneratedUrlHelpersModule
   def edit_madmin_user_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_password_url(*args); end
+  def edit_user_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def edit_users_url(*args); end
+  def edit_user_registration_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def logout_url(*args); end
+  def federails_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def feed_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def follow_followings_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def following_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def followings_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def llms_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def lookup_actors_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_active_storage_attachment_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_active_storage_attachments_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def madmin_article_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def madmin_articles_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_preference_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_preferences_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_role_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_roles_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def madmin_root_url(*args); end
@@ -50,6 +161,9 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def madmin_sites_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def madmin_social_index_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def madmin_tag_url(*args); end
@@ -64,13 +178,31 @@ module GeneratedUrlHelpersModule
   def madmin_users_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def mark_unrelated_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def mission_control_jobs_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_article_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def new_blog_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_following_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_active_storage_attachment_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def new_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_preference_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_madmin_role_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_madmin_site_url(*args); end
@@ -82,28 +214,58 @@ module GeneratedUrlHelpersModule
   def new_madmin_user_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_password_url(*args); end
-
-  sig { params(args: T.untyped).returns(String) }
   def new_rails_conductor_inbound_email_source_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def new_rails_conductor_inbound_email_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_session_url(*args); end
+  def new_user_confirmation_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def new_user_url(*args); end
+  def new_user_oauth_registration_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def password_url(*args); end
+  def new_user_password_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def passwords_url(*args); end
+  def new_user_registration_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def new_user_session_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_install_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def oauth_result_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def others_api_v1_articles_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def others_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def posts_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def privacy_policy_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def publish_blog_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def push_subscription_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def pwa_manifest_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def pwa_service_worker_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def rails_blob_representation_proxy_url(*args); end
@@ -187,10 +349,55 @@ module GeneratedUrlHelpersModule
   def rails_storage_redirect_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def regenerate_thumbnail_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def reprocess_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def restore_madmin_article_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def restore_madmin_site_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def robots_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def root_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def session_url(*args); end
+  def rss_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def rswag_api_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def rswag_ui_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def ruby_llm_monitoring_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def slack_events_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def slack_oauth_callback_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def social_provider_authorize_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def social_provider_callback_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def tag_api_v1_articles_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def tag_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def terms_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def turbo_recede_historical_location_url(*args); end
@@ -202,11 +409,71 @@ module GeneratedUrlHelpersModule
   def turbo_resume_historical_location_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def undiscard_blog_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def update_rails_disk_service_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def user_url(*args); end
+  def user_apple_omniauth_authorize_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def users_url(*args); end
+  def user_apple_omniauth_callback_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_confirmation_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_github_omniauth_authorize_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_github_omniauth_callback_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_google_oauth2_omniauth_authorize_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_google_oauth2_omniauth_callback_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_oauth_registration_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_password_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_base_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_blog_post_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_blog_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_boosts_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_comments_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_followers_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_following_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_likes_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_posts_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_profile_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_registration_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def user_session_url(*args); end
 end

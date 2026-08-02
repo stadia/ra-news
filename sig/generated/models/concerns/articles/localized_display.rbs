@@ -10,17 +10,17 @@ module Articles
   module LocalizedDisplay
     extend ActiveSupport::Concern
 
-    # : (Symbol? locale) -> String
-    def display_title: (Symbol? locale) -> String
+    # : (?locale: Symbol) -> String
+    def display_title: (?locale: Symbol) -> String
 
-    # : (Symbol? locale) -> Array?
-    def display_summary_key: (Symbol? locale) -> Array?
+    # : (?locale: Symbol) -> Array?
+    def display_summary_key: (?locale: Symbol) -> Array?
 
-    # : (Symbol? locale) -> Hash?
-    def display_summary_detail: (Symbol? locale) -> Hash?
+    # : (?locale: Symbol) -> Hash?
+    def display_summary_detail: (?locale: Symbol) -> Hash?
 
-    # : (Symbol? locale) -> String?
-    def display_summary_body: (Symbol? locale) -> String?
+    # : (?locale: Symbol) -> String?
+    def display_summary_body: (?locale: Symbol) -> String?
 
     # Whether a genuine translation exists for the given locale (vs. falling back
     # to the Korean source). :ja requires summary_key_ja; :ko (base content) is
@@ -31,18 +31,18 @@ module Articles
     # pre-filled from a Japanese source title before the article body/summary is
     # translated, whereas summary_key_ja is only set by the Japanese translation
     # pipeline (ArticleAgentsService#run_japanese / DeeplTranslationService).
-    # : (Symbol?) -> bool
-    def available_in?: (Symbol?) -> bool
+    # : (?Symbol) -> bool
+    def available_in?: (?Symbol) -> bool
 
     # Whether to show the original (source) title below the display title.
     # :ja — true when title_ja exists and differs from what display_title returns
     # :ko — true when title_ko exists and differs from the raw title
-    # : (Symbol? locale) -> bool
-    def show_original_title?: (Symbol? locale) -> bool
+    # : (?locale: Symbol) -> bool
+    def show_original_title?: (?locale: Symbol) -> bool
 
     # First item of summary_key, or the whole string if it's a String.
     # Commonly used in card previews and meta descriptions.
-    # : (Symbol? locale) -> String?
-    def summary_key_preview: (Symbol? locale) -> String?
+    # : (?locale: Symbol) -> String?
+    def summary_key_preview: (?locale: Symbol) -> String?
   end
 end

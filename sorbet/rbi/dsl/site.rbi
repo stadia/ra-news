@@ -8,6 +8,7 @@
 class Site
   include GeneratedAssociationMethods
   include GeneratedAttributeMethods
+  include EnumMethodsModule
   extend CommonRelationMethods
   extend GeneratedRelationMethods
 
@@ -17,6 +18,9 @@ class Site
   def to_ary; end
 
   class << self
+    sig { returns(T::Hash[T.any(String, Symbol), Integer]) }
+    def clients; end
+
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Site).void)).returns(::Site) }
     def new(attributes = nil, &block); end
   end
@@ -83,8 +87,34 @@ class Site
     sig { params(attributes: T.untyped, block: T.nilable(T.proc.params(object: ::Site).void)).returns(::Site) }
     def create_or_find_by!(attributes, &block); end
 
+    sig do
+      params(
+        records: T.any(::Site, Integer, String, T::Enumerable[T.any(::Site, Integer, String, T::Enumerable[::Site])])
+      ).returns(Integer)
+    end
+    def delete(*records); end
+
+    sig { returns(Integer) }
+    def delete_all; end
+
+    sig { params(args: T.untyped).returns(Integer) }
+    def delete_by(*args); end
+
+    sig do
+      params(
+        records: T.any(::Site, Integer, String, T::Enumerable[T.any(::Site, Integer, String, T::Enumerable[::Site])])
+      ).returns(T::Array[::Site])
+    end
+    def destroy(*records); end
+
     sig { returns(T::Array[::Site]) }
     def destroy_all; end
+
+    sig { returns(T::Array[::Site]) }
+    def destroy_all; end
+
+    sig { params(args: T.untyped).returns(T::Array[::Site]) }
+    def destroy_by(*args); end
 
     sig { params(conditions: T.untyped).returns(T::Boolean) }
     def exists?(conditions = :none); end
@@ -120,7 +150,8 @@ class Site
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         block: T.proc.params(object: ::Site).void
       ).void
     end
@@ -130,10 +161,11 @@ class Site
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol])
       ).returns(T::Enumerator[::Site])
     end
-    def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+    def find_each(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, cursor: primary_key, order: :asc, &block); end
 
     sig do
       params(
@@ -141,7 +173,8 @@ class Site
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         block: T.proc.params(object: T::Array[::Site]).void
       ).void
     end
@@ -151,10 +184,11 @@ class Site
         finish: T.untyped,
         batch_size: Integer,
         error_on_ignore: T.untyped,
-        order: Symbol
-      ).returns(T::Enumerator[T::Enumerator[::Site]])
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol])
+      ).returns(T::Enumerator[T::Array[::Site]])
     end
-    def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, order: :asc, &block); end
+    def find_in_batches(start: nil, finish: nil, batch_size: 1000, error_on_ignore: nil, cursor: primary_key, order: :asc, &block); end
 
     sig do
       params(
@@ -211,7 +245,7 @@ class Site
     sig { returns(::Site) }
     def fourth!; end
 
-    sig { returns(Array) }
+    sig { returns(T::Array[::Integer]) }
     def ids; end
 
     sig do
@@ -221,7 +255,8 @@ class Site
         finish: T.untyped,
         load: T.untyped,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         use_ranges: T.untyped,
         block: T.proc.params(object: PrivateRelation).void
       ).void
@@ -233,11 +268,12 @@ class Site
         finish: T.untyped,
         load: T.untyped,
         error_on_ignore: T.untyped,
-        order: Symbol,
+        cursor: T.untyped,
+        order: T.any(Symbol, T::Array[Symbol]),
         use_ranges: T.untyped
       ).returns(::ActiveRecord::Batches::BatchEnumerator)
     end
-    def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, order: :asc, use_ranges: nil, &block); end
+    def in_batches(of: 1000, start: nil, finish: nil, load: false, error_on_ignore: nil, cursor: primary_key, order: :asc, use_ranges: nil, &block); end
 
     sig { params(record: T.untyped).returns(T::Boolean) }
     def include?(record); end
@@ -328,6 +364,44 @@ class Site
     def third_to_last!; end
   end
 
+  module EnumMethodsModule
+    sig { void }
+    def gmail!; end
+
+    sig { returns(T::Boolean) }
+    def gmail?; end
+
+    sig { void }
+    def hacker_news!; end
+
+    sig { returns(T::Boolean) }
+    def hacker_news?; end
+
+    sig { void }
+    def reddit!; end
+
+    sig { returns(T::Boolean) }
+    def reddit?; end
+
+    sig { void }
+    def rss!; end
+
+    sig { returns(T::Boolean) }
+    def rss?; end
+
+    sig { void }
+    def rss_page!; end
+
+    sig { returns(T::Boolean) }
+    def rss_page?; end
+
+    sig { void }
+    def youtube!; end
+
+    sig { returns(T::Boolean) }
+    def youtube?; end
+  end
+
   module GeneratedAssociationMethods
     sig { returns(T::Array[T.untyped]) }
     def article_ids; end
@@ -360,6 +434,9 @@ class Site
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def create_with(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def discarded(*args, &blk); end
+
     sig { params(value: T::Boolean).returns(PrivateAssociationRelation) }
     def distinct(value = true); end
 
@@ -381,8 +458,14 @@ class Site
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def from(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def gmail(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelationGroupChain) }
     def group(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def hacker_news(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def having(*args, &blk); end
@@ -398,6 +481,9 @@ class Site
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def joins(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def kept(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def left_joins(*args, &blk); end
@@ -416,6 +502,24 @@ class Site
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def none(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_gmail(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_hacker_news(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_reddit(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_rss(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_rss_page(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def not_youtube(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def null_relation?(*args, &blk); end
@@ -442,6 +546,9 @@ class Site
     def readonly(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def reddit(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def references(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
@@ -459,6 +566,12 @@ class Site
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def rewhere(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def rss(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def rss_page(*args, &blk); end
+
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
     sig { params(blk: T.proc.params(record: ::Site).returns(BasicObject)).returns(T::Array[::Site]) }
     def select(*args, &blk); end
@@ -470,10 +583,17 @@ class Site
     def structurally_compatible?(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def undiscarded(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def uniq!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def unscope(*args, &blk); end
+
+    sig { returns(PrivateAssociationRelation) }
+    sig { type_parameters(:U).params(block: T.proc.returns(T.type_parameter(:U))).returns(T.type_parameter(:U)) }
+    def unscoped(&block); end
 
     sig { returns(PrivateAssociationRelationWhereChain) }
     sig { params(args: T.untyped).returns(PrivateAssociationRelation) }
@@ -483,10 +603,16 @@ class Site
     def with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def with_discarded(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def with_recursive(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def without(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
+    def youtube(*args, &blk); end
   end
 
   module GeneratedAttributeMethods
@@ -514,7 +640,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def base_uri_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def base_uri_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -523,7 +649,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def base_uri_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def base_uri_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -559,7 +685,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def channel_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def channel_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -568,7 +694,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def channel_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def channel_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -583,7 +709,7 @@ class Site
     sig { returns(::String) }
     def client; end
 
-    sig { params(value: ::String).returns(::String) }
+    sig { params(value: T.any(::String, ::Symbol, ::Integer)).returns(T.any(::String, ::Symbol, ::Integer)) }
     def client=(value); end
 
     sig { returns(T::Boolean) }
@@ -604,7 +730,7 @@ class Site
     sig { returns(T.nilable([::String, ::String])) }
     def client_change_to_be_saved; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def client_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -613,7 +739,7 @@ class Site
     sig { returns(T.nilable([::String, ::String])) }
     def client_previous_change; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def client_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -649,7 +775,7 @@ class Site
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_change_to_be_saved; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def created_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -658,7 +784,7 @@ class Site
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def created_at_previous_change; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def created_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -669,6 +795,51 @@ class Site
 
     sig { void }
     def created_at_will_change!; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def deleted_at; end
+
+    sig { params(value: T.nilable(::ActiveSupport::TimeWithZone)).returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def deleted_at=(value); end
+
+    sig { returns(T::Boolean) }
+    def deleted_at?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def deleted_at_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def deleted_at_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def deleted_at_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def deleted_at_change; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def deleted_at_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def deleted_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def deleted_at_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def deleted_at_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def deleted_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def deleted_at_previously_was; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def deleted_at_was; end
+
+    sig { void }
+    def deleted_at_will_change!; end
 
     sig { returns(T.nilable(::String)) }
     def email; end
@@ -694,7 +865,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def email_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def email_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -703,7 +874,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def email_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def email_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -739,7 +910,7 @@ class Site
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_change_to_be_saved; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -748,7 +919,7 @@ class Site
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_previous_change; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -778,7 +949,7 @@ class Site
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_change_to_be_saved; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_value_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -787,7 +958,7 @@ class Site
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def id_value_previous_change; end
 
-    sig { params(from: ::Integer, to: ::Integer).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def id_value_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::Integer)) }
@@ -829,12 +1000,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def last_checked_at_change_to_be_saved; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def last_checked_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -843,12 +1009,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def last_checked_at_previous_change; end
 
-    sig do
-      params(
-        from: T.nilable(::ActiveSupport::TimeWithZone),
-        to: T.nilable(::ActiveSupport::TimeWithZone)
-      ).returns(T::Boolean)
-    end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def last_checked_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -884,7 +1045,7 @@ class Site
     sig { returns(T.nilable([::String, ::String])) }
     def name_change_to_be_saved; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def name_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -893,7 +1054,7 @@ class Site
     sig { returns(T.nilable([::String, ::String])) }
     def name_previous_change; end
 
-    sig { params(from: ::String, to: ::String).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def name_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -929,7 +1090,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def path_change_to_be_saved; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def path_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -938,7 +1099,7 @@ class Site
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def path_previous_change; end
 
-    sig { params(from: T.nilable(::String), to: T.nilable(::String)).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def path_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::String)) }
@@ -963,6 +1124,9 @@ class Site
     def restore_created_at!; end
 
     sig { void }
+    def restore_deleted_at!; end
+
+    sig { void }
     def restore_email!; end
 
     sig { void }
@@ -983,71 +1147,86 @@ class Site
     sig { void }
     def restore_updated_at!; end
 
+    sig { void }
+    def restore_url!; end
+
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_base_uri; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_base_uri?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_base_uri?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_channel; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_channel?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_channel?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_client; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_client?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_client?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_created_at; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_created_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_created_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def saved_change_to_deleted_at; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_deleted_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_email; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_email?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_email?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::Integer, ::Integer])) }
     def saved_change_to_id_value; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_id_value?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_id_value?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
     def saved_change_to_last_checked_at; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_last_checked_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_last_checked_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::String, ::String])) }
     def saved_change_to_name; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_name?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_name?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_path; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_path?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_path?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def saved_change_to_updated_at; end
 
-    sig { returns(T::Boolean) }
-    def saved_change_to_updated_at?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_updated_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def saved_change_to_url; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(::ActiveSupport::TimeWithZone) }
     def updated_at; end
@@ -1073,7 +1252,7 @@ class Site
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_change_to_be_saved; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def updated_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -1082,7 +1261,7 @@ class Site
     sig { returns(T.nilable([::ActiveSupport::TimeWithZone, ::ActiveSupport::TimeWithZone])) }
     def updated_at_previous_change; end
 
-    sig { params(from: ::ActiveSupport::TimeWithZone, to: ::ActiveSupport::TimeWithZone).returns(T::Boolean) }
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def updated_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
@@ -1094,38 +1273,89 @@ class Site
     sig { void }
     def updated_at_will_change!; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_base_uri?; end
+    sig { returns(T.nilable(::String)) }
+    def url; end
+
+    sig { params(value: T.nilable(::String)).returns(T.nilable(::String)) }
+    def url=(value); end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_channel?; end
+    def url?; end
+
+    sig { returns(T.nilable(::String)) }
+    def url_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def url_before_type_cast; end
 
     sig { returns(T::Boolean) }
-    def will_save_change_to_client?; end
+    def url_came_from_user?; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_created_at?; end
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def url_change; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_email?; end
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def url_change_to_be_saved; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_id?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def url_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_id_value?; end
+    sig { returns(T.nilable(::String)) }
+    def url_in_database; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_last_checked_at?; end
+    sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
+    def url_previous_change; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_name?; end
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def url_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_path?; end
+    sig { returns(T.nilable(::String)) }
+    def url_previously_was; end
 
-    sig { returns(T::Boolean) }
-    def will_save_change_to_updated_at?; end
+    sig { returns(T.nilable(::String)) }
+    def url_was; end
+
+    sig { void }
+    def url_will_change!; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_base_uri?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_channel?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_client?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_created_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_deleted_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_email?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_id_value?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_last_checked_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_name?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_path?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_updated_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
   end
 
   module GeneratedRelationMethods
@@ -1143,6 +1373,9 @@ class Site
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def create_with(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def discarded(*args, &blk); end
 
     sig { params(value: T::Boolean).returns(PrivateRelation) }
     def distinct(value = true); end
@@ -1165,8 +1398,14 @@ class Site
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def from(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def gmail(*args, &blk); end
+
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelationGroupChain) }
     def group(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def hacker_news(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def having(*args, &blk); end
@@ -1182,6 +1421,9 @@ class Site
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def joins(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def kept(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def left_joins(*args, &blk); end
@@ -1200,6 +1442,24 @@ class Site
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def none(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_gmail(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_hacker_news(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_reddit(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_rss(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_rss_page(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def not_youtube(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def null_relation?(*args, &blk); end
@@ -1226,6 +1486,9 @@ class Site
     def readonly(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def reddit(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def references(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
@@ -1243,6 +1506,12 @@ class Site
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def rewhere(*args, &blk); end
 
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def rss(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def rss_page(*args, &blk); end
+
     sig { params(args: T.untyped).returns(PrivateRelation) }
     sig { params(blk: T.proc.params(record: ::Site).returns(BasicObject)).returns(T::Array[::Site]) }
     def select(*args, &blk); end
@@ -1254,10 +1523,17 @@ class Site
     def structurally_compatible?(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def undiscarded(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def uniq!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def unscope(*args, &blk); end
+
+    sig { returns(PrivateRelation) }
+    sig { type_parameters(:U).params(block: T.proc.returns(T.type_parameter(:U))).returns(T.type_parameter(:U)) }
+    def unscoped(&block); end
 
     sig { returns(PrivateRelationWhereChain) }
     sig { params(args: T.untyped).returns(PrivateRelation) }
@@ -1267,10 +1543,16 @@ class Site
     def with(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def with_discarded(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def with_recursive(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def without(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
+    def youtube(*args, &blk); end
   end
 
   class PrivateAssociationRelation < ::ActiveRecord::AssociationRelation

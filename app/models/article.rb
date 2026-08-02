@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -188,7 +189,8 @@ class Article < ApplicationRecord
     Articles::Markdown.render(self)
   end
 
-  def generate_metadata #: void
+  #: () -> void
+  def generate_metadata
     result = metadata_service.call(self)
     logger.debug { "Article metadata preparation failed for #{url}: #{result.failure}" } if result.failure?
   end
@@ -198,7 +200,8 @@ class Article < ApplicationRecord
     super(Articles::Utils.truncate_title(value))
   end
 
-  def youtube_id #: String?
+  #: () -> String?
+  def youtube_id
     # nil 체크를 포함하여 안전하게 접근
     if url.is_a?(String)
       uri = URI.parse(url)
@@ -213,7 +216,8 @@ class Article < ApplicationRecord
     nil
   end
 
-  def update_slug #: bool
+  #: () -> bool
+  def update_slug
     if is_youtube?
       new_slug = youtube_id
     else
@@ -335,15 +339,18 @@ class Article < ApplicationRecord
     IndexNowJob.set(wait: 30.seconds).perform_later(id)
   end
 
-  def should_generate_new_friendly_id? #: bool
+  #: () -> bool
+  def should_generate_new_friendly_id?
     false
   end
 
-  def random_slug #: String
+  #: () -> String
+  def random_slug
     "#{Time.zone.now.strftime('%Y%m%d')}-#{SecureRandom.hex(4)}"
   end
 
-  def metadata_service #: Articles::MetadataPreparationService
+  #: () -> Articles::MetadataPreparationService
+  def metadata_service
     @metadata_service ||= Articles::MetadataPreparationService.new
   end
 end

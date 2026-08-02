@@ -4,8 +4,8 @@ module Youtube
   class Channel
     attr_reader channel: Yt::Channel
 
-    # : (?id: String) -> Youtube::Channel
-    def initialize: (?id: String) -> Youtube::Channel
+    # : (?id: String?) -> void
+    def initialize: (?id: String?) -> void
 
     # : () -> Array[Yt::Video]
     def videos: () -> Array[Yt::Video]

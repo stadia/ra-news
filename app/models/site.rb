@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -19,7 +20,8 @@ class Site < ApplicationRecord
 
   enum :client, [ :rss, :gmail, :youtube, :hacker_news, :rss_page, :reddit ], default: :rss
 
-  def init_client #: (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
+  #: () -> (RssClient | Gmail | HackerNews | Reddit | Youtube::Channel)?
+  def init_client
     case client
     when "gmail"
       Gmail.new
@@ -34,7 +36,8 @@ class Site < ApplicationRecord
 
   private
 
-  def parse_url_to_uri_parts #: void
+  #: () -> void
+  def parse_url_to_uri_parts
     return if url.blank?
 
     parsed = URI.parse(url)

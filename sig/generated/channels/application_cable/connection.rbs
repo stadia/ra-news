@@ -6,6 +6,9 @@ module ApplicationCable
 
     private
 
+    # Devise/warden, matching AuthenticatedConstraint. The Rails 8 auth
+    # scaffold this replaced looked up a `Session` model that does not exist
+    # in this app, so every connection raised NameError.
     def set_current_user: () -> untyped
   end
 end

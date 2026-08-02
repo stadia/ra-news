@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -6,7 +7,7 @@ class SocialPostJob < ApplicationJob
 
   queue_as :default
 
-  #: (Integer id) -> void
+  #: (?Integer? id, ?Time created_at) -> void
   def perform(id = nil, created_at = Time.zone.now.beginning_of_day)
     return unless Rails.env.production?
 
@@ -32,11 +33,13 @@ class SocialPostJob < ApplicationJob
     end
   end
 
-  def rate_limit_threshold #: Integer
+  #: () -> Integer
+  def rate_limit_threshold
     2
   end
 
-  def rate_limit_window #: ActiveSupport::Duration
+  #: () -> ActiveSupport::Duration
+  def rate_limit_window
     5.minutes
   end
 end

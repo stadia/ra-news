@@ -3,7 +3,9 @@
 module RubyConference
   BASE_URL: ::String
 
+  # : () -> Array[untyped]
   def self?.conferences: () -> Array[untyped]
 
+  # : () -> Array[untyped]
   def self?.conferences_cached: () -> Array[untyped]
 end

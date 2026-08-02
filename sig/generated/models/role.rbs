@@ -3,5 +3,6 @@
 class Role < ApplicationRecord
   private
 
-  def remove_role_from_users: () -> untyped
+  # : () -> void
+  def remove_role_from_users: () -> void
 end

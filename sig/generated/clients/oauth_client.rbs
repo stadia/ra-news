@@ -3,7 +3,9 @@
 module OauthClient
   OAUTH_CONFIG: Hash[Symbol, Hash[Symbol, String]]
 
-  def self?.build: (untyped oauth_preference) -> untyped
+  # : (Preference oauth_preference) -> OAuth2::Client
+  def self?.build: (Preference oauth_preference) -> OAuth2::Client
 
-  def self?.extract_provider_from_preference_name: (untyped name) -> untyped
+  # : (String name) -> String
+  def self?.extract_provider_from_preference_name: (String name) -> String
 end

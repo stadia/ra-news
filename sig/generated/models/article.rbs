@@ -57,13 +57,16 @@ class Article < ApplicationRecord
   # : () -> String
   def to_markdown: () -> String
 
+  # : () -> void
   def generate_metadata: () -> void
 
   # : (untyped value) -> untyped
   def title=: (untyped value) -> untyped
 
+  # : () -> String?
   def youtube_id: () -> String?
 
+  # : () -> bool
   def update_slug: () -> bool
 
   # : () -> String?
@@ -112,9 +115,12 @@ class Article < ApplicationRecord
   # : () -> void
   def enqueue_index_now: () -> void
 
+  # : () -> bool
   def should_generate_new_friendly_id?: () -> bool
 
+  # : () -> String
   def random_slug: () -> String
 
+  # : () -> Articles::MetadataPreparationService
   def metadata_service: () -> Articles::MetadataPreparationService
 end

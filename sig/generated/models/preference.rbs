@@ -4,12 +4,13 @@ class Preference < ApplicationRecord
   # : (String? value) -> String?
   def name=: (String? value) -> String?
 
-  # : (String name) -> Hash[String, untyped] || Array[untyped]
-  def self.get_value: (String name) -> Hash[String, untyped]
+  # : (String name) -> (Hash[String, untyped] | Array[untyped])?
+  def self.get_value: (String name) -> (Hash[String, untyped] | Array[untyped])?
 
   # : (String name) -> Preference?
   def self.get_object: (String name) -> Preference?
 
+  # : () -> Array[String]
   def self.ignore_hosts: () -> Array[String]
 
   # : () -> void

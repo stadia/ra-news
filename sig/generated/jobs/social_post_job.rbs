@@ -3,10 +3,12 @@
 class SocialPostJob < ApplicationJob
   include JobRateLimiting
 
-  # : (Integer id) -> void
-  def perform: (Integer id) -> void
+  # : (?Integer? id, ?Time created_at) -> void
+  def perform: (?Integer? id, ?Time created_at) -> void
 
+  # : () -> Integer
   def rate_limit_threshold: () -> Integer
 
+  # : () -> ActiveSupport::Duration
   def rate_limit_window: () -> ActiveSupport::Duration
 end

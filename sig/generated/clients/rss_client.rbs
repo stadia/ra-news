@@ -4,11 +4,11 @@ module RssClient
   # RSS/Atom 피드에서 자주 누락되는 XML 네임스페이스
   KNOWN_NAMESPACES: untyped
 
-  # : (String url) -> RSS::Rss | RSS::Atom::Feed | nil
-  def self?.feed: (String url) -> RSS::Rss
+  # : (String url) -> (RSS::Rss | RSS::Atom::Feed)?
+  def self?.feed: (String url) -> (RSS::Rss | RSS::Atom::Feed)?
 
-  # : (String xml) -> RSS::Rss | RSS::Atom::Feed | nil
-  def self?.parse: (String xml) -> RSS::Rss
+  # : (String xml) -> (RSS::Rss | RSS::Atom::Feed)?
+  def self?.parse: (String xml) -> (RSS::Rss | RSS::Atom::Feed)?
 
   # : (String xml) -> String
   def self?.repair_xml: (String xml) -> String

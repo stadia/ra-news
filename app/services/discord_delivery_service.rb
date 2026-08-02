@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -36,7 +37,7 @@ class DiscordDeliveryService < OperationService
     Success(delivery)
   end
 
-  #: (Article article, DiscordChannel channel, DiscordDelivery delivery) -> Dry::Monads::Result
+  #: (Article article, DiscordChannel channel, delivery: DiscordDelivery) -> Dry::Monads::Result
   def send_message(article, channel, delivery:)
     presenter = DiscordArticlePresenter.new(article)
 

@@ -1,9 +1,10 @@
+# typed: false
 # frozen_string_literal: true
 
 module Components
   module Articles
     class SearchSuggestion < Components::Base
-      #: (String query) -> void
+      #: (query: String) -> void
       def initialize(query:)
         @query = query
       end

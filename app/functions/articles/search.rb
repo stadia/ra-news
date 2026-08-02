@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -13,7 +14,7 @@ module Articles
     )
 
     class << self
-      #: (String? search, ^(ActiveRecord::Relation) -> [Pagy, Array[Article]] pagy) -> IndexResult
+      #: (search: String?, pagy: ^(ActiveRecord::Relation) -> [Pagy, Array[Article]]) -> IndexResult
       def index_html(search:, pagy:)
         pagy_result, articles = pagy.call(Articles::Query.index_html(search))
         # to_a로 미리 로드: empty? 검사(COUNT)와 이후 map(&:id)·뷰 렌더링(SELECT)의

@@ -13,7 +13,8 @@ class Gmail
   # 15초 = open(5)+read(10)에 대응하는 단일 wall-clock 예산(open/read 구분 불가).
   NETWORK_TIMEOUT: Integer
 
-  def initialize: () -> Gmail
+  # : () -> void
+  def initialize: () -> void
 
   def fetch_emails: (?untyped options) -> untyped
 
