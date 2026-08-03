@@ -13,5 +13,8 @@ pre-commit:
     # stage_fixed는 기존 스테이징 파일의 수정만 다시 스테이징하므로,
     # 신규 .rb에 대해 새로 생성되는 .rbs 파일은 누락된다.
     # 따라서 생성 후 sig/generated 전체를 명시적으로 스테이징한다.
+    # `app lib` must match the CI drift check in .github/workflows/ci.yml --
+    # this hook covered only `app`, which is why lib/search_benchmark.rb never
+    # got a signature despite being tracked and `rbs_inline: enabled`.
     rbs:
-      run: rbs-inline --output app && git add sig/generated
+      run: rbs-inline --output app lib && git add sig/generated
