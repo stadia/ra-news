@@ -98,6 +98,15 @@ jobs:
             exit 1
           fi
 
+      # `steep check` asks "does the Ruby match the signatures?"; `rbs validate`
+      # asks "are the signatures coherent among themselves?" -- undefined type
+      # references, circular inheritance, wrong generic arity. Steep happens to
+      # surface some of these today, but only for signatures reachable from the
+      # files it checks, and it stops at the first failing target. This runs in
+      # seconds over all of sig/ regardless.
+      - name: Validate RBS signatures
+        run: bundle exec rbs -I sig validate
+
       - name: Type check with Steep
         run: bundle exec steep check
 

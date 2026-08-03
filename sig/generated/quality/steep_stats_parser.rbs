@@ -1,0 +1,31 @@
+# Generated from lib/quality/steep_stats_parser.rb with RBS::Inline
+
+module Quality
+  # `steep check` passing means "no contradiction found", not "the code is
+  # typed" -- calls whose receiver resolves to `untyped` are skipped silently.
+  # `steep stats` counts them, which is the only way to see that gap move.
+  class SteepStatsParser
+    # With stdout redirected, steep sends its progress line to stderr and the
+    # header lands on row 1. Merge the streams (`2>&1`, as an interactive run
+    # or a CI log capture may) and that line plus rbs collection warnings land
+    # on stdout ahead of it, so seek the header rather than assuming row 1.
+    HEADER_PREFIX: ::String
+
+    # : (untyped csv_path) -> void
+    def initialize: (untyped csv_path) -> void
+
+    # : () -> Hash[Symbol, untyped]
+    def parse: () -> Hash[Symbol, untyped]
+
+    private
+
+    # : () -> Array[untyped]
+    def read_rows: () -> Array[untyped]
+
+    # : (Array[untyped] rows) -> Hash[Symbol, untyped]
+    def summarize: (Array[untyped] rows) -> Hash[Symbol, untyped]
+
+    # : (Array[untyped] rows, String column) -> Integer
+    def sum: (Array[untyped] rows, String column) -> Integer
+  end
+end

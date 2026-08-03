@@ -21,6 +21,12 @@ module Quality
 
     GATES: untyped
 
+    # Reported, not gated. A hard floor here would either sit so far below the
+    # current value that it never fires, or block PRs that merely add untyped
+    # call sites in passing. Kept visible so the number moves deliberately
+    # rather than drifting unnoticed.
+    INFO_METRICS: untyped
+
     def initialize: (measurements: untyped, thresholds: untyped) -> untyped
 
     def passed?: () -> untyped
@@ -28,6 +34,8 @@ module Quality
     def to_s: () -> untyped
 
     private
+
+    def info_lines: () -> untyped
 
     def build_gate_results: () -> untyped
 

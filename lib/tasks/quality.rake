@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# rbs_inline: disabled
 
 require "fileutils"
 require "json"
@@ -8,6 +9,7 @@ require_relative "../quality/coverage_parser"
 require_relative "../quality/coverage_snapshot"
 require_relative "../quality/flog_parser"
 require_relative "../quality/rubocop_parser"
+require_relative "../quality/steep_stats_parser"
 require_relative "../quality/report"
 
 QUALITY_DIR = Rails.root.join("tmp/quality")
@@ -42,12 +44,36 @@ namespace :quality do
     result = parser.parse
     File.write(QUALITY_DIR.join("flog.json"), JSON.pretty_generate(result))
   end
+
+  desc "Measure Steep type coverage and parse results"
+  task steep: :setup do
+    csv_path = QUALITY_DIR.join("steep_stats.csv")
+
+    # `|| true` like the rubocop task above: steep exits non-zero when the
+    # project has type errors, but the stats it printed are still valid and a
+    # failing `steep check` is CI's job to report, not this task's.
+    #
+    # stderr stays attached: with stdout redirected, steep writes only its
+    # progress line there, so anything else is a real failure worth seeing.
+    sh "bundle exec steep stats --format=csv > #{csv_path} || true"
+
+    parser = Quality::SteepStatsParser.new(csv_path)
+    result = parser.parse
+
+    # `|| true` above means a broken steep run reaches here as an empty result,
+    # which the report would silently omit -- indistinguishable from "not
+    # measured yet". Say so out loud instead.
+    warn "[quality:steep] no stats parsed from #{csv_path}; type coverage will be missing from the report" if result.empty?
+
+    File.write(QUALITY_DIR.join("steep_stats.json"), JSON.pretty_generate(result))
+  end
 end
 
 desc "Run all quality gates"
 task quality: "quality:setup" do
   Rake::Task["quality:rubocop"].invoke
   Rake::Task["quality:flog"].invoke
+  Rake::Task["quality:steep"].invoke
 
   measurements = {}
 
@@ -67,6 +93,12 @@ task quality: "quality:setup" do
   flog_path = QUALITY_DIR.join("flog.json")
   if flog_path.exist?
     measurements[:flog] = JSON.parse(File.read(flog_path), symbolize_names: true)
+  end
+
+  # Steep type coverage (informational -- see Report::INFO_METRICS)
+  steep_path = QUALITY_DIR.join("steep_stats.json")
+  if steep_path.exist?
+    measurements[:steep] = JSON.parse(File.read(steep_path), symbolize_names: true)
   end
 
   thresholds = YAML.load_file(Rails.root.join("config/quality_thresholds.yml"))

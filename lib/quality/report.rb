@@ -12,6 +12,15 @@ module Quality
       { name: "Flog max (class)",    measure_path: [ :flog, :class_max ],      threshold_path: [ "flog", "class_max" ],          cmp: :<=, unit: "" }
     ].freeze
 
+    # Reported, not gated. A hard floor here would either sit so far below the
+    # current value that it never fires, or block PRs that merely add untyped
+    # call sites in passing. Kept visible so the number moves deliberately
+    # rather than drifting unnoticed.
+    INFO_METRICS = [
+      { name: "Type coverage (app)",  measure_path: [ :steep, :app, :percent ],  unit: "%" },
+      { name: "Type coverage (test)", measure_path: [ :steep, :test, :percent ], unit: "%" }
+    ].freeze
+
     def initialize(measurements:, thresholds:)
       @measurements = measurements
       @thresholds = thresholds
@@ -37,10 +46,25 @@ module Quality
       end
       lines << ""
       lines << "#{@gate_results.count(&:passed)}/#{@gate_results.size} gates passed."
+      lines.concat(info_lines)
       lines.join("\n")
     end
 
     private
+
+    def info_lines
+      measured = INFO_METRICS.filter_map do |metric|
+        value = dig_measurements(metric[:measure_path])
+        [ metric, value ] unless value.nil?
+      end
+      return [] if measured.empty?
+
+      lines = [ "", "Informational (not gated)", "-------------------------" ]
+      measured.each do |metric, value|
+        lines << format("%-25s %8s", metric[:name], format_value(value, metric[:unit]))
+      end
+      lines
+    end
 
     def build_gate_results
       GATES.map do |gate_config|
