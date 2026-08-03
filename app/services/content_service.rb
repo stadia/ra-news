@@ -57,7 +57,9 @@ class ContentService < OperationService
     logger.info "Youtube ID: #{youtube_id}"
     return Failure(:not_youtube) unless youtube_id
 
-    transcript = nil
+    # Declared up front, so without the annotation Steep pins the local to
+    # `nil` and rejects every later assignment in the blocks below.
+    transcript = nil #: String?
     video = Yt::Video.new id: youtube_id
     begin
       video.captions.map(&:language).each do |lang|

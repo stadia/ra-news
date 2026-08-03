@@ -108,7 +108,10 @@ class ProfilesController < ApplicationController
       end
     end
 
-    #: () -> Hash[Symbol, untyped]
+    # A record type, not `Hash[Symbol, untyped]`: this is double-splatted into
+    # `Views::Profiles::ActivityList.new`, and Steep can only verify the
+    # required keywords are supplied when the exact keys are declared.
+    #: () -> { user: untyped, posts: untyped, pagy: untyped, liked_post_ids: untyped, boosted_post_ids: untyped }
     def post_list_args
       { user: @user, posts: @posts, pagy: @pagy,
         liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids }

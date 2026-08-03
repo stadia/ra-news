@@ -66,7 +66,19 @@ module Federails
   module ActorEntity
   end
 
+  # `rbs_collection.yaml` sets `federails: ignore: true` because the gem's
+  # checked-in signatures reference undeclared Pagy/Alba types, so the concern
+  # arrives here empty. Article and Post override these three and call `super`,
+  # which without a declaration is Ruby::UnexpectedSuper -- and makes Steep
+  # read the `actor:`/`to:`/`cc:` keywords as a record type it cannot resolve
+  # (Ruby::UnknownRecordKey). Copied from the gem's own
+  # sig/generated/models/concerns/federails/data_entity.rbs.
   module DataEntity
+    def create_federails_activity: (untyped action, ?actor: untyped, ?to: untyped, ?cc: untyped) -> untyped
+
+    def set_federails_actor: () -> Federails::Actor?
+
+    def federails_actor: () -> Federails::Actor?
   end
 
   module HandlesSocialActivities
@@ -113,11 +125,14 @@ module Components
   class Base
   end
 
-  # Zeitwerk defines namespace modules implicitly from the directory layout, so
-  # components written in compact form (`class Components::Layout::Foo`) have no
-  # `module` keyword for rbs-inline to pick up. Declare them here, same as
-  # `Views::Profiles` above.
-  module Layout
+  # `Components::Layout` is both a real component (`class Components::Layout <
+  # Components::Base` in app/components/layout.rb) and the namespace its
+  # children are written under in compact form (`class
+  # Components::Layout::AssetPreloads`). It has no generated signature -- only
+  # nested components under app/components/layout/ do -- so declare it here.
+  # Must be a `class`, not a `module`: declaring it as a module contradicts the
+  # source and raises Ruby::ClassModuleMismatch.
+  class Layout < Base
   end
 end
 
@@ -199,4 +214,44 @@ module Phlex
       end
     end
   end
+end
+
+# The pinned activestorage 7.0 RBS predates Rails 7.1's named-variants block
+# form (`has_one_attached :thumbnail do |attachable| ... end`), so calling it
+# with a block raises Ruby::UnexpectedBlockGiven. Append an overload with
+# `| ...` rather than redefining, so the collection's own signature survives.
+module ActiveStorage
+  module Attached::Model
+    module ClassMethods
+      def has_one_attached: (
+        (::String | ::Symbol) name,
+        ?dependent: ::Symbol,
+        ?service: (::String | ::Symbol | nil),
+        ?strict_loading: bool
+      ) { (untyped attachable) -> void } -> void | ...
+    end
+  end
+end
+
+# ActiveSupport's generated RBS narrows `Range#sum` to the blockless
+# arithmetic-progression fast path, which shadows `Enumerable#sum`'s block
+# form and makes `(0...n).sum { ... }` a Ruby::UnexpectedBlockGiven. The real
+# method falls back to `super` whenever a block is given, so append that
+# overload back with `| ...`.
+class Range[out Elem]
+  def sum: [T] (?untyped identity) { (Elem) -> T } -> untyped | ...
+end
+
+# The web-push 3.0 RBS types the `vapid:` argument as a closed record with only
+# subject/public_key/private_key, so passing the gem's supported `expiration`
+# key is a Ruby::UnknownRecordKey. Append the wider record with `| ...`.
+module WebPush
+  def self.payload_send: (
+    ?message: String,
+    endpoint: String,
+    ?p256dh: String,
+    ?auth: String,
+    ?vapid: { subject: String, public_key: String, private_key: String, expiration: untyped },
+    **untyped
+  ) -> untyped | ...
 end

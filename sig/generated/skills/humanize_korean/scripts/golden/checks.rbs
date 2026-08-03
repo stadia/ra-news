@@ -53,7 +53,11 @@ module HumanizeKoreanGoldenChecks
 
   def self.check_headings: (untyped original, untyped output) -> untyped
 
-  def self.extract_inline_markers: (untyped text) -> untyped
+  # Annotated so `line` below is a String: with `text` untyped, `line.length`
+  # is untyped too and `offset + untyped` resolves against every `Integer#+`
+  # overload, widening the offset accumulator to BigDecimal.
+  # : (String) -> Array[untyped]
+  def self.extract_inline_markers: (String) -> Array[untyped]
 
   def self.extract_defs: (untyped text) -> untyped
 

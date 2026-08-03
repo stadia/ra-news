@@ -816,7 +816,9 @@ class ArticleTest < ActiveSupport::TestCase
     article.summary_key = nil
     article.tag_list = "ruby, rails"
 
-    captured = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    captured = nil #: Hash[Symbol, untyped]?
     Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
@@ -836,7 +838,9 @@ class ArticleTest < ActiveSupport::TestCase
     blob = ActiveStorage::Blob.create_and_upload!(io: StringIO.new("fake image data"), filename: "test.jpg", content_type: "image/jpeg")
     article.thumbnail.attach(blob)
 
-    captured = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    captured = nil #: Hash[Symbol, untyped]?
     Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
@@ -856,7 +860,9 @@ class ArticleTest < ActiveSupport::TestCase
     article.title_ko = "썸네일 없음"
     article.summary_key = [ "요약" ]
 
-    captured = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    captured = nil #: Hash[Symbol, untyped]?
     Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end

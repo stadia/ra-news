@@ -27,6 +27,10 @@ class ApplicationController < ActionController::Base
   unless Rails.env.production?
     around_action :n_plus_one_detection
 
+    # `around_action` hands the rest of the request cycle in as a block, which
+    # nothing in the source declares -- without this annotation the bare
+    # `yield` below is Ruby::UnexpectedYield.
+    #: () { () -> void } -> void
     def n_plus_one_detection
       Prosopite.scan
       yield

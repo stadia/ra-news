@@ -101,6 +101,10 @@ module HumanizeKoreanGoldenChecks
       failures
     end
 
+    # Annotated so `line` below is a String: with `text` untyped, `line.length`
+    # is untyped too and `offset + untyped` resolves against every `Integer#+`
+    # overload, widening the offset accumulator to BigDecimal.
+    #: (String) -> Array[untyped]
     def extract_inline_markers(text)
       markers = []
       offset = 0

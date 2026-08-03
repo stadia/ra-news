@@ -12,30 +12,47 @@ D = Steep::Diagnostic
 # lacks types and would fail wholesale under `default`. The base stays
 # `lenient`, and the scope is widened one diagnostic at a time.
 #
-# `CLEAN_DIAGNOSTICS` below are the diagnostics the codebase currently has
-# *zero* occurrences of, measured by running `steep check` with
-# `D::Ruby.all_error` on both targets (2026-08-04: 12,574 problems total, none
-# from these). Raising them to their `strict` severity therefore costs nothing
+# `CLEAN_DIAGNOSTICS` below are the diagnostics the codebase has *zero*
+# occurrences of, measured by running `steep check` with `D::Ruby.all_error` on
+# both targets. Raising them to their `strict` severity therefore costs nothing
 # today and acts as a ratchet: the first new violation fails CI instead of
 # quietly joining the debt pile.
+#
+# The list grows as debt is paid off. The last six entries -- ClassModuleMismatch
+# through UnknownRecordKey -- were driven to zero rather than found at zero.
 #
 # Steep gates on severity >= :warning, so :hint/:information entries here are
 # informational only.
 #
-# To widen further, promote the next-cheapest diagnostic from the remaining
-# debt (occurrence counts as of 2026-08-04):
+# Remaining debt, with why each is still `lenient` (counts as of 2026-08-04).
+# These were each investigated; none can currently be driven to zero:
 #
-#     ClassModuleMismatch 1, InsufficientKeywordArguments 1, UnexpectedYield 1,
-#     UnexpectedBlockGiven 2, UnreachableValueBranch 2, BlockBodyTypeMismatch 4,
-#     BlockTypeMismatch 5, RequiredBlockMissing 7, UnknownRecordKey 7,
-#     UnexpectedPositionalArgument 13, UnexpectedSuper 13, UnsupportedSyntax 15,
-#     IncompatibleAssignment 17, UnexpectedKeywordArgument 17,
-#     UnreachableBranch 30, MethodDefinitionMissing 33, ArgumentTypeMismatch 43,
-#     UndeclaredMethodDefinition 44, UnresolvedOverloading 93,
-#     UnannotatedEmptyCollection 225
+#   UnreachableValueBranch 2       Steep proves an `else` unreachable. Only
+#                                  "fixable" by deleting defensive branches.
+#   BlockBodyTypeMismatch 4        `to_h { [k, v] }` -- Steep wants
+#                                  `Hash::_Pair`, gets `Array[untyped]`.
+#   BlockTypeMismatch 5            `&:sym` and `&` forwarding typed as bare
+#                                  `::Proc` instead of a proc type.
+#   RequiredBlockMissing 7         Anonymous block forwarding (`foo(&)`) plus
+#                                  gem RBS that omits block forms.
+#   UnexpectedSuper 9              Needs ActiveRecord schema signatures: two
+#                                  are `super` from an attribute-writer
+#                                  override (`Article#title=`,
+#                                  `Preference#name=`) whose target only
+#                                  exists once columns are typed. The other
+#                                  seven are Devise/Madmin/ActionMailer RBS
+#                                  declaring the controllers but not the
+#                                  methods we override.
+#   UnexpectedPositionalArgument 13
+#   UnexpectedKeywordArgument 17   Gem RBS argument lists narrower than the
+#                                  real methods. Fixable one `| ...` overload
+#                                  at a time, but ~30 separate gem gaps.
+#   UnsupportedSyntax 15           NOT fixable here -- Steep 2.0 does not
+#                                  support splat-into-untyped (`dig(*path)`,
+#                                  `includes(*CONST)`) or `case/in`.
 #
-# The remaining five are the signature-coverage wall, not fixable one call site
-# at a time -- they need real Phlex/Rails RBS rather than annotations:
+# Beyond those, five diagnostics are the signature-coverage wall. They are not
+# fixable one call site at a time -- they need real Phlex/Rails RBS:
 #
 #     UnknownInstanceVariable 469, MethodDefinitionInUndeclaredModule 677,
 #     UnknownConstant 1229, FallbackAny 1899, NoMethod 7727
@@ -76,6 +93,14 @@ CLEAN_DIAGNOSTICS = [
   D::Ruby::UnexpectedTypeArgument,
   D::Ruby::UnknownGlobalVariable,
   D::Ruby::UnsatisfiableConstraint,
+
+  # Driven to zero, not found at zero -- see the PR that added this block.
+  D::Ruby::ClassModuleMismatch,
+  D::Ruby::IncompatibleAssignment,
+  D::Ruby::InsufficientKeywordArguments,
+  D::Ruby::UnexpectedBlockGiven,
+  D::Ruby::UnexpectedYield,
+  D::Ruby::UnknownRecordKey,
 ].freeze
 
 # Lenient base + strict severity for everything we are already clean on.
