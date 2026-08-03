@@ -75,7 +75,7 @@ CLEAN_DIAGNOSTICS = [
   D::Ruby::UnexpectedJumpValue,
   D::Ruby::UnexpectedTypeArgument,
   D::Ruby::UnknownGlobalVariable,
-  D::Ruby::UnsatisfiableConstraint,
+  D::Ruby::UnsatisfiableConstraint
 ].freeze
 
 # Lenient base + strict severity for everything we are already clean on.
