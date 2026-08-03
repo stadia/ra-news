@@ -1,0 +1,14 @@
+# Generated from lib/schema_dot_org/speakable_specification.rb with RBS::Inline
+
+module SchemaDotOrg
+  # #
+  #  Model the Schema.org `Thing > Intangible > SpeakableSpecification`.
+  #  @see https://schema.org/SpeakableSpecification
+  #
+  #  Indicates which parts of a NewsArticle are suitable for text-to-speech
+  #  (voice assistants). At least one of cssSelector or xpath must be present.
+  #  cssSelector serializes as `cssSelector` via the gem's
+  #  snake_case → lowerCamelCase conversion.
+  class SpeakableSpecification < SchemaType
+  end
+end

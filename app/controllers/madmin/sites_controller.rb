@@ -1,3 +1,5 @@
+# rbs_inline: enabled
+
 module Madmin
   class SitesController < Madmin::ResourceController
     def discard

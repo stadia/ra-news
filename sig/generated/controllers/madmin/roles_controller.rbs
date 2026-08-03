@@ -1,4 +1,4 @@
-# rbs_inline: enabled
+# Generated from app/controllers/madmin/roles_controller.rb with RBS::Inline
 
 module Madmin
   class RolesController < Madmin::ResourceController

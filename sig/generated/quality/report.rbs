@@ -1,0 +1,44 @@
+# Generated from lib/quality/report.rb with RBS::Inline
+
+module Quality
+  class Report
+    class GateResult < Struct[untyped]
+      attr_accessor name(): untyped
+
+      attr_accessor measure(): untyped
+
+      attr_accessor threshold(): untyped
+
+      attr_accessor passed(): untyped
+
+      attr_accessor unit(): untyped
+
+      attr_accessor cmp(): untyped
+
+      def self.new: (?name: untyped, ?measure: untyped, ?threshold: untyped, ?passed: untyped, ?unit: untyped, ?cmp: untyped) -> instance
+                  | ({ ?name: untyped, ?measure: untyped, ?threshold: untyped, ?passed: untyped, ?unit: untyped, ?cmp: untyped }) -> instance
+    end
+
+    GATES: untyped
+
+    def initialize: (measurements: untyped, thresholds: untyped) -> untyped
+
+    def passed?: () -> untyped
+
+    def to_s: () -> untyped
+
+    private
+
+    def build_gate_results: () -> untyped
+
+    def dig_measurements: (untyped path) -> untyped
+
+    def dig_thresholds: (untyped path) -> untyped
+
+    def compare: (untyped measure, untyped threshold, untyped cmp) -> untyped
+
+    def format_value: (untyped value, untyped unit) -> untyped
+
+    def cmp_symbol: (untyped cmp) -> untyped
+  end
+end

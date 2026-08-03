@@ -1,0 +1,19 @@
+# Generated from lib/quality/rubocop_parser.rb with RBS::Inline
+
+module Quality
+  class RubocopParser
+    COPS: untyped
+
+    # Captures the first "<measured>/<max>" pair in the offense message.
+    # Handles "[143/100]" and "[<7, 18, 3> 19.55/15]" shapes.
+    MEASURE_RE: ::Regexp
+
+    def initialize: (untyped path) -> untyped
+
+    def parse: () -> untyped
+
+    private
+
+    def max_for: (untyped cop_name, untyped offenses) -> untyped
+  end
+end

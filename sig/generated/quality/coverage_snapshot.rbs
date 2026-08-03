@@ -1,0 +1,29 @@
+# Generated from lib/quality/coverage_snapshot.rb with RBS::Inline
+
+module Quality
+  module CoverageSnapshot
+    PARTIAL_RUN_OPTIONS: untyped
+
+    OPTIONS_WITH_VALUES: untyped
+
+    def self?.full_suite_run?: (?untyped argv, ?untyped root) -> untyped
+
+    def self?.preferred_path: (?untyped root) -> untyped
+
+    def self?.persist_result!: (untyped result, ?untyped root) -> untyped
+
+    def self?.snapshot_path: (?untyped root) -> untyped
+
+    def self?.snapshot_payload: (untyped result) -> untyped
+
+    def self?.default_path: (?untyped root) -> untyped
+
+    def self?.partial_run_option?: (untyped arg) -> untyped
+
+    def self?.positional_test_targets: (untyped argv) -> untyped
+
+    def self?.expand_test_targets: (untyped targets, untyped root) -> untyped
+
+    def self?.all_test_files: (untyped root) -> untyped
+  end
+end

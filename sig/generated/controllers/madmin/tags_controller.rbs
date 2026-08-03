@@ -1,4 +1,4 @@
-# rbs_inline: enabled
+# Generated from app/controllers/madmin/tags_controller.rb with RBS::Inline
 
 module Madmin
   class TagsController < Madmin::ResourceController

@@ -1,3 +1,5 @@
+# rbs_inline: enabled
+
 module Madmin
   class ApplicationController < Madmin::BaseController
     T.unsafe(self).include(Rails.application.routes.url_helpers)

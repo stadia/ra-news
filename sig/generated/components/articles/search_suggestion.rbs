@@ -1,0 +1,12 @@
+# Generated from app/components/articles/search_suggestion.rb with RBS::Inline
+
+module Components
+  module Articles
+    class SearchSuggestion < Components::Base
+      # : (query: String) -> void
+      def initialize: (query: String) -> void
+
+      def view_template: () -> untyped
+    end
+  end
+end

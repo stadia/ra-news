@@ -25,7 +25,14 @@ class Pagy
 end
 
 module Madmin
-  class ApplicationController < ActionController::Base
+  # `Madmin::ApplicationController` itself is app code (app/controllers/madmin)
+  # and generated from source, so only its gem-side ancestors are shimmed here.
+  # Real hierarchy: BaseController < ActionController::Base, ResourceController
+  # < Madmin::ApplicationController.
+  class BaseController < ActionController::Base
+  end
+
+  class ResourceController < Madmin::ApplicationController
   end
 end
 
@@ -99,6 +106,21 @@ module Views
   end
 end
 
+# Phlex ships no RBS, so `Components::Base < Phlex::HTML` cannot be generated
+# from source the way the rest of `sig/generated` is. Declare it bare, same as
+# `Views::Base` above, so component signatures have a superclass to name.
+module Components
+  class Base
+  end
+
+  # Zeitwerk defines namespace modules implicitly from the directory layout, so
+  # components written in compact form (`class Components::Layout::Foo`) have no
+  # `module` keyword for rbs-inline to pick up. Declare them here, same as
+  # `Views::Profiles` above.
+  module Layout
+  end
+end
+
 module Api
   module V1
     module Auth
@@ -150,8 +172,13 @@ class MessageType
   def to_proto: () -> String
 end
 
+# schema_dot_org defines `SchemaType` at the top level, not inside its own
+# namespace. `NewsMediaOrganization` is app code and now generated from source.
+class SchemaType
+end
+
 module SchemaDotOrg
-  class NewsMediaOrganization
+  class Organization < SchemaType
   end
 end
 

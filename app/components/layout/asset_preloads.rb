@@ -1,5 +1,6 @@
 # typed: false
 # frozen_string_literal: true
+# rbs_inline: enabled
 
 # head 안에서 서로 떨어진 위치에 렌더되는 자산 프리로드 관련 마크업을 한 곳에 모은다.
 # head 요소 순서(성능·CSP 민감)를 보존하기 위해 각 섹션은 원래 위치에서

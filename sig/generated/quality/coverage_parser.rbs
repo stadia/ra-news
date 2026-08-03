@@ -1,0 +1,9 @@
+# Generated from lib/quality/coverage_parser.rb with RBS::Inline
+
+module Quality
+  class CoverageParser
+    def initialize: (untyped path) -> untyped
+
+    def parse: () -> untyped
+  end
+end
