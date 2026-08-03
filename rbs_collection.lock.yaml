@@ -449,6 +449,14 @@ gems:
   version: '0'
   source:
     type: stdlib
+- name: pundit
+  version: '2.5'
+  source:
+    type: git
+    name: ruby/gem_rbs_collection
+    revision: 82762423fc5694b82888ea89a972847cf19838c2
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    repo_dir: gems
 - name: rack
   version: '2.2'
   source:

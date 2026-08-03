@@ -37,7 +37,12 @@ class Preference < ApplicationRecord
   #: () -> Array[String]
   def self.ignore_hosts
     value = get_value("ignore_hosts")
-    value.is_a?(Array) ? value.grep(String) : []
+    return value.grep(String) if value.is_a?(Array)
+
+    # Non-array value (e.g. a stray Hash) collapses the blocklist to "collect
+    # everything" — log loudly rather than failing open silently.
+    logger.error "Preference 'ignore_hosts' is not an Array (#{value.class}); host blocklist inactive"
+    []
   end
 
   #: () -> void

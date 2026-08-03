@@ -13,8 +13,8 @@ module Articles
     # : (?locale: Symbol) -> String
     def display_title: (?locale: Symbol) -> String
 
-    # : (?locale: Symbol) -> Array[String]?
-    def display_summary_key: (?locale: Symbol) -> Array[String]?
+    # : (?locale: Symbol) -> (Array[String] | String | nil)
+    def display_summary_key: (?locale: Symbol) -> (Array[String] | String | nil)
 
     # : (?locale: Symbol) -> Hash[String, untyped]?
     def display_summary_detail: (?locale: Symbol) -> Hash[String, untyped]?
