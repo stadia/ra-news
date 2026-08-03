@@ -66,6 +66,13 @@ group :development, :test do
   gem "i18n-tasks", "~> 1.1.2"
   gem "minitest", "~> 6.0"
   gem "minitest-mock"
+  # Generates sig/generated/*.rbs from the inline `#:` comments. Declared
+  # explicitly even though rubocop-rbs_inline pulls it in transitively --
+  # sig/generated is what Steep type-checks, so losing the generator to an
+  # unrelated lint-gem bump would leave those signatures unregenerable.
+  # Upstream plans to fold this into the rbs gem itself and retire rbs-inline;
+  # rbs 4.1.1 has no `inline` subcommand yet, so swap when it does.
+  gem "rbs-inline", require: false
   gem "rubocop", require: false
   gem "rubocop-i18n", require: false
   gem "rubocop-minitest", require: false
