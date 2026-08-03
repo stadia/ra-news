@@ -9,8 +9,10 @@ module Quality
   # typed" -- calls whose receiver resolves to `untyped` are skipped silently.
   # `steep stats` counts them, which is the only way to see that gap move.
   class SteepStatsParser
-    # steep prefixes the CSV with a progress line and a blank line, so the
-    # header is not on row 1 and the file cannot be handed to CSV.read as-is.
+    # With stdout redirected, steep sends its progress line to stderr and the
+    # header lands on row 1. Merge the streams (`2>&1`, as an interactive run
+    # or a CI log capture may) and that line plus rbs collection warnings land
+    # on stdout ahead of it, so seek the header rather than assuming row 1.
     HEADER_PREFIX = "Target,File,"
 
     #: (untyped csv_path) -> void

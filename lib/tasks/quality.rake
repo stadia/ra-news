@@ -52,10 +52,19 @@ namespace :quality do
     # `|| true` like the rubocop task above: steep exits non-zero when the
     # project has type errors, but the stats it printed are still valid and a
     # failing `steep check` is CI's job to report, not this task's.
-    sh "bundle exec steep stats --format=csv > #{csv_path} 2>/dev/null || true"
+    #
+    # stderr stays attached: with stdout redirected, steep writes only its
+    # progress line there, so anything else is a real failure worth seeing.
+    sh "bundle exec steep stats --format=csv > #{csv_path} || true"
 
     parser = Quality::SteepStatsParser.new(csv_path)
     result = parser.parse
+
+    # `|| true` above means a broken steep run reaches here as an empty result,
+    # which the report would silently omit -- indistinguishable from "not
+    # measured yet". Say so out loud instead.
+    warn "[quality:steep] no stats parsed from #{csv_path}; type coverage will be missing from the report" if result.empty?
+
     File.write(QUALITY_DIR.join("steep_stats.json"), JSON.pretty_generate(result))
   end
 end
