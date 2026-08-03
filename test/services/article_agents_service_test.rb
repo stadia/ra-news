@@ -196,4 +196,42 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     assert_predicate result, :failure?
     assert_equal "원본 요약", article.reload.summary_body
   end
+
+  # RubyLLM은 스키마 응답 JSON 파싱에 실패하면 content를 String 그대로 둔다.
+  # 이때 content["summary_body"]는 String#[] 부분문자열 매칭이라 키 이름 자체를 돌려주므로,
+  # 가드가 없으면 본문이 "summary_body"라는 글자로 덮인다.
+  test "run_humanize는 content가 String이면 article을 갱신하지 않고 실패를 반환한다" do
+    article = articles(:ruby_article)
+    article.update!(summary_body: "원본 요약")
+
+    raw_response = HumanizeResult.new(
+      "```json\n{\"summary_key\": [\"요점\"], \"summary_body\": \"윤문된 본문\"}\n```"
+    )
+
+    chat = build_humanize_chat(raw_response)
+
+    result = nil
+    HumanMonolithAgent.stub(:chat, chat) do
+      result = ArticleAgentsService.new.send(:run_humanize, article)
+    end
+
+    assert_predicate result, :failure?
+    assert_equal "원본 요약", article.reload.summary_body
+  end
+
+  test "japanese_via_agent는 content가 String이면 빈 해시를 반환한다" do
+    article = articles(:ruby_article)
+
+    agent = Object.new
+    agent.define_singleton_method(:ask) do |_prompt|
+      AgentResult.new("stop", "{\"title_ja\": \"タイトル\", \"summary_body_ja\": \"本文\"}")
+    end
+
+    attrs = nil
+    ArticleJapaneseAgent.stub(:new, agent) do
+      attrs = ArticleAgentsService.new.send(:japanese_via_agent, article)
+    end
+
+    assert_empty attrs
+  end
 end
