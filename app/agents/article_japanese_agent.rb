@@ -3,8 +3,7 @@
 
 class ArticleJapaneseAgent < RubyLLM::Agent
   # model "qwen/qwen3.7-plus", provider: :openrouter, assume_model_exists: true
-  # model "google/gemma-4-31b-it", provider: :openrouter
-  model "deepseek-v4-flash:0731-cloud", provider: :ollama, assume_model_exists: true
+  model "deepseek/deepseek-v4-flash-0731", provider: :openrouter, assume_model_exists: true
   temperature 0.2
   tools SearchRelatedArticles, GetExistingTags, ValidateSlug
 
