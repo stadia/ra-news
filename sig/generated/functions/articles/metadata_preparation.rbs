@@ -16,14 +16,14 @@ module Articles
     # : (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
     def self.follow_redirection: (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
 
-    # : (String url) -> DateTime?
-    def self.url_to_published_at: (String url) -> DateTime?
+    # : (String url) -> ActiveSupport::TimeWithZone?
+    def self.url_to_published_at: (String url) -> ActiveSupport::TimeWithZone?
 
-    # : (String body) -> DateTime?
-    def self.extract_published_at_from_content: (String body) -> DateTime?
+    # : (String body) -> ActiveSupport::TimeWithZone?
+    def self.extract_published_at_from_content: (String body) -> ActiveSupport::TimeWithZone?
 
-    # : (Article article, String body) -> Time
-    def self.published_at_for: (Article article, String body) -> Time
+    # : (Article article, String body) -> ActiveSupport::TimeWithZone
+    def self.published_at_for: (Article article, String body) -> ActiveSupport::TimeWithZone
 
     # : (String title) -> String
     def self.build_slug: (String title) -> String
@@ -34,8 +34,8 @@ module Articles
     # : (Article article, URI::Generic parsed_url) -> bool
     def self.should_discard_url?: (Article article, URI::Generic parsed_url) -> bool
 
-    # : (DateTime? candidate) -> Time
-    def self.normalize_published_at: (DateTime? candidate) -> Time
+    # : (ActiveSupport::TimeWithZone? candidate) -> ActiveSupport::TimeWithZone
+    def self.normalize_published_at: (ActiveSupport::TimeWithZone? candidate) -> ActiveSupport::TimeWithZone
 
     # : () -> String
     private def self.random_slug: () -> String

@@ -27,7 +27,7 @@ module Articles
     JSON_LD_ARTICLE_TYPES = %w[NewsArticle Article BlogPosting].freeze
 
     class << self
-      #: (Nokogiri::HTML4::Document doc) -> Time?
+      #: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
       def meta_published_at(doc)
         PUBLISHED_META_SELECTORS.each do |selector|
           element = doc.at_css(selector)
@@ -40,7 +40,7 @@ module Articles
         nil
       end
 
-      #: (Nokogiri::HTML4::Document doc) -> Time?
+      #: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
       def json_ld_published_at(doc)
         doc.css('script[type="application/ld+json"]').each do |node|
           payload = parse_json_ld(node.text)
@@ -53,7 +53,7 @@ module Articles
         nil
       end
 
-      #: (Nokogiri::HTML4::Document doc) -> Time?
+      #: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
       def selector_published_at(doc)
         PUBLISHED_DATE_SELECTORS.each do |selector|
           doc.css(selector).each do |element|
@@ -67,7 +67,7 @@ module Articles
         end
       end
 
-      #: (Nokogiri::HTML4::Document doc) -> Time?
+      #: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
       def text_published_at(doc)
         text = doc.at_css("article, main, body")&.text.to_s.squish
         return if text.blank?
@@ -89,7 +89,7 @@ module Articles
         nil
       end
 
-      #: (untyped payload) -> Time?
+      #: (untyped payload) -> ActiveSupport::TimeWithZone?
       def extract_from_json_ld(payload)
         case payload
         in Array => items
@@ -108,7 +108,7 @@ module Articles
         Array(node["@type"]).any? { |type| JSON_LD_ARTICLE_TYPES.include?(type) }
       end
 
-      #: (untyped value) -> Time?
+      #: (untyped value) -> ActiveSupport::TimeWithZone?
       def parse_value(value)
         return if value.blank?
 

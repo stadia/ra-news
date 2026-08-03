@@ -47,7 +47,7 @@ module RssHelper
   end
 
   # Extracts attributes from a feed item.
-  #: ((RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry) item) -> Hash?
+  #: ((RSS::Rss::Channel::Item | RSS::Atom::Feed::Entry) item) -> Hash[Symbol, untyped]?
   def extract_item_attributes(item)
     attrs = case item
     when RSS::Atom::Feed::Entry

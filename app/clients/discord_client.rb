@@ -56,7 +56,7 @@ class DiscordClient
       "#{AUTHORIZE_URL}?#{query}"
     end
 
-    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
+    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess[String, untyped]
     def exchange_code(code, redirect_uri:)
       response = Faraday.post(TOKEN_URL) do |req|
         apply_timeouts(req)

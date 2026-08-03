@@ -8,28 +8,28 @@ module Articles
 
     JSON_LD_ARTICLE_TYPES: untyped
 
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self.meta_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+    # : (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
+    def self.meta_published_at: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
 
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self.json_ld_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+    # : (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
+    def self.json_ld_published_at: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
 
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self.selector_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+    # : (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
+    def self.selector_published_at: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
 
-    # : (Nokogiri::HTML4::Document doc) -> Time?
-    def self.text_published_at: (Nokogiri::HTML4::Document doc) -> Time?
+    # : (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
+    def self.text_published_at: (Nokogiri::HTML4::Document doc) -> ActiveSupport::TimeWithZone?
 
     # : (String text) -> untyped
     private def self.parse_json_ld: (String text) -> untyped
 
-    # : (untyped payload) -> Time?
-    private def self.extract_from_json_ld: (untyped payload) -> Time?
+    # : (untyped payload) -> ActiveSupport::TimeWithZone?
+    private def self.extract_from_json_ld: (untyped payload) -> ActiveSupport::TimeWithZone?
 
     # : (Hash[String, untyped] node) -> bool
     private def self.article_json_ld?: (Hash[String, untyped] node) -> bool
 
-    # : (untyped value) -> Time?
-    private def self.parse_value: (untyped value) -> Time?
+    # : (untyped value) -> ActiveSupport::TimeWithZone?
+    private def self.parse_value: (untyped value) -> ActiveSupport::TimeWithZone?
   end
 end

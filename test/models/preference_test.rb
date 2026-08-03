@@ -34,4 +34,23 @@ class PreferenceTest < ActiveSupport::TestCase
     assert_equal "persisted-id", fresh.client_id
     assert_equal "persisted-secret", fresh.client_secret
   end
+
+  test "ignore_hosts 설정이 배열이 아니면 빈 배열을 반환한다" do
+    Preference.find_or_initialize_by(name: "ignore_hosts").update!(value: { "unexpected" => "value" })
+
+    assert_equal [], Preference.ignore_hosts
+  end
+
+  test "ignore_hosts 배열의 비문자열 항목은 걸러진다" do
+    Preference.find_or_initialize_by(name: "ignore_hosts").update!(value: [ "github.com", nil, 123 ])
+
+    assert_equal [ "github.com" ], Preference.ignore_hosts
+  end
+
+  test "ignore_hosts 행이 없으면 빈 배열을 반환한다" do
+    Preference.where(name: "ignore_hosts").destroy_all
+    Rails.cache.clear
+
+    assert_equal [], Preference.ignore_hosts
+  end
 end

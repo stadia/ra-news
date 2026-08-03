@@ -59,7 +59,7 @@ class FeedController < ApplicationController
     current_user
   end
 
-  #: (ActiveRecord::Relation[Post] posts, Pagy pagy, Hash[Integer, Federails::Actor] boosters) -> Hash[Symbol, untyped]
+  #: (ActiveRecord::Relation posts, Pagy pagy, Hash[Integer, Federails::Actor] boosters) -> Hash[Symbol, untyped]
   def serialize_collection(posts, pagy, boosters)
     {
       posts: PostSerializer.new(posts, params: {
@@ -74,7 +74,7 @@ class FeedController < ApplicationController
     }
   end
 
-  #: (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+  #: (ActiveRecord::Relation posts) -> Array[Integer]
   def liked_post_ids(posts)
     Like.liked_ids_for(
       liker: current_user,
@@ -83,7 +83,7 @@ class FeedController < ApplicationController
     )
   end
 
-  #: (ActiveRecord::Relation[Post] posts) -> Array[Integer]
+  #: (ActiveRecord::Relation posts) -> Array[Integer]
   def boosted_post_ids(posts)
     Boost.boosted_ids_for(
       booster: current_user,

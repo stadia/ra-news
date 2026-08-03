@@ -10,7 +10,6 @@ D = Steep::Diagnostic
 target :app do
   # Where to find application-specific RBS files
   signature "sig"
-
   # Directories to type check
   check "app"
   check "lib"
@@ -19,9 +18,14 @@ target :app do
   ignore "lib/tasks/**/*.rake"
   ignore "lib/protobuf/**/*"
 
-  # Set the default diagnostic level.
-  # :strict is a good goal, but :default is a good starting point.
-  configure_code_diagnostics(D::Ruby.default)
+  # Generated Rails/DSL signatures are intentionally incomplete, so most app
+  # code lacks types and would fail under the default severity. Use the lenient
+  # base for that existing debt, but restore MethodReturnTypeAnnotationMismatch
+  # (which `lenient` disables) so the hand-maintained inline return-type
+  # annotations are actually validated instead of silently skipped.
+  diagnostics = D::Ruby.lenient.dup
+  diagnostics[D::Ruby::MethodReturnTypeAnnotationMismatch] = :hint
+  configure_code_diagnostics(diagnostics)
 end
 
 # Target for the test suite
@@ -32,6 +36,9 @@ target :test do
   # Directory to type check
   check "test"
 
-  # Use a more relaxed setting for tests
-  configure_code_diagnostics(D::Ruby.lenient)
+  # Same lenient base as :app so test type gaps don't gate the build, while
+  # still validating inline return-type annotations.
+  test_diagnostics = D::Ruby.lenient.dup
+  test_diagnostics[D::Ruby::MethodReturnTypeAnnotationMismatch] = :hint
+  configure_code_diagnostics(test_diagnostics)
 end

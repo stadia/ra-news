@@ -75,6 +75,14 @@ jobs:
       - name: Type check with Sorbet
         run: bundle exec srb tc
 
+      # Steep gates the inline RBS annotations (`#:` comments) that `srb tc`
+      # cannot see under `# typed: false`. The Steepfile uses `rbs collection`,
+      # so install the gem RBSs before checking.
+      - name: Install RBS collection
+        run: bundle exec rbs collection install
+      - name: Type check with Steep
+        run: bundle exec steep check
+
   test:
     runs-on: ubuntu-latest
 

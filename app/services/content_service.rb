@@ -34,7 +34,7 @@ class ContentService < OperationService
     execute_html(readme_url)
   end
 
-  #: (String url) -> String?
+  #: (String url) -> Dry::Monads::Result
   def execute_html(url)
     logger.info "Fetching HTML content from: #{url}"
 
@@ -50,7 +50,7 @@ class ContentService < OperationService
     github_url?(url) ? Success(Inkmark.to_html(html_content, options: { preset: :recommended })) : Success(Readability::Document.new(html_content).content)
   end
 
-  #: (String url) -> String?
+  #: (String url) -> Dry::Monads::Result
   def execute_youtube(url)
     logger.info "Fetching Youtube content from: #{url}"
     youtube_id = youtube_id(url)
