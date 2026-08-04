@@ -1,4 +1,4 @@
-# typed: true
+# typed: strong
 
 class RoleResource < Madmin::Resource
   # Attributes

@@ -1,4 +1,4 @@
-# typed: true
+# typed: strong
 
 class ActiveStorage::AttachmentResource < Madmin::Resource
   # Attributes
