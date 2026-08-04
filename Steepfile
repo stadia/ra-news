@@ -100,7 +100,7 @@ CLEAN_DIAGNOSTICS = [
   D::Ruby::InsufficientKeywordArguments,
   D::Ruby::UnexpectedBlockGiven,
   D::Ruby::UnexpectedYield,
-  D::Ruby::UnknownRecordKey,
+  D::Ruby::UnknownRecordKey
 ].freeze
 
 # Lenient base + strict severity for everything we are already clean on.
