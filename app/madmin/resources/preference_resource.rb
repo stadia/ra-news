@@ -1,4 +1,4 @@
-# typed: strong
+# typed: true
 
 class PreferenceResource < Madmin::Resource
   # Attributes

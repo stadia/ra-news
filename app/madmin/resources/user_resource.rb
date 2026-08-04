@@ -1,4 +1,4 @@
-# typed: strong
+# typed: true
 
 class UserResource < Madmin::Resource
   # Attributes

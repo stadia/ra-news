@@ -1,4 +1,4 @@
-# typed: strong
+# typed: true
 
 class TagResource < Madmin::Resource
   # Attributes

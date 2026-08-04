@@ -1,4 +1,4 @@
-# typed: strong
+# typed: true
 # rbs_inline: enabled
 
 module Madmin
