@@ -7,7 +7,10 @@ class SocialPostJob < ApplicationJob
 
   queue_as :default
 
-  #: (?Integer? id, ?Time created_at) -> void
+  # `Time.zone.now` returns an ActiveSupport::TimeWithZone, which only quacks
+  # like Time -- it is not a subclass -- so the default value does not satisfy
+  # a bare `Time` annotation.
+  #: (?Integer? id, ?(Time | ActiveSupport::TimeWithZone) created_at) -> void
   def perform(id = nil, created_at = Time.zone.now.beginning_of_day)
     return unless Rails.env.production?
 

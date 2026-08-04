@@ -23,9 +23,12 @@ class DiscardedArticleCleanupJob < ApplicationJob
       article_ids = batch.pluck(:id)
       next if article_ids.empty?
 
-      nulled_posts = Post.where(article_id: article_ids).update_all(article_id: nil)
-      deleted_notifications = NotificationDelivery.where(article_id: article_ids).delete_all
-      deleted_articles = Article.where(id: article_ids).delete_all
+      # `update_all`/`delete_all` are typed `untyped` by the activerecord RBS,
+      # so `count += rows` resolves against every `Integer#+` overload and
+      # widens the counters to BigDecimal. Both actually return a row count.
+      nulled_posts = Post.where(article_id: article_ids).update_all(article_id: nil) #: Integer
+      deleted_notifications = NotificationDelivery.where(article_id: article_ids).delete_all #: Integer
+      deleted_articles = Article.where(id: article_ids).delete_all #: Integer
 
       nulled_posts_count += nulled_posts
       deleted_notifications_count += deleted_notifications

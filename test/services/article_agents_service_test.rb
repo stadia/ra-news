@@ -35,7 +35,9 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     content_service = Object.new
     content_service.define_singleton_method(:call) { |_article = nil| Dry::Monads::Failure(:no_content) }
 
-    result = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    result = nil #: Dry::Monads::Result?
     ContentService.stub(:new, -> { content_service }) do
       result = ArticleAgentsService.new.call(article)
     end
@@ -103,7 +105,9 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
 
     embed_result = Struct.new(:vectors).new(Array.new(3072, 0.0))
 
-    result = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    result = nil #: Dry::Monads::Result?
     RubyLLM.stub(:embed, ->(*, **) { embed_result }) do
       ArticleAgent.stub(:new, agent) do
         HumanMonolithAgent.stub(:chat, humanize_chat) do
@@ -165,7 +169,9 @@ class ArticleAgentsServiceTest < ActiveSupport::TestCase
     service.define_singleton_method(:run_humanize) { |a| Dry::Monads::Success(a) }
     service.define_singleton_method(:run_thumbnail) { |a| Dry::Monads::Success(a) }
 
-    result = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    result = nil #: Dry::Monads::Result?
     Articles::AgentRunner.stub(:run, ->(**) { Dry::Monads::Success(article) }) do
       result = service.call(article)
     end

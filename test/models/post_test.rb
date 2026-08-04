@@ -548,7 +548,9 @@ class PostTest < ActiveSupport::TestCase
     )
     post.tag_list = "ruby, rails"
 
-    captured = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    captured = nil #: Hash[Symbol, untyped]?
     Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
@@ -564,7 +566,9 @@ class PostTest < ActiveSupport::TestCase
   test "to_activitypub_object는 parent가 없으면 article을 inReplyTo로 사용한다" do
     post = Post.create!(body: "기사 댓글", user: @user, article: @article)
 
-    captured = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    captured = nil #: Hash[Symbol, untyped]?
     Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
@@ -651,7 +655,9 @@ class PostTest < ActiveSupport::TestCase
   test "to_activitypub_object는 장문을 요약과 제목과 원문 링크로 전달한다" do
     post = posts(:blog_published)
 
-    captured = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    captured = nil #: Hash[Symbol, untyped]?
     Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
@@ -682,7 +688,9 @@ class PostTest < ActiveSupport::TestCase
   test "to_activitypub_object는 단문 본문 전체 발행을 유지한다" do
     post = @root_post
 
-    captured = nil
+    # Pinned to `nil` by the initial assignment otherwise, which rejects the
+    # assignment made inside the block below.
+    captured = nil #: Hash[Symbol, untyped]?
     Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
