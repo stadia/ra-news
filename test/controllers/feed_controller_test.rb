@@ -1,3 +1,4 @@
+# typed: true
 # test/controllers/activities_controller_test.rb
 # frozen_string_literal: true
 

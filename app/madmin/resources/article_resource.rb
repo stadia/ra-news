@@ -1,3 +1,5 @@
+# typed: false
+
 class ArticleResource < Madmin::Resource
   # Attributes
   attribute :id, form: false

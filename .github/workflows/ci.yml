@@ -68,10 +68,14 @@ jobs:
       # Static only -- no database or credentials needed. The RBI files under
       # sorbet/rbi are committed, so this never regenerates them; if they drift
       # from Gemfile.lock, run `bundle exec tapioca gem` and commit the result.
-      # All app/lib files declare `# typed: false` (or omit the sigil, which
-      # defaults to false), so this gate currently catches syntax errors,
-      # RBI/sigil drift, and autoload/require issues -- not type errors. Bump
-      # files to `# typed: true` incrementally to start enforcing signatures.
+      # Every file under app/lib/test now carries an explicit sigil: 296 at
+      # `# typed: true` (where Sorbet enforces signatures and constant/method
+      # resolution) and 185 still at `# typed: false` (syntax and RBI drift
+      # only). Widen by re-running `bundle exec spoom srb bump . --dry`, which
+      # lists the files that would type check cleanly at the next level up.
+      #
+      # A NEW file with no sigil defaults to `false` and is therefore invisible
+      # to this gate -- add one when creating files.
       - name: Type check with Sorbet
         run: bundle exec srb tc
 

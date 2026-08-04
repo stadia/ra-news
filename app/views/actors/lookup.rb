@@ -1,3 +1,4 @@
+# typed: true
 # app/views/actors/lookup.rb
 # frozen_string_literal: true
 

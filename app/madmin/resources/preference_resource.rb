@@ -1,3 +1,5 @@
+# typed: true
+
 class PreferenceResource < Madmin::Resource
   # Attributes
   attribute :id, form: false

@@ -5,9 +5,16 @@ pre-commit:
   parallel: false
   commands:
     # 스테이징한 .rb 파일만 자동 수정하고, 수정 결과를 이번 커밋에 포함한다.
+    #
+    # --force-exclusion 이 없으면 .rubocop.yml 의 AllCops/Exclude 가 무시된다.
+    # RuboCop 은 파일을 인자로 명시하면 "사용자가 일부러 지목했다"고 보고 제외
+    # 목록을 건너뛰기 때문이다. 여기서는 항상 경로를 넘기므로 app/components,
+    # app/views, lib 전체가 검사 대상이 되어 `bundle exec rubocop` 과 결과가
+    # 갈렸다. -A 는 unsafe 수정까지 하므로 제외 대상인 vendored 컴포넌트가
+    # 조용히 재포맷되기도 했다.
     rubocop:
       glob: "*.{rb,rake,gemspec}"
-      run: bundle exec rubocop -A {staged_files}
+      run: bundle exec rubocop -A --force-exclusion {staged_files}
       stage_fixed: true
     # 인라인 RBS를 생성하고, 생성/변경된 시그니처를 이번 커밋에 포함한다.
     # stage_fixed는 기존 스테이징 파일의 수정만 다시 스테이징하므로,

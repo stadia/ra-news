@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # users/form 필드 서브컴포넌트들이 공유하는 입력 필드 클래스 헬퍼.

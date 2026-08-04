@@ -1,3 +1,4 @@
+# typed: true
 # app/views/actors/show.rb
 # frozen_string_literal: true
 
