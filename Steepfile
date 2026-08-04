@@ -8,108 +8,75 @@ D = Steep::Diagnostic
 
 # --- Diagnostic scope ------------------------------------------------------
 #
-# Generated Rails/DSL signatures are intentionally incomplete, so most app code
-# lacks types and would fail wholesale under `default`. The base stays
-# `lenient`, and the scope is widened one diagnostic at a time.
+# The base is `strict` and debt is subtracted from it, NOT the other way round.
 #
-# `CLEAN_DIAGNOSTICS` below are the diagnostics the codebase has *zero*
-# occurrences of, measured by running `steep check` with `D::Ruby.all_error` on
-# both targets. Raising them to their `strict` severity therefore costs nothing
-# today and acts as a ratchet: the first new violation fails CI instead of
-# quietly joining the debt pile.
+# This used to start from `lenient` and promote the diagnostics that happened to
+# be clean. That allowlist reached 39 of Steep's 58 entries and was fail-open in
+# the wrong direction: anything not on it -- including diagnostics added by a
+# future Steep release -- stayed silently lenient. Inverting it makes the list
+# shorter (19), makes each entry justify itself with a count and a reason, and
+# makes a Steep upgrade enforce new checks by default. Removing an entry from
+# `DEBT` is now how you widen the gate.
 #
-# The list grows as debt is paid off. The last six entries -- ClassModuleMismatch
-# through UnknownRecordKey -- were driven to zero rather than found at zero.
+# Steep gates on severity >= :warning, so `:hint` here means "reported, not
+# enforced".
 #
-# Steep gates on severity >= :warning, so :hint/:information entries here are
-# informational only.
-#
-# Remaining debt, with why each is still `lenient` (counts as of 2026-08-04).
-# These were each investigated; none can currently be driven to zero:
-#
-#   UnreachableValueBranch 2       Steep proves an `else` unreachable. Only
-#                                  "fixable" by deleting defensive branches.
-#   BlockBodyTypeMismatch 4        `to_h { [k, v] }` -- Steep wants
-#                                  `Hash::_Pair`, gets `Array[untyped]`.
-#   BlockTypeMismatch 5            `&:sym` and `&` forwarding typed as bare
-#                                  `::Proc` instead of a proc type.
-#   RequiredBlockMissing 7         Anonymous block forwarding (`foo(&)`) plus
-#                                  gem RBS that omits block forms.
-#   UnexpectedSuper 9              Needs ActiveRecord schema signatures: two
-#                                  are `super` from an attribute-writer
-#                                  override (`Article#title=`,
-#                                  `Preference#name=`) whose target only
-#                                  exists once columns are typed. The other
-#                                  seven are Devise/Madmin/ActionMailer RBS
-#                                  declaring the controllers but not the
-#                                  methods we override.
-#   UnexpectedPositionalArgument 13
-#   UnexpectedKeywordArgument 17   Gem RBS argument lists narrower than the
-#                                  real methods. Fixable one `| ...` overload
-#                                  at a time, but ~30 separate gem gaps.
-#   UnsupportedSyntax 15           NOT fixable here -- Steep 2.0 does not
-#                                  support splat-into-untyped (`dig(*path)`,
-#                                  `includes(*CONST)`) or `case/in`.
-#
-# Beyond those, five diagnostics are the signature-coverage wall. They are not
-# fixable one call site at a time -- they need real Phlex/Rails RBS:
-#
-#     UnknownInstanceVariable 469, MethodDefinitionInUndeclaredModule 677,
-#     UnknownConstant 1229, FallbackAny 1899, NoMethod 7727
-#
-# Re-measure with:
-#     bundle exec steep check --steepfile=<file using D::Ruby.all_error>
-CLEAN_DIAGNOSTICS = [
-  D::Ruby::AnnotationSyntaxError,
-  D::Ruby::BreakTypeMismatch,
-  D::Ruby::DeprecatedReference,
-  D::Ruby::DifferentMethodParameterKind,
-  D::Ruby::FalseAssertion,
-  D::Ruby::ImplicitBreakValueMismatch,
-  D::Ruby::IncompatibleAnnotation,
-  D::Ruby::IncompatibleArgumentForwarding,
-  D::Ruby::InsufficientPositionalArguments,
-  D::Ruby::InsufficientTypeArgument,
-  D::Ruby::InvalidIgnoreComment,
-  D::Ruby::LibraryRBSError,
-  D::Ruby::MethodArityMismatch,
-  D::Ruby::MethodBodyTypeMismatch,
-  D::Ruby::MethodParameterMismatch,
-  D::Ruby::MethodReturnTypeAnnotationMismatch,
-  D::Ruby::MultipleAssignmentConversionError,
-  D::Ruby::ProcHintIgnored,
-  D::Ruby::ProcTypeExpected,
-  D::Ruby::RBSError,
-  D::Ruby::RedundantIgnoreComment,
-  D::Ruby::ReturnTypeMismatch,
-  D::Ruby::SetterBodyTypeMismatch,
-  D::Ruby::SetterReturnTypeMismatch,
-  D::Ruby::SyntaxError,
-  D::Ruby::TypeArgumentMismatchError,
-  D::Ruby::UnexpectedDynamicMethod,
-  D::Ruby::UnexpectedError,
-  D::Ruby::UnexpectedJump,
-  D::Ruby::UnexpectedJumpValue,
-  D::Ruby::UnexpectedTypeArgument,
-  D::Ruby::UnknownGlobalVariable,
-  D::Ruby::UnsatisfiableConstraint,
+# Counts are from 2026-08-04 (12,844 problems total). Re-measure with a copy of
+# this file that swaps `configure_code_diagnostics(DIAGNOSTICS.call)` for
+# `configure_code_diagnostics(D::Ruby.all_error)` -- and keep the copy in the
+# project root, or the relative `check` paths resolve to nothing and it passes
+# having checked zero files.
+DEBT = {
+  # --- The signature-coverage wall (12,292 of the 12,844) -------------------
+  # Not fixable one call site at a time. Phlex ships no RBS and there are no
+  # ActiveRecord column signatures, so most receivers are untyped and every
+  # call on them lands here. Closing this needs generated Rails/Phlex RBS
+  # (rbs_rails or similar), not annotations.
+  D::Ruby::NoMethod => 7975,
+  D::Ruby::FallbackAny => 1900,
+  D::Ruby::UnknownConstant => 1269,
+  D::Ruby::MethodDefinitionInUndeclaredModule => 679,
+  D::Ruby::UnknownInstanceVariable => 469,
 
-  # Driven to zero, not found at zero -- see the PR that added this block.
-  D::Ruby::ClassModuleMismatch,
-  D::Ruby::IncompatibleAssignment,
-  D::Ruby::InsufficientKeywordArguments,
-  D::Ruby::UnexpectedBlockGiven,
-  D::Ruby::UnexpectedYield,
-  D::Ruby::UnknownRecordKey
-].freeze
+  # --- Fixable, just not yet ------------------------------------------------
+  # Mechanical annotation work. Highest count first; each is a candidate for
+  # the next pass.
+  D::Ruby::UnannotatedEmptyCollection => 233,
+  D::Ruby::UnresolvedOverloading => 93,
+  D::Ruby::ArgumentTypeMismatch => 45,
+  D::Ruby::UndeclaredMethodDefinition => 44,
+  D::Ruby::MethodDefinitionMissing => 33,
+  D::Ruby::UnreachableBranch => 30,
 
-# Lenient base + strict severity for everything we are already clean on.
+  # --- Blocked on gem RBS ---------------------------------------------------
+  # Gem signatures narrower than the real methods. Fixable one `| ...` overload
+  # at a time in sig/shims/external.rbs; ~30 separate gaps across Yt, Slack,
+  # schema_dot_org, Devise, Madmin, ActiveRecord.
+  D::Ruby::UnexpectedKeywordArgument => 17,
+  D::Ruby::UnexpectedPositionalArgument => 13,
+  D::Ruby::UnexpectedSuper => 9,     # 2 of these need AR column signatures
+  D::Ruby::RequiredBlockMissing => 8,
+
+  # --- Blocked on Steep itself ----------------------------------------------
+  # Not fixable in this codebase.
+  #   UnsupportedSyntax  -- Steep 2.0 does not support splat-into-untyped
+  #                         (`dig(*path)`, `includes(*CONST)`) or `case/in`.
+  #   BlockTypeMismatch  -- `&:sym` and `&` forwarding type as bare `::Proc`
+  #                         rather than a proc type.
+  #   BlockBodyTypeMismatch -- `to_h { [k, v] }` wants `Hash::_Pair`.
+  #   UnreachableValueBranch -- only "fixable" by deleting defensive `else`es.
+  D::Ruby::UnsupportedSyntax => 16,
+  D::Ruby::BlockTypeMismatch => 5,
+  D::Ruby::BlockBodyTypeMismatch => 4,
+  D::Ruby::UnreachableValueBranch => 2
+}.freeze
+
+# `strict` everywhere, `:hint` for the debt above.
 # A lambda rather than a method: the Steepfile is `instance_eval`ed, and a `def`
 # here would land on the outer DSL object and be invisible inside `target`.
-RATCHETED_DIAGNOSTICS = lambda do
-  strict = D::Ruby.strict
-  D::Ruby.lenient.dup.tap do |diagnostics|
-    CLEAN_DIAGNOSTICS.each { |key| diagnostics[key] = strict.fetch(key) }
+DIAGNOSTICS = lambda do
+  D::Ruby.strict.dup.tap do |diagnostics|
+    DEBT.each_key { |key| diagnostics[key] = :hint }
   end
 end
 
@@ -120,12 +87,22 @@ target :app do
   # Directories to type check
   check "app"
   check "lib"
+  # `config` and `db` were outside the checked scope until 2026-08-04. Adding
+  # them cost nothing -- no ratcheted diagnostic fires there -- and the gate now
+  # covers initializers, environments, routes and db/seeds.rb too.
+  check "config"
+  check "db"
 
   # Ignore generated or less critical files
   ignore "lib/tasks/**/*.rake"
   ignore "lib/protobuf/**/*"
+  # Migrations are write-once history: they ran against the schema of their day
+  # and are never edited again. Gating them would tax every future migration
+  # for no runtime benefit -- and one existing backfill already trips
+  # IncompatibleAssignment on `total += exec_update(...)`.
+  ignore "db/migrate/**/*"
 
-  configure_code_diagnostics(RATCHETED_DIAGNOSTICS.call)
+  configure_code_diagnostics(DIAGNOSTICS.call)
 end
 
 # Target for the test suite
@@ -136,6 +113,6 @@ target :test do
   # Directory to type check
   check "test"
 
-  # Same ratchet as :app -- the zero-occurrence measurement covered both targets.
-  configure_code_diagnostics(RATCHETED_DIAGNOSTICS.call)
+  # Same configuration as :app -- the debt measurement covered both targets.
+  configure_code_diagnostics(DIAGNOSTICS.call)
 end
