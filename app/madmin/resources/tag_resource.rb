@@ -1,3 +1,5 @@
+# typed: true
+
 class TagResource < Madmin::Resource
   # Attributes
   attribute :id, form: false

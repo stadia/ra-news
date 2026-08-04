@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class Components::Users::Form::Actions < Components::Base

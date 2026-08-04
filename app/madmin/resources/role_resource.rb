@@ -1,3 +1,5 @@
+# typed: true
+
 class RoleResource < Madmin::Resource
   # Attributes
   attribute :id, form: false

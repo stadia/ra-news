@@ -1,3 +1,5 @@
+# typed: true
+
 class UserResource < Madmin::Resource
   # Attributes
   attribute :id, form: false

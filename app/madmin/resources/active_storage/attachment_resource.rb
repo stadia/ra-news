@@ -1,3 +1,5 @@
+# typed: true
+
 class ActiveStorage::AttachmentResource < Madmin::Resource
   # Attributes
   attribute :id, form: false

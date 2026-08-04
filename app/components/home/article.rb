@@ -1,3 +1,4 @@
+# typed: false
 # frozen_string_literal: true
 
 class Components::Home::Article < Components::Base
