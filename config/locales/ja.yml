@@ -424,9 +424,3 @@ ja:
     password_form:
       back: 戻る
       save: パスワードを保存
-    show:
-      change_password: パスワード変更
-      edit: 情報を編集
-      heading: ユーザー情報
-      subtitle: アカウントの個人情報と設定を管理します。
-      title: ユーザー情報
