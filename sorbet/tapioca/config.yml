@@ -16,4 +16,4 @@ dsl:
   #
   # exclude:
   # - SomeGeneratorName
-  workers: 8
+  workers: 1

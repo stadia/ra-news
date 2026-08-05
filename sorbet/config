@@ -10,3 +10,8 @@
 --ignore=lib/protobuf/
 --parser=prism
 --enable-experimental-rbs-comments
+# Lets `requires_ancestor { Article }` in sorbet/rbi/shims/concern_ancestors.rbi
+# tell Sorbet what a concern's `self` is. Without it those declarations parse
+# and are silently ignored, and every call a concern makes on its includer is
+# reported as a missing method.
+--enable-experimental-requires-ancestor
