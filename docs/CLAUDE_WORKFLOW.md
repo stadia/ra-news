@@ -101,7 +101,7 @@ bin/rails test test/models/article_test.rb
 bin/rails test
 
 # 타입 체크 (서비스/모델 변경 시)
-bundle exec steep check
+bundle exec srb tc
 
 # 스타일 체크 및 자동 수정
 bin/rubocop --autocorrect-all

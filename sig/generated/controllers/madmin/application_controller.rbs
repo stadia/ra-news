@@ -1,7 +1,0 @@
-# Generated from app/controllers/madmin/application_controller.rb with RBS::Inline
-
-module Madmin
-  class ApplicationController < Madmin::BaseController
-    def authenticate_admin_user: () -> untyped
-  end
-end

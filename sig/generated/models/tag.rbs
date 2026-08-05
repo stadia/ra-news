@@ -1,4 +1,0 @@
-# Generated from app/models/tag.rb with RBS::Inline
-
-class Tag < ActsAsTaggableOn::Tag
-end

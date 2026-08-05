@@ -1,5 +1,0 @@
-# Generated from app/constraints/authenticated_constraint.rb with RBS::Inline
-
-class AuthenticatedConstraint
-  def matches?: (untyped request) -> untyped
-end

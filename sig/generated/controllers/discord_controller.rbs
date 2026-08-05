@@ -1,9 +1,0 @@
-# Generated from app/controllers/discord_controller.rb with RBS::Inline
-
-class DiscordController < ApplicationController
-  def callback: () -> untyped
-
-  private
-
-  def cleanup_discord_webhook: (untyped webhook_url) -> untyped
-end

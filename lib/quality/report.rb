@@ -18,8 +18,8 @@ module Quality
     # call sites in passing. Kept visible so the number moves deliberately
     # rather than drifting unnoticed.
     INFO_METRICS = [
-      { name: "Type coverage (app)",  measure_path: [ :steep, :app, :percent ],  unit: "%" },
-      { name: "Type coverage (test)", measure_path: [ :steep, :test, :percent ], unit: "%" }
+      { name: "Files above typed:false", measure_path: [ :sorbet, :sigils, :percent ],  unit: "%" },
+      { name: "Methods with signature",  measure_path: [ :sorbet, :methods, :percent ], unit: "%" }
     ].freeze
 
     def initialize(measurements:, thresholds:)

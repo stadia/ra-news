@@ -1,4 +1,0 @@
-# Generated from app/models/notification_delivery.rb with RBS::Inline
-
-class NotificationDelivery < ApplicationRecord
-end

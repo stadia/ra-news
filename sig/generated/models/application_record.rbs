@@ -1,4 +1,0 @@
-# Generated from app/models/application_record.rb with RBS::Inline
-
-class ApplicationRecord < ActiveRecord::Base
-end

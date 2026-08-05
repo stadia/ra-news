@@ -9,14 +9,14 @@ class SocialPostJob
   class << self
     sig do
       params(
-        id: T.untyped,
-        created_at: T.untyped,
+        id: T.nilable(::Integer),
+        created_at: T.any(::ActiveSupport::TimeWithZone, ::Time),
         block: T.nilable(T.proc.params(job: SocialPostJob).void)
       ).returns(T.any(SocialPostJob, FalseClass))
     end
     def perform_later(id = T.unsafe(nil), created_at = T.unsafe(nil), &block); end
 
-    sig { params(id: T.untyped, created_at: T.untyped).returns(T.untyped) }
+    sig { params(id: T.nilable(::Integer), created_at: T.any(::ActiveSupport::TimeWithZone, ::Time)).void }
     def perform_now(id = T.unsafe(nil), created_at = T.unsafe(nil)); end
   end
 end

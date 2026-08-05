@@ -1,4 +1,0 @@
-# Generated from app/agents/human_monolith_agent.rb with RBS::Inline
-
-class HumanMonolithAgent < RubyLLM::Agent
-end

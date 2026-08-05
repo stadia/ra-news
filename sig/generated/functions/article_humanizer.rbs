@@ -1,8 +1,0 @@
-# Generated from app/functions/article_humanizer.rb with RBS::Inline
-
-module ArticleHumanizer
-  extend FunctionLogger
-
-  # : (Article article) -> String
-  def self.prompt: (Article article) -> String
-end

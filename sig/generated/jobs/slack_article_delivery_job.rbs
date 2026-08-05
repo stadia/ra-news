@@ -1,6 +1,0 @@
-# Generated from app/jobs/slack_article_delivery_job.rb with RBS::Inline
-
-class SlackArticleDeliveryJob < ApplicationJob
-  # : (Integer article_id, Integer channel_id) -> void
-  def perform: (Integer article_id, Integer channel_id) -> void
-end

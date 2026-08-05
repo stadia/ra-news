@@ -1,8 +1,0 @@
-# Generated from app/functions/slack_notifier.rb with RBS::Inline
-
-module SlackNotifier
-  extend FunctionLogger
-
-  # : (Article article) -> bool?
-  def self.notify: (Article article) -> bool?
-end

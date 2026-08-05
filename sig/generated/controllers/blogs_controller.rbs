@@ -1,9 +1,0 @@
-# Generated from app/controllers/blogs_controller.rb with RBS::Inline
-
-class BlogsController < ApplicationController
-  include PostViewing
-
-  # GET /@:username/blog/:slug — public blog detail. Scopes by username so the
-  # URL is canonical, but slugs are globally unique so this never ambiguates.
-  def show: () -> untyped
-end

@@ -1,7 +1,0 @@
-# Generated from app/models/configs/github_oauth.rb with RBS::Inline
-
-module Configs
-  class GithubOauth < OauthBase
-    def self.configured?: () -> untyped
-  end
-end

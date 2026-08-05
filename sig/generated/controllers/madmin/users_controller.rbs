@@ -1,6 +1,0 @@
-# Generated from app/controllers/madmin/users_controller.rb with RBS::Inline
-
-module Madmin
-  class UsersController < Madmin::ResourceController
-  end
-end
