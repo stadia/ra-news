@@ -46,6 +46,52 @@ module Faraday
   end
 end
 
+# `ActiveStorage::Attached::One` declares only a handful of methods and routes
+# everything else to the attachment: `delegate_missing_to :attachment,
+# allow_nil: true` (attached/one.rb:27). So `thumbnail.blob` and
+# `thumbnail.variant(...)` are real but reach `ActiveStorage::Attachment`
+# through `method_missing`, and the generated RBI has no trace of them.
+class ActiveStorage::Attached::One
+  def blob; end
+
+  def variant(transformations); end
+end
+
+# Route helpers in test cases.
+#
+# These classes do not define or include the helpers -- verified from a running
+# test: `respond_to?(:article_path)` is true while
+# `self.class.ancestors.find { |m| m.instance_methods(false).include?(:article_path) }`
+# is nil. Rails forwards them through `method_missing` to the integration
+# session, which is the one holding the app's url helpers.
+#
+# Declaring the include models the contract ("a test can call route helpers")
+# rather than the mechanism, the same way `Faraday.get` is declared above for a
+# `method_missing` forward. `GeneratedPathHelpersModule` and
+# `GeneratedUrlHelpersModule` are the modules tapioca's UrlHelpers compiler
+# builds from the real routes, so a renamed route still fails here -- which is
+# the point: `edit_users_path` in app/views/users/show.rb is NOT declared
+# anywhere, because that route does not exist.
+class ActionDispatch::IntegrationTest
+  include GeneratedPathHelpersModule
+  include GeneratedUrlHelpersModule
+end
+
+class ActionDispatch::SystemTestCase
+  include GeneratedPathHelpersModule
+  include GeneratedUrlHelpersModule
+end
+
+class ActionController::TestCase
+  include GeneratedPathHelpersModule
+  include GeneratedUrlHelpersModule
+end
+
+class ActionMailer::TestCase
+  include GeneratedPathHelpersModule
+  include GeneratedUrlHelpersModule
+end
+
 # `Dry::Monads::Result` is the abstract parent of `Success` and `Failure`, and
 # the generated RBI declares `value!` / `success?` / `failure?` on each subclass
 # but not on the parent. Code that holds a `Result` -- which is what a service
