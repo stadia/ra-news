@@ -93,6 +93,25 @@ jobs:
       - name: Type check with Sorbet
         run: bundle exec srb tc
 
+      # `srb tc` reads sorbet/rbi/gems but never asks whether those RBIs still
+      # match Gemfile.lock, so a stale one is invisible to it. Removing the
+      # steep gem on 2026-08-05 left steep@2.0.0.rbi and five of its transitive
+      # dependencies (listen, rb-fsevent, rb-inotify, fileutils, strscan)
+      # behind, and everything stayed green. This step is what would have
+      # caught that.
+      #
+      # No database or credentials needed, despite sorbet/tapioca/require.rb
+      # booting config/environment: the boot populates
+      # ActiveRecord::Base.configurations but opens no connection, every
+      # `ENV.fetch` on the boot path carries a default block (so a missing
+      # .env is fine), and nothing reads Rails credentials -- verified by
+      # booting with a deliberately wrong RAILS_MASTER_KEY, which would raise
+      # on the first decryption.
+      #
+      # Fix a failure with `bin/tapioca gem` and commit the result.
+      - name: Check gem RBIs match Gemfile.lock
+        run: bundle exec tapioca gem --verify
+
   test:
     runs-on: ubuntu-latest
 
