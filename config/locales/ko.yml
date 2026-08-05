@@ -424,9 +424,3 @@ ko:
     password_form:
       back: 돌아가기
       save: 비밀번호 저장
-    show:
-      change_password: 비밀번호 변경
-      edit: 정보 수정
-      heading: 사용자 정보
-      subtitle: 계정의 개인 정보와 설정을 관리하세요.
-      title: 사용자 정보

@@ -424,9 +424,3 @@ en:
     password_form:
       back: Back
       save: Save password
-    show:
-      change_password: Change password
-      edit: Edit profile
-      heading: Profile
-      subtitle: Manage your personal information and settings.
-      title: Profile
