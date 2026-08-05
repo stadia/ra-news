@@ -1,4 +1,0 @@
-# Generated from app/models/slack_channel.rb with RBS::Inline
-
-class SlackChannel < NotificationChannel
-end

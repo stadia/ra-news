@@ -1,9 +1,0 @@
-# Generated from app/controllers/madmin/social_controller.rb with RBS::Inline
-
-module Madmin
-  class SocialController < Madmin::ApplicationController
-    # Social 메뉴 메인 페이지
-    # : () -> void
-    def index: () -> void
-  end
-end

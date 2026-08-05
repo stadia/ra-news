@@ -1,5 +1,0 @@
-# Generated from app/models/notification_channel.rb with RBS::Inline
-
-class NotificationChannel < ApplicationRecord
-  include Discard::Model
-end

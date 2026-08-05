@@ -1,5 +1,0 @@
-# Generated from app/models/jwt_denylist.rb with RBS::Inline
-
-class JwtDenylist < ApplicationRecord
-  include Devise::JWT::RevocationStrategies::Denylist
-end

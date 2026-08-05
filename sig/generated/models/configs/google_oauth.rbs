@@ -1,7 +1,0 @@
-# Generated from app/models/configs/google_oauth.rb with RBS::Inline
-
-module Configs
-  class GoogleOauth < OauthBase
-    def self.configured?: () -> untyped
-  end
-end

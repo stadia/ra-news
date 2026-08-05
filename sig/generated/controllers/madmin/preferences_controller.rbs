@@ -1,9 +1,0 @@
-# Generated from app/controllers/madmin/preferences_controller.rb with RBS::Inline
-
-module Madmin
-  class PreferencesController < Madmin::ResourceController
-    private
-
-    def resource_params: () -> untyped
-  end
-end

@@ -1,5 +1,0 @@
-# Generated from app/jobs/hacker_news_site_job.rb with RBS::Inline
-
-class HackerNewsSiteJob < ApplicationJob
-  def perform: () -> untyped
-end

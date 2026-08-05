@@ -1,8 +1,0 @@
-# Generated from app/models/role.rb with RBS::Inline
-
-class Role < ApplicationRecord
-  private
-
-  # : () -> void
-  def remove_role_from_users: () -> void
-end

@@ -66,7 +66,7 @@ RSS, 이메일 뉴스레터, YouTube, Hacker News 등 다양한 소스를 수집
 
 ### 품질 & 보안
 
-- **Steep + RBS + RBS 인라인 주석**: 타입 검증
+- **Sorbet + RBS 인라인 주석**: 타입 검증 (`#:` 주석을 Sorbet이 직접 읽음)
 - **RuboCop**: 코드 스타일 및 정적 분석
 - **Brakeman**: 보안 스캐닝
 - **GitHub Actions**: CI (테스트, 린트, 타입체크)
@@ -189,7 +189,8 @@ bin/rails jobs:stats         # 큐 상태 확인
 bin/rails test                                  # 전체 테스트
 bin/rails test:system BROWSER=headless_firefox  # 시스템 테스트(headless)
 bin/rubocop                                     # 스타일/린트
-bundle exec steep check                         # Steep 타입 체크
+bundle exec srb tc                              # Sorbet 타입 체크
+bundle exec spoom srb bump . --dry               # typed:true 상향 후보 확인
 bin/brakeman                                    # 보안 점검
 ```
 
@@ -266,8 +267,10 @@ vapid_key.private_key
 
 ### 타입 & 에러 처리
 
-- 모델/서비스에 RBS 인라인 주석을 점진적으로 도입
-- Steep를 사용해 서비스/도메인 레이어 시그니처를 검증
+- 모델/서비스에 RBS 인라인 주석(`#:`)을 점진적으로 도입
+- Sorbet(`srb tc`)이 그 주석을 직접 읽어 검증한다. 단 `# typed: false` 파일에서는
+  시그니처를 무시하므로, 주석을 다는 것과 파일을 `# typed: true`로 올리는 것은
+  한 쌍으로 움직여야 한다
 - ApplicationJob, 클라이언트 레이어에서
   - 외부 API 에러를 공통 포맷으로 감싸고
   - production에서는 Honeybadger 컨텍스트와 함께 보고하는 패턴 사용

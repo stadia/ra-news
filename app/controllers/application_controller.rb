@@ -29,10 +29,9 @@ class ApplicationController < ActionController::Base
     around_action :n_plus_one_detection
 
     # `around_action` hands the rest of the request cycle in as a block, which
-    # nothing in the source declared -- without the annotation the bare `yield`
-    # below is Ruby::UnexpectedYield. The `(&)` is required: Sorbet reads the
-    # same `#:` comment and rejects a block in the signature when the `def` has
-    # no block parameter (srb.help/3552), even though Steep accepts it.
+    # nothing in the source declared -- the annotation is what lets the bare
+    # `yield` below type check. The `(&)` is required: Sorbet rejects a block
+    # in the signature when the `def` has no block parameter (srb.help/3552).
     #: () { () -> void } -> void
     def n_plus_one_detection(&)
       Prosopite.scan

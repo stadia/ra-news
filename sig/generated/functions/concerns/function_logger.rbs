@@ -1,6 +1,0 @@
-# Generated from app/functions/concerns/function_logger.rb with RBS::Inline
-
-module FunctionLogger
-  # : () -> ActiveSupport::Logger
-  def logger: () -> ActiveSupport::Logger
-end

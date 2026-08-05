@@ -1,9 +1,0 @@
-# Generated from app/controllers/madmin/sites_controller.rb with RBS::Inline
-
-module Madmin
-  class SitesController < Madmin::ResourceController
-    def discard: () -> untyped
-
-    def restore: () -> untyped
-  end
-end

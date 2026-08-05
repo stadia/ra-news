@@ -65,54 +65,33 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
+      # Sorbet is the only type checker. Steep, the `sig/` RBS tree and the
+      # `rbs collection` were removed on 2026-08-05: the inline `#:` comments
+      # stayed, because `--enable-experimental-rbs-comments` in sorbet/config
+      # makes Sorbet read them straight from the .rb source. Nothing generates
+      # .rbs files anymore, so there is no sync step and no drift to check.
+      #
       # Static only -- no database or credentials needed. The RBI files under
       # sorbet/rbi are committed, so this never regenerates them; if they drift
       # from Gemfile.lock, run `bundle exec tapioca gem` and commit the result.
-      # Every file under app/lib/test now carries an explicit sigil: 296 at
+      #
+      # Every file under app/lib/test carries an explicit sigil: ~297 at
       # `# typed: true` (where Sorbet enforces signatures and constant/method
-      # resolution) and 185 still at `# typed: false` (syntax and RBI drift
+      # resolution) and the rest at `# typed: false` (syntax and RBI drift
       # only). Widen by re-running `bundle exec spoom srb bump . --dry`, which
       # lists the files that would type check cleanly at the next level up.
+      #
+      # KNOWN GAP: 60 files carry `#:` annotations but sit at `# typed: false`,
+      # where Sorbet ignores signatures entirely. Steep used to check those;
+      # nothing does now. Bumping all 60 to `true` currently costs 353 errors,
+      # overwhelmingly srb.help/7003 (unknown method) from incomplete gem RBIs,
+      # so it is a follow-up: fill the RBI gaps with `bundle exec tapioca gem`
+      # first, then bump.
       #
       # A NEW file with no sigil defaults to `false` and is therefore invisible
       # to this gate -- add one when creating files.
       - name: Type check with Sorbet
         run: bundle exec srb tc
-
-      # Steep gates the inline RBS annotations (`#:` comments) that `srb tc`
-      # cannot see under `# typed: false`. The Steepfile uses `rbs collection`,
-      # so install the gem RBSs before checking.
-      - name: Install RBS collection
-        run: bundle exec rbs collection install
-
-      # Steep reads sig/generated/*.rbs, NOT the `#:` comments those files are
-      # generated from -- so editing an annotation without regenerating leaves
-      # the two silently out of sync and Steep keeps checking the stale copy.
-      # Regenerate and fail if anything moved. Fix with:
-      #   bundle exec rbs-inline --output app lib
-      - name: Check sig/generated is in sync with inline RBS
-        run: |
-          bundle exec rbs-inline --output app lib
-          # --porcelain, not `git diff --exit-code`: a newly annotated file
-          # produces an *untracked* .rbs, which git diff does not report.
-          drift="$(git status --porcelain -- sig/generated)"
-          if [ -n "$drift" ]; then
-            echo "$drift"
-            echo "::error::sig/generated is stale. Run 'bundle exec rbs-inline --output app lib' and commit the result."
-            exit 1
-          fi
-
-      # `steep check` asks "does the Ruby match the signatures?"; `rbs validate`
-      # asks "are the signatures coherent among themselves?" -- undefined type
-      # references, circular inheritance, wrong generic arity. Steep happens to
-      # surface some of these today, but only for signatures reachable from the
-      # files it checks, and it stops at the first failing target. This runs in
-      # seconds over all of sig/ regardless.
-      - name: Validate RBS signatures
-        run: bundle exec rbs -I sig validate
-
-      - name: Type check with Steep
-        run: bundle exec steep check
 
   test:
     runs-on: ubuntu-latest

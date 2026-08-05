@@ -1,6 +1,0 @@
-# Generated from app/jobs/application_job.rb with RBS::Inline
-
-class ApplicationJob < ActiveJob::Base
-  # Provides default URL options for URL helpers in jobs.
-  def default_url_options: () -> untyped
-end
