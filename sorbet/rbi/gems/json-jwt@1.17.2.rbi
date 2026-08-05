@@ -263,10 +263,10 @@ class JSON::JWE
 
   class << self
     # pkg:gem/json-jwt#lib/json/jwe.rb:262
-    def decode_compact_serialized(input, private_key_or_secret, algorithms = T.unsafe(nil), encryption_methods = T.unsafe(nil), _allow_blank_payload = T.unsafe(nil)); end
+    def decode_compact_serialized(input, private_key_or_secret, algorithms = T.unsafe(nil), encryption_methods = T.unsafe(nil), allow_blank_payload = T.unsafe(nil)); end
 
-    # pkg:gem/json-jwt#lib/json/jwe.rb:282
-    def decode_json_serialized(input, private_key_or_secret, algorithms = T.unsafe(nil), encryption_methods = T.unsafe(nil), _allow_blank_payload = T.unsafe(nil)); end
+    # pkg:gem/json-jwt#lib/json/jwe.rb:285
+    def decode_json_serialized(input, private_key_or_secret, algorithms = T.unsafe(nil), encryption_methods = T.unsafe(nil), allow_blank_payload = T.unsafe(nil)); end
   end
 end
 
@@ -607,10 +607,10 @@ class JSON::JWT < ::ActiveSupport::HashWithIndifferentAccess
     # pkg:gem/json-jwt#lib/json/jwt.rb:107
     def decode_compact_serialized(jwt_string, key_or_secret, algorithms = T.unsafe(nil), encryption_methods = T.unsafe(nil), allow_blank_payload = T.unsafe(nil)); end
 
-    # pkg:gem/json-jwt#lib/json/jwt.rb:122
+    # pkg:gem/json-jwt#lib/json/jwt.rb:118
     def decode_json_serialized(input, key_or_secret, algorithms = T.unsafe(nil), encryption_methods = T.unsafe(nil), allow_blank_payload = T.unsafe(nil)); end
 
-    # pkg:gem/json-jwt#lib/json/jwt.rb:133
+    # pkg:gem/json-jwt#lib/json/jwt.rb:129
     def pretty_generate(jwt_string); end
   end
 end

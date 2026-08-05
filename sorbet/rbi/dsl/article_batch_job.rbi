@@ -9,13 +9,13 @@ class ArticleBatchJob
   class << self
     sig do
       params(
-        created_at: ::Time,
+        created_at: T.any(::ActiveSupport::TimeWithZone, ::Time),
         block: T.nilable(T.proc.params(job: ArticleBatchJob).void)
       ).returns(T.any(ArticleBatchJob, FalseClass))
     end
     def perform_later(created_at = T.unsafe(nil), &block); end
 
-    sig { params(created_at: ::Time).void }
+    sig { params(created_at: T.any(::ActiveSupport::TimeWithZone, ::Time)).void }
     def perform_now(created_at = T.unsafe(nil)); end
   end
 end

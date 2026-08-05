@@ -100,7 +100,7 @@ module MCPClient
     # @param item [Hash] a content item with a 'type' field
     # @return [MCPClient::ResourceLink, Hash] typed object or raw hash
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client.rb:480
+    # pkg:gem/ruby-mcp-client#lib/mcp_client.rb:487
     def parse_content_item(item); end
 
     # Parse the content array from a tool result into typed objects
@@ -109,7 +109,7 @@ module MCPClient
     # @param content [Array<Hash>] content array from a tool result
     # @return [Array<MCPClient::ResourceLink, Hash>] array of typed objects or raw hashes
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client.rb:494
+    # pkg:gem/ruby-mcp-client#lib/mcp_client.rb:501
     def parse_tool_content(content); end
 
     # Create a standard server configuration for SSE
@@ -145,12 +145,15 @@ module MCPClient
     # @param retry_backoff [Integer] Backoff delay in seconds (default: 1)
     # @param name [String, nil] Optional name for this server
     # @param logger [Logger, nil] Optional logger for server operations
+    # @param max_decompressed_body_bytes [Integer] ceiling on how far a gzip-encoded
+    #   response may expand before it is rejected, guarding against a small highly
+    #   compressed body exhausting memory (default: 64 MiB)
     # @yieldparam faraday [Faraday::Connection] the configured connection instance for additional customization
     #   (e.g., SSL settings, custom middleware). The block is called after default configuration is applied.
     # @return [Hash] server configuration
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client.rb:459
-    def streamable_http_config(base_url:, endpoint: T.unsafe(nil), headers: T.unsafe(nil), read_timeout: T.unsafe(nil), retries: T.unsafe(nil), retry_backoff: T.unsafe(nil), name: T.unsafe(nil), logger: T.unsafe(nil), &faraday_config); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client.rb:462
+    def streamable_http_config(base_url:, endpoint: T.unsafe(nil), headers: T.unsafe(nil), read_timeout: T.unsafe(nil), retries: T.unsafe(nil), retry_backoff: T.unsafe(nil), name: T.unsafe(nil), logger: T.unsafe(nil), max_decompressed_body_bytes: T.unsafe(nil), &faraday_config); end
 
     private
 
@@ -313,7 +316,7 @@ module MCPClient::Auth; end
 
 # Registered OAuth client information
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:143
+# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:141
 class MCPClient::Auth::ClientInfo
   # @param client_id [String] OAuth client ID
   # @param client_secret [String, nil] OAuth client secret (for confidential clients)
@@ -321,34 +324,34 @@ class MCPClient::Auth::ClientInfo
   # @param client_secret_expires_at [Integer, nil] Unix timestamp when client secret expires
   # @param metadata [ClientMetadata] Client metadata
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:151
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:149
   def initialize(client_id:, metadata:, client_secret: T.unsafe(nil), client_id_issued_at: T.unsafe(nil), client_secret_expires_at: T.unsafe(nil)); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:144
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:142
   def client_id; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:144
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:142
   def client_id_issued_at; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:144
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:142
   def client_secret; end
 
   # Check if client secret is expired
   # @return [Boolean] true if client secret is expired
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:162
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:160
   def client_secret_expired?; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:144
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:142
   def client_secret_expires_at; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:144
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:142
   def metadata; end
 
   # Convert to hash for serialization
   # @return [Hash] Hash representation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:170
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:168
   def to_h; end
 
   class << self
@@ -356,21 +359,21 @@ class MCPClient::Auth::ClientInfo
     # @param metadata_data [Hash] Metadata hash
     # @return [ClientMetadata] Client metadata instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:199
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:197
     def build_metadata_from_hash(metadata_data); end
 
     # Extract token endpoint auth method from metadata
     # @param metadata_data [Hash] Metadata hash
     # @return [String] Authentication method
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:219
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:217
     def extract_auth_method(metadata_data); end
 
     # Create client info from hash
     # @param data [Hash] Client info data
     # @return [ClientInfo] New client info instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:183
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:181
     def from_h(data); end
   end
 end
@@ -391,7 +394,7 @@ class MCPClient::Auth::ClientMetadata
   # @param policy_uri [String, nil] URL of the client privacy policy
   # @param contacts [Array<String>, nil] List of contact emails for the client
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:104
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:103
   def initialize(redirect_uris:, token_endpoint_auth_method: T.unsafe(nil), grant_types: T.unsafe(nil), response_types: T.unsafe(nil), scope: T.unsafe(nil), client_name: T.unsafe(nil), client_uri: T.unsafe(nil), logo_uri: T.unsafe(nil), tos_uri: T.unsafe(nil), policy_uri: T.unsafe(nil), contacts: T.unsafe(nil)); end
 
   # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:89
@@ -424,7 +427,7 @@ class MCPClient::Auth::ClientMetadata
   # Convert to hash for HTTP requests
   # @return [Hash] Hash representation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:125
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:123
   def to_h; end
 
   # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:89
@@ -461,14 +464,14 @@ class MCPClient::Auth::OAuthProvider
   # Get current access token (refresh if needed)
   # @return [Token, nil] Current valid access token or nil
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:89
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:91
   def access_token; end
 
   # Apply OAuth authorization to HTTP request
   # @param request [Faraday::Request] HTTP request to authorize
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:165
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:167
   def apply_authorization(request); end
 
   # Extract the Bearer challenge's own parameter segment from a (possibly
@@ -480,13 +483,13 @@ class MCPClient::Auth::OAuthProvider
   # @return [String, nil] the Bearer challenge's parameters (possibly
   #   empty), or nil when the header has no Bearer challenge
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:245
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:254
   def bearer_challenge_segment(header); end
 
   # Scope requested by the most recent WWW-Authenticate challenge.
   # @return [String, nil]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:273
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:282
   def challenge_scope; end
 
   # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:39
@@ -498,7 +501,7 @@ class MCPClient::Auth::OAuthProvider
   # @param url [String, nil] HTTPS URL of this client's metadata document, or nil to clear
   # @raise [ArgumentError] if the URL is not HTTPS or lacks a path component
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:83
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:85
   def client_id_metadata_url=(url); end
 
   # Complete OAuth authorization flow with authorization code
@@ -508,7 +511,7 @@ class MCPClient::Auth::OAuthProvider
   # @raise [MCPClient::Errors::ConnectionError] if token exchange fails
   # @raise [ArgumentError] if state parameter doesn't match
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:137
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:139
   def complete_authorization_flow(code, state); end
 
   # Extract an auth-param value from a WWW-Authenticate header
@@ -517,7 +520,7 @@ class MCPClient::Auth::OAuthProvider
   # @param name [String] the auth-param name
   # @return [String, nil] the parameter value if present
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:263
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:272
   def extract_challenge_param(header, name); end
 
   # Extract the protected-resource-metadata URL from a WWW-Authenticate header.
@@ -528,14 +531,14 @@ class MCPClient::Auth::OAuthProvider
   # @param header [String] the WWW-Authenticate header value
   # @return [String, nil] the metadata URL if present
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:218
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:227
   def extract_resource_metadata_url(header); end
 
   # Handle 401 Unauthorized response (for server discovery)
   # @param response [Faraday::Response] HTTP response
   # @return [ResourceMetadata, nil] Resource metadata if found
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:177
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:179
   def handle_unauthorized_response(response); end
 
   # @!attribute [rw] redirect_uri
@@ -639,14 +642,14 @@ class MCPClient::Auth::OAuthProvider
 
   # @param url [String] Server URL to normalize
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:74
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:76
   def server_url=(url); end
 
   # Start OAuth authorization flow
   # @return [String] Authorization URL to redirect user to
   # @raise [MCPClient::Errors::ConnectionError] if server discovery fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:112
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:114
   def start_authorization_flow; end
 
   # @!attribute [rw] redirect_uri
@@ -686,7 +689,7 @@ class MCPClient::Auth::OAuthProvider
   # @return [Array<String>] supported scopes, or empty array if not advertised
   # @raise [MCPClient::Errors::ConnectionError] if server discovery fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:105
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:107
   def supported_scopes; end
 
   private
@@ -698,7 +701,7 @@ class MCPClient::Auth::OAuthProvider
   # @param issuer [String] the authorization server issuer URL
   # @return [Array<String>] ordered candidate URLs
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:393
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:402
   def authorization_server_metadata_urls(issuer); end
 
   # Build authorization URL
@@ -708,7 +711,7 @@ class MCPClient::Auth::OAuthProvider
   # @param state [String] State parameter
   # @return [String] Authorization URL
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:917
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1005
   def build_authorization_url(server_metadata, client_info, pkce, state); end
 
   # Build OAuth discovery URL from server URL
@@ -717,7 +720,7 @@ class MCPClient::Auth::OAuthProvider
   # @param discovery_type [Symbol] Type of discovery endpoint (:authorization_server or :protected_resource)
   # @return [String] Discovery URL
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:341
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:350
   def build_discovery_url(server_url, discovery_type = T.unsafe(nil)); end
 
   # Resolve the Protected Resource Metadata for discovery.
@@ -733,7 +736,7 @@ class MCPClient::Auth::OAuthProvider
   # @raise [MCPClient::Errors::ConnectionError] if the challenge-advertised
   #   URL cannot be fetched, or a well-known candidate exists but is invalid
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:531
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:554
   def challenge_or_well_known_resource_metadata; end
 
   # Build client information for a Client ID Metadata Document client
@@ -743,27 +746,27 @@ class MCPClient::Auth::OAuthProvider
   # application's responsibility, not this library's.
   # @return [ClientInfo] Client information with the metadata URL as client_id
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:784
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:872
   def client_info_from_metadata_url; end
 
   # Create HTTP client for OAuth requests
   # @return [Faraday::Connection] HTTP client
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:328
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:337
   def create_http_client; end
 
   # Check if URI uses default port for its scheme
   # @param uri [URI] Parsed URI
   # @return [Boolean] true if using default port
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:356
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:365
   def default_port?(uri); end
 
   # Discover authorization server metadata, validate it, and cache it.
   # @return [ServerMetadata]
   # @raise [MCPClient::Errors::ConnectionError] if discovery or validation fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:436
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:451
   def discover_and_cache_authorization_server; end
 
   # Discover authorization server metadata
@@ -773,14 +776,14 @@ class MCPClient::Auth::OAuthProvider
   # @return [ServerMetadata] Authorization server metadata
   # @raise [MCPClient::Errors::ConnectionError] if discovery fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:416
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:425
   def discover_authorization_server; end
 
   # Legacy/self-hosted discovery: treat the MCP server ORIGIN as its own
   # authorization server issuer.
   # @return [ServerMetadata, nil]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:541
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:564
   def discover_via_direct_authorization_server; end
 
   # PRM-first discovery: fetch Protected Resource Metadata and then the
@@ -788,21 +791,21 @@ class MCPClient::Auth::OAuthProvider
   # @return [ServerMetadata, nil] AS metadata, or nil if no PRM document exists
   # @raise [MCPClient::Errors::ConnectionError] if PRM is malformed or mismatched
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:493
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:509
   def discover_via_protected_resource; end
 
   # @param url [String, nil] endpoint URL
   # @param label [String] human-readable endpoint name for errors
   # @raise [MCPClient::Errors::ConnectionError] if the URL is not HTTPS (non-localhost)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:618
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:706
   def enforce_https!(url, label); end
 
   # Require HTTPS for all discovered authorization server endpoints, with a
   # localhost exception for local development.
   # @param server_metadata [ServerMetadata]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:607
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:630
   def enforce_https_endpoints!(server_metadata); end
 
   # Exchange authorization code for access token
@@ -813,14 +816,14 @@ class MCPClient::Auth::OAuthProvider
   # @return [Token] Access token
   # @raise [MCPClient::Errors::ConnectionError] if token exchange fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:944
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1032
   def exchange_authorization_code(server_metadata, client_info, code, pkce); end
 
   # Extract redirect_uri mismatch details from an OAuth error response
   # @param body [String] Raw HTTP response body
   # @return [Hash, nil] Hash with :sent and :expected URIs if mismatch detected
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1068
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1156
   def extract_redirect_mismatch(body); end
 
   # Fetch the first Protected Resource Metadata document that resolves.
@@ -833,7 +836,7 @@ class MCPClient::Auth::OAuthProvider
   # @param urls [Array<String>] candidate URLs
   # @return [ResourceMetadata, nil]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:555
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:578
   def fetch_first_resource_metadata(urls); end
 
   # Fetch the first Authorization Server Metadata document that resolves.
@@ -842,7 +845,7 @@ class MCPClient::Auth::OAuthProvider
   # @param urls [Array<String>] candidate URLs
   # @return [ServerMetadata, nil]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:568
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:591
   def fetch_first_server_metadata(urls); end
 
   # Fetch resource metadata from URL.
@@ -858,7 +861,7 @@ class MCPClient::Auth::OAuthProvider
   # @return [ResourceMetadata, nil] metadata, or nil if a speculative URL returns 404
   # @raise [MCPClient::Errors::ConnectionError] on any non-404 failure, or on 404 when strict
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:699
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:787
   def fetch_resource_metadata(url, strict: T.unsafe(nil)); end
 
   # Fetch authorization server metadata from URL
@@ -866,7 +869,7 @@ class MCPClient::Auth::OAuthProvider
   # @return [ServerMetadata] Server metadata
   # @raise [MCPClient::Errors::ConnectionError] if fetch fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:728
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:816
   def fetch_server_metadata(url); end
 
   # Get or register OAuth client, following the MCP 2025-11-25 client
@@ -878,7 +881,7 @@ class MCPClient::Auth::OAuthProvider
   # @return [ClientInfo] Client information
   # @raise [MCPClient::Errors::ConnectionError] if registration fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:755
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:843
   def get_or_register_client(server_metadata); end
 
   # When a 401 challenge changes the authorization server, per-AS state cached
@@ -888,21 +891,33 @@ class MCPClient::Auth::OAuthProvider
   # @param previous [ServerMetadata, nil] previously cached AS metadata
   # @param current [ServerMetadata] newly discovered AS metadata
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:465
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:481
   def invalidate_client_info_on_as_change(previous, current); end
+
+  # @param host [String] a downcased hostname
+  # @return [Boolean] whether it names a loopback, private or link-local address
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:693
+  def local_address?(host); end
+
+  # @return [Boolean] whether the configured MCP server is itself local,
+  #   in which case local discovery targets are expected
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:685
+  def local_development?; end
 
   # Normalize server URL to canonical form
   # @param url [String] Server URL
   # @return [String] Normalized URL
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:303
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:312
   def normalize_server_url(url); end
 
   # Build the scheme://host[:port] origin for a parsed URI.
   # @param uri [URI] Parsed URI
   # @return [String] origin string
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:364
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:373
   def origin_of(uri); end
 
   # Protected Resource Metadata well-known URLs to try, in priority order
@@ -912,14 +927,14 @@ class MCPClient::Auth::OAuthProvider
   # @param server_url [String] the MCP server (protected resource) URL
   # @return [Array<String>] ordered candidate URLs
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:376
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:385
   def protected_resource_metadata_urls(server_url); end
 
   # Refresh access token
   # @param token [Token] Current token with refresh token
   # @return [Token, nil] New access token or nil if refresh failed
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1013
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1101
   def refresh_token(token); end
 
   # Register OAuth client dynamically
@@ -927,8 +942,14 @@ class MCPClient::Auth::OAuthProvider
   # @return [ClientInfo] Registered client information
   # @raise [MCPClient::Errors::ConnectionError] if registration fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:843
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:931
   def register_client(server_metadata); end
+
+  # @param message [String] why the challenge was refused
+  # @raise [MCPClient::Errors::ConnectionError] always
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:673
+  def reject_challenge!(message); end
 
   # Resolve the scope for authorization/registration requests using the
   # MCP 2025-11-25 scope selection strategy: the challenge's scope
@@ -937,7 +958,7 @@ class MCPClient::Auth::OAuthProvider
   # Resource Metadata's scopes_supported; otherwise omit scope entirely.
   # @return [String, nil]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:283
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:292
   def resolved_scope; end
 
   # Canonical resource identity (scheme, host, port, path, query) used for
@@ -950,12 +971,12 @@ class MCPClient::Auth::OAuthProvider
   # @return [String] canonical identity string
   # @raise [MCPClient::Errors::ConnectionError] if the URL is not an absolute URI
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:667
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:755
   def resource_identity(url); end
 
   # Non-raising server-metadata fetch used while iterating candidates.
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:577
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:600
   def try_fetch_server_metadata(url); end
 
   # Validate a Client ID Metadata Document URL (SEP-991): "The client_id
@@ -968,8 +989,32 @@ class MCPClient::Auth::OAuthProvider
   # @raise [ArgumentError] if the URL is invalid, not HTTPS, lacks a host or path
   #   component, or contains userinfo, a fragment, or dot path segments
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:813
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:901
   def validate_client_id_metadata_url(url); end
+
+  # Validate a URL that a peer advertised to us (a 401 challenge's
+  # resource_metadata, or PRM authorization_servers).
+  #
+  # Stricter than enforce_https!, which exists for URLs the OPERATOR
+  # configured and therefore tolerates plain-HTTP loopback for local
+  # development. Applying that exception to peer-supplied input would
+  # leave the reported SSRF intact against the most sensitive targets of
+  # all — services listening only on localhost. The loopback exception is
+  # honored here only when the configured MCP server is itself loopback,
+  # i.e. the developer is already pointed at a local stack.
+  #
+  # The rejection is recorded so a later discovery fails closed instead of
+  # silently reusing cached authorization-server metadata.
+  #
+  # NOTE: hostnames are checked literally. This does not resolve DNS, so a
+  # public name that resolves to a private address is not caught here;
+  # that needs resolution-time checking in the HTTP layer.
+  # @param url [String] the peer-advertised URL
+  # @param label [String] human-readable name for errors
+  # @raise [MCPClient::Errors::ConnectionError] if the URL is not acceptable
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:658
+  def validate_peer_advertised_url!(url, label); end
 
   # Validate the PRM `resource` identifies this server (RFC 9728 confused
   # deputy protection). Path/canonicalization differences on the same host
@@ -977,14 +1022,14 @@ class MCPClient::Auth::OAuthProvider
   # @param resource_metadata [ResourceMetadata]
   # @raise [MCPClient::Errors::ConnectionError] on host mismatch
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:638
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:726
   def validate_resource_matches!(resource_metadata); end
 
   # Apply the PKCE-support and HTTPS-endpoint checks to server metadata.
   # @param server_metadata [ServerMetadata]
   # @raise [MCPClient::Errors::ConnectionError] if a check fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:484
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:500
   def validate_server_metadata!(server_metadata); end
 
   # Verify the authorization server supports PKCE S256 (RFC 8414 / MCP).
@@ -995,7 +1040,7 @@ class MCPClient::Auth::OAuthProvider
   # @param server_metadata [ServerMetadata]
   # @raise [MCPClient::Errors::ConnectionError] if PKCE S256 support cannot be verified
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:591
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:614
   def verify_pkce_support!(server_metadata); end
 end
 
@@ -1018,76 +1063,76 @@ MCPClient::Auth::OAuthProvider::AUTH_PARAMS_RUN = T.let(T.unsafe(nil), Regexp)
 
 # Simple in-memory storage for OAuth data
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1089
+# pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1177
 class MCPClient::Auth::OAuthProvider::MemoryStorage
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1090
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1178
   def initialize; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1114
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1202
   def delete_client_info(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1134
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1222
   def delete_pkce(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1146
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1234
   def delete_state(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1106
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1194
   def get_client_info(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1126
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1214
   def get_pkce(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1118
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1206
   def get_server_metadata(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1138
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1226
   def get_state(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1098
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1186
   def get_token(server_url); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1110
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1198
   def set_client_info(server_url, client_info); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1130
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1218
   def set_pkce(server_url, pkce); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1122
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1210
   def set_server_metadata(server_url, metadata); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1142
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1230
   def set_state(server_url, state); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1102
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth/oauth_provider.rb:1190
   def set_token(server_url, token); end
 end
 
 # PKCE (Proof Key for Code Exchange) helper
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:354
+# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:350
 class MCPClient::Auth::PKCE
   # Generate PKCE parameters
   # @param code_verifier [String, nil] Existing code verifier (for deserialization)
   # @param code_challenge [String, nil] Existing code challenge (for deserialization)
   # @param code_challenge_method [String] Challenge method (default: 'S256')
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:361
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:357
   def initialize(code_verifier: T.unsafe(nil), code_challenge: T.unsafe(nil), code_challenge_method: T.unsafe(nil)); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:355
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:351
   def code_challenge; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:355
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:351
   def code_challenge_method; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:355
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:351
   def code_verifier; end
 
   # Convert to hash for serialization
   # @return [Hash] Hash representation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:369
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:365
   def to_h; end
 
   private
@@ -1096,13 +1141,13 @@ class MCPClient::Auth::PKCE
   # @param verifier [String] Code verifier
   # @return [String] Base64url-encoded SHA256 hash
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:407
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:403
   def generate_code_challenge(verifier); end
 
   # Generate a cryptographically random code verifier
   # @return [String] Base64url-encoded code verifier
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:399
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:395
   def generate_code_verifier; end
 
   class << self
@@ -1114,36 +1159,36 @@ class MCPClient::Auth::PKCE
     #   The code_challenge is not re-validated against code_verifier;
     #   callers are expected to provide values from a prior to_h round-trip.
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:384
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:380
     def from_h(data); end
   end
 end
 
 # Protected resource metadata for authorization server discovery
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:318
+# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:314
 class MCPClient::Auth::ResourceMetadata
   # @param resource [String] Resource server identifier
   # @param authorization_servers [Array<String>] List of authorization server URLs
   # @param scopes_supported [Array<String>, nil] Scopes the resource supports (RFC 9728);
   #   per MCP, the default scope set when a challenge provides none
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:325
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:321
   def initialize(resource:, authorization_servers:, scopes_supported: T.unsafe(nil)); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:319
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:315
   def authorization_servers; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:319
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:315
   def resource; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:319
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:315
   def scopes_supported; end
 
   # Convert to hash
   # @return [Hash] Hash representation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:333
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:329
   def to_h; end
 
   class << self
@@ -1151,14 +1196,14 @@ class MCPClient::Auth::ResourceMetadata
     # @param data [Hash] Resource metadata
     # @return [ResourceMetadata] New resource metadata instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:344
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:340
     def from_h(data); end
   end
 end
 
 # OAuth authorization server metadata
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:226
+# pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:224
 class MCPClient::Auth::ServerMetadata
   # @param issuer [String] Issuer identifier URL
   # @param authorization_endpoint [String] Authorization endpoint URL
@@ -1171,53 +1216,53 @@ class MCPClient::Auth::ServerMetadata
   # @param client_id_metadata_document_supported [Boolean, nil] Whether the server accepts
   #   Client ID Metadata Document client IDs (MCP 2025-11-25 / SEP-991)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:242
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:239
   def initialize(issuer:, authorization_endpoint:, token_endpoint:, registration_endpoint: T.unsafe(nil), scopes_supported: T.unsafe(nil), response_types_supported: T.unsafe(nil), grant_types_supported: T.unsafe(nil), code_challenge_methods_supported: T.unsafe(nil), client_id_metadata_document_supported: T.unsafe(nil)); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def authorization_endpoint; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def client_id_metadata_document_supported; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def code_challenge_methods_supported; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def grant_types_supported; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def issuer; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def registration_endpoint; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def response_types_supported; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def scopes_supported; end
 
   # Check if the server accepts clients using Client ID Metadata Documents
   # (MCP 2025-11-25 / SEP-991), i.e. HTTPS URLs as client identifiers
   # @return [Boolean] true if client_id_metadata_document_supported is true
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:266
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:262
   def supports_client_id_metadata_documents?; end
 
   # Check if dynamic client registration is supported
   # @return [Boolean] true if registration endpoint is available
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:259
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:255
   def supports_registration?; end
 
   # Convert to hash
   # @return [Hash] Hash representation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:272
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:268
   def to_h; end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:227
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:225
   def token_endpoint; end
 
   class << self
@@ -1225,7 +1270,7 @@ class MCPClient::Auth::ServerMetadata
     # @param data [Hash] Server metadata
     # @return [ServerMetadata] New server metadata instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:289
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:285
     def from_h(data); end
 
     private
@@ -1236,7 +1281,7 @@ class MCPClient::Auth::ServerMetadata
     # @param key [Symbol] Key to fetch
     # @return [Object, nil] The value, or nil when absent under both keys
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:309
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/auth.rb:305
     def fetch_boolean(data, key); end
   end
 end
@@ -1327,7 +1372,7 @@ class MCPClient::Client
   #   "Clients SHOULD validate structured results against this schema"): :warn (default)
   #   logs a warning, :strict raises MCPClient::Errors::ValidationError
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:47
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:61
   def initialize(mcp_server_configs: T.unsafe(nil), logger: T.unsafe(nil), elicitation_handler: T.unsafe(nil), roots: T.unsafe(nil), sampling_handler: T.unsafe(nil), sampling_supports_tools: T.unsafe(nil), client_info: T.unsafe(nil), validate_structured_content: T.unsafe(nil)); end
 
   # Calls a specific tool by name with the given parameters
@@ -1336,7 +1381,7 @@ class MCPClient::Client
   # @param server [String, Symbol, Integer, MCPClient::ServerBase, nil] optional server to use
   # @return [Object] the result of the tool invocation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:303
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:317
   def call_tool(tool_name, parameters, server: T.unsafe(nil), progress: T.unsafe(nil)); end
 
   # Call a tool as a task (task-augmented tools/call, MCP 2025-11-25).
@@ -1355,7 +1400,7 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ValidationError] if required parameters are missing
   # @raise [MCPClient::Errors::TaskError] if the server or tool does not support tasks, or creation fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:530
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:544
   def call_tool_as_task(tool_name, parameters, ttl: T.unsafe(nil), server: T.unsafe(nil)); end
 
   # Stream call of a specific tool by name with the given parameters.
@@ -1365,7 +1410,7 @@ class MCPClient::Client
   # @param server [String, Symbol, Integer, MCPClient::ServerBase, nil] optional server to use
   # @return [Enumerator] streaming enumerator or single-value enumerator
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:434
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:448
   def call_tool_streaming(tool_name, parameters, server: T.unsafe(nil)); end
 
   # Call multiple tools in batch
@@ -1375,29 +1420,31 @@ class MCPClient::Client
   #   - server: server name for routing (optional)
   # @return [Array<Object>] array of results for each tool invocation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:419
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:433
   def call_tools(calls); end
 
   # Cancel a task (tasks/cancel, MCP 2025-11-25)
-  # @param task_id [String] the ID of the task to cancel
+  # @param task_id [String, MCPClient::Task] the task to cancel; passing the
+  #   Task handle returned by #call_tool_as_task routes to its own server
   # @param server [Integer, String, Symbol, MCPClient::ServerBase, nil] server selector
   # @return [MCPClient::Task] the task with updated (cancelled) status
+  # @raise [ArgumentError] if the server is ambiguous in a multi-server client
   # @raise [MCPClient::Errors::ServerNotFound] if no server is available
   # @raise [MCPClient::Errors::TaskNotFound] if the task does not exist
   # @raise [MCPClient::Errors::TaskError] if cancellation fails (including cancelling a terminal task)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:638
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:660
   def cancel_task(task_id, server: T.unsafe(nil)); end
 
   # Clean up all server connections
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:362
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:376
   def cleanup; end
 
   # Clear the cached tools so that next list_tools will fetch fresh data
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:368
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:382
   def clear_cache; end
 
   # Request completion suggestions from a server (MCP 2025-06-18)
@@ -1410,28 +1457,28 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ServerNotFound] if no server is available
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:510
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:524
   def complete(ref:, argument:, context: T.unsafe(nil), server: T.unsafe(nil)); end
 
   # Find a server by name
   # @param name [String] the name of the server to find
   # @return [MCPClient::ServerBase, nil] the server with the given name, or nil if not found
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:394
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:408
   def find_server(name); end
 
   # Find the first tool whose name matches the given pattern
   # @param pattern [String, Regexp] pattern to match tool names
   # @return [MCPClient::Tool, nil]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:409
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:423
   def find_tool(pattern); end
 
   # Find all tools whose name matches the given pattern (String or Regexp)
   # @param pattern [String, Regexp] pattern to match tool names
   # @return [Array<MCPClient::Tool>] matching tools
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:401
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:415
   def find_tools(pattern); end
 
   # Gets a specific prompt by name with the given parameters
@@ -1440,18 +1487,20 @@ class MCPClient::Client
   # @param server [String, Symbol, Integer, MCPClient::ServerBase, nil] optional server to use
   # @return [Object] the final prompt
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:153
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:167
   def get_prompt(prompt_name, parameters, server: T.unsafe(nil)); end
 
   # Get the current state of a task (tasks/get, MCP 2025-11-25)
-  # @param task_id [String] the ID of the task to query
+  # @param task_id [String, MCPClient::Task] the task to query; passing the
+  #   Task handle returned by #call_tool_as_task routes to its own server
   # @param server [Integer, String, Symbol, MCPClient::ServerBase, nil] server selector
   # @return [MCPClient::Task] the task with current status
+  # @raise [ArgumentError] if the server is ambiguous in a multi-server client
   # @raise [MCPClient::Errors::ServerNotFound] if no server is available
   # @raise [MCPClient::Errors::TaskNotFound] if the task does not exist
   # @raise [MCPClient::Errors::TaskError] if retrieving the task fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:571
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:587
   def get_task(task_id, server: T.unsafe(nil)); end
 
   # Retrieve the result of a completed task (tasks/result, MCP 2025-11-25).
@@ -1464,13 +1513,15 @@ class MCPClient::Client
   # identify which tool (and therefore which outputSchema) produced the
   # result, and the client keeps no task-to-tool registry. Callers who need
   # validation here can run MCPClient::SchemaValidator.validate themselves.
-  # @param task_id [String] the ID of the task
+  # @param task_id [String, MCPClient::Task] the task; passing the Task
+  #   handle returned by #call_tool_as_task routes to its own server
   # @param server [Integer, String, Symbol, MCPClient::ServerBase, nil] server selector
   # @return [Object] the underlying task result
+  # @raise [ArgumentError] if the server is ambiguous in a multi-server client
   # @raise [MCPClient::Errors::TaskNotFound] if the task does not exist
   # @raise [MCPClient::Errors::TaskError] if retrieval fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:599
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:618
   def get_task_result(task_id, server: T.unsafe(nil)); end
 
   # Lists all available prompts from all connected MCP servers
@@ -1479,7 +1530,7 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ConnectionError] on authorization failures
   # @raise [MCPClient::Errors::PromptGetError] if no prompts could be retrieved from any server
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:122
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:136
   def list_prompts(cache: T.unsafe(nil)); end
 
   # Lists all available resources from all connected MCP servers
@@ -1489,7 +1540,7 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ConnectionError] on authorization failures
   # @raise [MCPClient::Errors::ResourceReadError] if no resources could be retrieved from any server
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:202
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:216
   def list_resources(cache: T.unsafe(nil), cursor: T.unsafe(nil)); end
 
   # List tasks known to a server (tasks/list, paginated, MCP 2025-11-25)
@@ -1498,7 +1549,7 @@ class MCPClient::Client
   # @return [Hash] { tasks: Array<MCPClient::Task>, next_cursor: String, nil }
   # @raise [MCPClient::Errors::TaskError] if listing fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:616
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:636
   def list_tasks(cursor: T.unsafe(nil), server: T.unsafe(nil)); end
 
   # Lists all available tools from all connected MCP servers
@@ -1507,7 +1558,7 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ConnectionError] on authorization failures
   # @raise [MCPClient::Errors::ToolCallError] if no tools could be retrieved from any server
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:265
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:279
   def list_tools(cache: T.unsafe(nil)); end
 
   # Set the logging level on all connected servers (MCP 2025-06-18)
@@ -1517,7 +1568,7 @@ class MCPClient::Client
   # @return [Array<Hash>] results from servers
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:664
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:687
   def log_level=(level); end
 
   # @!attribute [r] servers
@@ -1540,7 +1591,7 @@ class MCPClient::Client
   # @yield [server, method, params]
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:377
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:391
   def on_notification(&block); end
 
   # Ping the MCP server to check connectivity (zero-parameter heartbeat call)
@@ -1548,7 +1599,7 @@ class MCPClient::Client
   # @return [Object] result from the ping request
   # @raise [MCPClient::Errors::ServerNotFound] if no server is available
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:460
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:474
   def ping(server_index: T.unsafe(nil)); end
 
   # @!attribute [r] servers
@@ -1572,7 +1623,7 @@ class MCPClient::Client
   # @param server [String, Symbol, Integer, MCPClient::ServerBase, nil] optional server to use
   # @return [Object] the resource contents
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:247
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:261
   def read_resource(uri, server: T.unsafe(nil)); end
 
   # @!attribute [r] servers
@@ -1612,7 +1663,7 @@ class MCPClient::Client
   # @param new_roots [Array<MCPClient::Root, Hash>] the new roots to set
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:385
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:399
   def roots=(new_roots); end
 
   # Send a raw JSON-RPC notification to a server (no response expected)
@@ -1621,7 +1672,7 @@ class MCPClient::Client
   # @param server [Integer, String, Symbol, MCPClient::ServerBase, nil] server selector
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:496
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:510
   def send_notification(method, params: T.unsafe(nil), server: T.unsafe(nil)); end
 
   # Send a raw JSON-RPC request to a server
@@ -1630,7 +1681,7 @@ class MCPClient::Client
   # @param server [Integer, String, Symbol, MCPClient::ServerBase, nil] server selector
   # @return [Object] result from the JSON-RPC response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:482
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:496
   def send_rpc(method, params: T.unsafe(nil), server: T.unsafe(nil), timeout: T.unsafe(nil)); end
 
   # @!attribute [r] servers
@@ -1653,21 +1704,21 @@ class MCPClient::Client
   # @param tool_names [Array<String>, nil] optional list of tool names to include, nil means all tools
   # @return [Array<Hash>] Anthropic Claude tool specifications
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:346
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:360
   def to_anthropic_tools(tool_names: T.unsafe(nil)); end
 
   # Convert MCP tools to Google Vertex AI tool specifications
   # @param tool_names [Array<String>, nil] optional list of tool names to include, nil means all tools
   # @return [Array<Hash>] Google Vertex AI tool specifications with cleaned schemas
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:355
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:369
   def to_google_tools(tool_names: T.unsafe(nil)); end
 
   # Convert MCP tools to OpenAI function specifications
   # @param tool_names [Array<String>, nil] optional list of tool names to include, nil means all tools
   # @return [Array<Hash>] OpenAI function specifications
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:337
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:351
   def to_openai_tools(tool_names: T.unsafe(nil)); end
 
   # @!attribute [r] servers
@@ -1692,7 +1743,7 @@ class MCPClient::Client
   # @param token [String] progress token
   # @return [Hash] parameters with _meta.progressToken merged in
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:800
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:823
   def attach_progress_token(parameters, token); end
 
   # Generate a cache key for server-specific items
@@ -1700,7 +1751,7 @@ class MCPClient::Client
   # @param item_id [String] the item identifier (name or URI)
   # @return [String] composite cache key
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1069
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1158
   def cache_key_for(server, item_id); end
 
   # Call sampling handler with appropriate arity
@@ -1715,14 +1766,14 @@ class MCPClient::Client
   #   tools/toolChoice fields, _meta, and any future params
   # @return [Hash] the handler result
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1406
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1501
   def call_sampling_handler(messages, model_preferences, system_prompt, max_tokens, params); end
 
   # Whether the server's negotiated capability set is available yet.
   # @param srv [MCPClient::ServerBase] the server
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:685
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:708
   def capabilities_known?(srv); end
 
   # Enforce the tasks.<operation> capability gate for a server (MCP
@@ -1737,7 +1788,7 @@ class MCPClient::Client
   # @return [void]
   # @raise [MCPClient::Errors::CapabilityError] if the negotiated set lacks the capability
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:700
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:723
   def ensure_task_capability!(srv, operation); end
 
   # Execute the resource read operation
@@ -1747,7 +1798,7 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ServerNotFound] if no server found
   # @raise [MCPClient::Errors::ResourceReadError] on read errors
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1117
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1206
   def execute_resource_read(resource, uri); end
 
   # Find a resource across all servers
@@ -1757,7 +1808,7 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ResourceNotFound] if resource not found
   # @raise [MCPClient::Errors::AmbiguousResourceURI] if multiple resources found
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1096
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1185
   def find_resource_across_servers(uri, resources); end
 
   # Find a resource on a specific server
@@ -1767,10 +1818,10 @@ class MCPClient::Client
   # @return [Resource] the found resource
   # @raise [MCPClient::Errors::ResourceNotFound] if resource not found
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1080
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1169
   def find_resource_on_server(uri, resources, server); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:971
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1060
   def find_server_for_tool(tool); end
 
   # Format and validate the elicitation response
@@ -1778,12 +1829,12 @@ class MCPClient::Client
   # @param params [Hash] original request params (for schema validation)
   # @return [Hash] formatted response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1232
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1325
   def format_elicitation_response(result, params); end
 
   # @return [String] a unique progress token for an outgoing request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:793
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:816
   def generate_progress_token; end
 
   # Handle elicitation request from server (MCP 2025-11-25)
@@ -1792,7 +1843,7 @@ class MCPClient::Client
   # @param params [Hash] the elicitation parameters
   # @return [Hash] the elicitation response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1135
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1224
   def handle_elicitation_request(_request_id, params); end
 
   # Handle form mode elicitation (MCP 2025-11-25)
@@ -1800,10 +1851,10 @@ class MCPClient::Client
   # @param message [String] the human-readable message
   # @return [Object] handler result
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1183
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1276
   def handle_form_elicitation(params, message); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:821
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:844
   def handle_log_message(server_id, params); end
 
   # Handle logging message notification from server (MCP 2025-06-18)
@@ -1817,7 +1868,7 @@ class MCPClient::Client
   # @param params [Hash, nil] notification params
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:767
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:790
   def handle_progress_notification(server_id, params); end
 
   # Handle roots/list request from server (MCP 2025-06-18)
@@ -1825,7 +1876,7 @@ class MCPClient::Client
   # @param _params [Hash] the request parameters (unused)
   # @return [Hash] the roots list response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1326
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1419
   def handle_roots_list_request(_request_id, _params); end
 
   # Handle sampling/createMessage request from server (MCP 2025-11-25)
@@ -1833,7 +1884,7 @@ class MCPClient::Client
   # @param params [Hash] the sampling parameters
   # @return [Hash] the sampling response (role, content, model, stopReason)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1353
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1446
   def handle_sampling_request(_request_id, params); end
 
   # Log a structured-content conformance violation and, in :strict mode,
@@ -1842,7 +1893,7 @@ class MCPClient::Client
   # @return [void]
   # @raise [MCPClient::Errors::ValidationError] in :strict mode
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:966
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1055
   def handle_structured_content_violation(message); end
 
   # Handle a notifications/tasks/status notification (MCP 2025-11-25).
@@ -1851,7 +1902,7 @@ class MCPClient::Client
   # @param params [Hash] the flat task params
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1058
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1147
   def handle_task_status_notification(server_id, params); end
 
   # Handle URL mode elicitation (MCP 2025-11-25)
@@ -1859,7 +1910,7 @@ class MCPClient::Client
   # @param message [String] the human-readable message
   # @return [Object] handler result
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1210
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1303
   def handle_url_elicitation(params, message); end
 
   # Build an error-shaped handler result that transports turn into a
@@ -1868,13 +1919,13 @@ class MCPClient::Client
   # @param message [String] error message
   # @return [Hash] error result
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1175
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1268
   def jsonrpc_error_result(code, message); end
 
   # Ensure the action value conforms to MCP spec (accept, decline, cancel)
   # Falls back to accept for unknown action values.
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1296
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1389
   def normalised_action_response(result); end
 
   # Normalize a handler's return value into a string-keyed ElicitResult
@@ -1882,7 +1933,7 @@ class MCPClient::Client
   # @param result [Object] handler result
   # @return [Hash] normalized response with string keys
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1262
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1355
   def normalize_elicitation_result(result); end
 
   # Normalize and validate modelPreferences from sampling request (MCP 2025-11-25)
@@ -1890,20 +1941,20 @@ class MCPClient::Client
   # @param prefs [Hash, nil] raw modelPreferences from request
   # @return [Hash, nil] normalized modelPreferences or nil
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1438
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1533
   def normalize_model_preferences(prefs); end
 
   # Normalize roots array - convert Hashes to Root objects (MCP 2025-06-18)
   # @param roots [Array<MCPClient::Root, Hash>, nil] the roots to normalize
   # @return [Array<MCPClient::Root>] normalized roots array
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1307
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1400
   def normalize_roots(roots); end
 
   # Send notification to all servers that roots have changed (MCP 2025-06-18)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1332
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1425
   def notify_roots_changed; end
 
   # Process incoming JSON-RPC notifications with default handlers
@@ -1912,14 +1963,23 @@ class MCPClient::Client
   # @param params [Hash] parameters for the notification
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:721
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:744
   def process_notification(server, method, params); end
+
+  # Copy of a server config with credential-bearing values replaced, for
+  # safe logging. Nested hashes (headers, env) have every value redacted;
+  # sensitive scalars are replaced outright.
+  # @param config [Hash, Object] a server configuration
+  # @return [Hash, Object] a redacted copy (non-Hash input is returned as-is)
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:889
+  def redact_config(config); end
 
   # @param token [String] progress token
   # @param callback [#call] receives (progress, total, message)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:811
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:834
   def register_progress_callback(token, callback); end
 
   # Reject a plain (synchronous) call for a tool whose execution.taskSupport is
@@ -1929,7 +1989,7 @@ class MCPClient::Client
   # @param tool_name [String] the tool name (for the message)
   # @raise [MCPClient::Errors::ToolCallError] if the tool requires task execution
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1015
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1104
   def reject_task_required!(tool, tool_name); end
 
   # Resolve a tool by name (optionally scoped to a server), raising the same
@@ -1939,7 +1999,7 @@ class MCPClient::Client
   # @return [MCPClient::Tool] the resolved tool
   # @raise [MCPClient::Errors::ToolNotFound, MCPClient::Errors::AmbiguousToolName]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:983
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1072
   def resolve_tool(tool_name, server: T.unsafe(nil)); end
 
   # Number of the five positional sampling arguments the handler can accept.
@@ -1955,22 +2015,49 @@ class MCPClient::Client
   # full list. Plain fixed-arity handlers keep arity-based sizing.
   # @return [Integer] how many arguments to pass, capped at 5
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1423
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1518
   def sampling_handler_arg_count; end
+
+  # Make peer-supplied log text safe to write to the host log: control
+  # characters (notably newlines, which would let a server forge additional
+  # log entries) are escaped, and the result is capped.
+  # @param text [String] the peer-supplied text
+  # @return [String] sanitized, length-bounded text
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:877
+  def sanitize_peer_log_text(text); end
 
   # Select a server based on index, name, type, or instance
   # @param server_arg [Integer, String, Symbol, MCPClient::ServerBase, nil] server selector
   # @return [MCPClient::ServerBase]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:848
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:937
   def select_server(server_arg); end
+
+  # Resolve which server a task operation targets.
+  #
+  # Task IDs are only unique within the server that issued them, so silently
+  # defaulting to the first configured server can poll, read or cancel an
+  # unrelated task on the wrong server. Resolution order:
+  #   1. an explicit server: argument wins;
+  #   2. a Task handle carries the server that issued it;
+  #   3. a bare ID with exactly one configured server is unambiguous;
+  #   4. anything else is ambiguous and fails closed.
+  # @param task [String, MCPClient::Task] the task or its ID
+  # @param server_arg [Integer, String, Symbol, MCPClient::ServerBase, nil] explicit selector
+  # @param operation [String] calling method name, for the error message
+  # @return [MCPClient::ServerBase]
+  # @raise [ArgumentError] when the target server cannot be determined
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:914
+  def select_task_server(task, server_arg, operation); end
 
   # Whether a server advertised support for task-augmented tools/call, i.e.
   # capabilities.tasks.requests.tools.call.
   # @param srv [MCPClient::ServerBase] the server
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1029
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1118
   def server_supports_task_tool_call?(srv); end
 
   # Attach progress tracking to an outgoing request when requested.
@@ -1978,7 +2065,7 @@ class MCPClient::Client
   # @param progress [#call, nil] optional progress callback
   # @return [Array(Hash, String|nil)] possibly-augmented parameters and token
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:784
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:807
   def setup_progress_tracking(parameters, progress); end
 
   # Map a ServerError from a task operation to TaskNotFound or TaskError.
@@ -1987,20 +2074,26 @@ class MCPClient::Client
   # @param action [String] a verb phrase for the error message (e.g. 'getting')
   # @return [MCPClient::Errors::TaskNotFound, MCPClient::Errors::TaskError]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1045
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1134
   def task_error_from(error, task_id, action); end
+
+  # @param task [String, MCPClient::Task] a task or its ID
+  # @return [String] the task ID
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:930
+  def task_identifier(task); end
 
   # Whether sampling response content contains ToolUseContent blocks (MCP 2025-11-25 / SEP-1577)
   # @param content [Object] the content field of a CreateMessageResult
   # @return [Boolean] true when any content block has type "tool_use"
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1503
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1598
   def tool_use_content?(content); end
 
   # @param token [String] progress token
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:817
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:840
   def unregister_progress_callback(token); end
 
   # Validate elicitation response content against the requestedSchema
@@ -2008,7 +2101,7 @@ class MCPClient::Client
   # @param params [Hash] original request params
   # @return [Array<String>] validation errors (empty when conforming or not applicable)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1282
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1375
   def validate_elicitation_content(response, params); end
 
   # Validate parameters against tool JSON schema (checks required properties)
@@ -2016,14 +2109,14 @@ class MCPClient::Client
   # @param parameters [Hash] parameters to validate
   # @raise [MCPClient::Errors::ValidationError] when required params are missing
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:881
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:970
   def validate_params!(tool, parameters); end
 
   # Validate sampling response from handler (MCP 2025-11-25)
   # @param result [Hash] the result from the sampling handler
   # @return [Hash] validated sampling response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1467
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1562
   def validate_sampling_response(result); end
 
   # Validate a tools/call result's structuredContent against the tool's
@@ -2044,7 +2137,7 @@ class MCPClient::Client
   # @raise [MCPClient::Errors::ValidationError] in :strict mode when structuredContent
   #   is missing from a successful result or does not match the schema
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:921
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1010
   def validate_structured_content!(tool, result); end
 
   # Warn (in both :warn and :strict modes) when a tool's output schema uses
@@ -2053,9 +2146,28 @@ class MCPClient::Client
   # @param tool [MCPClient::Tool] the tool whose output schema is being used
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:950
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:1039
   def warn_partial_schema_coverage(tool); end
 end
+
+# Maximum characters of a peer-supplied log message written to the host
+# log. The remote server controls this content, so an unbounded message
+# would let it inflate log storage at will.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:44
+MCPClient::Client::MAX_PEER_LOG_MESSAGE_LENGTH = T.let(T.unsafe(nil), Integer)
+
+# Placeholder written in place of a redacted value.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:39
+MCPClient::Client::REDACTED = T.let(T.unsafe(nil), String)
+
+# Server-config keys whose values carry credentials (HTTP headers, the
+# subprocess environment, inline tokens). Their values are replaced before
+# a config is written to the log.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/client.rb:35
+MCPClient::Client::SENSITIVE_CONFIG_KEYS = T.let(T.unsafe(nil), Array)
 
 # Supported modes for structuredContent validation (MCP 2025-11-25):
 # :warn logs a warning on mismatch, :strict raises a ValidationError.
@@ -2180,13 +2292,20 @@ module MCPClient::ElicitationValidator
     # @param value [String] candidate ISO 8601 value
     # @return [Boolean] whether the value parses
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:239
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:282
     def parseable?(klass, value); end
+
+    # Time left in the validation-wide pattern budget.
+    # @param deadline [Float, nil] monotonic deadline, or nil for a lone match
+    # @return [Float] seconds available for the next match; 0.0 when exhausted
+    #
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:243
+    def pattern_budget_remaining(deadline); end
 
     # @param value [String] candidate URI
     # @return [Boolean] whether the value is an absolute URI
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:229
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:272
     def valid_uri?(value); end
 
     # Validate an array property (multi-select enum only).
@@ -2194,7 +2313,7 @@ module MCPClient::ElicitationValidator
     # @param prop [Hash] property schema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:95
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:107
     def validate_array_property(name, prop); end
 
     # Validate an array value against its property schema (multi-select enum).
@@ -2203,7 +2322,7 @@ module MCPClient::ElicitationValidator
     # @param prop [Hash] property schema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:273
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:316
     def validate_array_value(field, value, prop); end
 
     # Validate content against a requestedSchema.
@@ -2212,7 +2331,7 @@ module MCPClient::ElicitationValidator
     # @param schema [Hash] the requestedSchema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:117
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:129
     def validate_content(content, schema); end
 
     # Validate a number value against its property schema.
@@ -2221,7 +2340,7 @@ module MCPClient::ElicitationValidator
     # @param prop [Hash] property schema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:251
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:294
     def validate_number_value(field, value, prop); end
 
     # Validate a primitive property (string, number, integer, boolean).
@@ -2229,7 +2348,7 @@ module MCPClient::ElicitationValidator
     # @param prop [Hash] property schema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:69
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:81
     def validate_primitive_property(name, prop); end
 
     # Validate a single property definition.
@@ -2237,7 +2356,7 @@ module MCPClient::ElicitationValidator
     # @param prop [Hash] property schema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:48
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:60
     def validate_property(name, prop); end
 
     # Validate that a requestedSchema conforms to MCP elicitation constraints.
@@ -2245,7 +2364,7 @@ module MCPClient::ElicitationValidator
     # @param schema [Hash] the requestedSchema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:25
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:37
     def validate_schema(schema); end
 
     # Validate a string value against the schema's format constraint.
@@ -2255,8 +2374,22 @@ module MCPClient::ElicitationValidator
     # @param format [String, nil] declared format
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:215
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:258
     def validate_string_format(field, value, format); end
+
+    # Validate a string value against the schema's regular-expression pattern.
+    # An invalid pattern is not enforced (unchanged behavior), but matching
+    # runs under PATTERN_MATCH_TIMEOUT because the pattern comes from the
+    # remote server. A match that exceeds the budget is reported as a
+    # validation error rather than silently accepted — the value was never
+    # shown to satisfy the constraint.
+    # @param field [String] field name
+    # @param value [String] the value
+    # @param pattern [String] the declared pattern
+    # @return [Array<String>] validation errors
+    #
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:226
+    def validate_string_pattern(field, value, pattern, deadline = T.unsafe(nil)); end
 
     # Validate a string value against its property schema.
     # @param field [String] field name
@@ -2264,8 +2397,8 @@ module MCPClient::ElicitationValidator
     # @param prop [Hash] property schema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:169
-    def validate_string_value(field, value, prop); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:184
+    def validate_string_value(field, value, prop, deadline = T.unsafe(nil)); end
 
     # Validate a single value against its property schema.
     # @param field [String] field name
@@ -2273,10 +2406,26 @@ module MCPClient::ElicitationValidator
     # @param prop [Hash] property schema
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:146
-    def validate_value(field, value, prop); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:161
+    def validate_value(field, value, prop, deadline = T.unsafe(nil)); end
   end
 end
+
+# Floor for an individual match, so a nearly-exhausted budget still makes
+# progress rather than failing every remaining field.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:31
+MCPClient::ElicitationValidator::MIN_PATTERN_MATCH_TIMEOUT = T.let(T.unsafe(nil), Float)
+
+# Wall-clock budget for ALL pattern matching in a single validate_content
+# call. The requestedSchema comes from the remote server, so an expensive
+# expression must not be able to monopolize the calling thread.
+#
+# The budget covers the whole operation, not each match: a per-match limit
+# multiplies, since the server also controls how many fields it declares.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/elicitation_validator.rb:27
+MCPClient::ElicitationValidator::PATTERN_MATCH_TIMEOUT = T.let(T.unsafe(nil), Float)
 
 # Allowed primitive types for schema properties
 #
@@ -2295,17 +2444,17 @@ module MCPClient::Errors; end
 
 # Raised when multiple prompts with the same name exist across different servers
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:89
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:97
 class MCPClient::Errors::AmbiguousPromptName < ::MCPClient::Errors::MCPError; end
 
 # Raised when multiple resources with the same URI exist across different servers
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:92
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:100
 class MCPClient::Errors::AmbiguousResourceURI < ::MCPClient::Errors::MCPError; end
 
 # Raised when multiple tools with the same name exist across different servers
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:86
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:94
 class MCPClient::Errors::AmbiguousToolName < ::MCPClient::Errors::MCPError; end
 
 # Raised when a request requires a server capability that was not
@@ -2379,6 +2528,16 @@ class MCPClient::Errors::ResourceNotFound < ::MCPClient::Errors::MCPError; end
 # pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:28
 class MCPClient::Errors::ResourceReadError < ::MCPClient::Errors::MCPError; end
 
+# Raised when a response body exceeded the configured size limit (e.g. a
+# gzip payload that expands past the decompression ceiling). A subclass of
+# TransportError so existing rescues keep working, but deliberately
+# excluded from automatic retries: the server already received and
+# processed the request, so re-sending it could run a non-idempotent
+# operation again — and would decompress the oversized body each time.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:86
+class MCPClient::Errors::ResponseTooLargeError < ::MCPClient::Errors::TransportError; end
+
 # Raised when the MCP server returns an error response
 #
 # pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:58
@@ -2391,12 +2550,12 @@ class MCPClient::Errors::ServerNotFound < ::MCPClient::Errors::MCPError; end
 
 # Raised when there's an error creating or managing a task
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:101
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:109
 class MCPClient::Errors::TaskError < ::MCPClient::Errors::MCPError; end
 
 # Raised when a task is not found
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:98
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:106
 class MCPClient::Errors::TaskNotFound < ::MCPClient::Errors::MCPError; end
 
 # Raised when there's an error calling a tool
@@ -2422,7 +2581,7 @@ class MCPClient::Errors::TransientServerError < ::MCPClient::Errors::ServerError
 
 # Raised when transport type cannot be determined from target URL/command
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:95
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:103
 class MCPClient::Errors::TransportDetectionError < ::MCPClient::Errors::MCPError; end
 
 # Raised when there's an error in the MCP server transport
@@ -2434,7 +2593,7 @@ class MCPClient::Errors::TransportError < ::MCPClient::Errors::MCPError; end
 # schema, or (in strict mode) when a tool result's structuredContent fails
 # validation against the tool's output schema
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:83
+# pkg:gem/ruby-mcp-client#lib/mcp_client/errors.rb:91
 class MCPClient::Errors::ValidationError < ::MCPClient::Errors::MCPError; end
 
 # Base module for HTTP-based JSON-RPC transports
@@ -2443,6 +2602,24 @@ class MCPClient::Errors::ValidationError < ::MCPClient::Errors::MCPError; end
 # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:9
 module MCPClient::HttpTransportBase
   include ::MCPClient::JsonRpcCommon
+
+  # Resend a request against the freshly restarted session — unless doing so
+  # could execute a side effect twice.
+  #
+  # A 404 usually means the server rejected the request outright, but it does
+  # not prove that: a session can expire after the tool ran. Automatic
+  # session recovery is worth having for idempotent methods, and would
+  # otherwise be a hole straight through the no-replay guarantee that
+  # with_retry enforces for NON_IDEMPOTENT_METHODS.
+  #
+  # Raises ConnectionError (which with_retry never retries) so no other path
+  # can turn this into a second attempt.
+  # @param request [Hash] the JSON-RPC request that hit the expired session
+  # @return [Faraday::Response] the response to the resent request
+  # @raise [MCPClient::Errors::ConnectionError] for a non-idempotent method
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:129
+  def resend_after_session_restart(request); end
 
   # Send a JSON-RPC notification (no response expected)
   # @param method [String] JSON-RPC method name
@@ -2484,7 +2661,7 @@ module MCPClient::HttpTransportBase
   # @param url [String] the URL to validate
   # @return [Boolean] true if URL is considered safe
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:133
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:156
   def valid_server_url?(url); end
 
   # Validate session ID format
@@ -2495,7 +2672,7 @@ module MCPClient::HttpTransportBase
   # @param session_id [String] the session ID to validate
   # @return [Boolean] true if session ID is valid
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:122
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:145
   def valid_session_id?(session_id); end
 
   private
@@ -2504,7 +2681,7 @@ module MCPClient::HttpTransportBase
   # @param req [Faraday::Request] HTTP request
   # @param _request [Hash] JSON-RPC request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:304
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:327
   def apply_request_headers(req, _request); end
 
   # Extract the Bearer challenge's own parameter segment from a (possibly
@@ -2515,14 +2692,14 @@ module MCPClient::HttpTransportBase
   # @return [String, nil] the Bearer challenge's parameters (possibly empty),
   #   or nil when the header has no Bearer challenge
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:417
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:440
   def bearer_challenge_segment(header); end
 
   # Create a Faraday connection for HTTP requests
   # Applies default configuration first, then allows user customization via @faraday_config block
   # @return [Faraday::Connection] the configured connection
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:457
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:480
   def create_http_connection; end
 
   # Handle authentication errors raised by user-configured raise_error
@@ -2531,7 +2708,7 @@ module MCPClient::HttpTransportBase
   # @param error [Faraday::UnauthorizedError, Faraday::ForbiddenError] Auth error
   # @raise [MCPClient::Errors::InsufficientScopeError, MCPClient::Errors::ConnectionError]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:325
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:348
   def handle_auth_error(error); end
 
   # Handle HTTP error responses
@@ -2539,20 +2716,20 @@ module MCPClient::HttpTransportBase
   # @raise [MCPClient::Errors::ConnectionError] for auth errors
   # @raise [MCPClient::Errors::ServerError] for server errors
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:350
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:373
   def handle_http_error_response(response); end
 
   # Handle successful HTTP response (can be overridden by subclasses)
   # @param response [Faraday::Response] HTTP response
   # @param _request [Hash] JSON-RPC request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:316
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:339
   def handle_successful_response(response, _request); end
 
   # Get or create HTTP connection
   # @return [Faraday::Connection] the HTTP connection
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:450
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:473
   def http_connection; end
 
   # The Bearer challenge segment carries an error auth-param that is exactly
@@ -2561,19 +2738,19 @@ module MCPClient::HttpTransportBase
   # @param challenge [String, nil] the Bearer challenge segment
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:434
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:457
   def insufficient_scope_challenge?(challenge); end
 
   # Log HTTP response (to be overridden by specific transports)
   # @param response [Faraday::Response] the HTTP response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:473
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:496
   def log_response(response); end
 
   # @param raw [Faraday::Response, Hash, nil] an exception's response payload
   # @return [#status, nil] a response-like object with #status and #headers
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:337
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:360
   def normalize_error_response(raw); end
 
   # Parse HTTP response (to be implemented by specific transports)
@@ -2581,14 +2758,14 @@ module MCPClient::HttpTransportBase
   # @return [Hash] the parsed result
   # @raise [NotImplementedError] if not implemented by concrete transport
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:481
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:504
   def parse_response(response, _request = T.unsafe(nil)); end
 
   # Perform JSON-RPC initialize handshake with the MCP server
   # @return [void]
   # @raise [MCPClient::Errors::ConnectionError] if initialization fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:159
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:182
   def perform_initialize; end
 
   # Surface a 401/403 WWW-Authenticate challenge to the OAuth provider so
@@ -2598,7 +2775,7 @@ module MCPClient::HttpTransportBase
   # @param response [Faraday::Response] the 401/403 response
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:381
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:404
   def process_authorization_challenge(response); end
 
   # Raise the appropriate error for a 401/403: an insufficient_scope 403
@@ -2607,7 +2784,7 @@ module MCPClient::HttpTransportBase
   # @param response [Faraday::Response] the 401/403 response
   # @raise [MCPClient::Errors::InsufficientScopeError, MCPClient::Errors::ConnectionError]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:394
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:417
   def raise_authorization_error(response); end
 
   # Start a new session after the server invalidated the current one, then
@@ -2617,7 +2794,7 @@ module MCPClient::HttpTransportBase
   # @param expired_session_id [String] the session id the 404'd request was sent with
   # @return [Faraday::Response] the response to the resent request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:269
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:292
   def restart_session_and_resend(request, expired_session_id); end
 
   # Send an HTTP request to the server
@@ -2625,7 +2802,7 @@ module MCPClient::HttpTransportBase
   # @return [Faraday::Response] the HTTP response
   # @raise [MCPClient::Errors::ConnectionError] if connection fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:205
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:228
   def send_http_request(request, timeout: T.unsafe(nil)); end
 
   # Send a JSON-RPC request to the server and wait for result
@@ -2635,7 +2812,7 @@ module MCPClient::HttpTransportBase
   # @raise [MCPClient::Errors::TransportError] if response isn't valid JSON
   # @raise [MCPClient::Errors::ToolCallError] for other errors during request execution
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:183
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:206
   def send_jsonrpc_request(request, timeout: T.unsafe(nil)); end
 
   # Whether a 404 should trigger a session restart: only when the 404'd
@@ -2644,13 +2821,13 @@ module MCPClient::HttpTransportBase
   # @param sent_session_id [String, nil] session id captured when the request was sent
   # @return [Boolean] true if session restart recovery applies
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:295
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:318
   def session_restart_applicable?(sent_session_id); end
 
   # @param response [Faraday::Response] an HTTP response
   # @return [String, nil] the WWW-Authenticate header value, if any
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:442
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/http_transport_base.rb:465
   def www_authenticate_header(response); end
 end
 
@@ -2712,7 +2889,7 @@ module MCPClient::JsonRpcCommon
   # @param params [Hash] parameters for the notification
   # @return [Hash] the JSON-RPC notification object
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:108
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:177
   def build_jsonrpc_notification(method, params); end
 
   # Build a JSON-RPC request object
@@ -2721,7 +2898,7 @@ module MCPClient::JsonRpcCommon
   # @param id [Integer] request ID
   # @return [Hash] the JSON-RPC request object
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:95
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:164
   def build_jsonrpc_request(method, params, id); end
 
   # Build tools/call- or prompts/get-style params with request-level _meta
@@ -2730,7 +2907,7 @@ module MCPClient::JsonRpcCommon
   # @param arguments [Hash] user-supplied arguments (possibly carrying _meta)
   # @return [Hash] params hash for the JSON-RPC request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:83
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:152
   def build_named_request_params(name, arguments); end
 
   # Whether automatic notifications/cancelled on timeout is appropriate
@@ -2740,7 +2917,7 @@ module MCPClient::JsonRpcCommon
   # @param params [Hash] request params
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:56
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:125
   def cancellable_request?(method, params); end
 
   # Declared client capabilities, derived from the server-request callbacks
@@ -2751,14 +2928,14 @@ module MCPClient::JsonRpcCommon
   # both directions.
   # @return [Hash] the capabilities object for the initialize request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:164
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:233
   def client_capabilities; end
 
   # The Implementation object sent as clientInfo: the host-provided info
   # when configured (client_info=), otherwise the gem's identity.
   # @return [Hash]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:151
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:220
   def client_info_payload; end
 
   # Opt this transport into declaring tool-use support for sampling
@@ -2768,13 +2945,47 @@ module MCPClient::JsonRpcCommon
   # sampling.tools is a sub-capability of sampling.
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:191
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:260
   def declare_sampling_tools; end
+
+  # A log-safe description of a payload body: its size, never its content.
+  # @param body [String, nil] the response/request body
+  # @return [String]
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:104
+  def describe_body_size(body); end
+
+  # A log-safe description of a JSON-RPC message: its method and id only.
+  #
+  # Params and results are deliberately omitted. tools/call arguments and
+  # tool results routinely carry credentials, personal data or customer
+  # content, and logs are frequently shipped to lower-trust destinations
+  # (aggregators, CI artifacts, support bundles) — so enabling DEBUG must
+  # not silently start recording payloads.
+  # @param message [Hash] a JSON-RPC request, notification or response
+  # @return [String] method/id summary, never payload content
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:72
+  def describe_jsonrpc_message(message); end
+
+  # A log-safe description of a JSON parse failure.
+  #
+  # JSON::ParserError#message quotes the offending token — e.g.
+  # "expected object key, got 'SECRET-123' at line 1 column 2" — so
+  # interpolating it puts peer-controlled bytes straight into logs and
+  # exception messages. Keep the position, which is what actually helps
+  # diagnose a broken server, and drop the quoted content.
+  # @param error [JSON::ParserError] the parse failure
+  # @param payload [String, nil] the payload that failed to parse
+  # @return [String] position and size, never payload content
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:93
+  def describe_parse_error(error, payload = T.unsafe(nil)); end
 
   # Generate initialization parameters for MCP protocol
   # @return [Hash] the initialization parameters
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:118
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:187
   def initialization_params; end
 
   # Ping the server to keep the connection alive
@@ -2783,7 +2994,7 @@ module MCPClient::JsonRpcCommon
   # @raise [MCPClient::Errors::TransportError] if there's a connection error
   # @raise [MCPClient::Errors::ServerError] if the server returns an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:46
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:115
   def ping; end
 
   # Process JSON-RPC response
@@ -2791,18 +3002,18 @@ module MCPClient::JsonRpcCommon
   # @return [Object] the result field from the response
   # @raise [MCPClient::Errors::ServerError] if the response contains an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:210
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:279
   def process_jsonrpc_response(response); end
 
   # @param ivar [Symbol] callback instance variable name
   # @return [Boolean] whether the callback is registered on this transport
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:197
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:266
   def registered_callback?(ivar); end
 
   # @return [Boolean] whether the host opted into sampling tool use
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:202
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:271
   def sampling_tools_supported?; end
 
   # Split request-level _meta (RequestParams._meta, e.g. progressToken or
@@ -2812,7 +3023,7 @@ module MCPClient::JsonRpcCommon
   # @param arguments [Hash, nil] user-supplied arguments
   # @return [Array(Hash, Hash|nil)] [arguments without _meta, _meta or nil]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:69
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:138
   def split_request_meta(arguments); end
 
   # Validate the protocol version the server negotiated in its initialize
@@ -2824,7 +3035,7 @@ module MCPClient::JsonRpcCommon
   # @return [String] the negotiated protocol version
   # @raise [MCPClient::Errors::ConnectionError] if the version is unsupported
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:134
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:203
   def validate_protocol_version!(result); end
 
   # Execute the block with retry/backoff for transient errors only.
@@ -2838,13 +3049,28 @@ module MCPClient::JsonRpcCommon
   # server received and processed (or deterministically rejected) the request.
   # Re-sending those would silently re-execute a non-idempotent operation
   # (e.g. a tools/call), which JSON-RPC provides no way to make safe.
+  #
+  # It also never retries a NON_IDEMPOTENT_METHODS request (pass the
+  # JSON-RPC method being sent): an ambiguous failure may follow server-side
+  # receipt, so those fail fast instead of risking a duplicate execution.
+  # @param method [String, nil] the JSON-RPC method the block sends
   # @yield block to execute
   # @return [Object] result of block
   # @raise original exception if max retries exceeded or the error is not retryable
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:20
-  def with_retry; end
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:33
+  def with_retry(method = T.unsafe(nil)); end
 end
+
+# JSON-RPC methods with arbitrary side effects that MUST NOT be re-sent
+# automatically. Even a "transient" failure (5xx, dropped connection,
+# malformed response) can arrive AFTER the server received the request,
+# so a retry could execute the operation twice — and JSON-RPC has no
+# idempotency key to make the duplicate safe. Callers who want to retry
+# such an operation must decide that explicitly.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/json_rpc_common.rb:12
+MCPClient::JsonRpcCommon::NON_IDEMPOTENT_METHODS = T.let(T.unsafe(nil), Array)
 
 # Utility class for creating OAuth-enabled MCP clients
 #
@@ -3086,7 +3312,7 @@ class MCPClient::Resource
   # @param meta [Hash, nil] optional `_meta` metadata attached to the resource (MCP 2025-11-25)
   # @param server [MCPClient::ServerBase, nil] the server this resource belongs to
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource.rb:40
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource.rb:39
   def initialize(uri:, name:, title: T.unsafe(nil), description: T.unsafe(nil), mime_type: T.unsafe(nil), size: T.unsafe(nil), annotations: T.unsafe(nil), icons: T.unsafe(nil), meta: T.unsafe(nil), server: T.unsafe(nil)); end
 
   # @!attribute [r] uri
@@ -3164,7 +3390,7 @@ class MCPClient::Resource
   # Return the lastModified annotation value (ISO 8601 timestamp string)
   # @return [String, nil] the lastModified timestamp, or nil if not set
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource.rb:57
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource.rb:55
   def last_modified; end
 
   # @!attribute [r] uri
@@ -3341,7 +3567,7 @@ class MCPClient::Resource
     # @param server [MCPClient::ServerBase, nil] the server this resource belongs to
     # @return [MCPClient::Resource] resource instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/resource.rb:67
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/resource.rb:65
     def from_json(data, server: T.unsafe(nil)); end
   end
 end
@@ -3569,7 +3795,7 @@ class MCPClient::ResourceLink
   # @param icons [Array<Hash>, nil] optional icons for display in user interfaces (MCP 2025-11-25)
   # @param meta [Hash, nil] optional `_meta` metadata attached to the resource link (MCP 2025-11-25)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_link.rb:39
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_link.rb:38
   def initialize(uri:, name:, description: T.unsafe(nil), mime_type: T.unsafe(nil), annotations: T.unsafe(nil), title: T.unsafe(nil), size: T.unsafe(nil), icons: T.unsafe(nil), meta: T.unsafe(nil)); end
 
   # @!attribute [r] uri
@@ -3751,7 +3977,7 @@ class MCPClient::ResourceLink
   # The content type identifier for this content type
   # @return [String] 'resource_link'
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_link.rb:72
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_link.rb:70
   def type; end
 
   # @!attribute [r] uri
@@ -3781,7 +4007,7 @@ class MCPClient::ResourceLink
     # @param data [Hash] JSON data from MCP server (content item with type 'resource_link')
     # @return [MCPClient::ResourceLink] resource link instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_link.rb:56
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_link.rb:54
     def from_json(data); end
   end
 end
@@ -3802,7 +4028,7 @@ class MCPClient::ResourceTemplate
   # @param meta [Hash, nil] optional `_meta` metadata attached to the resource template (MCP 2025-11-25)
   # @param server [MCPClient::ServerBase, nil] the server this resource template belongs to
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_template.rb:38
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_template.rb:37
   def initialize(uri_template:, name:, title: T.unsafe(nil), description: T.unsafe(nil), mime_type: T.unsafe(nil), annotations: T.unsafe(nil), icons: T.unsafe(nil), meta: T.unsafe(nil), server: T.unsafe(nil)); end
 
   # @!attribute [r] uri_template
@@ -4009,7 +4235,7 @@ class MCPClient::ResourceTemplate
     # @param server [MCPClient::ServerBase, nil] the server this resource template belongs to
     # @return [MCPClient::ResourceTemplate] resource template instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_template.rb:56
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/resource_template.rb:54
     def from_json(data, server: T.unsafe(nil)); end
   end
 end
@@ -4137,7 +4363,7 @@ module MCPClient::SchemaValidator
     # @param found [Array<String>] accumulator
     # @return [void]
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:66
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:79
     def collect_unsupported_keywords(schema, found); end
 
     # Whether a value is a JSON Schema integer. Per JSON Schema 2020-12 a
@@ -4145,15 +4371,22 @@ module MCPClient::SchemaValidator
     # @param data [Object] the value
     # @return [Boolean]
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:138
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:154
     def integer?(data); end
 
     # The JSON type name of a Ruby value (for error messages).
     # @param data [Object] the value
     # @return [String]
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:148
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:164
     def json_type(data); end
+
+    # Time left in the validation-wide pattern budget.
+    # @param deadline [Float, nil] monotonic deadline, or nil for a lone match
+    # @return [Float] seconds available for the next match; 0.0 when exhausted
+    #
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:298
+    def pattern_budget_remaining(deadline); end
 
     # Whether a value matches a JSON Schema type name.
     # Unknown type names are not enforced (returns true).
@@ -4161,7 +4394,7 @@ module MCPClient::SchemaValidator
     # @param data [Object] the value
     # @return [Boolean]
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:121
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:137
     def type_match?(type, data); end
 
     # List the unsupported JSON Schema keywords a schema uses (anywhere: at the
@@ -4171,7 +4404,7 @@ module MCPClient::SchemaValidator
     # @param schema [Object] the JSON schema (string or symbol keys)
     # @return [Array<String>] unique unsupported keywords, in discovery order
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:56
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:69
     def unsupported_keywords(schema); end
 
     # Validate data against a JSON Schema subset.
@@ -4181,8 +4414,8 @@ module MCPClient::SchemaValidator
     # @param path [String] JSON-pointer-style location used in error messages
     # @return [Array<String>] human-readable validation errors (empty if valid)
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:88
-    def validate(data, schema, path: T.unsafe(nil)); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:101
+    def validate(data, schema, path: T.unsafe(nil), deadline: T.unsafe(nil)); end
 
     # Validate an array against items/minItems/maxItems.
     # @param data [Array] the array
@@ -4190,8 +4423,8 @@ module MCPClient::SchemaValidator
     # @param path [String] location for error messages
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:212
-    def validate_array(data, schema, path); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:228
+    def validate_array(data, schema, path, deadline = T.unsafe(nil)); end
 
     # Validate enum/const membership.
     # @param data [Object] the value
@@ -4199,7 +4432,7 @@ module MCPClient::SchemaValidator
     # @param path [String] location for error messages
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:166
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:182
     def validate_enum(data, schema, path); end
 
     # Validate a number against inclusive/exclusive bounds.
@@ -4208,7 +4441,7 @@ module MCPClient::SchemaValidator
     # @param path [String] location for error messages
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:268
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:312
     def validate_number(data, schema, path); end
 
     # Validate an object against required/properties.
@@ -4217,18 +4450,26 @@ module MCPClient::SchemaValidator
     # @param path [String] location for error messages
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:182
-    def validate_object(data, schema, path); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:198
+    def validate_object(data, schema, path, deadline = T.unsafe(nil)); end
 
     # Validate a string against a regular-expression pattern.
     # Invalid patterns are not enforced.
+    #
+    # The pattern comes from the tool's outputSchema, i.e. from the remote
+    # server, so matching runs against the validation-wide deadline: neither a
+    # single expensive expression nor many cheap-looking ones can pin the
+    # calling thread. A match that exceeds the budget is reported as a
+    # validation error rather than silently accepted — the value was never
+    # shown to satisfy the schema.
     # @param data [String] the string
     # @param pattern [Object] the pattern keyword value
     # @param path [String] location for error messages
+    # @param deadline [Float, nil] monotonic deadline for the whole validation
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:254
-    def validate_pattern(data, pattern, path); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:280
+    def validate_pattern(data, pattern, path, deadline = T.unsafe(nil)); end
 
     # Validate a string against minLength/maxLength/pattern.
     # @param data [String] the string
@@ -4236,8 +4477,8 @@ module MCPClient::SchemaValidator
     # @param path [String] location for error messages
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:234
-    def validate_string(data, schema, path); end
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:252
+    def validate_string(data, schema, path, deadline = T.unsafe(nil)); end
 
     # Validate the JSON type of a value.
     # @param data [Object] the value
@@ -4245,24 +4486,41 @@ module MCPClient::SchemaValidator
     # @param path [String] location for error messages
     # @return [Array<String>] validation errors
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:109
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:125
     def validate_type(data, type, path); end
   end
 end
 
+# Floor for an individual match's timeout, so a nearly-exhausted budget
+# still makes progress rather than failing every remaining pattern.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:49
+MCPClient::SchemaValidator::MIN_PATTERN_MATCH_TIMEOUT = T.let(T.unsafe(nil), Float)
+
+# Wall-clock budget for ALL pattern matching in a single validate call.
+# Schemas come from the remote server, so an expensive expression must not
+# be able to monopolize the calling thread.
+#
+# The budget is for the whole operation, not per match: a per-match limit
+# multiplies, since the server also controls how many strings it sends
+# (N array items under one pathological items.pattern costs N x limit).
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:45
+MCPClient::SchemaValidator::PATTERN_MATCH_TIMEOUT = T.let(T.unsafe(nil), Float)
+
 # Keywords whose value is an array of subschemas.
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:48
+# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:61
 MCPClient::SchemaValidator::SUBSCHEMA_ARRAY_KEYWORDS = T.let(T.unsafe(nil), Array)
 
 # Keywords whose value is a single subschema to walk.
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:39
+# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:52
 MCPClient::SchemaValidator::SUBSCHEMA_KEYWORDS = T.let(T.unsafe(nil), Array)
 
 # Keywords whose value is a map of name => subschema.
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:45
+# pkg:gem/ruby-mcp-client#lib/mcp_client/schema_validator.rb:58
 MCPClient::SchemaValidator::SUBSCHEMA_MAP_KEYWORDS = T.let(T.unsafe(nil), Array)
 
 # JSON Schema 2020-12 keywords that affect validation but that this
@@ -4555,7 +4813,7 @@ class MCPClient::ServerFactory
     # @param config [Hash] server configuration
     # @return [String, Array] prepared command
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/server_factory.rb:109
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/server_factory.rb:112
     def prepare_command(config); end
   end
 end
@@ -4853,6 +5111,7 @@ end
 #
 # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:20
 class MCPClient::ServerSSE < ::MCPClient::ServerBase
+  include ::MCPClient::ServerSSE::OriginPolicy
   include ::MCPClient::ServerSSE::SseParser
   include ::MCPClient::JsonRpcCommon
   include ::MCPClient::ServerSSE::JsonRpcTransport
@@ -4867,7 +5126,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param name [String, nil] optional name for this server
   # @param logger [Logger, nil] optional logger
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:69
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:76
   def initialize(base_url:, headers: T.unsafe(nil), read_timeout: T.unsafe(nil), ping: T.unsafe(nil), retries: T.unsafe(nil), retry_backoff: T.unsafe(nil), name: T.unsafe(nil), logger: T.unsafe(nil)); end
 
   # @!attribute [r] base_url
@@ -4879,7 +5138,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @!attribute [r] resources
   #   @return [Array<MCPClient::Resource>, nil] List of available resources (nil if not fetched yet)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:51
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:58
   def base_url; end
 
   # Call a tool with the given parameters
@@ -4891,7 +5150,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ToolCallError] for other errors during tool execution
   # @raise [MCPClient::Errors::ConnectionError] if server is disconnected
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:324
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:337
   def call_tool(tool_name, parameters); end
 
   # Stream tool call fallback for SSE transport (yields single result)
@@ -4899,13 +5158,13 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param parameters [Hash]
   # @return [Enumerator]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:122
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:135
   def call_tool_streaming(tool_name, parameters); end
 
   # Server capabilities from initialize response
   # @return [Hash, nil] Server capabilities
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:59
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:66
   def capabilities; end
 
   # Clean up the server connection
@@ -4916,7 +5175,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   #   multiple connection attempts. This is essential for proper reconnection
   #   logic and exponential backoff.
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:412
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:425
   def cleanup; end
 
   # Request completion suggestions from the server (MCP 2025-06-18)
@@ -4926,14 +5185,14 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [Hash] completion result with 'values', optional 'total', and 'hasMore' fields
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:340
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:353
   def complete(ref:, argument:, context: T.unsafe(nil)); end
 
   # Connect to the MCP server over HTTP/HTTPS with SSE
   # @return [Boolean] true if connection was successful
   # @raise [MCPClient::Errors::ConnectionError] if connection fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:373
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:386
   def connect; end
 
   # Get a prompt with the given parameters
@@ -4945,7 +5204,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::PromptGetError] for other errors during prompt interpolation
   # @raise [MCPClient::Errors::ConnectionError] if server is disconnected
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:165
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:178
   def get_prompt(prompt_name, parameters); end
 
   # Handle elicitation/create request from server (MCP 2025-06-18)
@@ -4953,7 +5212,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param params [Hash] the elicitation parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:545
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:572
   def handle_elicitation_create(request_id, params); end
 
   # Handle a server-initiated ping request (MCP ping utility)
@@ -4961,7 +5220,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param request_id [String, Integer] the JSON-RPC request ID
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:530
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:557
   def handle_ping(request_id); end
 
   # Handle roots/list request from server (MCP 2025-06-18)
@@ -4969,7 +5228,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param params [Hash] the request parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:565
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:592
   def handle_roots_list(request_id, params); end
 
   # Handle sampling/createMessage request from server (MCP 2025-11-25)
@@ -4977,14 +5236,14 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param params [Hash] the sampling parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:603
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:630
   def handle_sampling_create_message(request_id, params); end
 
   # Handle incoming JSON-RPC request from server (MCP 2025-06-18)
   # @param msg [Hash] the JSON-RPC request message
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:501
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:525
   def handle_server_request(msg); end
 
   # List all prompts available from the MCP server
@@ -4993,7 +5252,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::TransportError] if response isn't valid JSON
   # @raise [MCPClient::Errors::PromptGetError] for other errors during prompt listing
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:133
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:146
   def list_prompts; end
 
   # List all resource templates available from the MCP server
@@ -5002,7 +5261,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during resource template listing
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:236
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:249
   def list_resource_templates(cursor: T.unsafe(nil)); end
 
   # List all resources available from the MCP server
@@ -5012,7 +5271,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::TransportError] if response isn't valid JSON
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during resource listing
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:181
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:194
   def list_resources(cursor: T.unsafe(nil)); end
 
   # List all tools available from the MCP server
@@ -5021,7 +5280,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::TransportError] if response isn't valid JSON
   # @raise [MCPClient::Errors::ToolCallError] for other errors during tool listing
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:292
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:305
   def list_tools; end
 
   # Set the logging level on the server (MCP 2025-06-18)
@@ -5030,28 +5289,28 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [Hash] empty result on success
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:359
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:372
   def log_level=(level); end
 
   # Register a callback for elicitation requests (MCP 2025-06-18)
   # @param block [Proc] callback that receives (request_id, params) and returns response hash
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:480
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:504
   def on_elicitation_request(&block); end
 
   # Register a callback for roots/list requests (MCP 2025-06-18)
   # @param block [Proc] callback that receives (request_id, params) and returns response hash
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:487
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:511
   def on_roots_list_request(&block); end
 
   # Register a callback for sampling requests (MCP 2025-11-25)
   # @param block [Proc] callback that receives (request_id, params) and returns response hash
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:494
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:518
   def on_sampling_request(&block); end
 
   # Post a JSON-RPC response message to the server via HTTP
@@ -5059,7 +5318,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:697
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:724
   def post_jsonrpc_response(response); end
 
   # @!attribute [r] base_url
@@ -5071,7 +5330,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @!attribute [r] resources
   #   @return [Array<MCPClient::Resource>, nil] List of available resources (nil if not fetched yet)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:51
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:58
   def prompts; end
 
   # Read a resource by its URI
@@ -5082,7 +5341,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during resource reading
   # @raise [MCPClient::Errors::ConnectionError] if server is disconnected
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:219
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:232
   def read_resource(uri); end
 
   # @!attribute [r] base_url
@@ -5094,7 +5353,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @!attribute [r] resources
   #   @return [Array<MCPClient::Resource>, nil] List of available resources (nil if not fetched yet)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:51
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:58
   def resources; end
 
   # Send elicitation response back to server via HTTP POST (MCP 2025-06-18)
@@ -5102,7 +5361,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param result [Hash] the elicitation result (action and optional content)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:647
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:674
   def send_elicitation_response(request_id, result); end
 
   # Send error response back to server via HTTP POST (MCP 2025-06-18)
@@ -5111,7 +5370,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param message [String] the error message
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:675
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:702
   def send_error_response(request_id, code, message); end
 
   # Send roots/list response back to server via HTTP POST (MCP 2025-06-18)
@@ -5119,7 +5378,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param result [Hash] the roots list result
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:584
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:611
   def send_roots_list_response(request_id, result); end
 
   # Send sampling response back to server via HTTP POST (MCP 2025-11-25)
@@ -5127,13 +5386,13 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @param result [Hash] the sampling result (role, content, model, stopReason)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:622
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:649
   def send_sampling_response(request_id, result); end
 
   # Server information from initialize response
   # @return [Hash, nil] Server information
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:55
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:62
   def server_info; end
 
   # Subscribe to resource updates
@@ -5142,7 +5401,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during subscription
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:258
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:271
   def subscribe_resource(uri); end
 
   # @!attribute [r] base_url
@@ -5154,7 +5413,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @!attribute [r] resources
   #   @return [Array<MCPClient::Resource>, nil] List of available resources (nil if not fetched yet)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:51
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:58
   def tools; end
 
   # Unsubscribe from resource updates
@@ -5163,7 +5422,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during unsubscription
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:275
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:288
   def unsubscribe_resource(uri); end
 
   private
@@ -5174,7 +5433,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [Boolean] True if it's an authorization error
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:861
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:890
   def authorization_error?(error_message, error_code); end
 
   # Establish SSE connection with error handling
@@ -5183,7 +5442,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:777
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:804
   def establish_sse_connection(conn, sse_path); end
 
   # Extract complete SSE events from the buffer
@@ -5191,7 +5450,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [Array<String>, nil] array of complete events or nil if none
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:899
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:928
   def extract_complete_events(chunk); end
 
   # Extract a single event from the buffer
@@ -5199,8 +5458,19 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [String] the extracted event data
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:919
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:988
   def extract_single_event(event_end); end
+
+  # Drop an oversized partial event and fail the connection.
+  #
+  # Recording the cause matters: this runs inside Faraday's on_data callback
+  # on the SSE worker thread, whose generic rescue would otherwise leave
+  # callers with a bare "connection lost" and no reason. Mirrors the
+  # endpoint-URI failure path so wait_for_connection surfaces it promptly.
+  # @raise [MCPClient::Errors::ConnectionError] always
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:972
+  def fail_oversized_sse_buffer!; end
 
   # Handle JSON error responses embedded in SSE chunks
   # @param chunk [String] the chunk to check for JSON errors
@@ -5208,7 +5478,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ConnectionError] if authentication error is found
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:873
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:902
   def handle_json_error_response(chunk); end
 
   # Handle authorization error in SSE message
@@ -5217,7 +5487,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ConnectionError] with an authentication error message
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:935
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:1004
   def handle_sse_auth_error_message(error_message); end
 
   # Handle auth errors from SSE response
@@ -5225,14 +5495,14 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:797
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:824
   def handle_sse_auth_response_error(err); end
 
   # Handle the SSE connection in a separate method to reduce method size
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:742
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:769
   def handle_sse_connection; end
 
   # Handle connection failures in SSE
@@ -5241,7 +5511,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [Faraday::ConnectionFailed] re-raises the original error
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:814
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:841
   def handle_sse_connection_failed(err); end
 
   # Handle general Faraday errors in SSE
@@ -5250,13 +5520,20 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [Faraday::Error] re-raises the original error
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:829
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:856
   def handle_sse_general_error(err); end
+
+  # Index of the earliest event terminator at or after an offset.
+  # @param offset [Integer] character offset to start searching from
+  # @return [Integer, nil] index of the terminator, or nil if none yet
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:959
+  def next_event_end(offset); end
 
   # Process an SSE chunk from the server
   # @param chunk [String] the chunk to process
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:841
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:868
   def process_sse_chunk(chunk); end
 
   # Request the prompts list using JSON-RPC
@@ -5264,7 +5541,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::PromptGetError] if prompts list retrieval fails
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:949
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:1018
   def request_prompts_list; end
 
   # Request the resources list using JSON-RPC
@@ -5272,7 +5549,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ResourceReadError] if resources list retrieval fails
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:965
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:1034
   def request_resources_list; end
 
   # Request the tools list using JSON-RPC
@@ -5280,14 +5557,14 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ToolCallError] if tools list retrieval fails
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:991
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:1060
   def request_tools_list; end
 
   # Reset SSE connection state
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:765
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:792
   def reset_sse_connection_state; end
 
   # Start the SSE thread to listen for events
@@ -5295,7 +5572,7 @@ class MCPClient::ServerSSE < ::MCPClient::ServerBase
   # @return [Thread] the SSE thread
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:731
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:758
   def start_sse_thread; end
 end
 
@@ -5322,8 +5599,9 @@ MCPClient::ServerSSE::JITTER_FACTOR = T.let(T.unsafe(nil), Float)
 
 # JSON-RPC request/notification plumbing for SSE transport
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:8
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:10
 module MCPClient::ServerSSE::JsonRpcTransport
+  include ::MCPClient::ServerSSE::OriginPolicy
   include ::MCPClient::JsonRpcCommon
 
   # Send a JSON-RPC notification (no response expected)
@@ -5331,7 +5609,7 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @param params [Hash] parameters for the notification
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:52
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:55
   def rpc_notify(method, params = T.unsafe(nil)); end
 
   # Generic JSON-RPC request: send method with params and return result
@@ -5343,7 +5621,7 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @raise [MCPClient::Errors::TransportError] if response isn't valid JSON
   # @raise [MCPClient::Errors::ToolCallError] for other errors during request execution
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:19
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:22
   def rpc_request(method, params = T.unsafe(nil), timeout: T.unsafe(nil)); end
 
   # Best-effort notifications/cancelled for a request the client stopped
@@ -5351,7 +5629,7 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @param request_id [Integer] id of the abandoned request
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:40
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:43
   def send_cancellation_notification(request_id); end
 
   private
@@ -5361,14 +5639,14 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @return [Hash, nil] the result if available, nil otherwise
   # @raise [MCPClient::Errors::ServerError] if the stored result is a JSON-RPC error response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:271
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:299
   def check_for_result(request_id); end
 
   # Create a Faraday connection for JSON-RPC
   # @param base_url [String] the base URL for the connection
   # @return [Faraday::Connection] the configured connection
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:178
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:206
   def create_json_rpc_connection(base_url); end
 
   # Ensure SSE initialization handshake has been performed.
@@ -5376,12 +5654,12 @@ module MCPClient::ServerSSE::JsonRpcTransport
   #
   # @raise [MCPClient::Errors::ConnectionError] if reconnect or initialization fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:66
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:69
   def ensure_initialized; end
 
   # Ensure the SSE connection is active, reconnect if needed
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:230
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:258
   def ensure_sse_connection_active; end
 
   # Parse a direct (non-SSE) JSON-RPC response
@@ -5390,14 +5668,14 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @raise [MCPClient::Errors::TransportError] if parsing fails
   # @raise [MCPClient::Errors::ServerError] if the response contains an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:305
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:333
   def parse_direct_response(response); end
 
   # Perform JSON-RPC initialize handshake with the MCP server
   # @return [void]
   # @raise [MCPClient::Errors::ConnectionError] if the initialize result is malformed
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:85
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:88
   def perform_initialize; end
 
   # Post a JSON-RPC request to the server
@@ -5405,7 +5683,7 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @return [Faraday::Response] the HTTP response
   # @raise [MCPClient::Errors::ConnectionError] if connection fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:149
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:177
   def post_json_rpc_request(request); end
 
   # Raise a ServerError for a JSON-RPC error response received over SSE,
@@ -5413,8 +5691,15 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @param error [Hash, nil] the JSON-RPC error object ('code', 'message', 'data')
   # @raise [MCPClient::Errors::ServerError] always
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:293
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:321
   def raise_sse_error_response(error); end
+
+  # Mark a request id as awaiting its response.
+  # @param request_id [Integer, String] id of the outgoing request
+  # @return [void]
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:157
+  def register_pending_request(request_id); end
 
   # Send an HTTP request with the proper headers and body
   # @param conn [Faraday::Connection] the connection to use
@@ -5422,7 +5707,7 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @param request [Hash] the request data
   # @return [Faraday::Response] the HTTP response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:193
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:221
   def send_http_request(conn, endpoint, request); end
 
   # Send a JSON-RPC request to the server and wait for result
@@ -5432,8 +5717,17 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @raise [MCPClient::Errors::TransportError] if response isn't valid JSON
   # @raise [MCPClient::Errors::ToolCallError] for other errors during request execution
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:121
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:124
   def send_jsonrpc_request(request, timeout: T.unsafe(nil)); end
+
+  # Stop accepting responses for a request id (completed, failed or timed
+  # out) and drop any result that was never consumed — a late or duplicate
+  # response must not accumulate in @sse_results.
+  # @param request_id [Integer, String] id of the finished request
+  # @return [void]
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:166
+  def unregister_pending_request(request_id); end
 
   # Wait for a result with timeout
   # @param request_id [Integer] the request ID to wait for
@@ -5442,7 +5736,7 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @return [Hash] the result when available
   # @raise [MCPClient::Errors::ConnectionError, MCPClient::Errors::ToolCallError] on errors
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:248
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:276
   def wait_for_result_with_timeout(request_id, start_time, timeout); end
 
   # Wait for an SSE result to arrive
@@ -5450,42 +5744,97 @@ module MCPClient::ServerSSE::JsonRpcTransport
   # @return [Hash] the result data
   # @raise [MCPClient::Errors::ConnectionError, MCPClient::Errors::ToolCallError] on errors
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:219
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/json_rpc_transport.rb:247
   def wait_for_sse_result(request, timeout: T.unsafe(nil)); end
 end
 
 # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:40
 MCPClient::ServerSSE::MAX_RECONNECT_DELAY = T.let(T.unsafe(nil), Integer)
 
+# Maximum bytes the SSE parse buffer may hold while waiting for an event
+# terminator. The stream is peer-controlled: without a cap, a hostile
+# server could withhold the blank-line delimiter forever and grow the
+# buffer until the host runs out of memory. Generous enough for any
+# legitimate JSON-RPC response event.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse.rb:48
+MCPClient::ServerSSE::MAX_SSE_BUFFER_BYTES = T.let(T.unsafe(nil), Integer)
+
+# Origin pinning for the legacy HTTP+SSE transport.
+#
+# Everything this transport sends carries the caller's configured headers
+# (Authorization, API keys, cookies), and callback responses carry
+# roots/sampling/elicitation data, so no request may leave the origin the
+# caller connected to — neither by a server-chosen endpoint URI nor by a
+# redirect.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/origin_policy.rb:14
+module MCPClient::ServerSSE::OriginPolicy
+  # @param uri [URI::Generic]
+  # @return [String] scheme://host:port of the URI
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/origin_policy.rb:26
+  def origin_of(uri); end
+
+  # Refuse to follow a redirect that leaves the SSE connection's origin.
+  #
+  # Pinning the endpoint event's origin is not sufficient on its own: a
+  # same-origin endpoint can answer a POST with a 307/308 to another
+  # origin, and faraday-follow_redirects replays the request there. It
+  # strips only the literal Authorization header, so configured API-key
+  # and other custom headers — plus the JSON-RPC body — would still reach
+  # the foreign origin.
+  #
+  # Raises ConnectionError rather than TransportError because the server
+  # has already received the original request; with_retry must not re-send
+  # it.
+  # @param _old_env [Faraday::Env] the redirecting response environment
+  # @param new_env [Faraday::Env] environment of the request about to be replayed
+  # @return [void]
+  # @raise [MCPClient::Errors::ConnectionError] if the redirect changes origin
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/origin_policy.rb:46
+  def reject_cross_origin_redirect!(_old_env, new_env); end
+
+  # @param base [URI::Generic] the SSE connection URL
+  # @param other [URI::Generic] the URL to compare
+  # @return [Boolean] whether both share scheme, host and port
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/origin_policy.rb:18
+  def same_origin?(base, other); end
+end
+
 # Extracted module for back-off, ping, and reconnection logic
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:6
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:8
 module MCPClient::ServerSSE::ReconnectMonitor
+  include ::MCPClient::ServerSSE::OriginPolicy
+
   # Main loop for the activity monitor thread
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:36
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:40
   def activity_monitor_loop; end
 
   # Attempt to ping the server to check if connection is still alive
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:121
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:125
   def attempt_ping; end
 
   # Attempt to reconnect with exponential backoff
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:76
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:80
   def attempt_reconnection; end
 
   # Check if the connection is currently active
   # @return [Boolean] true if connection is established and SSE is connected
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:29
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:33
   def connection_active?; end
 
   # Handle ping failures by incrementing a counter and logging
@@ -5493,7 +5842,7 @@ module MCPClient::ServerSSE::ReconnectMonitor
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:149
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:153
   def handle_ping_failure(error); end
 
   # Handle authentication errors from SSE
@@ -5501,20 +5850,20 @@ module MCPClient::ServerSSE::ReconnectMonitor
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:217
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:223
   def handle_sse_auth_error(error); end
 
   # Record activity to prevent unnecessary pings
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:163
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:167
   def record_activity; end
 
   # Reset the connection state
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:231
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:237
   def reset_connection_state; end
 
   # Setup the SSE connection with Faraday
@@ -5522,13 +5871,13 @@ module MCPClient::ServerSSE::ReconnectMonitor
   # @return [Faraday::Connection] the configured connection
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:198
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:202
   def setup_sse_connection(uri); end
 
   # Start an activity monitor thread to maintain the connection
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:9
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:13
   def start_activity_monitor; end
 
   # Wait for the connection to be established
@@ -5536,14 +5885,26 @@ module MCPClient::ServerSSE::ReconnectMonitor
   # @return [void]
   # @raise [MCPClient::Errors::ConnectionError] if connection times out or fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:171
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/reconnect_monitor.rb:175
   def wait_for_connection(timeout:); end
 end
 
 # === Wire-level SSE parsing & dispatch ===
 #
-# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:9
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:10
 module MCPClient::ServerSSE::SseParser
+  include ::MCPClient::ServerSSE::OriginPolicy
+
+  # Record the handshake failure cause and raise. The SSE worker thread
+  # swallows this exception with a generic rescue, so also record the
+  # failure (mirroring @auth_error) for the connect caller blocked in
+  # wait_for_connection to surface promptly.
+  # @param message [String] the failure description
+  # @raise [MCPClient::Errors::TransportError] always
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:203
+  def fail_endpoint_handshake!(message); end
+
   # Handle the special "endpoint" control frame (for SSE handshake).
   # The event data is a URI reference (MCP 2024-11-05 HTTP with SSE: the
   # server sends "an `endpoint` event containing a URI for the client to
@@ -5552,26 +5913,26 @@ module MCPClient::ServerSSE::SseParser
   # POST to the URL the server actually designated.
   # @param data [String] the raw endpoint payload
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:149
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:161
   def handle_endpoint_event(data); end
 
   # Handle a "message" SSE event (payload is JSON-RPC over SSE)
   # @param event [Hash] the parsed SSE event (with :data, :id, etc)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:28
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:31
   def handle_message_event(event); end
 
   # Parse and handle a raw SSE event payload.
   # @param event_data [String] the raw event chunk
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:12
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:15
   def parse_and_handle_sse_event(event_data); end
 
   # Parse a raw SSE chunk into its :event, :data, :id fields
   # @param event_data [String] the raw SSE block
   # @return [Hash,nil] parsed fields or nil if it was pure comment/blank
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:118
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:130
   def parse_sse_event(event_data); end
 
   # Process a connection-level JSON-RPC error payload in the SSE stream.
@@ -5583,35 +5944,40 @@ module MCPClient::ServerSSE::SseParser
   # @param data [Hash] the parsed JSON payload
   # @return [Boolean] true if we saw & handled an id-less error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:56
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:59
   def process_error_in_message?(data); end
 
   # Process a JSON-RPC notification (no id => notification)
   # @param data [Hash] the parsed JSON payload
   # @return [Boolean] true if we saw & handled a notification
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:82
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:85
   def process_notification?(data); end
 
   # Process a JSON-RPC response (id => response)
   # @param data [Hash] the parsed JSON payload
   # @return [Boolean] true if we saw & handled a response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:92
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:95
   def process_response?(data); end
 
   # Process a JSON-RPC request from server (has both id AND method)
   # @param data [Hash] the parsed JSON payload
   # @return [Boolean] true if we saw & handled a server request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:72
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:75
   def process_server_request?(data); end
 
-  # Resolve an endpoint URI reference against the SSE connection URL
+  # Resolve an endpoint URI reference against the SSE connection URL.
+  # The resolved endpoint MUST stay on the SSE connection's origin: the
+  # event payload is server-controlled input, and honoring a cross-origin
+  # target would redirect every JSON-RPC POST — including the configured
+  # Authorization/API-key headers and callback response bodies — to a
+  # server the caller never chose.
   # @param data [String] the endpoint event payload (absolute or relative URI)
   # @return [String] the absolute endpoint URL
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:162
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_sse/sse_parser.rb:179
   def resolve_endpoint_uri(data); end
 end
 
@@ -5658,7 +6024,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # within a reasonable time, then SIGKILL if it still does not exit.
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:729
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:732
   def cleanup; end
 
   # @!attribute [r] command
@@ -5698,7 +6064,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param buffer [String] mutable buffer of accumulated stderr bytes
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:705
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:708
   def flush_stderr_lines(buffer); end
 
   # Flush an unterminated stderr fragment that has grown past the size cap,
@@ -5706,7 +6072,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param buffer [String] mutable buffer of accumulated stderr bytes
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:716
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:719
   def flush_stderr_overflow(buffer); end
 
   # Get a prompt with the given parameters
@@ -5724,7 +6090,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param params [Hash] the elicitation parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:566
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:569
   def handle_elicitation_create(request_id, params); end
 
   # Handle a line of output from the stdio server
@@ -5740,7 +6106,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param request_id [String, Integer] the JSON-RPC request ID
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:553
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:556
   def handle_ping(request_id); end
 
   # Handle roots/list request from server (MCP 2025-06-18)
@@ -5748,7 +6114,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param params [Hash] the request parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:586
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:589
   def handle_roots_list(request_id, params); end
 
   # Handle sampling/createMessage request from server (MCP 2025-11-25)
@@ -5756,7 +6122,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param params [Hash] the sampling parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:605
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:608
   def handle_sampling_create_message(request_id, params); end
 
   # Handle incoming JSON-RPC request from server (MCP 2025-06-18)
@@ -5855,7 +6221,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param result [Hash] the elicitation result (action and optional content)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:656
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:659
   def send_elicitation_response(request_id, result); end
 
   # Send error response back to server (MCP 2025-06-18)
@@ -5864,14 +6230,14 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param message [String] the error message
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:678
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:681
   def send_error_response(request_id, code, message); end
 
   # Send a JSON-RPC message to the server
   # @param message [Hash] the message to send
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:693
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:696
   def send_message(message); end
 
   # Send roots/list response back to server (MCP 2025-06-18)
@@ -5879,7 +6245,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param result [Hash] the roots list result
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:624
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:627
   def send_roots_list_response(request_id, result); end
 
   # Send sampling response back to server (MCP 2025-11-25)
@@ -5887,7 +6253,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param result [Hash] the sampling result (role, content, model, stopReason)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:637
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:640
   def send_sampling_response(request_id, result); end
 
   # Server info from the initialize response
@@ -5901,7 +6267,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # @param signal [String] signal name, e.g. 'TERM' or 'KILL'
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:769
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:772
   def signal_server_process(signal); end
 
   # Spawn a reader thread to collect JSON-RPC responses
@@ -5942,7 +6308,7 @@ class MCPClient::ServerStdio < ::MCPClient::ServerBase
   # the grace period send SIGTERM, wait again, and finally send SIGKILL.
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:754
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_stdio.rb:757
   def terminate_server_process; end
 
   # Unsubscribe from resource updates
@@ -6080,12 +6446,12 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param base_url [String] The base URL of the MCP server
   # @param options [Hash] Server configuration options (same as ServerHTTP)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:54
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:100
   def initialize(base_url:, **options); end
 
   # Override apply_request_headers to add session and SSE headers for MCP protocol
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:402
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:455
   def apply_request_headers(req, request); end
 
   # @!attribute [r] base_url
@@ -6095,7 +6461,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @!attribute [r] tools
   #   @return [Array<MCPClient::Tool>, nil] List of available tools (nil if not fetched yet)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:42
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:88
   def base_url; end
 
   # Call a tool with the given parameters
@@ -6107,7 +6473,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::ToolCallError] for other errors during tool execution
   # @raise [MCPClient::Errors::ConnectionError] if server is disconnected
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:200
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:253
   def call_tool(tool_name, parameters); end
 
   # Stream tool call (default implementation returns single-value stream)
@@ -6115,19 +6481,19 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param parameters [Hash] the parameters to pass to the tool
   # @return [Enumerator] stream of results
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:214
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:267
   def call_tool_streaming(tool_name, parameters); end
 
   # Server capabilities from initialize response
   # @return [Hash, nil] Server capabilities
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:50
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:96
   def capabilities; end
 
   # Clean up the server connection
   # Properly closes HTTP connections, stops threads, and clears cached state
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:454
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:507
   def cleanup; end
 
   # Request completion suggestions from the server (MCP 2025-06-18)
@@ -6137,14 +6503,14 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Hash] completion result with 'values', optional 'total', and 'hasMore' fields
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:226
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:279
   def complete(ref:, argument:, context: T.unsafe(nil)); end
 
   # Connect to the MCP server over Streamable HTTP
   # @return [Boolean] true if connection was successful
   # @raise [MCPClient::Errors::ConnectionError] if connection fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:130
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:183
   def connect; end
 
   # @!attribute [r] base_url
@@ -6154,7 +6520,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @!attribute [r] tools
   #   @return [Array<MCPClient::Tool>, nil] List of available tools (nil if not fetched yet)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:42
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:88
   def endpoint; end
 
   # Get a prompt with the given parameters
@@ -6163,19 +6529,19 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Object] the result of the prompt (with string keys for backward compatibility)
   # @raise [MCPClient::Errors::PromptGetError] if prompt retrieval fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:288
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:341
   def get_prompt(prompt_name, parameters); end
 
   # Override handle_successful_response to capture session ID
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:423
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:476
   def handle_successful_response(response, request); end
 
   # List all prompts available from the MCP server
   # @return [Array<MCPClient::Prompt>] list of available prompts
   # @raise [MCPClient::Errors::PromptGetError] if prompts list retrieval fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:259
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:312
   def list_prompts; end
 
   # List all resource templates available from the MCP server
@@ -6183,7 +6549,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Hash] result containing resourceTemplates array and optional nextCursor
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during resource template listing
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:353
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:406
   def list_resource_templates(cursor: T.unsafe(nil)); end
 
   # List all resources available from the MCP server
@@ -6191,7 +6557,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Hash] result containing resources array and optional nextCursor
   # @raise [MCPClient::Errors::ResourceReadError] if resources list retrieval fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:302
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:355
   def list_resources(cursor: T.unsafe(nil)); end
 
   # List all tools available from the MCP server
@@ -6200,7 +6566,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @raise [MCPClient::Errors::TransportError] if response isn't valid JSON
   # @raise [MCPClient::Errors::ToolCallError] for other errors during tool listing
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:168
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:221
   def list_tools; end
 
   # Set the logging level on the server (MCP 2025-06-18)
@@ -6209,28 +6575,28 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Hash] empty result on success
   # @raise [MCPClient::Errors::ServerError] if server returns an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:245
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:298
   def log_level=(level); end
 
   # Register a callback for elicitation requests (MCP 2025-06-18)
   # @param block [Proc] callback that receives (request_id, params) and returns response hash
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:504
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:558
   def on_elicitation_request(&block); end
 
   # Register a callback for roots/list requests (MCP 2025-06-18)
   # @param block [Proc] callback that receives (request_id, params) and returns response hash
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:511
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:565
   def on_roots_list_request(&block); end
 
   # Register a callback for sampling requests (MCP 2025-11-25)
   # @param block [Proc] callback that receives (request_id, params) and returns response hash
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:518
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:572
   def on_sampling_request(&block); end
 
   # Read a resource by its URI
@@ -6238,13 +6604,13 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Array<MCPClient::ResourceContent>] array of resource contents
   # @raise [MCPClient::Errors::ResourceReadError] if resource reading fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:337
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:390
   def read_resource(uri); end
 
   # Server information from initialize response
   # @return [Hash, nil] Server information
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:46
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:92
   def server_info; end
 
   # Subscribe to resource updates
@@ -6252,13 +6618,13 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Boolean] true if subscription successful
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during subscription
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:373
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:426
   def subscribe_resource(uri); end
 
   # Terminate the current session (if any)
   # @return [Boolean] true if termination was successful or no session exists
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:444
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:497
   def terminate_session; end
 
   # @!attribute [r] base_url
@@ -6268,7 +6634,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @!attribute [r] tools
   #   @return [Array<MCPClient::Tool>, nil] List of available tools (nil if not fetched yet)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:42
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:88
   def tools; end
 
   # Unsubscribe from resource updates
@@ -6276,21 +6642,24 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [Boolean] true if unsubscription successful
   # @raise [MCPClient::Errors::ResourceReadError] for other errors during unsubscription
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:389
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:442
   def unsubscribe_resource(uri); end
 
   private
 
+  # Reserve one slot of the response-POST concurrency budget.
+  # @return [Boolean] whether a slot was available
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1399
+  def acquire_response_post_slot; end
+
   # Apply headers for events connection
   # @param req [Faraday::Request] HTTP request
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:862
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:959
   def apply_events_headers(req); end
 
-  # Default options for server initialization
-  # @return [Hash] Default options
-  #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:537
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:602
   def default_options; end
 
   # Deliver a response replayed on the events stream to a waiting request.
@@ -6299,7 +6668,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param message [Hash] a JSON-RPC response message
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:852
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:949
   def deliver_stream_response(message); end
 
   # Dispatch a parsed server message (request, ping, or notification).
@@ -6307,29 +6676,38 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # interleaved on a POST SSE response stream.
   # @param message [Hash] the parsed JSON-RPC message
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:961
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1112
   def dispatch_server_message(message); end
+
+  # @param buffer [String] a partial-event SSE buffer
+  # @raise [MCPClient::Errors::ConnectionError] when the buffer exceeds MAX_SSE_BUFFER_BYTES
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1025
+  def enforce_sse_buffer_cap!(buffer); end
 
   # Ensure connection is established
   # @return [void]
   # @raise [MCPClient::Errors::ConnectionError] if connection is not established
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:571
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:637
   def ensure_connected; end
 
   # Reconnect delay for the events stream: the server's SSE retry directive
-  # (in ms) when present, otherwise the caller's backoff value.
+  # (in ms) when present, otherwise the caller's backoff value. The
+  # peer-controlled directive is floored at MIN_EVENTS_RECONNECT_DELAY so a
+  # zero/near-zero value cannot drive a tight reconnect loop; the
+  # deadline-bounded resumption loop intentionally keeps honoring zero.
   # @param fallback_seconds [Numeric] exponential-backoff fallback
   # @return [Numeric] delay in seconds
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:729
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:798
   def events_reconnect_delay(fallback_seconds); end
 
   # Extract a single event from the buffer
   # @param event_end [Integer] the position where the event ends
   # @return [String] the extracted event data
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:897
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1036
   def extract_event(event_end); end
 
   # Handle elicitation/create request from server (MCP 2025-11-25)
@@ -6337,21 +6715,21 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param params [Hash] the elicitation parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1040
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1177
   def handle_elicitation_create(request_id, params); end
 
   # Handle the events connection in a separate thread
   # Maintains a persistent SSE connection for server notifications and ping/pong
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:658
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:724
   def handle_events_connection; end
 
   # Handle ping request from server
   # Sends pong response to maintain session keepalive
   # @param ping_id [Integer, String] the ping request ID
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:981
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1132
   def handle_ping_request(ping_id); end
 
   # Parse one SSE event received on a resumption stream: track `id:` lines
@@ -6361,7 +6739,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param state [Hash] mutable resumption state (:cursor, :retry_ms)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:830
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:925
   def handle_resumption_event(event_text, state); end
 
   # Handle roots/list request from server (MCP 2025-06-18)
@@ -6369,7 +6747,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param params [Hash] the request parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1060
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1197
   def handle_roots_list(request_id, params); end
 
   # Handle sampling/createMessage request from server (MCP 2025-11-25)
@@ -6377,21 +6755,21 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param params [Hash] the sampling parameters
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1079
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1216
   def handle_sampling_create_message(request_id, params); end
 
   # Handle server messages (notifications and requests)
   # Processes ping/pong keepalive and server notifications
   # @param data [String] the JSON data from SSE event
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:946
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1088
   def handle_server_message(data); end
 
   # Handle incoming JSON-RPC request from server (MCP 2025-06-18)
   # @param msg [Hash] the JSON-RPC request message
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1013
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1147
   def handle_server_request(msg); end
 
   # One GET with the current cursor; complete SSE events are dispatched
@@ -6401,17 +6779,36 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param state [Hash] mutable resumption state (:cursor, :retry_ms)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:792
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:877
   def issue_resumption_get(state); end
+
+  # Warn that the response-POST budget is saturated, at most once per
+  # SATURATION_LOG_INTERVAL.
+  #
+  # The peer controls how often this path is reached, so logging every
+  # rejection (at WARN, which the default logger emits) would just trade a
+  # thread-exhaustion vector for a log-volume one. The peer-supplied request
+  # id is deliberately omitted for the same reason.
+  # @return [void]
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1382
+  def log_response_post_saturation; end
+
+  # Index of the earliest event terminator at or after an offset.
+  # @param offset [Integer] character offset to start searching from
+  # @return [Integer, nil] index of the terminator, or nil if none yet
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1017
+  def next_buffer_event_end(offset); end
 
   # Parse and handle an SSE event
   # Parses SSE format according to the W3C specification
   # @param event_data [String] the raw event data
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:911
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1050
   def parse_and_handle_event(event_data); end
 
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:524
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:578
   def perform_initialize; end
 
   # Post a JSON-RPC response message to the server via HTTP
@@ -6419,14 +6816,14 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @return [void]
   # @private
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1186
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1323
   def post_jsonrpc_response(response); end
 
   # Process event chunks from the server
   # Buffers partial chunks and processes complete SSE events
   # @param chunk [String] the chunk to process
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:877
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:974
   def process_event_chunk(chunk); end
 
   # Extract complete SSE events (terminated by a blank line, LF or CRLF)
@@ -6435,28 +6832,34 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param state [Hash] mutable resumption state (:cursor, :retry_ms)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:817
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:906
   def process_resumption_buffer(buffer, state); end
+
+  # Release a slot reserved by acquire_response_post_slot.
+  # @return [void]
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1410
+  def release_response_post_slot; end
 
   # Request the prompts list using JSON-RPC
   # @return [Array<Hash>] the prompts data
   # @raise [MCPClient::Errors::PromptGetError] if prompts list retrieval fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:598
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:664
   def request_prompts_list; end
 
   # Request the resources list using JSON-RPC
   # @return [Array<Hash>] the resources data
   # @raise [MCPClient::Errors::ResourceReadError] if resources list retrieval fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:613
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:679
   def request_resources_list; end
 
   # Request the tools list using JSON-RPC
   # @return [Array<Hash>] the tools data
   # @raise [MCPClient::Errors::ToolCallError] if tools list retrieval fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:582
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:648
   def request_tools_list; end
 
   # Wait for a response replayed after the POST stream was closed before
@@ -6470,8 +6873,17 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   #   stream itself (not the shared events-stream directive)
   # @return [Hash, nil] the replayed JSON-RPC response, or nil on timeout
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:744
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:815
   def resume_response_via_get(request_id, cursor, retry_ms = T.unsafe(nil)); end
+
+  # Delay before the next resumption GET: the peer's retry directive when
+  # present, floored so "retry: 0" cannot turn the deadline window into a
+  # back-to-back request loop, otherwise the standard reconnect delay.
+  # @param retry_ms [Integer, nil] retry directive in milliseconds
+  # @return [Numeric] delay in seconds
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:865
+  def resumption_delay(retry_ms); end
 
   # Reconnecting worker for SEP-1699 resumption. The server MAY close a
   # resumed stream again before returning the response (polling pattern),
@@ -6485,7 +6897,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param retry_ms [Integer, nil] retry directive from the closed stream
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:769
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:840
   def run_resumption_loop(request_id, cursor, retry_ms); end
 
   # Send elicitation response back to server via HTTP POST (MCP 2025-11-25)
@@ -6496,7 +6908,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param result [Hash] the elicitation result (action and optional content)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1141
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1278
   def send_elicitation_response(request_id, result); end
 
   # Send error response back to server via HTTP POST (MCP 2025-06-18)
@@ -6505,7 +6917,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param message [String] the error message
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1166
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1303
   def send_error_response(request_id, code, message); end
 
   # Send roots/list response back to server via HTTP POST (MCP 2025-06-18)
@@ -6513,7 +6925,7 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param result [Hash] the roots list result
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1098
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1235
   def send_roots_list_response(request_id, result); end
 
   # Send sampling response back to server via HTTP POST (MCP 2025-11-25)
@@ -6521,22 +6933,39 @@ class MCPClient::ServerStreamableHTTP < ::MCPClient::ServerBase
   # @param result [Hash] the sampling result (role, content, model, stopReason)
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1115
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1252
   def send_sampling_response(request_id, result); end
 
   # Start the long-lived GET connection for server events
   # Creates a separate thread to maintain SSE connection for server notifications
   # @return [void]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:638
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:704
   def start_events_connection; end
+
+  # Spawn the worker that POSTs one server-initiated response.
+  # @param response [Hash] the JSON-RPC response
+  # @return [Thread]
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:1348
+  def start_response_post_thread(response); end
 
   # Test basic connectivity to the HTTP endpoint
   # @return [void]
   # @raise [MCPClient::Errors::ConnectionError] if connection test fails
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:554
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:620
   def test_connection; end
+
+  # Default options for server initialization
+  # @return [Hash] Default options
+  # Validate the configured decompression ceiling.
+  # @param value [Object] the max_decompressed_body_bytes option
+  # @return [Integer] the validated positive byte limit
+  # @raise [ArgumentError] if the value is not a positive Integer
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:595
+  def validate_decompression_limit(value); end
 end
 
 # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:28
@@ -6546,6 +6975,15 @@ MCPClient::ServerStreamableHTTP::DEFAULT_MAX_RETRIES = T.let(T.unsafe(nil), Inte
 #
 # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:27
 MCPClient::ServerStreamableHTTP::DEFAULT_READ_TIMEOUT = T.let(T.unsafe(nil), Integer)
+
+# Characters allowed in a retained event id: printable ASCII, since the
+# value becomes an HTTP header value. Notably excludes CR/LF. The range
+# starts at 0x20 because a space is legal inside a field value, and
+# rejecting ids like "cursor 42" would silently strand resumption on a
+# stale cursor.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:53
+MCPClient::ServerStreamableHTTP::EVENT_ID_PATTERN = T.let(T.unsafe(nil), Regexp)
 
 # JSON-RPC request/notification plumbing for Streamable HTTP transport
 # This transport uses HTTP POST requests but expects Server-Sent Event formatted responses
@@ -6557,6 +6995,15 @@ module MCPClient::ServerStreamableHTTP::JsonRpcTransport
 
   private
 
+  # Incrementally decompress a gzip response body, aborting once the
+  # expanded output exceeds the configured ceiling.
+  # @param body [String] the gzip-compressed response body
+  # @return [String] the decompressed body
+  # @raise [MCPClient::Errors::ResponseTooLargeError] if the expansion limit is exceeded
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:89
+  def decompress_gzip(body); end
+
   # Split an SSE body into events. An event without an explicit `event:`
   # field has the default type "message" per the SSE specification; events
   # carrying only an id (priming events) are kept so their id is tracked.
@@ -6564,14 +7011,20 @@ module MCPClient::ServerStreamableHTTP::JsonRpcTransport
   # @return [Array(Array<Hash>, Integer, nil)] parsed events and the last
   #   retry directive (ms) received on this stream, if any
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:114
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:179
   def extract_sse_events(sse_body); end
 
   # Log HTTP response for Streamable HTTP
   # @param response [Faraday::Response] the HTTP response
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:19
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:52
   def log_response(response); end
+
+  # Configured ceiling for decompressed response bodies.
+  # @return [Integer] positive byte limit
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:109
+  def max_decompressed_body_bytes; end
 
   # Parse a Streamable HTTP JSON-RPC response (JSON or SSE format)
   # @param response [Faraday::Response] the HTTP response
@@ -6580,14 +7033,14 @@ module MCPClient::ServerStreamableHTTP::JsonRpcTransport
   # @raise [MCPClient::Errors::TransportError] if parsing fails
   # @raise [MCPClient::Errors::ServerError] if the response contains an error
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:29
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:62
   def parse_response(response, request = T.unsafe(nil)); end
 
   # Parse the data payload of a single SSE event.
   # @param json_data [String] the joined data lines
   # @return [Hash, Symbol, nil] the parsed message, :invalid, or nil for empty/non-object data
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:187
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:255
   def parse_sse_event_data(json_data); end
 
   # Parse a Server-Sent Event formatted response body.
@@ -6603,7 +7056,7 @@ module MCPClient::ServerStreamableHTTP::JsonRpcTransport
   # @return [Hash] the parsed JSON-RPC response
   # @raise [MCPClient::Errors::TransportError] if no response is found
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:63
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:126
   def parse_sse_response(sse_body, request_id = T.unsafe(nil)); end
 
   # SEP-1699 polling pattern: the server MAY close the POST stream before
@@ -6617,15 +7070,26 @@ module MCPClient::ServerStreamableHTTP::JsonRpcTransport
   # @raise [MCPClient::Errors::ServerError] when resumption fails
   # @raise [MCPClient::Errors::TransportError] when no cursor was received
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:90
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:153
   def resume_or_fail(events, request_id, retry_ms = T.unsafe(nil)); end
+
+  # Whether a server-supplied SSE event id may be retained as the
+  # resumption cursor: non-empty, bounded, and safe to place in an HTTP
+  # header. Shared by every SSE parsing path (GET events stream, POST
+  # response stream, and resumed GET), since all three feed the same
+  # Last-Event-ID header.
+  # @param id [String, nil] the raw id field
+  # @return [Boolean]
+  #
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:36
+  def retainable_event_id?(id); end
 
   # Track event ids for resumability, dispatch interleaved server messages
   # (requests, notifications, pings) and collect response candidates.
   # @param events [Array<Hash>] parsed SSE events
   # @return [Array(Array<Hash>, Boolean)] response candidates and whether invalid JSON was seen
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:159
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:224
   def route_sse_events(events); end
 
   # Choose the JSON-RPC response answering the originating request.
@@ -6633,15 +7097,82 @@ module MCPClient::ServerStreamableHTTP::JsonRpcTransport
   # @param request_id [Integer, String, nil] id of the originating request
   # @return [Hash, nil] the selected response, if any
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:204
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:274
   def select_sse_response(responses, request_id); end
 
   # @param event [Hash] a parsed SSE event
   # @return [Boolean] whether the event carries any data or id
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:151
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:216
   def sse_event_present?(event); end
 end
+
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:25
+MCPClient::ServerStreamableHTTP::JsonRpcTransport::DECOMPRESS_CHUNK_BYTES = T.let(T.unsafe(nil), Integer)
+
+# Default ceiling on the expanded size of a gzip-encoded response body.
+# The peer controls the compression ratio, so without a bound a tiny
+# compressed response ("gzip bomb") could expand to an arbitrarily large
+# string and exhaust host memory before JSON parsing.
+#
+# Hosts that legitimately exchange very large payloads (e.g. base64
+# resource blobs or audio) can raise it per server with the
+# max_decompressed_body_bytes option, so that whether a response is
+# accepted does not depend on the server's choice to gzip it.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http/json_rpc_transport.rb:24
+MCPClient::ServerStreamableHTTP::JsonRpcTransport::MAX_DECOMPRESSED_BODY_BYTES = T.let(T.unsafe(nil), Integer)
+
+# Ceiling on concurrent threads POSTing server-initiated responses
+# (pongs, roots/sampling/elicitation replies, error responses). Each
+# server request on the events stream costs one blocking HTTP POST in
+# its own thread; without a bound, a peer flooding requests could
+# accumulate threads and connections until the host is exhausted.
+# Responses beyond the budget are dropped, with saturation logged at most
+# once per SATURATION_LOG_INTERVAL seconds.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:62
+MCPClient::ServerStreamableHTTP::MAX_CONCURRENT_RESPONSE_POSTS = T.let(T.unsafe(nil), Integer)
+
+# Maximum length of a server-supplied SSE event id retained as the
+# resumption cursor. The id is echoed in the Last-Event-ID header of
+# subsequent requests, so an unbounded value means unbounded retained
+# memory and oversized outbound headers.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:46
+MCPClient::ServerStreamableHTTP::MAX_EVENT_ID_LENGTH = T.let(T.unsafe(nil), Integer)
+
+# Maximum bytes an SSE parse buffer (events stream or resumption GET) may
+# hold while waiting for an event terminator. The stream is
+# peer-controlled: without a cap, a hostile server could withhold the
+# blank-line delimiter forever and grow the buffer until the host runs
+# out of memory. Generous enough for any legitimate JSON-RPC event.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:80
+MCPClient::ServerStreamableHTTP::MAX_SSE_BUFFER_BYTES = T.let(T.unsafe(nil), Integer)
+
+# Floor for server-supplied retry directives on the long-lived events
+# stream. The directive is peer-controlled: honoring "retry: 0" literally
+# would let a hostile server that closes every stream drive a tight
+# reconnect loop (sustained CPU/TLS/connection churn). Waiting longer
+# than the directive stays SEP-1699 compliant — the retry field is a
+# lower bound on the reconnect delay, not an exact schedule.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:73
+MCPClient::ServerStreamableHTTP::MIN_EVENTS_RECONNECT_DELAY = T.let(T.unsafe(nil), Float)
+
+# Floor for the delay between resumption GETs. SEP-1699's polling pattern
+# wants fast reconnects, so this is far smaller than the events-stream
+# floor — it only prevents a peer-supplied "retry: 0" from turning the
+# deadline window into a back-to-back request loop.
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:40
+MCPClient::ServerStreamableHTTP::MIN_RESUMPTION_RECONNECT_DELAY = T.let(T.unsafe(nil), Float)
+
+# Minimum gap between "response budget saturated" warnings
+#
+# pkg:gem/ruby-mcp-client#lib/mcp_client/server_streamable_http.rb:65
+MCPClient::ServerStreamableHTTP::SATURATION_LOG_INTERVAL = T.let(T.unsafe(nil), Integer)
 
 # SSE connection settings
 #
@@ -6828,7 +7359,7 @@ class MCPClient::Tool
   # @param icons [Array<Hash>, nil] optional icons for display in user interfaces (MCP 2025-11-25)
   # @param meta [Hash, nil] optional `_meta` metadata attached to the tool (MCP 2025-11-25)
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:42
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:41
   def initialize(name:, description:, schema:, title: T.unsafe(nil), output_schema: T.unsafe(nil), annotations: T.unsafe(nil), server: T.unsafe(nil), task_support: T.unsafe(nil), icons: T.unsafe(nil), meta: T.unsafe(nil)); end
 
   # @!attribute [r] name
@@ -6885,7 +7416,7 @@ class MCPClient::Tool
   # @return [Boolean] true if the tool is destructive
   # @see #destructive_hint? for MCP 2025-11-25 annotation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:129
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:127
   def destructive?; end
 
   # Check the destructiveHint annotation (MCP 2025-11-25)
@@ -6895,7 +7426,7 @@ class MCPClient::Tool
   # is assumed to be potentially destructive.
   # @return [Boolean] defaults to true when not specified
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:156
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:154
   def destructive_hint?; end
 
   # @!attribute [r] name
@@ -6928,7 +7459,7 @@ class MCPClient::Tool
   # Only meaningful when readOnlyHint is false.
   # @return [Boolean] defaults to false when not specified
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:166
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:164
   def idempotent_hint?; end
 
   # @!attribute [r] name
@@ -6985,7 +7516,7 @@ class MCPClient::Tool
   # When true, the tool may interact with the "open world" (external entities).
   # @return [Boolean] defaults to true when not specified
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:175
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:173
   def open_world_hint?; end
 
   # @!attribute [r] name
@@ -7017,7 +7548,7 @@ class MCPClient::Tool
   # @return [Boolean] true if the tool is read-only
   # @see #read_only_hint? for MCP 2025-11-25 annotation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:122
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:120
   def read_only?; end
 
   # Check the readOnlyHint annotation (MCP 2025-11-25)
@@ -7026,13 +7557,13 @@ class MCPClient::Tool
   # without this hint is assumed to potentially modify its environment.
   # @return [Boolean] defaults to false when not specified
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:144
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:142
   def read_only_hint?; end
 
   # Check if the tool requires confirmation before execution
   # @return [Boolean] true if the tool requires confirmation
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:135
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:133
   def requires_confirmation?; end
 
   # @!attribute [r] name
@@ -7088,32 +7619,32 @@ class MCPClient::Tool
   # Check if the tool supports structured outputs (MCP 2025-06-18)
   # @return [Boolean] true if the tool has an output schema defined
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:183
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:181
   def structured_output?; end
 
   # Whether task-augmented execution is allowed for this tool (MCP 2025-11-25).
   # True when execution.taskSupport is 'optional' or 'required'.
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:190
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:188
   def supports_task?; end
 
   # Whether task-augmented execution is forbidden (the default when unset)
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:208
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:206
   def task_forbidden?; end
 
   # Whether task-augmented execution is optional for this tool
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:202
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:200
   def task_optional?; end
 
   # Whether task-augmented execution is required for this tool
   # @return [Boolean]
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:196
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:194
   def task_required?; end
 
   # @!attribute [r] name
@@ -7169,19 +7700,19 @@ class MCPClient::Tool
   # Convert tool to Anthropic Claude tool specification format
   # @return [Hash] Anthropic Claude tool specification with cleaned schema
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:101
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:99
   def to_anthropic_tool; end
 
   # Convert tool to Google Vertex AI tool specification format
   # @return [Hash] Google Vertex AI tool specification with cleaned schema
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:111
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:109
   def to_google_tool; end
 
   # Convert tool to OpenAI function specification format
   # @return [Hash] OpenAI function specification
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:88
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:86
   def to_openai_tool; end
 
   private
@@ -7190,7 +7721,7 @@ class MCPClient::Tool
   # @param obj [Object] schema element (Hash/Array/other)
   # @return [Object] cleaned schema without "$schema" keys
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:235
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:233
   def cleaned_schema(obj); end
 
   # Fetch a boolean annotation hint, checking both string and symbol keys.
@@ -7200,7 +7731,7 @@ class MCPClient::Tool
   # @param default [Boolean] the default value when the key is not present
   # @return [Boolean] the annotation value, or the default
   #
-  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:220
+  # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:218
   def fetch_annotation_hint(str_key, sym_key, default); end
 
   class << self
@@ -7209,7 +7740,7 @@ class MCPClient::Tool
     # @param server [MCPClient::ServerBase, nil] the server this tool belongs to
     # @return [MCPClient::Tool] tool instance
     #
-    # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:61
+    # pkg:gem/ruby-mcp-client#lib/mcp_client/tool.rb:59
     def from_json(data, server: T.unsafe(nil)); end
   end
 end
