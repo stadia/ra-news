@@ -117,6 +117,7 @@ class ContentService < OperationService
 
   #: (String url, ?Integer? count) -> Faraday::Response
   def faraday_fetch_html(url, count = 0)
+    count ||= 0
     response = Faraday.get(url)
     logger.debug "#{response.status} #{url}"
     return response.body unless response.status.between?(300, 399) && response.headers["location"]

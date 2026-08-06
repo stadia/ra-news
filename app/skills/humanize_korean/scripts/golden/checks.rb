@@ -113,6 +113,8 @@ module HumanizeKoreanGoldenChecks
         unless DEF_LINE.match?(line)
           line.to_enum(:scan, INLINE_MARKER).each do
             match = Regexp.last_match
+            next unless match
+
             markers << [ match[1], offset + match.begin(1) ]
           end
         end
@@ -125,7 +127,13 @@ module HumanizeKoreanGoldenChecks
       text.lines.each_with_object({}) do |line, definitions|
         next unless DEF_LINE.match?(line)
 
-        labels = line.to_enum(:scan, DEF_LABEL).map { match = Regexp.last_match; [ match.begin(0), match[1] ] }
+        labels = []
+        line.to_enum(:scan, DEF_LABEL).each do
+          match = Regexp.last_match
+          next unless match
+
+          labels << [ match.begin(0), match[1] ]
+        end
         labels.each_with_index do |(position, number), index|
           ending = labels[index + 1]&.first || line.length
           content = line[position...ending].sub(/^\s*\d{1,3}\)\s*/, "")
@@ -187,8 +195,11 @@ module HumanizeKoreanGoldenChecks
     def number_values(text)
       values = {}
       text.scan(NUM_TOKEN) do |matched_token|
+        m = Regexp.last_match
+        next unless m
+
         token = matched_token.delete(",")
-        unit = text[Regexp.last_match.end(0), 1]
+        unit = text[m.end(0), 1]
         multiplier = KO_UNIT_MULT[unit]
         if multiplier
           begin

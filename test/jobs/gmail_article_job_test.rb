@@ -15,4 +15,31 @@ class GmailArticleJobTest < ActiveSupport::TestCase
   test "GmailArticleJob은 LinkHelper를 포함한다" do
     assert_includes GmailArticleJob.ancestors, LinkHelper
   end
+
+  test "클라이언트 초기화 실패 시 last_checked_at을 갱신하지 않는다" do
+    site = sites(:newsletter)
+    site.update!(email: "bot@example.com")
+    original_checked_at = site.last_checked_at
+    site.define_singleton_method(:init_client) { nil }
+
+    Site.stub(:find, site) do
+      assert_nothing_raised { GmailArticleJob.perform_now([ site.id ]) }
+    end
+
+    assert_equal original_checked_at, site.reload.last_checked_at
+  end
+
+  test "클라이언트 초기화 성공 시 메일 조회 후 last_checked_at을 갱신한다" do
+    site = sites(:newsletter)
+    site.update!(email: "bot@example.com", last_checked_at: 2.days.ago)
+    client = Object.new
+    client.define_singleton_method(:fetch_email_links) { |*_args, **_kwargs| [] }
+    site.define_singleton_method(:init_client) { client }
+
+    Site.stub(:find, site) do
+      GmailArticleJob.perform_now([ site.id ])
+    end
+
+    assert_operator site.reload.last_checked_at, :>, 1.minute.ago
+  end
 end
