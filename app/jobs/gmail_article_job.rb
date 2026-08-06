@@ -18,6 +18,13 @@ class GmailArticleJob < ApplicationJob
     return if site.email.blank?
 
     links = fetch_new_email_links(site)
+    if links.nil?
+      # 클라이언트 초기화 실패: 조회가 수행되지 않았으므로 체크포인트를 갱신하지 않고 다음 사이트로 진행한다.
+      logger.error "Gmail 클라이언트 초기화에 실패해 last_checked_at을 갱신하지 않습니다 (site_id=#{site.id})"
+      GmailArticleJob.perform_later(ids) unless ids.empty?
+      return
+    end
+
     if links.empty?
       site.update!(last_checked_at: Time.zone.now)
       GmailArticleJob.perform_later(ids) unless ids.empty?
@@ -33,9 +40,13 @@ class GmailArticleJob < ApplicationJob
   private
 
   # Fetches new email links from the site's email account.
-  #: (Site site) -> Array[String]
+  # Returns nil when the client cannot be initialized (no fetch was performed).
+  #: (Site site) -> Array[String]?
   def fetch_new_email_links(site)
-    site.init_client.fetch_email_links(from: site.email, since: (site.last_checked_at || 1.day.ago) - 1.day)
+    client = site.init_client
+    return if client.nil?
+
+    client.fetch_email_links(from: site.email, since: (site.last_checked_at || 1.day.ago) - 1.day)
   end
 
   # Iterates over links and creates articles.

@@ -20,8 +20,9 @@ class YoutubeSiteJob < ApplicationJob
     videos = site.init_client&.videos
     return if videos.nil?
 
+    last_checked = site.last_checked_at
     videos.each do |video|
-      break if site.last_checked_at > video.published_at
+      break if last_checked && last_checked > video.published_at
 
       # 정규화된 URL 사용
       url = "https://#{YOUTUBE_NORMALIZED_HOST}/watch?v=#{video.id}"

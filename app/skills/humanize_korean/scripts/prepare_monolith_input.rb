@@ -265,7 +265,12 @@ end
 def sentence_pieces(text, start_pos, end_pos, target)
   segment = text[start_pos...end_pos]
   bounds = []
-  segment.to_enum(:scan, SENT_END_RE).each { bounds << start_pos + Regexp.last_match.end(0) if start_pos + Regexp.last_match.end(0) < end_pos }
+  segment.to_enum(:scan, SENT_END_RE).each do
+    m = Regexp.last_match
+    next unless m
+
+    bounds << start_pos + m.end(0) if start_pos + m.end(0) < end_pos
+  end
   pieces = []
   piece_start = start_pos
   previous = nil
@@ -292,7 +297,10 @@ def pack_segment(body, segment_start, segment_end, target, _max_chunk, warnings)
   units = []
   position = segment_start
   body[segment_start...segment_end].to_enum(:scan, PARA_SEP_RE).each do
-    match_end = segment_start + Regexp.last_match.end(0)
+    m = Regexp.last_match
+    next unless m
+
+    match_end = segment_start + m.end(0)
     break if match_end >= segment_end
 
     units << [ position, match_end ]
@@ -389,6 +397,8 @@ def render_chunk_header(index, total, starts_with_heading)
 end
 
 def compute_metrics(text, options)
+  return nil unless METRICS_PROVIDER
+
   METRICS_PROVIDER.compute_all(text, genre: options[:genre], baseline_path: options[:baseline])
 end
 
@@ -433,8 +443,8 @@ def run_chunk_mode(options, diagnosis)
   degraded = 0
   spans.each_with_index do |span, offset|
     index = offset + 1
-    chunk_text = text[span["start"]...span["end"]]
-    first_line = chunk_text.sub(/\A\n+/, "").split("\n", 2).first
+    chunk_text = text[span["start"]...span["end"]] || ""
+    first_line = chunk_text.sub(/\A\n+/, "").split("\n", 2).first || ""
     starts_with_heading = !span["passthrough"] && HEADING_LINE_RE.match?(first_line)
     entry = {
       "index" => index, "start" => span["start"], "end" => span["end"],

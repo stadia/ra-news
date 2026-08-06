@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -54,7 +54,8 @@ class RedditSiteJob < ApplicationJob
 
     begin
       parsed_url = URI.parse(url)
-      return if parsed_url.path.nil? || parsed_url.path.size < 2
+      parsed_path = parsed_url.path
+      return if parsed_path.nil? || parsed_path.size < 2
     rescue URI::InvalidURIError
       return
     end

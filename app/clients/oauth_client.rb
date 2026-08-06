@@ -24,8 +24,9 @@ module OauthClient
     raise ArgumentError, "OAuth 설정 이름이 비어있습니다" if oauth_preference.name.blank?
 
     provider = extract_provider_from_preference_name(oauth_preference.name)
-    config = OAUTH_CONFIG[provider.to_sym]
-    raise ArgumentError, "지원하지 않는 provider입니다: #{provider}" if config.blank?
+    config = OAUTH_CONFIG.fetch(provider.to_sym) do
+      raise ArgumentError, "지원하지 않는 provider입니다: #{provider}"
+    end
 
     OAuth2::Client.new(
       oauth_preference.client_id,

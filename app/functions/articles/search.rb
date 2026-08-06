@@ -104,6 +104,14 @@ module Articles
               end
             end
 
+          # `break`, not `next`: neither `remaining` nor `selected` has been
+          # touched at this point, so `next` would re-enter the loop with the
+          # condition unchanged and spin forever on a live search request.
+          # `max_by` on a non-empty array always returns an element, so this
+          # cannot fire today -- the point is that it stays harmless if it ever
+          # does.
+          break unless best
+
           selected << best
           remaining.delete(best)
 
