@@ -15,6 +15,21 @@ class SocialControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to madmin_social_index_path
   end
 
+  # OAuth Preference 미설정 시 OauthClient.build의 ArgumentError가 500이 아니라 안내 redirect가 되어야 한다.
+  test "GET provider_authorize redirects with alert when oauth config is missing" do
+    get "/social/xcom/authorize"
+
+    assert_redirected_to madmin_social_index_path
+    assert_match "OAuth 설정이 비어있습니다", flash[:alert]
+  end
+
+  test "GET provider_callback redirects with alert when oauth config is missing" do
+    get "/social/xcom/callback", params: { code: "auth_code", state: "state123" }
+
+    assert_redirected_to madmin_social_index_path
+    assert_match "OAuth 설정이 비어있습니다", flash[:alert]
+  end
+
   # 콜백 성공 시 인가 시작 때 조회한 oauth preference에 토큰이 저장된다(재조회 없이 동일 객체 재사용).
   test "GET provider_callback saves token into the existing oauth preference" do
     pref = Preference.create!(name: "xcom_oauth", value: {
