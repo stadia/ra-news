@@ -51,4 +51,26 @@ class HackerNewsSiteJobTest < ActiveSupport::TestCase
     # 종료 시각(시작+30분)이 아니라 수집 시작 시각이 커서로 저장되어야 한다
     assert_in_delta started_at, site.reload.last_checked_at, 1
   end
+
+  test "오래된 스토리를 만나면 수집을 중단한다 (break 경로)" do
+    site = sites(:hn_site)
+    site.update!(last_checked_at: Time.current)
+
+    old_item = { "type" => "story", "url" => "https://example.com/old",
+                 "title" => "Old", "text" => "", "time" => 1.day.ago.to_i }
+    new_item = { "type" => "story", "url" => "https://example.com/new",
+                 "title" => "New", "text" => "", "time" => Time.current.to_i }
+
+    HackerNews.stub(:new_stories, [ 1, 2 ]) do
+      HackerNews.stub(:item, ->(id) { id == 1 ? old_item : new_item }) do
+        assert_no_difference "Article.count" do
+          HackerNewsSiteJob.perform_now
+        end
+      end
+    end
+
+    # 첫 스토리가 오래되면 process_story가 false를 반환해 루프가 중단된다.
+    # 뒤의 신규 스토리(2번)는 처리되지 않으므로 기사가 생성되지 않는다.
+    assert_equal 0, Article.where(origin_url: "https://example.com/new").count
+  end
 end
