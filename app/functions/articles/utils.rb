@@ -16,7 +16,7 @@ module Articles
         boundary_index = normalized.rindex(Article::TITLE_BOUNDARY_PATTERN, content_limit)
         min_boundary_index = (content_limit * Article::TITLE_BOUNDARY_MIN_RATIO).floor
         cut_index = boundary_index && boundary_index >= min_boundary_index ? boundary_index : content_limit
-        "#{normalized[0...cut_index].rstrip}#{Article::TITLE_OMISSION}"
+        "#{normalized[0...cut_index].to_s.rstrip}#{Article::TITLE_OMISSION}"
       end
 
       # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
@@ -30,7 +30,7 @@ module Articles
           return true if host.blank?
 
           # Check for dangerous file extensions
-          return true if %w[.epub .pdf .exe .zip .rar].any? { |ext| uri.path.end_with?(ext) }
+          return true if %w[.epub .pdf .exe .zip .rar].any? { |ext| uri.path.to_s.end_with?(ext) }
 
           Preference.ignore_hosts.any? do |ignore_host|
             # 정확한 도메인 매칭

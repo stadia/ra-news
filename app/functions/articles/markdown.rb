@@ -29,7 +29,7 @@ module Articles
         return if article.display_summary_key.blank?
 
         "\n## #{I18n.t('articles.markdown.summary_heading')}\n" \
-          "#{article.display_summary_key.map { |item| "- #{item}" }.join("\n")}"
+          "#{Array(article.display_summary_key).map { |item| "- #{item}" }.join("\n")}"
       end
 
       #: (Article article) -> String?

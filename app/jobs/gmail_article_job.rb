@@ -35,7 +35,7 @@ class GmailArticleJob < ApplicationJob
   # Fetches new email links from the site's email account.
   #: (Site site) -> Array[String]
   def fetch_new_email_links(site)
-    site.init_client.fetch_email_links(from: site.email, since: site.last_checked_at - 1.day)
+    site.init_client.fetch_email_links(from: site.email, since: (site.last_checked_at || 1.day.ago) - 1.day)
   end
 
   # Iterates over links and creates articles.

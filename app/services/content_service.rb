@@ -100,7 +100,7 @@ class ContentService < OperationService
   def github_readme_url(url)
     logger.info "Fetching GitHub README from: #{url}"
     uri = URI.parse(url)
-    parts = uri.path.split("/").reject(&:blank?)
+    parts = uri.path.to_s.split("/").reject(&:blank?)
     return nil if parts.size < 2
 
     owner, repo = parts[0], parts[1]

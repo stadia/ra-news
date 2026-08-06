@@ -45,13 +45,13 @@ class DeeplTranslationService < OperationService
 
     scalar_out = scalars.keys.zip(outputs.first(scalars.size)).to_h
     Success(
-      title_ja: scalar_out[:title_ja].strip,
+      title_ja: scalar_out[:title_ja].to_s.strip,
       summary_key_ja: outputs.last(keys.size).map { |t| t.to_s.strip }.reject(&:blank?),
       summary_detail_ja: {
-        "introduction" => scalar_out[:introduction].strip,
-        "conclusion" => scalar_out[:conclusion].strip
+        "introduction" => scalar_out[:introduction].to_s.strip,
+        "conclusion" => scalar_out[:conclusion].to_s.strip
       },
-      summary_body_ja: scalar_out[:summary_body_ja].strip
+      summary_body_ja: scalar_out[:summary_body_ja].to_s.strip
     )
   rescue DeepL::Exceptions::QuotaExceeded
     mark_quota_exceeded!
