@@ -59,9 +59,14 @@ class DeeplTranslationService < OperationService
     #
     # The `.to_s` below is then unreachable for nil and kept only so the
     # expression types as String; the recovery decision is made here.
-    if scalar_out.values.any?(&:nil?)
+    #
+    # `summary_key` 영역(outputs의 뒷부분)의 nil도 같은 실패다 — 거기서 nil을
+    # 통과시키면 `.to_s.strip`이 ""로 만들어 reject돼 일본어 요약 항목이 조용히 유실된다.
+    if outputs.any?(&:nil?)
+      nil_labels = scalar_out.select { |_, v| v.nil? }.keys
+      nil_labels << :summary_key_ja if outputs.last(keys.size).any?(&:nil?)
       logger.warn "DeepL returned a nil translation for article #{article.id} " \
-                  "(#{scalar_out.select { |_, v| v.nil? }.keys.join(', ')}); falling back"
+                  "(#{nil_labels.join(', ')}); falling back"
       return Failure(:deepl_error)
     end
 

@@ -59,6 +59,19 @@ class DeeplTranslationServiceTest < ActiveSupport::TestCase
     assert_equal "エージェント題", attrs[:title_ja]
   end
 
+  # nil 검사가 scalar 영역만 볼 때 놓치던 경로: summary_key 번역 원소의 nil도
+  # 폴백 대상 실패여야 한다(그렇지 않으면 일본어 요약 항목이 조용히 유실된다).
+  test "summary_key 번역 원소가 nil이어도 실패를 돌려준다" do
+    article = translatable_article
+    article.update!(summary_key: [ "핵심" ])
+
+    # scalars 4개는 정상, summary_key 영역 마지막 원소만 nil
+    result = build_service([ "題", "はじめに", "むすび", "本文", nil ]).call(article)
+
+    assert_predicate result, :failure?
+    assert_equal :deepl_error, result.failure
+  end
+
   test "모든 번역이 채워져 있으면 성공을 돌려준다" do
     article = translatable_article
     result = build_service([ "題", "はじめに", "むすび", "本文" ]).call(article)
