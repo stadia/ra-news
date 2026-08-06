@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -44,6 +44,27 @@ class DeeplTranslationService < OperationService
     return Failure(:deepl_error) if outputs.size != inputs.size
 
     scalar_out = scalars.keys.zip(outputs.first(scalars.size)).to_h
+
+    # A nil element means DeepL answered with a translation object whose text
+    # was null -- the size check above only catches a short response.
+    #
+    # This must stay a Failure. `japanese_translation` in ArticleAgentsService
+    # falls back to ArticleJapaneseAgent on failure, but takes a Success at
+    # face value: `return attrs if attrs.is_a?(Hash)`. Letting the nils through
+    # as "" would therefore skip the fallback entirely and either persist empty
+    # Japanese columns (readers silently get the Korean text, because
+    # `display_summary_body` is `summary_body_ja.presence || summary_body`) or
+    # fail as `:japanese_agent_empty` -- a label naming an agent that was never
+    # called.
+    #
+    # The `.to_s` below is then unreachable for nil and kept only so the
+    # expression types as String; the recovery decision is made here.
+    if scalar_out.values.any?(&:nil?)
+      logger.warn "DeepL returned a nil translation for article #{article.id} " \
+                  "(#{scalar_out.select { |_, v| v.nil? }.keys.join(', ')}); falling back"
+      return Failure(:deepl_error)
+    end
+
     Success(
       title_ja: scalar_out[:title_ja].to_s.strip,
       summary_key_ja: outputs.last(keys.size).map { |t| t.to_s.strip }.reject(&:blank?),
