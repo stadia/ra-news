@@ -65,7 +65,7 @@ class MastodonService < SocialMediaService
                            .sort_by(&:taggings_count)
                            .reverse
                            .take(3)
-    tags = top_tags.map { |tag| "##{tag.name.gsub(/\s+/, '_').downcase}" }.join(" ")
+    tags = top_tags.map { |tag| "##{tag.name.to_s.gsub(/\s+/, '_').downcase}" }.join(" ")
     link = article_link(article.slug)
 
     # Mastodon은 URL을 실제 길이로 계산하므로 링크 길이도 포함

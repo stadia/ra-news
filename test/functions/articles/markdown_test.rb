@@ -49,6 +49,23 @@ class Articles::MarkdownTest < ActiveSupport::TestCase
     assert_no_match(/## 요약/, markdown)
   end
 
+  # summary_key는 jsonb라 String도 올 수 있다 — 한 줄 불릿으로 렌더한다.
+  test "render renders String summary_key as a single bullet" do
+    markdown = Articles::Markdown.render(build_article(summary_key: "한 줄 요약"))
+
+    assert_match(/## 요약\n- 한 줄 요약/, markdown)
+  end
+
+  # summary_key가 Hash처럼 예상 밖 형태면 깨진 출력 대신 섹션을 생략하고 로그를 남긴다.
+  test "render omits summary section when summary_key has unexpected shape" do
+    article = build_article(summary_key: { "unexpected" => "hash" })
+
+    markdown = Articles::Markdown.render(article)
+
+    assert_no_match(/## 요약/, markdown)
+    assert_no_match(/unexpected/, markdown)
+  end
+
   test "render omits body section when summary_body is blank" do
     markdown = Articles::Markdown.render(build_article(summary_body: nil, summary_body_ja: nil))
 

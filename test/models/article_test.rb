@@ -586,6 +586,21 @@ class ArticleTest < ActiveSupport::TestCase
     end
   end
 
+  test "should_ignore_url?은 파싱 불가 URL에 대해 크래시 없이 true를 반환해야 한다" do
+    assert_nothing_raised do
+      assert Articles::Utils.should_ignore_url?("ht tp://invalid url with spaces")
+    end
+  end
+
+  # host 가드가 완화돼도 nil path가 "통과"로 해석되지 않도록 fail-closed를 유지한다.
+  test "should_ignore_url?은 nil path를 무시 대상으로 처리해야 한다" do
+    fake_uri = Struct.new(:host, :path).new("example.com", nil)
+
+    URI.stub(:parse, fake_uri) do
+      assert Articles::Utils.should_ignore_url?("https://example.com")
+    end
+  end
+
   test "should_ignore_url?은 위험한 파일 확장자에 대해 true를 반환해야 한다" do
     dangerous_urls = [
       "https://example.com/file.pdf",

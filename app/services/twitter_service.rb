@@ -62,7 +62,7 @@ class TwitterService < SocialMediaService
 
     # 태그와 링크를 먼저 생성해서 길이 계산 (taggings_count가 가장 높은 태그 하나만)
     top_tag = article.tags.select { |it| it.is_confirmed? }.max_by(&:taggings_count)
-    tags = top_tag ? "##{top_tag.name.gsub(/\s+/, '_').downcase}" : ""
+    tags = top_tag ? "##{top_tag.name.to_s.gsub(/\s+/, '_').downcase}" : ""
     link = article_link(article.slug)
 
     # 태그와 링크를 위한 공간 확보 (공백 문자들 포함)

@@ -207,8 +207,8 @@ class Article < ApplicationRecord
       uri = URI.parse(url)
       if uri.query.present?
         URI.decode_www_form(uri.query).to_h["v"]
-      elsif uri.path.start_with?("/live")
-        uri.path.split("/").last
+      elsif (path = uri.path) && path.start_with?("/live")
+        path.split("/").last
       end
     end
   rescue URI::InvalidURIError

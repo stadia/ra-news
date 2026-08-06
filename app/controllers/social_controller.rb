@@ -3,18 +3,17 @@
 # rbs_inline: enabled
 
 class SocialController < ApplicationController
+  before_action :set_oauth_client, only: %i[provider_authorize provider_callback]
+
   # provider OAuth2 인증 시작
   #: () -> void
   def provider_authorize
-    oauth_config = Preference.get_object("#{provider}_oauth")
-    client = OauthClient.build(oauth_config)
-
     # PKCE 사용 (X.com OAuth2.0 요구사항)
     code_verifier = SecureRandom.urlsafe_base64(32)
 
     session["#{provider}_code_verifier"] = code_verifier
 
-    authorize_url = authorize_url(client, code_verifier)
+    authorize_url = authorize_url(@client, code_verifier)
 
     session["#{provider}_state"] = authorize_url.match(/state=([^&]+)/)[1]
 
@@ -30,27 +29,24 @@ class SocialController < ApplicationController
       return
     end
 
-    oauth_config = Preference.get_object("#{provider}_oauth")
-    client = OauthClient.build(oauth_config)
-
     begin
-      token = client.auth_code.get_token(
+      token = @client.auth_code.get_token(
         params[:code],
         redirect_uri: social_provider_callback_url(provider: provider),
         code_verifier: session["#{provider}_code_verifier"]
       )
 
-      # Access token을 기존 oauth preference에 저장
-      oauth_preference = Preference.get_object("#{provider}_oauth")
-      current_config = oauth_preference.value || {}
+      # Access token을 기존 oauth preference에 저장한다.
+      # set_oauth_client에서 설정 존재가 보장된 같은 객체를 재사용하므로 재조회하지 않는다.
+      current_config = @oauth_config.value || {}
 
-      oauth_preference.value = current_config.merge(
+      @oauth_config.value = current_config.merge(
         access_token: token.token,
         refresh_token: token.refresh_token,
         expires_at: token.expires_at,
         token_created_at: Time.current.to_i
       )
-      oauth_preference.save!
+      @oauth_config.save!
 
       session.delete("#{provider}_code_verifier")
       session.delete("#{provider}_state")
@@ -62,6 +58,17 @@ class SocialController < ApplicationController
   end
 
   private
+
+  # OAuth 설정이 없거나 잘못됐으면 500 대신 안내와 함께 redirect한다.
+  # (OauthClient.build은 미설정/이름 누락/미지원 provider를 ArgumentError로 던진다)
+  #: () -> void
+  def set_oauth_client
+    @oauth_config = Preference.get_object("#{provider}_oauth")
+    @client = OauthClient.build(@oauth_config)
+  rescue ArgumentError => e
+    logger.warn "OAuth 설정 오류 (#{provider}): #{e.message}"
+    redirect_to madmin_social_index_path, alert: t("social.oauth.error", message: e.message)
+  end
 
   def provider
     params[:provider].presence || "xcom"

@@ -46,7 +46,7 @@ class GmailArticleJob < ApplicationJob
     client = site.init_client
     return if client.nil?
 
-    client.fetch_email_links(from: site.email, since: site.last_checked_at - 1.day)
+    client.fetch_email_links(from: site.email, since: (site.last_checked_at || 1.day.ago) - 1.day)
   end
 
   # Iterates over links and creates articles.

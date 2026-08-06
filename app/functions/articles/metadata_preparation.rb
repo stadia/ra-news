@@ -49,7 +49,7 @@ module Articles
 
       #: (String url) -> ActiveSupport::TimeWithZone?
       def url_to_published_at(url)
-        match_data = URI.parse(url).path.match(%r{(\d{4})[/-](\d{1,2})[/-](\d{1,2})})
+        match_data = URI.parse(url).path&.match(%r{(\d{4})[/-](\d{1,2})[/-](\d{1,2})})
         return unless match_data
 
         Time.zone.parse("#{match_data[1]}-#{match_data[2]}-#{match_data[3]}")

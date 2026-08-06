@@ -14,6 +14,12 @@ module Articles
       assert_kind_of OperationService, service
     end
 
+    test "url_to_published_at은 mailto 같은 opaque URI에서 크래시 없이 nil을 반환한다" do
+      assert_nothing_raised do
+        assert_nil Articles::MetadataPreparation.url_to_published_at("mailto:someone@example.com")
+      end
+    end
+
     test "트래킹 파라미터를 제거하면서 중복 쿼리 파라미터는 보존한다" do
       article = Article.new(url: "https://example.com/post?tag=ruby&utm_source=x&tag=rails", title: "Existing Title")
       response = Response.new("<html></html>", 200, {})

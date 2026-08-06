@@ -4,6 +4,8 @@
 
 module Articles
   module Utils
+    extend FunctionLogger
+
     class << self
       #: (untyped value) -> untyped
       def truncate_title(value)
@@ -30,7 +32,10 @@ module Articles
           return true if host.blank?
 
           # Check for dangerous file extensions
-          return true if %w[.epub .pdf .exe .zip .rar].any? { |ext| uri.path.end_with?(ext) }
+          # host 가드가 완화돼도 nil path가 "통과"로 해석되지 않도록 fail-closed로 둔다.
+          path = uri.path
+          return true if path.nil?
+          return true if %w[.epub .pdf .exe .zip .rar].any? { |ext| path.end_with?(ext) }
 
           Preference.ignore_hosts.any? do |ignore_host|
             # 정확한 도메인 매칭

@@ -167,6 +167,17 @@ class UserTest < ActiveSupport::TestCase
     assert_not @user.has_role?(:admin)
   end
 
+  # 레거시 행이나 직접 SQL 갱신으로 roles가 NULL이어도 권한 검사는 fail-closed여야 한다.
+  test "has_role?은 roles가 NULL이어도 크래시 없이 false를 반환한다" do
+    @user.update_column(:roles, nil)
+    @user.reload
+
+    assert_nothing_raised do
+      assert_not @user.has_role?(:admin)
+      assert_not @user.admin?
+    end
+  end
+
   test "사용자는 여러 역할을 가질 수 있어야 한다" do
     @admin.roles << @editor_role.name
 

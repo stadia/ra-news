@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -64,7 +64,7 @@ class User < ApplicationRecord
   end
 
   def has_role?(role_name)
-    roles.include? role_name.to_s
+    Array(roles).include? role_name.to_s
   end
 
   def roles=(role_names)
