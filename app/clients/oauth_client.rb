@@ -27,7 +27,6 @@ module OauthClient
     config = OAUTH_CONFIG.fetch(provider.to_sym) do
       raise ArgumentError, "지원하지 않는 provider입니다: #{provider}"
     end
-    raise ArgumentError, "지원하지 않는 provider입니다: #{provider}" if config.empty?
 
     OAuth2::Client.new(
       oauth_preference.client_id,

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -15,9 +15,14 @@ class SlackController < ApplicationController
     team = oauth.fetch("team")
     incoming_webhook = oauth.fetch("incoming_webhook")
 
-    channel = nil
+    # Assigned before the transaction rather than inside it, so `channel` is
+    # never nil afterwards. The previous `channel = nil` + `channel&.` pair
+    # type-checked but meant a nil would have rendered the success page with a
+    # blank channel name -- telling the user Slack was connected when it was
+    # not. `find_or_initialize_by` only reads, so it does not need to be in the
+    # transaction; the write below still is.
+    channel = SlackChannel.find_or_initialize_by(remote_id: team.fetch("id"))
     SlackChannel.transaction do
-      channel = SlackChannel.find_or_initialize_by(remote_id: team.fetch("id"))
       channel.assign_attributes(
         name: team.fetch("name"),
         webhook_url: incoming_webhook.fetch("url"),
@@ -29,8 +34,7 @@ class SlackController < ApplicationController
       channel.save!
     end
 
-    channel_name = channel&.channel_name
-    redirect_to oauth_result_path(provider: "slack", success: "true", channel_name: channel_name)
+    redirect_to oauth_result_path(provider: "slack", success: "true", channel_name: channel.channel_name)
   rescue KeyError, SlackClient::ApiError, ActiveRecord::RecordInvalid => e
     redirect_to oauth_result_path(provider: "slack", success: "false", error: e.message)
   end

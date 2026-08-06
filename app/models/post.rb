@@ -176,7 +176,13 @@ class Post < ApplicationRecord
       return
     end
     local_parent = parent
-    return unless local_parent
+    unless local_parent
+      # Unreachable: the guard above already returns when `parent` is nil.
+      # Logged anyway so this exit matches its siblings -- a silent return
+      # here would blank out the debug trail exactly where you would look.
+      logger.debug { "ReplyNotification skip: parent #{parent_id} disappeared between checks" }
+      return
+    end
 
     if local_parent.user_id == user_id
       logger.debug { "ReplyNotification skip: self-reply by user #{user_id}" }

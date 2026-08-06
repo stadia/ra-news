@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 
 class Views::Articles::Show < Views::Base
@@ -36,8 +36,10 @@ class Views::Articles::Show < Views::Base
   # Shift markdown headings so that # and ## become ### (minimum h3)
   def downshift_headings(markdown)
     markdown.gsub(/^(#+)\s/) do
-      match = Regexp.last_match(1)
-      level = match ? match.length : 0
+      # Group 1 always participates in this pattern, so the fallback is
+      # unreachable. It is 1 rather than 0 so that if it ever does fire the
+      # result is still the h3 this method promises, not an h2.
+      level = Regexp.last_match(1)&.length || 1
       new_level = [ level + 2, 6 ].min
       "#" * new_level + " "
     end
