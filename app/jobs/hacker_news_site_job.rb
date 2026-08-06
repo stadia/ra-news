@@ -8,6 +8,8 @@ class HackerNewsSiteJob < ApplicationJob
     site = Site.hacker_news.first
     return if site.nil?
 
+    # 수집 중 발행되는 스토리를 놓치지 않도록 조회 전 시각을 커서로 사용한다.
+    run_started_at = Time.zone.now
     top_story_ids = HackerNews.new_stories
     return if top_story_ids.blank?
 
@@ -21,7 +23,7 @@ class HackerNewsSiteJob < ApplicationJob
     top_story_ids.each do |id|
       break unless process_story(id, site, tag_pattern, last_checked)
     end
-    site.update(last_checked_at: Time.zone.now)
+    site.update(last_checked_at: run_started_at)
   end
 
   private
