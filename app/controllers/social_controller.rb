@@ -43,6 +43,7 @@ class SocialController < ApplicationController
       # Access token을 기존 oauth preference에 저장
       oauth_preference = Preference.get_object("#{provider}_oauth")
       return redirect_to madmin_social_index_path, alert: t("social.oauth.error", message: "preference missing") unless oauth_preference
+
       current_config = oauth_preference.value || {}
 
       oauth_preference.value = current_config.merge(
