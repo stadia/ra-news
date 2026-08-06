@@ -153,7 +153,7 @@ class ArticlesController < ApplicationController
         ArticleJob.perform_later(@article.id)
         format.html { redirect_to article_path(@article), notice: t("articles.create.success") }
       else
-        if @article.errors.details[:origin_url]&.any? { |e| e[:error] == :taken } && @article.errors.details[:url]&.any? { |e| e[:error] == :taken }
+        if @article.errors.details[:origin_url].any? { |e| e[:error] == :taken } && @article.errors.details[:url].any? { |e| e[:error] == :taken }
           format.html { redirect_to article_path(existing_article), notice: t("articles.create.already_exists") }
         else
           format.html { render Views::Articles::New.new(article: @article), status: :unprocessable_entity }

@@ -40,19 +40,17 @@ class SocialController < ApplicationController
         code_verifier: session["#{provider}_code_verifier"]
       )
 
-      # Access token을 기존 oauth preference에 저장
-      oauth_preference = Preference.get_object("#{provider}_oauth")
-      return redirect_to madmin_social_index_path, alert: t("social.oauth.error", message: "preference missing") unless oauth_preference
+      # Access token을 기존 oauth preference에 저장한다.
+      # OauthClient.build가 blank 설정을 raise로 걸러낸 같은 객체를 재사용하므로 재조회하지 않는다.
+      current_config = oauth_config.value || {}
 
-      current_config = oauth_preference.value || {}
-
-      oauth_preference.value = current_config.merge(
+      oauth_config.value = current_config.merge(
         access_token: token.token,
         refresh_token: token.refresh_token,
         expires_at: token.expires_at,
         token_created_at: Time.current.to_i
       )
-      oauth_preference.save!
+      oauth_config.save!
 
       session.delete("#{provider}_code_verifier")
       session.delete("#{provider}_state")

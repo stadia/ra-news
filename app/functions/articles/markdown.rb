@@ -7,6 +7,8 @@
 # model's surface; reads only the article's public locale-aware display methods.
 module Articles
   module Markdown
+    extend FunctionLogger
+
     class << self
       #: (Article article) -> String
       def render(article)
@@ -26,10 +28,20 @@ module Articles
 
       #: (Article article) -> String?
       def summary_key_section(article)
-        return if article.display_summary_key.blank?
+        # summary_key는 jsonb이라 선언 타입(Array[String] | String | nil) 밖의 형태(Hash 등)도
+        # 런타임에 올 수 있다 — 경계에서 untyped로 받아 형태를 직접 검사한다.
+        items = T.cast(article.display_summary_key, T.untyped)
+        return if items.blank?
+
+        items = [ items ] if items.is_a?(String)
+        unless items.is_a?(Array)
+          # 깨진 출력(- ["k", 1]) 대신 로그를 남기고 섹션을 생략한다.
+          logger.error "summary_key has unexpected shape for article #{article.id}: #{items.class}"
+          return
+        end
 
         "\n## #{I18n.t('articles.markdown.summary_heading')}\n" \
-          "#{Array(article.display_summary_key).map { |item| "- #{item}" }.join("\n")}"
+          "#{items.map { |item| "- #{item}" }.join("\n")}"
       end
 
       #: (Article article) -> String?
