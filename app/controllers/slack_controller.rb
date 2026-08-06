@@ -29,7 +29,8 @@ class SlackController < ApplicationController
       channel.save!
     end
 
-    redirect_to oauth_result_path(provider: "slack", success: "true", channel_name: channel.channel_name)
+    channel_name = channel&.channel_name
+    redirect_to oauth_result_path(provider: "slack", success: "true", channel_name: channel_name)
   rescue KeyError, SlackClient::ApiError, ActiveRecord::RecordInvalid => e
     redirect_to oauth_result_path(provider: "slack", success: "false", error: e.message)
   end

@@ -30,12 +30,12 @@ class RssSiteJob < ApplicationJob
 
     site.update!(last_checked_at: Time.zone.now)
   rescue Faraday::ForbiddenError, Faraday::UnauthorizedError => e
-    logger.warn("Site #{site.id} (#{site.name}) discarded: #{e.class} - #{e.message}")
-    site.discard!
+    logger.warn("Site #{site&.id} (#{site&.name}) discarded: #{e.class} - #{e.message}")
+    site&.discard!
   rescue Faraday::TooManyRequestsError => e
-    logger.warn("Site #{site.id} (#{site.name}) rate limited, skipping: #{e.message}")
+    logger.warn("Site #{site&.id} (#{site&.name}) rate limited, skipping: #{e.message}")
   rescue StandardError => e
-    logger.error("Site #{site.id} (#{site.name}) failed: #{e.class} - #{e.message}")
+    logger.error("Site #{site&.id} (#{site&.name}) failed: #{e.class} - #{e.message}")
   ensure
     RssSiteJob.perform_later(ids) unless ids.empty?
   end

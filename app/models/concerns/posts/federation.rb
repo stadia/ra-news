@@ -13,10 +13,10 @@ module Posts::Federation
   #: () -> Hash[String, untyped]
   def to_activitypub_object
     custom = {}
-    if parent.present?
-      custom["inReplyTo"] = parent.federated_url || parent.public_url
-    elsif article.present?
-      custom["inReplyTo"] = article.federated_url || Rails.application.routes.url_helpers.article_url(article)
+    if (parent_local = parent)
+      custom["inReplyTo"] = parent_local.federated_url || parent_local.public_url
+    elsif (article_local = article)
+      custom["inReplyTo"] = article_local.federated_url || Rails.application.routes.url_helpers.article_url(article_local)
     end
 
     if tag_list.any?
@@ -45,8 +45,8 @@ module Posts::Federation
   # namespace (/@user/blog/:slug); everything else at /posts/:slug.
   #: () -> String
   def public_url
-    if blog? && user
-      Rails.application.routes.url_helpers.user_profile_blog_post_url(username: user.username, slug: self)
+    if blog? && (u = user)
+      Rails.application.routes.url_helpers.user_profile_blog_post_url(username: u.username, slug: self)
     else
       Rails.application.routes.url_helpers.post_url(self)
     end

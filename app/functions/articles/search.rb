@@ -104,6 +104,8 @@ module Articles
               end
             end
 
+          next unless best
+
           selected << best
           remaining.delete(best)
 

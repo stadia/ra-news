@@ -375,7 +375,10 @@ module MetricsV2
       queue = [ [ 0, a.length, 0, b.length ] ]
       blocks = []
       until queue.empty?
-        alo, ahi, blo, bhi = queue.pop
+        entry = queue.pop
+        next if entry.nil?
+
+        alo, ahi, blo, bhi = entry
         i, j, size = find_longest_match(a, index, alo, ahi, blo, bhi)
         next if size.zero?
 
@@ -386,8 +389,9 @@ module MetricsV2
       blocks.sort_by! { |block| [ block[0], block[1] ] }
       merged = []
       blocks.each do |i, j, size|
-        if !merged.empty? && merged[-1][0] + merged[-1][2] == i && merged[-1][1] + merged[-1][2] == j
-          merged[-1][2] += size
+        last = merged[-1]
+        if last && last[0] + last[2] == i && last[1] + last[2] == j
+          last[2] += size
         else
           merged << [ i, j, size ]
         end

@@ -115,8 +115,9 @@ class Post < ApplicationRecord
 
   #: () -> Array[String]
   def federation_reply_recipients
-    if parent&.federails_actor&.distant?
-      [ parent.federails_actor.federated_url ]
+    actor = parent&.federails_actor
+    if actor&.distant?
+      [ actor.federated_url ]
     else
       []
     end
@@ -174,20 +175,23 @@ class Post < ApplicationRecord
       logger.debug { "ReplyNotification skip: parent post #{parent_id} has no local user" }
       return
     end
-    if parent.user_id == user_id
+    local_parent = parent
+    return unless local_parent
+
+    if local_parent.user_id == user_id
       logger.debug { "ReplyNotification skip: self-reply by user #{user_id}" }
       return
     end
 
-    logger.info { "ReplyNotification enqueue: post #{id} → parent #{parent_id} (user #{parent.user_id})" }
-    ReplyNotificationJob.perform_later(parent.id, id)
+    logger.info { "ReplyNotification enqueue: post #{id} → parent #{parent_id} (user #{local_parent.user_id})" }
+    ReplyNotificationJob.perform_later(local_parent.id, id)
   end
 
   #: () -> void
   def enqueue_article_thumbnail
     return unless article_id.present?
-    return if article.blank?
-    return if article.thumbnail.attached?
+    article_local = article
+    return if article_local.nil? || article_local.thumbnail.attached?
 
     logger.info { "ArticleThumbnail enqueue: comment on article #{article_id}" }
     ArticleThumbnailJob.perform_later(article_id)

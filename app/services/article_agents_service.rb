@@ -44,7 +44,8 @@ class ArticleAgentsService < OperationService
 
   #: (Article article) -> Dry::Monads::Result
   def ensure_body(article)
-    return Success(article) if article.body.present? && article.body.size > 30
+    body = article.body
+    return Success(article) if body.present? && body.size > 30
 
     body_result = ContentService.new.call(article)
     if body_result.failure? || body_result.value!.size < 31

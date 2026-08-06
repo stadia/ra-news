@@ -150,7 +150,7 @@ class Article < ApplicationRecord
 
   before_save do
     # 제목에 "Show HN"이 포함되어 있으면 discard 처리
-    if title.present? && title.match?(/Show HN/i)
+    if title&.match?(/Show HN/i)
       self.deleted_at = Time.zone.now
     end
   end
@@ -233,8 +233,8 @@ class Article < ApplicationRecord
 
   #: () -> String?
   def user_name
-    if site.present?
-      site.name
+    if (local_site = site)
+      local_site.name
     else
       host
     end
@@ -285,10 +285,11 @@ class Article < ApplicationRecord
 
   #: () -> void
   def assign_japanese_title
-    return if title.blank?
-    return unless title.match?(JAPANESE_TITLE_REGEX)
+    title_local = title
+    return if title_local.nil? || title_local.blank?
+    return unless title_local.match?(JAPANESE_TITLE_REGEX)
 
-    self.title_ja = title
+    self.title_ja = title_local
   end
 
   #: () -> User?
