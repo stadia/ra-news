@@ -149,10 +149,12 @@ Style/RbsInline/VariableCommentSpacing:
   Enabled: true
 Style/RbsInline/DataDefineWithBlock:
   Enabled: true
+Style/RbsInline/InvalidTypes:
+  Enabled: true
+  Exclude:
+    - sorbet/**/*
 
 Style/RbsInline/UntypedInstanceVariable:
-  Enabled: false
-Style/RbsInline/InvalidTypes:
   Enabled: false
 Style/RbsInline/MissingTypeAnnotation:
   Enabled: false
