@@ -32,3 +32,18 @@ class Preference
   def team_id; end
   def key_id; end
 end
+
+# app/channels/application_cable/connection.rb -- `identified_by :current_user`
+#
+# ActionCable defines the reader and writer for each identifier with
+# `define_method` at class-definition time, and Tapioca ships no DSL compiler
+# for it.
+module ApplicationCable
+  class Connection
+    sig { returns(T.nilable(::User)) }
+    def current_user; end
+
+    sig { params(value: T.nilable(::User)).returns(T.nilable(::User)) }
+    def current_user=(value); end
+  end
+end

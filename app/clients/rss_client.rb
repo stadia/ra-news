@@ -6,8 +6,6 @@ require "rss"
 require "nokogiri"
 
 module RssClient
-  module_function
-
   # RSS/Atom 피드에서 자주 누락되는 XML 네임스페이스
   KNOWN_NAMESPACES = {
     "content" => "http://purl.org/rss/1.0/modules/content/",
@@ -23,53 +21,56 @@ module RssClient
   }.freeze
   private_constant :KNOWN_NAMESPACES
 
-  #: (String url) -> (RSS::Rss | RSS::Atom::Feed)?
-  def feed(url)
-    response = Faraday.get(url) { |req| apply_timeouts(req) }
-    if response.status.between?(300, 399) && response.headers["location"]
-      # Location이 상대 경로(/feed.xml 등)일 수 있으므로 원 요청 URL 기준으로 절대화한다.
-      redirect_url = URI.join(url, response.headers["location"]).to_s
-      response = Faraday.get(redirect_url) { |req| apply_timeouts(req) }
-    end
-    raise Faraday::ForbiddenError, response.body if response.status == 403
-    raise Faraday::UnauthorizedError, response.body if response.status == 401
-    raise Faraday::TooManyRequestsError, response.body if response.status == 429
-    parse(response.body)
-  end
-
-  #: (String xml) -> (RSS::Rss | RSS::Atom::Feed)?
-  def parse(xml)
-    return nil if xml.blank?
-
-    RSS::Parser.parse(xml, false)
-  rescue RSS::NotWellFormedError
-    repaired = repair_xml(xml)
-    return nil if repaired.blank? || repaired == xml
-
-    RSS::Parser.parse(repaired, false)
-  end
-
-  #: (String xml) -> String
-  def repair_xml(xml)
-    doc = Nokogiri::XML(xml)
-    root = doc.at("rss") || doc.at("feed") || doc.root
-    return xml unless root
-
-    doc.errors.each do |error|
-      if error.to_s =~ /Namespace prefix (\w+) on/i
-        prefix = $1
-        uri = KNOWN_NAMESPACES[prefix] || "http://unknown.namespace/#{prefix}"
-        root["xmlns:#{prefix}"] = uri
+  class << self
+    #: (String url) -> (RSS::Rss | RSS::Atom::Feed)?
+    def feed(url)
+      response = Faraday.get(url) { |req| apply_timeouts(req) }
+      if response.status.between?(300, 399) && response.headers["location"]
+        # Location이 상대 경로(/feed.xml 등)일 수 있으므로 원 요청 URL 기준으로 절대화한다.
+        redirect_url = URI.join(url, response.headers["location"]).to_s
+        response = Faraday.get(redirect_url) { |req| apply_timeouts(req) }
       end
+      raise Faraday::ForbiddenError, response.body if response.status == 403
+      raise Faraday::UnauthorizedError, response.body if response.status == 401
+      raise Faraday::TooManyRequestsError, response.body if response.status == 429
+      parse(response.body)
     end
 
-    doc.to_xml
-  end
+    #: (String xml) -> (RSS::Rss | RSS::Atom::Feed)?
+    def parse(xml)
+      return nil if xml.blank?
 
-  #: (untyped req) -> void
-  def apply_timeouts(req)
-    req.options.open_timeout = HttpTimeouts::OPEN
-    req.options.timeout = HttpTimeouts::REQUEST
+      RSS::Parser.parse(xml, false)
+    rescue RSS::NotWellFormedError
+      repaired = repair_xml(xml)
+      return nil if repaired.blank? || repaired == xml
+
+      RSS::Parser.parse(repaired, false)
+    end
+
+    #: (String xml) -> String
+    def repair_xml(xml)
+      doc = Nokogiri::XML(xml)
+      root = doc.at("rss") || doc.at("feed") || doc.root
+      return xml unless root
+
+      doc.errors.each do |error|
+        if error.to_s =~ /Namespace prefix (\w+) on/i
+          prefix = $1
+          uri = KNOWN_NAMESPACES[prefix] || "http://unknown.namespace/#{prefix}"
+          root["xmlns:#{prefix}"] = uri
+        end
+      end
+
+      doc.to_xml
+    end
+
+    private
+
+    #: (untyped req) -> void
+    def apply_timeouts(req)
+      req.options.open_timeout = HttpTimeouts::OPEN
+      req.options.timeout = HttpTimeouts::REQUEST
+    end
   end
-  private_class_method :apply_timeouts
 end

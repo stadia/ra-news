@@ -10,7 +10,9 @@ module OauthAccounts
     Result = Data.define(
       :success,  #: bool
       :user      #: User
-    ) do
+    )
+
+    class Result
       #: () -> bool
       def success? = success
     end

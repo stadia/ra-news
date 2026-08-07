@@ -34,7 +34,8 @@ class SlackClient
 
   private
 
-  attr_reader :channel #: SlackChannel
+  #: SlackChannel
+  attr_reader :channel
 
   # @rbs @webhook_client: Faraday::Connection?
 
@@ -67,7 +68,7 @@ class SlackClient
       "#{AUTHORIZE_URL}?#{query}"
     end
 
-    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess[String, untyped]
+    #: (String code, redirect_uri: String) -> ActiveSupport::HashWithIndifferentAccess
     def exchange_code(code, redirect_uri:)
       response = oauth_client.oauth_v2_access(
         client_id: Configs::Slack.client_id,

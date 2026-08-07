@@ -4,7 +4,8 @@
 
 module Youtube
   class Channel
-    attr_reader :channel #: Yt::Channel
+    #: Yt::Channel
+    attr_reader :channel
 
     #: (?id: String?) -> void
     def initialize(id: nil)

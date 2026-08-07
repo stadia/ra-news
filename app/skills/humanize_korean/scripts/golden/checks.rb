@@ -11,7 +11,10 @@ module HumanizeKoreanGoldenChecks
   Failure = Data.define(
     :code,    #: String
     :message  #: String
-  ) do
+  )
+
+  class Failure
+    #: () -> String
     def to_s = "[#{code}] #{message}"
   end
 

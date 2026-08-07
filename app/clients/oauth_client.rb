@@ -16,32 +16,33 @@ module OauthClient
     }
   }.freeze #: Hash[Symbol, Hash[Symbol, String]]
 
-  module_function
+  class << self
+    # `Preference.get_object`가 미설정 시 nil을 돌려주므로 nil을 받는다.
+    #: (Preference? oauth_preference) -> OAuth2::Client
+    def build(oauth_preference)
+      raise ArgumentError, "OAuth 설정이 비어있습니다" if oauth_preference.nil?
+      raise ArgumentError, "OAuth 설정 이름이 비어있습니다" if oauth_preference.name.blank?
 
-  #: (Preference oauth_preference) -> OAuth2::Client
-  def build(oauth_preference)
-    raise ArgumentError, "OAuth 설정이 비어있습니다" if oauth_preference.blank?
-    raise ArgumentError, "OAuth 설정 이름이 비어있습니다" if oauth_preference.name.blank?
+      provider = extract_provider_from_preference_name(oauth_preference.name)
+      config = OAUTH_CONFIG.fetch(provider.to_sym) do
+        raise ArgumentError, "지원하지 않는 provider입니다: #{provider}"
+      end
 
-    provider = extract_provider_from_preference_name(oauth_preference.name)
-    config = OAUTH_CONFIG.fetch(provider.to_sym) do
-      raise ArgumentError, "지원하지 않는 provider입니다: #{provider}"
+      OAuth2::Client.new(
+        oauth_preference.client_id,
+        oauth_preference.client_secret,
+        site: oauth_preference.site || config[:default_site],
+        authorize_url: config[:authorize_url],
+        token_url: config[:token_url],
+        connection_opts: { request: { open_timeout: HttpTimeouts::OPEN, timeout: HttpTimeouts::REQUEST } }
+      )
     end
 
-    OAuth2::Client.new(
-      oauth_preference.client_id,
-      oauth_preference.client_secret,
-      site: oauth_preference.site || config[:default_site],
-      authorize_url: config[:authorize_url],
-      token_url: config[:token_url],
-      connection_opts: { request: { open_timeout: HttpTimeouts::OPEN, timeout: HttpTimeouts::REQUEST } }
-    )
-  end
+    private
 
-  #: (String name) -> String
-  def extract_provider_from_preference_name(name)
-    name.gsub(/_oauth$/, "")
+    #: (String name) -> String
+    def extract_provider_from_preference_name(name)
+      name.gsub(/_oauth$/, "")
+    end
   end
-
-  private_class_method :extract_provider_from_preference_name
 end

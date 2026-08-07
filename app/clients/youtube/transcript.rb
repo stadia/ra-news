@@ -46,13 +46,13 @@ module Youtube
 
     private
 
-    #: (Hash[Symbol, String] message, MessageType typedef) -> String
+    #: (Hash[Symbol, String] message, singleton(MessageType) typedef) -> String
     def encode_message(message, typedef)
       encoded_message = typedef.new(message)
       encoded_message.to_proto
     end
 
-    #: (Hash[Symbol, String] message, MessageType typedef) -> String
+    #: (Hash[Symbol, String] message, singleton(MessageType) typedef) -> String
     def get_base64_protobuf(message, typedef)
       encoded_data = encode_message(message, typedef)
       Base64.encode64(encoded_data).delete("\n")
