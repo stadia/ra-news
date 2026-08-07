@@ -1,4 +1,3 @@
-# typed: true
 # test/controllers/actors_controller_test.rb
 # frozen_string_literal: true
 

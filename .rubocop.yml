@@ -1,7 +1,6 @@
 # Omakase Ruby styling for Rails
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
-  rubocop-sorbet: config/rbi.yml
 
 inherit_from: .rubocop_todo.yml
 
@@ -148,12 +147,20 @@ Style/RbsInline/UnmatchedAnnotations:
   Enabled: true
 Style/RbsInline/VariableCommentSpacing:
   Enabled: true
+Style/RbsInline/DataDefineWithBlock:
+  Enabled: true
 
 Style/RbsInline/UntypedInstanceVariable:
-  Enabled: false
-Style/RbsInline/DataDefineWithBlock:
   Enabled: false
 Style/RbsInline/InvalidTypes:
   Enabled: false
 Style/RbsInline/MissingTypeAnnotation:
   Enabled: false
+
+Sorbet/BlockMethodDefinition:
+  Enabled: false
+Sorbet/FalseSigil:
+  Enabled: true
+  Exclude:
+    - "test/**/*"
+    - "spec/**/*"

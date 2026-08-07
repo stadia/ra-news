@@ -9,7 +9,7 @@ class Preference < ApplicationRecord
 
   after_commit :clear_cache, on: %i[create update destroy]
 
-  #: (String? value) -> String?
+  #: (String? value) -> void
   def name=(value)
     super.tap do
       define_dynamic_accessors if name.present?

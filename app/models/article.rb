@@ -195,7 +195,7 @@ class Article < ApplicationRecord
     logger.debug { "Article metadata preparation failed for #{url}: #{result.failure}" } if result.failure?
   end
 
-  #: (untyped value) -> untyped
+  #: (untyped value) -> void
   def title=(value)
     super(Articles::Utils.truncate_title(value))
   end
