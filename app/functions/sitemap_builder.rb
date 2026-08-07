@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -43,7 +43,7 @@ module SitemapBuilder
         &.iso8601
     end
 
-    #: (Time) -> bool
+    #: (ActiveSupport::TimeWithZone) -> bool
     def realistic_lastmod?(candidate)
       candidate >= MIN_LASTMOD && candidate <= Time.current
     end

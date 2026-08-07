@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -18,7 +18,9 @@ module Articles
         boundary_index = normalized.rindex(Article::TITLE_BOUNDARY_PATTERN, content_limit)
         min_boundary_index = (content_limit * Article::TITLE_BOUNDARY_MIN_RATIO).floor
         cut_index = boundary_index && boundary_index >= min_boundary_index ? boundary_index : content_limit
-        "#{normalized[0...cut_index].rstrip}#{Article::TITLE_OMISSION}"
+        # cut_index는 항상 normalized.length 이하라 nil이 아니지만, String#[]의
+        # nilable 반환 타입에 맞춰 &로 받는다(nil이어도 보간 시 ""와 동일).
+        "#{normalized[0...cut_index]&.rstrip}#{Article::TITLE_OMISSION}"
       end
 
       # 도메인과 서브도메인을 정확히 체크하는 클래스 메서드
