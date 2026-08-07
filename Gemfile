@@ -70,13 +70,8 @@ group :development, :test do
   gem "rubocop-i18n", require: false
   gem "rubocop-minitest", require: false
   gem "rubocop-rails-omakase", require: false
-  # Lints the inline `#:` RBS comments. Sorbet reads those comments directly
-  # (`--enable-experimental-rbs-comments` in sorbet/config), so they are the
-  # annotation syntax for this project -- there is no longer a generation step
-  # turning them into .rbs files. rbs-inline arrives transitively as this
-  # plugin's parser; it is no longer declared on its own because nothing
-  # invokes its CLI anymore.
   gem "rubocop-rbs_inline", require: false
+  gem "rubocop-sorbet", require: false
 
   # Quality gates
   gem "flog", require: false

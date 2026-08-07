@@ -1,3 +1,5 @@
+# typed: false
+
 # 커버리지 계측: 공용 설정은 프로젝트 루트의 `.simplecov`가 담당(자동 로드).
 # 커버리지 시작은 .simplecov가 아닌 여기서 호출(SimpleCov 2.0 deprecation 대응).
 # command_name을 "RSpec"으로 분리해 Minitest 결과와 병합되게 한다.
