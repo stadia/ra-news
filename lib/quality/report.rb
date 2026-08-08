@@ -4,7 +4,8 @@
 
 module Quality
   class Report
-    GateResult = Struct.new(:name, :measure, :threshold, :passed, :unit, :cmp, keyword_init: true)
+    # 멤버 타입: sorbet/rbi/shims/data_definitions.rbi
+    GateResult = Data.define(:name, :measure, :threshold, :passed, :unit, :cmp)
 
     GATES = [
       { name: "Line coverage",       measure_path: [ :coverage, :line ],       threshold_path: [ "coverage", "line_min" ],       cmp: :>=, unit: "%" },

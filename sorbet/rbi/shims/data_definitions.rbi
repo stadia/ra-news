@@ -48,6 +48,30 @@ module HumanizeKoreanGoldenChecks
   end
 end
 
+module Quality
+  class Report
+    class GateResult
+      sig { returns(String) }
+      def name; end
+
+      sig { returns(T.nilable(Numeric)) }
+      def measure; end
+
+      sig { returns(T.nilable(Numeric)) }
+      def threshold; end
+
+      sig { returns(T::Boolean) }
+      def passed; end
+
+      sig { returns(String) }
+      def unit; end
+
+      sig { returns(Symbol) }
+      def cmp; end
+    end
+  end
+end
+
 module OauthAccounts
   module Callbacks
     class SignIn
