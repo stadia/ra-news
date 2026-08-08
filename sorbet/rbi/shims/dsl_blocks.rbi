@@ -10,6 +10,43 @@
 # Keep each entry in sync with the generated RBI it overrides: same parameter
 # names and arity, or Sorbet reports a redefinition mismatch instead.
 
+module ActiveSupport::Concern
+  # `included do ... end` is `class_eval`d on whichever class includes the
+  # concern, so its `self` is that class -- but the concern itself cannot name
+  # it, and `requires_ancestor` does not reach the block (it constrains the
+  # module, not the singleton `self` of a `class_eval`). Without a bind Sorbet
+  # resolves `has_many`/`before_save`/`validate`/`around_action` against
+  # `T.class_of(TheConcern)` and reports each as a missing method.
+  #
+  # `T.untyped` rather than a concrete class: model, controller and job concerns
+  # all use this hook, so there is no single includer to name.
+  sig do
+    params(
+      base: T.untyped,
+      block: T.nilable(T.proc.bind(T.untyped).void)
+    ).returns(T.untyped)
+  end
+  def included(base = T.unsafe(nil), &block); end
+end
+
+module Alba::Resource::ClassMethods
+  # lib/alba/resource.rb -- `attribute :x do |obj| ... end` blocks are
+  # `instance_exec`d on the resource *instance* during serialization, which is
+  # where `params` (and `object`) live. Without the bind Sorbet resolves
+  # `params` against the serializer's singleton class.
+  #
+  # Used by app/serializers/*.rb.
+  sig do
+    params(
+      name: T.untyped,
+      if: T.untyped,
+      name_with_type: T.untyped,
+      block: T.nilable(T.proc.bind(Alba::Resource::InstanceMethods).params(arg0: T.untyped).returns(T.untyped))
+    ).returns(T.untyped)
+  end
+  def attribute(name = T.unsafe(nil), if: T.unsafe(nil), **name_with_type, &block); end
+end
+
 class RubyLLM::Agent
   class << self
     # lib/ruby_llm/agent.rb -- `schema { ... }` is class_eval'd on an anonymous

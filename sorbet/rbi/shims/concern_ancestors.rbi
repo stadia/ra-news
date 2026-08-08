@@ -41,6 +41,39 @@ module Posts::Blog
   requires_ancestor { Post }
 end
 
+module HtmlSanitizable
+  extend T::Helpers
+
+  requires_ancestor { Post }
+end
+
+# Boost/Like handling is shared by Article and Post, which have no common
+# superclass below ActiveRecord::Base -- and `persisted?`, the only thing these
+# modules ask of their includer, comes from there anyway.
+module FederailsBoostable
+  extend T::Helpers
+
+  requires_ancestor { ActiveRecord::Base }
+end
+
+module FederailsLikeable
+  extend T::Helpers
+
+  requires_ancestor { ActiveRecord::Base }
+end
+
+# `ClassMethods` modules are `extend`ed, so their `self` is the includer's
+# singleton class and `requires_ancestor` (which constrains instances) cannot
+# describe it. Both only reach for `logger`, declared here as the contract they
+# expect -- it is `ActiveRecord::Base.logger` in practice.
+module Articles::Activitypub::ClassMethods
+  def logger; end
+end
+
+module Posts::FederationIngest::ClassMethods
+  def logger; end
+end
+
 # Controller concerns name `ApplicationController` rather than the individual
 # controllers that include them: what they actually reach for is the inherited
 # surface (`render`, `request`, `cookies`, `current_user`), and pinning to a
