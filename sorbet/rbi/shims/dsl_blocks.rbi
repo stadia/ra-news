@@ -10,32 +10,14 @@
 # Keep each entry in sync with the generated RBI it overrides: same parameter
 # names and arity, or Sorbet reports a redefinition mismatch instead.
 
-module ActiveSupport::Concern
-  # `included do ... end` is `class_eval`d on whichever class includes the
-  # concern, so its `self` is that class -- but the concern itself cannot name
-  # it, and `requires_ancestor` does not reach the block (it constrains the
-  # module, not the singleton `self` of a `class_eval`). Without a bind Sorbet
-  # resolves `has_many`/`before_save`/`validate`/`around_action` against
-  # `T.class_of(TheConcern)` and reports each as a missing method.
-  #
-  # `T.untyped` rather than a concrete class: model, controller and job concerns
-  # all use this hook, so there is no single includer to name.
-  sig do
-    params(
-      base: T.untyped,
-      block: T.nilable(T.proc.bind(T.untyped).void)
-    ).returns(T.untyped)
-  end
-  def included(base = T.unsafe(nil), &block); end
-end
-
 module Alba::Resource::ClassMethods
   # lib/alba/resource.rb -- `attribute :x do |obj| ... end` blocks are
   # `instance_exec`d on the resource *instance* during serialization, which is
   # where `params` (and `object`) live. Without the bind Sorbet resolves
   # `params` against the serializer's singleton class.
   #
-  # Used by app/serializers/*.rb.
+  # The yielded object stays `T.untyped` here because a resource class is not
+  # bound to one model; the serializers below narrow it to theirs.
   sig do
     params(
       name: T.untyped,
@@ -45,6 +27,43 @@ module Alba::Resource::ClassMethods
     ).returns(T.untyped)
   end
   def attribute(name = T.unsafe(nil), if: T.unsafe(nil), **name_with_type, &block); end
+end
+
+# Each serializer knows the model it yields, so it narrows `attribute`'s block
+# parameter -- without this the block body reads an untyped object and typos like
+# `article.tites` pass. `object` is the same model, so it is declared too.
+class ArticleSerializer
+  class << self
+    sig do
+      params(
+        name: T.untyped,
+        if: T.untyped,
+        name_with_type: T.untyped,
+        block: T.nilable(T.proc.bind(Alba::Resource::InstanceMethods).params(arg0: Article).returns(T.untyped))
+      ).returns(T.untyped)
+    end
+    def attribute(name = T.unsafe(nil), if: T.unsafe(nil), **name_with_type, &block); end
+  end
+
+  sig { returns(Article) }
+  def object; end
+end
+
+class PostSerializer
+  class << self
+    sig do
+      params(
+        name: T.untyped,
+        if: T.untyped,
+        name_with_type: T.untyped,
+        block: T.nilable(T.proc.bind(Alba::Resource::InstanceMethods).params(arg0: Post).returns(T.untyped))
+      ).returns(T.untyped)
+    end
+    def attribute(name = T.unsafe(nil), if: T.unsafe(nil), **name_with_type, &block); end
+  end
+
+  sig { returns(Post) }
+  def object; end
 end
 
 class RubyLLM::Agent

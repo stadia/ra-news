@@ -16,6 +16,15 @@
 # Each entry is checked: Sorbet verifies the ancestor really is present
 # wherever the module is included, so a wrong claim here fails the build rather
 # than hiding.
+#
+# `included do ... end` needs a second declaration. The block is `class_eval`d
+# on the includer, so its `self` is that *class*, which `requires_ancestor`
+# (a constraint on instances) does not describe -- Sorbet resolves
+# `has_many`/`before_save`/`validate` against `T.class_of(TheConcern)` instead.
+# Each concern that uses the hook redeclares `included` on its own singleton
+# with the includer's class as the block's bind, so the DSL calls inside stay
+# checked. A concern bumped to `typed: true` without an entry here fails rather
+# than passing unchecked; add one naming its includer.
 
 module Articles::LocalizedDisplay
   extend T::Helpers
@@ -39,27 +48,62 @@ module Posts::Blog
   extend T::Helpers
 
   requires_ancestor { Post }
+
+  class << self
+    sig { params(base: T.untyped, block: T.nilable(T.proc.bind(T.class_of(Post)).void)).returns(T.untyped) }
+    def included(base = T.unsafe(nil), &block); end
+  end
 end
 
 module HtmlSanitizable
   extend T::Helpers
 
   requires_ancestor { Post }
+
+  class << self
+    sig { params(base: T.untyped, block: T.nilable(T.proc.bind(T.class_of(Post)).void)).returns(T.untyped) }
+    def included(base = T.unsafe(nil), &block); end
+  end
 end
 
 # Boost/Like handling is shared by Article and Post, which have no common
 # superclass below ActiveRecord::Base -- and `persisted?`, the only thing these
 # modules ask of their includer, comes from there anyway.
+#
+# Their `included` blocks register Federails callbacks on an Active Record class.
+# Sorbet's `bind` takes a single class name -- no intersection -- so they name
+# `Article`, one of the two includers. Post carries the identical surface (both
+# models include both concerns), so nothing goes unchecked by the choice.
 module FederailsBoostable
   extend T::Helpers
 
   requires_ancestor { ActiveRecord::Base }
+
+  class << self
+    sig do
+      params(
+        base: T.untyped,
+        block: T.nilable(T.proc.bind(T.class_of(Article)).void)
+      ).returns(T.untyped)
+    end
+    def included(base = T.unsafe(nil), &block); end
+  end
 end
 
 module FederailsLikeable
   extend T::Helpers
 
   requires_ancestor { ActiveRecord::Base }
+
+  class << self
+    sig do
+      params(
+        base: T.untyped,
+        block: T.nilable(T.proc.bind(T.class_of(Article)).void)
+      ).returns(T.untyped)
+    end
+    def included(base = T.unsafe(nil), &block); end
+  end
 end
 
 # `ClassMethods` modules are `extend`ed, so their `self` is the includer's
@@ -95,6 +139,11 @@ module LocaleSwitcher
   extend T::Helpers
 
   requires_ancestor { ApplicationController }
+
+  class << self
+    sig { params(base: T.untyped, block: T.nilable(T.proc.bind(T.class_of(ApplicationController)).void)).returns(T.untyped) }
+    def included(base = T.unsafe(nil), &block); end
+  end
 end
 
 # Job concerns name `ApplicationJob` rather than the individual jobs that
@@ -112,5 +161,14 @@ end
 # name. They each supply `article`, which is the only thing the module calls on
 # its includer -- declared here as the contract the module expects.
 module ArticlePresentable
+  extend T::Helpers
+
   def article; end
+
+  # Its `included` block only calls `include`, which every class has, so the bind
+  # is `Object` -- the two unrelated presenters have nothing narrower in common.
+  class << self
+    sig { params(base: T.untyped, block: T.nilable(T.proc.bind(T.class_of(Object)).void)).returns(T.untyped) }
+    def included(base = T.unsafe(nil), &block); end
+  end
 end

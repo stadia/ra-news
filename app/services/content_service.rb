@@ -117,7 +117,7 @@ class ContentService < OperationService
     nil
   end
 
-  #: (String url, ?Integer? count) -> Faraday::Response
+  #: (String url, ?Integer? count) -> String?
   def faraday_fetch_html(url, count = 0)
     count ||= 0
     response = Faraday.get(url)

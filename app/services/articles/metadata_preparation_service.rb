@@ -41,7 +41,7 @@ module Articles
       Success(response)
     end
 
-    #: (Article article) -> void
+    #: (Article article) -> Dry::Monads::Result
     def normalize_article_url(article)
       parsed_url = URI.parse(article.url.to_s)
       article.url = MetadataPreparation.normalized_url(parsed_url)
@@ -55,7 +55,7 @@ module Articles
       Failure(:invalid_uri)
     end
 
-    #: (Article article) -> void
+    #: (Article article) -> Dry::Monads::Result
     def apply_youtube_metadata(article)
       video = Yt::Video.new id: article.youtube_id
       article.published_at = video.published_at if video.published_at.is_a?(Time)
@@ -66,7 +66,7 @@ module Articles
       Failure(:api_error)
     end
 
-    #: (Article article, String body) -> void
+    #: (Article article, String body) -> Dry::Monads::Result
     def apply_webpage_metadata(article, body)
       logger.debug "Setting webpage metadata for #{article.url}"
       return Failure(:discarded) if article.deleted_at.present?
@@ -84,7 +84,7 @@ module Articles
     end
 
 
-    #: (Article article) -> void
+    #: (Article article) -> Dry::Monads::Result
     def ensure_article_slug(article)
       return Success(article) if article.slug.present?
 
