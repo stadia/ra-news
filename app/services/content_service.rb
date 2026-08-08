@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -9,15 +9,17 @@ class ContentService < OperationService
 
   #: (Article article) -> Dry::Monads::Result
   def call(article)
+    url = article.url.to_s
+
     if article.is_youtube?
       # YouTube URL인 경우
-      step execute_youtube(article.url)
-    elsif github_url?(article.url)
+      step execute_youtube(url)
+    elsif github_url?(url)
       # GitHub URL인 경우 README.md 가져오기
       step execute_github_readme(article)
     else
       # 일반 URL인 경우
-      step execute_html(article.url)
+      step execute_html(url)
     end
   end
 
@@ -27,7 +29,7 @@ class ContentService < OperationService
   # guard clause는 반드시 step으로 호출되는 별도 메서드에 위치시킨다.
   #: (Article article) -> Dry::Monads::Result
   def execute_github_readme(article)
-    readme_url = github_readme_url(article.url)
+    readme_url = github_readme_url(article.url.to_s)
     return Failure(:no_content) unless readme_url
 
     logger.info "GitHub README URL: #{readme_url}"
@@ -101,9 +103,9 @@ class ContentService < OperationService
     logger.info "Fetching GitHub README from: #{url}"
     uri = URI.parse(url)
     parts = uri.path.to_s.split("/").reject(&:blank?)
-    return nil if parts.size < 2
+    owner, repo = parts
+    return nil if owner.nil? || repo.nil?
 
-    owner, repo = parts[0], parts[1]
     repo = repo.delete_suffix(".git")
 
     # branch가 URL에 명시된 경우: /owner/repo/tree/branch

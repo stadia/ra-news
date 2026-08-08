@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -172,7 +172,7 @@ class ArticleAgentsService < OperationService
 
   # extract_humanized와 같은 이유로 Hash만 받는다. String이 들어오면 title_ja 등이
   # 키 이름 그대로 채워져 번역문이 아닌 글자가 저장된다.
-  #: (Hash[String, untyped] content) -> Hash[Symbol, untyped]
+  #: (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
   def build_japanese_attrs(content)
     unless content.is_a?(Hash)
       logger.warn "Japanese agent response was not a Hash (#{content.class}); skipping update"
