@@ -6,7 +6,16 @@
 
 
 # pkg:gem/image_processing#lib/image_processing/chainable.rb:1
-module ImageProcessing; end
+module ImageProcessing
+  class << self
+    # Whether calling +name+ on +receiver+ would dispatch to an unsafe Ruby core
+    # method rather than a genuine operation. Used as a single, shared guard at
+    # every place where a user-provided name is dispatched via +public_send+.
+    #
+    # pkg:gem/image_processing#lib/image_processing.rb:21
+    def unsafe_method?(receiver, name); end
+  end
+end
 
 # pkg:gem/image_processing#lib/image_processing/builder.rb:2
 class ImageProcessing::Builder
@@ -89,21 +98,26 @@ module ImageProcessing::Chainable
   private
 
   # This prevents calling unsafe Ruby core methods such as `Kernel#system`,
-  # which would allow for remote shell execution.
+  # which would allow for remote shell execution. The processor enforces the
+  # same guard when operations are dispatched, which also covers paths that
+  # bypass this early check (e.g. the #operation meta-builder).
   #
-  # pkg:gem/image_processing#lib/image_processing/chainable.rb:90
+  # Bang names are rejected here because they are Chainable's execution
+  # shortcut (see #method_missing), not operations to chain.
+  #
+  # pkg:gem/image_processing#lib/image_processing/chainable.rb:95
   def invalid_operation?(name); end
 
   # Assume that any unknown method names an operation supported by the
   # processor. Add a bang ("!") if you want processing to be performed.
   #
   # pkg:gem/image_processing#lib/image_processing/chainable.rb:101
-  def method_missing(name, *args, **_arg2, &block); end
+  def method_missing(name, *_arg1, **_arg2, &_arg3); end
 end
 
 # Empty options which the builder starts with.
 #
-# pkg:gem/image_processing#lib/image_processing/chainable.rb:110
+# pkg:gem/image_processing#lib/image_processing/chainable.rb:109
 ImageProcessing::Chainable::DEFAULT_OPTIONS = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/image_processing#lib/image_processing.rb:8
@@ -197,7 +211,7 @@ class ImageProcessing::Processor
   # Calls the given block with the accumulator object. Useful for when you
   # want to access the accumulator object directly.
   #
-  # pkg:gem/image_processing#lib/image_processing/processor.rb:68
+  # pkg:gem/image_processing#lib/image_processing/processor.rb:77
   def custom(&block); end
 
   class << self
@@ -221,6 +235,16 @@ class ImageProcessing::Processor
     def supports_resize_on_load?; end
   end
 end
+
+# Method owners considered unsafe to dispatch to when a method name comes
+# from user input, because they expose Ruby's metaprogramming and shell
+# primitives (e.g. Kernel#send, Kernel#eval, BasicObject#instance_eval,
+# Kernel#system). Any name whose implementation is inherited from one of
+# these should never be treated as an image operation or a loader/saver
+# option.
+#
+# pkg:gem/image_processing#lib/image_processing.rb:16
+ImageProcessing::UNSAFE_METHOD_OWNERS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/image_processing#lib/image_processing/version.rb:2
 ImageProcessing::VERSION = T.let(T.unsafe(nil), String)
