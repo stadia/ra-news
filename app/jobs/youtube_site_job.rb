@@ -10,8 +10,11 @@ class YoutubeSiteJob < ApplicationJob
     YoutubeSiteJob.perform_later(Site.kept.youtube.order("id ASC").pluck(:id))
   end
 
-  #: (Array[Integer] ids) -> void
+  # perform은 큐에서 역직렬화된 인자를 받는 지점이라 시그니처가 런타임을 강제하지 못한다.
+  # 단일 id로 enqueue되는 경로(콘솔, 재시도 중인 구버전 잡)도 받아들이도록 배열로 승격한다.
+  #: ((Array[Integer] | Integer) ids) -> void
   def perform(ids)
+    ids = [ ids ] unless ids.is_a?(Array)
     site_id = ids.shift
     return if site_id.nil?
 

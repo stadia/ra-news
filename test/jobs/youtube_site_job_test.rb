@@ -28,6 +28,21 @@ class YoutubeSiteJobTest < ActiveSupport::TestCase
     end
   end
 
+  # perform의 인자는 큐에서 역직렬화돼 들어오므로 시그니처가 배열을 보장하지 못한다.
+  # 단일 id로 enqueue된 잡도 받아들여야 한다.
+  test "단일 id로 enqueue돼도 배열로 승격해 처리한다" do
+    site = Object.new
+    site.define_singleton_method(:init_client) { Object.new }
+
+    Site.stub(:find, site) do
+      assert_no_enqueued_jobs do
+        assert_nothing_raised do
+          YoutubeSiteJob.perform_now(123)
+        end
+      end
+    end
+  end
+
   test "enqueue_all이 Site.kept.youtube의 ID를 예약한다" do
     assert_enqueued_with(job: YoutubeSiteJob, args: [ Site.kept.youtube.order("id ASC").pluck(:id) ]) do
       YoutubeSiteJob.enqueue_all
