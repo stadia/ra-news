@@ -41,4 +41,11 @@ Primary가 같으면 오탐 0을 전제로 지원 파일 크기와 실행시간,
 ## What's Been Tried
 - 프로젝트 이력상 Steep 2.0은 strict 기준에서 12,844개 진단 중 12,292개가 Rails/Phlex/RBS 공백으로 인해 실질 강제 불가능했다.
 - 같은 이력에서 Sorbet은 Tapioca RBI를 사용해 앱 파일 시길 50.5%, 메서드 시그니처 27.6%를 측정했고 이후 단일 체커로 전환되었다.
-- 이번 연구는 그 과거 결정을 그대로 답으로 쓰지 않고, 동일 스냅샷과 동일 결함 corpus로 재검증한다.
+- 이번 연구는 그 과거 결정을 그대로 답으로 쓰지 않고, 동일 스냅샷과 동일 결함 corpus로 재검증했다.
+- Steep의 현재 실용 설정은 9개 중 3개(33.3%)를 검출했고 6개를 놓쳤다. 18초 안팎이 걸렸으며 지원 파일은 약 0.8MB다.
+- Sorbet은 동일 corpus에서 9개 중 7개(77.8%)를 검출했고 cold 1.94초, warm 0.43초였다. 지원 RBI는 약 37MB로 크다.
+- Steep의 모든 진단을 strict로 올리면 8개(88.9%)를 잡지만 기존 코드에서 12,701건이 발생해 CI 게이트로 사용할 수 없다. 이를 DEBT/hint로 완화하면 다시 3개만 강제된다.
+- Steep에 `rbs_rails` 0.13.1과 실제 PostgreSQL schema를 추가한 공정성 실험도 3/9로 개선이 없었고, 기존 RBS collection/shim과 충돌해 baseline 진단 68건이 생겼다.
+- 초기 corpus의 Rails setter 항목은 `Article#title = 123`이었지만, 검증 결과 앱이 `title=(value)`를 `(untyped) -> void`로 의도적으로 오버라이드하고 비문자열을 그대로 허용했다. 이는 실제 결함이 아니므로 benchmark mislabeled case였다.
+- Rails setter 항목을 동일한 nullable string column이면서 커스텀 writer가 없는 `Article#slug = 123`으로 교정했다. schema와 generated RBI의 `String?` 계약, source override 부재를 rails-ai-context로 검증했다. workload 변경이므로 새 experiment segment를 시작한다.
+- 결론: 현 프로젝트에서는 **Sorbet + Tapioca + inline RBS comments**를 단일 타입 검사 경로로 유지한다. Steep 재도입은 Rails/Phlex RBS 생태계가 baseline strict를 감당할 때 재평가한다.

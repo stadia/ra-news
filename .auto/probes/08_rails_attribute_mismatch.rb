@@ -2,5 +2,5 @@
 # rbs_inline: enabled
 
 module AutoresearchProbe08
-  Article.new.title = 123
+  Article.new.slug = 123
 end
