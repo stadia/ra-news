@@ -185,6 +185,7 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 서비스 객체를 만들거나 수정할 때는 기존 `OperationService` 을 상속하여 ROP 패턴을 따른다. 단순한 유틸리티성 서비스는 `class << self` 를 사용한 함수 모듈로 작성한다.
 - 소셜 미디어 연동 코드는 `SocialMediaService` 기반 구조와 플랫폼별 서비스 분리를 유지한다.
 - 변경을 마무리하기 전에 테스트 여부와 미실행 사유를 명확히 남긴다.
+- **젬을 올리면(`bundle update`, `bundle add`, Gemfile 수정) 같은 커밋에서 `bin/tapioca gem`을 돌린다.** `srb tc`는 `sorbet/rbi/gems`의 파일을 그대로 읽을 뿐 Gemfile.lock과 맞는지 묻지 않아, RBI 드리프트는 로컬에서 전혀 보이지 않다가 CI의 `tapioca gem --verify`에서 터진다. `Gemfile.lock`이 스테이징되면 lefthook의 `tapioca-gem-drift` 훅이 이를 검사한다(검증만 하고 재생성은 하지 않는다).
 - 관련 배경 문서가 필요하면 `docs/CLAUDE_WORKFLOW.md`, `docs/postgresql-extensions.md`를 우선 참고한다.
 - 뷰 클래스는 `Views::Base`를, 컴포넌트 클래스는 `Components::Base`를 상속한다.
 - `OperationService`(`Dry::Operation`)의 `call` 메서드에서 `return Failure(:x)`를 직접 반환하면 `Dry::Operation`이 이를 `Success(Failure(:x))`로 감싸버린다. `Failure`를 반환하려면 반드시 `step`을 통해야 한다. guard clause도 `step validate_something(...)` 형태로 호출한다.
