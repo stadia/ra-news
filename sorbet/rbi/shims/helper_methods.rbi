@@ -1,4 +1,5 @@
 # typed: true
+# rbs_inline: enabled
 
 # Helper/concern modules call methods their includer provides -- `logger` on a
 # job, `render`/`image_tag`/`current_page?` on a controller -- or Kernel methods
@@ -11,12 +12,10 @@
 # Sorbet-specific constructs (type information lives in inline `#:` RBS comments
 # and these shims).
 #
-# The class-level entries (`LocaleSwitcher.around_action`,
-# `ApplicationJob.arguments`) exist because Sorbet types `included do ... end`
-# and `rescue_from` blocks as running on the module's *class*, even though they
-# are `class_eval`'d on the includer at runtime. Declaring the method on the
-# class satisfies that (incorrect) typing; at runtime the call resolves to the
-# includer's own method.
+# The class-level `LocaleSwitcher.around_action` entry exists because Sorbet
+# types `included do ... end` as running on the module's *class*, even though it
+# is `class_eval`'d on the includer at runtime. Declaring the method on the class
+# satisfies that typing; at runtime the call resolves to the includer's method.
 
 module RssHelper
   sig { returns(Logger) }
@@ -49,14 +48,5 @@ module LocaleSwitcher
   class << self
     sig { params(args: T.untyped, block: T.untyped).returns(T.untyped) }
     def around_action(*args, &block); end
-  end
-end
-
-class ApplicationJob
-  class << self
-    # `arguments` is an ActiveJob *instance* method; the `rescue_from` block
-    # runs in instance context, but Sorbet types it as class-level.
-    sig { returns(T::Array[T.untyped]) }
-    def arguments; end
   end
 end

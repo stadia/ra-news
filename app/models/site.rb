@@ -20,7 +20,7 @@ class Site < ApplicationRecord
 
   enum :client, [ :rss, :gmail, :youtube, :hacker_news, :rss_page, :reddit ], default: :rss
 
-  #: () -> untyped
+  #: () -> (Gmail | Youtube::Channel)?
   def init_client
     case client
     when "gmail"

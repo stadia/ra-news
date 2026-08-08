@@ -17,7 +17,10 @@ class YoutubeSiteJob < ApplicationJob
     site = Site.find(site_id)
     return if site.nil?
 
-    videos = site.init_client&.videos
+    client = site.init_client
+    return unless client.is_a?(Youtube::Channel)
+
+    videos = client.videos
     return if videos.nil?
 
     last_checked = site.last_checked_at

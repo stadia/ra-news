@@ -32,6 +32,25 @@ class RssClientTest < ActiveSupport::TestCase
     assert_equal "Test Feed", result.channel.title
   end
 
+  test "RSS 1.0 RDF XML을 파싱한다" do
+    xml = <<~XML
+      <?xml version="1.0"?>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/">
+        <channel rdf:about="https://example.com/">
+          <title>RDF Feed</title>
+          <link>https://example.com/</link>
+          <description>Example feed</description>
+          <items><rdf:Seq /></items>
+        </channel>
+      </rdf:RDF>
+    XML
+
+    result = RssClient.parse(xml)
+
+    assert_kind_of RSS::RDF, result
+    assert_equal "RDF Feed", result.channel.title
+  end
+
   test "content 네임스페이스 누락 XML도 파싱한다" do
     xml = <<~XML
       <?xml version="1.0" encoding="UTF-8"?>

@@ -201,6 +201,15 @@ module Articles
       assert_equal ok, MetadataPreparation.follow_redirection(article, ok)
     end
 
+    test "follow_redirection은 기준 URL 없이 상대 경로를 해석하지 않는다" do
+      article = Article.new(url: nil)
+      redirect = Response.new("", 302, { "location" => "/next" })
+
+      MetadataPreparation.stub(:fetch_url_content, ->(*) { flunk "기준 URL이 없으면 fetch하지 않아야 한다" }) do
+        assert_nil MetadataPreparation.follow_redirection(article, redirect)
+      end
+    end
+
     test "follow_redirection은 상대 경로와 절대 경로를 따라간다" do
       article = Article.new(url: "https://example.com/original")
       first = Response.new("", 302, { "location" => "/step-1" })

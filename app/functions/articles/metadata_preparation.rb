@@ -37,11 +37,17 @@ module Articles
         return response if count > MAX_REDIRECTS
 
         redirect_url = response.headers["location"]
-        # article.url은 nilable 컬럼이라 로컬 변수에 확정한 뒤 AR 속성에도 반영한다.
+        # article.url은 nilable 컬럼이라 상대 URL은 기준 URL이 있을 때만 해석한다.
+        base_url = article.url
         current_url = if redirect_url.start_with?("http")
           redirect_url
         else
-          URI.join(article.url.to_s, redirect_url).to_s
+          if base_url.nil? || base_url.empty?
+            logger.error "Cannot resolve relative redirect #{redirect_url.inspect} without an article URL"
+            return nil
+          end
+
+          URI.join(base_url, redirect_url).to_s
         end
         article.url = current_url
 
@@ -77,9 +83,10 @@ module Articles
 
       #: (Article article, String body) -> ActiveSupport::TimeWithZone
       def published_at_for(article, body)
+        url = article.url
         candidate =
           article.published_at ||
-          url_to_published_at(article.url.to_s) ||
+          (url_to_published_at(url) if url.present?) ||
           extract_published_at_from_content(body)
 
         normalize_published_at(candidate)

@@ -46,7 +46,7 @@ class GmailArticleJob < ApplicationJob
   #: (Site site) -> Array[String]?
   def fetch_new_email_links(site)
     client = site.init_client
-    return if client.nil?
+    return unless client.is_a?(Gmail)
 
     client.fetch_email_links(from: site.email, since: (site.last_checked_at || 1.day.ago) - 1.day)
   end
