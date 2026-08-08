@@ -3,10 +3,11 @@
 # rbs_inline: enabled
 
 class MastodonService < SocialMediaService
-  MastodonConfig = Struct.new(:character_limit, :url_length_counted, :formatting_buffer) do
-    def max_content_length
-      character_limit - formatting_buffer
-    end
+  MastodonConfig = Data.define(:character_limit, :url_length_counted, :formatting_buffer)
+
+  class MastodonConfig
+    #: () -> Integer
+    def max_content_length = character_limit - formatting_buffer
   end
 
   # Mastodon의 기본 문자 제한은 500자 (인스턴스마다 다를 수 있음)
@@ -70,7 +71,7 @@ class MastodonService < SocialMediaService
 
     # Mastodon은 URL을 실제 길이로 계산하므로 링크 길이도 포함
     reserved_space = tags.length + link.length + 5 # 공백과 줄바꿈
-    available_content_length = MASTODON_CONFIG.character_limit - MASTODON_CONFIG.formatting_buffer - reserved_space
+    available_content_length = MASTODON_CONFIG.max_content_length - reserved_space
 
     truncated_content = content.truncate([ available_content_length, 1 ].max, omission: "...")
     "#{truncated_content}\n\n#{tags}\n#{link}"

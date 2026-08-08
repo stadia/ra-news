@@ -3,10 +3,11 @@
 # rbs_inline: enabled
 
 class TwitterService < SocialMediaService
-  TwitterConfig = Struct.new(:character_limit, :shortened_url_length, :formatting_buffer) do
-    def max_content_length
-      character_limit - shortened_url_length - formatting_buffer
-    end
+  TwitterConfig = Data.define(:character_limit, :shortened_url_length, :formatting_buffer)
+
+  class TwitterConfig
+    #: () -> Integer
+    def max_content_length = character_limit - shortened_url_length - formatting_buffer
   end
 
   TWITTER_CONFIG = TwitterConfig.new(280, 23, 4) #: TwitterConfig
@@ -67,7 +68,7 @@ class TwitterService < SocialMediaService
 
     # 태그와 링크를 위한 공간 확보 (공백 문자들 포함)
     reserved_space = tags.length + link.length + 3 # " " + "\n" + 여분
-    available_content_length = TWITTER_CONFIG.character_limit - TWITTER_CONFIG.shortened_url_length - TWITTER_CONFIG.formatting_buffer - reserved_space
+    available_content_length = TWITTER_CONFIG.max_content_length - reserved_space
 
     truncated_content = content.truncate([ available_content_length, 1 ].max, omission: "...")
     "#{truncated_content} #{tags}\n#{link}"
