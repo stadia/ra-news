@@ -64,6 +64,16 @@ module LocaleSwitcher
   requires_ancestor { ApplicationController }
 end
 
+# Job concerns name `ApplicationJob` rather than the individual jobs that
+# include them: what they reach for is the inherited surface (`logger`,
+# `raise`, `self.class`), and pinning to a single subclass would be both
+# narrower than the truth and wrong the moment a second job includes the module.
+module JobRateLimiting
+  extend T::Helpers
+
+  requires_ancestor { ApplicationJob }
+end
+
 # Not a `requires_ancestor`: DiscordArticlePresenter and SlackArticlePresenter
 # both include this and share no superclass, so there is no single ancestor to
 # name. They each supply `article`, which is the only thing the module calls on

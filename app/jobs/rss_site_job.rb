@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -10,7 +10,7 @@ class RssSiteJob < ApplicationJob
   end
 
   # Performs the job for a given site ID.
-  #: (Array[Integer] ids) -> void
+  #: (Array[Integer] | Integer ids) -> void
   def perform(ids)
     ids = [ ids ] unless ids.is_a?(Array)
     site_id = ids.shift
@@ -31,12 +31,12 @@ class RssSiteJob < ApplicationJob
 
       site.update!(last_checked_at: Time.zone.now)
     rescue Faraday::ForbiddenError, Faraday::UnauthorizedError => e
-      logger.warn("Site #{site&.id} (#{site&.name}) discarded: #{e.class} - #{e.message}")
-      site&.discard!
+      logger.warn("Site #{site.id} (#{site.name}) discarded: #{e.class} - #{e.message}")
+      site.discard!
     rescue Faraday::TooManyRequestsError => e
-      logger.warn("Site #{site&.id} (#{site&.name}) rate limited, skipping: #{e.message}")
+      logger.warn("Site #{site.id} (#{site.name}) rate limited, skipping: #{e.message}")
     rescue StandardError => e
-      logger.error("Site #{site&.id} (#{site&.name}) failed: #{e.class} - #{e.message}")
+      logger.error("Site #{site.id} (#{site.name}) failed: #{e.class} - #{e.message}")
     ensure
       RssSiteJob.perform_later(ids) unless ids.empty?
     end

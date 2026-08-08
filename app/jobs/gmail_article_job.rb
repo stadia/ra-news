@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -10,10 +10,12 @@ class GmailArticleJob < ApplicationJob
   end
 
   # Performs the job for a given site ID.
-  #: (Array[Integer] ids) -> void
+  #: (Array[Integer] | Integer ids) -> void
   def perform(ids)
     ids = [ ids ] unless ids.is_a?(Array)
     site_id = ids.shift
+    return if site_id.nil?
+
     site = Site.find(site_id)
     return if site.email.blank?
 

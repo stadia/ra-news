@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # rbs_inline: enabled
 
 module RssHelper
@@ -24,7 +24,10 @@ module RssHelper
   # Fetches and parses the RSS feed for a site.
   #: (Site site) -> (RSS::Rss | RSS::Atom::Feed)?
   def fetch_feed(site)
-    RssClient.feed(site.url)
+    url = site.url
+    return nil if url.nil? || url.blank?
+
+    RssClient.feed(url)
   rescue RSS::NotWellFormedError, RSS::Error, REXML::ParseException => e
     logger.warn "RSS parsing error for site #{site.id} (#{site.url}): #{e.class} - #{e.message}"
     nil
@@ -41,8 +44,6 @@ module RssHelper
       feed.items
     when RSS::Atom::Feed
       feed.entries
-    else
-      []
     end
   end
 

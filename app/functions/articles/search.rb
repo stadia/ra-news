@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -94,11 +94,13 @@ module Articles
         until remaining.empty? || selected.size >= limit
           best =
             if selected.empty?
-              remaining.max_by { |c| query_sim[c[:id]] }
+              # query_sim은 remaining 전체로 미리 만들어 두므로 fetch로
+              # nil 불가를 타입 수준에서 보장한다.
+              remaining.max_by { |c| query_sim.fetch(c[:id]) }
             else
               remaining.max_by do |c|
                 diversity_penalty = max_sim_to_selected[c[:id]]
-                mmr_score = (lambda * query_sim[c[:id]]) - ((1 - lambda) * diversity_penalty)
+                mmr_score = (lambda * query_sim.fetch(c[:id])) - ((1 - lambda) * diversity_penalty)
                 # 동점 시 다양성(낮은 diversity_penalty) 우선
                 [ mmr_score, -diversity_penalty ]
               end

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -12,7 +12,6 @@ class DiscardedArticleCleanupJob < ApplicationJob
   def perform
     cutoff = RETENTION_PERIOD.ago
     scope = Article.discarded.where(created_at: ...cutoff)
-    deleted_any = false
     nulled_posts_count = 0
     deleted_notifications_count = 0
     deleted_articles_count = 0
@@ -33,17 +32,16 @@ class DiscardedArticleCleanupJob < ApplicationJob
       nulled_posts_count += nulled_posts
       deleted_notifications_count += deleted_notifications
       deleted_articles_count += deleted_articles
-      deleted_any ||= deleted_articles.positive?
 
       logger.info(
         "DiscardedArticleCleanupJob batch completed: article_ids=#{article_ids.size}, nulled_posts=#{nulled_posts}, deleted_notifications=#{deleted_notifications}, deleted_articles=#{deleted_articles}"
       )
     end
 
-    vacuum_articles if deleted_any
+    vacuum_articles if deleted_articles_count.positive?
 
     logger.info(
-      "DiscardedArticleCleanupJob finished: deleted_articles=#{deleted_articles_count}, deleted_notifications=#{deleted_notifications_count}, nulled_posts=#{nulled_posts_count}, vacuum_run=#{deleted_any}"
+      "DiscardedArticleCleanupJob finished: deleted_articles=#{deleted_articles_count}, deleted_notifications=#{deleted_notifications_count}, nulled_posts=#{nulled_posts_count}, vacuum_run=#{deleted_articles_count.positive?}"
     )
   end
 

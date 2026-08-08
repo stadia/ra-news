@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # rbs_inline: enabled
 
 module LinkHelper
@@ -31,13 +31,13 @@ module LinkHelper
   end
 
   # Checks if a URI is invalid for article creation.
-  #: (URI uri) -> bool
+  #: (URI::Generic uri) -> bool
   def invalid_uri?(uri)
-    (uri.path.blank? || uri.path.size < 2) || Articles::Utils.should_ignore_url?(uri.to_s)
+    (uri.path.blank? || uri.path.to_s.size < 2) || Articles::Utils.should_ignore_url?(uri.to_s)
   end
 
   # Extracts the 'url' parameter from a URI's query string.
-  #: (URI uri) -> String?
+  #: (URI::Generic uri) -> String?
   def extract_url_param(uri)
     return unless uri.query
 
@@ -65,7 +65,7 @@ module LinkHelper
     if url.is_a?(String)
       uri = URI.parse(url)
       if uri.query.present?
-        URI.decode_www_form(uri.query).to_h["v"]
+        URI.decode_www_form(uri.query.to_s).to_h["v"]
       elsif (path = uri.path)&.start_with?("/live")
         path.split("/").last
       end

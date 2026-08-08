@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -30,20 +30,22 @@ module Articles
         nil
       end
 
-      #: (Article article, Faraday::Response response, ?Integer count) -> Faraday::Response?
+      #: (Article article, Faraday::Response? response, ?Integer count) -> Faraday::Response?
       def follow_redirection(article, response, count = 0)
         return response if response.nil?
         return response unless response.status.between?(300, 399) && response.headers["location"]
         return response if count > MAX_REDIRECTS
 
         redirect_url = response.headers["location"]
-        article.url = if redirect_url.start_with?("http")
+        # article.url은 nilable 컬럼이라 로컬 변수에 확정한 뒤 AR 속성에도 반영한다.
+        current_url = if redirect_url.start_with?("http")
           redirect_url
         else
-          URI.join(article.url, redirect_url).to_s
+          URI.join(article.url.to_s, redirect_url).to_s
         end
+        article.url = current_url
 
-        next_response = fetch_url_content(article.url)
+        next_response = fetch_url_content(current_url)
         follow_redirection(article, next_response, count + 1)
       end
 
@@ -77,7 +79,7 @@ module Articles
       def published_at_for(article, body)
         candidate =
           article.published_at ||
-          url_to_published_at(article.url) ||
+          url_to_published_at(article.url.to_s) ||
           extract_published_at_from_content(body)
 
         normalize_published_at(candidate)
