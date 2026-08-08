@@ -1,0 +1,3 @@
+- 동일 결함 corpus를 실제 최신 HEAD에서도 양 후보가 clean baseline을 갖도록 이식해 재검증한다.
+- Rails DSL 외에 Phlex, ActiveJob, Devise, Data.define 대표 결함을 추가하되 양 후보 공통 문법만 사용한다.
+- cold/warm 실행을 분리하고 Steep server 및 Sorbet LSP의 증분 검사 지연시간을 에디터 시나리오로 측정한다.
