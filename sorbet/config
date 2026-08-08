@@ -10,6 +10,9 @@
 --ignore=lib/protobuf/
 --parser=prism
 --enable-experimental-rbs-comments
+# Data.define returns a class at runtime, but Sorbet cannot model reopening it
+# with `class Name`; keep the idiomatic Ruby shape and suppress that limitation.
+--suppress-error-code=4022
 # Lets `requires_ancestor { Article }` in sorbet/rbi/shims/concern_ancestors.rbi
 # tell Sorbet what a concern's `self` is. Without it those declarations parse
 # and are silently ignored, and every call a concern makes on its includer is

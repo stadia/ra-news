@@ -119,8 +119,13 @@ Style/RbsInline/KeywordSeparator:
   Enabled: true
 Style/RbsInline/MethodCommentSpacing:
   Enabled: true
+# 이 cop이 요구하는 표기(`Data.define(:path, #: String)`)는 Sorbet과 양립하지 않는다.
+# Sorbet은 `--enable-experimental-rbs-comments` 아래에서 줄 끝 `#:`를 "그 줄 표현식에
+# 대한 타입 단언"으로 읽으므로, 인자 줄의 주석은 멤버 선언이 아니라 `:path` 심볼이
+# `String`이라는 단언이 되어 `srb tc`가 깨진다. 멤버 타입은 대신
+# sorbet/rbi/shims/data_definitions.rbi 에 둔다. 배경은 AGENTS.md 참고.
 Style/RbsInline/MissingDataClassAnnotation:
-  Enabled: true
+  Enabled: false
 Style/RbsInline/ParametersSeparator:
   Enabled: true
 Style/RbsInline/RedundantAnnotationWithSkip:

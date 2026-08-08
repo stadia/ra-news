@@ -15,6 +15,10 @@ class GmailArticleJobTest < ActiveSupport::TestCase
     assert_includes GmailArticleJob.ancestors, LinkHelper
   end
 
+  test "빈 ID 배열은 오류 없이 종료한다" do
+    assert_nothing_raised { GmailArticleJob.perform_now([]) }
+  end
+
   test "클라이언트 초기화 실패 시 last_checked_at을 갱신하지 않는다" do
     site = sites(:newsletter)
     site.update!(email: "bot@example.com")
@@ -31,7 +35,7 @@ class GmailArticleJobTest < ActiveSupport::TestCase
   test "클라이언트 초기화 성공 시 메일 조회 후 last_checked_at을 갱신한다" do
     site = sites(:newsletter)
     site.update!(email: "bot@example.com", last_checked_at: 2.days.ago)
-    client = Object.new
+    client = Gmail.allocate
     client.define_singleton_method(:fetch_email_links) { |*_args, **_kwargs| [] }
     site.define_singleton_method(:init_client) { client }
 

@@ -185,6 +185,7 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 서비스 객체를 만들거나 수정할 때는 기존 `OperationService` 을 상속하여 ROP 패턴을 따른다. 단순한 유틸리티성 서비스는 `class << self` 를 사용한 함수 모듈로 작성한다.
 - 소셜 미디어 연동 코드는 `SocialMediaService` 기반 구조와 플랫폼별 서비스 분리를 유지한다.
 - 변경을 마무리하기 전에 테스트 여부와 미실행 사유를 명확히 남긴다.
+- **젬을 올리면(`bundle update`, `bundle add`, Gemfile 수정) 같은 커밋에서 `bin/tapioca gem`을 돌린다.** `srb tc`는 `sorbet/rbi/gems`의 파일을 그대로 읽을 뿐 Gemfile.lock과 맞는지 묻지 않아, RBI 드리프트는 로컬에서 전혀 보이지 않다가 CI의 `tapioca gem --verify`에서 터진다. `Gemfile.lock`이 스테이징되면 lefthook의 `tapioca-gem-drift` 훅이 이를 검사한다(검증만 하고 재생성은 하지 않는다).
 - 관련 배경 문서가 필요하면 `docs/CLAUDE_WORKFLOW.md`, `docs/postgresql-extensions.md`를 우선 참고한다.
 - 뷰 클래스는 `Views::Base`를, 컴포넌트 클래스는 `Components::Base`를 상속한다.
 - `OperationService`(`Dry::Operation`)의 `call` 메서드에서 `return Failure(:x)`를 직접 반환하면 `Dry::Operation`이 이를 `Success(Failure(:x))`로 감싸버린다. `Failure`를 반환하려면 반드시 `step`을 통해야 한다. guard clause도 `step validate_something(...)` 형태로 호출한다.
@@ -199,6 +200,12 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
   - `{ success: ..., user: ... }`처럼 결과를 Hash로 반환하지 않는다. `Result = Data.define(:success, :user)`로 정의해 오타 시 `nil` 대신 `NoMethodError`가 나도록 하고, 불변성·값 동등성을 확보한다.
   - bool 필드는 `success?`처럼 술어 메서드를 블록으로 함께 정의해 호출부에서 `result.success?`로 읽히게 한다.
   - 가변 상태가 필요 없는 데이터 묶음에는 `Struct`보다 `Data`(불변)를 우선한다. Success/Failure 모나드는 도입하지 않는다(실패는 가드절·예외로 처리).
+  - **`Data.define`에는 심볼만 넘기고, 멤버 타입은 `sorbet/rbi/shims/data_definitions.rbi`에 쓴다.** 인자 줄에 `#:` 주석을 달지 않는다.
+    - 이유: rbs-inline과 Sorbet이 같은 `#:` 문법을 다르게 읽는다. rbs-inline은 `Data.define(:path, #: String)`을 멤버 타입 선언으로 읽지만, Sorbet은 `--enable-experimental-rbs-comments` 아래에서 줄 끝 `#:`를 "그 줄 표현식에 대한 타입 단언"으로 읽어 `:path` **심볼**이 `String`이라는 단언으로 해석한다. 단언 실패 → 인자 타입 불일치 → 상수가 클래스로 해석되지 않음(`Constant Entry is not a class or type alias`)까지 연쇄된다.
+    - 이 오류는 sorbet-runtime과 무관하다. `T.must`/`T.let` 없이 표기만 바꿔서 제거된다.
+    - **`Data.define(...) do ... end` 블록 안에 타입 주석을 넣는 우회는 쓰지 않는다.** rbs-inline은 블록 내부를 파싱하지 않아(`Style/RbsInline/DataDefineWithBlock` cop 메시지) `@rbs`든 `@rbs!`든 생성 RBS는 `untyped`가 되고, Sorbet도 블록 주석을 읽지 않는다. cop만 4종 더 꺼야 하고 얻는 것이 없다.
+    - **감수한 대가**: 타입이 살아 있는 RBS를 만드는 표기는 인자 줄 `#:` 하나뿐이므로, 이 규칙 아래에서 rbs-inline 생성물은 멤버가 `untyped`가 된다. 현재 `sig/` 생성과 `rbs collection`은 2026-08-05에 제거됐고(#906) `#:`의 유일한 소비자가 Sorbet이라 실질 손해가 없다. **RBS 생성을 되살린다면 이 규칙을 재검토해야 한다.**
+    - 위 표기를 강제하기 위해 `Style/RbsInline/MissingDataClassAnnotation` cop은 `.rubocop.yml`에서 끈다(이 cop이 요구하는 표기가 곧 Sorbet을 깨뜨리는 표기다). 나머지 `Style/RbsInline/*`는 켜 둔다.
 
 ## 도구 사용 규칙
 

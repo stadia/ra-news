@@ -17,3 +17,16 @@ pre-commit:
       glob: "*.{rb,rake,gemspec}"
       run: bundle exec rubocop -A --force-exclusion {staged_files}
       stage_fixed: true
+
+    # 젬을 올리면 sorbet/rbi/gems 가 같이 늙는다. `srb tc` 는 거기 있는 파일을
+    # 그냥 읽을 뿐 Gemfile.lock 과 맞는지 묻지 않으므로 드리프트가 로컬에서는
+    # 완전히 보이지 않고, CI 의 `tapioca gem --verify` 에서야 터진다. 실제로
+    # 젬 12개가 버전업된 채 옛 RBI 를 달고 머지됐다.
+    #
+    # Gemfile.lock 이 스테이징될 때만 돈다(평상시 커밋에는 비용 0).
+    # 검증만 하고 RBI 를 다시 만들지도, `git add` 하지도 않는다 — 훅이 인덱스를
+    # 만지면 위 rubocop 훅과 .git/index.lock 을 두고 경합한다(과거 사례).
+    # 실패하면 `bin/tapioca gem` 을 돌려 결과를 같은 커밋에 담으면 된다.
+    tapioca-gem-drift:
+      glob: "Gemfile.lock"
+      run: bundle exec tapioca gem --verify

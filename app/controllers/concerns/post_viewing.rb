@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -32,10 +32,10 @@ module PostViewing
 
   def build_thread(root)
     # parent_id 기반으로 안전하게 스레드 수집
-    ids = [ root.id ]
-    queue = [ root.id ]
+    ids = [ root.id ] #: Array[Integer]
+    queue = [ root.id ] #: Array[Integer]
     while queue.any?
-      children = Post.kept.where(parent_id: queue).pluck(:id)
+      children = Post.kept.where(parent_id: queue).pluck(:id) #: Array[Integer]
       ids.concat(children)
       queue = children
     end

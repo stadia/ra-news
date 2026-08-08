@@ -22,11 +22,8 @@ module SitemapBuilder
   # 사이트맵에 등재할 기사 1건의 경량 표현. DB를 한 번만 순회해 이 값들을 모아
   # ko/ja 빌드가 공유한다(AR 객체를 로케일마다 다시 읽지 않는다).
   #   available: 번역이 존재하는 로케일 키 배열(예: ["ko", "ja"] 또는 ["ko"])
-  Entry = Data.define(
-    :path,      #: String
-    :lastmod,   #: String?
-    :available  #: Array[String]
-  )
+  # 멤버 타입: sorbet/rbi/shims/data_definitions.rbi
+  Entry = Data.define(:path, :lastmod, :available)
 
   class << self
     T.unsafe(self).include(Rails.application.routes.url_helpers)

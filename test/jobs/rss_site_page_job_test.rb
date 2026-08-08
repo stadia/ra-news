@@ -15,4 +15,8 @@ class RssSitePageJobTest < ActiveSupport::TestCase
     assert_includes RssSitePageJob.ancestors, RssHelper
     assert_includes RssSitePageJob.ancestors, LinkHelper
   end
+
+  test "빈 ID 배열은 오류 없이 종료한다" do
+    assert_nothing_raised { RssSitePageJob.perform_now([]) }
+  end
 end

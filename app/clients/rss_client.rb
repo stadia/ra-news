@@ -22,7 +22,7 @@ module RssClient
   private_constant :KNOWN_NAMESPACES
 
   class << self
-    #: (String url) -> (RSS::Rss | RSS::Atom::Feed)?
+    #: (String url) -> (RSS::Rss | RSS::RDF | RSS::Atom::Feed)?
     def feed(url)
       response = Faraday.get(url) { |req| apply_timeouts(req) }
       if response.status.between?(300, 399) && response.headers["location"]
@@ -36,7 +36,7 @@ module RssClient
       parse(response.body)
     end
 
-    #: (String xml) -> (RSS::Rss | RSS::Atom::Feed)?
+    #: (String xml) -> (RSS::Rss | RSS::RDF | RSS::Atom::Feed)?
     def parse(xml)
       return nil if xml.blank?
 

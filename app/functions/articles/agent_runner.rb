@@ -1,11 +1,13 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
 module Articles
   module AgentRunner
     extend FunctionLogger
-    T.unsafe(self).extend(Dry::Monads[:result])
+    # Dry::Monads[:result]은 Result::Mixin을 반환한다. 상수를 직접 extend해야
+    # Sorbet이 Success/Failure 생성자를 RBI에서 해석할 수 있다.
+    extend(Dry::Monads::Result::Mixin)
 
     class << self
       #: (article: Article, prompt: String) -> Dry::Monads::Result

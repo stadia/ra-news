@@ -7,10 +7,8 @@ module OauthAccounts
     extend FunctionLogger
 
     # 등록 결과를 담는 불변 값 객체.
-    Result = Data.define(
-      :success,  #: bool
-      :user      #: User
-    )
+    # 멤버 타입: sorbet/rbi/shims/data_definitions.rbi
+    Result = Data.define(:success, :user)
 
     class Result
       #: () -> bool

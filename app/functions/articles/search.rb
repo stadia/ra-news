@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -7,11 +7,8 @@ module Articles
     # 검색 화면 조합 결과. 모듈명 Search 안에서 `Index`는 "검색 인덱스(데이터 구조)"로
     # 오독되므로 IndexResult로 명명한다.
     # 불변식: suggestions는 articles가 비어있고 search가 존재할 때만 비-빈이다.
-    IndexResult = Data.define(
-      :pagy,        #: Pagy
-      :articles,    #: Array[Article]
-      :suggestions  #: Array[String]
-    )
+    # 멤버 타입: sorbet/rbi/shims/data_definitions.rbi
+    IndexResult = Data.define(:pagy, :articles, :suggestions)
 
     class << self
       #: (search: String?, pagy: ^(ActiveRecord::Relation) -> [Pagy, Array[Article]]) -> IndexResult
@@ -94,11 +91,13 @@ module Articles
         until remaining.empty? || selected.size >= limit
           best =
             if selected.empty?
-              remaining.max_by { |c| query_sim[c[:id]] }
+              # query_sim은 remaining 전체로 미리 만들어 두므로 fetch로
+              # nil 불가를 타입 수준에서 보장한다.
+              remaining.max_by { |c| query_sim.fetch(c[:id]) }
             else
               remaining.max_by do |c|
                 diversity_penalty = max_sim_to_selected[c[:id]]
-                mmr_score = (lambda * query_sim[c[:id]]) - ((1 - lambda) * diversity_penalty)
+                mmr_score = (lambda * query_sim.fetch(c[:id])) - ((1 - lambda) * diversity_penalty)
                 # 동점 시 다양성(낮은 diversity_penalty) 우선
                 [ mmr_score, -diversity_penalty ]
               end

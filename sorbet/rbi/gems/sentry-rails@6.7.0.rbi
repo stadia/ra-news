@@ -128,62 +128,120 @@ Sentry::Rails::ActionCableExtensions::ErrorHandler::OP_NAME = T.let(T.unsafe(nil
 # pkg:gem/sentry-rails#lib/sentry/rails/action_cable.rb:8
 Sentry::Rails::ActionCableExtensions::ErrorHandler::SPAN_ORIGIN = T.let(T.unsafe(nil), String)
 
-# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:7
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:9
 module Sentry::Rails::ActiveJobExtensions
-  # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:18
+  # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:67
   def already_supported_by_sentry_integration?; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:8
+  # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:56
+  def deserialize(job_data); end
+
+  # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:18
   def perform_now; end
+
+  # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:31
+  def serialize; end
+
+  class << self
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:14
+    def prepended(base); end
+  end
 end
 
-# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:22
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:10
+Sentry::Rails::ActiveJobExtensions::SENTRY_PAYLOAD_KEY = T.let(T.unsafe(nil), String)
+
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:71
 class Sentry::Rails::ActiveJobExtensions::SentryReporter
+  extend ::Sentry::Rails::ErrorReporterContext
+
   class << self
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:58
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:222
     def capture_exception(job, e); end
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:77
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:215
+    def compute_latency(job); end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:245
     def detach_event_handlers; end
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:99
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:267
     def finish_sentry_transaction(transaction, status); end
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:94
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:262
     def handle_error_event(*args); end
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:31
-    def record(job, &block); end
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:130
+    def log_producer_span_error(e); end
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:69
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:199
+    def messaging_system(job); end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:92
+    def producer_callback_registered!; end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:88
+    def producer_callback_registered?; end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:134
+    def record(job, trace_headers: T.unsafe(nil), user: T.unsafe(nil), &block); end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:96
+    def record_producer_span(job, &enqueue); end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:237
     def register_event_handlers; end
+
+    # Number of retries the job has already gone through, as observed at
+    # the moment the span is opened. On the consumer the span opens before
+    # ActiveJob increments +executions+, so a job's first attempt reads 0,
+    # its first retry reads 1, and so on. On the producer the retry enqueue
+    # runs after the failed attempt bumped +executions+, so it observes the
+    # same progression.
+    #
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:211
+    def retry_count(job); end
 
     # This handler does not capture error unless `active_job_report_on_retry_error` is true
     #
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:85
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:253
     def retry_handler(*args); end
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:106
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:274
     def sentry_context(job); end
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:117
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:285
     def sentry_serialize_arguments(argument); end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:186
+    def set_messaging_data(transaction, job); end
 
     private
 
-    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:138
+    # pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:291
     def subscribers; end
   end
 end
 
-# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:26
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:81
 Sentry::Rails::ActiveJobExtensions::SentryReporter::EVENT_HANDLERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:23
+# Emitted as messaging.system when the configured queue adapter's
+# identity cannot be resolved from the job. ActiveJob is adapter-agnostic
+# and supports arbitrary third-party backends, so the concrete value is
+# normally derived from the adapter itself; this is only the last resort.
+#
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:79
+Sentry::Rails::ActiveJobExtensions::SentryReporter::MESSAGING_SYSTEM_FALLBACK = T.let(T.unsafe(nil), String)
+
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:72
 Sentry::Rails::ActiveJobExtensions::SentryReporter::OP_NAME = T.let(T.unsafe(nil), String)
 
-# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:24
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:73
 Sentry::Rails::ActiveJobExtensions::SentryReporter::SPAN_ORIGIN = T.let(T.unsafe(nil), String)
+
+# pkg:gem/sentry-rails#lib/sentry/rails/active_job.rb:12
+Sentry::Rails::ActiveJobExtensions::USER_FIELDS_ALLOWLIST = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/sentry-rails#lib/sentry/rails/backtrace_cleaner.rb:8
 class Sentry::Rails::BacktraceCleaner < ::ActiveSupport::BacktraceCleaner
@@ -214,42 +272,58 @@ module Sentry::Rails::Breadcrumb::ActiveSupportLogger
   end
 end
 
-# pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:5
+# pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:7
 class Sentry::Rails::CaptureExceptions < ::Sentry::Rack::CaptureExceptions
-  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:9
+  include ::Sentry::Rails::ErrorReporterContext
+
+  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:13
   def initialize(_); end
 
   private
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:28
+  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:32
   def capture_exception(exception, env); end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:19
+  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:23
   def collect_exception(env); end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:54
+  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:58
   def show_exceptions?(exception, env); end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:38
+  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:42
   def start_transaction(env, scope); end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:64
+  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:68
   def status_code_for_exception(exception); end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:24
+  # pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:28
   def transaction_op; end
 end
 
-# pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:6
+# pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:10
 Sentry::Rails::CaptureExceptions::RAILS_7_1 = T.let(T.unsafe(nil), TrueClass)
 
-# pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:7
+# pkg:gem/sentry-rails#lib/sentry/rails/capture_exceptions.rb:11
 Sentry::Rails::CaptureExceptions::SPAN_ORIGIN = T.let(T.unsafe(nil), String)
 
 # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:126
 class Sentry::Rails::Configuration
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:179
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:184
   def initialize; end
+
+  # Whether we should inject trace propagation headers into the serialized job
+  # payload in order to have a connected trace between producer and consumer.
+  # Defaults to true. Set to false to opt out.
+  #
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:178
+  def active_job_propagate_traces; end
+
+  # Whether we should inject trace propagation headers into the serialized job
+  # payload in order to have a connected trace between producer and consumer.
+  # Defaults to true. Set to false to opt out.
+  #
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:178
+  def active_job_propagate_traces=(_arg0); end
 
   # Set this option to true if you want Sentry to capture each retry failure
   #
@@ -378,7 +452,7 @@ class Sentry::Rails::Configuration
   # Configuration for structured logging feature
   # @return [StructuredLoggingConfiguration]
   #
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:177
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:182
   def structured_logging; end
 
   # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:143
@@ -417,6 +491,15 @@ end
 
 # pkg:gem/sentry-rails#lib/sentry/rails/controller_transaction.rb:6
 Sentry::Rails::ControllerTransaction::SPAN_ORIGIN = T.let(T.unsafe(nil), String)
+
+# pkg:gem/sentry-rails#lib/sentry/rails/error_reporter_context.rb:7
+module Sentry::Rails::ErrorReporterContext
+  # pkg:gem/sentry-rails#lib/sentry/rails/error_reporter_context.rb:11
+  def execution_context; end
+end
+
+# pkg:gem/sentry-rails#lib/sentry/rails/error_reporter_context.rb:8
+Sentry::Rails::ErrorReporterContext::SUPPORTS_EXECUTION_CONTEXT = T.let(T.unsafe(nil), TrueClass)
 
 # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:43
 Sentry::Rails::IGNORE_DEFAULT = T.let(T.unsafe(nil), Array)
@@ -707,6 +790,20 @@ class Sentry::Rails::RescuedExceptionInterceptor
   def report_rescued_exceptions?; end
 end
 
+# pkg:gem/sentry-rails#lib/sentry/rails/serializer.rb:5
+module Sentry::Rails::Serializer
+  class << self
+    # pkg:gem/sentry-rails#lib/sentry/rails/serializer.rb:6
+    def serialize(value); end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/serializer.rb:21
+    def serialize_global_id(value); end
+
+    # pkg:gem/sentry-rails#lib/sentry/rails/serializer.rb:27
+    def serialize_range(range); end
+  end
+end
+
 # pkg:gem/sentry-rails#lib/sentry/rails/structured_logging.rb:11
 module Sentry::Rails::StructuredLogging
   class << self
@@ -718,43 +815,43 @@ module Sentry::Rails::StructuredLogging
   end
 end
 
-# pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:200
+# pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:206
 class Sentry::Rails::StructuredLoggingConfiguration
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:214
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:220
   def initialize; end
 
   # Enable or disable structured logging
   # @return [Boolean]
   #
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:203
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:209
   def enabled; end
 
   # Enable or disable structured logging
   # @return [Boolean]
   #
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:203
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:209
   def enabled=(_arg0); end
 
   # Returns true if structured logging should be enabled.
   # @return [Boolean]
   #
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:221
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:227
   def enabled?; end
 
   # Hash of components to subscriber classes for structured logging
   # @return [Hash<Symbol, Class>]
   #
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:207
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:213
   def subscribers; end
 
   # Hash of components to subscriber classes for structured logging
   # @return [Hash<Symbol, Class>]
   #
-  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:207
+  # pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:213
   def subscribers=(_arg0); end
 end
 
-# pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:209
+# pkg:gem/sentry-rails#lib/sentry/rails/configuration.rb:215
 Sentry::Rails::StructuredLoggingConfiguration::DEFAULT_SUBSCRIBERS = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/sentry-rails#lib/sentry/rails/tracing.rb:5
@@ -928,37 +1025,37 @@ Sentry::Rails::VERSION = T.let(T.unsafe(nil), String)
 
 # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:8
 class Sentry::Railtie < ::Rails::Railtie
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:137
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:144
   def activate_structured_logging; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:128
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:135
   def activate_tracing; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:82
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:89
   def configure_cron_timezone; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:74
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:81
   def configure_project_root; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:78
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:85
   def configure_trusted_proxies; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:87
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:94
   def extend_controller_methods; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:103
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:110
   def inject_breadcrumbs_logger; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:120
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:127
   def override_streaming_reporter; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:99
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:106
   def patch_background_worker; end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:143
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:150
   def register_error_subscriber(app); end
 
-  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:112
+  # pkg:gem/sentry-rails#lib/sentry/rails/railtie.rb:119
   def setup_backtrace_cleanup_callback; end
 end
 
