@@ -199,6 +199,12 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
   - `{ success: ..., user: ... }`처럼 결과를 Hash로 반환하지 않는다. `Result = Data.define(:success, :user)`로 정의해 오타 시 `nil` 대신 `NoMethodError`가 나도록 하고, 불변성·값 동등성을 확보한다.
   - bool 필드는 `success?`처럼 술어 메서드를 블록으로 함께 정의해 호출부에서 `result.success?`로 읽히게 한다.
   - 가변 상태가 필요 없는 데이터 묶음에는 `Struct`보다 `Data`(불변)를 우선한다. Success/Failure 모나드는 도입하지 않는다(실패는 가드절·예외로 처리).
+  - **`Data.define`에는 심볼만 넘기고, 멤버 타입은 `sorbet/rbi/shims/data_definitions.rbi`에 쓴다.** 인자 줄에 `#:` 주석을 달지 않는다.
+    - 이유: rbs-inline과 Sorbet이 같은 `#:` 문법을 다르게 읽는다. rbs-inline은 `Data.define(:path, #: String)`을 멤버 타입 선언으로 읽지만, Sorbet은 `--enable-experimental-rbs-comments` 아래에서 줄 끝 `#:`를 "그 줄 표현식에 대한 타입 단언"으로 읽어 `:path` **심볼**이 `String`이라는 단언으로 해석한다. 단언 실패 → 인자 타입 불일치 → 상수가 클래스로 해석되지 않음(`Constant Entry is not a class or type alias`)까지 연쇄된다.
+    - 이 오류는 sorbet-runtime과 무관하다. `T.must`/`T.let` 없이 표기만 바꿔서 제거된다.
+    - **`Data.define(...) do ... end` 블록 안에 타입 주석을 넣는 우회는 쓰지 않는다.** rbs-inline은 블록 내부를 파싱하지 않아(`Style/RbsInline/DataDefineWithBlock` cop 메시지) `@rbs`든 `@rbs!`든 생성 RBS는 `untyped`가 되고, Sorbet도 블록 주석을 읽지 않는다. cop만 4종 더 꺼야 하고 얻는 것이 없다.
+    - **감수한 대가**: 타입이 살아 있는 RBS를 만드는 표기는 인자 줄 `#:` 하나뿐이므로, 이 규칙 아래에서 rbs-inline 생성물은 멤버가 `untyped`가 된다. 현재 `sig/` 생성과 `rbs collection`은 2026-08-05에 제거됐고(#906) `#:`의 유일한 소비자가 Sorbet이라 실질 손해가 없다. **RBS 생성을 되살린다면 이 규칙을 재검토해야 한다.**
+    - 위 표기를 강제하기 위해 `Style/RbsInline/MissingDataClassAnnotation` cop은 `.rubocop.yml`에서 끈다(이 cop이 요구하는 표기가 곧 Sorbet을 깨뜨리는 표기다). 나머지 `Style/RbsInline/*`는 켜 둔다.
 
 ## 도구 사용 규칙
 

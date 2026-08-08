@@ -8,10 +8,8 @@
 
 # rubocop:disable Metrics/ModuleLength
 module HumanizeKoreanGoldenChecks
-  Failure = Data.define(
-    :code,    #: String
-    :message  #: String
-  )
+  # 멤버 타입: sorbet/rbi/shims/data_definitions.rbi
+  Failure = Data.define(:code, :message)
 
   class Failure
     #: () -> String
