@@ -1,4 +1,5 @@
 # typed: true
+# rbs_inline: disabled
 
 # Constants that the generated gem RBIs do not cover.
 
@@ -18,6 +19,21 @@ module Federails
     # FollowingPolicy::Scope), which the gem declares outright. Referenced by
     # ActivitiesController#index.
     class ActivityPolicy::Scope < ::Federails::FederailsPolicy::Scope; end
+  end
+end
+
+# FriendlyId adds `friendly` to both the model and its relations at runtime.
+# The generated gem RBI declares the generic mixin method, but Tapioca's model
+# RBI does not project it onto Article's generated relation classes.
+class Article
+  class << self
+    sig { returns(PrivateRelation) }
+    def friendly; end
+  end
+
+  class PrivateRelation
+    sig { returns(PrivateRelation) }
+    def friendly; end
   end
 end
 

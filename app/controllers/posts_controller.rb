@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -7,7 +7,7 @@ class PostsController < ApplicationController
   include PostViewing
 
   before_action :authenticate_user!, only: [ :create, :destroy ]
-  before_action :set_article, only: [ :create, :destroy ], if: -> { params[:article_id].present? }
+  before_action :set_article, only: [ :create, :destroy ], if: :article_scoped_request?
   before_action :set_post, only: [ :destroy ]
   before_action :check_rate_limit, only: [ :create ]
 
@@ -52,6 +52,10 @@ class PostsController < ApplicationController
 
   private
 
+  def article_scoped_request?
+    params[:article_id].present?
+  end
+
   def create_article_comment
     @post = @article.posts.build(article_comment_params.merge(post_type: :comment, status: :published))
     @post.user = current_user
@@ -88,7 +92,7 @@ class PostsController < ApplicationController
   end
 
   def set_article
-    @article = Article.kept.find_by_slug(params[:article_id]) || Article.kept.find_by(id: params[:article_id])
+    @article = Article.kept.find_by(slug: params[:article_id]) || Article.kept.find_by(id: params[:article_id])
     raise ActiveRecord::RecordNotFound if @article.nil?
   end
 
