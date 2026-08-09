@@ -56,11 +56,11 @@ class Article
     sig { params(args: T.untyped, kwargs: T.untyped).void }
     def friendly_id(*args, **kwargs); end
 
-    sig { params(args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
-    def after_discard(*args, **kwargs, &block); end
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_discard(name = nil, *args, **kwargs, &block); end
 
-    sig { params(args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
-    def after_undiscard(*args, **kwargs, &block); end
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_undiscard(name = nil, *args, **kwargs, &block); end
   end
 end
 
@@ -69,11 +69,11 @@ class Post
     sig { params(args: T.untyped, kwargs: T.untyped).void }
     def friendly_id(*args, **kwargs); end
 
-    sig { params(args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
-    def after_discard(*args, **kwargs, &block); end
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_discard(name = nil, *args, **kwargs, &block); end
 
-    sig { params(args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
-    def after_undiscard(*args, **kwargs, &block); end
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_undiscard(name = nil, *args, **kwargs, &block); end
   end
 end
 

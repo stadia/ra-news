@@ -217,7 +217,13 @@ class Article < ApplicationRecord
     if is_youtube?
       new_slug = youtube_id
     else
-      path = URI.parse(url.to_s).path
+      url_local = url
+      if url_local.blank?
+        logger.error "update_slug: article #{id}에 url이 없어 slug를 만들 수 없습니다"
+        return false
+      end
+
+      path = URI.parse(url_local).path
       new_slug = path&.split("/")&.last&.split(".")&.first
       new_slug = random_slug if new_slug.blank?
     end

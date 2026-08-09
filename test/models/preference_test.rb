@@ -35,6 +35,15 @@ class PreferenceTest < ActiveSupport::TestCase
     assert_equal "persisted-secret", fresh.client_secret
   end
 
+  test "name에 nil을 할당하면 name이 nil이 되고 검증에 실패한다" do
+    preference = Preference.create!(name: "_nil_assign_oauth", value: {})
+
+    preference.name = nil
+
+    assert_nil preference.name
+    assert_not preference.valid?
+  end
+
   test "ignore_hosts 설정이 배열이 아니면 빈 배열을 반환한다" do
     Preference.find_or_initialize_by(name: "ignore_hosts").update!(value: { "unexpected" => "value" })
 

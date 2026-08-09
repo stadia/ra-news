@@ -788,6 +788,29 @@ class ArticleTest < ActiveSupport::TestCase
     assert_includes deleted_keys, "rss_articles"
   end
 
+  test "discard하면 Delete 활동이 생성되고 SocialDeleteJob이 등록된다" do
+    assert_difference -> { Federails::Activity.where(action: "Delete", entity: @article).count }, 1 do
+      assert_enqueued_with(job: SocialDeleteJob, args: [ @article.id ]) do
+        @article.discard!
+      end
+    end
+  end
+
+  test "undiscard하면 Undo 활동이 생성된다" do
+    @article.discard!
+
+    assert_difference -> { Federails::Activity.where(action: "Undo", entity: @article).count }, 1 do
+      @article.undiscard!
+    end
+  end
+
+  test "인바운드 연합 삭제는 기사를 soft discard한다" do
+    @article.run_callbacks(:on_federails_delete_requested)
+
+    assert_predicate @article.reload, :discarded?
+    assert Article.exists?(@article.id)
+  end
+
   # ========== Performance Tests ==========
 
   test "kept된 기사를 효율적으로 쿼리해야 한다" do

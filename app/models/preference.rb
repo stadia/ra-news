@@ -11,8 +11,9 @@ class Preference < ApplicationRecord
 
   #: (String? value) -> void
   def name=(value)
-    value_local = value
-    super(value_local) if value_local
+    # nil을 포함한 모든 입력을 그대로 반영해야 presence 검증이 정상 동작한다.
+    # 생성된 `name=` 시그니처가 non-nil String만 받으므로 write_attribute 경로를 쓴다.
+    self[:name] = value
     define_dynamic_accessors if name.present?
   end
 

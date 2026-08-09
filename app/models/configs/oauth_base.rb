@@ -5,8 +5,9 @@
 module Configs
   class OauthBase
     class << self
+      #: (String key) -> void
       def preference_key(key)
-        const_set(:PREFERENCE_KEY, key)
+        @preference_key = key
       end
 
       def pref(name, env: nil, credentials: nil, pref_field: nil)
@@ -26,8 +27,10 @@ module Configs
 
       private
 
+      #: () -> Preference?
       def preference
-        Preference.get_object(const_get(:PREFERENCE_KEY))
+        key = @preference_key or raise "#{name}에 preference_key가 정의되지 않았습니다"
+        Preference.get_object(key)
       end
     end
   end
