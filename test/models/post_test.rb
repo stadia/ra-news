@@ -152,6 +152,13 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @article, @comment_post.reply
   end
 
+  test "reply는 parent도 article도 없으면 에러를 발생시킨다" do
+    post = Post.new(body: "고아 포스트", user: @user)
+
+    error = assert_raises(RuntimeError) { post.reply }
+    assert_match(/parent도 article도 없습니다/, error.message)
+  end
+
   test "author_name은 user의 full_name을 반환한다" do
     assert_equal @user.full_name, @root_post.author_name
   end

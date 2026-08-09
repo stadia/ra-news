@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -11,9 +11,10 @@ class Preference < ApplicationRecord
 
   #: (String? value) -> void
   def name=(value)
-    super.tap do
-      define_dynamic_accessors if name.present?
-    end
+    # nil을 포함한 모든 입력을 그대로 반영해야 presence 검증이 정상 동작한다.
+    # 생성된 `name=` 시그니처가 non-nil String만 받으므로 write_attribute 경로를 쓴다.
+    self[:name] = value
+    define_dynamic_accessors if name.present?
   end
 
   #: (String name) -> (Hash[String, untyped] | Array[untyped])?

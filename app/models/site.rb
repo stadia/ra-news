@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -10,7 +10,7 @@ class Site < ApplicationRecord
   has_many :articles, dependent: :destroy
 
   validates :name, :client, presence: true
-  validates :url, uniqueness: true, if: -> { rss? }, allow_nil: true
+  validates :url, uniqueness: true, if: :rss?, allow_nil: true
 
   before_save :parse_url_to_uri_parts, if: :will_save_change_to_url?
 
@@ -38,9 +38,10 @@ class Site < ApplicationRecord
 
   #: () -> void
   def parse_url_to_uri_parts
-    return if url.blank?
+    url_local = url
+    return if url_local.blank?
 
-    parsed = URI.parse(url)
+    parsed = URI.parse(url_local)
     return if parsed.scheme.blank? || parsed.host.blank?
 
     port_part = ":#{parsed.port}" if parsed.port && ![ 80, 443 ].include?(parsed.port)

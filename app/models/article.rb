@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -143,7 +143,8 @@ class Article < ApplicationRecord
 
   # ── Callbacks ────────────────────────────────────────────────────────
   before_validation on: :create do
-    self.origin_url = url if origin_url.blank?
+    url_local = url
+    self.origin_url = url_local if url_local && origin_url.blank?
   end
 
   before_create :generate_metadata
@@ -162,15 +163,8 @@ class Article < ApplicationRecord
   after_commit :clear_rss_cache, on: [ :create, :update, :destroy ]
   after_commit :enqueue_index_now, on: [ :create, :update ]
 
-  after_discard do
-    clear_rss_cache
-    SocialDeleteJob.perform_later(id)
-    create_federails_activity "Delete"
-  end
-
-  after_undiscard do
-    create_federails_activity "Undo"
-  end
+  after_discard :handle_after_discard
+  after_undiscard :handle_after_undiscard
 
   # ── Federation ───────────────────────────────────────────────────────
   acts_as_federails_data handles: "Note",
@@ -179,7 +173,7 @@ class Article < ApplicationRecord
                          soft_delete_date_method: :deleted_at,
                          should_federate_method: :should_federate?
 
-  on_federails_delete_requested -> { logger.info { "Federated article deletion requested #{id}" }; discard! }
+  on_federails_delete_requested :handle_federails_delete_requested
   on_federails_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────
@@ -203,10 +197,12 @@ class Article < ApplicationRecord
   #: () -> String?
   def youtube_id
     # nil 체크를 포함하여 안전하게 접근
-    if url.is_a?(String)
-      uri = URI.parse(url)
-      if uri.query.present?
-        URI.decode_www_form(uri.query).to_h["v"]
+    url_local = url
+    if url_local.is_a?(String)
+      uri = URI.parse(url_local)
+      query = uri.query
+      if query.present?
+        URI.decode_www_form(query).to_h["v"]
       elsif (path = uri.path) && path.start_with?("/live")
         path.split("/").last
       end
@@ -221,7 +217,13 @@ class Article < ApplicationRecord
     if is_youtube?
       new_slug = youtube_id
     else
-      path = URI.parse(url).path
+      url_local = url
+      if url_local.blank?
+        logger.error "update_slug: article #{id}에 url이 없어 slug를 만들 수 없습니다"
+        return false
+      end
+
+      path = URI.parse(url_local).path
       new_slug = path&.split("/")&.last&.split(".")&.first
       new_slug = random_slug if new_slug.blank?
     end
@@ -282,6 +284,24 @@ class Article < ApplicationRecord
 
   # ── Private Instance Methods ─────────────────────────────────────────
   private
+
+  #: () -> void
+  def handle_after_discard
+    clear_rss_cache
+    SocialDeleteJob.perform_later(id)
+    create_federails_activity "Delete"
+  end
+
+  #: () -> void
+  def handle_after_undiscard
+    create_federails_activity "Undo"
+  end
+
+  #: () -> void
+  def handle_federails_delete_requested
+    logger.info { "Federated article deletion requested #{id}" }
+    discard!
+  end
 
   #: () -> void
   def assign_japanese_title

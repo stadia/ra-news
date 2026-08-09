@@ -45,6 +45,38 @@ class Article
   end
 end
 
+# `friendly_id` and `after_discard`/`after_undiscard` are class methods
+# installed by `extend FriendlyId` and `include Discard::Model` respectively.
+# Tapioca does not reflect over these hooks (same mechanism as `friendly`
+# above), so Sorbet reports them as missing on every model that uses them.
+# Declared per-model because Sorbet does not project `included`-hook singleton
+# methods onto their includers.
+class Article
+  class << self
+    sig { params(args: T.untyped, kwargs: T.untyped).void }
+    def friendly_id(*args, **kwargs); end
+
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_discard(name = nil, *args, **kwargs, &block); end
+
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_undiscard(name = nil, *args, **kwargs, &block); end
+  end
+end
+
+class Post
+  class << self
+    sig { params(args: T.untyped, kwargs: T.untyped).void }
+    def friendly_id(*args, **kwargs); end
+
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_discard(name = nil, *args, **kwargs, &block); end
+
+    sig { params(name: T.nilable(T.any(Symbol, String)), args: T.untyped, kwargs: T.untyped, block: T.nilable(T.proc.void)).void }
+    def after_undiscard(name = nil, *args, **kwargs, &block); end
+  end
+end
+
 # The `herb` gem is excluded from `tapioca gem` (see sorbet/tapioca/config.yml),
 # but reactionview's RBI subclasses Herb::Engine.
 module Herb
