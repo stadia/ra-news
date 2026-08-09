@@ -1,11 +1,11 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
 class Users::SessionsController < Devise::SessionsController
   layout -> { Components::Layout }
 
-  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }, only: [ :create, :destroy ]
+  skip_before_action :verify_authenticity_token, if: :skip_csrf_for_json_write?
 
   respond_to :html, :json
 

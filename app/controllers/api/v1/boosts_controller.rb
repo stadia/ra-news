@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -6,7 +6,7 @@ class Api::V1::BoostsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_boostable
 
-  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }, only: [ :create, :destroy ]
+  skip_before_action :verify_authenticity_token, if: :skip_csrf_for_json_write?
 
   BOOSTABLE_CLASSES = {
     "Post" => Post,

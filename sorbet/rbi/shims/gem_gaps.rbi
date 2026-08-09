@@ -77,6 +77,29 @@ class Post
   end
 end
 
+# `devise` 매크로는 런타임에 모듈을 mixin하므로, 생성된 User RBI에는 그
+# include 엣지가 없다. 메서드 본체는 `devise@5.0.4.rbi`에 이미 있으므로
+# 손으로 재선언하지 않고 include/extend만 선언한다. Confirmable 전체를
+# 커버하고 Devise 업그레이드 시 시그니처를 자동 추종한다. (`friendly_id`
+# 블록과 달리, 여기는 메서드 본체가 존재하는 RBI에 이미 있는 케이스다.)
+class User
+  include Devise::Models::Confirmable
+  extend Devise::Models::Confirmable::ClassMethods
+end
+
+# Devise controllers inherit `resource_class` typed as `T::Class[T.anything]`,
+# so the Confirmable class methods on the resource are unresolvable. The
+# resource for this controller is always `User`, so narrow the return type.
+# Scoped to this controller on purpose: if another mapping (e.g.
+# `devise_for :admins`) is added, its controller must get its own shim
+# rather than inheriting a `User`-only narrowing.
+module Users
+  class ConfirmationsController
+    sig { returns(T.class_of(User)) }
+    def resource_class; end
+  end
+end
+
 # The `herb` gem is excluded from `tapioca gem` (see sorbet/tapioca/config.yml),
 # but reactionview's RBI subclasses Herb::Engine.
 module Herb
