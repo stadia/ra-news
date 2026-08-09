@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -65,8 +65,8 @@ class Post < ApplicationRecord
   # ── Soft delete ──────────────────────────────────────────────────────
   # Only published posts were ever federated, so only they emit Delete/Undo.
   # Drafts are local-only, so discarding/restoring one federates nothing.
-  after_discard { create_federails_activity "Delete" if published? }
-  after_undiscard { create_federails_activity "Undo" if published? }
+  after_discard :handle_after_discard
+  after_undiscard :handle_after_undiscard
 
   # ── Federation ───────────────────────────────────────────────────────
   acts_as_federails_data handles: "Note",
@@ -78,7 +78,7 @@ class Post < ApplicationRecord
   # Only blog posts support soft delete (trash/restore). Short posts and
   # comments hard-destroy, both locally and on inbound federated Delete, so
   # their rows (and counter caches) are removed as before.
-  on_federails_delete_requested -> { logger.info { "Federated post deletion requested #{id}" }; blog? ? discard! : destroy! }
+  on_federails_delete_requested :handle_federails_delete_requested
   on_federails_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────
@@ -110,7 +110,10 @@ class Post < ApplicationRecord
 
   #: () -> (Post | Article)
   def reply
-    parent.present? ? parent : article
+    parent_local = parent
+    return parent_local if parent_local
+
+    article or raise "Post에 parent도 article도 없습니다"
   end
 
   #: () -> Array[String]
@@ -137,6 +140,22 @@ class Post < ApplicationRecord
 
   # ── Private Instance Methods ─────────────────────────────────────────
   private
+
+  #: () -> void
+  def handle_after_discard
+    create_federails_activity "Delete" if published?
+  end
+
+  #: () -> void
+  def handle_after_undiscard
+    create_federails_activity "Undo" if published?
+  end
+
+  #: () -> void
+  def handle_federails_delete_requested
+    logger.info { "Federated post deletion requested #{id}" }
+    blog? ? discard! : destroy!
+  end
 
   def create_federails_activity(action, actor: nil, to: nil, cc: nil)
     actor ||= federails_actor || user&.federails_actor
@@ -195,12 +214,13 @@ class Post < ApplicationRecord
 
   #: () -> void
   def enqueue_article_thumbnail
-    return unless article_id.present?
+    article_id_local = article_id
+    return unless article_id_local.present?
     article_local = article
     return if article_local.nil? || article_local.thumbnail.attached?
 
-    logger.info { "ArticleThumbnail enqueue: comment on article #{article_id}" }
-    ArticleThumbnailJob.perform_later(article_id)
+    logger.info { "ArticleThumbnail enqueue: comment on article #{article_id_local}" }
+    ArticleThumbnailJob.perform_later(article_id_local)
   end
 
   #: () -> void

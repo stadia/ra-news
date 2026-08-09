@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -27,7 +27,7 @@ module Configs
       private
 
       def preference
-        Preference.get_object(self::PREFERENCE_KEY)
+        Preference.get_object(const_get(:PREFERENCE_KEY))
       end
     end
   end

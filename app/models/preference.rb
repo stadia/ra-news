@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -11,9 +11,9 @@ class Preference < ApplicationRecord
 
   #: (String? value) -> void
   def name=(value)
-    super.tap do
-      define_dynamic_accessors if name.present?
-    end
+    value_local = value
+    super(value_local) if value_local
+    define_dynamic_accessors if name.present?
   end
 
   #: (String name) -> (Hash[String, untyped] | Array[untyped])?
