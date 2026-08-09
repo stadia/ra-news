@@ -49,6 +49,10 @@ class ApplicationController < ActionController::Base
     )
   end
 
+  def json_request?
+    request.format.json?
+  end
+
   def cacheable_page!(max_age: 5.minutes)
     return if user_signed_in?
     request.session_options[:skip] = true

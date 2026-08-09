@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -11,9 +11,7 @@ class Api::V1::Auth::TokensController < Api::V1::BaseController
 
     return render(json: { error: "invalid_refresh_token" }, status: :unauthorized) unless record
 
-    user = nil
-    new_raw = nil
-    RefreshToken.transaction do
+    user, new_raw = RefreshToken.transaction do
       record.lock!
       if record.revoked_at.present? || record.expires_at <= Time.current
         return render json: { error: "invalid_refresh_token" }, status: :unauthorized
@@ -22,6 +20,7 @@ class Api::V1::Auth::TokensController < Api::V1::BaseController
       user = record.user
       record.update!(revoked_at: Time.current)
       _new_record, new_raw = RefreshToken.issue(user)
+      [user, new_raw]
     end
 
     access_token, _payload = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil)

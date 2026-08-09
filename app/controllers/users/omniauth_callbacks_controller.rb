@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -50,8 +50,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to root_path, notice: t("devise.omniauth_callbacks.success", kind: provider_name)
     when OauthAccounts::Callbacks::CompleteSignup
       redirect_to new_user_oauth_registration_path
-    else
-      redirect_to new_user_session_path, alert: t("devise.omniauth_callbacks.failure", kind: provider_name, reason: "OAuth 인증 처리 실패")
     end
   rescue KeyError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
     logger.warn("[OAuth callback failure] provider=#{provider_name} error=#{e.class}: #{e.message}")

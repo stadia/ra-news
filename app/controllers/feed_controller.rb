@@ -55,10 +55,6 @@ class FeedController < ApplicationController
 
   private
 
-  def json_request?
-    request.format.json?
-  end
-
   def pundit_user
     current_user
   end

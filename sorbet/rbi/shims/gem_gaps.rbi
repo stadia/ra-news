@@ -77,6 +77,35 @@ class Post
   end
 end
 
+# `devise` is a class macro that mixes modules in at runtime, so Tapioca's
+# static reflection never sees the resulting instance/class methods on `User`.
+# Same gem-gap mechanism as `friendly_id`/`after_discard` above: declared here
+# for the methods this app's typed controllers reach for.
+class User
+  # Devise::Models::Authenticatable (instance) -- reached via `result.user`.
+  sig { returns(T::Boolean) }
+  def active_for_authentication?; end
+
+  class << self
+    # Devise::Models::Confirmable (class methods) -- reached via `resource_class`.
+    sig { params(attributes: T.untyped).returns(T.untyped) }
+    def send_confirmation_instructions(attributes = T.unsafe(nil)); end
+
+    sig { params(confirmation_token: T.untyped).returns(T.untyped) }
+    def confirm_by_token(confirmation_token); end
+  end
+end
+
+# Devise controllers inherit `resource_class` typed as `T::Class[T.anything]`,
+# so the Confirmable class methods on the resource are unresolvable. The
+# resource for this controller is always `User`, so narrow the return type.
+module Users
+  class ConfirmationsController
+    sig { returns(T.class_of(User)) }
+    def resource_class; end
+  end
+end
+
 # The `herb` gem is excluded from `tapioca gem` (see sorbet/tapioca/config.yml),
 # but reactionview's RBI subclasses Herb::Engine.
 module Herb
