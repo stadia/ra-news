@@ -20,7 +20,7 @@ class Api::V1::Auth::TokensController < Api::V1::BaseController
       user = record.user
       record.update!(revoked_at: Time.current)
       _new_record, new_raw = RefreshToken.issue(user)
-      [user, new_raw]
+      [ user, new_raw ]
     end
 
     access_token, _payload = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil)
