@@ -42,7 +42,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def handle_oauth_callback
-    result = OauthAccounts::Callbacks.handle_callback(auth: request.env["omniauth.auth"], session: session)
+    result = oauth_callback_result
 
     case result
     when OauthAccounts::Callbacks::SignIn
@@ -50,10 +50,19 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to root_path, notice: t("devise.omniauth_callbacks.success", kind: provider_name)
     when OauthAccounts::Callbacks::CompleteSignup
       redirect_to new_user_oauth_registration_path
+    else
+      # handle_callback의 sum type에 새 variant가 추가됐을 때 render 없이
+      # fall-through해 MissingExactTemplate 500로 죽는 대신 loudly 실패한다.
+      raise ArgumentError, "unexpected callback result: #{result.class}"
     end
   rescue KeyError, ActiveRecord::RecordInvalid, ActiveRecord::RecordNotUnique => e
     logger.warn("[OAuth callback failure] provider=#{provider_name} error=#{e.class}: #{e.message}")
     redirect_to new_user_session_path, alert: t("devise.omniauth_callbacks.failure", kind: provider_name, reason: "OAuth 인증 처리 실패")
+  end
+
+  #: () -> untyped
+  def oauth_callback_result
+    OauthAccounts::Callbacks.handle_callback(auth: request.env["omniauth.auth"], session: session)
   end
 
   def provider_name

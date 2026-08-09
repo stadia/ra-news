@@ -5,7 +5,7 @@
 class Users::SessionsController < Devise::SessionsController
   layout -> { Components::Layout }
 
-  skip_before_action :verify_authenticity_token, if: :json_request?, only: [ :create, :destroy ]
+  skip_before_action :verify_authenticity_token, if: :skip_csrf_for_json_write?
 
   respond_to :html, :json
 
@@ -22,10 +22,6 @@ class Users::SessionsController < Devise::SessionsController
   end
 
   private
-
-  def json_request?
-    request.format.json?
-  end
 
   def respond_with(resource, _opts = {})
     if request.format.json?

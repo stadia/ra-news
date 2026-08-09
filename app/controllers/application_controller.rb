@@ -49,6 +49,15 @@ class ApplicationController < ActionController::Base
     )
   end
 
+  # CSRF 면제는 JSON 쓰기 요청에만 적용해야 한다. Rails는 `if:`와 `only:`를
+  # OR로 평가해 HTML POST까지 통째로 면제되므로, 하나의 술어 안에서 AND로
+  # 조합해야 한다.
+  #: () -> bool
+  def skip_csrf_for_json_write?
+    json_request? && action_name.in?(%w[create destroy])
+  end
+
+  #: () -> bool
   def json_request?
     request.format.json?
   end

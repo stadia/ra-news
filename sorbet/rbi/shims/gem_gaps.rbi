@@ -77,28 +77,22 @@ class Post
   end
 end
 
-# `devise` is a class macro that mixes modules in at runtime, so Tapioca's
-# static reflection never sees the resulting instance/class methods on `User`.
-# Same gem-gap mechanism as `friendly_id`/`after_discard` above: declared here
-# for the methods this app's typed controllers reach for.
+# `devise` 매크로는 런타임에 모듈을 mixin하므로, 생성된 User RBI에는 그
+# include 엣지가 없다. 메서드 본체는 `devise@5.0.4.rbi`에 이미 있으므로
+# 손으로 재선언하지 않고 include/extend만 선언한다. Confirmable 전체를
+# 커버하고 Devise 업그레이드 시 시그니처를 자동 추종한다. (`friendly_id`
+# 블록과 달리, 여기는 메서드 본체가 존재하는 RBI에 이미 있는 케이스다.)
 class User
-  # Devise::Models::Authenticatable (instance) -- reached via `result.user`.
-  sig { returns(T::Boolean) }
-  def active_for_authentication?; end
-
-  class << self
-    # Devise::Models::Confirmable (class methods) -- reached via `resource_class`.
-    sig { params(attributes: T.untyped).returns(T.untyped) }
-    def send_confirmation_instructions(attributes = T.unsafe(nil)); end
-
-    sig { params(confirmation_token: T.untyped).returns(T.untyped) }
-    def confirm_by_token(confirmation_token); end
-  end
+  include Devise::Models::Confirmable
+  extend Devise::Models::Confirmable::ClassMethods
 end
 
 # Devise controllers inherit `resource_class` typed as `T::Class[T.anything]`,
 # so the Confirmable class methods on the resource are unresolvable. The
 # resource for this controller is always `User`, so narrow the return type.
+# Scoped to this controller on purpose: if another mapping (e.g.
+# `devise_for :admins`) is added, its controller must get its own shim
+# rather than inheriting a `User`-only narrowing.
 module Users
   class ConfirmationsController
     sig { returns(T.class_of(User)) }

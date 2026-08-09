@@ -9,7 +9,6 @@ class FeedController < ApplicationController
   after_action :verify_authorized
 
   before_action :authenticate_user!
-  skip_before_action :verify_authenticity_token, if: :json_request?, only: [ :show ]
 
   def show
     authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy

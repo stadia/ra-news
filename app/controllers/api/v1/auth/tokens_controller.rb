@@ -23,6 +23,11 @@ class Api::V1::Auth::TokensController < Api::V1::BaseController
       [ user, new_raw ]
     end
 
+    if user.nil? || new_raw.nil?
+      logger.error("[token refresh] transaction rolled back refresh_token_id=#{record.id}")
+      return render json: { error: "token_refresh_failed" }, status: :internal_server_error
+    end
+
     access_token, _payload = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil)
 
     render json: {
