@@ -1,6 +1,9 @@
 # typed: true
 # rbs_inline: disabled
 
+# This file is hand-written RBI (Sorbet `sig` DSL), not Ruby source -- RBS
+# inline (`#:`) annotations don't apply, so RBS inline generation is off.
+
 # Constants that the generated gem RBIs do not cover.
 
 # Federails ships its policies as engine-autoloaded files under app/policies,
@@ -22,9 +25,14 @@ module Federails
   end
 end
 
-# FriendlyId adds `friendly` to both the model and its relations at runtime.
-# The generated gem RBI declares the generic mixin method, but Tapioca's model
-# RBI does not project it onto Article's generated relation classes.
+# `friendly` is added at runtime, which Sorbet can't resolve statically -- but
+# for two different reasons on the model vs. the relation:
+#  - Model (class << self): `extend FriendlyId` installs `friendly` through a
+#    `self.extended` hook that Tapioca does not trace, so the generated RBI
+#    omits it.
+#  - Relation: it is *not* FriendlyId but `ActiveRecord::Delegation` forwarding
+#    the model's singleton method, and Tapioca's model RBI does not project
+#    that onto Article's generated relation classes.
 class Article
   class << self
     sig { returns(PrivateRelation) }

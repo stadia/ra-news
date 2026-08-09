@@ -17,6 +17,17 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
     assert_match(/id="replies_\d+"/, @response.body)
   end
 
+  test "turbo_stream 응답은 HTML 레이아웃으로 감싸지지 않는다" do
+    # 레이아웃 proc이 turbo_stream일 때 false를 반환하는지 지킨다. 기존 단언들은
+    # 부분 문자열 검사라 통짜 HTML로 감싸여도 통과하므로, <html> 미포함을 직접
+    # 단언해야 이 분기의 회귀를 잡는다(application_controller.rb:12).
+    post posts_url, params: { post: { body: "레이아웃 확인" } }, as: :turbo_stream
+
+    assert_response :success
+    assert_equal "text/vnd.turbo-stream.html", @response.media_type
+    assert_no_match(/<html/i, @response.body)
+  end
+
   test "should create reply post" do
     parent = Post.create!(body: "부모 포스트", user: users(:jane))
     assert_difference("Post.count") do

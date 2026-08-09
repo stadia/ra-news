@@ -26,6 +26,9 @@ class ArticlesController < ApplicationController
       return
     end
 
+    # `:offset`은 Pagy의 기본값이지만 명시한다: relation 인자가 타입 붙으면
+    # bare `pagy(relation)` 호출을 Sorbet이 거부한다(gem RBI 인자 순서 결함).
+    # 람다로 감싼 건 `:offset`을 끼워 넣기 위해서다.
     search_result = Articles::Search.index_html(search:, pagy: ->(relation) { pagy(:offset, relation) })
     render Views::Articles::Index.new(
       pagy: search_result.pagy,
@@ -153,6 +156,10 @@ class ArticlesController < ApplicationController
         ArticleJob.perform_later(@article.id)
         format.html { redirect_to article_path(@article), notice: t("articles.create.success") }
       else
+        # `fetch(:k, [])`를 쓴 건 동등성 때문이 아니다. ActiveModel::Errors가
+        # details 해시에 `[]` 기본값을 두어 `[:k]`와 같지만, Sorbet은
+        # `details[:k]`를 nilable로 보므로 명시적 기본값이 있어야 `.any?`가
+        # 타입 검사를 통과한다.
         if @article.errors.details.fetch(:origin_url, []).any? { |e| e[:error] == :taken } && @article.errors.details.fetch(:url, []).any? { |e| e[:error] == :taken }
           format.html { redirect_to article_path(existing_article), notice: t("articles.create.already_exists") }
         else
