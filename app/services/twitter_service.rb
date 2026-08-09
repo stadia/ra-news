@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -62,9 +62,9 @@ class TwitterService < SocialMediaService
     content = "#{content_data[:title]}\n#{content_data[:summary]}"
 
     # 태그와 링크를 먼저 생성해서 길이 계산 (taggings_count가 가장 높은 태그 하나만)
-    top_tag = article.tags.select { |it| it.is_confirmed? }.max_by(&:taggings_count)
+    top_tag = article.tags.select { |it| it.is_confirmed? }.max_by { |it| it.taggings_count.to_i }
     tags = top_tag ? "##{top_tag.name.to_s.gsub(/\s+/, '_').downcase}" : ""
-    link = article_link(article.slug)
+    link = article_link(article.slug.to_s)
 
     # 태그와 링크를 위한 공간 확보 (공백 문자들 포함)
     reserved_space = tags.length + link.length + 3 # " " + "\n" + 여분

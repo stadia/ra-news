@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -63,11 +63,11 @@ class MastodonService < SocialMediaService
 
     # Mastodon은 여러 태그를 지원하므로 상위 3개 태그 사용
     top_tags = article.tags.select { |it| it.is_confirmed? }
-                           .sort_by(&:taggings_count)
+                           .sort_by { |it| it.taggings_count.to_i }
                            .reverse
                            .take(3)
     tags = top_tags.map { |tag| "##{tag.name.to_s.gsub(/\s+/, '_').downcase}" }.join(" ")
-    link = article_link(article.slug)
+    link = article_link(article.slug.to_s)
 
     # Mastodon은 URL을 실제 길이로 계산하므로 링크 길이도 포함
     reserved_space = tags.length + link.length + 5 # 공백과 줄바꿈

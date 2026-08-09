@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -172,7 +172,7 @@ class ArticleAgentsService < OperationService
 
   # extract_humanized와 같은 이유로 Hash만 받는다. String이 들어오면 title_ja 등이
   # 키 이름 그대로 채워져 번역문이 아닌 글자가 저장된다.
-  #: (Hash[String, untyped] content) -> Hash[Symbol, untyped]
+  #: (untyped content) -> Hash[Symbol, untyped]
   def build_japanese_attrs(content)
     unless content.is_a?(Hash)
       logger.warn "Japanese agent response was not a Hash (#{content.class}); skipping update"
@@ -251,7 +251,7 @@ class ArticleAgentsService < OperationService
   # content가 Hash가 아니면(RubyLLM이 스키마 JSON 파싱에 실패해 String을 그대로 넘긴 경우)
   # content["summary_body"]는 String#[] 부분문자열 매칭이 되어 키 이름 자체를 돌려준다.
   # 그대로 두면 본문이 "summary_body"라는 글자로 덮이므로 반드시 Hash만 받는다.
-  #: (Hash[String, untyped]? content) -> Hash[Symbol, untyped]
+  #: (untyped content) -> Hash[Symbol, untyped]
   def extract_humanized(content)
     unless content.is_a?(Hash)
       logger.warn "Humanize response was not a Hash (#{content.class}); skipping update"

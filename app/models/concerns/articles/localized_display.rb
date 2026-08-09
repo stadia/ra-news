@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -15,8 +15,8 @@ module Articles
     #: (?locale: Symbol) -> String
     def display_title(locale: I18n.locale)
       case locale
-      when :ja then title_ja.presence || title_ko.presence || title
-      else              title_ko.presence || title
+      when :ja then title_ja.presence || title_ko.presence || title.to_s
+      else              title_ko.presence || title.to_s
       end
     end
 

@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -25,7 +25,9 @@ class GetExistingTags < RubyLLM::Tool
     limit = [ [ limit.to_i, 1 ].max, 50 ].min
 
     tags = if keyword.present?
-      Tag.confirmed.named_like(keyword).order(:name).limit(limit).pluck(:name)
+      # named_like는 gem이 `def self.named_like`로 정의한 클래스 메서드라 relation에는
+      # 없다(런타임에는 위임으로 동작). confirmed보다 먼저 호출해 클래스에서 시작한다.
+      Tag.named_like(keyword).confirmed.order(:name).limit(limit).pluck(:name)
     else
       Tag.confirmed.order(taggings_count: :desc).limit(limit).pluck(:name)
     end

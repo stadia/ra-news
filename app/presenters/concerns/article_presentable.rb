@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -11,7 +11,8 @@ module ArticlePresentable
 
   private
 
-  attr_reader :article #: Article
+  #: Article
+  attr_reader :article
 
   #: () -> String
   def title
