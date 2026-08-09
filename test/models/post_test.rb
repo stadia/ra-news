@@ -567,6 +567,7 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @root_post.federated_url || Rails.application.routes.url_helpers.post_url(@root_post), captured[:custom]["inReplyTo"]
     assert_equal 2, captured[:custom]["tag"].size
     assert_equal "Hashtag", captured[:custom]["tag"].first["type"]
+    assert_equal "http://example.com/tag/ruby", captured[:custom]["tag"].first["href"]
     assert_equal 1, captured[:custom]["attachment"].size
   end
 
