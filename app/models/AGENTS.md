@@ -5,7 +5,7 @@
 
 - **ActsAsTaggableOn::Tag** (table: tags) - has_many :taggings [3v]
 - **Article** (table: articles) - has_many :boosts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob [7v]
-  scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index | INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
+  scopes: full_text_search_for, related, unrelated, confirmed, without_toast, missing_japanese, hangul_leftover_japanese, needs_japanese, for_admin_index | INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
 - **Boost** (table: boosts) - belongs_to :actor, belongs_to :boostable [2v]
 - **DiscordChannel** (table: notification_channels) - has_many :notification_deliveries [3v]
 - **DiscordDelivery** (table: notification_deliveries) - belongs_to :article, belongs_to :notification_channel [5v]

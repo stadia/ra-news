@@ -66,3 +66,6 @@ graphify-out/
 # Isolated feature worktrees
 .worktrees/
 swagger/
+
+# rails-ai-context (embeds this machine's Ruby PATH/GEM_HOME - do not share)
+.codex/config.toml

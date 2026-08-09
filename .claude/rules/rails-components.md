@@ -221,3 +221,4 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
   props: user
 - **Users::User** (phlex)
   props: user
+  slots: detail_field

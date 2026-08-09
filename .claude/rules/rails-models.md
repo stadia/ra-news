@@ -11,7 +11,7 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
   methods: count, taggings, validates_name_uniqueness?
 - Article (table: articles) - 13 assocs, 7 validations
   concerns: FederailsBoostable, FederailsLikeable
-  scopes: full_text_search_for, related, unrelated, confirmed, without_toast, for_admin_index
+  scopes: full_text_search_for, related, unrelated, confirmed, without_toast, missing_japanese, hangul_leftover_japanese, needs_japanese, for_admin_index
   methods: to_markdown, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, federails_actor, likes_count, boosts_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, announce!, apply_remote_boost, apply_remote_like, apply_remote_unboost, apply_remote_unlike, available_in?
   INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
 - Boost (table: boosts) - 2 assocs, 2 validations
