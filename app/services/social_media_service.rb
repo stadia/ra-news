@@ -3,7 +3,7 @@
 # rbs_inline: enabled
 
 class SocialMediaService < OperationService
-  T.unsafe(self).include(Rails.application.routes.url_helpers)
+  include Rails.application.routes.url_helpers
 
   def call(article, command: :post)
     case command

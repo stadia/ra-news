@@ -3,7 +3,7 @@
 
 module Madmin
   class ApplicationController < Madmin::BaseController
-    T.unsafe(self).include(Rails.application.routes.url_helpers)
+    include Rails.application.routes.url_helpers
 
     before_action :authenticate_admin_user
 
