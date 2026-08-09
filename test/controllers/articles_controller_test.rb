@@ -260,6 +260,22 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, article.reload.likers_count
   end
 
+  test "POST create with a duplicate url redirects to the existing article" do
+    # url·origin_url 모두 uniqueness 검증이므로 중복 POST는 저장 실패 →
+    # errors.details.fetch(:origin_url/:url, []).any?(:taken) 분기로 빠져
+    # existing_article로 리다이렉트한다(articles_controller.rb:156). 이 분기를
+    # 커버하는 테스트가 없으면 fetch 키를 바꿔도 0 failures다.
+    existing = articles(:ruby_article)
+    sign_in_as(users(:john))
+
+    assert_no_difference("Article.count") do
+      post articles_path, params: { article: { url: existing.url } }
+    end
+
+    assert_redirected_to article_path(existing)
+    assert_equal I18n.t("articles.create.already_exists"), flash[:notice]
+  end
+
   test "GET others renders pagination and push notification modal when multiple pages exist" do
     user = users(:john)
 

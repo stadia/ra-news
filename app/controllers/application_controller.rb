@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -9,21 +9,13 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
   allow_browser versions: { ie: false }
-  layout -> { request.format.turbo_stream? ? false : Components::Layout }
+  # 로컬로 뽑은 건 후행 `#:` 타입 단언이 붙을 대입문이 필요해서다(인라인
+  # `layout -> { ... }`에는 postscript 형식을 달 수 없다). `controller` 인자는
+  # ActionView가 기대하는 레이아웃 proc arity와 맞춘 것.
+  application_layout = ->(controller) { controller.request.format.turbo_stream? ? false : Components::Layout } #: ^(ApplicationController) -> (singleton(Components::Layout) | false)
+  layout application_layout
 
-  before_action do
-    if request.path == "/"
-      base = request.base_url
-      @web_site = SchemaDotOrg::WebSite.new(
-        name: t("layout.site_name"),
-        url:  base,
-        potential_action: SchemaDotOrg::SearchAction.new(
-          target: "#{base}/articles?search={search_term_string}",
-          query_input: "required name=search_term_string"
-        )
-      )
-    end
-  end
+  before_action :set_web_site_schema
 
   unless Rails.env.production?
     around_action :n_plus_one_detection
@@ -42,6 +34,20 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def set_web_site_schema
+    return unless request.path == "/"
+
+    base = request.base_url
+    @web_site = SchemaDotOrg::WebSite.new(
+      name: t("layout.site_name"),
+      url: base,
+      potential_action: SchemaDotOrg::SearchAction.new(
+        target: "#{base}/articles?search={search_term_string}",
+        query_input: "required name=search_term_string"
+      )
+    )
+  end
 
   def cacheable_page!(max_age: 5.minutes)
     return if user_signed_in?

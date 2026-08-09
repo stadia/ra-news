@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # frozen_string_literal: true
 # rbs_inline: enabled
 
@@ -49,14 +49,14 @@ class ProfilesController < ApplicationController
   end
 
   def likes
-    @pagy, page_likes = pagy(Like.for_actor(@user.federails_actor))
+    @pagy, page_likes = pagy(:offset, Like.for_actor(@user.federails_actor))
 
     @likeables = Profiles::PolymorphicActivity.resolve(page_likes.pluck(:likeable_type, :likeable_id))
     render_activity_page(:likes)
   end
 
   def boosts
-    @pagy, page_boosts = pagy(Boost.for_actor(@user.federails_actor))
+    @pagy, page_boosts = pagy(:offset, Boost.for_actor(@user.federails_actor))
 
     @boostables = Profiles::PolymorphicActivity.resolve(page_boosts.pluck(:boostable_type, :boostable_id))
     render_activity_page(:boosts)
