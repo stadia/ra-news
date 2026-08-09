@@ -26,7 +26,9 @@ module SitemapBuilder
   Entry = Data.define(:path, :lastmod, :available)
 
   class << self
-    include Rails.application.routes.url_helpers
+    # Sorbet은 `include`에 상수 리터럴만 허용해 런타임에 만들어지는 라우트 헬퍼
+    # 모듈을 직접 넘길 수 없다(srb.help/4002). `send`로 우회한다.
+    send(:include, Rails.application.routes.url_helpers)
 
     # lastmod는 실제 문서 변경 시점을 나타내야 하므로 published_at만 쓰면
     # 발행 이후 제목/요약/번역 수정이 검색엔진에 전달되지 않는다.

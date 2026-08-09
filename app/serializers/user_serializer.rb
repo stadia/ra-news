@@ -4,7 +4,6 @@
 
 class UserSerializer
   include Alba::Resource
-  include Rails.application.routes.url_helpers
 
   attributes :id, :email, :name, :username, :unconfirmed_email,
              :confirmed_at, :likees_count, :created_at, :updated_at

@@ -28,10 +28,24 @@ module Articles
 
       #: (Article article) -> String?
       def summary_key_section(article)
-        return if article.display_summary_key.blank?
+        items = summary_key_items(article.display_summary_key, article.id)
+        return if items.blank?
 
         "\n## #{I18n.t('articles.markdown.summary_heading')}\n" \
-          "#{article.display_summary_key.map { |item| "- #{item}" }.join("\n")}"
+          "#{items.map { |item| "- #{item}" }.join("\n")}"
+      end
+
+      # summary_key는 jsonb이라 선언 타입(Array[String] | String | nil) 밖의 형태(Hash 등)도
+      # 런타임에 올 수 있다 — 경계에서 untyped로 받아 형태를 직접 검사한다.
+      # 깨진 출력(- ["k", 1]) 대신 로그를 남기고 섹션을 생략한다.
+      #: (untyped value, untyped article_id) -> Array[untyped]?
+      def summary_key_items(value, article_id)
+        return if value.blank?
+        return [ value ] if value.is_a?(String)
+        return value if value.is_a?(Array)
+
+        logger.error "summary_key has unexpected shape for article #{article_id}: #{value.class}"
+        nil
       end
 
       #: (Article article) -> String?

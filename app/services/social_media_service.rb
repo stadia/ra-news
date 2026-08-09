@@ -3,7 +3,9 @@
 # rbs_inline: enabled
 
 class SocialMediaService < OperationService
-  include Rails.application.routes.url_helpers
+  # Sorbet은 `include`에 상수 리터럴만 허용해 런타임에 만들어지는 라우트 헬퍼
+  # 모듈을 직접 넘길 수 없다(srb.help/4002). `send`로 우회한다.
+  send(:include, Rails.application.routes.url_helpers)
 
   def call(article, command: :post)
     case command

@@ -3,8 +3,6 @@
 
 module Madmin
   class ApplicationController < Madmin::BaseController
-    include Rails.application.routes.url_helpers
-
     before_action :authenticate_admin_user
 
     def authenticate_admin_user
