@@ -2,15 +2,14 @@
 RubyLLM.configure do |config|
   # --- Default Models ---
   # Used by RubyLLM.chat, RubyLLM.embed, RubyLLM.paint if no model is specified.
-  config.default_model = "gemini-3-flash-preview"
+  config.default_model = "gemini-3.5-flash"
   # config.gemini_api_base = 'https://generativelanguage.googleapis.com/v1'
 
   # --- Connection Settings ---
   config.request_timeout = 120  # Request timeout in seconds (default: 120)
   config.max_retries = 3        # Max retries on transient network errors (default: 3)
-  config.retry_interval = 0.1 # Initial delay in seconds (default: 0.1)
+  config.retry_interval = 0.2 # Initial delay in seconds (default: 0.1)
 
-  # config.ollama_api_base = "http://127.0.0.1:1234/v1"
   config.model_registry_file = "config/models.json"
 
   # --- OR Custom Logger ---
