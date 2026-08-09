@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Ruby News">
+  <rect width="512" height="512" rx="96" fill="#7F1D1D" />
+  <g transform="translate(256 256)">
+    <path d="M0 -150 L130 -52 L80 130 L-80 130 L-130 -52 Z" fill="none" stroke="#FECACA" stroke-width="20" stroke-linejoin="round" />
+    <line x1="0" y1="-150" x2="0" y2="130" stroke="#FECACA" stroke-width="16" />
+    <line x1="-130" y1="-52" x2="80" y2="130" stroke="#FECACA" stroke-width="16" />
+    <line x1="130" y1="-52" x2="-80" y2="130" stroke="#FECACA" stroke-width="16" />
+  </g>
+</svg>
