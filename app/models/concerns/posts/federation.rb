@@ -21,7 +21,7 @@ module Posts::Federation
 
     if tag_list.any?
       custom["tag"] = tag_list.map do |name|
-        { "type" => "Hashtag", "name" => "##{name}", "href" => "#{Rails.application.routes.default_url_options[:host]}/tags/#{name}" }
+        { "type" => "Hashtag", "name" => "##{name}", "href" => Rails.application.routes.url_helpers.tag_url(keyword: name) }
       end
     end
 

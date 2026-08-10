@@ -82,8 +82,10 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "ruby-news.dev" }
 
-  # Set default URL options for URL helpers
-  Rails.application.routes.default_url_options = { host: "ruby-news.dev" }
+  # Set default URL options for URL helpers. Federation objects (federails.yml
+  # `site_host: https://ruby-news.dev`) and every reader are HTTPS, so URL
+  # generation outside a request context must not fall back to http://.
+  Rails.application.routes.default_url_options = { host: "ruby-news.dev", protocol: "https" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
