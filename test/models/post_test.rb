@@ -568,6 +568,7 @@ class PostTest < ActiveSupport::TestCase
     assert_equal 2, captured[:custom]["tag"].size
     assert_equal "Hashtag", captured[:custom]["tag"].first["type"]
     assert_equal "http://example.com/tag/ruby", captured[:custom]["tag"].first["href"]
+    assert_equal "http://example.com/tag/rails", captured[:custom]["tag"].second["href"]
     assert_equal 1, captured[:custom]["attachment"].size
   end
 
