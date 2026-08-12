@@ -35,7 +35,7 @@ class Components::PushNotifications::PromptModal < Components::Base
           div(class: "border-t border-border-strong/80") do
             render RubyUI::Button.new(variant: :primary, size: :lg,
                     data: { action: "click->push-notifications#enable" },
-                    class: "w-full font-semibold text-link transition hover:bg-surface hover:text-link-hover") { t("push_notifications.prompt_modal.enable") }
+                    class: "w-full font-semibold rounded-none") { t("push_notifications.prompt_modal.enable") }
           end
 
           div(class: "border-t border-border-strong/80") do
