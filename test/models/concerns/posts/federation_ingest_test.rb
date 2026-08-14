@@ -66,9 +66,49 @@ class Posts::FederationIngestTest < ActiveSupport::TestCase
                           federated_url: "https://remote.example.com/notes/discarded-2")
     parent.discard!
 
-    hash = { "type" => "Note", "inReplyTo" => "https://remote.example.com/notes/discarded-2" }
+    hash = { "id" => "https://remote.example.com/notes/reply-to-discarded",
+             "type" => "Note", "inReplyTo" => "https://remote.example.com/notes/discarded-2" }
 
     assert Post.send(:handle_federated_object?, hash)
+  end
+
+  # ── id-less objects ─────────────────────────────────────────────────
+  #
+  # An object without "id" must be rejected at the inbox filter, not merely
+  # logged. federails looks the entity up with
+  # `find_by federated_url: hash['id']` (utils/object.rb), and every *local*
+  # post has federated_url NULL (the gem's own `local_federails_entities`
+  # scope is `where federated_url: nil`). So a nil id matches an arbitrary
+  # local post, and an Update activity then overwrites it via
+  # `assign_attributes` + `save!` (data_entity.rb).
+
+  test "handle_federated_object? rejects an object with no id" do
+    hash = { "type" => "Note", "content" => "id 없는 객체" }
+
+    assert_not Post.send(:handle_federated_object?, hash)
+  end
+
+  test "handle_federated_object? rejects an id-less object even when it replies to a local post" do
+    hash = { "type" => "Note", "content" => "id 없는 답글",
+             "inReplyTo" => "https://#{@local_host}/posts/#{@root_post.id}" }
+
+    assert_not Post.send(:handle_federated_object?, hash)
+  end
+
+  # ── local host matching is case-insensitive ─────────────────────────
+  #
+  # Host names are case-insensitive per DNS, and URI.parse preserves the case
+  # it was given. A reply to https://RUBY-NEWS.DEV/posts/1 must resolve the
+  # same as the lowercase form; otherwise it is classified remote, rejected by
+  # handle_federated_object?, and the reply is silently lost.
+
+  test "local host matching ignores case" do
+    upcased = @local_host.upcase
+    hash = { "id" => "https://remote.example.com/notes/upcased", "content" => "답글",
+             "inReplyTo" => "https://#{upcased}/posts/#{@root_post.id}" }
+
+    assert Post.send(:handle_federated_object?, hash)
+    assert_equal @root_post.id, Post.from_activitypub_object(hash)[:parent_id]
   end
 
   # ── local /posts/ branch ────────────────────────────────────────────

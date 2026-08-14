@@ -364,33 +364,33 @@ class PostTest < ActiveSupport::TestCase
   # ========== handle_federated_object? Tests ==========
 
   test "inReplyTo가 없는 Note를 수락한다" do
-    hash = { "type" => "Note", "content" => "Hello" }
+    hash = { "id" => "https://remote.example.com/notes/plain", "type" => "Note", "content" => "Hello" }
 
     assert Post.send(:handle_federated_object?, hash)
   end
 
   test "inReplyTo가 외부 URL이면 거부한다" do
-    hash = { "type" => "Note", "inReplyTo" => "https://example.com/some/external/post" }
+    hash = { "id" => "https://remote.example.com/notes/ext", "type" => "Note", "inReplyTo" => "https://example.com/some/external/post" }
 
     assert_not Post.send(:handle_federated_object?, hash)
   end
 
   test "inReplyTo가 로컬 article URL이면 수락한다" do
     local_host = Rails.application.routes.default_url_options[:host] || "www.example.com"
-    hash = { "type" => "Note", "inReplyTo" => "http://#{local_host}/articles/#{@article.id}" }
+    hash = { "id" => "https://remote.example.com/notes/to-article", "type" => "Note", "inReplyTo" => "http://#{local_host}/articles/#{@article.id}" }
 
     assert Post.send(:handle_federated_object?, hash)
   end
 
   test "inReplyTo가 로컬 post를 가리키면 수락한다" do
     local_host = Rails.application.routes.default_url_options[:host] || "www.example.com"
-    hash = { "type" => "Note", "inReplyTo" => "http://#{local_host}/posts/#{@root_post.id}" }
+    hash = { "id" => "https://remote.example.com/notes/to-post", "type" => "Note", "inReplyTo" => "http://#{local_host}/posts/#{@root_post.id}" }
 
     assert Post.send(:handle_federated_object?, hash)
   end
 
   test "inReplyTo가 리모트 post의 federated_url이면 수락한다" do
-    hash = { "type" => "Note", "inReplyTo" => @remote_post.federated_url }
+    hash = { "id" => "https://remote.example.com/notes/to-remote", "type" => "Note", "inReplyTo" => @remote_post.federated_url }
 
     assert Post.send(:handle_federated_object?, hash)
   end

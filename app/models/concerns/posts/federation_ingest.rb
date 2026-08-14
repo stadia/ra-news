@@ -16,9 +16,11 @@ module Posts::FederationIngest
     def from_activitypub_object(hash)
       in_reply_to = hash["inReplyTo"].to_s
 
-      # id 없는 객체는 federated_url이 nil로 저장되어 중복 수신을 막지 못하고
-      # 이후 조회에서도 찾히지 않는다 — 조용히 통과시키지 않고 남긴다.
-      logger.warn { "from_activitypub_object: object has no id; storing without federated_url (inReplyTo=#{in_reply_to.inspect})" } if hash["id"].blank?
+      # 이중 방어선. id 없는 객체는 handle_federated_object? 에서 이미 거부되므로
+      # 여기 도달하면 인박스 필터를 우회한 호출이다(직접 호출 또는 필터 회귀).
+      # 그대로 두면 federated_url 이 nil 인 채로 진행되어, federails 의
+      # `find_by federated_url: nil` 이 무관한 로컬 post 를 매칭한다.
+      logger.warn { "from_activitypub_object: id-less object bypassed the inbox filter (inReplyTo=#{in_reply_to.truncate(200).inspect})" } if hash["id"].blank?
 
       attachments = Array.wrap(hash["attachment"]).select { |a| a.is_a?(Hash) && (a["type"] == "Document" || a["type"] == "Image") }
 
@@ -98,7 +100,9 @@ module Posts::FederationIngest
       return :local if Hosts.local_host?(host)
 
       configured_host = Rails.application.routes.default_url_options[:host]
-      return (host == configured_host ? :local : :remote) if configured_host.present?
+      # Hosts.local_host? 와 같은 이유로 대소문자 비구분 비교 (호스트명은 DNS 규격상
+      # 대소문자를 구분하지 않고 URI.parse 는 입력 대소문자를 보존한다).
+      return (host.casecmp?(configured_host) ? :local : :remote) if configured_host.present?
 
       # Blank routing host is a misconfiguration; log so local replies aren't
       # silently reclassified as remote and orphaned.
@@ -136,6 +140,17 @@ module Posts::FederationIngest
 
     #: (Hash[String, untyped]) -> bool
     def handle_federated_object?(hash)
+      # id 없는 객체는 수락 자체를 거부한다. federails 는 엔티티를
+      # `find_by federated_url: hash['id']` 로 찾는데(utils/object.rb), 로컬 post 는
+      # 전부 federated_url 이 NULL 이다(젬의 local_federails_entities 스코프가
+      # `where federated_url: nil`). 따라서 id 가 nil 이면 이 조회가 무관한 로컬
+      # post 를 반환하고, Update 액티비티는 그 레코드를 assign_attributes + save! 로
+      # 덮어쓴다(data_entity.rb). 로깅만으로는 막을 수 없는 자리다.
+      if hash["id"].blank?
+        logger.warn { "handle_federated_object?: rejecting object with no id (type=#{hash['type'].inspect} attributedTo=#{hash['attributedTo'].inspect})" }
+        return false
+      end
+
       in_reply_to = hash["inReplyTo"].to_s
 
       # inReplyTo가 없으면 원문 → 수락
