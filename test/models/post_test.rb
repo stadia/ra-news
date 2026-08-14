@@ -288,7 +288,7 @@ class PostTest < ActiveSupport::TestCase
 
     object = Post.from_activitypub_object(hash)
 
-    assert_equal @article.id.to_s, object[:article_id]
+    assert_equal @article.id, object[:article_id]
     assert_equal :comment, object[:post_type]
   end
 
@@ -413,7 +413,7 @@ class PostTest < ActiveSupport::TestCase
     }
     result = Post.from_activitypub_object(hash)
 
-    assert_equal @root_post.id.to_s, result[:parent_id]
+    assert_equal @root_post.id, result[:parent_id]
   end
 
   test "from_activitypub_object는 기사 댓글을 가리키는 로컬 post URL에서 article_id도 채운다" do
@@ -424,7 +424,7 @@ class PostTest < ActiveSupport::TestCase
     }
     result = Post.from_activitypub_object(hash)
 
-    assert_equal @comment_post.id.to_s, result[:parent_id]
+    assert_equal @comment_post.id, result[:parent_id]
     assert_equal @article.id, result[:article_id]
   end
 
@@ -447,7 +447,7 @@ class PostTest < ActiveSupport::TestCase
     }
     result = Post.from_activitypub_object(hash)
 
-    assert_equal @article.id.to_s, result[:article_id]
+    assert_equal @article.id, result[:article_id]
     assert_nil result[:parent_id]
   end
 
@@ -471,7 +471,7 @@ class PostTest < ActiveSupport::TestCase
     }
     result = Post.from_activitypub_object(hash)
 
-    assert_equal @article.id.to_s, result[:article_id]
+    assert_equal @article.id, result[:article_id]
     assert_nil result[:parent_id]
   end
 

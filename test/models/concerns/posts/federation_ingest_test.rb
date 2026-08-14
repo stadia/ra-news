@@ -15,19 +15,18 @@ class Posts::FederationIngestTest < ActiveSupport::TestCase
     @local_host = Rails.application.routes.default_url_options[:host] || "www.example.com"
   end
 
-  # ── article_id value type (regex capture vs DB column) ──────────────
+  # ── article_id / parent_id value type ───────────────────────────────
   #
-  # The /articles/N branch yields a String (regex capture) while the
-  # federated-parent branch yields an Integer. Pinned so a future
-  # normalization is a deliberate, visible change.
+  # Every branch normalizes the id to Integer, so the regex-capture branches
+  # agree with the DB-column branches (issue #871, item 1).
 
-  test "article_id from a local /articles/ URL is a String" do
+  test "article_id from a local /articles/ URL is an Integer" do
     hash = { "id" => "https://remote.example.com/notes/a", "content" => "댓글",
              "inReplyTo" => "https://#{@local_host}/articles/#{@article.id}" }
     result = Post.from_activitypub_object(hash)
 
-    assert_equal @article.id.to_s, result[:article_id]
-    assert_kind_of String, result[:article_id]
+    assert_equal @article.id, result[:article_id]
+    assert_kind_of Integer, result[:article_id]
     assert_equal :comment, result[:post_type]
   end
 
@@ -79,8 +78,21 @@ class Posts::FederationIngestTest < ActiveSupport::TestCase
              "inReplyTo" => "https://#{@local_host}/posts/#{@comment_post.id}" }
     result = Post.from_activitypub_object(hash)
 
-    assert_equal @comment_post.id.to_s, result[:parent_id]
+    assert_equal @comment_post.id, result[:parent_id]
+    assert_kind_of Integer, result[:parent_id]
     assert_equal @comment_post.article_id, result[:article_id]
+  end
+
+  # A local /posts/N URL whose post no longer exists must not produce a
+  # dangling parent_id — that would violate the FK on save (issue #871, item 2).
+  test "local /posts/ URL for a missing post yields no parent_id" do
+    missing_id = Post.maximum(:id).to_i + 1_000
+    hash = { "id" => "https://remote.example.com/notes/gone", "content" => "답글",
+             "inReplyTo" => "https://#{@local_host}/posts/#{missing_id}" }
+    result = Post.from_activitypub_object(hash)
+
+    assert_not result.key?(:parent_id)
+    assert_not result.key?(:article_id)
   end
 
   # ── hashtag parsing ─────────────────────────────────────────────────
