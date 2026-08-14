@@ -74,26 +74,9 @@ class Views::Home::Index < Views::Base
   private
 
   def render_item_list_schema
-    items = (@featured_articles + @articles)
-    return if items.empty?
-
-    payload = {
-      "@context" => "https://schema.org",
-      "@type" => "ItemList",
-      "name" => t("home.index.item_list_name"),
-      "itemListOrder" => "https://schema.org/ItemListOrderDescending",
-      "numberOfItems" => items.size,
-      "itemListElement" => items.each_with_index.map do |article, idx|
-        {
-          "@type" => "ListItem",
-          "position" => idx + 1,
-          "url" => article_url(article)
-        }
-      end
-    }
-
-    script(type: "application/ld+json") do
-      raw(JSON.generate(payload).html_safe)
-    end
+    render Components::StructuredData::ItemList.new(
+      name: t("home.index.item_list_name"),
+      articles: @featured_articles + @articles
+    )
   end
 end

@@ -49,25 +49,9 @@ class Views::Articles::Tagged < Views::Base
   private
 
   def render_item_list_schema
-    return if @articles.empty?
-
-    payload = {
-      "@context" => "https://schema.org",
-      "@type" => "ItemList",
-      "name" => t("articles.tagged.item_list_name", tag: @tag),
-      "itemListOrder" => "https://schema.org/ItemListOrderDescending",
-      "numberOfItems" => @articles.size,
-      "itemListElement" => @articles.each_with_index.map do |article, idx|
-        {
-          "@type" => "ListItem",
-          "position" => idx + 1,
-          "url" => article_url(article)
-        }
-      end
-    }
-
-    script(type: "application/ld+json") do
-      raw(JSON.generate(payload).html_safe)
-    end
+    render Components::StructuredData::ItemList.new(
+      name: t("articles.tagged.item_list_name", tag: @tag),
+      articles: @articles
+    )
   end
 end
