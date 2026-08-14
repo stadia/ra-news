@@ -1,6 +1,6 @@
-## Tools (39) - MANDATORY, Use Before Read
+## Tools (45) - MANDATORY, Use Before Read
 
-This project has 39 introspection tools. **MANDATORY - use these instead of reading files.**
+This project has 45 introspection tools. **MANDATORY - use these instead of reading files.**
 They return ground truth from the running app: real schema, real associations, real filters - not guesses.
 Read files ONLY when you are about to Edit them.
 
@@ -95,7 +95,7 @@ Use individual tools only when you need deeper detail on a specific layer.
 5. **Validate EVERY edit** - `rails 'ai:tool[validate]' files=... level=rails`
 6. **Follow _Next:_ hints** - tool responses suggest the best follow-up call
 
-### All 39 Tools
+### All 45 Tools
 
 | CLI | What it does |
 |-----|-------------|
@@ -138,3 +138,9 @@ Use individual tools only when you need deeper detail on a specific layer.
 | `rails 'ai:tool[onboard]' detail=standard` | Narrative app walkthrough for new developers or AI agents |
 | `rails 'ai:tool[runtime_info]' detail=standard` | Live runtime: DB pool, table sizes, cache stats, job queues, pending migrations |
 | `rails 'ai:tool[session_context]' action=status` | Track what you've already queried, avoid redundant calls |
+| `rails 'ai:tool[i18n]' locale=fr` | Locales, locale files with key counts, per-locale coverage, fallbacks |
+| `rails 'ai:tool[mailers]' mailer=UserMailer` | Mailer classes with delivery actions and delivery method |
+| `rails 'ai:tool[engines]'` | Mounted engines + loaded engine classes with route/model counts |
+| `rails 'ai:tool[autoload]'` | Zeitwerk mode, autoload/eager-load paths, collapsed dirs, custom inflections |
+| `rails 'ai:tool[active_support]'` | Concerns registry, deprecators, MessageVerifier usage, on_load hooks, cache store |
+| `rails 'ai:tool[env_config]' environment=production` | Per-environment config: notable toggles + config keys each env sets |

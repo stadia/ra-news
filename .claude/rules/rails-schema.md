@@ -4,7 +4,7 @@ paths:
   - "db/migrate/**"
 ---
 
-# Database Tables (31)
+# Database Tables (29)
 
 _Snapshot - may be stale after migrations. Use `rails_get_schema(table:"name")` for live data._
 
@@ -37,10 +37,8 @@ _Snapshot - may be stale after migrations. Use `rails_get_schema(table:"name")` 
 - **refresh_tokens** (7 cols) - token_digest:string, expires_at:datetime, revoked_at:datetime | FK: user_id→users | Idx: token_digest(unique)
 - **roles** (4 cols) - name:string | Idx: name(unique)
 - **ruby_llm_monitoring_events** (21 cols) - allocations:integer, cost:float, cpu_time:float, duration:float, end:float, gc_time:float, idle_time:float, name:string, payload:json, time:float, transaction_id:string, provider:string, model:string, input_tokens:integer, output_tokens:integer, exception_class:string, exception_message:string, thinking_tokens:integer
-- **sites** (12 cols) - name:string, base_uri:string, client:integer(=0), last_checked_at:datetime, email:string, path:string, channel:string, deleted_at:datetime, url:string | Idx: client+id, client+last_checked_at, url(unique)
+- **sites** (12 cols) - name:string, base_uri:string, client:integer(=0), last_checked_at:datetime, email:string, path:string, channel:string, deleted_at:datetime, url:string | Idx: client+id, url(unique)
   client: rss, gmail, youtube, hacker_news, rss_page, reddit
-- **spatial_ref_sys** (5 cols) - srid:integer, auth_name:string, auth_srid:integer, srtext:string, proj4text:string
-- **taggings** (9 cols) - taggable_type:string, taggable_id:integer, tagger_type:string, tagger_id:integer, context:string, tenant:string | FK: tag_id→tags | Idx: taggable_id+taggable_type+context+tag_id, taggable_type+taggable_id, tagger_id+tagger_type, tag_id+taggable_id+taggable_type+context+tagger_id+tagger_type(unique), taggable_id+taggable_type+tagger_id+context, taggable_id+taggable_type+context
+- **taggings** (9 cols) - taggable_type:string, taggable_id:integer, tagger_type:string, tagger_id:integer, context:string, tenant:string | FK: tag_id→tags | Idx: taggable_id+taggable_type+tagger_id+context, taggable_id+taggable_type+context+tag_id, taggable_type+taggable_id, tagger_id+tagger_type, tag_id+taggable_id+taggable_type+context+tagger_id+tagger_type(unique), taggable_id+taggable_type+context
 - **tags** (6 cols) - name:string, taggings_count:integer(=0), is_confirmed:boolean(=false) | Idx: name(unique)
-- **user_roles** (5 cols) | Idx: user_id+role_id(unique)
-- ...1 more tables (use `rails_get_schema` MCP tool)
+- **users** (18 cols) - email:string, name:string(=""), roles:string(={user}), username:string, likees_count:integer(=0), encrypted_password:string(=""), reset_password_token:string, reset_password_sent_at:datetime, remember_created_at:datetime, confirmation_token:string, confirmed_at:datetime, confirmation_sent_at:datetime, unconfirmed_email:string, locale:string, signup_host:string | Idx: confirmation_token(unique), email(unique), reset_password_token(unique), username(unique)

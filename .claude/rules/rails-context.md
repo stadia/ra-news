@@ -2,9 +2,9 @@
 
 Rails 8.1.3.1 | Ruby 4.0.6
 
-- Database: PostgreSQL - 31 tables
+- Database: PostgreSQL - 29 tables
 - Models: 21
-- Routes: 186
+- Routes: 176
 - Auth: Devise
 - I18n: 3 locales (en, ja, ko)
 - Storage: ActiveStorage (2 models with attachments)
