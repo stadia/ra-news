@@ -52,9 +52,14 @@ module Hosts
     end
 
     # host(스킴 제외)가 이 앱의 로케일 호스트(.dev/.jp)인지 여부.
+    #
+    # 호스트명은 DNS 규격상 대소문자를 구분하지 않고 URI.parse 는 입력의 대소문자를
+    # 그대로 보존한다. 인바운드 ActivityPub 처럼 외부가 준 문자열을 그대로 넘기는
+    # 경로가 있으므로 비교 전에 내려서 맞춘다 — 구분해 버리면 RUBY-NEWS.DEV 로 온
+    # 로컬 답글이 원격으로 분류돼 인박스에서 조용히 폐기된다.
     #: (String) -> bool
     def local_host?(host)
-      LOCALE_FOR_HOST.key?(host)
+      LOCALE_FOR_HOST.key?(host.to_s.downcase)
     end
   end
 end
