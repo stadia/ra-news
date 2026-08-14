@@ -53,170 +53,181 @@ TailwindMerge::ClassGroupUtils::CLASS_PART_SEPARATOR = T.let(T.unsafe(nil), Stri
 module TailwindMerge::Config
   include ::TailwindMerge::Validators
 
-  # pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:2446
+  # pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:2462
   def merge_config(incoming_config); end
+
+  class << self
+    private
+
+    # Recursively freezes nested Hash/Array structures so shared config
+    # constants can't be mutated in place. Keys are strings/symbols and are
+    # already immutable, so only values need walking.
+    #
+    # pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:13
+    def deep_freeze(object); end
+  end
 end
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:188
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:201
 TailwindMerge::Config::DEFAULTS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:85
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:98
 TailwindMerge::Config::SCALE_ALIGN_PRIMARY_AXIS = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:86
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:99
 TailwindMerge::Config::SCALE_ALIGN_SECONDARY_AXIS = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:135
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:148
 TailwindMerge::Config::SCALE_BG_POSITION = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:136
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:149
 TailwindMerge::Config::SCALE_BG_REPEAT = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:137
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:150
 TailwindMerge::Config::SCALE_BG_SIZE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:152
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:165
 TailwindMerge::Config::SCALE_BLEND_MODE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:173
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:186
 TailwindMerge::Config::SCALE_BLUR = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:150
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:163
 TailwindMerge::Config::SCALE_BORDER_WIDTH = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:38
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:51
 TailwindMerge::Config::SCALE_BREAK = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:134
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:147
 TailwindMerge::Config::SCALE_COLOR = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:138
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:151
 TailwindMerge::Config::SCALE_GRADIENT_STOP_POSITION = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:84
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:97
 TailwindMerge::Config::SCALE_GRID_AUTO_COLS_ROWS = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:74
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:87
 TailwindMerge::Config::SCALE_GRID_COL_ROW_START_AND_END = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:83
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:96
 TailwindMerge::Config::SCALE_GRID_COL_ROW_START_OR_END = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:73
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:86
 TailwindMerge::Config::SCALE_GRID_TEMPLATE_COLS_ROWS = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:64
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:77
 TailwindMerge::Config::SCALE_INSET = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:151
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:164
 TailwindMerge::Config::SCALE_LINE_STYLE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:87
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:100
 TailwindMerge::Config::SCALE_MARGIN = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:172
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:185
 TailwindMerge::Config::SCALE_MASK_IMAGE_POSITION = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:61
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:74
 TailwindMerge::Config::SCALE_OVERFLOW = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:62
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:75
 TailwindMerge::Config::SCALE_OVERSCROLL = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:39
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:52
 TailwindMerge::Config::SCALE_POSITION = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:60
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:73
 TailwindMerge::Config::SCALE_POSITION_WITH_ARBITRARY = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:139
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:152
 TailwindMerge::Config::SCALE_RADIUS = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:183
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:196
 TailwindMerge::Config::SCALE_ROTATE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:184
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:197
 TailwindMerge::Config::SCALE_SCALE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:88
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:101
 TailwindMerge::Config::SCALE_SIZING = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:119
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:132
 TailwindMerge::Config::SCALE_SIZING_BLOCK = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:105
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:118
 TailwindMerge::Config::SCALE_SIZING_INLINE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:185
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:198
 TailwindMerge::Config::SCALE_SKEW = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:186
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:199
 TailwindMerge::Config::SCALE_TRANSLATE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:63
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:76
 TailwindMerge::Config::SCALE_UNAMBIGUOUS_SPACING = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_ANIMATE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_ASPECT = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_BLUR = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_BREAKPOINT = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_COLOR = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_CONTAINER = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_DROP_SHADOW = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_EASE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_FONT = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_FONT_WEIGHT = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_INSET_SHADOW = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:9
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:22
 TailwindMerge::Config::THEME_KEYS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_LEADING = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_PERSPECTIVE = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_RADIUS = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_SHADOW = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_SPACING = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_TEXT = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_TEXT_SHADOW = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:31
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:44
 TailwindMerge::Config::THEME_TRACKING = T.let(T.unsafe(nil), Proc)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:36
+# pkg:gem/tailwind_merge#lib/tailwind_merge/config.rb:49
 TailwindMerge::Config::VALID_THEME_IDS = T.let(T.unsafe(nil), Set)
 
 # pkg:gem/tailwind_merge#lib/tailwind_merge.rb:16
@@ -248,38 +259,41 @@ module TailwindMerge::ParseClassName
   # Inspired by `splitAtTopLevelOnly` used in Tailwind CSS
   # @see https://github.com/tailwindlabs/tailwindcss/blob/v3.2.2/src/util/splitAtTopLevelOnly.js
   #
-  # pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:24
+  # pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:25
   def parse_class_name(class_name, prefix: T.unsafe(nil)); end
 
-  # pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:96
+  # pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:99
   def strip_important_modifier(base_class_name); end
 end
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:15
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:16
 TailwindMerge::ParseClassName::CLOSE_BRACKET_BYTE = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:17
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:18
 TailwindMerge::ParseClassName::CLOSE_PAREN_BYTE = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:9
+TailwindMerge::ParseClassName::EMPTY_MODIFIERS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:8
 TailwindMerge::ParseClassName::IMPORTANT_MODIFIER = T.let(T.unsafe(nil), String)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:9
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:10
 TailwindMerge::ParseClassName::MODIFIER_SEPARATOR = T.let(T.unsafe(nil), String)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:12
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:13
 TailwindMerge::ParseClassName::MODIFIER_SEPARATOR_BYTE = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:10
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:11
 TailwindMerge::ParseClassName::MODIFIER_SEPARATOR_LENGTH = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:14
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:15
 TailwindMerge::ParseClassName::OPEN_BRACKET_BYTE = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:16
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:17
 TailwindMerge::ParseClassName::OPEN_PAREN_BYTE = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:13
+# pkg:gem/tailwind_merge#lib/tailwind_merge/parse_class_name.rb:14
 TailwindMerge::ParseClassName::POSTFIX_SEPARATOR_BYTE = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/tailwind_merge#lib/tailwind_merge/sort_modifiers.rb:4

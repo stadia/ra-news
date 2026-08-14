@@ -7,7 +7,7 @@ paths:
 
 _Quick reference - use `rails_get_model_details(model:"Name")` for live data with resolved concerns and callbacks._
 
-- ActsAsTaggableOn::Tag (table: tags) - 1 assocs, 3 validations
+- ActsAsTaggableOn::Tag (table: tags) - 1 assoc, 3 validations
   methods: count, taggings, validates_name_uniqueness?
 - Article (table: articles) - 13 assocs, 7 validations
   concerns: FederailsBoostable, FederailsLikeable
@@ -16,7 +16,7 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
   INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
 - Boost (table: boosts) - 2 assocs, 2 validations
   methods: actor, boostable
-- DiscordChannel (table: notification_channels) - 1 assocs, 3 validations
+- DiscordChannel (table: notification_channels) - 1 assoc, 3 validations
   methods: active!, active?, discard, discard!, discard_column, discard_column?, discarded?, error!, error?, inactive!, inactive?, kept?, notification_deliveries, undiscard, undiscard!, undiscarded?
   status: active, inactive, error
 - DiscordDelivery (table: notification_deliveries) - 2 assocs, 5 validations
@@ -27,14 +27,14 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
 - JwtDenylist (table: jwt_denylists) - 0 assocs, 0 validations
 - Like (table: likes) - 2 assocs, 2 validations
   methods: actor, likeable
-- NotificationChannel (table: notification_channels) - 1 assocs, 3 validations
+- NotificationChannel (table: notification_channels) - 1 assoc, 3 validations
   scopes: active, delivery_ready
   methods: active!, active?, discard, discard!, discard_column, discard_column?, discarded?, error!, error?, inactive!, inactive?, kept?, notification_deliveries, undiscard, undiscard!, undiscarded?
   status: active, inactive, error
 - NotificationDelivery (table: notification_deliveries) - 2 assocs, 5 validations
   methods: article, failed!, failed?, notification_channel, sent!, sent?
   status: sent, failed
-- OauthAccount (table: oauth_accounts) - 1 assocs, 5 validations
+- OauthAccount (table: oauth_accounts) - 1 assoc, 5 validations
   methods: user
 - Post (table: posts) - 10 assocs, 5 validations
   concerns: FederailsBoostable, FederailsLikeable, HtmlSanitizable
@@ -44,23 +44,23 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
   status: draft, published
 - Preference (table: preferences) - 0 assocs, 2 validations
   methods: clear_cache
-- PushSubscription (table: push_subscriptions) - 1 assocs, 6 validations
+- PushSubscription (table: push_subscriptions) - 1 assoc, 6 validations
   methods: user
-- RefreshToken (table: refresh_tokens) - 1 assocs, 1 validations
+- RefreshToken (table: refresh_tokens) - 1 assoc, 1 validation
   scopes: active
   methods: revoke!, user
 - Role (table: roles) - 0 assocs, 2 validations
   scopes: named
-- Site (table: sites) - 1 assocs, 2 validations
+- Site (table: sites) - 1 assoc, 2 validations
   methods: init_client, articles, discard, discard!, discard_column, discard_column?, discarded?, gmail!, gmail?, hacker_news!, hacker_news?, kept?, reddit!, reddit?, rss!, rss?, rss_page!, rss_page?, undiscard, undiscard!
   client: rss, gmail, youtube, hacker_news, rss_page, reddit
-- SlackChannel (table: notification_channels) - 1 assocs, 3 validations
+- SlackChannel (table: notification_channels) - 1 assoc, 3 validations
   methods: active!, active?, discard, discard!, discard_column, discard_column?, discarded?, error!, error?, inactive!, inactive?, kept?, notification_deliveries, undiscard, undiscard!, undiscarded?
   status: active, inactive, error
 - SlackDelivery (table: notification_deliveries) - 2 assocs, 5 validations
   methods: article, failed!, failed?, notification_channel, sent!, sent?
   status: sent, failed
-- Tag (table: tags) - 1 assocs, 3 validations
+- Tag (table: tags) - 1 assoc, 3 validations
   scopes: confirmed, unconfirmed
   methods: count, taggings, validates_name_uniqueness?
 - User (table: users) - 8 assocs, 13 validations

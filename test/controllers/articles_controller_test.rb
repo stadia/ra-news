@@ -198,6 +198,16 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /#{Regexp.escape(article.title_ko)}/
   end
 
+  test "GET show without summary key items does not render an empty summary box" do
+    article = articles(:site_only_article)
+    article.update!(summary_key: nil, summary_key_ja: nil)
+
+    get article_path(article)
+
+    assert_response :success
+    assert_select "h2", text: I18n.t("articles.show.summary_heading"), count: 0
+  end
+
   test "GET show with .md extension returns markdown representation" do
     article = articles(:ruby_article)
     article.summary_body = "요약된 본문"

@@ -5,40 +5,40 @@
 # Please instead update this file by running `bin/tapioca gem rails-ai-context`.
 
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context.rb:28
+# pkg:gem/rails-ai-context#lib/rails_ai_context.rb:36
 module RailsAiContext
   class << self
     # Global configuration
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:36
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:44
     def configuration; end
 
     # Global configuration
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:34
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:42
     def configuration=(_arg0); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:40
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:48
     def configure; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:45
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:53
     def configured_via_block?; end
 
     # The app object introspection runs against: the booted Rails app in
     # runtime tier, a filesystem-rooted stand-in in static tier.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:101
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:109
     def default_app; end
 
     # Generate context files (CLAUDE.md, .cursor/rules/, etc.)
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:87
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:95
     def generate_context(app = T.unsafe(nil), format: T.unsafe(nil)); end
 
     # Quick access to introspect the current Rails app
     # Returns a hash of all discovered context
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:81
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:89
     def introspect(app = T.unsafe(nil)); end
 
     # Warn through Rails.logger when available, stderr otherwise. Introspection
@@ -46,27 +46,27 @@ module RailsAiContext
     # dummy apps); a logging call that raises inside a rescue block defeats the
     # fault isolation the rescue exists to provide.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:53
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:61
     def log_warn(message); end
 
     # Start the MCP server programmatically
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:94
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:102
     def start_mcp_server(app = T.unsafe(nil), transport: T.unsafe(nil)); end
 
     # One-line explanation of why the static tier is active (boot failure
     # summary, or a note that --no-boot was requested). Nil in runtime tier.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:77
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:85
     def static_reason; end
 
     # One-line explanation of why the static tier is active (boot failure
     # summary, or a note that --no-boot was requested). Nil in runtime tier.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:77
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:85
     def static_reason=(_arg0); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:71
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:79
     def static_tier?; end
 
     # Operating tier. :runtime means the host app booted and live reflection
@@ -74,7 +74,7 @@ module RailsAiContext
     # Defaults to :runtime because in-app usage (railtie, rake tasks) only
     # reaches this code after a successful boot.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:67
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:75
     def tier; end
 
     # Operating tier. :runtime means the host app booted and live reflection
@@ -82,7 +82,7 @@ module RailsAiContext
     # Defaults to :runtime because in-app usage (railtie, rake tasks) only
     # reaches this code after a successful boot.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:65
+    # pkg:gem/rails-ai-context#lib/rails_ai_context.rb:73
     def tier=(_arg0); end
   end
 end
@@ -94,6 +94,19 @@ end
 module RailsAiContext::AppKind
   private
 
+  # An API-only app has no view layer, and saying "no Stimulus controllers
+  # found" about one invites an agent to add some. The flag is written in
+  # config/application.rb, so this answer needs no booted app.
+  #
+  # Read from the AST, not a regex: `config.api_only = true` is an
+  # assignment, which docs/INTROSPECTORS.md puts squarely in AST territory,
+  # and ConfigAssignmentListener already reports exactly this shape. A regex
+  # also has to hand-roll what the parser knows for free - comments, strings
+  # and heredocs that merely contain the text.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/app_kind.rb:40
+  def api_only?(root); end
+
   # The four-space indent plus "(" matches Bundler's resolved-spec line
   # exactly, so gems that merely contain the name do not false-positive.
   #
@@ -101,6 +114,19 @@ module RailsAiContext::AppKind
   def mongoid?(root); end
 
   class << self
+    # An API-only app has no view layer, and saying "no Stimulus controllers
+    # found" about one invites an agent to add some. The flag is written in
+    # config/application.rb, so this answer needs no booted app.
+    #
+    # Read from the AST, not a regex: `config.api_only = true` is an
+    # assignment, which docs/INTROSPECTORS.md puts squarely in AST territory,
+    # and ConfigAssignmentListener already reports exactly this shape. A regex
+    # also has to hand-roll what the parser knows for free - comments, strings
+    # and heredocs that merely contain the text.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/app_kind.rb:40
+    def api_only?(root); end
+
     # The four-space indent plus "(" matches Bundler's resolved-spec line
     # exactly, so gems that merely contain the name do not false-positive.
     #
@@ -250,7 +276,14 @@ class RailsAiContext::BootManager::Result < ::Struct
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:4
+# Explicit, not an implicit namespace from the directory alone. An implicit
+# one resolves through an autoload pointing at the directory, which only
+# works while Zeitwerk's `require` decoration is in place - and the
+# standalone binary rebuilds the gem environment before this constant is
+# first reached, which left a bare `require` of the directory raising
+# LoadError.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/cli.rb:10
 module RailsAiContext::CLI; end
 
 # Runs MCP tools from the command line without requiring an MCP client.
@@ -265,22 +298,22 @@ module RailsAiContext::CLI; end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:14
 class RailsAiContext::CLI::ToolRunner
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:20
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:27
   def initialize(tool_name, raw_args, json_mode: T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:18
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:25
   def error; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:18
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:25
   def json_mode; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:18
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:25
   def raw_args; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:27
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:34
   def run; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:18
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:25
   def tool_class; end
 
   private
@@ -288,29 +321,38 @@ class RailsAiContext::CLI::ToolRunner
   # Parse raw_args into keyword arguments hash.
   # Supports both hash input (rake) and array input (CLI).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:170
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:177
   def build_kwargs; end
 
   # Coerce a string value to the type specified in the JSON Schema property.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:245
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:305
   def coerce_value(raw, property_schema); end
+
+  # Tokens belonging to an array flag: everything up to the next flag,
+  # stopping at a rake-style `key=value` token so `--include a model=Post`
+  # does not swallow the second parameter. Each token is still
+  # comma-split, so the documented `a.rb,b.rb` form keeps working and
+  # mixing the two spellings does not fabricate a path.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:294
+  def collect_array_values(args, from); end
 
   # Extract text from MCP::Tool::Response and record whether the tool
   # reported failure (isError), so callers can set a non-zero exit code.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:311
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:371
   def extract_output(response); end
 
   # Parse ["--table", "users", "--detail", "full", "--app-only"] into { table: "users", ... }
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:191
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:198
   def parse_cli_args(args); end
 
   # Resolve tool name: tries short → medium → full form.
   # "schema" → "rails_get_schema", "search_code" → "rails_search_code"
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:131
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:138
   def resolve_tool(name); end
 
   # InputSchema#to_h is stable across the mcp gem's >= 0.8, < 2.0 range;
@@ -318,7 +360,7 @@ class RailsAiContext::CLI::ToolRunner
   # symbol-keyed hash carrying the :properties and :required this runner
   # reads (newer mcp also merges a benign :$schema key we ignore).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:125
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:132
   def tool_schema; end
 
   # Validate kwargs against the tool's input_schema.
@@ -327,44 +369,203 @@ class RailsAiContext::CLI::ToolRunner
   # For invalid enums: strip the bad value and let the tool use its default.
   # For unknown params: raise InvalidArgumentError with closest-match suggestion.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:263
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:323
   def validate_kwargs!(kwargs, schema); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:300
+  def values_consumed(args, from); end
 
   class << self
     # Filtered tool list respecting skip_tools config.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:70
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:77
     def available_tools; end
 
     # Derive short name: rails_get_schema → schema, rails_analyze_feature → analyze_feature
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:115
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:122
     def short_name(tool_name); end
 
     # Generate help for a specific tool from its input_schema.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:79
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:86
     def tool_help(tool_class); end
 
     # List all available tools with short names and descriptions.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:36
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:43
     def tool_list; end
 
     # Truncate at the last whole word within `limit` chars and append "..."
     # so descriptions never cut off mid-word. Returns `text` unchanged when
     # it already fits.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:60
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:67
     def truncate_at_word(text, limit); end
   end
 end
 
+# pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:23
+RailsAiContext::CLI::ToolRunner::BOOLEAN_WORDS = T.let(T.unsafe(nil), Array)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:22
+RailsAiContext::CLI::ToolRunner::FALSEY_WORDS = T.let(T.unsafe(nil), Array)
+
 # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:16
 class RailsAiContext::CLI::ToolRunner::InvalidArgumentError < ::StandardError; end
 
+# The only words that read as true, and every word a boolean flag will
+# consume as its value. Kept together so the two cannot drift: a word
+# accepted here but missing from TRUTHY would silently mean false.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:21
+RailsAiContext::CLI::ToolRunner::TRUTHY_WORDS = T.let(T.unsafe(nil), Array)
+
 # pkg:gem/rails-ai-context#lib/rails_ai_context/cli/tool_runner.rb:15
 class RailsAiContext::CLI::ToolRunner::ToolNotFoundError < ::StandardError; end
+
+# Re-runs Rails' own code reloader so a long-lived process sees files written
+# after it booted.
+#
+# Clearing the gem's caches is not enough on its own. Introspectors reach the
+# app through constants, and the eager loading they trigger
+# (`Zeitwerk::Loader#eager_load_dir`) is idempotent per process - a directory
+# already loaded is never re-scanned, so a model added after boot stays
+# invisible for the life of the server. Routes never had the problem because
+# RouteIntrospector asks `routes_reloader.execute_if_updated` every call.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/code_reloader.rb:13
+module RailsAiContext::CodeReloader
+  private
+
+  # Reload the app's autoloaded code. Returns whether a reload actually ran,
+  # so callers can say what they did instead of guessing.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/code_reloader.rb:18
+  def reload!; end
+
+  # `enable_reloading` is the flag that decides whether Rails unloads
+  # anything: with it off, the finisher registers no class_unload callback,
+  # so `reload!` runs the prepare callbacks and returns having reloaded
+  # nothing. Gating on `eager_load` instead reported success for every
+  # eager_load=false + cache_classes=true environment (stock `test`, a
+  # cache-classes staging container) - a reload that never happened,
+  # announced as one.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/code_reloader.rb:61
+  def reloadable?; end
+
+  # Run a block with the sharing lock held, so a reload cannot unload
+  # constants underneath it.
+  #
+  # `Reloader#class_unload!` takes the unload lock through
+  # ActiveSupport::Dependencies.interlock, but that only blocks threads
+  # holding the sharing lock - which is acquired inside `executor.wrap`.
+  # Nothing here wrapped anything, so the Listen thread could clear
+  # DescendantsTracker while a tool call was midway through reading
+  # `ActiveRecord::Base.descendants`, returning a short list with no
+  # exception for the per-section rescue to notice.
+  #
+  # Only taken when a reload could actually happen; everywhere else this is
+  # a plain yield.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/code_reloader.rb:45
+  def with_app_code; end
+
+  class << self
+    # Reload the app's autoloaded code. Returns whether a reload actually ran,
+    # so callers can say what they did instead of guessing.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/code_reloader.rb:18
+    def reload!; end
+
+    # `enable_reloading` is the flag that decides whether Rails unloads
+    # anything: with it off, the finisher registers no class_unload callback,
+    # so `reload!` runs the prepare callbacks and returns having reloaded
+    # nothing. Gating on `eager_load` instead reported success for every
+    # eager_load=false + cache_classes=true environment (stock `test`, a
+    # cache-classes staging container) - a reload that never happened,
+    # announced as one.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/code_reloader.rb:61
+    def reloadable?; end
+
+    # Run a block with the sharing lock held, so a reload cannot unload
+    # constants underneath it.
+    #
+    # `Reloader#class_unload!` takes the unload lock through
+    # ActiveSupport::Dependencies.interlock, but that only blocks threads
+    # holding the sharing lock - which is acquired inside `executor.wrap`.
+    # Nothing here wrapped anything, so the Listen thread could clear
+    # DescendantsTracker while a tool call was midway through reading
+    # `ActiveRecord::Base.descendants`, returning a short list with no
+    # exception for the per-section rescue to notice.
+    #
+    # Only taken when a reload could actually happen; everywhere else this is
+    # a plain yield.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/code_reloader.rb:45
+    def with_app_code; end
+  end
+end
+
+# One answer to "where does this app keep its concerns", for every surface
+# that lists or counts them.
+#
+# `GetConcern` hardcoded two directories and `ActiveSupportIntrospector`
+# hardcoded five, so a single run answered 80 concerns and 81 concerns for
+# the same app, and the mailer concern only the second one found could not be
+# reached through the first at all. Neither list matches Rails, which
+# autoloads these paths by glob - `Rails::Engine::Configuration#paths` adds
+# `app` with `glob: "{*,*/concerns}"` - so any hardcoded list is one entry
+# behind an app that keeps `app/serializers/concerns`.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/concern_paths.rb:14
+module RailsAiContext::ConcernPaths
+  private
+
+  # Source file for a concern named by its constant, or nil.
+  #
+  # @param root [String] application root
+  # @param concern_name [String] constant name, e.g. "BulkMailSettingsConcern"
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/concern_paths.rb:47
+  def find_file(root, concern_name); end
+
+  # @param root [String] application root
+  # @return [Array<String>] absolute concern directories that exist
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/concern_paths.rb:19
+  def resolve(root); end
+
+  # The owner segment names the type: `app/mailers/concerns` holds mailer
+  # concerns. Singular so a filter reads `type: "mailer"`.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/concern_paths.rb:38
+  def type_for(dir); end
+
+  class << self
+    # Source file for a concern named by its constant, or nil.
+    #
+    # @param root [String] application root
+    # @param concern_name [String] constant name, e.g. "BulkMailSettingsConcern"
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/concern_paths.rb:47
+    def find_file(root, concern_name); end
+
+    # @param root [String] application root
+    # @return [Array<String>] absolute concern directories that exist
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/concern_paths.rb:19
+    def resolve(root); end
+
+    # The owner segment names the type: `app/mailers/concerns` holds mailer
+    # concerns. Singular so a filter reads `type: "mailer"`.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/concern_paths.rb:38
+    def type_for(dir); end
+  end
+end
 
 # Confidence tags for AST introspection results.
 # Shared across tools and introspectors without creating
@@ -1011,8 +1212,31 @@ RailsAiContext::Configuration::SYMBOL_KEYS = T.let(T.unsafe(nil), Array)
 # pkg:gem/rails-ai-context#lib/rails_ai_context/configuration.rb:14
 RailsAiContext::Configuration::YAML_KEYS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context.rb:30
+# pkg:gem/rails-ai-context#lib/rails_ai_context.rb:38
 class RailsAiContext::ConfigurationError < ::RailsAiContext::Error; end
+
+# Renders a count with its noun. Raw interpolation reads wrong at one
+# ("1 models"), and every tool and serializer that reports a count needs
+# the same fix, so they share this rather than each spelling it out.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/count_phrase.rb:9
+module RailsAiContext::CountPhrase
+  private
+
+  # Mixed in for the classes; rake tasks and generators, which have no class
+  # to mix into, call CountPhrase.call directly.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/count_phrase.rb:20
+  def count_phrase(count, noun, plural: T.unsafe(nil)); end
+
+  class << self
+    # Pass `plural` where the inflector's answer is wrong for the domain:
+    # database docs say indexes, not the inflector's indices.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/count_phrase.rb:12
+    def call(count, noun, plural: T.unsafe(nil)); end
+  end
+end
 
 # The `detail` parameter shared by most tools. Values arrive over the wire as
 # strings, so this stays string-compatible rather than wrapping them; what it
@@ -1022,22 +1246,22 @@ class RailsAiContext::ConfigurationError < ::RailsAiContext::Error; end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:8
 module RailsAiContext::DetailLevel
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:28
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:33
     def at_least?(detail, minimum); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:32
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:37
     def full?(detail); end
 
     # Unknown values read as the default rather than falling through to
     # whichever branch happens to be last.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:24
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:29
     def normalize(detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:36
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:41
     def summary?(detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:18
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:23
     def valid?(detail); end
   end
 end
@@ -1054,6 +1278,13 @@ RailsAiContext::DetailLevel::FULL = T.let(T.unsafe(nil), String)
 # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:16
 RailsAiContext::DetailLevel::ORDER = T.let(T.unsafe(nil), Hash)
 
+# The enum tools publish in their input schema, so the advertised values
+# and the normalizer cannot drift apart. Spelling the values in a tool
+# instead fails the enum-ownership spec.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:21
+RailsAiContext::DetailLevel::SCHEMA_ENUM = T.let(T.unsafe(nil), Array)
+
 # pkg:gem/rails-ai-context#lib/rails_ai_context/detail_level.rb:10
 RailsAiContext::DetailLevel::STANDARD = T.let(T.unsafe(nil), String)
 
@@ -1065,30 +1296,32 @@ RailsAiContext::DetailLevel::SUMMARY = T.let(T.unsafe(nil), String)
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:6
 class RailsAiContext::Doctor
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:39
+  include ::RailsAiContext::CountPhrase
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:41
   def initialize(app = T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:37
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:39
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:45
   def run; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:473
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:475
   def check_brakeman; end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:303
   def check_codex_env_staleness; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:177
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:183
   def check_context_freshness; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:122
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:124
   def check_controllers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:113
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:115
   def check_gems; end
 
   # A guard written before the respond_to? check was added only tests
@@ -1096,7 +1329,7 @@ class RailsAiContext::Doctor
   # even outside this gem's Bundler group - `.configure` then raises
   # NoMethodError in that environment.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:233
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:239
   def check_initializer_guard; end
 
   # ── Introspector health ───────────────────────────────────────────
@@ -1104,57 +1337,57 @@ class RailsAiContext::Doctor
   # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:389
   def check_introspector_health; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:482
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:484
   def check_live_reload; end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:338
   def check_mcp_buildable; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:245
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:251
   def check_mcp_json; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:152
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:154
   def check_migrations; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:94
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:96
   def check_models; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:79
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:81
   def check_pending_migrations; end
 
   # ── Performance checks ────────────────────────────────────────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:615
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:617
   def check_performance_schema_size; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:638
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:640
   def check_performance_view_count; end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:417
   def check_preset_coverage; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:464
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:466
   def check_prism; end
 
   # ── Tool dependencies ─────────────────────────────────────────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:454
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:456
   def check_ripgrep; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:104
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:106
   def check_routes; end
 
   # ── Existence checks ──────────────────────────────────────────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:65
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:67
   def check_schema; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:600
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:602
   def check_security_auto_mount; end
 
   # ── Security checks ───────────────────────────────────────────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:493
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:495
   def check_security_gitignore; end
 
   # RubyGems prints "Resolving dependencies..." to STDOUT when activating
@@ -1167,18 +1400,18 @@ class RailsAiContext::Doctor
   # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:353
   def check_stdio_activation_hygiene; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:142
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:144
   def check_tests; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:132
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:134
   def check_views; end
 
   # ── Scoring ───────────────────────────────────────────────────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:661
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:663
   def compute_score(results); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:59
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:61
   def configured_ai_tools; end
 
   # git sets core.ignorecase from the filesystem; mirror it by probing
@@ -1186,7 +1419,7 @@ class RailsAiContext::Doctor
   # (APFS/NTFS default). The .gitignore basename always carries cased
   # letters, unlike the app root (which can be all digits).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:590
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:592
   def gitignore_case_insensitive?; end
 
   # Substring checks miss glob entries (Rails 8.1 generates `/config/*.key`
@@ -1197,10 +1430,10 @@ class RailsAiContext::Doctor
   # directories, a negation must match the file itself (not a container),
   # and a file cannot be re-included while a parent directory is excluded.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:530
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:532
   def gitignore_covers?(content, path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:570
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:572
   def gitignore_parent_ignored?(rules, path); end
 
   # Mirrors git's evaluation order: if any ancestor directory ends up
@@ -1210,22 +1443,29 @@ class RailsAiContext::Doctor
   # is no "descend" globbing, which is what made `config/` + `!config/`
   # (a re-included directory) falsely read as still covering its files.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:556
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:558
   def gitignore_path_ignored?(rules, path, dir:); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:576
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:578
   def gitignore_pattern_matches?(rule, path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:534
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:536
   def parse_gitignore_rules(content); end
+
+  class << self
+    # Where each tool's MCP config lives, and how to name it in a report.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:176
+    def mcp_config_checks; end
+  end
 end
 
 # All configured AI tools, defaulting to all 5 when nil (unconfigured).
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:57
+# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:59
 RailsAiContext::Doctor::ALL_AI_TOOLS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
+# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:11
 RailsAiContext::Doctor::CHECKS = T.let(T.unsafe(nil), Array)
 
 # Per-tool context path - sentinel checked for the freshness check.
@@ -1233,35 +1473,37 @@ RailsAiContext::Doctor::CHECKS = T.let(T.unsafe(nil), Array)
 # atomically by the same serializer). For Cursor, `.cursor/rules/` is
 # the sentinel; `.cursorrules` (v5.9.0 legacy fallback) is generated
 # atomically next to it, so checking either proves both are fresh.
+# The first context path is each tool's sentinel: the rest are written
+# atomically beside it, so its freshness proves theirs.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:169
+# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:173
 RailsAiContext::Doctor::CONTEXT_FILES = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+# pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
 class RailsAiContext::Doctor::Check < ::Data
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
   def fix; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
   def message; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
   def name; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
   def status; end
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
     def [](*_arg0); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
     def inspect; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
     def members; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:7
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/doctor.rb:9
     def new(*_arg0); end
   end
 end
@@ -1269,7 +1511,7 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/engine.rb:4
 class RailsAiContext::Engine < ::Rails::Engine; end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context.rb:29
+# pkg:gem/rails-ai-context#lib/rails_ai_context.rb:37
 class RailsAiContext::Error < ::StandardError; end
 
 # Renders the schema facts summary shared by the rake task (ai:facts) and
@@ -1277,25 +1519,27 @@ class RailsAiContext::Error < ::StandardError; end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:6
 class RailsAiContext::FactsFormatter
+  extend ::RailsAiContext::CountPhrase
+
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:8
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:10
     def render(context, inspect_hint: T.unsafe(nil)); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:24
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:26
     def app_name(context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:88
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:90
     def architecture_section(context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:52
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:54
     def associations_section(context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:75
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:77
     def dependencies_section(context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:34
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/facts_formatter.rb:36
     def tables_section(context); end
   end
 end
@@ -1375,7 +1619,10 @@ class RailsAiContext::HydrationResult < ::Data
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/hydrators/controller_hydrator.rb:4
+# Explicit rather than implicit, so reaching this constant does not depend
+# on Zeitwerk's `require` decoration surviving. See cli.rb.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/hydrators.rb:6
 module RailsAiContext::Hydrators; end
 
 # Parses a controller source file via Prism AST, detects model
@@ -1463,6 +1710,296 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/hydrators/view_hydrator.rb:45
 RailsAiContext::Hydrators::ViewHydrator::SKIP_IVARS = T.let(T.unsafe(nil), Set)
 
+# Explicit rather than implicit, so reaching this constant does not depend
+# on Zeitwerk's `require` decoration surviving. See cli.rb.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install.rb:6
+module RailsAiContext::Install; end
+
+# What each AI tool means to this gem, in one table: what to call it, what
+# context files it gets, where its MCP config lives and in what shape, and
+# what it left behind in older releases. The generator, the rake task and
+# the standalone CLI all asked these questions separately and answered
+# them from copies that drifted.
+#
+# Vocabulary per CONTEXT.md: "AI tool" for the assistant, "context files"
+# for what the gem generates for it.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+class RailsAiContext::Install::AiTool < ::Struct
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def context_paths; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def context_paths=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def files; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def files=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def key; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def key=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def legacy_paths; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def legacy_paths=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def mcp_config; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def mcp_config=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def name; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def name=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def number; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+  def number=(_); end
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+    def [](*_arg0); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:56
+    def all; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:60
+    def find(key); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+    def inspect; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+    def keyword_init?; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:69
+    def legacy_files; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:65
+    def mcp_configs_by_key; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+    def members; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:13
+    def new(*_arg0); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/ai_tool.rb:17
+RailsAiContext::Install::AiTool::ALL = T.let(T.unsafe(nil), Array)
+
+# Removing the context files of an AI tool the user dropped. All three
+# install entries prompt about this in their own voice; what they do once
+# the user says yes is the same work, and used to be three copies of it.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/cleanup.rb:10
+module RailsAiContext::Install::Cleanup
+  private
+
+  # @param tools [Array<Symbol>] the AI tools being dropped
+  # @param keeping [Array<Symbol>] the tools still selected, whose files
+  #   must survive even when a dropped tool names the same path
+  # @param root [String, Pathname] project root
+  # @return [Array<String>] the paths removed, directories marked with a
+  #   trailing slash so callers can print them the way they always have
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/cleanup.rb:19
+  def remove(tools:, keeping:, root:); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/cleanup.rb:28
+  def remove_path(relative, root); end
+
+  class << self
+    # @param tools [Array<Symbol>] the AI tools being dropped
+    # @param keeping [Array<Symbol>] the tools still selected, whose files
+    #   must survive even when a dropped tool names the same path
+    # @param root [String, Pathname] project root
+    # @return [Array<String>] the paths removed, directories marked with a
+    #   trailing slash so callers can print them the way they always have
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/cleanup.rb:19
+    def remove(tools:, keeping:, root:); end
+
+    private
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/cleanup.rb:28
+    def remove_path(relative, root); end
+  end
+end
+
+# Which AI tools the user picked, written and read the same way whichever
+# entry point ran. Two records exist because they answer to two owners:
+# the YAML file is the installer's own, and the initializer line is Rails
+# config a user hand-edits. The initializer therefore wins on read.
+#
+# Reading is a textual parse, never an eval or a boot, so the standalone
+# CLI can answer the question with no Rails in the process.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:16
+module RailsAiContext::Install::SelectionRecord
+  private
+
+  # Adds one tool to whatever is already recorded, for the per-tool
+  # context tasks. Reads first so the addition lands in both files
+  # together rather than only in whichever one the caller happened to
+  # know about.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:80
+  def add(tool, root:); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:91
+  def initializer_line(tools); end
+
+  # What a caller should tell the user about a write, as [level, text]
+  # pairs. The entries differ in voice - Thor `say` with a colour, `puts`
+  # with an emoji, `$stderr.puts` - not in what there is to say, and
+  # keeping that judgement here means a new outcome lands in one place
+  # rather than three.
+  #
+  # @return [Array<Array(Symbol, String)>] level is :ok, :muted or :warn
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:72
+  def messages(result); end
+
+  # @return [Array<Symbol>, nil] the recorded tools, or nil if none.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:42
+  def read(root:); end
+
+  # Records the selection in both places and says what it did, because
+  # every entry prints its own "Created / Updated / unchanged" line and
+  # would otherwise keep its own copy of the writing just to know which.
+  #
+  # @param initializer [Boolean] false leaves the user's Rails config
+  #   untouched, for callers refreshing this gem's own YAML on a run the
+  #   user did not ask to change their selection in.
+  # @return [Hash] { tools:, yaml: :created|:updated|:unchanged|:replaced|:failed,
+  #   initializer: :updated|:inserted|:unchanged|:conflict|:absent|:skipped }
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:55
+  def write(tools, root:, extra_yaml: T.unsafe(nil), initializer: T.unsafe(nil)); end
+
+  class << self
+    # Adds one tool to whatever is already recorded, for the per-tool
+    # context tasks. Reads first so the addition lands in both files
+    # together rather than only in whichever one the caller happened to
+    # know about.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:80
+    def add(tool, root:); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:91
+    def initializer_line(tools); end
+
+    # What a caller should tell the user about a write, as [level, text]
+    # pairs. The entries differ in voice - Thor `say` with a colour, `puts`
+    # with an emoji, `$stderr.puts` - not in what there is to say, and
+    # keeping that judgement here means a new outcome lands in one place
+    # rather than three.
+    #
+    # @return [Array<Array(Symbol, String)>] level is :ok, :muted or :warn
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:72
+    def messages(result); end
+
+    # @return [Array<Symbol>, nil] the recorded tools, or nil if none.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:42
+    def read(root:); end
+
+    # Records the selection in both places and says what it did, because
+    # every entry prints its own "Created / Updated / unchanged" line and
+    # would otherwise keep its own copy of the writing just to know which.
+    #
+    # @param initializer [Boolean] false leaves the user's Rails config
+    #   untouched, for callers refreshing this gem's own YAML on a run the
+    #   user did not ask to change their selection in.
+    # @return [Hash] { tools:, yaml: :created|:updated|:unchanged|:replaced|:failed,
+    #   initializer: :updated|:inserted|:unchanged|:conflict|:absent|:skipped }
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:55
+    def write(tools, root:, extra_yaml: T.unsafe(nil), initializer: T.unsafe(nil)); end
+
+    private
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:116
+    def from_initializer(root); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:129
+    def from_yaml(root); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:105
+    def initializer_message(status); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:142
+    def normalize(tools); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:146
+    def presence(tools); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:151
+    def readable_yaml(path); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:191
+    def write_initializer(tools, root); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:158
+    def write_yaml(tools, root, extra = T.unsafe(nil)); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:95
+    def yaml_message(status); end
+  end
+end
+
+# Any assignment to the key, in any shape. A hand-written
+# `config.ai_tools = [:claude]` is not one this module rewrites, but
+# inserting beside it would leave two assignments: the stale one wins at
+# boot while `read` returns the fresh one.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:34
+RailsAiContext::Install::SelectionRecord::ANY_ASSIGNMENT = T.let(T.unsafe(nil), Regexp)
+
+# Where a selection line goes when the initializer has none yet.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:37
+RailsAiContext::Install::SelectionRecord::CONFIGURE_BLOCK = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:18
+RailsAiContext::Install::SelectionRecord::INITIALIZER = T.let(T.unsafe(nil), String)
+
+# Dates and times because a hand-added `generated_at:` is ordinary in a
+# config file, and refusing to load one used to cost the user the write.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:23
+RailsAiContext::Install::SelectionRecord::PERMITTED_YAML = T.let(T.unsafe(nil), Array)
+
+# Matches the line the installer writes, and nothing else. Anchored past
+# any leading whitespace but not past a `#`, so the commented-out
+# default in the generated initializer is not mistaken for a selection.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:28
+RailsAiContext::Install::SelectionRecord::SELECTION_LINE = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:17
+RailsAiContext::Install::SelectionRecord::YAML_FILE = T.let(T.unsafe(nil), String)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/install/selection_record.rb:19
+RailsAiContext::Install::SelectionRecord::YAML_KEY = T.let(T.unsafe(nil), String)
+
 # Detects how the gem is installed into the current app so user-facing copy
 # can advertise invocation forms that actually exist.
 #
@@ -1548,26 +2085,44 @@ class RailsAiContext::Introspector
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:101
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:139
   def app_name; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:133
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:171
   def environment_name; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:127
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:165
   def rails_version; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:141
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:179
   def resolve_introspector(name); end
 
-  # Static tier: only introspectors that declare a static_call can produce
-  # data without a booted app; everything else is honestly unavailable
-  # rather than crashing into a misleading per-section error.
+  # `SchemaIntrospector` writes `static_parse` when it read a dump instead of
+  # the connection, and every surface that rendered the section raw named a
+  # database that does not exist. Fixing that one surface at a time meant
+  # `.ai-context.json` and `rails://schema` still disagreed with the
+  # multi_database section of the same file. Resolving it here means the
+  # context never carries the placeholder, so nothing downstream has to
+  # remember. The raw observation stays under `adapter_source` for a reader
+  # that needs to know the schema was parsed rather than observed.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:114
+  # Runs after the loop: the answer comes from the database config and gem
+  # list, which are sections of this same context.
+  #
+  # Rescued for the same reason the loop above is: this reads two other
+  # sections, and a malformed one raising here would cost the whole context
+  # rather than one entry. The placeholder surviving is the honest failure.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:119
+  def resolve_schema_adapter(context); end
+
+  # Static tier: what an introspector answers is what it declared, so a
+  # section is either real data or an honest refusal, never a guess.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:151
   def run_introspector(introspector); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:121
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:161
   def unavailable_reason; end
 end
 
@@ -1575,31 +2130,36 @@ end
 # Used by both the dispatcher below AND the Configuration presets validation,
 # so adding/renaming introspectors only requires one edit.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:57
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:59
 RailsAiContext::Introspector::INTROSPECTOR_MAP = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspector.rb:58
+# Explicit rather than implicit, so reaching this constant does not depend
+# on Zeitwerk's `require` decoration surviving. See cli.rb.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors.rb:6
 module RailsAiContext::Introspectors; end
 
 # Discovers Action Mailbox setup: mailbox classes, routing patterns.
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:6
 class RailsAiContext::Introspectors::ActionMailboxIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:9
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:12
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:10
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:13
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:16
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:28
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:31
   def extract_mailboxes; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:24
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_mailbox_introspector.rb:27
   def root; end
 end
 
@@ -1607,24 +2167,26 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:6
 class RailsAiContext::Introspectors::ActionTextIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:9
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:12
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:10
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:13
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:16
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:29
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:32
   def detect_trix_customizations; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:47
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:50
   def extract_rich_text_fields; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:25
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/action_text_introspector.rb:28
   def root; end
 end
 
@@ -1633,33 +2195,35 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:7
 class RailsAiContext::Introspectors::ActiveStorageIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:17
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:107
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:110
   def detect_direct_upload; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:65
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:68
   def extract_attachment_validations; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:33
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:36
   def extract_attachments; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:53
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:56
   def extract_storage_services; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:87
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:90
   def extract_variants; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:29
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_storage_introspector.rb:32
   def root; end
 end
 
@@ -1670,98 +2234,116 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:9
 class RailsAiContext::Introspectors::ActiveSupportIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:12
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:15
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:10
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:13
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:16
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:19
   def call; end
+
+  # Concerns, MessageVerifier usage and tagged logging are read off disk.
+  # The registered deprecators, the subscribed load hooks and the cache
+  # store only exist in a running process; an empty list for them renders
+  # as "this app has none", so they refuse instead.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:37
+  def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:150
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:163
   def common_on_load_hooks; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:166
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:179
   def detect_cache_usage; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:118
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:131
   def detect_tagged_logging; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:44
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:58
   def extract_concerns; end
 
   # Rails 7.1+ registers deprecators per gem/component via
   # `Rails.application.deprecators`. Return the registered keys.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:75
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:88
   def extract_deprecators; end
 
   # Scan `lib/` + `app/` for calls into ActiveSupport::MessageEncryptor and
   # ActiveSupport::MessageVerifier. Used for tokens, signed IDs, etc.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:95
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:108
   def extract_message_verifier_usage; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:32
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:54
   def root; end
 end
 
 # The canonical lazy hooks that Railties expose. Report which have at
 # least one subscriber attached so AI can reason about load-order.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:143
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:156
 RailsAiContext::Introspectors::ActiveSupportIntrospector::COMMON_HOOKS = T.let(T.unsafe(nil), Array)
-
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/active_support_introspector.rb:36
-RailsAiContext::Introspectors::ActiveSupportIntrospector::CONCERN_DIRS = T.let(T.unsafe(nil), Array)
 
 # Discovers API layer setup: api_only mode, serializers, GraphQL,
 # versioning patterns, rate limiting.
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:7
 class RailsAiContext::Introspectors::ApiIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:31
   def call; end
+
+  # Everything but api_only needs a booted app, but api_only itself is a
+  # plain assignment in config/application.rb - and the view tools already
+  # read it there. Leaving this section wholly unavailable meant one
+  # process answering "this is an API-only app" from get_stimulus and
+  # "cannot say" from get_api.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:22
+  def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:114
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:131
   def detect_api_client_generation; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:95
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:112
   def detect_cors_config; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:57
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:74
   def detect_graphql; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:77
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:94
   def detect_openapi_specs; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:142
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:159
   def detect_pagination; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:159
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:176
   def detect_rate_limiting; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:37
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:54
   def detect_serializers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:68
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:85
   def detect_versioning; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:128
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:145
   def extract_graphql_details; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:33
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/api_introspector.rb:50
   def root; end
 end
 
@@ -1770,39 +2352,41 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:7
 class RailsAiContext::Introspectors::AssetPipelineIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:17
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:82
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:85
   def detect_css_framework; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:94
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:97
   def detect_js_bundler; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:104
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:107
   def detect_manifests; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:32
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:35
   def detect_pipeline; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:39
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:42
   def extract_importmap_pins; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:120
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:123
   def package_json_has?(package); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:112
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:115
   def read_gemfile_lock; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:28
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/asset_pipeline_introspector.rb:31
   def root; end
 end
 
@@ -1811,39 +2395,41 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:7
 class RailsAiContext::Introspectors::AuthIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:15
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:18
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:13
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:16
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:19
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:22
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:311
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:319
   def config_assignments(path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:37
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:40
   def detect_authentication; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:126
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:129
   def detect_authorization; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:195
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:203
   def detect_devise_jwt; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:161
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:169
   def detect_devise_modules_per_model; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:210
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:218
   def detect_doorkeeper; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:235
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:243
   def detect_http_token_auth; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:251
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:259
   def detect_omniauth_providers; end
 
   # Rails 8's `bin/rails generate authentication` produces a Session model,
@@ -1854,53 +2440,53 @@ class RailsAiContext::Introspectors::AuthIntrospector
   #   2. which controllers opt out via `allow_unauthenticated_access`
   #   3. where the Authentication concern lives so they can find before_actions
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:70
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:73
   def detect_rails_auth; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:145
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:153
   def detect_security; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:182
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:190
   def detect_token_auth; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:305
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:313
   def devise_setting_value(key, hit); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:288
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:296
   def extract_devise_settings; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:366
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:374
   def file_exists?(relative_path); end
 
   # Format a scope value extracted by the AST listener (symbol, array of
   # symbols, or arbitrary value) into the string form the tests expect.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:115
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:118
   def format_scope_value(value); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:354
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:362
   def gem_present?(name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:33
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:36
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:88
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:91
   def scan_allow_unauthenticated_access; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:315
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:323
   def scan_models_for_devise; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:335
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:343
   def scan_models_for_macro(macro_name); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:11
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:14
 RailsAiContext::Introspectors::AuthIntrospector::DEVISE_SETTINGS = T.let(T.unsafe(nil), Array)
 
 # Settings reported as a bare word rather than as their literal value,
 # matching how Devise's own docs name the strategies.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:10
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/auth_introspector.rb:13
 RailsAiContext::Introspectors::AuthIntrospector::SYMBOL_DEVISE_SETTINGS = T.let(T.unsafe(nil), Array)
 
 # Extracts the autoloading configuration: Zeitwerk vs Classic, custom
@@ -1909,57 +2495,62 @@ RailsAiContext::Introspectors::AuthIntrospector::SYMBOL_DEVISE_SETTINGS = T.let(
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:8
 class RailsAiContext::Introspectors::AutoloadIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:13
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:16
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:14
   def app; end
 
   # @return [Hash] autoloader configuration
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:18
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:21
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:44
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:47
   def detect_mode; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:130
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:133
   def directive_rule(hit); end
 
   # Return per-autoloader metadata: name, collapsed dirs, ignored paths.
   # Rails exposes `Rails.autoloaders.main` and `.once` by default.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:52
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:55
   def extract_autoloaders; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:71
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:74
   def extract_collapsed(loader); end
 
   # Collect `inflect` blocks and `Zeitwerk::Inflector` customizations
   # declared in config/initializers/*.rb.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:101
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:104
   def extract_custom_inflections; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:80
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:83
   def extract_ignored(loader); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:89
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:92
   def extract_root_dirs(loader); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:136
+  # Rails lists a path once per railtie that contributed it, and every
+  # engine's paths sit under the machine's gem prefix rather than the app.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:141
   def relativize(paths); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:36
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:39
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:40
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:43
   def zeitwerk_available?; end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:9
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/autoload_introspector.rb:12
 RailsAiContext::Introspectors::AutoloadIntrospector::INFLECTION_DIRECTIVES = T.let(T.unsafe(nil), Array)
 
 # Discovers ViewComponent and Phlex components: class definitions,
@@ -1967,13 +2558,15 @@ RailsAiContext::Introspectors::AutoloadIntrospector::INFLECTION_DIRECTIVES = T.l
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:7
 class RailsAiContext::Introspectors::ComponentIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:17
   def call; end
 
   private
@@ -1983,67 +2576,67 @@ class RailsAiContext::Introspectors::ComponentIntrospector
   #   2. Constant name match: prop "size" matches SIZES constant, prop "variant" matches VARIANTS constant
   #   3. Constant usage in initialize: @size referenced as SIZES[@size] matches prop "size"
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:286
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:289
   def attach_enum_values_to_props(props, enum_values, structure); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:360
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:363
   def build_summary(components = T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:30
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:33
   def components_dir; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:109
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:112
   def constant_path_to_string(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:127
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:130
   def detect_component_type(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:154
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:157
   def detect_phlex_bases; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:77
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:80
   def extract_class_name(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:34
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:37
   def extract_components; end
 
   # Enumerable values a prop can take, keyed by downcased constant name
   # (VARIANTS -> "variants") or by the instance variable a `case` branches on.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:267
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:270
   def extract_enum_values(structure); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:176
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:179
   def extract_props(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:250
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:253
   def extract_slots(structure, type); end
 
   # Structural facts about the component class, grouped by kind so each
   # consumer reads its own bucket instead of re-filtering the whole list.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:242
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:245
   def extract_structure(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:100
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:103
   def find_first_class_node(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:231
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:234
   def find_initialize_def(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:321
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:324
   def find_preview(component_path, class_name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:335
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:338
   def find_sidecar_assets(component_path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:149
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:152
   def inherits_from_phlex_base?(superclass_name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:47
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:50
   def parse_component(path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:26
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/component_introspector.rb:29
   def root; end
 end
 
@@ -2052,57 +2645,59 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:7
 class RailsAiContext::Introspectors::ConfigIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:17
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:152
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:155
   def constant_path_to_string(node); end
 
   # Returns whether credentials are configured (boolean).
   # Does NOT expose key names - those could reveal integrated services.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:115
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:118
   def credentials_configured?; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:47
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:50
   def detect_cache_store; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:123
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:126
   def detect_current_attributes; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:170
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:173
   def detect_error_monitoring; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:189
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:192
   def detect_job_processor_config; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:75
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:78
   def detect_mailer_settings; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:63
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:66
   def detect_queue_adapter; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:59
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:62
   def detect_session_store; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:106
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:109
   def extract_initializers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:99
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:102
   def extract_middleware; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:143
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:146
   def find_first_class_node(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/config_introspector.rb:46
   def root; end
 end
 
@@ -2113,55 +2708,57 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:9
 class RailsAiContext::Introspectors::ConnectionPoolIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:12
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:15
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:10
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:13
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:16
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:19
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:115
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:118
   def can_list?(handler, role); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:77
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:80
   def config_hash(cfg); end
 
   # Rails 7.1+ introduced ActiveRecord::Middleware::ShardSelector.
   # Detect via the middleware stack + initializer references.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:124
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:127
   def detect_automatic_shard_selector; end
 
   # Rails 6.1+ splits connection handling into the ConnectionHandler
   # registry. Report which roles have a handler registered.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:101
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:104
   def detect_pool_handlers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:69
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:72
   def extract_adapter_options(cfg); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:35
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:38
   def extract_databases; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:62
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:65
   def extract_pool_config(cfg); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:31
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:34
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:90
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:93
   def serializable(value); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:55
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:58
 RailsAiContext::Introspectors::ConnectionPoolIntrospector::ADAPTER_KEYS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:54
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/connection_pool_introspector.rb:57
 RailsAiContext::Introspectors::ConnectionPoolIntrospector::POOL_KEYS = T.let(T.unsafe(nil), Array)
 
 # Discovers controllers and extracts filters, strong params,
@@ -2171,209 +2768,253 @@ RailsAiContext::Introspectors::ConnectionPoolIntrospector::POOL_KEYS = T.let(T.u
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:9
 class RailsAiContext::Introspectors::ControllerIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:16
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:19
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:10
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:13
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:20
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:23
   def call; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:12
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:15
   def excluded_filters; end
 
   # Static tier: every controller goes through the source-only extractor;
   # class loading and reflection never run.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:46
   def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:158
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:161
   def api_controller?(ctrl); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:469
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:255
+  def app_base_controller?(klass); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:239
+  def app_base_controller_for(ctrl); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:548
   def call_on_params?(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:553
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:632
   def collect_expect_array(array_node, key, permits, nested); end
 
   # Walk up the controller inheritance chain and collect filter constraints from source files
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:233
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:316
   def collect_source_constraints(ctrl, current_source = T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:785
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:864
   def constant_node_to_string(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:324
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:403
   def devise_controller?(ctrl); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:90
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:93
   def discover_controllers; end
 
   # Scan filesystem for controller files not yet loaded as classes
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:103
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:106
   def discover_from_filesystem; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:59
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:62
   def eager_load_controllers!; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:79
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:82
   def eager_load_controllers_individually!(controllers_path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:575
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:654
   def expect_symbol_values(array_node); end
 
   # `if: -> { action_name == "create" }` narrows a filter to one action the
   # same way `only:` does. Returns the action name, or nil for any other
   # condition.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:335
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:414
   def extract_action_condition(node); end
 
   # Prefer source-based parsing for actions - always reflects current file state.
-  # Falls back to reflection for controllers without readable source files.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:165
+  # `action_methods` used to answer for a controller whose own file defines
+  # no public method, and it cannot: it subtracts inherited methods only as
+  # far as the nearest abstract ancestor, which is ActionController::Base.
+  # Everything ApplicationController and its concerns define publicly came
+  # back as an action, so a two-route controller reported 19 of them, most
+  # named things like `set_locale` and `pundit_user`.
+  #
+  # A thin subclass does still serve actions - its parent defines them - so
+  # the answer comes from the parent's source instead.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:177
   def extract_actions(ctrl, source = T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:176
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:259
   def extract_actions_from_source(source); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:585
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:664
   def extract_ast_value(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:356
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:435
   def extract_concerns(ctrl); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:367
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:446
   def extract_concerns_from_source(source); end
 
   # For rescue_from, we need constants (not symbols). GenericMacroListener's
   # extract_symbol_args skips them. Walk the AST for the specific call node
   # at the given line to get ConstantReadNode/ConstantPathNode args.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:656
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:735
   def extract_constant_args_from_source(source, line_number); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:139
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:142
   def extract_controller_details(ctrl); end
 
   # Extract details purely from source file (for controllers not loaded as classes)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:116
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:119
   def extract_details_from_source(path); end
 
   # Hybrid approach: reflection for complete filter names (handles inheritance + skips),
   # source parsing from inheritance chain for only/except constraints.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:193
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:276
   def extract_filters(ctrl, source = T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:256
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:335
   def extract_filters_from_source(source); end
 
   # Extract parent class name from source via Prism AST.
   # Walks for ClassNode and reads superclass constant path.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:765
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:844
   def extract_parent_class_ast(source); end
 
   # Also keep extract_permit_details for specs that call it directly
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:401
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:480
   def extract_permit_details(source, method_name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:419
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:498
   def extract_permit_from_def(def_node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:692
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:771
   def extract_rate_limit(source, entry); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:634
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:713
   def extract_rescue_from(source); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:595
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:674
   def extract_respond_to(source); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:388
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:467
   def extract_strong_params(source); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:723
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:802
   def extract_turbo_stream_actions(source); end
 
   # Statically evaluate known runtime conditions to exclude inapplicable filters.
   # e.g., `unless: :devise_controller?` on a Devise controller means the filter doesn't apply.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:310
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:389
   def filter_excluded_by_condition?(ctrl, filter); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:663
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:742
   def find_call_at_line(node, method_name, line_number, constants); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:457
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:536
   def find_call_in_tree(node, method_name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:773
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:852
   def find_class_superclass(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:445
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:524
   def find_def_node(node, method_name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:620
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:699
   def find_format_calls(node, formats); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:377
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:456
   def find_include_calls(node, concerns); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:410
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:489
   def find_param_methods(node, results); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:476
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:555
   def find_require_in_chain(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:612
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:691
   def find_respond_to_blocks(node, blocks); end
 
   # Walk AST tracking which DefNode we're inside,
   # look for format.turbo_stream calls
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:737
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:816
   def find_turbo_stream_in_defs(node, current_def_name, actions); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:349
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:248
+  def framework_controller?(klass); end
+
+  # The nearest ancestor in the app that defines actions of its own.
+  #
+  # The walk stops at ApplicationController by convention: it is where an
+  # app puts the helpers every controller shares, not actions, and reading
+  # it is what produced the leak above. A base class that only sets up
+  # filters contributes nothing and the walk continues past it.
+  #
+  # Returns the actions and whether the walk passed an ancestor whose
+  # source it could not read, which is what tells an empty answer apart
+  # from one this app cannot see.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:210
+  def inherited_actions(ctrl); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:428
   def lambda_body(node); end
 
   # Normalize constraint values from AST extraction.
   # Could be a single symbol, an array of symbols, or a string.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:298
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:377
   def normalize_constraint(value); end
 
   # params.expect(article: [ :title, :body ]) combines require + permit in
   # one call. Map it to the same shape permit produces: the hash key
   # becomes :requires and the array members become :permits.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:524
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:603
   def parse_expect_args_ast(expect_call); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:483
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:562
   def parse_permit_args_ast(permit_call); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:706
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:785
   def parse_rate_limit(entry); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:680
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:759
   def rate_limit_entry(source); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:803
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:882
   def read_source(ctrl); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:809
+  # `action_methods` subtracts inherited methods only as far as the nearest
+  # abstract ancestor, and that is ActionController::Base. A gem controller
+  # mounted on the app's own base class - what Doorkeeper's `base_controller`
+  # setting produces - therefore arrives carrying every public method that
+  # base and its concerns define. The base's own answer is exactly that set,
+  # so subtracting it leaves the actions the gem contributes.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:232
+  def reflected_actions(ctrl); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/controller_introspector.rb:888
   def source_path(ctrl); end
 end
 
@@ -2382,15 +3023,17 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:7
 class RailsAiContext::Introspectors::ConventionIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:11
   def app; end
 
   # @return [Hash] detected conventions and patterns
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:18
   def call; end
 
   private
@@ -2399,67 +3042,67 @@ class RailsAiContext::Introspectors::ConventionIntrospector
   # only a .keep file), so directory existence alone isn't evidence the
   # pattern is in use. Require at least one real Ruby file inside.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:342
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:345
   def concern_files_exist?(relative_path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:324
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:327
   def constant_path_to_string(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:31
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:34
   def detect_architecture; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:213
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:216
   def detect_config_files; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:236
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:239
   def detect_custom_directories; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:69
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:72
   def detect_patterns; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:335
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:338
   def dir_exists?(relative_path); end
 
   # Extract the parent class name from a Ruby file via AST ClassNode.
   # Returns a simple name like "User" (no module path).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:251
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:254
   def extract_parent_class(path); end
 
   # Extract the full superclass path (e.g. "ActiveSupport::CurrentAttributes").
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:260
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:263
   def extract_superclass_path(path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:346
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:349
   def file_exists?(relative_path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:268
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:271
   def find_parent_class(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:297
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:300
   def find_superclass_path(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:350
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:353
   def gem_present?(name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:354
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:357
   def gemfile_lock_content; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:27
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:30
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:189
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:192
   def scan_directory_structure; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:171
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:174
   def uses_async_queries?; end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:164
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:167
 RailsAiContext::Introspectors::ConventionIntrospector::ASYNC_QUERY_METHODS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:231
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/convention_introspector.rb:234
 RailsAiContext::Introspectors::ConventionIntrospector::STANDARD_APP_DIRS = T.let(T.unsafe(nil), Set)
 
 # Inspects Rails credentials configuration WITHOUT revealing any
@@ -2477,13 +3120,15 @@ RailsAiContext::Introspectors::ConventionIntrospector::STANDARD_APP_DIRS = T.let
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:17
 class RailsAiContext::Introspectors::CredentialsIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:20
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:23
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:18
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:21
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:24
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:27
   def call; end
 
   private
@@ -2491,31 +3136,31 @@ class RailsAiContext::Introspectors::CredentialsIntrospector
   # Try to enumerate top-level keys without revealing values. Returns
   # nil if decryption fails (no master key, invalid ciphertext, etc.).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:126
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:129
   def attempt_top_level_keys(creds); end
 
   # Rails 6.2+ supports arbitrary encrypted files via
   # `config/<name>.yml.enc` + `config/<name>.key`. Detect them.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:108
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:111
   def detect_encrypted_configs; end
 
   # Which source Rails uses to obtain the master key. Important because
   # ops teams often rely on RAILS_MASTER_KEY over key files on disk.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:89
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:92
   def detect_master_key_source; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:47
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:50
   def inspect_default_credentials; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:67
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:70
   def inspect_environment_credentials; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:100
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:103
   def require_master_key_flag; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/credentials_introspector.rb:46
   def root; end
 end
 
@@ -2524,24 +3169,26 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:7
 class RailsAiContext::Introspectors::DatabaseStatsIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:15
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:18
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:19
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:22
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:61
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:64
   def collect_mysql_stats; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:39
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:42
   def collect_postgresql_stats; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:81
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:84
   def collect_sqlite_stats; end
 end
 
@@ -2549,7 +3196,7 @@ end
 # "Trilogy", not "Mysql2") - matching only /mysql/ silently skips
 # stats collection for every Trilogy app.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:13
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/database_stats_introspector.rb:16
 RailsAiContext::Introspectors::DatabaseStatsIntrospector::MYSQL_ADAPTER = T.let(T.unsafe(nil), Regexp)
 
 # Discovers DevOps configuration: Puma, Procfile, health checks,
@@ -2557,43 +3204,45 @@ RailsAiContext::Introspectors::DatabaseStatsIntrospector::MYSQL_ADAPTER = T.let(
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:7
 class RailsAiContext::Introspectors::DevOpsIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:17
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:157
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:160
   def detect_deployment_tool; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:114
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:117
   def detect_health_check; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:136
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:139
   def extract_docker_info; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:98
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:101
   def extract_procfile; end
 
   # Walk AST to find threads/workers/port calls and extract their arguments.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:48
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:51
   def extract_puma_calls(node, config); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:32
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:35
   def extract_puma_config; end
 
   # Recursively search an AST node for an integer literal (handles ENV.fetch("X", 3000)).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:85
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:88
   def find_integer_in_node(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:28
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/devops_introspector.rb:31
   def root; end
 end
 
@@ -2602,31 +3251,103 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:7
 class RailsAiContext::Introspectors::EngineIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:36
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:39
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:11
   def app; end
 
   # @return [Hash] mounted engines with paths and descriptions
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:41
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:44
+  def call; end
+
+  # config/routes.rb is a file, so mounts read the same either way. Which
+  # engine classes a process loaded is only knowable from that process -
+  # and testing `defined?(Rails::Engine)` instead of the tier answered from
+  # the half-finished boot that put us here, which is the common way into
+  # the static tier.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:58
+  def static_call; end
+
+  private
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:73
+  def discover_mounted_engines; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:95
+  def discover_rails_engines; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:69
+  def root; end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:13
+RailsAiContext::Introspectors::EngineIntrospector::KNOWN_ENGINES = T.let(T.unsafe(nil), Hash)
+
+# Parses config/environments/*.rb - the one config surface no other
+# introspector covers. Captures, per environment file, which config keys
+# are assigned and the values of the toggles AI most often needs to
+# compare across environments (force_ssl, eager_load, caching, logging,
+# queue adapter, mailer delivery).
+#
+# Not EnvIntrospector, which reads environment variables and ENV[] usage.
+# This one reads the environment config files; that one reads the process
+# environment.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:14
+class RailsAiContext::Introspectors::EnvConfigIntrospector
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:30
+  def initialize(app); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:18
+  def app; end
+
+  # @return [Hash] per-environment config summary
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:35
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:56
-  def discover_mounted_engines; end
+  # Assigned `config.*` paths at any depth, mapped to their value source:
+  # `config.eager_load`, `config.action_mailer.delivery_method`,
+  # `config.active_record.encryption.primary_key`. The listener matches the
+  # root anywhere in the chain, so the `Rails.application.config.x` form
+  # resolves to the same path as the bare `config.x` inside `configure`.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:75
+  def config_assignments(path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:78
-  def discover_rails_engines; end
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:99
+  def current_environment; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:52
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:84
+  def extract_notable(assignments); end
+
+  # A node slice spans as many lines as the expression did, and the value
+  # renders inside backticks on one markdown line.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:95
+  def one_line(source); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:52
   def root; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:56
+  def summarize(path); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/engine_introspector.rb:10
-RailsAiContext::Introspectors::EngineIntrospector::KNOWN_ENGINES = T.let(T.unsafe(nil), Hash)
+# Assignments whose values are lifted into the per-env `notable` hash.
+# Keys are the config path relative to `config.` (one or two levels).
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_config_introspector.rb:22
+RailsAiContext::Introspectors::EnvConfigIntrospector::NOTABLE_KEYS = T.let(T.unsafe(nil), Array)
 
 # Reports which Rails-related environment variables are currently set
 # in the running process. Values are NEVER returned for sensitive vars
@@ -2636,30 +3357,32 @@ RailsAiContext::Introspectors::EngineIntrospector::KNOWN_ENGINES = T.let(T.unsaf
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:10
 class RailsAiContext::Introspectors::EnvIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:13
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:16
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:14
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:17
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:20
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:94
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:97
   def envs_that_are_set; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:109
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:112
   def envs_that_are_unset; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:30
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:33
   def root; end
 
   # Scan config/ and app/ for `ENV["FOO"]` / `ENV.fetch("FOO")` references
   # to surface custom env vars the app reads beyond the known catalog.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:118
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:121
   def scan_env_references; end
 end
 
@@ -2667,7 +3390,7 @@ end
 # documents or checks. `safe: true` = value is returned verbatim when
 # set; `safe: false` = only presence reported (never the value).
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:37
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/env_introspector.rb:40
 RailsAiContext::Introspectors::EnvIntrospector::KNOWN_ENV_VARS = T.let(T.unsafe(nil), Array)
 
 # Detects frontend frameworks, build tools, TypeScript config, monorepo
@@ -2676,133 +3399,135 @@ RailsAiContext::Introspectors::EnvIntrospector::KNOWN_ENV_VARS = T.let(T.unsafe(
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:11
 class RailsAiContext::Introspectors::FrontendFrameworkIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:63
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:66
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:12
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:15
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:67
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:70
   def call; end
 
   private
 
   # ---- Summary ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:384
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:387
   def build_summary(frameworks, mounting, build, ts, total_components); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:439
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:442
   def detect_api_clients(all_deps); end
 
   # ---- Build tool ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:254
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:257
   def detect_build_tool; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:446
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:449
   def detect_component_libraries(all_deps); end
 
   # ---- Framework detection ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:140
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:143
   def detect_frameworks(all_deps); end
 
   # ---- Frontend roots ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:281
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:284
   def detect_frontend_roots; end
 
   # ---- Monorepo ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:194
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:197
   def detect_monorepo(all_deps); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:149
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:152
   def detect_mounting_strategy(all_deps); end
 
   # ---- Package manager ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:166
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:169
   def detect_package_manager; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:156
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:159
   def detect_state_management(all_deps); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:160
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:163
   def detect_testing(all_deps); end
 
   # ---- TypeScript ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:177
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:180
   def detect_typescript; end
 
   # ---- Vite config framework detection ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:265
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:268
   def detect_vite_config_frameworks; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:453
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:456
   def package_json_has_script?(name); end
 
   # ---- Helpers ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:406
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:409
   def parse_json(path); end
 
   # ---- Package.json reading ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:125
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:128
   def read_package_json_deps; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:330
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:333
   def read_vite_source_dir; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:343
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:346
   def read_yaml_source_path(relative); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:119
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:122
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:414
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:417
   def safe_path?(full_path); end
 
   # ---- Component scanning ----
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:362
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:365
   def scan_components(dir_path); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:421
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:424
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::API_CLIENT_MARKERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:52
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:55
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::COMPONENT_EXTENSIONS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:429
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:432
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::COMPONENT_LIB_MARKERS = T.let(T.unsafe(nil), Hash)
 
 # 256 KB
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:16
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:19
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::FRAMEWORK_MARKERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:14
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:17
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::MAX_PACKAGE_JSON_SIZE = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:29
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:32
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::MOUNTING_MARKERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:54
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:57
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::SCAN_SKIP_DIRS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:39
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:42
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::STATE_MARKERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:46
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:49
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::TEST_MARKERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:56
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/frontend_framework_introspector.rb:59
 RailsAiContext::Introspectors::FrontendFrameworkIntrospector::VITE_IMPORT_MARKERS = T.let(T.unsafe(nil), Hash)
 
 # Analyzes Gemfile.lock to identify installed gems and
@@ -2810,75 +3535,86 @@ RailsAiContext::Introspectors::FrontendFrameworkIntrospector::VITE_IMPORT_MARKER
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:7
 class RailsAiContext::Introspectors::GemIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:150
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:153
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:11
   def app; end
 
   # @return [Hash] gem analysis
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:155
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:158
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:250
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:253
   def categorize_gems(notable); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:193
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:196
   def detect_gem_groups; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:174
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:177
   def detect_local_gems; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:237
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:240
   def detect_notable_gems(specs); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:211
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:214
   def parse_lockfile(path); end
 end
 
 # Known gems that significantly affect how the app works.
 # The AI needs to know about these to give accurate advice.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:12
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/gem_introspector.rb:15
 RailsAiContext::Introspectors::GemIntrospector::NOTABLE_GEMS = T.let(T.unsafe(nil), Hash)
 
 # Discovers internationalization setup: locales, backends, key counts.
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:8
 class RailsAiContext::Introspectors::I18nIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:11
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:19
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:9
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:17
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:23
   def call; end
+
+  # The locale files are the same files either way; only the list of
+  # locales and the default came from a running I18n. Read both from disk
+  # rather than report the library's own defaults as the app's.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:41
+  def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:64
-  def count_keys(hash, depth: T.unsafe(nil)); end
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:129
+  def count_keys(hash); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:95
-  def count_keys_for_locale(locale); end
-
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:58
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:123
   def count_locale_files; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:127
-  def count_nested_keys(hash, count = T.unsafe(nil)); end
+  # Rails' own default is :en, so "en" is the right answer when the app
+  # never says otherwise - not a guess.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:82
+  def default_locale_from_config; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:69
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:133
   def detect_fallback_config; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:78
-  def detect_locale_coverage; end
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:142
+  def detect_locale_coverage(locales: T.unsafe(nil), default: T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:36
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:101
   def extract_locale_files; end
 
   # Finds all YAML files contributing translations for the given locale:
@@ -2887,12 +3623,34 @@ class RailsAiContext::Introspectors::I18nIntrospector
   #   config/locales/en/users.yml
   #   config/locales/admin/en.yml
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:116
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:194
   def find_locale_paths(locale); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:32
+  # Dotted key paths a locale defines, with the locale root stripped so
+  # `en.posts.title` and `es.posts.title` compare as the same key.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:169
+  def key_paths_for_locale(locale); end
+
+  # Every top-level key across config/locales - the same population Rails
+  # builds available_locales from.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:61
+  def locales_from_files; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:205
+  def nested_key_paths(hash, prefix = T.unsafe(nil), paths = T.unsafe(nil)); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:97
   def root; end
 end
+
+# Both spellings apps use: `config.i18n.default_locale = :es` in
+# application.rb or an environment file, and a bare
+# `I18n.default_locale = :es` in an initializer.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/i18n_introspector.rb:15
+RailsAiContext::Introspectors::I18nIntrospector::DEFAULT_LOCALE_ASSIGNMENT = T.let(T.unsafe(nil), Regexp)
 
 # Enumerates Rails.application.initializers - the graph Rails assembles
 # during boot. Captures each initializer's name, the file:line where its
@@ -2902,15 +3660,17 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:10
 class RailsAiContext::Introspectors::InitializerIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:13
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:16
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:14
   def app; end
 
   # @return [Hash] initializer catalog with name, source, and ordering edges
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:18
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:21
   def call; end
 
   private
@@ -2918,118 +3678,220 @@ class RailsAiContext::Introspectors::InitializerIntrospector
   # Extract file:line for the initializer's block. `Rails::Initializer`
   # stores the block in `@block`; Proc#source_location returns [path, line].
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:103
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:106
   def block_source_location(init); end
 
   # Initializers defined in config/application.rb or config/initializers/*.rb
   # are the ones the user wrote. Return file + count of initializer blocks
   # declared inside each file so AI can jump straight to user-owned code.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:64
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:67
   def extract_application_initializers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:83
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:86
   def group_by_owner(initializers); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:87
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:90
   def owner_name(init); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:37
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:40
   def root; end
 
   # Summarize every initializer as { name, owner, before, after, source }.
   # Keeps the list bounded by returning a flat array of primitives only.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/initializer_introspector.rb:46
   def summarize(initializers); end
 end
 
-# Discovers background jobs (ActiveJob/Sidekiq), mailers,
-# and Action Cable channels.
+# Discovers ActiveJob jobs, mailers, and Action Cable channels. Sidekiq
+# reaches this only as config/sidekiq.yml: a class that includes
+# Sidekiq::Worker without subclassing ActiveJob::Base is not a descendant
+# and does not live in app/jobs/, so neither pass here finds it.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:7
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:9
 class RailsAiContext::Introspectors::JobIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:12
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:17
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:10
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:15
   def app; end
 
   # @return [Hash] async workers, mailers, and channels
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:17
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:22
   def call; end
+
+  # Mailers and channels are ordinary classes in ordinary directories, so
+  # the answer is the same with or without a booted app. Only the way in
+  # differs: descendants when Rails is up, the AST when it is not.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:39
+  def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:298
+  # `descendants` is every ActiveJob subclass in the process, and the name
+  # prefixes above only cover the framework's own - a job from any other gem
+  # was counted as the app's. Where the class is defined answers it for gems
+  # the list has never heard of. A class with no source location stays:
+  # dropping one would understate what the app runs.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:78
+  def app_defined?(job); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:87
+  def app_root_real; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:404
   def channel_absolute_path(channel); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:315
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:421
   def channel_macros(source, macro); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:308
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:414
   def channel_relative_path(channel); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:292
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:398
   def channel_source(channel); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:266
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:337
+  def constant_name_for(path, dir); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:372
   def eager_load_channels!; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:279
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:385
   def eager_load_mailers!; end
 
   # RPC actions = public instance methods that aren't lifecycle hooks or stream helpers.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:354
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:460
   def extract_channel_actions(channel); end
 
   # `periodically :method_name, every: 3.seconds`. The interval keeps its
   # source form so lambdas like `-> { current_user.interval }` survive whole.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:344
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:450
   def extract_channel_periodic(source); end
 
   # `stream_from "channel_name"` and `stream_for object` - what the channel broadcasts.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:332
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:438
   def extract_channel_streams(source); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:235
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:341
   def extract_channels; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:298
+  def extract_channels_from_source; end
 
   # Walk a Prism AST tree to find the first class name.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:144
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:183
   def extract_class_name(node); end
 
   # `identified_by :current_user, :tenant` - declared on ApplicationCable::Connection,
   # but channels can also use it. Returns array of attribute names.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:325
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:431
   def extract_identified_by(source); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:33
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:51
   def extract_jobs; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:54
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:93
   def extract_jobs_from_source; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:210
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:249
   def extract_mailers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:194
+  # A mailer's actions are its public instance methods, and the AST sees
+  # one file at a time. `action_methods` counts the public methods a mailer
+  # inherits too, so a public helper on a base class is an action the
+  # booted tier reports and this one cannot - the entries are tagged STATIC
+  # for that reason.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:286
+  def extract_mailers_from_source; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:233
   def extract_sidekiq_config; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:174
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:213
   def extract_solid_queue_recurring; end
+
+  # Class name plus method list for every .rb under `dir`, read from the
+  # AST. Yields nothing when the directory is absent.
+  #
+  # The name comes from the path, not the AST: Zeitwerk requires the two to
+  # agree, and only the path carries the namespace. Reading `class Channel`
+  # out of `application_cable/channel.rb` yields "Channel", which matches
+  # no base-class filter and no name the booted app would report.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:318
+  def source_classes(dir); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:8
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/job_introspector.rb:13
 RailsAiContext::Introspectors::JobIntrospector::CHANNEL_MACROS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/associations_listener.rb:5
+# Turns a listener into its own registration: every public `on_*_enter` /
+# `on_*_leave` method it answers to, inherited ones included, becomes a
+# registered event. Names are checked against the events the running prism
+# actually dispatches, so a typo raises here instead of never firing.
+#
+# See docs/adr/0001-own-listener-registration.md for why prism's own
+# register_public_methods is not used.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:14
+module RailsAiContext::Introspectors::ListenerRegistration
+  class << self
+    # A dispatcher with every listener wired. Validation runs for all of
+    # them before any is registered, so a bad listener cannot leave a
+    # half-wired dispatcher behind.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:27
+    def dispatcher_for(*listeners); end
+
+    # The listener's handlers, sorted for a stable registration order.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:43
+    def events_for(listener); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:55
+    def known_event?(event); end
+
+    # Derived from the dispatcher itself: each `visit_x_node` it defines is
+    # the source of an `on_x_node_enter` and an `on_x_node_leave` event.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:61
+    def known_events; end
+
+    # Register one listener onto an existing dispatcher. Returns the events.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:36
+    def register(dispatcher, listener); end
+  end
+end
+
+# Deliberately wider than `on_<node>_(enter|leave)`: a typo'd suffix is
+# exactly the failure this module exists to catch, so anything shaped
+# like a handler is claimed here and then validated. Predicate and bang
+# methods cannot be event names, so they stay the listener's own.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:21
+RailsAiContext::Introspectors::ListenerRegistration::HANDLER_PATTERN = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listener_registration.rb:15
+class RailsAiContext::Introspectors::ListenerRegistration::UnknownEventError < ::RailsAiContext::Error; end
+
+# Explicit rather than implicit, so reaching this constant does not depend
+# on Zeitwerk's `require` decoration surviving. See cli.rb.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners.rb:7
 module RailsAiContext::Introspectors::Listeners; end
 
 # Detects association macro calls via Prism AST:
@@ -3249,7 +4111,7 @@ class RailsAiContext::Introspectors::Listeners::ConfigAssignmentListener < ::Rai
   # Returns the path segments after the root, or nil when the chain is not
   # rooted at a configured root name.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/config_assignment_listener.rb:68
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/config_assignment_listener.rb:85
   def chain_path(node); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/config_assignment_listener.rb:35
@@ -3258,7 +4120,7 @@ class RailsAiContext::Introspectors::Listeners::ConfigAssignmentListener < ::Rai
   # A bare `config.jwt` reference, with or without a block. Enough to tell
   # that a section of the initializer exists at all.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/config_assignment_listener.rb:51
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/config_assignment_listener.rb:68
   def record_reference(node); end
 end
 
@@ -3314,7 +4176,13 @@ class RailsAiContext::Introspectors::Listeners::EnvAccessListener < ::RailsAiCon
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/env_access_listener.rb:26
   def extract_subscript(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/env_access_listener.rb:52
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/env_access_listener.rb:67
+  def literal_value(node); end
+
+  # An interpolated name has no value at parse time, so it is not a
+  # variable name and this returns nil for it.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/env_access_listener.rb:59
   def string_value(node); end
 end
 
@@ -3415,47 +4283,65 @@ RailsAiContext::Introspectors::Listeners::MailboxRoutingListener::LIFECYCLE_CALL
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:10
 class RailsAiContext::Introspectors::Listeners::MethodsListener < ::RailsAiContext::Introspectors::Listeners::BaseListener
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:11
-  def initialize; end
+  # A constructor is not part of the callable interface every other
+  # caller asks for, so it stays out unless one asks for it by name.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:13
+  def initialize(include_initialize: T.unsafe(nil)); end
 
   # Track visibility modifiers: private, protected, public
   # Handles both bare form (`private`) and inline form (`private :method_name`)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:53
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:61
   def on_call_node_enter(node); end
 
   # Reset visibility when entering a new class/module scope
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:20
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:24
   def on_class_node_enter(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:25
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:30
   def on_class_node_leave(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:78
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:86
   def on_def_node_enter(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:30
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:36
   def on_module_node_enter(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:35
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:42
   def on_module_node_leave(node); end
 
   # Track `class << self` blocks
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:41
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:49
   def on_singleton_class_node_enter(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:46
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:54
   def on_singleton_class_node_leave(node); end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:103
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:149
   def extract_params(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:119
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:165
   def param_name(node); end
+
+  # Each parameter is sliced on its own rather than taking the whole list
+  # in one piece: a list split over several lines carries its newlines,
+  # and a comment written between two parameters would otherwise swallow
+  # the ones after it. Slicing keeps defaults as written, which is the
+  # reason for reading source here at all.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:132
+  def parameter_slices(parameters); end
+
+  # `class << self` members carry no receiver of their own, so they read
+  # as the bare name, which is how they are written.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/methods_listener.rb:119
+  def signature_source(node, is_class_method); end
 end
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/middleware_config_listener.rb:6
@@ -3528,6 +4414,41 @@ RailsAiContext::Introspectors::Listeners::MigrationDslListener::REFERENCE_ACTION
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/migration_dsl_listener.rb:10
 RailsAiContext::Introspectors::Listeners::MigrationDslListener::SINGLE_TABLE_ACTIONS = T.let(T.unsafe(nil), Set)
+
+# Detects `include`, `prepend` and `extend` with a constant argument.
+#
+# `ancestor` marks the ones that reach the ancestor chain, which is what
+# reflection reports - so a caller can answer the same question the
+# booted tier answers.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:13
+class RailsAiContext::Introspectors::Listeners::MixinsListener < ::RailsAiContext::Introspectors::Listeners::BaseListener
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:17
+  def initialize; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:32
+  def on_call_node_enter(node); end
+
+  # `include` inside `class << self` lands on the singleton class, so it
+  # never reaches `ancestors` - extend semantics wearing an include's name.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:24
+  def on_singleton_class_node_enter(_node); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:28
+  def on_singleton_class_node_leave(_node); end
+
+  private
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:52
+  def constant_name(node); end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:15
+RailsAiContext::Introspectors::Listeners::MixinsListener::ANCESTOR_MACROS = T.let(T.unsafe(nil), Set)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/mixins_listener.rb:14
+RailsAiContext::Introspectors::Listeners::MixinsListener::MIXIN_MACROS = T.let(T.unsafe(nil), Set)
 
 # Prism Dispatcher listener that detects model references in controller source.
 # Extracts constant names used as method receivers (Post.find, Post.new),
@@ -3674,7 +4595,7 @@ class RailsAiContext::Introspectors::Listeners::RoutesDslListener < ::RailsAiCon
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:325
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:335
   def current_name_prefix; end
 
   # Each scope-introducing frame precomputes the absolute path prefix
@@ -3684,8 +4605,11 @@ class RailsAiContext::Introspectors::Listeners::RoutesDslListener < ::RailsAiCon
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:62
   def current_prefix; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:330
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:340
   def current_resource; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:283
+  def draw_target(node); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:166
   def edit_path(base, singular); end
@@ -3721,12 +4645,12 @@ class RailsAiContext::Introspectors::Listeners::RoutesDslListener < ::RailsAiCon
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:100
   def handle_resources(node, singular:); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:365
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:375
   def join_path(*segments); end
 
   # First positional argument when it is a plain symbol/string literal.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:298
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:308
   def literal_first_arg(node); end
 
   # The member/collection frame a verb route sits in, if any - either
@@ -3738,16 +4662,16 @@ class RailsAiContext::Introspectors::Listeners::RoutesDslListener < ::RailsAiCon
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:162
   def member_path(base, singular); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:360
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:370
   def plain_segment_name(segment); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:319
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:329
   def prefixed_controller(controller); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:51
   def push_frame(node, **attrs); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:305
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:315
   def requested_actions(all, opts); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:230
@@ -3756,17 +4680,17 @@ class RailsAiContext::Introspectors::Listeners::RoutesDslListener < ::RailsAiCon
   # Rails maps a singular resource to the plural controller
   # (resource :profile -> ProfilesController).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:314
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:324
   def resource_controller(name, opts, singular: T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:335
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:345
   def route_name_for(resource_name); end
 
   # Keyword options including hash-rocket string keys, so
   # `get "up" => "rails/health#show", as: :x` yields
   # {"up" => "rails/health#show", as: :x}.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:281
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:291
   def route_options(node); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:55
@@ -3785,7 +4709,7 @@ class RailsAiContext::Introspectors::Listeners::RoutesDslListener < ::RailsAiCon
   # "<prefix>_<action>" pattern used elsewhere, and an as: override
   # replaces only the action part, not the whole name.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:343
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:353
   def verb_route_name(as_option, segment, on_option); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/routes_dsl_listener.rb:212
@@ -3817,49 +4741,49 @@ class RailsAiContext::Introspectors::Listeners::SchemaDslListener < ::RailsAiCon
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:128
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:134
   def check_constraint_call?(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:144
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:150
   def column_call?(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:189
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:195
   def default_source(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:132
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:138
   def extract_check_constraint(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:164
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:170
   def extract_column(node); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:46
   def extract_create_table(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:75
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:81
   def extract_enum(node); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:61
   def extract_foreign_key(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:197
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:203
   def extract_index(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:97
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:103
   def extract_top_level_add_index(node); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:31
   def extract_top_level_call(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:114
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:120
   def extract_top_level_check_constraint(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:149
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:155
   def index_call?(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:153
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:159
   def receiver_is_t?(receiver); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:210
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/listeners/schema_dsl_listener.rb:216
   def resolve_index_columns(arg); end
 end
 
@@ -3921,35 +4845,37 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:7
 class RailsAiContext::Introspectors::MiddlewareIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:11
   def app; end
 
   # @return [Hash] custom middleware files and middleware stack analysis
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:18
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:119
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:122
   def categorize_middleware(name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:102
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:105
   def detect_middleware_from_initializers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:33
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:36
   def discover_custom_middleware; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:82
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:85
   def extract_middleware_stack; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:92
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:95
   def middleware_count(custom); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:29
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/middleware_introspector.rb:32
   def root; end
 end
 
@@ -3958,40 +4884,36 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:7
 class RailsAiContext::Introspectors::MigrationIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:11
   def app; end
 
   # @return [Hash] migration info including recent, pending, and stats
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:18
   def call; end
-
-  # The file-parsing paths in call already degrade cleanly when the
-  # database is unreachable, so the static tier runs the same code.
-  #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:29
-  def static_call; end
 
   private
 
   # Parse all migration files from db/migrate/
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:42
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:41
   def all_migrations; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:86
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:85
   def current_schema_version; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:109
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:108
   def detect_migration_actions(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:37
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:36
   def migrate_dir; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:93
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:92
   def migration_stats; end
 
   # Detect pending migrations. Prefers the live DB (authoritative - the
@@ -3999,13 +4921,13 @@ class RailsAiContext::Introspectors::MigrationIntrospector
   # filenames against the schema file's recorded version when the
   # database is unreachable (CI, static analysis, no db:create yet).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:74
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:73
   def pending_migrations; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:66
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:65
   def recent_migrations(count); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:33
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/migration_introspector.rb:32
   def root; end
 end
 
@@ -4018,18 +4940,20 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:11
 class RailsAiContext::Introspectors::ModelIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:16
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:19
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:12
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:15
   def app; end
 
   # @return [Hash] model metadata keyed by model name
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:22
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:25
   def call; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:12
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:15
   def config; end
 
   # Static tier: models are discovered by globbing every model directory
@@ -4041,97 +4965,102 @@ class RailsAiContext::Introspectors::ModelIntrospector
   # resolved. When the same class name is found in more than one
   # directory, the first discovery wins.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:57
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:60
   def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:113
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:116
   def discover_models; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:82
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:85
   def eager_load_models!; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:102
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:105
   def eager_load_models_individually!(models_path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:195
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:198
   def empty_source_data; end
 
   # ── Reflection-based extraction (unchanged) ─────────────────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:201
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:204
   def extract_associations(model); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:275
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:281
   def extract_callbacks(model, source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:331
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:337
   def extract_callbacks_from_ast(source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:338
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:350
   def extract_class_methods_from_ast(model, source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:233
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:239
   def extract_concerns(model); end
 
   # Extract constant definitions from source via AST.
   # Finds ConstantWriteNode where the value is an ArrayNode
   # (covers %w[], %i[], and literal array forms).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:439
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:451
   def extract_constants_from_source(source_path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:316
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:322
   def extract_custom_validates_from_ast(source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:473
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:485
   def extract_detailed_macros_from_ast(source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:322
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:328
   def extract_enum_options_from_ast(source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:228
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:234
   def extract_enums(model); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:366
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:378
   def extract_instance_methods_from_ast(model, source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:407
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:419
   def extract_macros_from_ast(source_data, source_path = T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:145
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:148
   def extract_model_details(model); end
 
   # ── AST-based extraction (replaces all regex parsing) ──────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:305
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:311
   def extract_scopes_from_ast(source_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:241
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:247
   def extract_sti_info(model); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:218
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:221
   def extract_validations(model); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:448
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:460
   def find_constant_arrays(node, constants); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:511
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:523
   def framework_concern?(name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:544
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:556
   def generated_association_methods(model); end
+
+  # One shape for both tiers: { "before_validation" => ["normalize"] }.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:342
+  def group_callbacks_by_type(callbacks); end
 
   # Run SourceIntrospector on the model's source file.
   # Returns the full AST introspection result or empty hash.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:184
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:187
   def introspect_source(model); end
 
   # ── Helpers ────────────────────────────────────────────────────
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:505
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:517
   def model_source_path(model); end
 
   # A hybrid app (ActiveRecord primary, Mongoid gem present) mixes
@@ -4140,10 +5069,10 @@ class RailsAiContext::Introspectors::ModelIntrospector
   # get the Mongoid listener stack; everything else falls back to the
   # regular AR-style static pass so it still gets a table_name.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:616
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:645
   def mongoid_document_source?(path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:621
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:650
   def mongoid_model_details(path); end
 
   # Mongoid documents are invisible to ActiveRecord reflection, so both
@@ -4151,32 +5080,39 @@ class RailsAiContext::Introspectors::ModelIntrospector
   # the Mongoid listener; shared-name macros (belongs_to, has_many,
   # validates, scope) come from the regular listener stack.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:586
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:615
   def mongoid_static_models; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:562
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:574
   def sanitize_options(options); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:567
+  # Only the mixins reflection would report, so both tiers answer the same
+  # question. This sees the model file alone, where the booted tier also
+  # walks what its superclass and its concerns pulled in.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:603
+  def static_concerns(mixins); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:579
   def static_model_details(path, class_name); end
 end
 
 # Maps macro names to their target key in the output hash.
 # Each entry collects m[:attribute] into an array under that key.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:393
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:405
 RailsAiContext::Introspectors::ModelIntrospector::ATTRIBUTE_MACRO_MAP = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:405
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:417
 RailsAiContext::Introspectors::ModelIntrospector::BROADCAST_MACROS = T.let(T.unsafe(nil), Set)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:518
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:530
 RailsAiContext::Introspectors::ModelIntrospector::DEVISE_CLASS_METHOD_PATTERNS = T.let(T.unsafe(nil), Set)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:530
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:542
 RailsAiContext::Introspectors::ModelIntrospector::DEVISE_INSTANCE_PATTERNS = T.let(T.unsafe(nil), Set)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:14
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/model_introspector.rb:17
 RailsAiContext::Introspectors::ModelIntrospector::EXCLUDED_CALLBACKS = T.let(T.unsafe(nil), Array)
 
 # Discovers multi-database configuration: multiple databases, replicas,
@@ -4184,41 +5120,43 @@ RailsAiContext::Introspectors::ModelIntrospector::EXCLUDED_CALLBACKS = T.let(T.u
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:7
 class RailsAiContext::Introspectors::MultiDatabaseIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:11
   def app; end
 
   # @return [Hash] multi-database configuration
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:18
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:194
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:197
   def anonymize_db_name(name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:100
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:103
   def detect_model_connections; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:65
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:68
   def detect_sharding; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:34
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:37
   def discover_databases; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:51
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:54
   def discover_replicas; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:130
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:133
   def format_connects_value(value); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:143
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:146
   def parse_database_yml; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:30
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/multi_database_introspector.rb:33
   def root; end
 end
 
@@ -4230,13 +5168,15 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:10
 class RailsAiContext::Introspectors::ObservabilityIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:13
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:16
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:14
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:17
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:20
   def call; end
 
   private
@@ -4248,24 +5188,24 @@ class RailsAiContext::Introspectors::ObservabilityIntrospector
   # a blockless call raises `LocalJumpError`. There is no keyspace to
   # introspect.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:147
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:150
   def detect_event_reporter; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:130
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:133
   def detect_server_timing; end
 
   # Every LogSubscriber registered with ActiveSupport::LogSubscriber is
   # reachable via `.log_subscribers` (available since Rails 3). Returns
   # class names + the notification namespace each subscribes to.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:42
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:45
   def extract_log_subscribers; end
 
   # Walk the Notifications notifier's subscriber registry. Each event
   # name maps to one or more Subscribers; return the event + pattern +
   # subscriber count (never the actual callable object).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:59
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:62
   def extract_notification_subscribers; end
 
   # The Fanout notifier splits subscribers across @string_subscribers
@@ -4273,16 +5213,16 @@ class RailsAiContext::Introspectors::ObservabilityIntrospector
   # flat Array). This shape has been stable since Rails 6.0 - the gem's
   # supported floor is Rails 7.1, so both ivars are always present.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:83
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:86
   def extract_subscribers_from_notifier(notifier); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:35
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:38
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:123
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:126
   def subscriber_class_name(sub); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:97
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:100
   def subscriber_raw_pattern(sub); end
 
   # The Fanout notifier wraps non-string patterns in a `Matcher` object
@@ -4290,7 +5230,7 @@ class RailsAiContext::Introspectors::ObservabilityIntrospector
   # one level so we surface `some.regexp.\w+` instead of
   # `#<…::Matcher:0x…>`.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:108
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:111
   def unwrap_pattern(pat); end
 end
 
@@ -4298,7 +5238,7 @@ end
 # as static data (not derived) since these are framework-defined and
 # stable. Useful for AI clients building subscribers or dashboards.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:162
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/observability_introspector.rb:165
 RailsAiContext::Introspectors::ObservabilityIntrospector::KNOWN_EVENTS = T.let(T.unsafe(nil), Hash)
 
 # Static analysis for common performance anti-patterns:
@@ -4313,57 +5253,59 @@ RailsAiContext::Introspectors::ObservabilityIntrospector::KNOWN_EVENTS = T.let(T
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:14
 class RailsAiContext::Introspectors::PerformanceIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:17
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:20
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:18
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:21
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:24
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:47
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:50
   def active_record_class_name(classes); end
 
   # Analyze a single controller file for N+1 risks with risk classification.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:127
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:130
   def analyze_controller_n_plus_one(content, controller_path, model_lookup, view_contents, risks); end
 
   # Check if an association is likely accessed in iteration context.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:222
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:225
   def association_accessed?(ivar, assoc_name, action_body, view_contents); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:414
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:417
   def build_summary(result); end
 
   # Classify risk based on preloading status in the query chain and action body.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:234
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:237
   def classify_n_plus_one_risk(query_chain, action_body, assoc_name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:382
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:385
   def detect_eager_load_candidates; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:260
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:263
   def detect_missing_counter_cache(model_data, schema_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:295
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:298
   def detect_missing_fk_indexes(schema_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:339
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:342
   def detect_model_all_in_controllers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:95
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:98
   def detect_n_plus_one(model_data); end
 
   # Extract public action methods from controller source.
   # Returns Hash { "index" => "body...", "show" => "body..." }
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:166
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:169
   def extract_controller_actions(source); end
 
   # Extract the full query chain for an instance variable assignment.
@@ -4372,50 +5314,52 @@ class RailsAiContext::Introspectors::PerformanceIntrospector
   #                .includes(:comments)
   #                .order(:created_at)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:199
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:202
   def extract_query_chain(source, ivar); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:51
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:54
   def load_model_data; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:46
   def load_schema_data; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:249
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:252
   def n_plus_one_suggestion(risk, model_name, assoc_name); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:117
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:120
   def preload_view_contents; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:39
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:42
   def root; end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:90
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:93
 RailsAiContext::Introspectors::PerformanceIntrospector::LOOP_METHODS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:92
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:95
 RailsAiContext::Introspectors::PerformanceIntrospector::PRELOAD_METHODS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:93
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/performance_introspector.rb:96
 RailsAiContext::Introspectors::PerformanceIntrospector::QUERY_METHODS = T.let(T.unsafe(nil), Array)
 
 # Discovers custom rake tasks from lib/tasks/.
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:6
 class RailsAiContext::Introspectors::RakeTaskIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:9
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:12
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:10
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:13
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:16
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:28
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/rake_task_introspector.rb:31
   def parse_rake_file(path, base_dir); end
 end
 
@@ -4424,109 +5368,154 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:7
 class RailsAiContext::Introspectors::RouteIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:17
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:15
   def app; end
 
   # @return [Hash] routes grouped by controller
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:22
   def call; end
 
-  # Static tier: answer route questions from config/routes.rb alone.
+  # Static tier: answer route questions from config/routes.rb and the
+  # files it draws.
   # Output mirrors the runtime shape exactly so tools, resources, and
   # serializers need no static-awareness of their own. Routes behind
   # dynamic constructs (devise_for, draw, concerns) are counted in
   # :dynamic_routes rather than fabricated.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:39
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:51
   def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:127
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:230
   def count_unrouted_mounts; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:119
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:222
   def detect_api_namespaces(routes); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:145
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:248
   def detect_mounted_engines; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:100
+  # `draw(:"admin/users")` is legal and resolves under config/routes/, but
+  # the name reaches here from source text, so the resolved path has to be
+  # confirmed inside that directory before it is read.
+  #
+  # Resolved with realpath, like safe_glob_realpath: expand_path folds
+  # `..` without following links, so a symlink under config/routes/ was
+  # enough to read a file anywhere on disk.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:148
+  def draw_target_path(target); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:203
   def extract_constraints(route); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:68
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:171
   def extract_routes; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:108
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:211
   def group_by_controller(routes); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:161
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:264
   def static_api_namespaces(entries); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:166
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:269
   def static_root_route(entries); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:163
+  def static_sources_phrase(files); end
+
+  # A drawn file that cannot be parsed - over AstCache's size ceiling, or
+  # syntax-broken - must cost its own routes, not the routing table. Before
+  # this walk existed only config/routes.rb could fail the whole section;
+  # letting the raise through would hand that power to every file it draws.
+  # The draw stays unmarked, so the count already says routes are missing.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:134
+  def walk_draw_target(target, already_read, depth); end
+
+  # An app that splits its routing table with `draw` keeps most of it in
+  # config/routes/*.rb, and reading config/routes.rb alone answered 94 on a
+  # 723-route app with nothing saying the count was partial. Rails resolves
+  # `draw(:admin)` to config/routes/admin.rb by literal path, so following
+  # it is a plain file read.
+  #
+  # Returns the merged records, mounts, and the files actually read.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:89
+  def walk_routes_file(path, already_read = T.unsafe(nil), depth = T.unsafe(nil)); end
 end
+
+# A drawn file can draw again. Rails allows it; this stops a cycle of
+# symlinked or mutually-drawing files from walking forever.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/route_introspector.rb:13
+RailsAiContext::Introspectors::RouteIntrospector::MAX_DRAW_DEPTH = T.let(T.unsafe(nil), Integer)
 
 # Extracts database schema information including tables, columns,
 # indexes, and foreign keys from the Rails application.
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:7
 class RailsAiContext::Introspectors::SchemaIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:11
   def app; end
 
   # @return [Hash] database schema context
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:18
   def call; end
 
   # Static tier entry: skip the connection probe entirely and answer from
   # schema.rb / structure.sql / migration files.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:32
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:35
   def static_call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:38
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:41
   def active_record_connected?; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:63
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:66
   def adapter_name; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:718
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:729
   def apply_migration_action(entry, tables); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:820
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:830
   def apply_schema_column(entry, current_table, tables); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:852
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:862
   def apply_schema_index(entry, current_table, tables); end
 
   # Additive: only sets :secondary_databases when at least one secondary
   # dump parsed to tables, and only on a result that already has the
   # primary :tables key, so error/unavailable results pass through untouched.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:267
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:270
   def attach_secondary_databases(result); end
 
   # Constraints and enum types are declared in the dump, not reported by
   # the adapter, so the live tier reads them from schema.rb too.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:152
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:155
   def check_constraints; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:70
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:73
   def connection; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:160
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:163
   def current_schema_version; end
 
   # Best-effort adapter lookup from config/database.yml without booting:
@@ -4534,14 +5523,14 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # distinct adapter is unambiguous; anything else falls back to the
   # first adapter (the primary comes first in generated configs).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:460
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:471
   def database_adapter_for(db_name); end
 
   # Read once per introspection run; normalize CRLF and guarantee a
   # trailing newline so the line-anchored block regex above works on
   # files with Windows endings or no final newline.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:482
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:493
   def database_yml_content; end
 
   # mysqldump always terminates CREATE TABLE with ") ENGINE=..." and
@@ -4553,36 +5542,43 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # generic double-quoted CREATE TABLE, which would otherwise also match
   # pg_dump's ANSI-quoted identifiers.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:509
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:520
   def detect_sql_dialect(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:156
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:159
   def enum_types; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:89
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:92
   def extract_columns(table); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:122
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:125
   def extract_foreign_keys(table); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:111
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:114
   def extract_indexes(table); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:78
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:81
   def extract_tables; end
 
   # Walk AST to find t.timestamps calls (not captured by SchemaDslListener).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:702
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:713
   def find_timestamps_calls(node, lines); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:861
+  # Rails omits column:/primary_key: only where the convention holds, so
+  # the fallback is what was declared rather than a guess. Both dump
+  # readers land here so the convention lives in one place.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:304
+  def foreign_key_entry(from, to, column, primary_key); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:871
   def format_default(value); end
 
   # Reads the dump it is given: a secondary database declares its own
   # generated columns, which are not in the primary schema.rb.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:613
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:624
   def generated_columns(schema); end
 
   # The implicit primary key's type is adapter-specific: bigint everywhere
@@ -4591,7 +5587,7 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # per database, because a multi-db app can mix adapters (postgres
   # primary, sqlite queue) and each dump must be typed by its own.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:445
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:456
   def implicit_pk_type(dump_path); end
 
   # create_table implies an id primary key unless disabled; the runtime
@@ -4599,10 +5595,10 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # (primary_key: [...]) dump their columns as explicit t.* lines -
   # synthesizing an id there would invent a column that does not exist.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:279
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:282
   def implicit_primary_key(options, path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:191
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:194
   def max_schema_file_size; end
 
   # The parsers serve secondary dumps too (db/queue_schema.rb,
@@ -4610,20 +5606,20 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # migrations directory (db/queue_migrate) - comparing a secondary dump
   # against db/migrate would report the primary's files as pending.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:494
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:505
   def migrate_dir_for_dump(path); end
 
   # Version prefixes of every file in the given migrate directory - the
   # static-tier counterpart of the schema_migrations table for pending
   # detection.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:431
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:442
   def migration_file_versions(migrate_dir); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:187
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:190
   def migrations_dir; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:871
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:881
   def normalize_sql_type(type); end
 
   # Reconstruct schema by replaying migrations in order.
@@ -4631,27 +5627,27 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # rename_table, drop_table, change_column, add_index, add_reference,
   # add_foreign_key, add_timestamps.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:631
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:642
   def parse_migrations; end
 
   # Supplements live DB column data when the adapter returns nil defaults.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:139
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:142
   def parse_schema_defaults_for_table(table); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:312
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:326
   def parse_schema_rb(path); end
 
   # Parse column definitions from a CREATE TABLE body
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:580
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:591
   def parse_sql_columns(body); end
 
   # MySQL keeps indexes and foreign keys inside the CREATE TABLE body as
   # KEY / UNIQUE KEY / CONSTRAINT lines; the other dialects emit separate
   # statements, so those lines simply never match here.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:520
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:531
   def parse_sql_table_body(body, table_name); end
 
   # Identifier quoting differs per dump tool: pg_dump uses bare or
@@ -4665,16 +5661,16 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # that one-line statement, so it keeps consuming lines - including the
   # next CREATE TABLE - until it finds one.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:374
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:385
   def parse_structure_sql(path); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:652
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:663
   def replay_migration(content, tables); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:179
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:182
   def schema_file_path; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:146
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:149
   def schema_reader; end
 
   # Reads the version stamp from the schema.rb file actually being parsed,
@@ -4683,7 +5679,7 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # current_schema_version would otherwise report the primary database's
   # version on every secondary entry.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:172
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:175
   def schema_version_for(path); end
 
   # Rails multi-database setups dump each secondary database to its own
@@ -4692,33 +5688,33 @@ class RailsAiContext::Introspectors::SchemaIntrospector
   # dump keeps the top-level :tables shape; secondaries ride their own
   # key so single-database consumers are unaffected.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:241
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:244
   def secondary_database_dumps; end
 
   # Rewrite a one-line CREATE TABLE body as one definition per line,
   # splitting on commas that sit outside parentheses and quotes (so
   # numeric(10,2) and quoted defaults survive intact).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:550
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:561
   def split_single_line_sql_body(body); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:288
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:291
   def static_column(column); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:298
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:312
   def static_index(index); end
 
   # Fallback: parse schema file as text when DB isn't connected.
   # Tries db/schema.rb first, then db/structure.sql, then migrations.
   # This enables introspection in CI, Claude Code, etc.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:198
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:201
   def static_schema_parse; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:183
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:186
   def structure_file_path; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:74
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_introspector.rb:77
   def table_names; end
 end
 
@@ -4781,18 +5777,18 @@ class RailsAiContext::Introspectors::SchemaReader
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:73
   def build; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:132
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:135
   def column_entry(event); end
 
   # A reference declares the foreign key column, not a column of its own name.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:147
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:150
   def column_name(event); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:61
   def columns_for(table); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:153
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:156
   def default_for(event, options); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:69
@@ -4805,7 +5801,7 @@ class RailsAiContext::Introspectors::SchemaReader
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:90
   def events; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:142
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:145
   def index_entry(event); end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/schema_reader.rb:65
@@ -4823,13 +5819,15 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:10
 class RailsAiContext::Introspectors::SecurityIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:13
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:16
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:14
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:17
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:20
   def call; end
 
   private
@@ -4837,53 +5835,59 @@ class RailsAiContext::Introspectors::SecurityIntrospector
   # Rails 7.2 introduced `allow_browser` to block unsupported browsers.
   # Scan controllers for the declaration + any `versions:` argument.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:207
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:210
   def extract_allow_browser; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:191
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:194
   def extract_cookie_config; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:71
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:74
   def extract_csp; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:156
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:159
   def extract_csrf; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:59
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:62
   def extract_host_authorization; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:96
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:99
   def extract_permissions_policy; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:126
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:129
   def extract_permissions_policy_calls(node, directives); end
 
   # Walk AST to find policy.directive_name calls (CSP directives).
   # These are CallNodes where the receiver is a local variable or
   # block parameter named "policy".
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:113
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:116
   def extract_policy_calls(node, directives); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:238
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:241
   def extract_signed_gid; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:40
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:43
   def extract_ssl_options; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:228
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:231
   def format_ast_value(value); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:147
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:150
   def format_policy_arg(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:139
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:142
   def policy_receiver?(node); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:36
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:39
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:246
+  # Rails 8 defaults same_site to a lambda. Left alone it reaches
+  # .ai-context.json as an address that answers nothing and moves every
+  # boot, so the file is rewritten on every run. Nested one level down it
+  # is worse: the encoder renders it `{}`, which reads as a setting the app
+  # left empty.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/security_introspector.rb:254
   def serializable(value); end
 end
 
@@ -4892,29 +5896,31 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:7
 class RailsAiContext::Introspectors::SeedsIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:11
   def app; end
 
   # @return [Hash] seed file info and detected models
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:15
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:18
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:31
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:34
   def analyze_seeds_file; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:76
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:79
   def detect_seeded_models; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:64
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:67
   def discover_seed_files; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:27
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/seeds_introspector.rb:30
   def root; end
 end
 
@@ -4930,32 +5936,27 @@ class RailsAiContext::Introspectors::SourceIntrospector
   class << self
     # Introspect a file on disk (cached parse) with default listeners.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:27
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:28
     def call(path); end
 
     # Introspect a source string (no caching) with default listeners.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:32
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:33
     def from_source(source); end
 
     # Walk a file with a custom listener map. Returns { key => results_array }.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:37
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:38
     def walk(path, listener_map = T.unsafe(nil)); end
 
     # Walk a source string with a custom listener map. Returns { key => results_array }.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:43
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:44
     def walk_source(source, listener_map = T.unsafe(nil)); end
 
     private
 
-    # Register a listener for all events it responds to.
-    #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:66
-    def register_listener(dispatcher, listener); end
-
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:48
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:49
     def walk_dispatch(parse_result, listener_map); end
   end
 end
@@ -4966,59 +5967,119 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/source_introspector.rb:16
 RailsAiContext::Introspectors::SourceIntrospector::LISTENER_MAP = T.let(T.unsafe(nil), Hash)
 
+# What an introspector can answer when the host app did not boot.
+# Extending this and declaring a kind is how an introspector becomes
+# reachable in the static tier; an undeclared one is a spec failure, so
+# "works statically but never said so" cannot be written.
+#
+# See docs/adr/0002-static-tier-declared-not-detected.md.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:11
+module RailsAiContext::Introspectors::StaticTier
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:44
+  def answers_statically?; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:30
+  def static_tier(kind = T.unsafe(nil)); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:40
+  def static_tier_declared?; end
+
+  # The declaration and the method have to agree, or the runner would call
+  # something that does not exist, or skip one that does. Checked on demand
+  # because the macro runs before the class body defines its methods.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:51
+  def validate_static_tier!; end
+
+  private
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:70
+  def declared_static_tier; end
+
+  class << self
+    # One wording for "the app did not boot", carrying whatever the boot
+    # failure said. Forked copies drift, and a single run then emits two
+    # different explanations for the same condition.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:24
+    def unavailable_reason; end
+  end
+end
+
+# Answers from a different source through `static_call`.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:17
+RailsAiContext::Introspectors::StaticTier::ALTERNATE_SOURCE = T.let(T.unsafe(nil), Symbol)
+
+# `call` runs unchanged against the static app handle.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:13
+RailsAiContext::Introspectors::StaticTier::FILES_ONLY = T.let(T.unsafe(nil), Symbol)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:19
+RailsAiContext::Introspectors::StaticTier::KINDS = T.let(T.unsafe(nil), Array)
+
+# Needs live reflection; refuses honestly.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/static_tier.rb:15
+RailsAiContext::Introspectors::StaticTier::RUNTIME_ONLY = T.let(T.unsafe(nil), Symbol)
+
 # Scans Stimulus controllers and extracts targets, values, and actions.
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:6
 class RailsAiContext::Introspectors::StimulusIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:9
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:12
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:10
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:13
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:16
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:179
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:182
   def extract_action_bindings; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:117
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:120
   def extract_actions(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:129
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:132
   def extract_classes(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:153
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:156
   def extract_complexity(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:205
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:208
   def extract_cross_controller_composition(root); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:136
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:139
   def extract_import_graph(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:171
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:174
   def extract_lifecycle(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:122
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:125
   def extract_outlets(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:69
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:72
   def extract_targets(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:163
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:166
   def extract_turbo_event_listeners(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:76
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:79
   def extract_values(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:46
   def parse_controller(path, base_dir); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:151
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/stimulus_introspector.rb:154
 RailsAiContext::Introspectors::StimulusIntrospector::JS_KEYWORDS = T.let(T.unsafe(nil), Array)
 
 # Discovers test infrastructure: framework, factories/fixtures,
@@ -5026,42 +6087,44 @@ RailsAiContext::Introspectors::StimulusIntrospector::JS_KEYWORDS = T.let(T.unsaf
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:7
 class RailsAiContext::Introspectors::TestIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:17
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:215
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:218
   def detect_ci; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:224
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:227
   def detect_coverage; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:275
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:278
   def detect_database_cleaner; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:76
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:79
   def detect_factories; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:131
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:134
   def detect_factory_names; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:233
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:236
   def detect_factory_traits; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:148
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:151
   def detect_fixture_names; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:91
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:94
   def detect_fixtures; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:46
   def detect_framework; end
 
   # Resolve the test framework from Gemfile.lock when no test directory
@@ -5069,31 +6132,35 @@ class RailsAiContext::Introspectors::TestIntrospector
   # minitest, which ships with every Rails app. Returns nil when there is
   # no lockfile or no recognizable test gem.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:62
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:65
   def detect_framework_from_lockfile; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:253
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:256
   def detect_shared_examples; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:106
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:109
   def detect_system_tests; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:298
+  # Only files named for a test framework are counted. Globbing every .rb
+  # counted whatever a project keeps beside its specs - mailer previews,
+  # shared contexts, page objects - under a heading that promises tests.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:304
   def detect_test_count_by_category; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:185
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:188
   def detect_test_files; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:166
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:169
   def detect_test_helper_setup; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:119
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:122
   def detect_test_helpers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:198
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:201
   def detect_vcr; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:39
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/test_introspector.rb:42
   def root; end
 end
 
@@ -5101,60 +6168,62 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:6
 class RailsAiContext::Introspectors::TurboIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:9
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:12
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:7
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:10
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:13
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:16
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:119
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:122
   def detect_morph_meta; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:263
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:266
   def detect_native_conditionals; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:219
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:222
   def detect_native_helpers(controllers_dir); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:205
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:208
   def detect_native_include(controllers_dir); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:235
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:238
   def detect_native_navigation(controllers_dir); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:191
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:194
   def detect_turbo_native; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:85
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:88
   def extract_model_broadcasts; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:132
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:135
   def extract_permanent_elements; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:70
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:73
   def extract_stream_actions; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:166
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:169
   def extract_turbo_drive_settings; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:39
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:42
   def extract_turbo_frames; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:278
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:281
   def extract_turbo_stream_responses; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:62
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:65
   def extract_turbo_stream_templates; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:31
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:34
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:35
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/turbo_introspector.rb:38
   def views_dir; end
 end
 
@@ -5163,55 +6232,57 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:7
 class RailsAiContext::Introspectors::ViewIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:10
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:13
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:8
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:11
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:17
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:170
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:173
   def detect_component_usage; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:206
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:209
   def detect_conditional_layouts; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:149
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:152
   def detect_form_builders; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:125
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:128
   def detect_template_engines; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:98
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:101
   def extract_helpers; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:190
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:193
   def extract_layout_mapping; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:41
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:44
   def extract_layouts; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:76
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:79
   def extract_partials; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:58
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:61
   def extract_templates; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:116
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:119
   def extract_view_components; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:33
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:36
   def root; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:37
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:40
   def views_dir; end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:142
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_introspector.rb:145
 RailsAiContext::Introspectors::ViewIntrospector::FORM_BUILDER_PATTERNS = T.let(T.unsafe(nil), Hash)
 
 # Reads actual view template contents and extracts metadata:
@@ -5225,65 +6296,282 @@ RailsAiContext::Introspectors::ViewIntrospector::FORM_BUILDER_PATTERNS = T.let(T
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:13
 class RailsAiContext::Introspectors::ViewTemplateIntrospector
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:16
+  extend ::RailsAiContext::Introspectors::StaticTier
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:19
   def initialize(app); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:14
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:17
   def app; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:20
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:23
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:153
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:156
   def extract_helper_calls(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:133
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:136
   def extract_model_fields(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:166
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:169
   def extract_partial_refs(content); end
 
   # Extract component render calls from Phlex Ruby DSL
   # Matches: render ComponentName.new(...), render(ComponentName.new(...))
   # Also matches: render Components::Nested::Name.new(...)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:95
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:98
   def extract_phlex_component_renders(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:112
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:115
   def extract_phlex_helper_calls(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:202
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:205
   def extract_slot_refs(content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:185
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:188
   def extract_stimulus_refs(content); end
 
   # Detect whether a view file is a Phlex view (Ruby DSL, not ERB)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:86
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:89
   def phlex_view?(path, content); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:70
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:73
   def scan_partials(views_dir); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:34
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:37
   def scan_templates(views_dir); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:120
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:123
 RailsAiContext::Introspectors::ViewTemplateIntrospector::EXCLUDED_METHODS = T.let(T.unsafe(nil), Array)
 
 # Extract helper method calls from Phlex views
 # Phlex views use include to pull in helpers, and call them directly
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:105
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:108
 RailsAiContext::Introspectors::ViewTemplateIntrospector::PHLEX_HELPER_METHODS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:160
+# pkg:gem/rails-ai-context#lib/rails_ai_context/introspectors/view_template_introspector.rb:163
 RailsAiContext::Introspectors::ViewTemplateIntrospector::RENDER_KEYWORD_ARGS = T.let(T.unsafe(nil), Set)
+
+# Fits a data structure into a character budget and serializes it as JSON
+# that always parses.
+#
+# A tool response is markdown and can be cut anywhere, so BaseTool#text_response
+# slices the string. Resource payloads are served under an application/json
+# mime type, so the same trick ends the body mid-object and JSON.parse raises.
+# The budget is applied to the DATA instead: whole elements are dropped until
+# what remains fits, and what went missing is reported under a reserved
+# "_truncated" key. Values are otherwise served exact, except an over-long
+# string, which is cut at a marker and counted in the report.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:16
+module RailsAiContext::JsonBudget
+  class << self
+    # Resource payloads ride a single JSON-RPC frame with no transport-level
+    # size guard, so they get the same char cap tool responses do: a huge
+    # schema or routing table must not produce an unbounded payload.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:56
+    def for_resource(data); end
+
+    # Pretty JSON when the payload fits, a reduced compact document when it
+    # does not. Never returns a string that fails to parse.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:62
+    def generate(data, max); end
+
+    private
+
+    # An emptied container keeps its type honest; the clip record is what
+    # says the contents are missing.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:261
+    def bottom_out?(total, depth, path, clips); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:279
+    def child_path(path, key); end
+
+    # Exact compact length of one value's own encoding. Measured inside a
+    # one-element array so the call is always a container generate: JSON
+    # versions differ on whether a bare scalar may be generated on its own,
+    # and the brackets cost a known 2 chars. JSON.generate rather than
+    # to_json because ActiveSupport overrides to_json with as_json semantics
+    # once a host app boots, which would measure something the emit path
+    # never produces.
+    #
+    # The wrapper costs a nesting level, which would fail a payload sitting
+    # exactly at JSON's default limit. Serializing the whole payload is the
+    # first thing generate does, so anything measured here is already known
+    # to encode - including that it is not circular, the case the nesting
+    # limit exists to catch.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:296
+    def measure(value); end
+
+    # Reached when the budget is smaller than a payload plus a usable report.
+    # A parseable body outranks the budget here: the cap is a safety net
+    # against unbounded frames, and no client is harmed by a response a few
+    # dozen chars over a limit set that low.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:118
+    def minimum_json(original_chars, max); end
+
+    # Scalar pairs are the cheap self-describing ones - counts, names, flags
+    # - and a single dominant collection must not crowd them out. A schema
+    # payload is `adapter`, `tables`, `total_tables`, `schema_version`, ...
+    # in that order, so without this the two counts that tell an agent how
+    # much it is missing get dropped to fit two more tables. JSON objects are
+    # unordered, so hoisting them costs nothing.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:212
+    def ordered_pairs(hash); end
+
+    # Records unwind deepest-first, so push to the front: the shallowest
+    # counts are the ones a reader needs and the ones that must survive
+    # MAX_CLIP_RECORDS. `unit` disambiguates the counts, which mean elements
+    # for a container and characters for a cut string.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:272
+    def record_clip(clips, path, kept, total, unit = T.unsafe(nil)); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:169
+    def reduce(value, budget, depth, path, clips); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:217
+    def reduce_array(array, budget, depth, path, clips); end
+
+    # Keeps a leading run of whole pairs. `used` tracks the exact compact
+    # length of what is kept: {} plus, per pair, the quoted key, its colon,
+    # the value, and the separating comma.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:180
+    def reduce_hash(hash, budget, depth, path, clips); end
+
+    # A long string is cut with a visible marker rather than dropped: a
+    # marked prefix of a description still answers most questions. Escaping
+    # makes the encoded length unpredictable, so halve until the measurement
+    # agrees instead of trusting the character count.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:244
+    def reduce_string(string, budget, path, clips); end
+
+    # Reduced payloads are emitted compact. Indentation is content we cannot
+    # afford at the cap, and compact JSON is also what makes the accounting
+    # below exact: pretty-printing indents a value by where it sits in the
+    # tree, so a subtree could not be measured once and reused.
+    #
+    # The report is built after the data is fitted, so its cost is only an
+    # estimate up front (NOTE_RESERVE). A report that outgrows the reserve is
+    # not allowed to push the response over the budget - the assembled string
+    # is measured, and an overshoot refits against the measured report size.
+    # The loop is bounded; the floor below it is not a guess.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:88
+    def reduce_to_budget(data, original_chars, max); end
+
+    # Decides what one child contributes to its container, or nil when the
+    # child has to be dropped. `chars` is always the truth about the value
+    # being returned, so a container can trust it for its own accounting;
+    # `whole` false means the container must stop after taking this one.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:150
+    def take_child(value, room, budget, depth, path, clips); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:136
+    def truncation_note(original_chars, max, clips); end
+
+    # The report rides inside the caller's own top-level object so existing
+    # key paths still resolve - data["routes"] keeps working. A payload that
+    # is not an object has nowhere to hang it, so it moves under "data".
+    # Key order also changes on a reduced hash, since ordered_pairs spends
+    # the budget on scalars first.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:130
+    def with_note(kept, note); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:37
+RailsAiContext::JsonBudget::MAX_CLIP_RECORDS = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:38
+RailsAiContext::JsonBudget::MAX_FIT_ATTEMPTS = T.let(T.unsafe(nil), Integer)
+
+# How deep the reducer descends before it empties a container instead of
+# recursing. Introspection payloads bottom out far above this; the cap is
+# here so a pathological structure cannot drive unbounded recursion.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:30
+RailsAiContext::JsonBudget::MAX_REDUCE_DEPTH = T.let(T.unsafe(nil), Integer)
+
+# Smallest valid JSON that still says the payload was cut. Emitted only
+# when the budget is below the size of a usable report.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:46
+RailsAiContext::JsonBudget::MINIMUM_TRUNCATION_JSON = T.let(T.unsafe(nil), String)
+
+# Chars it costs to attach the report to a fitted payload, whichever shape
+# with_note ends up using. Slack, not a tight bound.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:42
+RailsAiContext::JsonBudget::NOTE_ATTACH_OVERHEAD = T.let(T.unsafe(nil), Integer)
+
+# Chars held back from the data budget for the report, how many clipped
+# paths it names, and how many refits are allowed when a report outgrows
+# the reserve. The reserve is capped at a quarter of the budget so a small
+# budget still leaves room for data.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:36
+RailsAiContext::JsonBudget::NOTE_RESERVE = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:21
+RailsAiContext::JsonBudget::STRING_CLIP_MARKER = T.let(T.unsafe(nil), String)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:23
+RailsAiContext::JsonBudget::TRUNCATION_HINT = T.let(T.unsafe(nil), String)
+
+# Reserved key carrying the reduction report on an oversized payload, and
+# the marker left inside a string value that had to be cut.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:19
+RailsAiContext::JsonBudget::TRUNCATION_KEY = T.let(T.unsafe(nil), String)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:20
+RailsAiContext::JsonBudget::TRUNCATION_REASON = T.let(T.unsafe(nil), String)
+
+# What take_child hands back to a container: the value to keep, its exact
+# compact JSON size, and whether it survived intact.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+class RailsAiContext::JsonBudget::Taken < ::Data
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+  def chars; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+  def value; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+  def whole; end
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+    def [](*_arg0); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+    def inspect; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+    def members; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/json_budget.rb:50
+    def new(*_arg0); end
+  end
+end
 
 # One-time cleanup for files that were removed in a breaking release.
 # Handles v5.0.0's removal of design-system UI pattern rules and
@@ -5299,7 +6587,7 @@ module RailsAiContext::LegacyCleanup
   # @param io [IO] stream for output (stderr by default)
   # @param warn_only [Boolean] skip prompt even if TTY, only print warning
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/legacy_cleanup.rb:23
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/legacy_cleanup.rb:18
   def prompt_legacy_files(ai_tools, root:, io: T.unsafe(nil), warn_only: T.unsafe(nil)); end
 
   class << self
@@ -5308,7 +6596,7 @@ module RailsAiContext::LegacyCleanup
     # @param io [IO] stream for output (stderr by default)
     # @param warn_only [Boolean] skip prompt even if TTY, only print warning
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/legacy_cleanup.rb:23
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/legacy_cleanup.rb:18
     def prompt_legacy_files(ai_tools, root:, io: T.unsafe(nil), warn_only: T.unsafe(nil)); end
   end
 end
@@ -5324,42 +6612,44 @@ RailsAiContext::LegacyCleanup::LEGACY_FILES = T.let(T.unsafe(nil), Array)
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:7
 class RailsAiContext::LiveReload
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:12
+  include ::RailsAiContext::CountPhrase
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:14
   def initialize(app, mcp_server); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:10
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:12
   def app; end
 
   # Group changed file paths by category (model, controller, etc.)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:76
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:83
   def categorize_changes(paths); end
 
-  # Build a readable summary like "Files changed: 2 model(s), 1 controller(s)."
+  # Build a readable summary like "Files changed: 2 models, 1 controller."
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:102
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:109
   def format_change_message(categories); end
 
   # Process a batch of file changes. Public for testability.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:51
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:53
   def handle_change(changed_paths = T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:10
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:12
   def mcp_server; end
 
   # Start the file watcher in a background thread. Non-blocking.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:19
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:21
   def start; end
 
   # Stop the background listener thread.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:46
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:48
   def stop; end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:8
+# pkg:gem/rails-ai-context#lib/rails_ai_context/live_reload.rb:10
 RailsAiContext::LiveReload::WATCH_DIRS = T.let(T.unsafe(nil), Array)
 
 # Generates per-tool MCP config files so each AI tool auto-discovers the MCP server.
@@ -5383,65 +6673,65 @@ class RailsAiContext::McpConfigGenerator
   #   instead of rewriting each other's command form on alternate runs.
   # @param tool_mode [Symbol] :mcp or :cli
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:37
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:31
   def initialize(tools:, output_dir:, standalone: T.unsafe(nil), tool_mode: T.unsafe(nil)); end
 
   # @return [Hash] { written: [paths], skipped: [paths] }
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:45
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:39
   def call; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:170
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:164
   def build_codex_section; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:68
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:62
   def generate_for(tool, path, config); end
 
   # --- Shared helpers ---
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:212
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:206
   def mcp_json_entry; end
 
   # --- JSON merge logic ---
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:110
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:104
   def merge_json(path, root_key, entry); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:146
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:140
   def merge_toml(path, section); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:201
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:195
   def ruby_env_snapshot; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:224
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:218
   def server_command; end
 
   # Codex CLI (.codex/config.toml)
   # Format: [mcp_servers.rails-ai-context] section with command (string) and args (string array)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:103
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:97
   def write_codex_toml(path); end
 
   # Claude Code (.mcp.json) and Cursor (.cursor/mcp.json)
   # Format: { "mcpServers": { "rails-ai-context": { "command": "...", "args": [...] } } }
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:79
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:73
   def write_mcp_json(path, root_key); end
 
   # OpenCode (opencode.json)
   # Format: { "mcp": { "rails-ai-context": { "type": "local", "command": [...] } } }
   # Note: command is an ARRAY (not separate command/args)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:95
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:89
   def write_opencode_json(path); end
 
   # VS Code / Copilot (.vscode/mcp.json)
   # Format: { "servers": { "rails-ai-context": { "command": "...", "args": [...] } } }
   # Type is optional for stdio - VS Code infers from presence of command.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:87
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:81
   def write_vscode_json(path); end
 
   class << self
@@ -5452,15 +6742,15 @@ class RailsAiContext::McpConfigGenerator
     # @param output_dir [String] project root path
     # @return [Array<String>] paths that were modified or deleted
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:240
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:234
     def remove(tools:, output_dir:); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:259
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:253
     def remove_json_entry(path, root_key); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:279
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:273
     def remove_toml_entry(path); end
   end
 end
@@ -5468,21 +6758,21 @@ end
 # Snapshot environment variables needed for Ruby/Bundler to work.
 # Only captures vars that are actually set - works with any version manager.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:199
+# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:193
 RailsAiContext::McpConfigGenerator::RUBY_ENV_KEYS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:26
+# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:20
 RailsAiContext::McpConfigGenerator::SERVER_NAME = T.let(T.unsafe(nil), String)
 
 # --- TOML merge logic ---
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:137
+# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:131
 RailsAiContext::McpConfigGenerator::TOML_SECTION_HEADER = T.let(T.unsafe(nil), String)
 
 # Matches the [mcp_servers.rails-ai-context] section and any sub-sections
 # like [mcp_servers.rails-ai-context.env], stopping at a non-sub-section header.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:140
+# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:134
 RailsAiContext::McpConfigGenerator::TOML_SECTION_REGEX = T.let(T.unsafe(nil), Regexp)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_config_generator.rb:18
@@ -5497,6 +6787,9 @@ class RailsAiContext::McpController < ::ActionController::API
 
   private
 
+  def apply_transport_headers(rack_headers); end
+  def serve_transport; end
+  def stream_finished?; end
   def wait_for_stream_close; end
 
   class << self
@@ -5527,6 +6820,39 @@ class RailsAiContext::McpController::FlushableStream < ::SimpleDelegator
   def flush; end
 end
 
+# What the three HTTP entry points - the standalone rack app, the Rack
+# middleware and the engine controller - have in common: how a transport is
+# built, and what a transport failure looks like on the wire. Their genuine
+# differences (streaming, header handling, memoization lifetime) stay with
+# them.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_edge.rb:12
+module RailsAiContext::McpEdge
+  class << self
+    # Memoization is the caller's: the middleware holds one per instance,
+    # the controller one per class, and the standalone server one per
+    # process.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_edge.rb:37
+    def build_transport(app = T.unsafe(nil)); end
+
+    # None of the three sits behind anything that would turn an exception
+    # into a JSON-RPC reply, so each has to answer in JSON-RPC shape itself
+    # or leave the client's request loop hanging on a non-JSON body.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_edge.rb:19
+    def internal_error_frame(error); end
+
+    # The Rack-shaped answer, for the two entry points that return triples.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_edge.rb:28
+    def internal_error_response(error); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/mcp_edge.rb:13
+RailsAiContext::McpEdge::INTERNAL_ERROR = T.let(T.unsafe(nil), Integer)
+
 # Rack middleware that intercepts requests at the configured HTTP path
 # and delegates to the MCP StreamableHTTPTransport. All other requests
 # pass through to the Rails app.
@@ -5541,10 +6867,7 @@ class RailsAiContext::Middleware
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/middleware.rb:43
-  def json_rpc_error_response(error); end
-
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/middleware.rb:34
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/middleware.rb:35
   def transport; end
 end
 
@@ -5651,6 +6974,60 @@ module RailsAiContext::PathResolver
   end
 end
 
+# Rewrites a path so it means the same thing on another machine. What is
+# generated here ends up in .ai-context.json, which the app commits: an
+# absolute path is wrong on every other checkout, wrong again after a Ruby
+# or gem upgrade, and it carries the generating developer's home directory
+# into the repository. App paths go app-relative; gem paths keep the gem
+# and version and drop the install prefix.
+#
+# Distinct from PathResolver, which answers where a kind of app code lives.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:12
+module RailsAiContext::PortablePath
+  private
+
+  # A gem the Gemfile takes from path: or git: is never unpacked under a
+  # gem root, so its own checkout is the only prefix that names it. Longest
+  # first, because one checkout can sit inside another.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:44
+  def gem_checkouts; end
+
+  # Every prefix a gem can be unpacked under, trailing separator included so
+  # a prefix cannot match a sibling directory that merely starts the same.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:36
+  def gem_roots; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:15
+  def relativize(path, root); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:30
+  def relativize_all(paths, root); end
+
+  class << self
+    # A gem the Gemfile takes from path: or git: is never unpacked under a
+    # gem root, so its own checkout is the only prefix that names it. Longest
+    # first, because one checkout can sit inside another.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:44
+    def gem_checkouts; end
+
+    # Every prefix a gem can be unpacked under, trailing separator included so
+    # a prefix cannot match a sibling directory that merely starts the same.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:36
+    def gem_roots; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:15
+    def relativize(path, root); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/portable_path.rb:30
+    def relativize_all(paths, root); end
+  end
+end
+
 # Single source of truth for multi-tool presets, run via both
 # `rails 'ai:preset[name]'` (rake task) and `rails-ai-context preset name` (CLI).
 # Every tool call here uses parameters that need no caller-supplied target -
@@ -5671,6 +7048,199 @@ end
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/presets.rb:11
 RailsAiContext::Presets::DEFINITIONS = T.let(T.unsafe(nil), Hash)
+
+# Every value that leaves the app through this gem - config source slices,
+# log lines, query rows, environment values - passes through here first.
+# One set of patterns, one marker vocabulary, and redact-and-shorten as a
+# single operation so no caller can shorten a credential out of reach of
+# the pattern that would have caught it.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:9
+module RailsAiContext::Redaction
+  class << self
+    # Source slices and config values.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:103
+    def call(value); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:140
+    def credential_shaped?(value); end
+
+    # Redaction and shortening are one operation because their order is the
+    # whole point: shorten first and a cut landing between a password and
+    # its `@host` leaves the pattern nothing to match, so the credential's
+    # prefix ships in plaintext.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:156
+    def redact_and_shorten(value, limit); end
+
+    # A config value arrives without its context, so the setting's name is
+    # what says whether it holds a secret. Values are walked rather than
+    # type-checked: an evaluated value is often a hash or an array, and the
+    # credential is as often under a key inside it (`smtp_settings` holding
+    # a `password`) as it is under the setting itself.
+    #
+    # Both of the fields a listener emits for one assignment are decided
+    # together. Deciding separately let them disagree: the source slice is
+    # always a String, so any rule about the value's type never reached it.
+    #
+    # @param name [Symbol, String, Array] the setting, or its full path
+    # @return [Hash] { value:, source: }
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:124
+    def redact_assignment(name, value:, source:); end
+
+    # Log lines carry shapes config values do not: ANSI colour, dotenv
+    # announcements, bare env assignments, addresses.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:164
+    def redact_log_line(line); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:144
+    def secret_name?(name); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:136
+    def secret_value?(value); end
+
+    private
+
+    # The setting name at the head of a matched assignment.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:241
+    def descriptor?(match); end
+
+    # Keeps the quoting of a source slice so the result still reads as the
+    # assignment it replaced.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:235
+    def filtered_like(value); end
+
+    # Identifiers and switches, never credential material. Filtering them
+    # hides the config a reader came for - `reset_password_keys = [:email]`
+    # says which field the reset uses, not what the secret is.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:193
+    def policy_value?(value); end
+
+    # The slice is Ruby text, so the patterns can scrub a quoted value in
+    # place. They cannot scrub inside a collection literal without cutting
+    # it mid-value, so when walking the evaluated value found a secret that
+    # the patterns did not reach, the whole slice goes.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:224
+    def scrub_slice(source, changed:); end
+
+    # Credential shape beats the descriptor list: `api_key_params` is
+    # excused by its suffix, but a value reading `sk_live_...` is a
+    # credential whatever the setting is called.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:183
+    def secret_assignment?(name, value); end
+
+    # `secret` says the enclosing name already marks this as credential
+    # material. What survives it is decided by policy_value?, the same rule
+    # the top level uses - otherwise a number under a secret key is kept
+    # while the same number under a secret setting is filtered.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:206
+    def walk(value, secret); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:62
+RailsAiContext::Redaction::ANSI_ESCAPE = T.let(T.unsafe(nil), Regexp)
+
+# `=(?!>)` so the alternation cannot backtrack into matching the `=` of a
+# `=>` and treating the stray `>` as the value.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:38
+RailsAiContext::Redaction::ASSIGN = T.let(T.unsafe(nil), Regexp)
+
+# Stops before a collection: the value pattern ends at the first comma or
+# bracket, so matching `token: ["a", "b"]` would cut mid-literal and
+# leave the tail of the credential in place. Collections are handled by
+# filtering the whole slice instead. Symbols are skipped for the reason
+# policy_value? skips them - `password: :from_env` names where the value
+# comes from, it is not the value.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:48
+RailsAiContext::Redaction::BARE_SECRET = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:50
+RailsAiContext::Redaction::COLLECTION_LITERAL = T.let(T.unsafe(nil), Regexp)
+
+# A value actually shaped like a credential: a long hex blob or a vendor
+# prefix. For callers reading a bare value with no key beside it to match
+# on.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:55
+RailsAiContext::Redaction::CREDENTIAL_SHAPE = T.let(T.unsafe(nil), Regexp)
+
+# `password_length` and `token_expiry` describe a secret rather than
+# being one; their values are policy, and filtering them hides config the
+# reader asked for.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:34
+RailsAiContext::Redaction::DESCRIPTOR_SUFFIX = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:64
+RailsAiContext::Redaction::DOTENV_LINE = T.let(T.unsafe(nil), Regexp)
+
+# The one semantic marker: an address in a log line is worth telling
+# apart from a secret, because it says what kind of data was there.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:13
+RailsAiContext::Redaction::EMAIL = T.let(T.unsafe(nil), String)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:63
+RailsAiContext::Redaction::EMAIL_PATTERN = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:65
+RailsAiContext::Redaction::ENV_VAR_LINE = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:10
+RailsAiContext::Redaction::FILTERED = T.let(T.unsafe(nil), String)
+
+# Each entry is [pattern, replacement]. The replacement is spelled beside
+# the pattern rather than worked out later by grepping the pattern's own
+# source for a distinguishing substring.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:70
+RailsAiContext::Redaction::LOG_PATTERNS = T.let(T.unsafe(nil), Array)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:41
+RailsAiContext::Redaction::QUOTED_SECRET = T.let(T.unsafe(nil), Regexp)
+
+# The secret word has to be a whole underscore-delimited part of the name,
+# so `secret_key` and `api_key` match while `passwordless_login` does not.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:29
+RailsAiContext::Redaction::SECRET_NAME = T.let(T.unsafe(nil), Regexp)
+
+# `primary_key` is ordinary ActiveRecord vocabulary; under
+# `active_record.encryption` it is a credential. Only the path tells them
+# apart, so these are matched against the whole path, not the leaf.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:25
+RailsAiContext::Redaction::SECRET_PATH = T.let(T.unsafe(nil), Regexp)
+
+# The above, plus a value that merely names itself a secret. Right for a
+# real `.env`, wrong for a `.env.example`, whose placeholders exist to be
+# read and often say "secret" precisely because they are not one.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:60
+RailsAiContext::Redaction::SECRET_VALUE = T.let(T.unsafe(nil), Regexp)
+
+# Regex by design: these scrub vocabulary out of values already read from
+# the AST or a log file rather than parsing structure. A credential can
+# sit in an interpolation, a heredoc or a bare string, and no node type
+# marks one - the words are the signal.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:19
+RailsAiContext::Redaction::SECRET_WORD = T.let(T.unsafe(nil), Regexp)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/redaction.rb:40
+RailsAiContext::Redaction::URI_USERINFO = T.let(T.unsafe(nil), Regexp)
 
 # Registers MCP resources and resource templates that expose
 # static introspection data AI clients can read directly.
@@ -5695,6 +7265,9 @@ module RailsAiContext::Resources
     #
     # pkg:gem/rails-ai-context#lib/rails_ai_context/resources.rb:145
     def handle_read(params); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/resources.rb:152
+    def read_resource(params); end
   end
 end
 
@@ -5716,6 +7289,44 @@ RailsAiContext::Resources::STATIC_RESOURCES = T.let(T.unsafe(nil), Hash)
 # pkg:gem/rails-ai-context#lib/rails_ai_context/resources.rb:87
 RailsAiContext::Resources::VIEW_TEMPLATE = T.let(T.unsafe(nil), MCP::ResourceTemplate)
 
+# One answer to "how much of the routing table is this number", for every
+# surface that prints a route count.
+#
+# `RouteIntrospector` records the constructs it refused to fabricate -
+# `devise_for`, a `draw` whose target is computed or too large to parse - in
+# `:dynamic_routes`, and nothing read it. So `rails_get_routes`, `CLAUDE.md`,
+# the Cursor and Copilot rule files, `rails_onboard` and the rake summary all
+# quoted 94 routes on a 723-route app with nothing saying the count was
+# partial. Nine call sites each having to remember is what produced that;
+# this is the seam they share.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/route_coverage.rb:14
+module RailsAiContext::RouteCoverage
+  private
+
+  # A suffix rather than a predicate, so no call site needs a conditional of
+  # its own - that shape is what let nine of them forget.
+  #
+  # @param routes [Hash] the :routes section of an introspection context
+  # @return [String] a leading-comma clause naming what the count leaves out,
+  #   or "" when the count is the whole table
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/route_coverage.rb:23
+  def suffix(routes); end
+
+  class << self
+    # A suffix rather than a predicate, so no call site needs a conditional of
+    # its own - that shape is what let nine of them forget.
+    #
+    # @param routes [Hash] the :routes section of an introspection context
+    # @return [String] a leading-comma clause naming what the count leaves out,
+    #   or "" when the count is the whole table
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/route_coverage.rb:23
+    def suffix(routes); end
+  end
+end
+
 # Safe file reading with size limits and error handling.
 # Returns String on success, nil on any failure (missing, too large, unreadable).
 # Designed as a drop-in replacement for unguarded File.read calls across
@@ -5735,6 +7346,81 @@ module RailsAiContext::SafeFile
     def read(path, max_size: T.unsafe(nil)); end
   end
 end
+
+# One answer to "which database is this app on", for every surface that asks.
+#
+# `SchemaIntrospector` writes `static_parse` when it read `db/schema.rb`
+# instead of the connection. That is an internal detail: printed raw it names
+# a database that does not exist. Four call sites each grew their own
+# substitute and gave three different answers for one app - the generated
+# CLAUDE.md said PostgreSQL, `rails_get_schema` said unknown, `rails ai:inspect`
+# said static_parse. This is the seam they share.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:12
+module RailsAiContext::SchemaAdapter
+  private
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:51
+  def from_configurations(context); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:67
+  def from_dialect(schema); end
+
+  # Last, and order-independent: an app with both `pg` and `sqlite3` gets the
+  # same answer here as anywhere else, rather than depending on which match
+  # a loop happened to see last.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:76
+  def from_gems(context); end
+
+  # @param context [Hash] a full introspection context
+  # @return [String] the adapter to show, never an internal placeholder
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:35
+  def label(context); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:47
+  def placeholder?(adapter); end
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:51
+    def from_configurations(context); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:67
+    def from_dialect(schema); end
+
+    # Last, and order-independent: an app with both `pg` and `sqlite3` gets the
+    # same answer here as anywhere else, rather than depending on which match
+    # a loop happened to see last.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:76
+    def from_gems(context); end
+
+    # @param context [Hash] a full introspection context
+    # @return [String] the adapter to show, never an internal placeholder
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:35
+    def label(context); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:47
+    def placeholder?(adapter); end
+  end
+end
+
+# structure.sql dialects, as SchemaIntrospector records them.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:25
+RailsAiContext::SchemaAdapter::DIALECTS = T.let(T.unsafe(nil), Hash)
+
+# Gemfile display names, only as the last resort.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:17
+RailsAiContext::SchemaAdapter::GEM_ADAPTERS = T.let(T.unsafe(nil), Hash)
+
+# Values that mean "no adapter was observed", not "the adapter is X".
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/schema_adapter.rb:14
+RailsAiContext::SchemaAdapter::PLACEHOLDERS = T.let(T.unsafe(nil), Array)
 
 # Structured hydration payload representing a model's ground truth.
 # Used by hydrators to inject cross-tool context into controller
@@ -5820,7 +7506,10 @@ module RailsAiContext::SchemaVersion
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/claude_rules_serializer.rb:4
+# Explicit rather than implicit, so reaching this constant does not depend
+# on Zeitwerk's `require` decoration surviving. See cli.rb.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers.rb:6
 module RailsAiContext::Serializers; end
 
 # Generates .claude/rules/ files for Claude Code auto-discovery.
@@ -5828,6 +7517,7 @@ module RailsAiContext::Serializers; end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/claude_rules_serializer.rb:7
 class RailsAiContext::Serializers::ClaudeRulesSerializer
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
   include ::RailsAiContext::Serializers::ToolGuideHelper
 
@@ -5876,6 +7566,7 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/claude_serializer.rb:8
 class RailsAiContext::Serializers::ClaudeSerializer
   include ::RailsAiContext::Serializers::TestCommandDetection
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
   include ::RailsAiContext::Serializers::ToolGuideHelper
   include ::RailsAiContext::Serializers::CompactSerializerHelper
@@ -5898,18 +7589,20 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:8
 module RailsAiContext::Serializers::CompactSerializerHelper
+  include ::RailsAiContext::CountPhrase
+
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:134
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:137
   def enforce_max_lines(lines); end
 
   # Architecture / conventions section - moved from ClaudeSerializer so
   # Cursor (.cursorrules) and any future compact serializer can reuse.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:149
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:152
   def render_architecture; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:112
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:115
   def render_commands; end
 
   # Full compact-rules pipeline. Used by ClaudeSerializer (writes to
@@ -5917,27 +7610,27 @@ module RailsAiContext::Serializers::CompactSerializerHelper
   # Both files give an AI agent the same project context; only the
   # filename / distribution mechanism differs.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:213
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:216
   def render_compact_rules; end
 
   # Footer rules section - also moved from ClaudeSerializer.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:181
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:184
   def render_footer; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:13
   def render_header; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:73
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:76
   def render_key_models; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:96
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:99
   def render_notable_gems; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:21
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:23
   def render_stack_overview; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:123
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/compact_serializer_helper.rb:126
   def render_warnings; end
 end
 
@@ -5956,13 +7649,13 @@ class RailsAiContext::Serializers::ContextFileSerializer
   # END_MARKER directly. (Re-exports were considered for back-compat
   # but no external code referenced ContextFileSerializer::BEGIN_MARKER.)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:36
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:37
   def initialize(context, format: T.unsafe(nil)); end
 
   # Write context files, skipping unchanged ones.
   # @return [Hash] { written: [paths], skipped: [paths] }
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:43
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:44
   def call; end
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:17
@@ -5973,15 +7666,15 @@ class RailsAiContext::Serializers::ContextFileSerializer
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:118
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:119
   def generate_split_rules(formats, output_dir, written, skipped); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:87
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:88
   def serialize(fmt); end
 
   # JSON and other formats that don't support HTML comments
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:98
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:99
   def write_plain(filepath, content, written, skipped); end
 
   # Wrap content in section markers so user content is preserved.
@@ -5989,19 +7682,23 @@ class RailsAiContext::Serializers::ContextFileSerializer
   # for .cursorrules) so the marker contract is implemented in exactly
   # one place.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:111
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:112
   def write_with_markers(filepath, content, written, skipped); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:30
+# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:31
 RailsAiContext::Serializers::ContextFileSerializer::ALL_FORMATS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:19
+# The root file each format writes: an AI tool's first context path,
+# plus the toolless JSON dump. Derived so a tool's files are declared
+# once, in Install::AiTool.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:25
 RailsAiContext::Serializers::ContextFileSerializer::FORMAT_MAP = T.let(T.unsafe(nil), Hash)
 
 # Formats that produce only split rules (no root file).
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:28
+# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/context_file_serializer.rb:20
 RailsAiContext::Serializers::ContextFileSerializer::SPLIT_ONLY_FORMATS = T.let(T.unsafe(nil), Array)
 
 # Shared shape for the per-tool serializers that render a compact file by
@@ -6026,6 +7723,7 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_instructions_serializer.rb:7
 class RailsAiContext::Serializers::CopilotInstructionsSerializer
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
   include ::RailsAiContext::Serializers::ToolGuideHelper
 
@@ -6060,6 +7758,7 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_serializer.rb:8
 class RailsAiContext::Serializers::CopilotSerializer
   include ::RailsAiContext::Serializers::TestCommandDetection
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
   include ::RailsAiContext::Serializers::ToolGuideHelper
   include ::RailsAiContext::Serializers::ContextModeDispatch
@@ -6088,6 +7787,7 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/cursor_rules_serializer.rb:16
 class RailsAiContext::Serializers::CursorRulesSerializer
   include ::RailsAiContext::Serializers::TestCommandDetection
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
   include ::RailsAiContext::Serializers::ToolGuideHelper
   include ::RailsAiContext::Serializers::CompactSerializerHelper
@@ -6152,14 +7852,14 @@ end
 
 # Internal: full-mode Copilot serializer (wraps MarkdownSerializer)
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_serializer.rb:108
+# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_serializer.rb:110
 class RailsAiContext::Serializers::FullCopilotSerializer < ::RailsAiContext::Serializers::MarkdownSerializer
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_serializer.rb:122
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_serializer.rb:124
   def footer; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_serializer.rb:111
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/copilot_serializer.rb:113
   def header; end
 end
 
@@ -6207,6 +7907,7 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/markdown_serializer.rb:7
 class RailsAiContext::Serializers::MarkdownSerializer
   include ::RailsAiContext::Serializers::TestCommandDetection
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/markdown_serializer.rb:15
@@ -6326,6 +8027,7 @@ RailsAiContext::Serializers::MarkdownSerializer::MARKDOWN_SPECIAL_CHARS = T.let(
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/opencode_rules_serializer.rb:12
 class RailsAiContext::Serializers::OpencodeRulesSerializer
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
 
   # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/opencode_rules_serializer.rb:17
@@ -6356,6 +8058,7 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/opencode_serializer.rb:8
 class RailsAiContext::Serializers::OpencodeSerializer
   include ::RailsAiContext::Serializers::TestCommandDetection
+  include ::RailsAiContext::CountPhrase
   include ::RailsAiContext::Serializers::StackOverviewHelper
   include ::RailsAiContext::Serializers::ToolGuideHelper
   include ::RailsAiContext::Serializers::CompactSerializerHelper
@@ -6376,19 +8079,18 @@ class RailsAiContext::Serializers::OpencodeSerializer
   def render_footer; end
 end
 
-# One home for "can this introspector section be rendered?". A section
-# carrying :error (the introspector raised) or :unavailable (the data
-# source is absent) must be skipped, not rendered as empty-but-real data.
+# The serializers' name for the same question the tools ask through
+# Tools::SectionFetch. One definition, two call sites' vocabulary.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/section_guard.rb:8
+# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/section_guard.rb:7
 module RailsAiContext::Serializers::SectionGuard
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/section_guard.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/section_guard.rb:10
   def usable?(data); end
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/section_guard.rb:11
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/section_guard.rb:10
     def usable?(data); end
   end
 end
@@ -6449,69 +8151,78 @@ RailsAiContext::Serializers::SectionMarkerWriter::END_MARKER = T.let(T.unsafe(ni
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:7
 module RailsAiContext::Serializers::StackOverviewHelper
+  include ::RailsAiContext::CountPhrase
+
   # Safely resolve architecture labels from GetConventions tool.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:143
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:145
   def arch_labels_hash; end
+
+  # One seam for every surface that names the database, so the generated
+  # files, the tools and the rake task cannot answer differently for one
+  # app. See RailsAiContext::SchemaAdapter.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:220
+  def database_adapter_label(_schema = T.unsafe(nil)); end
 
   # Extract before_action names from ApplicationController source.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:206
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:208
   def detect_before_actions; end
 
   # Scan app/jobs/ for job class names.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:194
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:196
   def detect_job_files; end
 
   # Scan app/services/ for service object class names.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:182
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:184
   def detect_service_files; end
 
   # Returns an array of summary lines for full-preset introspectors.
   # Each line is only added if the introspector returned meaningful data.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:10
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:12
   def full_preset_stack_lines(ctx = T.unsafe(nil)); end
 
   # Render scopes and constants as a one-line extras summary for a model entry.
   # Returns "  scopes: a, b | STATUS: draft, active" or nil if no extras exist.
   # Shared by cursor_rules, opencode_rules, copilot_instructions, compact_serializer_helper.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:126
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:128
   def model_extras_line(data); end
 
   # Extract notable gems with triple-fallback for varying introspector output shapes.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:137
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:139
   def notable_gems_list(gems_data); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:147
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:149
   def pattern_labels_hash; end
 
   # Shared utility: resolve the project root directory.
   # Used by serializers that scan app/ for services, jobs, controllers, etc.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:177
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:179
   def project_root; end
 
   # Render a compact controllers listing: "- Name (N actions)" + "...X more".
   # Shared by cursor_rules and copilot_instructions serializers.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:112
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:114
   def render_compact_controllers_list(controllers_hash, limit: T.unsafe(nil)); end
 
   # Extract scope names from scope data (handles both Hash and String forms).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:106
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:108
   def scope_names(scopes); end
 
   # Write split-rule files with diff-check and atomic writes.
   # @param files [Hash<String, String|nil>] filepath => content mapping
   # @return [Hash] { written: [paths], skipped: [paths] }
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:154
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/stack_overview_helper.rb:156
   def write_rule_files(files); end
 end
 
@@ -6531,10 +8242,12 @@ end
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:7
 module RailsAiContext::Serializers::ToolGuideHelper
+  include ::RailsAiContext::CountPhrase
+
   # API-only apps have no view layer - swap in a workflow for modifying
   # a JSON/XML response instead.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:176
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:178
   def api_endpoint_workflow_lines; end
 
   # True when the app runs in API-only mode (no view layer) - used to swap
@@ -6542,73 +8255,79 @@ module RailsAiContext::Serializers::ToolGuideHelper
   # Falls back to false (the view workflow) when the includer has no
   # `context` to inspect.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:30
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:32
   def api_only?; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:285
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:250
   def build_tools_table(include_mcp:); end
 
   # Full tool guide section - used by split rules files (.claude/rules/, .cursor/rules/, etc.)
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:300
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:265
   def render_tools_guide; end
 
   # Compact tool guide for root files (CLAUDE.md, AGENTS.md) that have line limits.
   # Includes power tools + workflows + rules + dense tool name list (no table).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:317
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:282
   def render_tools_guide_compact; end
 
   # Returns the tool invocation example for a given tool call.
   # MCP: rails_analyze_feature(feature:"post")
   # CLI: rails 'ai:tool[analyze_feature]' feature=post
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:11
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:13
   def tool_call(mcp_call, cli_call); end
 
   # Derived from BaseTool.registered_tools - the single source of truth for tool count.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:41
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:43
   def tool_count; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:22
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:24
   def tool_mode; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:70
+  # Every registered tool declares its own row, so the guide lists what
+  # the registry holds and nothing else.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:244
+  def tool_rows; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:72
   def tools_anti_hallucination_section; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:187
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:189
   def tools_antipatterns_section; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:90
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:92
   def tools_detail_guidance; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:45
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:47
   def tools_header; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:49
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:51
   def tools_intro; end
 
-  # Dense one-line-per-tool listing - derived from TOOL_ROWS (single source of truth)
+  # Dense one-line-per-tool listing, from the same registry the table uses.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:332
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:297
   def tools_name_list; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:109
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:111
   def tools_power_tool_section; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:204
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:206
   def tools_rules_section; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:234
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:236
   def tools_table; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:129
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:131
   def tools_workflow_section; end
 
   # HTML/Hotwire apps get the view-editing workflow.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:162
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:164
   def view_workflow_lines; end
 
   private
@@ -6618,101 +8337,141 @@ module RailsAiContext::Serializers::ToolGuideHelper
   # host app's Gemfile) have no rake tasks at all, so they use the CLI
   # binary directly (`rails-ai-context tool name`).
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:361
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:326
   def cli_cmd(tool_name, params = T.unsafe(nil)); end
 
   # Apps with `config.active_record.schema_format = :sql` dump the schema
   # to db/structure.sql instead of db/schema.rb; guidance that names the
   # wrong file sends the AI hunting for a file that does not exist.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:346
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:311
   def schema_dump_path; end
 
   # `rails ai:serve` for in-Gemfile installs; `rails-ai-context serve` for
   # standalone installs where the rake task does not exist.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:369
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:334
   def serve_cmd; end
 
   # Delegates to InstallMode (shared with the CLI surfaces), memoized per
   # serializer instance because cli_cmd runs once per documented tool.
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:375
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:340
   def standalone_install?; end
 
   # Inline tool call for workflow steps (shorter format).
   # mcp_name is the full MCP tool name (e.g. "rails_validate", "rails_get_context").
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:383
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:348
   def tool_call_inline(mcp_name, mcp_params, cli_short, cli_params); end
 end
-
-# Single source of truth for the tools table.
-# Each row is [mcp_call, cli_name, cli_args, description].
-# Set include_mcp: false for CLI-only 2-column table.
-#
-# pkg:gem/rails-ai-context#lib/rails_ai_context/serializers/tool_guide_helper.rb:243
-RailsAiContext::Serializers::ToolGuideHelper::TOOL_ROWS = T.let(T.unsafe(nil), Array)
 
 # Configures and starts an MCP server using the official Ruby SDK.
 # Registers all introspection tools and handles transport selection.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:8
+# pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:9
 class RailsAiContext::Server
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:32
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:33
   def initialize(app, transport: T.unsafe(nil)); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:9
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:10
   def app; end
 
   # Build and return the configured MCP::Server instance
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:87
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:88
   def build; end
 
   # Start the MCP server with the configured transport
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:125
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:126
   def start; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:9
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:10
   def transport_type; end
 
   private
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:140
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:141
   def active_tools(config); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:209
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:277
   def build_rack_app(transport, path); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:221
+  def default_rack_handler; end
 
   # Conditionally start live reload based on configuration.
   # :auto  - try to load `listen`, skip silently with a tip if missing
   # true   - try to load `listen`, raise if missing
   # false  - skip entirely
   #
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:190
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:258
   def maybe_start_live_reload(mcp_server); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:158
+  # The MCP SDK refuses a tool list with a repeated name, so one duplicate
+  # takes the whole server down. Two ways they arise:
+  #
+  #   - The same class twice. Naming a BaseTool subclass in custom_tools
+  #     resolves its constant, which autoloads the file, which fires
+  #     `inherited` and enrols it in the registry active_tools reads.
+  #   - Two different classes claiming one name. Deliberate replacement is
+  #     spelled with skip_tools; without it, keep the built-in and say so.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:157
+  def merge_tools(builtin, custom); end
+
+  # The handler is whatever Rackup picked, and only Puma understands these
+  # keys. Puma::RackHandler is the module both Rackup::Handler::Puma and the
+  # older Rack::Handler::Puma extend, so this recognizes either.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:250
+  def puma_handler?(handler); end
+
+  # MCP sessions live in this process's memory, so a forked worker cannot
+  # answer a request whose `initialize` another worker handled - about half
+  # of them come back "Session not found". Puma's handler otherwise reads the
+  # host app's config/puma.rb, which on a real app sets `workers` (and a
+  # pidfile this server would then write over). Both options are load-bearing:
+  # refusing the file still leaves WEB_CONCURRENCY able to start a cluster on
+  # its own, and pinning the worker count still lets the file's pidfile and
+  # preload_app! through.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:238
+  def rack_handler_options(handler, config); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:200
   def start_http(server); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:148
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:191
   def start_stdio(server); end
+
+  # Read the list off the server rather than rebuilding it. Recomputing it
+  # from the registry drops any custom tool that is not a BaseTool, so the
+  # banner announced a different set than the server answered with.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:186
+  def tool_banner(server); end
+
+  # MCP::Tool subclasses answer tool_name; anything else falls back to the
+  # class name, which is what the SDK would key on anyway.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:179
+  def tool_label(tool); end
 
   class << self
     # All built-in tools, auto-discovered from Tools::BaseTool subclasses.
     # Kept as a class method (not a constant) so auto-registration works.
     # Legacy constant accessor preserved for backwards compatibility.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:14
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:15
     def builtin_tools; end
 
     # Backwards-compatible constant - delegates to the registry.
     # Existing code referencing Server::TOOLS continues to work.
     # Emits a deprecation notice once to guide migration.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:21
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:22
     def const_missing(name); end
 
     # Resolve config.custom_tools into MCP::Tool classes. Entries may be
@@ -6722,7 +8481,7 @@ class RailsAiContext::Server
     # where autoloading is ready. Invalid entries are warn-skipped so one bad
     # entry cannot take down every tool invocation.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:43
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/server.rb:44
     def resolve_custom_tools(config = T.unsafe(nil)); end
   end
 end
@@ -6913,7 +8672,10 @@ module RailsAiContext::TestHelper
   def resolve_tool(name_or_class); end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:4
+# Explicit rather than implicit, so reaching this constant does not depend
+# on Zeitwerk's `require` decoration surviving. See cli.rb.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools.rb:6
 module RailsAiContext::Tools; end
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:5
@@ -6921,94 +8683,94 @@ class RailsAiContext::Tools::AnalyzeFeature < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:36
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:43
     def call(**kwargs); end
 
     private
 
     # Detect inherited filters from parent controller
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:447
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:452
     def detect_parent_filters_for_analyze(parent_class, all_controllers); end
 
     # --- AF13: Callback Chains ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:516
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:521
     def discover_callbacks(ctx, matched_models, lines); end
 
     # --- AF10: Channels/WebSocket ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:535
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:540
     def discover_channels(root, pattern, lines); end
 
     # --- Component usage in feature views ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:579
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:584
     def discover_components(ctx, pattern, lines); end
 
     # --- AF12: Concern Tracing ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:492
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:497
     def discover_concerns(ctx, matched_models, lines); end
 
     # --- AF: Controllers ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:167
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:172
     def discover_controllers(ctx, pattern, lines); end
 
     # --- AF9: Environment Dependencies ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:604
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:609
     def discover_env_dependencies(root, pattern, matched_models, lines); end
 
     # --- AF2: Jobs ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:256
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:261
     def discover_jobs(root, pattern, lines); end
 
     # --- AF11: Mailers ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:556
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:561
     def discover_mailers(root, pattern, lines); end
 
     # --- AF: Models ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:114
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:119
     def discover_models(ctx, pattern, lines); end
 
     # --- AF6: Related Models via Associations ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:470
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:475
     def discover_related_models(ctx, matched_models, lines); end
 
     # --- AF: Routes ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:201
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:206
     def discover_routes(ctx, pattern, lines); end
 
     # --- AF1: Services ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:225
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:230
     def discover_services(root, pattern, lines); end
 
     # --- AF4: Stimulus Controllers ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:316
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:321
     def discover_stimulus(ctx, pattern, lines); end
 
     # --- Test coverage gaps ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:388
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:393
     def discover_test_gaps(root, pattern, matched_models, ctx, test_files, lines); end
 
     # --- AF5: Tests ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:348
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:353
     def discover_tests(root, pattern, lines); end
 
     # --- AF3: Views + Partials ---
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:282
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:287
     def discover_views(ctx, root, pattern, lines); end
 
     # Word-boundary match against the feature keyword: `pattern` must align
@@ -7019,17 +8781,17 @@ class RailsAiContext::Tools::AnalyzeFeature < ::RailsAiContext::Tools::BaseTool
     # "dos_service_0"). A plain substring check would also match "post"
     # against "postmark" - an unrelated word that merely starts the same.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:101
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:106
     def feature_word_match?(text, pattern); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:34
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:41
 RailsAiContext::Tools::AnalyzeFeature::AUTH_GEM_NAMES = T.let(T.unsafe(nil), Array)
 
 # Map well-known feature keywords to gem-based patterns
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:25
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:32
 RailsAiContext::Tools::AnalyzeFeature::AUTH_KEYWORDS = T.let(T.unsafe(nil), Array)
 
 # Cap per-directory file scans to avoid unbounded work on large monorepos.
@@ -7039,7 +8801,7 @@ RailsAiContext::Tools::AnalyzeFeature::AUTH_KEYWORDS = T.let(T.unsafe(nil), Arra
 # the filesystem. Tool output notes when the cap is hit so the AI agent knows
 # to narrow its feature keyword. v5.8.1 hardening; all glob sites in r2.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:33
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/analyze_feature.rb:40
 RailsAiContext::Tools::AnalyzeFeature::MAX_SCAN_FILES = T.let(T.unsafe(nil), Integer)
 
 # Base class for all MCP tools exposed by rails-ai-context.
@@ -7048,23 +8810,26 @@ RailsAiContext::Tools::AnalyzeFeature::MAX_SCAN_FILES = T.let(T.unsafe(nil), Int
 #
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:10
 class RailsAiContext::Tools::BaseTool < ::MCP::Tool
+  extend ::RailsAiContext::CountPhrase
+  extend ::RailsAiContext::Tools::SectionFetch
+
   class << self
     # Mark a tool class as abstract (excluded from registration).
     # Reaches back to BaseTool explicitly: registry_mutex/descendants are
     # ivars on the BaseTool object, and a subclass calling this method
     # has no ivar storage of its own to read them from.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:35
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:37
     def abstract!; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:40
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:42
     def abstract?; end
 
     # API-only apps legitimately have no views, partials, Stimulus, or
     # Turbo surface; a bare empty listing is indistinguishable from a
     # full-stack app that has none yet, so name the reason.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:267
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:353
     def api_only_app?; end
 
     # Short honest line for a view/frontend section that doesn't apply on
@@ -7072,34 +8837,45 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # this before rendering "no X found" copy so a legitimately absent
     # surface never reads as "not built yet".
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:281
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:375
     def api_only_note(section_label); end
 
     # Cache key for paginated responses - lets agents detect stale data between pages
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:347
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:441
     def cache_key; end
 
     # Cache introspection results with TTL + fingerprint invalidation.
     # Uses SHARED_CACHE so all tool subclasses share one introspection
     # result instead of each caching independently.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:124
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:156
     def cached_context; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:107
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:139
     def config; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:218
+    def current_session; end
 
     # Merge duplicate PUT/PATCH entries for the same path+action into a
     # single "PATCH|PUT" entry (Rails generates both for every `resources`
     # update route). Public: the VFS routes resource uses it too, so route
     # counts stay consistent across every surface that reports them.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:534
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:669
     def dedupe_put_patch_routes(actions); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:29
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:31
     def descendants; end
+
+    # Whether this tool's `detail` is DetailLevel's, read off the schema it
+    # already publishes rather than a second list someone has to keep in
+    # step. `rails_onboard` spells its own levels (quick/standard/full) and
+    # is deliberately not covered.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:512
+    def detail_param?; end
 
     # Helper: wrap text in an MCP::Tool::Response flagged as an error
     # (isError: true) so MCP clients and the CLI treat the call as failed
@@ -7107,31 +8883,34 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # execution failures only - policy blocks and guidance messages stay
     # informational via text_response.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:446
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:581
     def error_response(text); end
 
     # Extract method source from a file path. Reads file safely. Returns hash or nil.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:398
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:492
     def extract_method_source_from_file(path, method_name); end
 
     # Extract method source from a source string via indentation-based matching.
     # Returns { code:, start_line:, end_line: } or nil. Shared by get_callbacks, get_concern.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:369
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:463
     def extract_method_source_from_string(source, method_name); end
 
     # Fuzzy match: find the closest available name by exact, underscore, substring, or prefix
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:321
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:415
     def find_closest_match(input, available); end
 
     # Case-insensitive fuzzy key lookup for hashes keyed by class/table names.
     # Tries exact, underscore, singularize, and classify variants. Returns matching key or nil.
     # Shared by get_model_details, get_callbacks, get_context, generate_test, dependency_graph.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:354
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:448
     def fuzzy_find_key(keys, query); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:124
+    def guide_row(order: T.unsafe(nil), mcp: T.unsafe(nil), cli_args: T.unsafe(nil), summary: T.unsafe(nil)); end
 
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:19
     def inherited(subclass); end
@@ -7140,19 +8919,37 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # generation. Aggregate tools append this so AI clients know which
     # sections are missing rather than empty.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:243
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:329
     def introspection_warnings_note(ctx); end
+
+    # Normalizing silently would answer a question the caller did not ask
+    # and give them no way to notice. SafeCall appends this after the
+    # response is built, so it lands past truncation the way the
+    # static-tier banner does.
+    #
+    # The echoed value is shortened: it is caller input, and the response
+    # it rides on has just promised a length cap.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:538
+    def invalid_detail_note(given); end
+
+    # Junk and missing values both become the default here, so the
+    # nineteen `case detail` branches downstream only ever see one of
+    # three strings.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:525
+    def normalize_detail(kwargs); end
 
     # Structured not-found error with fuzzy suggestion and recovery hint.
     # Helps AI agents self-correct without retrying blind.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:229
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:315
     def not_found_response(type, name, available, recovery_tool: T.unsafe(nil)); end
 
     # Standardized pagination: slice items with offset/limit and produce a consistent hint.
     # Returns { items:, hint:, total:, offset:, limit: }
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:210
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:296
     def paginate(items, offset:, limit:, default_limit: T.unsafe(nil)); end
 
     # Convenience: access the Rails app and cached introspection.
@@ -7161,7 +8958,7 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # tools that call rails_app directly (get_concern, analyze_feature,
     # migration_advisor, ...) work in both tiers without their own checks.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:103
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:135
     def rails_app; end
 
     # The current environment name without requiring a booted app:
@@ -7171,46 +8968,57 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # `Rails.env` reference, which would NameError under --no-boot or
     # early boot death.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:117
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:149
     def rails_env_name; end
 
     # All non-abstract tool classes. Triggers eager loading first.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:45
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:47
     def registered_tools; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:29
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:31
     def registry_mutex; end
 
     # Reset the shared cache. Used by LiveReload to invalidate on file change.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:168
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:200
     def reset_all_caches!; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:155
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:187
     def reset_cache!; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:196
+    # Which conversation a request belongs to, read from the Rack env all
+    # three HTTP entry points already hold. The engine controller reaches
+    # it through `request.env` rather than naming the header a third time.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:225
+    def session_from(env); end
+
+    # What the session record should remember about this call. SafeCall
+    # asks every tool, so no tool has to remember to record anything;
+    # override to reshape a value that should not be kept verbatim.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:502
+    def session_params(kwargs); end
+
+    # Deep copies: the entries stay live inside the record and keep being
+    # mutated by later calls, so handing the originals out would let a
+    # caller's snapshot change under it.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:263
     def session_queries; end
 
-    # ── Session context helpers ──────────────────────────────────────
-    #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:176
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:238
     def session_record(tool_name, params, summary = T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:202
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:269
     def session_reset!; end
-
-    # Store call params for the current tool invocation (thread-safe)
-    #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:406
-    def set_call_params(**params); end
 
     # One banner per response in static tier: consumers must never
     # mistake static analysis for runtime-confirmed data. Rides the
     # suffix mechanism so it survives truncation.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:290
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:384
     def static_tier_banner; end
 
     # Tools that only make sense against a booted app must refuse in the
@@ -7218,7 +9026,7 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # happened to load (live DB access from a "static" response
     # contradicts the tier banner in the same reply).
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:309
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:403
     def static_tier_refusal(capability); end
 
     # Helper: wrap text in an MCP::Tool::Response with safety-net truncation.
@@ -7229,7 +9037,7 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # In static tier, the tier banner rides along on the same mechanism so
     # every response - caller-suffixed or not - ends with it.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:417
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:552
     def text_response(text, suffix: T.unsafe(nil)); end
 
     # Short honest line for a context section that could not be produced
@@ -7239,17 +9047,37 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # negative (e.g. "No notable gems found" when gems were never
     # inspected at all).
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:258
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:344
     def unavailable_note(section_data); end
+
+    # Run a block against one conversation's session record. The HTTP
+    # transports wrap each request in this; stdio never calls it.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:210
+    def with_session(session_id); end
+
+    # One process serves every client on all three HTTP entry points, so
+    # a request must run scoped to whoever sent it or the session record
+    # pools conversations together.
+    # See docs/adr/0003-shared-tool-cache-semantics.md.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:234
+    def with_session_for(env, &block); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:52
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:54
     def eager_load!; end
+
+    # The front of the hash is now the least recently used session.
+    # Called with the mutex held.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:288
+    def evict_oldest_sessions; end
 
     # Shared utility: max file size from configuration.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:469
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:604
     def max_file_size; end
 
     # Run Dir.glob under `dir` with the given glob pattern and return an array
@@ -7265,7 +9093,7 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     #     ...
     #   end
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:519
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:654
     def safe_glob(dir, pattern, real_root); end
 
     # Resolve a Dir.glob result to a realpath that is:
@@ -7276,35 +9104,114 @@ class RailsAiContext::Tools::BaseTool < ::MCP::Tool
     # Per CLAUDE.md Security Conventions - callers should perform all subsequent
     # file operations on the returned realpath, not the original glob path.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:491
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:626
     def safe_glob_realpath(file_path, real_dir, real_root); end
 
     # Shared utility: safe file reading with size limits.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:464
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:599
     def safe_read(path); end
 
     # Shared utility: check if a relative path matches sensitive file patterns.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:474
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:609
     def sensitive_file?(relative_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:457
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:592
     def session_key(tool_name, params); end
+
+    # Re-inserting moves this session to the back, so hash order is
+    # least-recently-used rather than oldest-created. Without it a
+    # conversation that has run for hours is evicted ahead of a hundred
+    # idle newcomers - backwards, and worst on the long-lived transports
+    # that made bucketing necessary. Called with the mutex held.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:280
+    def touch_session; end
   end
 end
 
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:107
+RailsAiContext::Tools::BaseTool::DEFAULT_SESSION = T.let(T.unsafe(nil), Symbol)
+
+# One row of the generated tool guide, declared beside the tool's own
+# description so adding a tool touches one file. `order` fixes where the
+# row lands; the CLI command is derived from tool_name, never spelled.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+class RailsAiContext::Tools::BaseTool::GuideRow < ::Struct
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def cli_args; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def cli_args=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def mcp; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def mcp=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def order; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def order=(_); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def summary; end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+  def summary=(_); end
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+    def [](*_arg0); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+    def inspect; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+    def keyword_init?; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+    def members; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:119
+    def new(*_arg0); end
+  end
+end
+
+# The session id comes from a client-controlled header in a process
+# that stays up, so both its length and the number of them are capped.
+# Oldest-first eviction: a conversation nobody has touched in the last
+# MAX_SESSIONS is the one least likely to ask about its own history.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:113
+RailsAiContext::Tools::BaseTool::MAX_SESSIONS = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:114
+RailsAiContext::Tools::BaseTool::MAX_SESSION_ID_LENGTH = T.let(T.unsafe(nil), Integer)
+
 # Session-level context tracking. Lets AI avoid redundant queries
 # by recording what tools have been called with what params.
-# In-memory only - resets on server restart (matches conversation lifecycle).
+# In-memory only - resets on server restart.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:95
+# Bucketed per conversation. Over stdio one process serves one
+# conversation and everything lands in DEFAULT_SESSION; the HTTP
+# transports serve many from one process, so each request's
+# Mcp-Session-Id gets its own bucket and one client's history stays out
+# of another's.
+# A plain Hash, not one with a default block: a default block writes on
+# lookup, so merely reading a session's history created it.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:105
 RailsAiContext::Tools::BaseTool::SESSION_CONTEXT = T.let(T.unsafe(nil), Hash)
 
 # Shared cache across all tool subclasses, protected by a Mutex
 # for thread safety in multi-threaded servers (e.g., Puma).
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:90
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/base_tool.rb:92
 RailsAiContext::Tools::BaseTool::SHARED_CACHE = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:5
@@ -7312,43 +9219,43 @@ class RailsAiContext::Tools::DependencyGraph < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:42
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:49
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:91
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:96
     def build_graph(models_data); end
 
     # DFS-based cycle detection. Returns array of cycle paths.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:187
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:192
     def detect_cycles(graph); end
 
     # Extract STI hierarchies from models data.
     # Groups models that share the same table_name with sti info.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:220
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:225
     def extract_sti_groups(models_data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:157
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:162
     def extract_subgraph(graph, center, depth); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:153
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:158
     def find_model_key(query, keys); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:241
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:246
     def render_mermaid(graph, center, cycles: T.unsafe(nil), sti_groups: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:321
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:326
     def render_text(graph, center, cycles: T.unsafe(nil), sti_groups: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:374
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:379
     def sanitize(name); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:40
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/dependency_graph.rb:47
 RailsAiContext::Tools::DependencyGraph::MAX_NODES = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:7
@@ -7356,12 +9263,12 @@ class RailsAiContext::Tools::Diagnose < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:105
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:112
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:237
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:244
     def classify_error(parsed); end
 
     # An undefined method on an ActiveRecord model deserves a schema-aware
@@ -7371,55 +9278,55 @@ class RailsAiContext::Tools::Diagnose < ::RailsAiContext::Tools::BaseTool
     # (falling through to the generic classifications) when the receiver
     # is not a known model or the method does exist on it.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:272
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:279
     def classify_undefined_method_on_model(parsed); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:306
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:313
     def extract_receiver_class(message); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:330
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:337
     def gather_context(parsed, classification, file, line, action); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:472
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:479
     def gather_git_context(file, file_refs); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:501
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:508
     def gather_log_context(exception_class); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:228
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:235
     def infer_exception_class(message); end
 
     # Infer a specific diagnosis from the error + context
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:424
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:431
     def infer_specific_cause(parsed, classification, file, action); end
 
     # Everything legitimately callable on the model that introspection
     # knows about: associations, table columns, and declared methods.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:317
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:324
     def known_model_methods(model_data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:179
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:186
     def parse_error(error_string); end
 
     # Truncate the content of a named section (identified by "## heading") within a lines array.
     # Returns a new array with the section's content lines truncated if they exceed max_chars.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:518
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:525
     def truncate_section(lines, heading, max_chars); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:52
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:59
 RailsAiContext::Tools::Diagnose::ERROR_CLASSIFICATIONS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:42
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:49
 RailsAiContext::Tools::Diagnose::MAX_SECTION_CHARS = T.let(T.unsafe(nil), Hash)
 
 # Section size limits for output truncation
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:41
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/diagnose.rb:48
 RailsAiContext::Tools::Diagnose::MAX_TOTAL_OUTPUT = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:5
@@ -7427,123 +9334,123 @@ class RailsAiContext::Tools::GenerateTest < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:35
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:42
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:878
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:885
     def attr_value_expr(res, attr, value_source); end
 
     # Scaffolds test each action once; keep one route per action (PATCH
     # wins over PUT for update).
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:808
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:815
     def dedupe_routes(routes); end
 
     # Extra create! arguments that keep a copied record from tripping
     # uniqueness validations.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:906
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:913
     def destroy_attr_overrides(res); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:58
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:65
     def detect_framework; end
 
     # Scan existing tests to learn project patterns
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:67
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:74
     def detect_patterns(framework); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:936
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:943
     def devise_app?(tests_data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:1002
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:1009
     def find_factory_name(model_name, tests_data); end
 
     # First fixture key for a table (reading the fixture file when the
     # cached fixture names miss it), or nil when no fixture exists.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:989
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:996
     def fixture_key_for(table, tests_data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:395
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:402
     def generate_controller_test(ctrl_name, framework, patterns, tests_data); end
 
     # ── File-based test generation ───────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:942
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:949
     def generate_file_test(file, framework, patterns, tests_data, type); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:453
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:460
     def generate_minitest_controller(ctrl_class, snake, routes, tests_data, res); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:254
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:261
     def generate_minitest_model(name, data, _patterns, tests_data); end
 
     # ── Model test generation ────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:101
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:108
     def generate_model_test(model_name, framework, patterns, tests_data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:119
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:126
     def generate_rspec_model(name, data, patterns, tests_data); end
 
     # ── RSpec request generation ─────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:637
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:644
     def generate_rspec_request(ctrl_class, snake, routes, patterns, tests_data, res); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:958
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:965
     def generate_service_test(class_name, file, framework); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:534
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:541
     def minitest_create_test(route, name_by_path, res, tests_data, subject); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:567
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:574
     def minitest_destroy_test(route, name_by_path, res, tests_data, subject); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:588
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:595
     def minitest_generic_test(route, name_by_path, res, tests_data, subject); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:521
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:528
     def minitest_get_test(route, name_by_path, res, tests_data, label, subject); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:528
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:535
     def minitest_member_get_test(route, name_by_path, res, tests_data, label, subject); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:603
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:610
     def minitest_request_test(label, verb, resolved, res, assertion, params_literal: T.unsafe(nil), difference: T.unsafe(nil), setup_lines: T.unsafe(nil), todos: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:497
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:504
     def minitest_route_test(route, name_by_path, res, tests_data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:484
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:491
     def minitest_setup_lines(res, tests_data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:623
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:630
     def minitest_skip_test(label, reason); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:550
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:557
     def minitest_update_test(route, name_by_path, res, tests_data, subject); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:889
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:896
     def params_todos(res, params_literal); end
 
     # Dynamic path segments come from the subject record (:id) or a parent
     # record (:parent_id). Minitest reads parents from fixtures; RSpec
     # request specs do not load fixtures, so parents need a factory.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:854
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:861
     def path_param_expr(param, subject_expr, tests_data, rspec: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:897
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:904
     def placeholder_attrs_literal(res); end
 
     # Build the params hash literal for create/update, copying attribute
     # values from the fixture record the way Rails scaffold tests do.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:871
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:878
     def request_params_literal(res, value_source); end
 
     # Everything the request templates need to emit runnable requests:
@@ -7551,56 +9458,56 @@ class RailsAiContext::Tools::GenerateTest < ::RailsAiContext::Tools::BaseTool
     # permitted attributes (from strong params, falling back to schema
     # content columns).
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:418
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:425
     def resource_info(ctrl_class, snake, tests_data); end
 
     # Unnamed routes (POST/PATCH/DELETE in a resources block) share their
     # path with a named sibling; borrow that sibling's helper name.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:822
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:829
     def route_names_by_path(routes); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:687
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:694
     def rspec_attributes_lines(lines, res, factory); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:745
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:752
     def rspec_create_body(route, name_by_path, res, tests_data, attrs_available); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:782
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:789
     def rspec_destroy_body(route, name_by_path, res, tests_data, subject_expr); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:732
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:739
     def rspec_get_body(route, name_by_path, res, tests_data, subject_expr, label); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:699
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:706
     def rspec_route_test(route, name_by_path, res, tests_data, subject_expr, attrs_available); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:800
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:807
     def rspec_skip_body(label, reason); end
 
     # Emits the subject let and returns the expression tests use to
     # reference a persisted record (nil when one cannot be built).
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:674
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:681
     def rspec_subject_lines(lines, res, factory); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:764
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:771
     def rspec_update_body(route, name_by_path, res, tests_data, subject_expr, attrs_available); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:920
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:927
     def schema_column_type(table, column); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:914
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:921
     def schema_content_columns(table); end
 
     # Columns covered by a unique database index. Posting a fixture row's
     # own value for one of these raises RecordNotUnique even when the
     # model declares no uniqueness validation.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:930
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:937
     def unique_index_columns(table); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:631
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:638
     def unresolved_reason(route); end
 
     # Resolve a route to a helper call (articles_url, article_url(@article))
@@ -7608,11 +9515,47 @@ class RailsAiContext::Tools::GenerateTest < ::RailsAiContext::Tools::BaseTool
     # Returns { url:, prelude: } or nil when a dynamic segment cannot be
     # satisfied from test data.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:832
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:839
     def url_expression(route, name_by_path, subject_expr, res, tests_data, rspec: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:627
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/generate_test.rb:634
     def verb_for(route); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:5
+class RailsAiContext::Tools::GetActiveSupport < ::RailsAiContext::Tools::BaseTool
+  extend ::RailsAiContext::Tools::SafeCall
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:20
+    def call(**kwargs); end
+
+    private
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:112
+    def render_cache(lines, cache); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:38
+    def render_concerns(lines, concerns); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:102
+    def render_on_load_hooks(lines, hooks); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:70
+    def render_simple_list(lines, title, items); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:93
+    def render_tagged_logging(lines, tagged); end
+
+    # A section the introspector could not reach says so under its own
+    # heading. Silently omitting it reads as "nothing here".
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:62
+    def render_unavailable(lines, title, data); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_active_support.rb:80
+    def render_verifier_usage(lines, usage); end
   end
 end
 
@@ -7621,94 +9564,119 @@ class RailsAiContext::Tools::GetApi < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:28
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:34
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:104
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:100
     def append_client_generation(lines, codegen); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:111
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:107
     def append_graphql_details(lines, details); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:95
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:91
     def append_openapi(lines, specs); end
 
     # Standard truncates the class list to the first few names; full lists
     # everything, so only the longer lists need this section.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:124
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:120
     def append_serializer_classes(lines, classes); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:86
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:82
     def build_full(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:73
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:69
     def build_standard(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:57
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:53
     def build_summary(data); end
 
     # The introspector returns nil both when config/initializers/cors.rb is
     # absent and when it exists with no active origins call (Rails --api
     # generates it fully commented out), so the empty state covers both.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:183
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:179
     def cors_line(cors); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:169
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:165
     def graphql_label(graphql); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:190
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:186
     def missing_areas(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:131
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:127
     def mode_label(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:145
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:141
     def pagination?(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:173
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:169
     def rate_limiting_label(rate); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:149
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:145
     def serialization_label(serializers); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:164
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:160
     def serialization_line(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:135
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:131
     def serializers?(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:141
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_api.rb:137
     def versioning?(data); end
   end
 end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_autoload.rb:5
+class RailsAiContext::Tools::GetAutoload < ::RailsAiContext::Tools::BaseTool
+  extend ::RailsAiContext::Tools::SafeCall
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_autoload.rb:24
+    def call(**kwargs); end
+
+    private
+
+    # Custom autoload paths (beyond Rails' defaults) matter most, but the
+    # full list is what AI needs for "where can this constant live" - cap
+    # long framework lists rather than hiding them.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_autoload.rb:62
+    def render_paths(lines, title, paths); end
+  end
+end
+
+# Framework path lists run long; enough rows to cover an app's own paths
+# plus the Rails defaults under them.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_autoload.rb:12
+RailsAiContext::Tools::GetAutoload::MAX_PATHS_SHOWN = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:5
 class RailsAiContext::Tools::GetCallbacks < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:53
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:60
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:230
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:231
     def extract_callback_source(model_name, method_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:235
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:236
     def find_concern_callbacks(model_name, data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:77
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:80
     def format_model_callbacks(name, data, detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:153
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:156
     def list_all_callbacks(models, detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:210
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_callbacks.rb:211
     def order_callbacks(callbacks); end
   end
 end
@@ -7721,7 +9689,7 @@ class RailsAiContext::Tools::GetComponentCatalog < ::RailsAiContext::Tools::Base
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_component_catalog.rb:36
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_component_catalog.rb:43
     def call(**kwargs); end
 
     private
@@ -7748,79 +9716,88 @@ class RailsAiContext::Tools::GetConcern < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:32
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:43
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:316
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:317
     def collect_concern_names(concern_dirs); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:457
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:465
     def find_includers(concern_name, root, concern_type); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:241
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:460
+    def includer_locations(concern_type); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:245
     def list_concerns(concern_dirs, root, max_size); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:362
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:363
     def parse_class_methods(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:441
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:442
     def parse_concern_callbacks(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:408
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:409
     def parse_concern_macros(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:324
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:325
     def parse_public_methods(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:51
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:62
     def resolve_concern_dirs(root, type); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:67
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:69
     def searched_dirs(type); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:75
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:76
     def show_concern(name, concern_dirs, root, max_size, detail = T.unsafe(nil)); end
   end
 end
+
+# Model and controller concerns lead because that is where most apps keep
+# most of them; anything else follows in discovery order.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_concern.rb:41
+RailsAiContext::Tools::GetConcern::SECTION_ORDER = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:5
 class RailsAiContext::Tools::GetConfig < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:15
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:21
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:183
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:185
     def detect_action_cable; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:204
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:206
     def detect_active_storage; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:152
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:154
     def detect_assets_stack; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:131
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:133
     def detect_auth_framework; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:125
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:127
     def detect_database; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:215
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:217
     def detect_mailer_delivery; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:107
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:109
     def initializer_note(name); end
   end
 end
 
 # One-line descriptions for initializers Rails generates in every app.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:95
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_config.rb:97
 RailsAiContext::Tools::GetConfig::STOCK_INITIALIZER_NOTES = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:5
@@ -7828,44 +9805,44 @@ class RailsAiContext::Tools::GetContext < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:39
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:46
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:179
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:185
     def api_only?; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:302
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:308
     def append_includes(includes); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:65
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:71
     def controller_action_context(controller_name, action_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:218
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:224
     def controller_context(controller_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:183
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:189
     def cross_reference_ivars(ctrl_ivars, view_ivars, rendered_templates: T.unsafe(nil), api_only: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:173
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:179
     def extract_api_rendered_ivars(ctrl_text); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:134
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:140
     def extract_ivars_from_text(text); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:152
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:158
     def extract_ivars_from_view_text(text, action: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:318
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:324
     def feature_context(feature_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:246
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:252
     def model_context(model_name); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:287
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_context.rb:293
 RailsAiContext::Tools::GetContext::INCLUDE_MAP = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:5
@@ -7873,30 +9850,30 @@ class RailsAiContext::Tools::GetControllers < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:39
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:46
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:307
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:310
     def detect_called_private_methods(action_code, source_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:339
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:342
     def detect_parent_filters(parent_class); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:371
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:374
     def detect_skipped_filters(source_path, action_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:455
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:458
     def extract_method_with_lines(file_path, method_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:399
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:402
     def extract_render_map(code); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:173
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:176
     def format_action_source(controller_name, info, action_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:484
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_controllers.rb:487
     def format_controller(name, info); end
   end
 end
@@ -7906,38 +9883,38 @@ class RailsAiContext::Tools::GetConventions < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:15
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:21
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:198
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:200
     def detect_app_patterns; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:155
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:157
     def detect_frontend_stack; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:407
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:409
     def detect_locale_info; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:189
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:191
     def detect_package_manager; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:461
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:463
     def detect_test_pattern; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:147
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:149
     def humanize_arch(key); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:151
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:153
     def humanize_pattern(key); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:100
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:102
 RailsAiContext::Tools::GetConventions::ARCH_LABELS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:134
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_conventions.rb:136
 RailsAiContext::Tools::GetConventions::PATTERN_LABELS = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:5
@@ -7945,19 +9922,29 @@ class RailsAiContext::Tools::GetEditContext < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:31
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:38
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:155
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:162
     def extract_methods(source_lines); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:173
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:180
     def find_method_end(lines, from_idx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:166
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_edit_context.rb:173
     def find_method_start(lines, from_idx); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_engines.rb:5
+class RailsAiContext::Tools::GetEngines < ::RailsAiContext::Tools::BaseTool
+  extend ::RailsAiContext::Tools::SafeCall
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_engines.rb:20
+    def call(**kwargs); end
   end
 end
 
@@ -7966,67 +9953,92 @@ class RailsAiContext::Tools::GetEnv < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:23
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:29
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:576
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:611
     def categorize_env_var(name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:499
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:524
+    def credentials_file_present?; end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:534
     def detect_credentials_keys; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:560
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:595
     def detect_encrypted_columns; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:358
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:381
     def detect_external_services(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:413
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:436
     def detect_http_clients(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:517
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:281
+    def env_references(source); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:552
     def extract_key_paths(hash, prefix, keys); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:454
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:477
     def extract_service_name_from_url(url); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:603
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:638
     def find_default_value(env_vars, name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:473
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:496
     def find_env_vars_with_prefix(prefix, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:141
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:149
     def format_full(env_vars, env_example, dockerfile_vars, external_services, credentials_keys, encrypted_columns, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:74
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:78
     def format_standard(env_vars, env_example, external_services, credentials_keys, encrypted_columns); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:55
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:59
     def format_summary(all_var_names, external_services, credentials_keys); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:588
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:623
     def group_env_vars(var_names); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:530
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:565
     def parse_credentials_structure; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:612
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:647
     def sanitize_default(value); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:623
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:660
     def sanitize_example_value(value); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:324
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:347
     def scan_dockerfile(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:281
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:304
     def scan_env_example(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:241
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env.rb:253
     def scan_env_vars(root); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env_config.rb:5
+class RailsAiContext::Tools::GetEnvConfig < ::RailsAiContext::Tools::BaseTool
+  extend ::RailsAiContext::Tools::SafeCall
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env_config.rb:38
+    def call(**kwargs); end
+
+    private
+
+    # Paging is per environment, so one offset/limit reads the same slice
+    # of every environment listed - which is what makes comparing the same
+    # page across development and production useful.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_env_config.rb:73
+    def render_environment(lines, entry, offset:, limit:); end
   end
 end
 
@@ -8035,31 +10047,31 @@ class RailsAiContext::Tools::GetFrontendStack < ::RailsAiContext::Tools::BaseToo
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:24
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:30
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:188
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:184
     def build_full(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:82
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:78
     def build_hotwire_summary; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:111
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:107
     def build_standard(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:53
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:49
     def build_summary(data); end
 
     # :vite_rails -> "Vite Rails", "vite" -> "Vite"
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:244
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:240
     def display_name(value); end
 
     # For Hotwire/importmap apps, pull Stimulus and Turbo data from context
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:259
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:255
     def enrich_with_hotwire(lines); end
 
     # The introspector emits frameworks as a hash of framework symbol =>
@@ -8067,10 +10079,10 @@ class RailsAiContext::Tools::GetFrontendStack < ::RailsAiContext::Tools::BaseToo
     # singular framework/version pair. Render the primary (first) entry,
     # stripping range operators from the version.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:233
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:229
     def framework_label(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:248
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_frontend_stack.rb:244
     def total_component_count(data); end
   end
 end
@@ -8080,17 +10092,17 @@ class RailsAiContext::Tools::GetGems < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_gems.rb:55
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_gems.rb:61
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_gems.rb:98
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_gems.rb:103
     def resolve_config_hint(hint); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_gems.rb:31
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_gems.rb:37
 RailsAiContext::Tools::GetGems::GEM_CONFIG_HINTS = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:5
@@ -8098,27 +10110,27 @@ class RailsAiContext::Tools::GetHelperMethods < ::RailsAiContext::Tools::BaseToo
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:50
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:56
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:293
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:297
     def detect_framework_helpers(real_root, max_size); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:260
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:264
     def find_view_references(method_names, real_root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:164
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:170
     def list_helpers(helper_files, helpers_dir, root, max_size, detail, offset: T.unsafe(nil), limit: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:83
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:89
     def module_name_for(file_path, helpers_dir); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:239
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:243
     def parse_helper_methods(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:87
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:93
     def show_helper(name, helper_files, helpers_dir, root, max_size, detail); end
   end
 end
@@ -8128,63 +10140,112 @@ end
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_helper_methods.rb:12
 RailsAiContext::Tools::GetHelperMethods::FRAMEWORK_HELPERS = T.let(T.unsafe(nil), Hash)
 
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:5
+class RailsAiContext::Tools::GetI18n < ::RailsAiContext::Tools::BaseTool
+  extend ::RailsAiContext::Tools::SafeCall
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:37
+    def call(**kwargs); end
+
+    private
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:138
+    def available_list(i18n); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:105
+    def coverage_gap(data); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:123
+    def file_line(file); end
+
+    # Mirrors the introspector's locale-file matching: en.yml, devise.en.yml,
+    # en/users.yml, admin/en.yml.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:132
+    def locale_file_match?(file, locale); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:112
+    def render_file_list(lines, page, heading, empty_message); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:87
+    def render_locale(i18n, locale, offset:, limit:); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_i18n.rb:54
+    def render_overview(i18n, offset:, limit:); end
+  end
+end
+
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:5
 class RailsAiContext::Tools::GetJobPattern < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:27
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:33
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:481
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:513
     def content_near_class?(content, class_name, target_line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:419
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:451
     def extract_broadcasts(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:322
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:354
     def extract_class_name(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:406
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:438
     def extract_dependencies(source, own_class_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:377
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:409
     def extract_guard_clauses(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:367
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:399
     def extract_perform_signature(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:327
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:359
     def extract_queue(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:332
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:364
     def extract_retry_config(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:449
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:481
     def extract_schedule(source, class_name, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:433
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:465
     def extract_side_effects(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:492
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:524
     def find_enqueuers(class_name, real_root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:282
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:314
     def format_channels_section(channels); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:194
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:226
     def format_job_listing_lines(job_files, jobs_dir, root, detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:104
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:136
     def format_single_job(job, job_files, jobs_dir, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:81
-    def no_job_files_message(jobs_dir_exists); end
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:96
+    def no_job_files_message(jobs_dir_exists, sidekiq_line = T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:95
-    def no_jobs_or_channels_message(jobs_dir_exists, channels_note); end
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:111
+    def no_jobs_or_channels_message(jobs_dir_exists, channels_note, sidekiq_line = T.unsafe(nil)); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_job_pattern.rb:124
+    def sidekiq_queues_line(jobs_data); end
+  end
+end
+
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_mailers.rb:5
+class RailsAiContext::Tools::GetMailers < ::RailsAiContext::Tools::BaseTool
+  extend ::RailsAiContext::Tools::SafeCall
+
+  class << self
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_mailers.rb:37
+    def call(**kwargs); end
   end
 end
 
@@ -8193,27 +10254,27 @@ class RailsAiContext::Tools::GetModelDetails < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:35
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:42
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:476
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:478
     def extract_concern_methods(concern_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:405
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:407
     def extract_custom_validate_bodies(model_name, method_names); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:449
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:451
     def extract_method_signatures(model_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:507
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:505
     def extract_model_structure(model_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:426
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:428
     def extract_source_defined_methods(model_name, class_methods: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:107
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_model_details.rb:109
     def format_model(name, data); end
   end
 end
@@ -8223,39 +10284,39 @@ class RailsAiContext::Tools::GetPartialInterface < ::RailsAiContext::Tools::Base
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:28
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:35
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:304
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:309
     def extract_local_variable_references(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:471
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:476
     def extract_locals_from_render(line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:283
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:288
     def extract_magic_comment_locals(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:499
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:504
     def extract_method_calls_on_locals(source, locals); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:529
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:534
     def find_available_partials(views_dir, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:372
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:377
     def find_render_sites(views_dir, partial, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:175
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:180
     def format_full(partial_name, relative_path, source, all_locals, magic_locals, render_sites, method_calls); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:130
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:135
     def format_standard(partial_name, relative_path, source, all_locals, magic_locals, render_sites, method_calls); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:113
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:118
     def format_summary(partial_name, all_locals, magic_locals, render_sites); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:226
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_partial_interface.rb:231
     def resolve_partial_path(views_dir, partial); end
   end
 end
@@ -8265,10 +10326,13 @@ class RailsAiContext::Tools::GetRoutes < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_routes.rb:43
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_routes.rb:54
     def call(**kwargs); end
 
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_routes.rb:37
+    def framework_controller?(name); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_routes.rb:41
     def route_prefixes; end
   end
 end
@@ -8278,24 +10342,27 @@ class RailsAiContext::Tools::GetSchema < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:45
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:52
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:330
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:215
+    def adapter_label(_schema = T.unsafe(nil)); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:339
     def format_schema_markdown(schema); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:256
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:265
     def format_table_markdown(name, data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:210
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:219
     def models_for_table(table_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:244
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:253
     def secondary_databases_lines(schema); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:227
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_schema.rb:236
     def static_source_lines(schema); end
   end
 end
@@ -8305,40 +10372,49 @@ class RailsAiContext::Tools::GetServicePattern < ::RailsAiContext::Tools::BaseTo
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:27
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:33
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:317
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:214
+    def constant_for(file, services_dir); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:358
     def detect_common_pattern(stats); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:201
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:218
     def extract_class_name(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:231
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:272
     def extract_dependencies(source, own_class_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:206
-    def extract_initialize_params(source); end
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:253
+    def extract_initialize_params(owned); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:212
-    def extract_public_methods(source); end
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:260
+    def extract_public_methods(owned); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:258
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:299
     def extract_rescue_blocks(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:268
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:309
     def extract_side_effects(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:291
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:332
     def find_callers(class_name, real_root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:123
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:131
     def format_service_listing(service_files, services_dir, root, detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:52
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:58
     def format_single_service(service, service_files, services_dir, root); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:238
+    def owned_methods(source, expected_constant = T.unsafe(nil)); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_service_pattern.rb:265
+    def primary_owner(methods, expected_constant); end
   end
 end
 
@@ -8347,21 +10423,21 @@ class RailsAiContext::Tools::GetStimulus < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:35
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:42
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:254
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:255
     def detect_lifecycle(relative_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:233
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:234
     def find_views_using(controller_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:163
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:164
     def format_controller_full(ctrl); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:210
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_stimulus.rb:211
     def generate_html_attrs(ctrl); end
   end
 end
@@ -8371,30 +10447,30 @@ class RailsAiContext::Tools::GetTestInfo < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:31
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:38
     def call(**kwargs); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:185
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:186
     def max_test_file_size; end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:441
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:442
     def extract_fixture_relationships(parsed_fixtures); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:189
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:190
     def find_test_file(name, type, detail = T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:261
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:262
     def generate_test_template(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:417
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:418
     def parse_all_fixture_contents; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:346
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:347
     def parse_factory_details(relative_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:382
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_test_info.rb:383
     def parse_fixture_contents(file_path); end
   end
 end
@@ -8404,66 +10480,66 @@ class RailsAiContext::Tools::GetTurboMap < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:47
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:53
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:731
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:735
     def build_stream_wiring(model_broadcasts, rb_broadcasts, view_subscriptions); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:671
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:675
     def detect_mismatches(model_broadcasts, rb_broadcasts, view_subscriptions); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:758
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:762
     def extract_class_name(source); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:650
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:654
     def extract_frame_id(line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:662
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:666
     def extract_frame_src(line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:612
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:616
     def extract_partial_from_broadcast(line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:577
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:581
     def extract_stream_from_broadcast(line, method); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:621
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:625
     def extract_stream_from_subscription(line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:555
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:559
     def extract_stream_name_from_macro(line, macro); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:603
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:607
     def extract_target_from_broadcast(line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:261
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:265
     def format_full(model_broadcasts, rb_broadcasts, view_subscriptions, view_frames, warnings, filter_label: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:154
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:158
     def format_standard(model_broadcasts, rb_broadcasts, view_subscriptions, view_frames, warnings, filter_label: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:126
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:130
     def format_summary(model_broadcasts, rb_broadcasts, view_subscriptions, view_frames, warnings, filter_label: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:396
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:400
     def scan_model_broadcasts(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:439
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:443
     def scan_rb_broadcasts(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:523
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:527
     def scan_view_frames(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:493
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:497
     def scan_view_subscriptions(root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:715
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:719
     def streams_match?(a, b); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:113
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_turbo_map.rb:117
     def turbo_rails_absent?; end
   end
 end
@@ -8479,52 +10555,52 @@ class RailsAiContext::Tools::GetView < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:31
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:38
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:375
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:380
     def compress_tailwind(content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:494
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:499
     def extract_partial_locals(partial_name, templates); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:469
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:474
     def extract_phlex_components(content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:485
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:490
     def extract_phlex_helpers(content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:432
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:437
     def extract_view_metadata(relative_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:226
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:231
     def list_layouts(detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:464
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:469
     def phlex_view_content?(content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:514
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:519
     def read_from_disk(controller:, path:, detail:); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:400
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:405
     def read_view_content(relative_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:276
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:281
     def read_view_file(path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:353
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:358
     def resolve_template_path(path, views_dir); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:369
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:374
     def strip_svg(content); end
   end
 end
 
 # Extract helper method calls from Phlex views
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:478
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/get_view.rb:483
 RailsAiContext::Tools::GetView::PHLEX_HELPERS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:5
@@ -8532,64 +10608,64 @@ class RailsAiContext::Tools::MigrationAdvisor < ::RailsAiContext::Tools::BaseToo
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:48
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:55
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:456
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:463
     def column_exists?(table, column); end
 
     # Locking/DDL advice differs by adapter (MySQL's online DDL vs
     # Postgres's ACCESS EXCLUSIVE locks), so callers need to know which
     # family the app is actually running before printing lock advice.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:500
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:507
     def current_adapter; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:480
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:487
     def find_column_type(table, column, schema); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:257
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:264
     def generate_add_association(table, column, type, options); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:122
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:129
     def generate_add_column(table, column, type, options, table_exists); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:222
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:229
     def generate_add_index(table, column, options); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:288
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:295
     def generate_change_type(table, column, type, options); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:321
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:328
     def generate_create_table(table, columns_str, options); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:156
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:163
     def generate_remove_column(table, column, type, schema, models); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:199
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:206
     def generate_rename_column(table, column, new_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:467
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:474
     def index_exists?(table, column); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:116
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:123
     def migration_class_name(action, table, column = T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:504
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:511
     def mysql_adapter?; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:508
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:515
     def postgresql_adapter?; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:490
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:497
     def rails_version; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:429
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:436
     def show_affected_models(table, models); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:418
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:425
     def strong_migrations_gem_present?; end
 
     # Strong Migrations integration - surfaces the same warnings the gem would raise
@@ -8599,12 +10675,12 @@ class RailsAiContext::Tools::MigrationAdvisor < ::RailsAiContext::Tools::BaseToo
     # Catalog covers the most common breaking-change patterns (columns, indexes, FKs).
     # Not exhaustive - see https://github.com/ankane/strong_migrations#checks for the full list.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:357
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:364
     def strong_migrations_warnings(action, table, column, options); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:46
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/migration_advisor.rb:53
 RailsAiContext::Tools::MigrationAdvisor::VALID_ACTIONS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:5
@@ -8612,7 +10688,7 @@ class RailsAiContext::Tools::Onboard < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:24
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:31
     def call(**kwargs); end
 
     private
@@ -8621,168 +10697,165 @@ class RailsAiContext::Tools::Onboard < ::RailsAiContext::Tools::BaseTool
     # ActiveRecord adds automatically for required belongs_to associations.
     # Those aren't hand-written rules, so the count deserves a qualifier.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:578
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:582
     def all_implicit_belongs_to_validations?(data); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:622
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:606
     def central_models(models, limit = T.unsafe(nil)); end
 
     # Collect domain signals from jobs, services, models, gems, and conventions
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:646
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:630
     def collect_purpose_signals(ctx); end
 
     # ── Full: standard + all subsystems ──────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:102
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:109
     def compose_full(ctx); end
 
     # ── Quick: single paragraph ──────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:45
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:52
     def compose_quick(ctx); end
 
     # ── Standard: structured walkthrough ─────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:87
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:94
     def compose_standard(ctx); end
 
-    # "1 model" / "3 models" - raw interpolation reads wrong at count 1
-    #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:571
-    def count_phrase(count, noun); end
-
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:704
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:688
     def extract_architecture(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:698
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:682
     def extract_gem_names(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:672
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:656
     def extract_job_names(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:692
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:676
     def extract_model_names(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:678
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:662
     def extract_service_names; end
 
     # Infer AI/ML processing features
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:772
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:756
     def infer_ai_processing(service_names, job_names, gem_names); end
 
     # Infer a short description of what the app does from its jobs,
     # services, models, gems, and architecture patterns.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:634
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:618
     def infer_app_purpose(ctx); end
 
     # Infer the primary domain of the app (e.g., "news aggregation", "e-commerce")
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:711
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:695
     def infer_domain(model_names, job_names, service_names); end
 
     # Infer e-commerce features
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:820
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:804
     def infer_ecommerce(model_names, service_names, gem_names); end
 
     # Infer ActivityPub/federation features
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:759
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:743
     def infer_federation(service_names, gem_names, model_names); end
 
     # Infer content ingestion sources from job/service names
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:743
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:727
     def infer_ingestion_sources(job_names, service_names); end
 
     # Infer messaging/real-time features
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:831
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:815
     def infer_messaging(model_names, job_names); end
 
     # Infer push/notification features
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:798
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:782
     def infer_notifications(service_names, job_names); end
 
     # Infer search capabilities
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:809
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:793
     def infer_search(gem_names, architecture); end
 
     # Infer social features (follows, likes, etc.)
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:785
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:769
     def infer_social_features(model_names, service_names); end
 
     # Join a list of capabilities with commas and "and" before the last
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:875
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:859
     def join_capabilities(items); end
 
     # Quick one-line frontend summary from conventions
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:842
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:826
     def quick_frontend_summary(ctx); end
 
-    # Resolve the DB adapter name, preferring live config over schema introspection
+    # The gems loop here let the LAST match win, so an app carrying both pg
+    # and sqlite3 was told SQLite by onboard and PostgreSQL by the
+    # generated files. One seam, one answer.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:596
-    def resolve_db_adapter(ctx, schema); end
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:602
+    def resolve_db_adapter(ctx, _schema = T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:473
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:482
     def section_api(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:189
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:196
     def section_auth(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:157
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:164
     def section_data_model(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:492
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:501
     def section_devops(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:535
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:544
     def section_engines(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:552
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:561
     def section_env(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:306
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:315
     def section_frontend(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:375
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:384
     def section_getting_started(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:525
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:534
     def section_i18n(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:286
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:295
     def section_jobs(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:249
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:256
     def section_key_flows(ctx); end
 
     # ── Full-only sections ───────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:395
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:404
     def section_payments(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:413
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:422
     def section_realtime(ctx); end
 
     # ── Section builders ─────────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:125
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:132
     def section_stack(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:457
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:466
     def section_storage(ctx); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:351
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/onboard.rb:360
     def section_testing(ctx); end
   end
 end
@@ -8792,7 +10865,7 @@ class RailsAiContext::Tools::PerformanceCheck < ::RailsAiContext::Tools::BaseToo
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/performance_check.rb:34
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/performance_check.rb:41
     def call(**kwargs); end
 
     private
@@ -8816,7 +10889,7 @@ class RailsAiContext::Tools::Query < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:130
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:147
     def call(**kwargs); end
 
     # Returns the first sensitive column name referenced by the SQL, or nil.
@@ -8825,75 +10898,82 @@ class RailsAiContext::Tools::Query < ::RailsAiContext::Tools::BaseTool
     # case-insensitive and word-bounded so unrelated identifiers containing
     # a sensitive substring are not false-positives.
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:287
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:303
     def references_sensitive_column?(cleaned_sql); end
+
+    # The session record is echoed back to the model; a full query body can
+    # carry literals from the app's own data, so keep only enough to
+    # recognise the call.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:142
+    def session_params(kwargs); end
 
     # ── SQL comment stripping ───────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:207
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:223
     def strip_sql_comments(sql); end
 
     # ── SQL validation (Layer 1) ────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:225
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:241
     def validate_sql(sql); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:555
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:571
     def apply_row_limit(sql, limit); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:683
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:699
     def clean_error_message(message); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:383
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:399
     def execute_explain(sql, timeout); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:333
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:349
     def execute_mysql(conn, sql, timeout); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:322
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:338
     def execute_postgresql(conn, sql, timeout); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:303
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:319
     def execute_safely(sql, row_limit, timeout_seconds); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:357
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:373
     def execute_sqlite(conn, sql, timeout); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:498
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:514
     def extract_pg_nodes(node, scans, warnings); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:662
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:678
     def format_cell(val); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:639
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:655
     def format_csv(result); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:611
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:627
     def format_table(result); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:549
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:565
     def parse_generic_explain(result); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:516
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:532
     def parse_mysql_explain(result); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:478
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:494
     def parse_pg_explain(result); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:452
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:468
     def parse_sqlite_explain(result); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:576
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:592
     def redact_results(result); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:49
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:56
 RailsAiContext::Tools::Query::ALLOWED_PREFIX = T.let(T.unsafe(nil), Regexp)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:45
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:52
 RailsAiContext::Tools::Query::BLOCKED_CLAUSES = T.let(T.unsafe(nil), Regexp)
 
 # SELECT-callable functions that give the caller a filesystem / network
@@ -8904,34 +10984,36 @@ RailsAiContext::Tools::Query::BLOCKED_CLAUSES = T.let(T.unsafe(nil), Regexp)
 #
 # Postgres: pg_read_file / pg_read_binary_file / pg_ls_dir / pg_stat_file
 #           (file read), lo_import / lo_export (large-object I/O),
-#           dblink* (cross-db exfiltration), COPY ... FROM/TO PROGRAM
-#           (arbitrary command execution when COPY permissions permit).
+#           dblink* (cross-db exfiltration).
 # MySQL:    LOAD_FILE (scalar file read outside SELECT INTO contexts).
 # SQLite:   load_extension (shared-library load - disabled by default
 #           but harden in defense).
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:64
+# COPY ... TO PROGRAM is not one of these: COPY is not a SELECT, so the
+# statement keyword blocker rejects it before this runs.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:73
 RailsAiContext::Tools::Query::BLOCKED_FUNCTIONS = T.let(T.unsafe(nil), Regexp)
 
 # ── Layer 1: SQL validation ─────────────────────────────────────
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:44
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:51
 RailsAiContext::Tools::Query::BLOCKED_KEYWORDS = T.let(T.unsafe(nil), Regexp)
 
 # MySQL `SELECT ... INTO OUTFILE 'path'` / `INTO DUMPFILE 'path'`
 # are caught by SELECT_INTO already, but make an explicit pattern so
 # the error message is accurate.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:77
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:86
 RailsAiContext::Tools::Query::BLOCKED_OUTPUT = T.let(T.unsafe(nil), Regexp)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:46
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:53
 RailsAiContext::Tools::Query::BLOCKED_SHOWS = T.let(T.unsafe(nil), Regexp)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:109
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:118
 RailsAiContext::Tools::Query::HARD_ROW_CAP = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:48
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:55
 RailsAiContext::Tools::Query::MULTI_STATEMENT = T.let(T.unsafe(nil), Regexp)
 
 # Trilogy is Rails 8's default MySQL adapter (`adapter_name` reports
@@ -8940,20 +11022,20 @@ RailsAiContext::Tools::Query::MULTI_STATEMENT = T.let(T.unsafe(nil), Regexp)
 # Trilogy apps silently fall through to the "unknown adapter" path
 # with no READ ONLY transaction and no statement timeout.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:116
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:125
 RailsAiContext::Tools::Query::MYSQL_ADAPTER = T.let(T.unsafe(nil), Regexp)
 
 # Lightweight proxy that quacks like ActiveRecord::Result for redacted output
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:689
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:705
 class RailsAiContext::Tools::Query::ResultProxy
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:692
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:708
   def initialize(columns, rows); end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:690
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:706
   def columns; end
 
-  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:690
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:706
   def rows; end
 end
 
@@ -8968,10 +11050,10 @@ end
 #      sensitive-suffix heuristic (ends_with "key") used for real result
 #      sets, so it would otherwise be redacted into uselessness.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:128
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:137
 RailsAiContext::Tools::Query::SCHEMA_METADATA_PREFIX = T.let(T.unsafe(nil), Regexp)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:47
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:54
 RailsAiContext::Tools::Query::SELECT_INTO = T.let(T.unsafe(nil), Regexp)
 
 # Defense against the column-aliasing redaction bypass:
@@ -8987,12 +11069,12 @@ RailsAiContext::Tools::Query::SELECT_INTO = T.let(T.unsafe(nil), Regexp)
 # whose own column merely looks sensitive exempts it by name through
 # `config.query_allowed_columns`.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:91
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:100
 RailsAiContext::Tools::Query::SENSITIVE_COLUMN_SUFFIXES = T.let(T.unsafe(nil), Array)
 
 # SQL injection tautology patterns: OR 1=1, OR true, OR ''='', UNION SELECT, etc.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:100
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/query.rb:109
 RailsAiContext::Tools::Query::TAUTOLOGY_PATTERNS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:5
@@ -9000,92 +11082,73 @@ class RailsAiContext::Tools::ReadLogs < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:78
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:47
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:295
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:237
     def available_log_files; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:225
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:194
     def detect_format(lines); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:230
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:199
     def extract_level(line, format); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:245
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:214
     def filter_by_level(lines, min_level, format); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:268
-    def redact(text); end
-
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:169
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:138
     def resolve_log_file(file_name); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:207
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:176
     def tail_file(path, num_lines); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:40
-RailsAiContext::Tools::ReadLogs::ANSI_ESCAPE = T.let(T.unsafe(nil), Regexp)
-
-# Lines that reveal env var names (dotenv, Figaro, etc.)
-#
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:74
-RailsAiContext::Tools::ReadLogs::DOTENV_PATTERN = T.let(T.unsafe(nil), Regexp)
-
-# Match ALL_CAPS env var assignments containing sensitive words
-#
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:76
-RailsAiContext::Tools::ReadLogs::ENV_VAR_LINE_PATTERN = T.let(T.unsafe(nil), Regexp)
-
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:38
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:45
 RailsAiContext::Tools::ReadLogs::LEVEL_HIERARCHY = T.let(T.unsafe(nil), Hash)
 
 # 1MB
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:36
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:43
 RailsAiContext::Tools::ReadLogs::MAX_LINES = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:35
-RailsAiContext::Tools::ReadLogs::MAX_READ_BYTES = T.let(T.unsafe(nil), Integer)
-
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/read_logs.rb:42
-RailsAiContext::Tools::ReadLogs::REDACT_PATTERNS = T.let(T.unsafe(nil), Array)
+RailsAiContext::Tools::ReadLogs::MAX_READ_BYTES = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:7
 class RailsAiContext::Tools::ReviewChanges < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:32
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:39
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:142
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:149
     def classify_file(path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:261
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:268
     def detect_warnings(classified, root, ref); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:158
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:165
     def gather_file_context(file, type, root, ref); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:114
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:121
     def get_changed_files(ref, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:135
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:142
     def get_commit_log(ref, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:249
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:256
     def get_file_diff(file, root, ref); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:30
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/review_changes.rb:37
 RailsAiContext::Tools::ReviewChanges::MAX_DIFF_LINES_PER_FILE = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:5
@@ -9093,46 +11156,46 @@ class RailsAiContext::Tools::RuntimeInfo < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:28
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:35
     def call(**kwargs); end
 
     private
 
     # ── Helpers ──────────────────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:315
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:322
     def format_bytes(bytes); end
 
     # ── Cache section ────────────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:222
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:229
     def gather_cache; end
 
     # ── Connection pool ──────────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:61
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:68
     def gather_connection_pool; end
 
     # ── Database section ─────────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:87
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:94
     def gather_database(detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:207
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:214
     def gather_index_usage(conn, adapter); end
 
     # ── Jobs section ─────────────────────────────────────────────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:258
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:265
     def gather_jobs(detail); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:199
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:206
     def gather_pending_migrations; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:172
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:179
     def gather_sqlite_table_sizes(conn); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:152
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/runtime_info.rb:159
     def gather_table_sizes(conn, adapter); end
   end
 end
@@ -9152,6 +11215,20 @@ end
 module RailsAiContext::Tools::SafeCall
   # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/safe_call.rb:16
   def call(**kwargs); end
+
+  private
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/safe_call.rb:67
+  def append_note(response, note); end
+
+  # The value the caller sent, when this tool takes a DetailLevel detail
+  # and that value is not one of its levels.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/safe_call.rb:60
+  def discarded_detail(kwargs); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/safe_call.rb:48
+  def failure_response(error); end
 end
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:7
@@ -9159,7 +11236,7 @@ class RailsAiContext::Tools::SearchCode < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:71
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:78
     def call(**kwargs); end
 
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:18
@@ -9167,46 +11244,46 @@ class RailsAiContext::Tools::SearchCode < ::RailsAiContext::Tools::BaseTool
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:199
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:206
     def build_regexp(pattern, options = T.unsafe(nil), timeout:); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:471
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:478
     def extract_class_context(file_path, line_num); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:509
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:516
     def extract_controller_actions_from_matches(matches); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:535
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:542
     def extract_method_body(file_path, def_line); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:487
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:494
     def extract_sibling_methods(file_path, def_line, exclude_method); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:521
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:528
     def find_routes_for_controller(ctrl_path, _actions, _root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:311
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:318
     def format_grouped(results, mixed = T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:191
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:198
     def line_marker(result, mixed); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:328
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:335
     def parse_rg_output(output, root); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:462
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:469
     def quick_search(pattern, search_path, root, limit, exclude_tests); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:207
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:214
     def ripgrep_available?; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:212
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:219
     def search_with_ripgrep(pattern, search_path, file_type, max_results, root, ctx_lines = T.unsafe(nil), exclude_tests: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:276
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:283
     def search_with_ruby(pattern, search_path, file_type, max_results, root, exclude_tests: T.unsafe(nil)); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:343
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_code.rb:350
     def trace_method(method_name, root, path, exclude_tests); end
   end
 end
@@ -9222,66 +11299,109 @@ class RailsAiContext::Tools::SearchDocs < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:44
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:51
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:144
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:151
     def compute_score(tokens, topic); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:129
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:136
     def detect_rails_branch; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:211
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:218
     def fetch_content(topic, branch, url); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:192
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:199
     def format_fetch_results(results, query, source, branch); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:174
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:181
     def format_results(results, query, source, branch); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:107
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:114
     def load_index; end
 
     # Derive URL at runtime - no hardcoded URLs stored in index.json
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:159
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:166
     def url_for(topic, branch); end
   end
 end
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:42
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:49
 RailsAiContext::Tools::SearchDocs::INDEX_PATH = T.let(T.unsafe(nil), String)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:41
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/search_docs.rb:48
 RailsAiContext::Tools::SearchDocs::VALID_SOURCES = T.let(T.unsafe(nil), Array)
+
+# Asking for an introspection section and answering honestly when it is
+# unusable are one operation. A tool names the section and what to call
+# it; everything that could make the answer dishonest - the section was
+# never introspected, the introspector raised, the data source was
+# absent, the app is API-only, the tier cannot serve it - is handled
+# here, and the block only ever sees real data.
+#
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/section_fetch.rb:11
+module RailsAiContext::Tools::SectionFetch
+  # @param unusable_message [String] one answer for both "never
+  #   introspected" and "the introspector raised", for tools that do not
+  #   distinguish them.
+  # @return the block's value, or a text response explaining why not.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/section_fetch.rb:24
+  def fetch_section(key, subject: T.unsafe(nil), remedy: T.unsafe(nil), api_only: T.unsafe(nil), unusable_message: T.unsafe(nil)); end
+
+  private
+
+  # Driven by the introspector's own declaration rather than by whatever
+  # the section hash happens to hold, so a runtime-only section refuses
+  # for the reason it actually cannot answer.
+  #
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/section_fetch.rb:64
+  def static_refusal_for(key); end
+
+  # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/section_fetch.rb:74
+  def unavailable_static_reason; end
+
+  class << self
+    # Whether a section can be rendered at all: a hash carrying :error (the
+    # introspector raised) or :unavailable (the data source was absent) is
+    # not empty data, it is no data. The serializers ask through
+    # Serializers::SectionGuard, which defers here.
+    #
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/section_fetch.rb:16
+    def usable?(data); end
+  end
+end
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:5
 class RailsAiContext::Tools::SecurityScan < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:59
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:65
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:110
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:116
     def brakeman_available?; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:184
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:195
     def format_full(warnings, checks_run); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:121
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:127
     def format_response(warnings, tracker, detail, files); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:167
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:178
     def format_standard(warnings, checks_run); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:145
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:156
     def format_summary(warnings, checks_run); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:152
+    def scan_headline(warnings, checks_run); end
   end
 end
 
@@ -9289,13 +11409,13 @@ end
 # Accepts: "sql", "SQL", "xss", "XSS", etc.
 # Full Brakeman names (e.g. "CheckSQL", "CheckCrossSiteScripting") pass through unchanged.
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:44
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:50
 RailsAiContext::Tools::SecurityScan::CHECK_ALIASES = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:38
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:44
 RailsAiContext::Tools::SecurityScan::CONFIDENCE_MAP = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:39
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/security_scan.rb:45
 RailsAiContext::Tools::SecurityScan::CONFIDENCE_NAMES = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:5
@@ -9303,21 +11423,21 @@ class RailsAiContext::Tools::SessionContext < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:28
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:35
     def call(**kwargs); end
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:57
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:64
     def parse_mark(mark_string); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:64
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:71
     def render_status; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:89
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:96
     def render_summary; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:122
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/session_context.rb:129
     def time_ago(iso_timestamp); end
   end
 end
@@ -9327,7 +11447,7 @@ class RailsAiContext::Tools::Validate < ::RailsAiContext::Tools::BaseTool
   extend ::RailsAiContext::Tools::SafeCall
 
   class << self
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:43
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:50
     def call(**kwargs); end
 
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:17
@@ -9335,32 +11455,32 @@ class RailsAiContext::Tools::Validate < ::RailsAiContext::Tools::BaseTool
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:156
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:172
     def find_file_suggestion(file); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:212
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:228
     def validate_erb(full_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:237
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:253
     def validate_javascript(full_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:254
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:270
     def validate_javascript_fallback(full_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:174
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:190
     def validate_ruby(full_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:178
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:194
     def validate_ruby_prism(full_path); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:197
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:213
     def validate_ruby_subprocess(full_path); end
   end
 end
 
 # ── Main entry point ─────────────────────────────────────────────
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:41
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate.rb:48
 RailsAiContext::Tools::Validate::VALID_LEVELS = T.let(T.unsafe(nil), Array)
 
 # Semantic (Rails-aware) half of the rails_validate tool: the Prism
@@ -9378,7 +11498,7 @@ class RailsAiContext::Tools::ValidateSemantics < ::RailsAiContext::Tools::BaseTo
   class << self
     # ── Brakeman security scan (runs once for all files) ───────────
     #
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:837
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:857
     def check_brakeman_security(files); end
 
     # ── Semantic check dispatcher ────────────────────────────────────
@@ -9388,31 +11508,31 @@ class RailsAiContext::Tools::ValidateSemantics < ::RailsAiContext::Tools::BaseTo
 
     private
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:867
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:887
     def brakeman_available?; end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:368
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:386
     def build_route_name_set(routes); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:494
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:514
     def check_callback_existence_ast(file, visitor, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:383
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:401
     def check_column_references_ast(file, visitor, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:401
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:419
     def check_column_references_regex(file, content, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:562
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:582
     def check_has_many_dependent(file, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:668
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:688
     def check_instance_variable_usage(file, content, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:782
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:802
     def check_memory_loading(file, content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:584
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:604
     def check_missing_fk_index(file, context); end
 
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:262
@@ -9421,34 +11541,37 @@ class RailsAiContext::Tools::ValidateSemantics < ::RailsAiContext::Tools::BaseTo
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:286
     def check_partial_existence_regex(file, content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:807
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:827
     def check_performance_warnings(file, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:755
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:775
     def check_respond_to_template_existence(file, content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:527
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:547
     def check_route_action_consistency(file, context); end
 
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:316
-    def check_route_helpers_ast(visitor, context); end
+    def check_route_helpers_ast(file, visitor, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:341
-    def check_route_helpers_regex(content, context); end
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:344
+    def check_route_helpers_regex(file, content, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:624
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:644
     def check_stimulus_controllers(content, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:447
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:467
     def check_strong_params_ast(file, visitor, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:720
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:740
     def check_turbo_stream_channels(file, content, context); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:364
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:375
+    def helper_shaped_columns(file, context); end
+
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:382
     def local_route_like_method_names(content); end
 
-    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:422
+    # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:440
     def model_valid_columns(file, context); end
 
     # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:239
@@ -9472,7 +11595,7 @@ RailsAiContext::Tools::ValidateSemantics::DEVISE_HELPER_NAMES = T.let(T.unsafe(n
 
 # ── CHECK: Memory-loading anti-pattern ───────────────────────────
 #
-# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:780
+# pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:800
 RailsAiContext::Tools::ValidateSemantics::MEMORY_LOAD_METHODS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/rails-ai-context#lib/rails_ai_context/tools/validate_semantics.rb:15
