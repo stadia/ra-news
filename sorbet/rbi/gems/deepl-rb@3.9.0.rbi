@@ -144,6 +144,36 @@
 # Copyright 2026 DeepL SE (https://www.deepl.com)
 # Use of this source code is governed by an MIT
 # license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
 # Copyright 2018 Daniel Herzog
 # Use of this source code is governed by an MIT
 # license that can be found in the LICENSE.md file.
@@ -166,6 +196,18 @@
 # Use of this source code is governed by an MIT
 # license that can be found in the LICENSE.md file.
 # Copyright 2018 Daniel Herzog
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
+# Use of this source code is governed by an MIT
+# license that can be found in the LICENSE.md file.
+# Copyright 2026 DeepL SE (https://www.deepl.com)
 # Use of this source code is governed by an MIT
 # license that can be found in the LICENSE.md file.
 # Copyright 2026 DeepL SE (https://www.deepl.com)
@@ -199,45 +241,61 @@ module DeepL
 
   # -- API shortcuts
   #
-  # pkg:gem/deepl-rb#lib/deepl.rb:95
+  # pkg:gem/deepl-rb#lib/deepl.rb:110
   def api; end
 
   # -- Configuration
   #
-  # pkg:gem/deepl-rb#lib/deepl.rb:170
+  # pkg:gem/deepl-rb#lib/deepl.rb:201
   def configuration; end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:174
+  # pkg:gem/deepl-rb#lib/deepl.rb:205
   def configure; end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:109
+  # pkg:gem/deepl-rb#lib/deepl.rb:140
   def document(options = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:114
+  # pkg:gem/deepl-rb#lib/deepl.rb:145
   def glossaries(options = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:141
+  # pkg:gem/deepl-rb#lib/deepl.rb:172
   def http_client; end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:99
+  # pkg:gem/deepl-rb#lib/deepl.rb:114
   def languages(options = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:129
+  # pkg:gem/deepl-rb#lib/deepl.rb:160
   def rephrase(text, target_lang = T.unsafe(nil), writing_style = T.unsafe(nil), tone = T.unsafe(nil), options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:119
+  # pkg:gem/deepl-rb#lib/deepl.rb:150
   def style_rules(options = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:103
+  # Translates +text+ from +source_lang+ into +target_lang+.
+  #
+  # @param [String, Array<String>] text Text(s) to translate.
+  # @param [String, nil] source_lang Source language. `nil` enables automatic detection.
+  # @param [String] target_lang Target language.
+  # @param [Hash] options Additional (body) options for the translation. Notable options:
+  #   * +:glossary_id+ - A single glossary ID (string) to use for the translation. Requires
+  #     +source_lang+ to be set. Cannot be combined with +:glossary_ids+.
+  #   * +:glossary_ids+ - An array of up to 5 glossary IDs (strings or
+  #     `DeepL::Resources::Glossary` objects) to use for the translation. Glossaries are applied
+  #     in order (first match wins). Requires +source_lang+ to be set. Cannot be combined with
+  #     +:glossary_id+. Raises `ArgumentError` if these rules are violated or more than 5 IDs are
+  #     provided.
+  # @param [Hash] additional_headers Additional HTTP headers for the translation.
+  # @return [DeepL::Resources::Text, Array<DeepL::Resources::Text>] Translated text resource(s).
+  #
+  # pkg:gem/deepl-rb#lib/deepl.rb:134
   def translate(text, source_lang, target_lang, options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:124
+  # pkg:gem/deepl-rb#lib/deepl.rb:155
   def translation_memories(options = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:136
+  # pkg:gem/deepl-rb#lib/deepl.rb:167
   def usage(options = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl.rb:145
+  # pkg:gem/deepl-rb#lib/deepl.rb:176
   def with_session(client_options = T.unsafe(nil)); end
 end
 
@@ -468,7 +526,7 @@ class DeepL::DocumentApi
   #                             already exists.
   # @return [DeepL::Resources::DocumentTranslationStatus] Status of the document translation.
   #
-  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:63
+  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:73
   def download(document_handle, output_file); end
 
   # Queries the status of the translation of the document with the given +document_handle+.
@@ -479,7 +537,7 @@ class DeepL::DocumentApi
   # @param [Hash] additional_headers Additional HTTP headers for the status check.
   # @return [DeepL::Resources::DocumentTranslationStatus] Status of the document translation.
   #
-  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:48
+  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:58
   def get_status(document_handle, options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
 
   # Translates a document with the DeepL API, `sleep`ing during waiting periods. Returns the
@@ -505,7 +563,7 @@ class DeepL::DocumentApi
   # @param [Hash] additional_headers Additional headers for the upload.
   # @return [DeepL::Resources::DocumentTranslationStatus] Status of the document translation.
   #
-  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:92
+  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:102
   def translate_document(input_file, output_file, source_lang, target_lang, filename = T.unsafe(nil), options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
 
   # Uploads the file at the given +input_file_path+ to be translated from +source_lang+ into
@@ -522,16 +580,26 @@ class DeepL::DocumentApi
   # @param [String, nil] filename The filename of the file, including its extension. Used to open
   #                               the different kinds of documents (PDFs, etc). If nil, will use
   #                               the filename of +input_file_path+.
-  # @param [Hash] options Additional (body) options for the upload.
+  # @param [Hash] options Additional (body) options for the upload. Notable glossary options:
+  #                       +:glossary_id+ (a single glossary ID) or +:glossary_ids+ (an array of
+  #                       up to 5 glossary IDs, as strings or `DeepL::Resources::Glossary`
+  #                       objects). +:glossary_ids+ requires +source_lang+ to be set, cannot be
+  #                       combined with +:glossary_id+, and raises `ArgumentError` if these rules
+  #                       are violated or more than 5 IDs are provided. Notable style/translation
+  #                       memory options (mirroring text translation): +:style_rule+ (a style rule
+  #                       ID string or a `DeepL::Resources::StyleRule` object),
+  #                       +:translation_memory+ (a translation memory ID string or a
+  #                       `DeepL::Resources::TranslationMemory` object), and
+  #                       +:translation_memory_threshold+ (integer 0-100, recommended minimum 75).
   # @param [Hash] additional_headers Additional HTTP headers for the upload.
   # @return [DeepL::Resources::DocumentHandle] Document handle for the uploaded document.
   #
-  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:32
+  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:42
   def upload(input_file_path, source_lang, target_lang, filename = T.unsafe(nil), options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
 
   private
 
-  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:110
+  # pkg:gem/deepl-rb#lib/deepl/document_api.rb:120
   def translate_document_wait_and_download(document_handle, output_file); end
 end
 
@@ -678,109 +746,144 @@ module DeepL::Requests; end
 
 # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:8
 class DeepL::Requests::Base
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:11
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:14
   def initialize(api, options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:9
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:12
   def api; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:23
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:26
   def details; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:9
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:12
   def options; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:19
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:22
   def request; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:9
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:12
   def response; end
 
   private
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:201
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:253
   def add_json_content_type(headers_to_add_to); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:206
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:258
   def add_multipart_form_content_type(headers_to_add_to); end
 
   # Apply extra body parameters to multipart form data array
   # Extra parameters will override existing keys
   #
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:70
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:73
   def apply_extra_body_parameters_to_form(form_data); end
 
   # Apply extra body parameters to a hash payload (for JSON/form-encoded requests)
   # Extra parameters will override existing keys
   #
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:59
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:62
   def apply_extra_body_parameters_to_json(payload); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:37
+  # Validates the +glossary_ids+ option and resolves it to an array of glossary ID strings.
+  #
+  # The +glossary_ids+ option accepts an array of up to `MAX_GLOSSARY_IDS` glossary
+  # identifiers. Each entry may be a glossary ID string or a
+  # `DeepL::Resources::Glossary` object. It:
+  # * requires +source_lang+ to be set,
+  # * cannot be combined with the singular +glossary_id+ option,
+  # * allows at most `MAX_GLOSSARY_IDS` identifiers.
+  #
+  # The API expects +glossary_ids+ as an array (a JSON array in the JSON translate body).
+  # Callers sending multipart/form-data (e.g. document upload) should join the returned
+  # array into a comma-separated string.
+  #
+  # @param [String, nil] source_lang The source language for the request.
+  # @return [Array<String>, nil] The list of glossary IDs, or nil if the +glossary_ids+
+  #                              option was not provided.
+  # @raise [ArgumentError] If any of the validation rules above are violated.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:195
+  def build_glossary_ids_param(source_lang); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:40
   def delete_option(name); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:162
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:165
   def delete_request; end
 
   # Files to reset: list of file objects to rewind when retrying the request
   #
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:84
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:87
   def execute_request_with_retries(req, files_to_reset = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:139
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:142
   def get_request; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:196
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:248
   def headers; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:188
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:234
   def host; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:33
+  # Subclasses that talk to a host other than the DeepL API, such as a pre-signed storage
+  # URL, override this to request through their own connection.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:240
+  def http_client; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:36
   def option(name); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:29
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:32
   def option?(name); end
 
   # Returns options excluding extra_body_parameters
   # extra_body_parameters are applied separately via apply_extra_body_parameters_* methods
   #
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:51
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:54
   def options_without_extra_params; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:146
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:149
   def patch_request(payload); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:175
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:221
   def path; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:124
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:127
   def post_request(payload); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:132
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:135
   def post_request_with_file(form_data); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:154
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:157
   def put_request(payload); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:192
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:244
   def query_params; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:41
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:44
   def set_option(name, value); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:117
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:120
   def should_retry?(response, exception, num_retries); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:183
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:229
   def uri; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:179
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:225
   def url; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:169
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:207
+  def validate_glossary_ids!(ids, source_lang); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/base.rb:172
   def validate_response!(response); end
 end
+
+# Maximum number of glossaries that may be provided via the +glossary_ids+ option.
+#
+# pkg:gem/deepl-rb#lib/deepl/requests/base.rb:10
+DeepL::Requests::Base::MAX_GLOSSARY_IDS = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/deepl-rb#lib/deepl/requests/document/download.rb:8
 module DeepL::Requests::Document; end
@@ -872,15 +975,47 @@ class DeepL::Requests::Document::Upload < ::DeepL::Requests::Base
   private
 
   # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:56
+  def add_extra_options_to_form(form_data); end
+
+  # Validates and serializes the `glossary_ids` option (see
+  # `DeepL::Requests::Base#build_glossary_ids_param`) and appends it to the form data as a
+  # comma-separated `glossary_ids` field. Requires `source_lang`, cannot be combined with
+  # the singular `glossary_id` option, and allows at most 5 IDs.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:68
+  def add_glossary_ids_to_form(form_data); end
+
+  # Serializes the `style_rule` option and appends it to the form data as a `style_id`
+  # field. Mirrors text translation: accepts either a style rule ID string or a
+  # `DeepL::Resources::StyleRule` object.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:76
+  def add_style_rule_to_form(form_data); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:105
   def add_supported_options_to_form(form_data); end
+
+  # Serializes the `translation_memory_threshold` option (integer 0-100) and appends it to
+  # the form data as a `translation_memory_threshold` field, mirroring text translation.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:98
+  def add_translation_memory_threshold_to_form(form_data); end
+
+  # Serializes the `translation_memory` option and appends it to the form data as a
+  # `translation_memory_id` field. Mirrors text translation: the `translation_memory`
+  # option accepts either a translation memory ID string or a
+  # `DeepL::Resources::TranslationMemory` object.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:88
+  def add_translation_memory_to_form(form_data); end
 
   # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:45
   def build_base_form_data(input_file); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:63
+  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:112
   def build_doc_handle(request, response); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:69
+  # pkg:gem/deepl-rb#lib/deepl/requests/document/upload.rb:118
   def path; end
 end
 
@@ -1342,7 +1477,7 @@ class DeepL::Requests::Translate < ::DeepL::Requests::Base
   # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:30
   def custom_instructions; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:71
+  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:74
   def details; end
 
   # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:30
@@ -1372,18 +1507,18 @@ class DeepL::Requests::Translate < ::DeepL::Requests::Base
   # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:30
   def text; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:76
+  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:79
   def to_s; end
 
   private
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:90
+  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:93
   def build_texts(request, response); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:101
+  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:104
   def path; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:82
+  # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:85
   def tweak_parameters!; end
 end
 
@@ -1405,37 +1540,288 @@ DeepL::Requests::Translate::STRING_TO_BOOLEAN_CONVERSION = T.let(T.unsafe(nil), 
 # pkg:gem/deepl-rb#lib/deepl/requests/translate.rb:9
 DeepL::Requests::Translate::STRING_TO_BOOLEAN_MAP = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:8
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/base.rb:8
 module DeepL::Requests::TranslationMemory; end
 
-# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:9
-class DeepL::Requests::TranslationMemory::List < ::DeepL::Requests::Base
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:10
-  def initialize(api, options = T.unsafe(nil)); end
+# Common behaviour of the translation memory endpoints: they are served under the `v3`
+# prefix instead of the configured API version, and take their parameters in the query
+# string rather than in the request body.
+#
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/base.rb:14
+class DeepL::Requests::TranslationMemory::Base < ::DeepL::Requests::Base
+  private
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:14
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/base.rb:26
+  def build_query_string; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/base.rb:41
+  def delete_request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/base.rb:37
+  def get_request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/base.rb:33
+  def query_params; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/base.rb:17
+  def uri; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_export.rb:9
+class DeepL::Requests::TranslationMemory::CreateExport < ::DeepL::Requests::TranslationMemory::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_export.rb:12
+  def initialize(api, translation_memory_id, options = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_export.rb:17
   def request; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:18
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_export.rb:21
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_export.rb:10
+  def translation_memory_id; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_export.rb:27
+  def build_translation_memory_export(request, response); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_export.rb:35
+  def path; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:9
+class DeepL::Requests::TranslationMemory::CreateImport < ::DeepL::Requests::TranslationMemory::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:12
+  def initialize(api, file_name, content_length, options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:10
+  def content_length; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:24
+  def details; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:10
+  def file_name; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:20
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:28
   def to_s; end
 
   private
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:45
-  def build_query_string; end
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:42
+  def build_translation_memory_import(request, response); end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:29
-  def build_translation_memory_list(request, response); end
-
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:24
-  def get_request; end
-
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:52
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:47
   def path; end
 
-  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:36
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/create_import.rb:34
+  def payload; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/destroy.rb:9
+class DeepL::Requests::TranslationMemory::Destroy < ::DeepL::Requests::TranslationMemory::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/destroy.rb:12
+  def initialize(api, translation_memory_id, options = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/destroy.rb:17
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/destroy.rb:21
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/destroy.rb:10
+  def translation_memory_id; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/destroy.rb:27
+  def build_response(_, _); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/destroy.rb:31
+  def path; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/download_export.rb:9
+class DeepL::Requests::TranslationMemory::DownloadExport < ::DeepL::Requests::TranslationMemory::StorageBase
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/download_export.rb:10
+  def initialize(api, download_url, output_file); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/download_export.rb:15
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/download_export.rb:19
+  def to_s; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/download_export.rb:29
+  def extract_file(_request, response); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/download_export.rb:25
+  def get_request; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find.rb:9
+class DeepL::Requests::TranslationMemory::Find < ::DeepL::Requests::TranslationMemory::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find.rb:12
+  def initialize(api, translation_memory_id, options = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find.rb:17
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find.rb:21
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find.rb:10
+  def translation_memory_id; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find.rb:27
+  def build_translation_memory(request, response); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find.rb:32
+  def path; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find_job.rb:9
+class DeepL::Requests::TranslationMemory::FindJob < ::DeepL::Requests::TranslationMemory::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find_job.rb:12
+  def initialize(api, job_id, options = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find_job.rb:10
+  def job_id; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find_job.rb:17
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find_job.rb:21
+  def to_s; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find_job.rb:27
+  def build_job(request, response); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/find_job.rb:32
+  def path; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:9
+class DeepL::Requests::TranslationMemory::List < ::DeepL::Requests::TranslationMemory::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:12
+  def initialize(api, options = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:16
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:20
+  def to_s; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:26
+  def build_translation_memory_list(request, response); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:39
+  def path; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:33
+  def query_params; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/list.rb:10
+DeepL::Requests::TranslationMemory::List::SUPPORTED_OPTIONS = T.let(T.unsafe(nil), Array)
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:9
+class DeepL::Requests::TranslationMemory::Segments < ::DeepL::Requests::TranslationMemory::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:14
+  def initialize(api, translation_memory_id, options = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:19
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:23
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:12
+  def translation_memory_id; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:29
+  def build_segments(request, response); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:40
+  def path; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:34
+  def query_params; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/segments.rb:10
+DeepL::Requests::TranslationMemory::Segments::SUPPORTED_OPTIONS = T.let(T.unsafe(nil), Array)
+
+# Common behaviour of the requests to a pre-signed storage URL handed out by the API, such
+# as a translation memory upload or download URL. Those URLs point outside of the DeepL
+# API, so they are requested over their own connection and the DeepL `Authorization` header
+# is deliberately not sent.
+#
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/storage_base.rb:15
+class DeepL::Requests::TranslationMemory::StorageBase < ::DeepL::Requests::Base
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/storage_base.rb:18
+  def initialize(api, storage_url, options = T.unsafe(nil), additional_headers = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/storage_base.rb:16
+  def storage_url; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/storage_base.rb:41
+  def headers; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/storage_base.rb:29
+  def http_client; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/storage_base.rb:37
   def uri; end
 end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:9
+class DeepL::Requests::TranslationMemory::UploadFile < ::DeepL::Requests::TranslationMemory::StorageBase
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:14
+  def initialize(api, upload_url, file_content, content_type = T.unsafe(nil)); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:12
+  def content_type; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:24
+  def details; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:12
+  def file_content; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:20
+  def request; end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:28
+  def to_s; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:41
+  def build_response(_, _); end
+
+  # pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:34
+  def put_request; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/requests/translation_memory/upload_file.rb:10
+DeepL::Requests::TranslationMemory::UploadFile::DEFAULT_CONTENT_TYPE = T.let(T.unsafe(nil), String)
 
 # pkg:gem/deepl-rb#lib/deepl/requests/usage.rb:8
 class DeepL::Requests::Usage < ::DeepL::Requests::Base
@@ -1730,8 +2116,11 @@ end
 
 # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:8
 class DeepL::Resources::TranslationMemory < ::DeepL::Resources::Base
-  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:11
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:12
   def initialize(translation_memory, *args); end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:9
+  def creation_time; end
 
   # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:9
   def name; end
@@ -1745,11 +2134,293 @@ class DeepL::Resources::TranslationMemory < ::DeepL::Resources::Base
   # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:9
   def target_languages; end
 
-  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:20
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:23
   def to_s; end
 
   # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:9
   def translation_memory_id; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory.rb:9
+  def updated_time; end
+end
+
+# A translation memory export job. Poll the job until it is finished to obtain the download
+# URL of the exported TMX file.
+#
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_export.rb:12
+class DeepL::Resources::TranslationMemoryExport < ::DeepL::Resources::Base
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_export.rb:15
+  def initialize(translation_memory_export, reused_existing, *args); end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_export.rb:13
+  def job_id; end
+
+  # Checks if the API reused a previously completed export instead of starting a new one.
+  #
+  # @return [true] if so
+  #
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_export.rb:28
+  def reused_existing?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_export.rb:32
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_export.rb:13
+  def translation_memory_id; end
+end
+
+# A newly created translation memory import job. The TMX file must be uploaded to
+# `upload_url` before `expires_at`, processing starts once the upload is detected.
+#
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_import.rb:12
+class DeepL::Resources::TranslationMemoryImport < ::DeepL::Resources::Base
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_import.rb:15
+  def initialize(translation_memory_import, *args); end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_import.rb:13
+  def expires_at; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_import.rb:13
+  def job_id; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_import.rb:24
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_import.rb:13
+  def upload_url; end
+end
+
+# Status of a translation memory import or export job. The API returns exactly one result.
+#
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:73
+class DeepL::Resources::TranslationMemoryJob < ::DeepL::Resources::Base
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:81
+  def initialize(job, *args); end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:105
+  def awaiting_input?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def creation_time; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def display_name; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:109
+  def error?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:113
+  def error_message; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:101
+  def finished?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def job_id; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def operation; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def product; end
+
+  # The single result of the job, or nil if the API returned none.
+  #
+  # @return [DeepL::Resources::TranslationMemoryJobResult, nil]
+  #
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:93
+  def result; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def results; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def source_content_length; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def source_content_type; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:97
+  def status; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:117
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def translation_memory_id; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:77
+  def updated_time; end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:123
+  def extract_basic_fields(job); end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:131
+  def extract_parameters(job); end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:75
+DeepL::Resources::TranslationMemoryJob::OPERATION_EXPORT = T.let(T.unsafe(nil), String)
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:74
+DeepL::Resources::TranslationMemoryJob::OPERATION_IMPORT = T.let(T.unsafe(nil), String)
+
+# The outcome of a translation memory import or export job.
+#
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:11
+class DeepL::Resources::TranslationMemoryJobResult
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:22
+  def initialize(result); end
+
+  # Checks if the job is still waiting for the TMX file to be uploaded. Note that the API
+  # detects an upload asynchronously, so a job keeps reporting this status for a while after
+  # its file has been uploaded.
+  #
+  # @return [true] if so
+  #
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:52
+  def awaiting_input?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:19
+  def download_url; end
+
+  # Checks if there was an error during the job, including it having expired.
+  #
+  # @return [true] if so
+  #
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:61
+  def error?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:19
+  def error_message; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:19
+  def expires_at; end
+
+  # Checks if the job terminated. Note that this could be due to an error as well, but means
+  # no further waiting is necessary.
+  #
+  # @return [true] if so
+  #
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:41
+  def finished?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:19
+  def required_action; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:19
+  def skipped_segment_count; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:19
+  def status; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:65
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:19
+  def translation_memory_id; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:12
+DeepL::Resources::TranslationMemoryJobResult::STATUS_AWAITING_INPUT = T.let(T.unsafe(nil), String)
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:14
+DeepL::Resources::TranslationMemoryJobResult::STATUS_COMPLETED = T.let(T.unsafe(nil), String)
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:15
+DeepL::Resources::TranslationMemoryJobResult::STATUS_DOWNLOADED = T.let(T.unsafe(nil), String)
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:17
+DeepL::Resources::TranslationMemoryJobResult::STATUS_EXPIRED = T.let(T.unsafe(nil), String)
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:16
+DeepL::Resources::TranslationMemoryJobResult::STATUS_FAILED = T.let(T.unsafe(nil), String)
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_job.rb:13
+DeepL::Resources::TranslationMemoryJobResult::STATUS_PROCESSING = T.let(T.unsafe(nil), String)
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:26
+class DeepL::Resources::TranslationMemorySegment
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:30
+  def initialize(segment); end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:27
+  def creation_time; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:27
+  def last_used_time; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:27
+  def source_segment_id; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:27
+  def source_text; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:27
+  def targets; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:41
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:27
+  def updated_time; end
+end
+
+# One page of the segments of a translation memory. Pagination is cursor-based: pass
+# `next_page_cursor` as the `page_cursor` option of the next request until it is nil.
+#
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:50
+class DeepL::Resources::TranslationMemorySegments < ::DeepL::Resources::Base
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:53
+  def initialize(segments_response, *args); end
+
+  # Checks whether another page of segments can be requested.
+  #
+  # @return [true] if so
+  #
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:69
+  def next_page?; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:51
+  def next_page_cursor; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:51
+  def segment_count; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:51
+  def segments; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:73
+  def to_s; end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:8
+class DeepL::Resources::TranslationMemoryTargetSegment
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:12
+  def initialize(target_segment); end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:9
+  def creation_time; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:9
+  def last_used_time; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:9
+  def target_language; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:9
+  def target_segment_id; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:9
+  def target_text; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:21
+  def to_s; end
+
+  # pkg:gem/deepl-rb#lib/deepl/resources/translation_memory_segments.rb:9
+  def updated_time; end
 end
 
 # pkg:gem/deepl-rb#lib/deepl/resources/usage.rb:8
@@ -1808,12 +2479,209 @@ end
 
 # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:7
 class DeepL::TranslationMemoryApi
-  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:8
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:11
   def initialize(api, options = T.unsafe(nil)); end
 
-  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:13
+  # Creates an export job for a translation memory. Poll `find_job` for the download URL of the
+  # exported TMX file. Use `export_to_filepath` to do both steps and write the file at once.
+  #
+  # @param [String, DeepL::Resources::TranslationMemory] translation_memory Translation memory
+  #                                                                         ID or object.
+  # @param [Hash] options Additional options for the request.
+  # @return [DeepL::Resources::TranslationMemoryExport] The job ID, and whether the API reused a
+  #                                                     previously completed export.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:126
+  def create_export(translation_memory, options = T.unsafe(nil)); end
+
+  # Creates an import job for a new translation memory. The job only declares the file, upload
+  # the TMX file itself to the returned upload URL with `upload_file`, then poll `find_job` for
+  # the outcome. Use `import_from_filepath` to do all three steps at once.
+  #
+  # @param [String] file_name Name of the TMX file to import, for example "legal.tmx".
+  # @param [Integer] content_length Size of the TMX file in bytes.
+  # @param [String, nil] content_type MIME type of the file, defaults to "application/xml".
+  # @param [String, nil] display_name Name of the resulting translation memory, defaults to the
+  #                                   file name.
+  # @param [Hash] additional_headers Additional HTTP headers for the request.
+  # @return [DeepL::Resources::TranslationMemoryImport] The job ID and the upload URL.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:89
+  def create_import(file_name, content_length, content_type: T.unsafe(nil), display_name: T.unsafe(nil), additional_headers: T.unsafe(nil)); end
+
+  # Deletes a translation memory.
+  #
+  # @param [String, DeepL::Resources::TranslationMemory] translation_memory Translation memory
+  #                                                                         ID or object.
+  # @param [Hash] options Additional options for the request.
+  # @return [String] The ID of the deleted translation memory.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:70
+  def destroy(translation_memory, options = T.unsafe(nil)); end
+
+  # Downloads the TMX file of a completed export job. The download URL is a pre-signed storage
+  # URL outside of the DeepL API, so no authorization header is sent with this request.
+  #
+  # @raise [DeepL::Exceptions::Error] If the job carries no download URL, for example because
+  #                                   it has not completed yet.
+  #
+  # @param [DeepL::Resources::TranslationMemoryJob, String] job Completed export job carrying
+  #        the download URL, or the download URL itself.
+  # @param [String] output_path Path to the file to write to. Will be overwritten if the file
+  #                             already exists.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:189
+  def download_export(job, output_path); end
+
+  # Exports a translation memory to a TMX file: creates the export job, waits for it to finish
+  # and writes the result to +output_path+.
+  #
+  # @raise [DeepL::Exceptions::Error] If the export fails.
+  #
+  # @param [String, DeepL::Resources::TranslationMemory] translation_memory Translation memory
+  #                                                                         ID or object.
+  # @param [String] output_path Path to the file to write to. Will be overwritten if the file
+  #                             already exists.
+  # @param [Numeric, nil] timeout_s Maximum time in seconds to wait for the export to finish.
+  # @return [DeepL::Resources::TranslationMemoryJob] The finished export job.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:234
+  def export_to_filepath(translation_memory, output_path, timeout_s: T.unsafe(nil)); end
+
+  # Retrieves a single translation memory.
+  #
+  # @param [String, DeepL::Resources::TranslationMemory] translation_memory Translation memory
+  #                                                                         ID or object.
+  # @param [Hash] options Additional options for the request.
+  # @return [DeepL::Resources::TranslationMemory] The requested translation memory.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:35
+  def find(translation_memory, options = T.unsafe(nil)); end
+
+  # Retrieves the status of a translation memory import or export job.
+  #
+  # @param [String, DeepL::Resources::TranslationMemoryJob] job Job ID or object.
+  # @param [Hash] options Additional options for the request.
+  # @return [DeepL::Resources::TranslationMemoryJob] The current status of the job.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:139
+  def find_job(job, options = T.unsafe(nil)); end
+
+  # Imports a TMX file as a new translation memory: creates the import job, uploads the file
+  # and waits for the processing to finish.
+  #
+  # @raise [DeepL::Exceptions::Error] If the import fails.
+  #
+  # @param [String] input_file_path Path to the TMX file to import.
+  # @param [String, nil] display_name Name of the resulting translation memory, defaults to the
+  #                                   file name.
+  # @param [Numeric, nil] timeout_s Maximum time in seconds to wait for the import to finish.
+  #                                 Note that the API keeps reporting `awaiting_input` for a
+  #                                 while after the upload, so allow for a generous timeout.
+  # @return [DeepL::Resources::TranslationMemoryJob] The finished import job, its result carries
+  #                                                  the ID of the new translation memory.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:209
+  def import_from_filepath(input_file_path, display_name: T.unsafe(nil), timeout_s: T.unsafe(nil)); end
+
+  # Lists the translation memories of the account.
+  #
+  # @param [Hash] options Additional options for the request. Supports `page` (page number for
+  #                       pagination, 0-indexed) and `page_size` (number of items per page).
+  # @return [Array<DeepL::Resources::TranslationMemory>] The translation memories of the page.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:23
   def list(options = T.unsafe(nil)); end
+
+  # Retrieves one page of the segments of a translation memory. Pagination is cursor-based:
+  # omit `page_cursor` on the first call, then pass the `next_page_cursor` of the previous
+  # response until it is nil.
+  #
+  # @param [String, DeepL::Resources::TranslationMemory] translation_memory Translation memory
+  #                                                                         ID or object.
+  # @param [Hash] options Additional options for the request. Supports `page_size` (maximum
+  #                       number of segments per page, 1-100, defaults to 50), `page_cursor`
+  #                       (cursor of a previous response), `filter_text` (substring filter
+  #                       across source and target text, at least 2 characters) and
+  #                       `filter_case_sensitive` (whether the filter is case-sensitive,
+  #                       defaults to false).
+  # @return [DeepL::Resources::TranslationMemorySegments] The requested page of segments.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:56
+  def segments(translation_memory, options = T.unsafe(nil)); end
+
+  # Uploads a TMX file to the upload URL of an import job, which starts the processing. The
+  # upload URL is a pre-signed storage URL outside of the DeepL API, so no authorization header
+  # is sent with this request.
+  #
+  # @param [String, DeepL::Resources::TranslationMemoryImport] translation_memory_import Import
+  #        returned by `create_import`, or its upload URL.
+  # @param [String] file_content Content of the TMX file.
+  # @param [String] content_type MIME type of the file. Must match the `content_type` declared
+  #                              when the import job was created.
+  # @return [nil]
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:109
+  def upload_file(translation_memory_import, file_content, content_type: T.unsafe(nil)); end
+
+  # Polls a translation memory import or export job until it is finished, `sleep`ing between
+  # the status queries, and returns the final status.
+  #
+  # Note that an import job keeps reporting `awaiting_input` for a while after its file has
+  # been uploaded, because the API detects the upload asynchronously. That status is therefore
+  # polled through like any other non-terminal one. A job whose file is never uploaded does not
+  # finish on its own, so pass `timeout_s` when that is a possibility.
+  #
+  # @raise [DeepL::Exceptions::Error] If the job failed or expired, or if `timeout_s` elapsed
+  #                                   before the job finished.
+  #
+  # @param [String, DeepL::Resources::TranslationMemoryJob] job Job ID or object.
+  # @param [Hash] options Additional options for the status queries.
+  # @param [Numeric, nil] timeout_s Maximum time in seconds to wait for the job to finish. Note
+  #                                 that this is not accurate to the second, the status is only
+  #                                 queried every five seconds.
+  # @return [DeepL::Resources::TranslationMemoryJob] The finished job.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:162
+  def wait_until_job_done(job, options = T.unsafe(nil), timeout_s: T.unsafe(nil)); end
+
+  private
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:281
+  def blank?(value); end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:269
+  def extract_download_url(job); end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:254
+  def extract_job_id(job); end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:243
+  def extract_translation_memory_id(translation_memory); end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:261
+  def extract_upload_url(translation_memory_import); end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:285
+  def log_job_polling; end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:290
+  def monotonic_time; end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:303
+  def raise_job_error(job_status); end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:298
+  def raise_timeout_error(timeout_s); end
+
+  # pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:294
+  def timeout_exceeded?(started_at, timeout_s); end
 end
+
+# Time to wait between two status queries of an import or export job.
+#
+# pkg:gem/deepl-rb#lib/deepl/translation_memory_api.rb:9
+DeepL::TranslationMemoryApi::JOB_POLLING_INTERVAL_SECONDS = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/deepl-rb#lib/deepl/utils/exception_builder.rb:7
 module DeepL::Utils; end
@@ -1870,6 +2738,19 @@ class DeepL::Utils::ExceptionBuilder
     # pkg:gem/deepl-rb#lib/deepl/utils/exception_builder.rb:11
     def error_class_from_response_code(code); end
   end
+end
+
+# pkg:gem/deepl-rb#lib/deepl/utils/time_parser.rb:10
+module DeepL::Utils::TimeParser
+  extend ::DeepL::Utils::TimeParser
+
+  # Parses an optional timestamp returned by the API.
+  #
+  # @param [String, nil] time_string Timestamp in ISO 8601 format, or nil.
+  # @return [Time, nil] The parsed time, or nil if no timestamp was given.
+  #
+  # pkg:gem/deepl-rb#lib/deepl/utils/time_parser.rb:19
+  def parse_optional_time(time_string); end
 end
 
 # pkg:gem/deepl-rb#lib/version.rb:7

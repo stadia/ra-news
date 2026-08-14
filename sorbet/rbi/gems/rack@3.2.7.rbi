@@ -4563,7 +4563,7 @@ module Rack::Utils
 end
 
 # pkg:gem/rack#lib/rack/utils.rb:149
-Rack::Utils::ALLOWED_FORWARED_PARAMS = T.let(T.unsafe(nil), Hash)
+Rack::Utils::ALLOWED_FORWARDED_PARAMS = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/rack#lib/rack/utils.rb:25
 Rack::Utils::COMMON_SEP = T.let(T.unsafe(nil), Hash)

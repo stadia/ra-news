@@ -133,7 +133,7 @@ class LruRedux::TTL::Cache
   # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:123
   def evict(key); end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:143
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:145
   def expire; end
 
   # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:65
@@ -154,7 +154,7 @@ class LruRedux::TTL::Cache
   # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:125
   def key?(key); end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:140
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:142
   def length; end
 
   # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:6
@@ -163,7 +163,7 @@ class LruRedux::TTL::Cache
   # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:26
   def max_size=(new_max_size); end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:141
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:143
   def size; end
 
   # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:105
@@ -180,30 +180,30 @@ class LruRedux::TTL::Cache
 
   private
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:192
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:194
   def evict_excess; end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:199
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:201
   def evict_expired; end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:211
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:213
   def evict_nil; end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:224
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:226
   def store_item(key, value); end
 
   # For cache validation only, ensure all is valid
   #
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:150
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:152
   def valid?; end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:186
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:188
   def validate_ignore_nil!(ignore_nil); end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:154
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:156
   def validate_max_size!(max_size); end
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:169
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/cache.rb:171
   def validate_ttl!(ttl); end
 end
 
@@ -211,6 +211,9 @@ end
 class LruRedux::TTL::ThreadSafeCache < ::LruRedux::TTL::Cache
   include ::MonitorMixin
   include ::LruRedux::Util::SafeSync
+
+  # pkg:gem/sin_lru_redux#lib/lru_redux/ttl/thread_safe_cache.rb:8
+  def expire; end
 end
 
 # pkg:gem/sin_lru_redux#lib/lru_redux/thread_safe_cache.rb:4
@@ -265,8 +268,14 @@ module LruRedux::Util::SafeSync
   # pkg:gem/sin_lru_redux#lib/lru_redux/util/safe_sync.rb:86
   def key?(key); end
 
+  # pkg:gem/sin_lru_redux#lib/lru_redux/util/safe_sync.rb:110
+  def length; end
+
   # pkg:gem/sin_lru_redux#lib/lru_redux/util/safe_sync.rb:14
   def max_size=(max_size); end
+
+  # pkg:gem/sin_lru_redux#lib/lru_redux/util/safe_sync.rb:116
+  def size; end
 
   # pkg:gem/sin_lru_redux#lib/lru_redux/util/safe_sync.rb:62
   def to_a; end
@@ -279,7 +288,7 @@ module LruRedux::Util::SafeSync
 
   private
 
-  # pkg:gem/sin_lru_redux#lib/lru_redux/util/safe_sync.rb:112
+  # pkg:gem/sin_lru_redux#lib/lru_redux/util/safe_sync.rb:124
   def valid?; end
 end
 

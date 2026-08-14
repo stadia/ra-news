@@ -552,7 +552,7 @@ class SQLite3::Database
   # is allowed to proceed. Returning 1 causes an authorization error to
   # occur, and returning 2 causes the access to be silently denied.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:207
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:205
   def authorizer(&block); end
 
   # Installs (or removes) a block that will be invoked for every access
@@ -566,7 +566,7 @@ class SQLite3::Database
   # Given a statement, return a result set.
   # This is not intended for general consumption
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:794
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:790
   def build_result_set(stmt); end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -577,10 +577,10 @@ class SQLite3::Database
   # This is an alternative to #busy_timeout, which holds the GVL
   # while SQLite sleeps and retries.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:697
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:693
   def busy_handler_timeout=(milliseconds); end
 
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:387
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:385
   def busy_timeout(_arg0); end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -606,7 +606,7 @@ class SQLite3::Database
   # to allow it to be used in idioms like
   # <tt>abort? and rollback or commit</tt>.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:673
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:669
   def commit; end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -651,7 +651,7 @@ class SQLite3::Database
   # See also #create_aggregate_handler for a more object-oriented approach to
   # aggregate functions.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:461
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:459
   def create_aggregate(name, arity, step = T.unsafe(nil), finalize = T.unsafe(nil), text_rep = T.unsafe(nil), &block); end
 
   # This is another approach to creating an aggregate function (see
@@ -702,7 +702,7 @@ class SQLite3::Database
   #   db.create_aggregate_handler( LengthsAggregateHandler )
   #   puts db.get_first_value( "select lengths(name) from A" )
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:559
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:555
   def create_aggregate_handler(handler); end
 
   # Creates a new function for use in SQL statements. It will be added as
@@ -731,7 +731,7 @@ class SQLite3::Database
   #
   #   puts db.get_first_value( "select maim(name) from table" )
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:414
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:412
   def create_function(name, arity, text_rep = T.unsafe(nil), &block); end
 
   # Define an aggregate function named +name+ using a object template
@@ -745,7 +745,7 @@ class SQLite3::Database
   # already provide a suitable +clone+.
   # The functions arity is the arity of the +step+ method.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:596
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:592
   def define_aggregator(name, aggregator); end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -761,7 +761,7 @@ class SQLite3::Database
   #
   # Fetch the encoding set on this database
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:199
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:197
   def encoding; end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -785,7 +785,7 @@ class SQLite3::Database
   # See also #execute2, #query, and #execute_batch for additional ways of
   # executing statements.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:248
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:246
   def execute(sql, bind_vars = T.unsafe(nil), &block); end
 
   # Executes the given SQL statement, exactly as with #execute. However, the
@@ -799,7 +799,7 @@ class SQLite3::Database
   # See also #execute, #query, and #execute_batch for additional ways of
   # executing statements.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:273
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:271
   def execute2(sql, *bind_vars); end
 
   # Executes all SQL statements in the given string. By contrast, the other
@@ -813,7 +813,7 @@ class SQLite3::Database
   # See also #execute_batch2 for additional ways of
   # executing statements.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:297
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:295
   def execute_batch(sql, bind_vars = T.unsafe(nil)); end
 
   # Executes all SQL statements in the given string. By contrast, the other
@@ -830,7 +830,7 @@ class SQLite3::Database
   # See also #execute_batch for additional ways of
   # executing statements.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:330
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:328
   def execute_batch2(sql, &block); end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -840,7 +840,7 @@ class SQLite3::Database
   # to "main".  Main return `nil` or an empty string if the database is
   # temporary or in-memory.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:230
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:228
   def filename(db_name = T.unsafe(nil)); end
 
   # A convenience method for obtaining the first row of a result set, and
@@ -848,7 +848,7 @@ class SQLite3::Database
   #
   # See also #get_first_value.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:369
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:367
   def get_first_row(sql, *bind_vars); end
 
   # A convenience method for obtaining the first value of the first row of a
@@ -857,10 +857,10 @@ class SQLite3::Database
   #
   # See also #get_first_row.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:378
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:376
   def get_first_value(sql, *bind_vars); end
 
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:742
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:738
   def initialize_extensions(extensions); end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -890,7 +890,7 @@ class SQLite3::Database
   #
   #   db.load_extension(SQLean::VSV)
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:733
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:729
   def load_extension(extension_specifier); end
 
   # Returns a Statement object representing the given SQL. This does not
@@ -898,7 +898,7 @@ class SQLite3::Database
   #
   # The Statement can then be executed using Statement#execute.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:216
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:214
   def prepare(sql); end
 
   # This is a convenience method for creating a statement, binding
@@ -913,13 +913,13 @@ class SQLite3::Database
   # with a block, +close+ will be invoked implicitly when the block
   # terminates.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:352
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:350
   def query(sql, bind_vars = T.unsafe(nil)); end
 
   # Returns +true+ if the database has been open in readonly mode
   # A helper to check before performing any operation
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:689
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:685
   def readonly?; end
 
   # A boolean that indicates whether rows in result sets should be returned
@@ -939,7 +939,7 @@ class SQLite3::Database
   # to allow it to be used in idioms like
   # <tt>abort? and rollback or commit</tt>.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:682
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:678
   def rollback; end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -970,7 +970,7 @@ class SQLite3::Database
   # transaction explicitly, either by calling #commit, or by calling
   # #rollback.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:650
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:646
   def transaction(mode = T.unsafe(nil)); end
 
   # pkg:gem/sqlite3#lib/sqlite3.rb:4
@@ -1028,32 +1028,32 @@ end
 # This class will almost _always_ be instantiated indirectly, by working
 # with the create methods mentioned above.
 #
-# pkg:gem/sqlite3#lib/sqlite3/database.rb:766
+# pkg:gem/sqlite3#lib/sqlite3/database.rb:762
 class SQLite3::Database::FunctionProxy
   # Create a new FunctionProxy that encapsulates the given +func+ object.
   # If context is non-nil, the functions context will be set to that. If
   # it is non-nil, it must quack like a Hash. If it is nil, then none of
   # the context functions will be available.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:773
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:769
   def initialize; end
 
   # Returns the value with the given key from the context. This is only
   # available to aggregate functions.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:780
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:776
   def [](key); end
 
   # Sets the value with the given key in the context. This is only
   # available to aggregate functions.
   #
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:786
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:782
   def []=(key, value); end
 
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:767
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:763
   def result; end
 
-  # pkg:gem/sqlite3#lib/sqlite3/database.rb:767
+  # pkg:gem/sqlite3#lib/sqlite3/database.rb:763
   def result=(_arg0); end
 end
 

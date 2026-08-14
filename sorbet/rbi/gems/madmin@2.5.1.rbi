@@ -7,7 +7,7 @@
 
 # based on Administrate Search: https://github.com/thoughtbot/administrate/blob/main/lib/administrate/search.rb
 #
-# pkg:gem/madmin#lib/madmin/engine.rb:3
+# pkg:gem/madmin#lib/madmin/engine.rb:1
 module Madmin
   # pkg:gem/madmin#lib/madmin.rb:42
   def importmap; end
@@ -52,13 +52,13 @@ module Madmin
     # pkg:gem/madmin#lib/madmin.rb:43
     def menu=(val); end
 
-    # pkg:gem/madmin#lib/madmin/engine.rb:5
+    # pkg:gem/madmin#lib/madmin/engine.rb:3
     def railtie_helpers_paths; end
 
-    # pkg:gem/madmin#lib/madmin/engine.rb:5
+    # pkg:gem/madmin#lib/madmin/engine.rb:3
     def railtie_namespace; end
 
-    # pkg:gem/madmin#lib/madmin/engine.rb:5
+    # pkg:gem/madmin#lib/madmin/engine.rb:3
     def railtie_routes_url_helpers(include_path_helpers = T.unsafe(nil)); end
 
     # pkg:gem/madmin#lib/madmin.rb:100
@@ -102,10 +102,10 @@ module Madmin
     # pkg:gem/madmin#lib/madmin.rb:45
     def stylesheets=(val); end
 
-    # pkg:gem/madmin#lib/madmin/engine.rb:5
+    # pkg:gem/madmin#lib/madmin/engine.rb:3
     def table_name_prefix; end
 
-    # pkg:gem/madmin#lib/madmin/engine.rb:5
+    # pkg:gem/madmin#lib/madmin/engine.rb:3
     def use_relative_model_naming?; end
   end
 end
@@ -172,7 +172,7 @@ module Madmin::BaseController::HelperMethods
   include ::Madmin::SortHelper
 end
 
-# pkg:gem/madmin#lib/madmin/engine.rb:4
+# pkg:gem/madmin#lib/madmin/engine.rb:2
 class Madmin::Engine < ::Rails::Engine; end
 
 # pkg:gem/madmin#lib/madmin/field.rb:2
@@ -441,6 +441,28 @@ end
 # pkg:gem/madmin#lib/madmin/generator_helpers.rb:3
 Madmin::GeneratorHelpers::ROUTES_FILE = T.let(T.unsafe(nil), Hash)
 
+# Wraps a member action block along with its options so views can decide
+# where to render it. Responds to `to_proc` and `call` so it can be used
+# anywhere the raw block was.
+#
+# pkg:gem/madmin#lib/madmin/member_action.rb:5
+class Madmin::MemberAction
+  # pkg:gem/madmin#lib/madmin/member_action.rb:8
+  def initialize(collection: T.unsafe(nil), &block); end
+
+  # pkg:gem/madmin#lib/madmin/member_action.rb:6
+  def block; end
+
+  # pkg:gem/madmin#lib/madmin/member_action.rb:15
+  def call(*args, &blk); end
+
+  # pkg:gem/madmin#lib/madmin/member_action.rb:13
+  def collection?; end
+
+  # pkg:gem/madmin#lib/madmin/member_action.rb:17
+  def to_proc; end
+end
+
 # pkg:gem/madmin#lib/madmin/menu.rb:2
 class Madmin::Menu
   include ::Madmin::Menu::Node
@@ -508,6 +530,15 @@ class Madmin::Resource
   # pkg:gem/madmin#lib/madmin/resource.rb:5
   def attributes?; end
 
+  # pkg:gem/madmin#lib/madmin/resource.rb:7
+  def collection_actions; end
+
+  # pkg:gem/madmin#lib/madmin/resource.rb:7
+  def collection_actions=(_arg0); end
+
+  # pkg:gem/madmin#lib/madmin/resource.rb:7
+  def collection_actions?; end
+
   # pkg:gem/madmin#lib/madmin/resource.rb:6
   def member_actions; end
 
@@ -517,20 +548,20 @@ class Madmin::Resource
   # pkg:gem/madmin#lib/madmin/resource.rb:6
   def member_actions?; end
 
-  # pkg:gem/madmin#lib/madmin/resource.rb:8
+  # pkg:gem/madmin#lib/madmin/resource.rb:9
   def menu_options=(_arg0); end
 
-  # pkg:gem/madmin#lib/madmin/resource.rb:7
+  # pkg:gem/madmin#lib/madmin/resource.rb:8
   def scopes; end
 
-  # pkg:gem/madmin#lib/madmin/resource.rb:7
+  # pkg:gem/madmin#lib/madmin/resource.rb:8
   def scopes=(_arg0); end
 
-  # pkg:gem/madmin#lib/madmin/resource.rb:7
+  # pkg:gem/madmin#lib/madmin/resource.rb:8
   def scopes?; end
 
   class << self
-    # pkg:gem/madmin#lib/madmin/resource.rb:42
+    # pkg:gem/madmin#lib/madmin/resource.rb:44
     def attribute(name, type = T.unsafe(nil), **options); end
 
     # pkg:gem/madmin#lib/madmin/resource.rb:5
@@ -542,41 +573,58 @@ class Madmin::Resource
     # pkg:gem/madmin#lib/madmin/resource.rb:5
     def attributes?; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:107
+    # pkg:gem/madmin#lib/madmin/resource.rb:109
     def becomes(record); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:119
+    # pkg:gem/madmin#lib/madmin/resource.rb:146
+    def collection_action(&block); end
+
+    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    def collection_actions; end
+
+    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    def collection_actions=(value); end
+
+    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    def collection_actions?; end
+
+    # Member actions that should also render in each row on the index page
+    #
+    # pkg:gem/madmin#lib/madmin/resource.rb:142
+    def collection_member_actions; end
+
+    # pkg:gem/madmin#lib/madmin/resource.rb:121
     def display_name(record); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:103
+    # pkg:gem/madmin#lib/madmin/resource.rb:105
     def edit_path(record); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:139
+    # pkg:gem/madmin#lib/madmin/resource.rb:150
     def field_for_type(type); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:123
+    # pkg:gem/madmin#lib/madmin/resource.rb:125
     def friendly_model?; end
 
     # Returns singular name
     # For example: "Forum::Post" -> "Forum / Post"
     #
-    # pkg:gem/madmin#lib/madmin/resource.rb:77
+    # pkg:gem/madmin#lib/madmin/resource.rb:79
     def friendly_name; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:38
+    # pkg:gem/madmin#lib/madmin/resource.rb:40
     def get_attribute(name); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:91
+    # pkg:gem/madmin#lib/madmin/resource.rb:93
     def index_path(options = T.unsafe(nil)); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:204
+    # pkg:gem/madmin#lib/madmin/resource.rb:215
     def infer_type(name); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:11
+    # pkg:gem/madmin#lib/madmin/resource.rb:12
     def inherited(base); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:135
-    def member_action(&block); end
+    # pkg:gem/madmin#lib/madmin/resource.rb:137
+    def member_action(collection: T.unsafe(nil), &block); end
 
     # pkg:gem/madmin#lib/madmin/resource.rb:6
     def member_actions; end
@@ -587,70 +635,70 @@ class Madmin::Resource
     # pkg:gem/madmin#lib/madmin/resource.rb:6
     def member_actions?; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:254
+    # pkg:gem/madmin#lib/madmin/resource.rb:265
     def menu(options); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:8
+    # pkg:gem/madmin#lib/madmin/resource.rb:9
     def menu_options; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:8
+    # pkg:gem/madmin#lib/madmin/resource.rb:9
     def menu_options=(value); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:8
+    # pkg:gem/madmin#lib/madmin/resource.rb:9
     def menu_options?; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:18
+    # pkg:gem/madmin#lib/madmin/resource.rb:20
     def model(value = T.unsafe(nil)); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:26
+    # pkg:gem/madmin#lib/madmin/resource.rb:28
     def model_find(id); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:30
+    # pkg:gem/madmin#lib/madmin/resource.rb:32
     def model_name; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:249
+    # pkg:gem/madmin#lib/madmin/resource.rb:260
     def model_store_accessors; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:95
+    # pkg:gem/madmin#lib/madmin/resource.rb:97
     def new_path; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:111
+    # pkg:gem/madmin#lib/madmin/resource.rb:113
     def param_key; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:115
+    # pkg:gem/madmin#lib/madmin/resource.rb:117
     def permitted_params; end
 
     # Support for isolated namespaces
     # Finds parent module class to include in polymorphic urls
     #
-    # pkg:gem/madmin#lib/madmin/resource.rb:83
+    # pkg:gem/madmin#lib/madmin/resource.rb:85
     def route_namespace; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:34
+    # pkg:gem/madmin#lib/madmin/resource.rb:36
     def scope(name); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    # pkg:gem/madmin#lib/madmin/resource.rb:8
     def scopes; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    # pkg:gem/madmin#lib/madmin/resource.rb:8
     def scopes=(value); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    # pkg:gem/madmin#lib/madmin/resource.rb:8
     def scopes?; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:131
+    # pkg:gem/madmin#lib/madmin/resource.rb:133
     def searchable_attributes; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:99
+    # pkg:gem/madmin#lib/madmin/resource.rb:101
     def show_path(record); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:127
+    # pkg:gem/madmin#lib/madmin/resource.rb:129
     def sortable_columns; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:233
+    # pkg:gem/madmin#lib/madmin/resource.rb:244
     def type_for_association(association); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:245
+    # pkg:gem/madmin#lib/madmin/resource.rb:256
     def url_helpers; end
 
     private
@@ -661,22 +709,28 @@ class Madmin::Resource
     # pkg:gem/madmin#lib/madmin/resource.rb:5
     def __class_attr_attributes=(new_value); end
 
+    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    def __class_attr_collection_actions; end
+
+    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    def __class_attr_collection_actions=(new_value); end
+
     # pkg:gem/madmin#lib/madmin/resource.rb:6
     def __class_attr_member_actions; end
 
     # pkg:gem/madmin#lib/madmin/resource.rb:6
     def __class_attr_member_actions=(new_value); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:8
+    # pkg:gem/madmin#lib/madmin/resource.rb:9
     def __class_attr_menu_options; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:8
+    # pkg:gem/madmin#lib/madmin/resource.rb:9
     def __class_attr_menu_options=(new_value); end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    # pkg:gem/madmin#lib/madmin/resource.rb:8
     def __class_attr_scopes; end
 
-    # pkg:gem/madmin#lib/madmin/resource.rb:7
+    # pkg:gem/madmin#lib/madmin/resource.rb:8
     def __class_attr_scopes=(new_value); end
   end
 end
