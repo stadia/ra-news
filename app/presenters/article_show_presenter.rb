@@ -58,9 +58,12 @@ class ArticleShowPresenter
     article.published_at&.iso8601
   end
 
-  #: (String format) -> String?
-  def published_at_label(format)
-    article.published_at&.strftime(format)
+  #: (?Symbol format) -> String?
+  def published_at_label(format = :short)
+    published_at = article.published_at
+    return nil if published_at.nil?
+
+    I18n.l(published_at, format:)
   end
 
   private

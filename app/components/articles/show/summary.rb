@@ -20,6 +20,8 @@ class Components::Articles::Show::Summary < Components::Base
   private
 
   def render_summary_key
+    return unless @presenter.summary_key_items?
+
     section(class: "mb-8 lg:mb-12") do
       div(class: "bg-linear-to-r from-brand-solid to-brand-solid-hover rounded-lg p-6") do
         render RubyUI::Heading.new(
@@ -30,7 +32,7 @@ class Components::Articles::Show::Summary < Components::Base
           plain t("articles.show.summary_heading")
         end
 
-        render_summary_key_items if @presenter.summary_key_items?
+        render_summary_key_items
       end
     end
   end

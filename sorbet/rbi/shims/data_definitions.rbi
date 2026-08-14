@@ -24,6 +24,16 @@ module SitemapBuilder
 end
 
 module Articles
+  module ItemListSchema
+    class Payload
+      sig { returns(String) }
+      def name; end
+
+      sig { returns(T::Array[String]) }
+      def urls; end
+    end
+  end
+
   module Search
     class IndexResult
       sig { returns(Pagy) }

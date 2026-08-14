@@ -83,7 +83,7 @@ class Components::Articles::Show::Header < Components::Base
         div(class: "text-xs text-content-secondary") { t("articles.show.published_at") }
         div(class: "font-medium text-content") do
           time(datetime: @presenter.published_at_iso) do
-            plain @presenter.published_at_label(t("articles.show.date_format")) || t("articles.show.not_available")
+            plain @presenter.published_at_label || t("articles.show.not_available")
           end
         end
       end

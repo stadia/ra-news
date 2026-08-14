@@ -10,9 +10,10 @@ module Articles
     SCHEMA_CONTEXT = "https://schema.org"
     DESCENDING_ORDER = "https://schema.org/ItemListOrderDescending"
 
-    class << self
-      #: (name: String, urls: Array[String]) -> Hash[String, untyped]
-      def payload(name:, urls:)
+    Payload = Data.define(:name, :urls)
+
+    class Payload
+      def to_h
         {
           "@context" => SCHEMA_CONTEXT,
           "@type" => "ItemList",
@@ -28,10 +29,17 @@ module Articles
           end
         }
       end
+    end
+
+    class << self
+      #: (name: String, urls: Array[String]) -> Payload
+      def payload(name:, urls:)
+        Payload.new(name: name.dup.freeze, urls: urls.map { |url| url.dup.freeze }.freeze)
+      end
 
       #: (name: String, urls: Array[String]) -> String
       def json(name:, urls:)
-        JSON.generate(payload(name: name, urls: urls))
+        JSON.generate(payload(name: name, urls: urls).to_h)
       end
     end
   end
