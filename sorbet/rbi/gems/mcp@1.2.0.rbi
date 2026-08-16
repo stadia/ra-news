@@ -9,7 +9,7 @@
 module JsonRpcHandler
   extend ::JsonRpcHandler
 
-  # pkg:gem/mcp#lib/json_rpc_handler.rb:199
+  # pkg:gem/mcp#lib/json_rpc_handler.rb:200
   def error_response(id:, id_validation_pattern:, error:); end
 
   # pkg:gem/mcp#lib/json_rpc_handler.rb:28
@@ -18,25 +18,25 @@ module JsonRpcHandler
   # pkg:gem/mcp#lib/json_rpc_handler.rb:56
   def handle_json(request_json, id_validation_pattern: T.unsafe(nil), &method_finder); end
 
-  # pkg:gem/mcp#lib/json_rpc_handler.rb:147
+  # pkg:gem/mcp#lib/json_rpc_handler.rb:148
   def handle_request_error(error, id, id_validation_pattern); end
 
   # pkg:gem/mcp#lib/json_rpc_handler.rb:78
   def process_request(request, id_validation_pattern:, &method_finder); end
 
-  # pkg:gem/mcp#lib/json_rpc_handler.rb:191
+  # pkg:gem/mcp#lib/json_rpc_handler.rb:192
   def success_response(id:, result:); end
 
-  # pkg:gem/mcp#lib/json_rpc_handler.rb:176
+  # pkg:gem/mcp#lib/json_rpc_handler.rb:177
   def valid_id?(id, pattern = T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/json_rpc_handler.rb:183
+  # pkg:gem/mcp#lib/json_rpc_handler.rb:184
   def valid_method_name?(method); end
 
-  # pkg:gem/mcp#lib/json_rpc_handler.rb:187
+  # pkg:gem/mcp#lib/json_rpc_handler.rb:188
   def valid_params?(params); end
 
-  # pkg:gem/mcp#lib/json_rpc_handler.rb:172
+  # pkg:gem/mcp#lib/json_rpc_handler.rb:173
   def valid_version?(version); end
 end
 
@@ -80,10 +80,10 @@ JsonRpcHandler::Version::V2_0 = T.let(T.unsafe(nil), String)
 # pkg:gem/mcp#lib/mcp/configuration.rb:3
 module MCP
   class << self
-    # pkg:gem/mcp#lib/mcp.rb:33
+    # pkg:gem/mcp#lib/mcp.rb:35
     def configuration; end
 
-    # pkg:gem/mcp#lib/mcp.rb:29
+    # pkg:gem/mcp#lib/mcp.rb:31
     def configure; end
   end
 end
@@ -258,13 +258,21 @@ class MCP::Client
   #
   # @param transport [Object] The transport object to use for communication with the server.
   #   The transport should be a duck type that responds to `send_request`. See the README for more details.
+  # @param input_required_max_rounds [Integer] Cap on SEP-2322 driver rounds.
+  # @param max_pages [Integer] Maximum number of pages the all-pages methods ({#tools}, {#resources},
+  #   {#resource_templates}, {#prompts}) will walk before raising {MCP::Client::PaginationLimitError}.
+  #
+  # Once a handler is registered through `on_elicitation`, `on_sampling`, or `on_roots`, `call_tool`,
+  # `get_prompt`, and `read_resource` resume `input_required` results automatically; without handlers
+  # (or when a requested kind has no handler) they raise `InputRequiredError` for manual driving,
+  # exactly as before.
   #
   # @example
   #   transport = MCP::Client::HTTP.new(url: "http://localhost:3000")
   #   client = MCP::Client.new(transport: transport)
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:90
-  def initialize(transport:); end
+  # pkg:gem/mcp#lib/mcp/client.rb:133
+  def initialize(transport:, input_required_max_rounds: T.unsafe(nil), max_pages: T.unsafe(nil)); end
 
   # Calls a tool via the transport layer and returns the full response from the server.
   #
@@ -301,9 +309,12 @@ class MCP::Client
   # @note
   #   The exact requirements for `arguments` are determined by the transport layer in use.
   #   Consult the documentation for your transport (e.g., MCP::Client::HTTP) for details.
+  # @param input_responses [Hash, nil] SEP-2322 answers to a previous `input_required` result's `inputRequests`,
+  #   keyed identically (manual retry legs).
+  # @param request_state [String, nil] The opaque `requestState` echoed back byte-exactly.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:343
-  def call_tool(name: T.unsafe(nil), tool: T.unsafe(nil), arguments: T.unsafe(nil), progress_token: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/client.rb:482
+  def call_tool(name: T.unsafe(nil), tool: T.unsafe(nil), arguments: T.unsafe(nil), progress_token: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil), input_responses: T.unsafe(nil), request_state: T.unsafe(nil)); end
 
   # Requests completion suggestions from the server for a prompt argument or resource template URI.
   #
@@ -316,7 +327,7 @@ class MCP::Client
   # @param cancellation [MCP::Cancellation, nil] Optional cancellation token.
   # @return [Hash] The completion result with `"values"`, `"hasMore"`, and optionally `"total"`.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:394
+  # pkg:gem/mcp#lib/mcp/client.rb:545
   def complete(ref:, argument:, context: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
 
   # Performs the MCP `initialize` handshake by delegating to the transport
@@ -331,19 +342,41 @@ class MCP::Client
   # @param capabilities [Hash] Capabilities advertised by the client. May include
   #   an `extensions` member per SEP-2133, keyed by reverse-DNS extension identifiers,
   #   e.g. `{ extensions: { "com.example/feature" => {} } }`.
-  # @return [Hash, nil] The server's `InitializeResult`, or `nil` when the transport
-  #   does not expose an explicit handshake.
+  # @param mode [Symbol, nil] Lifecycle selection (SEP-2575). When omitted, transports whose
+  #   `connect` declares `mode:` (the bundled `MCP::Client::HTTP` and `MCP::Client::Stdio`)
+  #   negotiate with `:auto`: probe `server/discover` first and fall back to the legacy handshake
+  #   when the server does not serve a mutually supported modern version. Transports without `mode:`
+  #   keep receiving the historical legacy call shape. `:legacy` forces the `initialize` handshake
+  #   exactly as before; `:modern` requires the modern lifecycle and fails without a mutual modern version.
+  #   Passing an explicit `protocol_version` from a legacy generation (e.g. `"2025-11-25"`) pins
+  #   the legacy handshake without a probe, so an explicitly requested version is never overridden
+  #   by the default negotiation.
+  # @return [Hash, nil] The server's `InitializeResult` (legacy) or `DiscoverResult` (modern),
+  #   or `nil` when the transport does not expose an explicit handshake.
+  #   Prefer the era-independent readers over inspecting this Hash directly.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle#initialization
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:121
-  def connect(client_info: T.unsafe(nil), protocol_version: T.unsafe(nil), capabilities: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/client.rb:215
+  def connect(client_info: T.unsafe(nil), protocol_version: T.unsafe(nil), capabilities: T.unsafe(nil), mode: T.unsafe(nil)); end
 
   # Returns true once `connect` has completed the handshake on the underlying
   # transport. Transports that do not expose connection state are assumed
   # connected and return `true`.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:134
+  # pkg:gem/mcp#lib/mcp/client.rb:264
   def connected?; end
+
+  # Sends `server/discover` (MCP 2026-07-28, SEP-2575): sessionless capability discovery
+  # that works before (or instead of) `connect`.
+  #
+  # @param meta [Hash, nil] Additional `_meta` entries to send with the request.
+  # @param cancellation [MCP::Cancellation, nil] Optional cancellation token.
+  # @return [MCP::Client::DiscoverResult]
+  # @raise [ServerError] If the server returns a JSON-RPC error.
+  # @raise [ValidationError] If the response `result` is missing or not a Hash.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:244
+  def discover(meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
 
   # Gets a prompt from the server by name and returns its details.
   #
@@ -353,8 +386,13 @@ class MCP::Client
   # @param cancellation [MCP::Cancellation, nil] Optional cancellation token.
   # @return [Hash] A hash containing the prompt details.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:378
-  def get_prompt(name:, meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/client.rb:524
+  def get_prompt(name:, meta: T.unsafe(nil), cancellation: T.unsafe(nil), input_responses: T.unsafe(nil), request_state: T.unsafe(nil)); end
+
+  # The server's instructions text, present in both eras when provided.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:179
+  def instructions; end
 
   # Returns a single page of prompts from the server.
   #
@@ -365,7 +403,7 @@ class MCP::Client
   # @return [MCP::Client::ListPromptsResult] Result with `prompts` (Array<Hash>)
   #   and `next_cursor` (String or nil).
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:281
+  # pkg:gem/mcp#lib/mcp/client.rb:416
   def list_prompts(cursor: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
 
   # Returns a single page of resource templates from the server.
@@ -377,7 +415,7 @@ class MCP::Client
   # @return [MCP::Client::ListResourceTemplatesResult] Result with `resource_templates`
   #   (Array<Hash>) and `next_cursor` (String or nil).
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:246
+  # pkg:gem/mcp#lib/mcp/client.rb:380
   def list_resource_templates(cursor: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
 
   # Returns a single page of resources from the server.
@@ -389,7 +427,7 @@ class MCP::Client
   # @return [MCP::Client::ListResourcesResult] Result with `resources` (Array<Hash>)
   #   and `next_cursor` (String or nil).
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:211
+  # pkg:gem/mcp#lib/mcp/client.rb:344
   def list_resources(cursor: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
 
   # Returns a single page of tools from the server.
@@ -411,7 +449,7 @@ class MCP::Client
   #     break unless cursor
   #   end
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:158
+  # pkg:gem/mcp#lib/mcp/client.rb:288
   def list_tools(cursor: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
 
   # Registers a handler for `elicitation/create` requests the server sends while one of
@@ -419,8 +457,11 @@ class MCP::Client
   # (message and `requestedSchema`, string keys) and must return an `ElicitResult`-shaped Hash:
   # `{ action: "accept" | "decline" | "cancel", content: { ... } }`.
   #
-  # Requires a transport that supports server-to-client requests (e.g. `MCP::Client::HTTP`);
-  # pass `capabilities: { elicitation: {} }` to `connect` so the server knows it may send them.
+  # The same handler answers both ways a server can ask: a real request mid-call, which needs a transport that
+  # carries server-to-client requests (e.g. `MCP::Client::HTTP`); and an `elicitation/create` embedded in a SEP-2322
+  # `input_required` result, which needs no server-to-client route, and is how the modern lifecycle asks now that it
+  # forbids server-to-client requests. Both routes need `capabilities: { elicitation: {} }` passed to `connect`: per SEP-2322,
+  # a server MUST NOT embed input requests of a kind the client has not declared.
   #
   # @example Accept with schema defaults applied (SEP-1034)
   #   client.on_elicitation do |params|
@@ -431,8 +472,24 @@ class MCP::Client
   #   end
   # https://modelcontextprotocol.io/specification/2025-11-25/client/elicitation
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:419
+  # pkg:gem/mcp#lib/mcp/client.rb:573
   def on_elicitation(&handler); end
+
+  # Registers a handler for `roots/list`, answering both a server-to-client request on transports that
+  # support one and an embedded `roots/list` inside a SEP-2322 `input_required` result. The handler
+  # receives the request `params` (`nil` for `roots/list`) and must return a `ListRootsResult`-shaped Hash:
+  # `{ roots: [{ uri: "file:///project", name: "Project" }] }`.
+  #
+  # @example
+  #   client.on_roots { { roots: [{ uri: "file:///project", name: "Project" }] } }
+  #
+  # @deprecated MCP Roots (`roots/list`) is deprecated as of MCP protocol version 2026-07-28 (SEP-2577).
+  #   Register this handler only to interoperate with servers that still ask for roots.
+  #
+  # https://modelcontextprotocol.io/specification/2025-11-25/client/roots
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:626
+  def on_roots(&handler); end
 
   # Registers a handler for `sampling/createMessage` requests the server sends while one of this client's requests is in flight.
   # The handler receives the request `params` (`messages`, `maxTokens`, optionally `systemPrompt`, `modelPreferences`, `tools`,
@@ -442,8 +499,11 @@ class MCP::Client
   # For trust and safety, the spec recommends a human in the loop able to review, edit, or reject the request and the generated response
   # before it is returned to the server. To reject, raise `ServerRequestError` with the spec's user-rejection code `-1`.
   #
-  # Requires a transport that supports server-to-client requests (e.g. `MCP::Client::HTTP`); pass `capabilities: { sampling: {} }` to
-  # `connect` (or `{ sampling: { tools: {} } }` to receive tool-enabled sampling requests) so the server knows it may send them.
+  # The same handler answers both ways a server can ask: a real request mid-call, which needs a transport that
+  # carries server-to-client requests (e.g. `MCP::Client::HTTP`); and a `sampling/createMessage` embedded in a SEP-2322
+  # `input_required` result, which needs no server-to-client route. Both routes need `capabilities: { sampling: {} }` passed to
+  # `connect` (or `{ sampling: { tools: {} } }` for tool-enabled requests): per SEP-2322, a server MUST NOT embed input requests of
+  # a kind the client has not declared.
   #
   # @example Forward the request to an LLM and return its completion
   #
@@ -465,7 +525,7 @@ class MCP::Client
   #   Register this handler only to interoperate with servers that still send sampling requests during the deprecation window;
   #   new servers should call LLM provider APIs directly.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:457
+  # pkg:gem/mcp#lib/mcp/client.rb:610
   def on_sampling(&handler); end
 
   # Sends a `ping` request to the server to verify the connection is alive.
@@ -483,7 +543,7 @@ class MCP::Client
   #
   # @see https://modelcontextprotocol.io/specification/latest/basic/utilities/ping
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:479
+  # pkg:gem/mcp#lib/mcp/client.rb:644
   def ping(meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
 
   # Returns every prompt available on the server. Iterates through all pages automatically
@@ -494,9 +554,17 @@ class MCP::Client
   #
   # @param cancellation [MCP::Cancellation, nil] Optional cancellation token (see {#tools}).
   # @return [Array<Hash>] An array of available prompts.
+  # @raise [MCP::Client::PaginationLimitError] See {#tools}.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:303
+  # pkg:gem/mcp#lib/mcp/client.rb:439
   def prompts(cancellation: T.unsafe(nil)); end
+
+  # The protocol version in use on this connection, independent of its era:
+  # the version negotiated by `initialize` (legacy) or adopted via `server/discover` (modern).
+  # Returns `nil` before `connect`.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:167
+  def protocol_version; end
 
   # Reads a resource from the server by URI and returns the contents.
   #
@@ -506,8 +574,8 @@ class MCP::Client
   # @param cancellation [MCP::Cancellation, nil] Optional cancellation token.
   # @return [Array<Hash>] An array of resource contents (text or blob).
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:365
-  def read_resource(uri:, meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/client.rb:506
+  def read_resource(uri:, meta: T.unsafe(nil), cancellation: T.unsafe(nil), input_responses: T.unsafe(nil), request_state: T.unsafe(nil)); end
 
   # Returns every resource template available on the server. Iterates through all pages automatically
   # when the server paginates, so the full collection is returned regardless of the server's `page_size` setting.
@@ -517,8 +585,9 @@ class MCP::Client
   #
   # @param cancellation [MCP::Cancellation, nil] Optional cancellation token (see {#tools}).
   # @return [Array<Hash>] An array of available resource templates.
+  # @raise [MCP::Client::PaginationLimitError] See {#tools}.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:268
+  # pkg:gem/mcp#lib/mcp/client.rb:403
   def resource_templates(cancellation: T.unsafe(nil)); end
 
   # Returns every resource available on the server. Iterates through all pages automatically
@@ -529,16 +598,32 @@ class MCP::Client
   #
   # @param cancellation [MCP::Cancellation, nil] Optional cancellation token (see {#tools}).
   # @return [Array<Hash>] An array of available resources.
+  # @raise [MCP::Client::PaginationLimitError] See {#tools}.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:233
+  # pkg:gem/mcp#lib/mcp/client.rb:367
   def resources(cancellation: T.unsafe(nil)); end
 
-  # The server's `InitializeResult` (protocol version, capabilities, server info,
-  # instructions), as reported by the transport after a successful `connect`.
-  # Returns `nil` before `connect`, after `close`, or when the transport does
-  # not expose a cached handshake result.
+  # The server's capabilities Hash, present in both eras. Returns `nil` before `connect`.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:102
+  # pkg:gem/mcp#lib/mcp/client.rb:174
+  def server_capabilities; end
+
+  # The server's identity (`name`/`version`), independent of where the era puts it: top-level `serverInfo`
+  # on legacy results, the optional `_meta` `io.modelcontextprotocol/serverInfo` stamp on modern results.
+  # Returns `nil` when a modern server does not identify itself.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:186
+  def server_implementation; end
+
+  # The raw handshake result exactly as the server returned it, so its shape depends on the connection's era (SEP-2575):
+  # after the legacy handshake it is an `InitializeResult` (`protocolVersion`, top-level `serverInfo`), after modern adoption
+  # it is a `DiscoverResult` (`supportedVersions`, `ttlMs`/`cacheScope`, `serverInfo` optionally under `_meta`).
+  # Code that must work against both eras should prefer the era-independent readers {#protocol_version}, {#server_capabilities},
+  # {#instructions}, and {#server_implementation}; this raw form remains the window to everything they do not cover
+  # (`supportedVersions`, cache hints, `_meta`, extension data). Returns `nil` before `connect`, after `close`,
+  # or when the transport does not expose a cached handshake result.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:160
   def server_info; end
 
   # Returns every tool available on the server. Iterates through all pages automatically
@@ -551,6 +636,7 @@ class MCP::Client
   #   Cancelling it aborts whichever page is currently in flight; pages already returned are kept,
   #   but the call raises `MCP::CancelledError` instead of returning the partial set.
   # @return [Array<MCP::Client::Tool>] An array of available tools.
+  # @raise [MCP::Client::PaginationLimitError] If the server offers more than `max_pages` pages.
   #
   # @example
   #   tools = client.tools
@@ -558,13 +644,13 @@ class MCP::Client
   #     puts tool.name
   #   end
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:198
+  # pkg:gem/mcp#lib/mcp/client.rb:331
   def tools(cancellation: T.unsafe(nil)); end
 
   # The user may want to access additional transport-specific methods/attributes
   # So keeping it public
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:96
+  # pkg:gem/mcp#lib/mcp/client.rb:151
   def transport; end
 
   private
@@ -574,7 +660,7 @@ class MCP::Client
   # with no acknowledgement returned. Driven internally by {#dispatch_with_cancellation} when a request's
   # `cancellation` token fires.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:677
+  # pkg:gem/mcp#lib/mcp/client.rb:999
   def cancel(request_id:, reason: T.unsafe(nil)); end
 
   # Sends `request_body` while watching `cancellation`. The actual blocking `transport.send_request` runs on
@@ -588,36 +674,162 @@ class MCP::Client
   # (or the transport closes). This is the same trade-off the server-side `StreamableHTTPTransport#send_request` accepts and
   # is noted in the README's Cancellation section.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:572
+  # pkg:gem/mcp#lib/mcp/client.rb:894
   def dispatch_with_cancellation(request_body, cancellation); end
+
+  # Drives the SEP-2322 multi round-trip loop for `tools/call`, `prompts/get`, and `resources/read`.
+  # With no configured handlers this degrades to the plain request (an `input_required` result raises
+  # `InputRequiredError` for manual driving). Otherwise each `inputRequests` entry is fulfilled by
+  # the matching handler and the ORIGINAL request is re-issued with `inputResponses` under
+  # the same keys plus the byte-exact echoed `requestState`, on a fresh JSON-RPC id per leg.
+  # A `requestState`-only result (load shedding) retries after an exponential backoff.
+  # Every leg counts against `input_required_max_rounds`.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:785
+  def drive_input_required(method:, params:, cancellation:); end
+
+  # SEP-2243: on the modern lifecycle, a tool definition whose `x-mcp-header` annotations violate
+  # the spec constraints MUST be excluded from `tools/list` results, so one malformed definition
+  # does not block the valid tools. The TypeScript and Python SDKs filter their listings the same way.
+  # Legacy connections, and transports without a lifecycle notion, list everything as before.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:670
+  def exclude_invalid_x_mcp_header?(tool); end
 
   # Walks every page of a list endpoint, following `next_cursor`, and returns
   # the page results. The `seen` set guards against a server that repeats or
-  # cycles cursors, so the loop always terminates.
+  # cycles cursors, and `@max_pages` bounds one that returns a fresh cursor every
+  # time, so the loop always terminates.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:491
+  # pkg:gem/mcp#lib/mcp/client.rb:724
   def fetch_all_pages; end
+
+  # Dispatches every embedded request to its configured handler and collects
+  # the answers under the same keys. A kind without a handler falls back to
+  # the manual path by raising `InputRequiredError` with the full result.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:839
+  def fulfill_input_requests(input_requests, result); end
 
   # Generates a fresh JSON-RPC request id for an outgoing request.
   # Ids are an internal concern: the public API never accepts or exposes them, and cancellation is driven through
   # an `MCP::Cancellation` token instead.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:558
+  # pkg:gem/mcp#lib/mcp/client.rb:880
   def generate_request_id; end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:857
+  def input_required?(response); end
 
   # Recognizes a SEP-2322 `input_required` result and raises rather than returning it as if it were a final result.
   # Servers on stable protocol versions never emit `resultType`, so this is a no-op for them.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:542
+  # pkg:gem/mcp#lib/mcp/client.rb:864
   def raise_on_input_required(response); end
+
+  # Records a handler for one of the three kinds of input a server can ask this client for, and wires it to
+  # the transport when the transport can carry server-to-client requests. One registration serves both routes:
+  # the real request a 2025-11-25 server sends mid-call, and the request embedded in a SEP-2322
+  # `input_required` result, which is how the modern lifecycle asks now that it forbids server-to-client
+  # requests outright. Registering is therefore valid on a transport with no `on_server_request` (stdio,
+  # and every modern-lifecycle connection); only the wire route is skipped there.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:659
+  def register_input_handler(method, &handler); end
 
   # Merges caller-supplied `meta` entries into the request params as `_meta`,
   # without mutating the caller's hashes. Per SEP-414, `_meta` carries
   # request-specific metadata such as W3C trace context (`traceparent`,
   # `tracestate`, `baggage`); see {MCP::TraceContext}.
   #
-  # pkg:gem/mcp#lib/mcp/client.rb:513
-  def request(method:, params: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/client.rb:751
+  def request(method:, params: T.unsafe(nil), meta: T.unsafe(nil), cancellation: T.unsafe(nil), raise_on_input_required: T.unsafe(nil)); end
+
+  # Resolves the effective SEP-2575 lifecycle mode for `connect`:
+  #
+  # - An explicit `protocol_version` from a legacy generation pins the legacy handshake without a probe,
+  #   so the default negotiation can never override a version the caller asked for.
+  # - Absent an explicit mode, transports declaring `mode:` negotiate with `:auto`; other transports keep
+  #   the historical legacy call shape.
+  # - An explicit `:modern`/`:auto` on a transport without `mode:` raises, rather than silently downgrading to
+  #   a lifecycle the caller did not ask for.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:688
+  def resolve_connect_mode(mode, protocol_version); end
+
+  # `mode:` is forwarded only when the transport's `connect` declares it as a keyword.
+  # A bare `**kwargs` deliberately does not count, so wrappers and test doubles that
+  # absorb arbitrary keywords keep the historical legacy call shape. Objects that
+  # dispatch `connect` through `method_missing` (e.g. mocks) may not support `method`,
+  # which reads as not declaring `mode:`.
+  #
+  # pkg:gem/mcp#lib/mcp/client.rb:710
+  def transport_connect_accepts_mode?; end
+end
+
+# Rounds the SEP-2322 driver runs before giving up, matching the TypeScript and
+# Python SDK defaults. Every leg counts, including `requestState`-only retries.
+#
+# pkg:gem/mcp#lib/mcp/client.rb:110
+MCP::Client::DEFAULT_INPUT_REQUIRED_MAX_ROUNDS = T.let(T.unsafe(nil), Integer)
+
+# The server's `DiscoverResult` (MCP 2026-07-28, SEP-2575): the modern protocol versions it serves,
+# its capabilities and identity, optional instructions, and the REQUIRED `ttlMs`/`cacheScope` cache hints.
+#
+# pkg:gem/mcp#lib/mcp/client.rb:98
+class MCP::Client::DiscoverResult < ::Struct
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def cache_scope; end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def cache_scope=(_); end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def capabilities; end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def capabilities=(_); end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def instructions; end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def instructions=(_); end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def server_info; end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def server_info=(_); end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def supported_versions; end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def supported_versions=(_); end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def ttl_ms; end
+
+  # pkg:gem/mcp#lib/mcp/client.rb:98
+  def ttl_ms=(_); end
+
+  class << self
+    # pkg:gem/mcp#lib/mcp/client.rb:98
+    def [](*_arg0); end
+
+    # pkg:gem/mcp#lib/mcp/client.rb:98
+    def inspect; end
+
+    # pkg:gem/mcp#lib/mcp/client.rb:98
+    def keyword_init?; end
+
+    # pkg:gem/mcp#lib/mcp/client.rb:98
+    def members; end
+
+    # pkg:gem/mcp#lib/mcp/client.rb:98
+    def new(*_arg0); end
+  end
 end
 
 # Client-side helpers for the `elicitation/create` server-to-client request.
@@ -631,10 +843,10 @@ module MCP::Client::Elicitation
   end
 end
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:11
+# pkg:gem/mcp#lib/mcp/client/http.rb:14
 class MCP::Client::HTTP
-  # pkg:gem/mcp#lib/mcp/client/http.rb:210
-  def initialize(url:, headers: T.unsafe(nil), oauth: T.unsafe(nil), max_message_bytes: T.unsafe(nil), &block); end
+  # pkg:gem/mcp#lib/mcp/client/http.rb:242
+  def initialize(url:, headers: T.unsafe(nil), oauth: T.unsafe(nil), max_message_bytes: T.unsafe(nil), max_reconnection_wait: T.unsafe(nil), &block); end
 
   # Terminates the session by sending an HTTP DELETE to the MCP endpoint
   # with the current `Mcp-Session-Id` header, and clears locally tracked
@@ -647,7 +859,7 @@ class MCP::Client::HTTP
   # session state is cleared either way.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#session-management
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:516
+  # pkg:gem/mcp#lib/mcp/client/http.rb:546
   def close; end
 
   # Performs the MCP `initialize` handshake: sends an `initialize` request
@@ -661,25 +873,37 @@ class MCP::Client::HTTP
   #
   # @param client_info [Hash, nil] `{ name:, version: }` identifying the client.
   #   Defaults to `{ name: "mcp-ruby-client", version: MCP::VERSION }`.
-  # @param protocol_version [String, nil] Protocol version to offer. Defaults
-  #   to `MCP::Configuration::LATEST_STABLE_PROTOCOL_VERSION`.
+  # @param protocol_version [String, nil] Protocol version to offer on the legacy handshake.
+  #   Defaults to `MCP::Configuration::LATEST_HANDSHAKE_PROTOCOL_VERSION`; a modern version
+  #   raises `ArgumentError` here (modern versions are selected via `mode: :modern`/`:auto`).
   # @param capabilities [Hash] Capabilities advertised by the client. Defaults to `{}`.
   # @return [Hash] The server's `InitializeResult`.
   # @raise [RequestHandlerError] If the server responds with a JSON-RPC error
   #   or a malformed result.
+  # @param mode [Symbol] Lifecycle selection (SEP-2575): `:legacy` (default) performs
+  #   the handshake below, `:modern` skips it and probes `server/discover`,
+  #   and `:auto` probes `server/discover` first, falling back to the legacy handshake
+  #   when the server does not serve a mutually supported modern version.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle#initialization
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:290
-  def connect(client_info: T.unsafe(nil), protocol_version: T.unsafe(nil), capabilities: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/client/http.rb:342
+  def connect(client_info: T.unsafe(nil), protocol_version: T.unsafe(nil), capabilities: T.unsafe(nil), mode: T.unsafe(nil)); end
 
   # Returns true once `connect` has completed the full handshake
-  # (`initialize` response received and `notifications/initialized` sent).
+  # (`initialize` response received and `notifications/initialized` sent),
+  # or once the modern lifecycle was adopted via `server/discover`.
   # Returns false before the first handshake and after `close`.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:355
+  # pkg:gem/mcp#lib/mcp/client/http.rb:372
   def connected?; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:208
+  # Whether the transport operates in the stateless modern lifecycle (SEP-2575):
+  # no handshake was performed and every request carries the `_meta` envelope.
+  #
+  # pkg:gem/mcp#lib/mcp/client/http.rb:364
+  def modern?; end
+
+  # pkg:gem/mcp#lib/mcp/client/http.rb:240
   def oauth; end
 
   # Registers a handler for a server-to-client request (e.g. `elicitation/create`) delivered on an SSE stream.
@@ -692,17 +916,17 @@ class MCP::Client::HTTP
   # which start listening after the `initialize` handshake.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#listening-for-messages-from-the-server
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:265
+  # pkg:gem/mcp#lib/mcp/client/http.rb:312
   def on_server_request(method, &handler); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:208
+  # pkg:gem/mcp#lib/mcp/client/http.rb:240
   def protocol_version; end
 
   # Sends a JSON-RPC notification (no response expected). Used by `Client#cancel` to deliver
   # `notifications/cancelled` for an in-flight request. The server acknowledges with HTTP 202 Accepted
   # per the Streamable HTTP spec.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:492
+  # pkg:gem/mcp#lib/mcp/client/http.rb:522
   def send_notification(notification:); end
 
   # Sends a JSON-RPC request and returns the parsed response body.
@@ -719,16 +943,16 @@ class MCP::Client::HTTP
   # a cancellation referring to an unknown request id when the cancel POST happens to arrive first.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/utilities/cancellation
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:372
+  # pkg:gem/mcp#lib/mcp/client/http.rb:389
   def send_request(request:); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:208
+  # pkg:gem/mcp#lib/mcp/client/http.rb:240
   def server_info; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:208
+  # pkg:gem/mcp#lib/mcp/client/http.rb:240
   def session_id; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:208
+  # pkg:gem/mcp#lib/mcp/client/http.rb:240
   def url; end
 
   private
@@ -737,28 +961,61 @@ class MCP::Client::HTTP
   # on success and falsy on either "no refresh token available" or "refresh attempt failed"
   # (in which case the caller should run the full interactive flow).
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:686
+  # pkg:gem/mcp#lib/mcp/client/http.rb:918
   def attempt_refresh(flow:, resource_metadata_url:); end
 
   # SEP-1699 resumability: the server closed the SSE stream after a priming event
   # without delivering the response. Treat the graceful close like a network failure:
-  # wait the server-specified `retry:` interval (default 1000ms), then reconnect with
+  # wait the `retry:` interval the server asked for (default 1000ms), then reconnect with
   # a GET carrying `Last-Event-ID` so the server can replay the pending response on
   # the standalone stream. Mirrors the TypeScript SDK's `StreamableHTTPClientTransport`
   # reconnection and the Python SDK's `_handle_reconnection` (including its 2-attempt cap).
+  #
+  # This runs on the caller's thread, so the attempts are bounded by `max_reconnection_wait` as well as
+  # by their count: the deadline gates each wait, and what is left of it becomes the read timeout of
+  # the resumed stream. A delay that would run past the deadline is never shortened: the client stops
+  # reconnecting instead, so the server's `retry:` is honored in full or not acted on at all.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/issues/1699
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:908
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1163
   def await_response_after_disconnect(stream, method, params); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:715
+  # Learns the `x-mcp-header` declarations of the tools a `tools/list` response advertises,
+  # so later `tools/call` requests can mirror the annotated arguments into `Mcp-Param-*` headers (SEP-2243).
+  # The custom headers exist on the modern lifecycle only, matching the TypeScript and Python SDKs,
+  # so legacy connections learn nothing. Only a valid, non-empty declaration set is kept:
+  # an invalid tool definition mirrors nothing,
+  # following the spec's guidance to send without custom headers when no reliable declarations are available.
+  #
+  # pkg:gem/mcp#lib/mcp/client/http.rb:790
+  def capture_mcp_param_declarations(method, params, body); end
+
+  # pkg:gem/mcp#lib/mcp/client/http.rb:947
   def capture_session_info(method, response, body); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:724
+  # pkg:gem/mcp#lib/mcp/client/http.rb:956
   def clear_session; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:535
+  # pkg:gem/mcp#lib/mcp/client/http.rb:722
   def client; end
+
+  # Probes `server/discover` and adopts the modern lifecycle when the server serves
+  # a mutually supported modern version; otherwise falls back to the legacy handshake.
+  # The fallback intentionally covers a successful discovery without a mutual modern
+  # version as well: during the 2026-07-28 rollout a server may answer discovery while
+  # only serving legacy versions.
+  #
+  # pkg:gem/mcp#lib/mcp/client/http.rb:669
+  def connect_auto(client_info:, protocol_version:, capabilities:); end
+
+  # pkg:gem/mcp#lib/mcp/client/http.rb:565
+  def connect_legacy(client_info:, protocol_version:, capabilities:); end
+
+  # Enters the modern lifecycle by probing `server/discover` at the requested (or latest) modern version.
+  # No `initialize` or `notifications/initialized` is sent; the probe response becomes `server_info`.
+  #
+  # pkg:gem/mcp#lib/mcp/client/http.rb:629
+  def connect_modern(client_info:, protocol_version:, capabilities:); end
 
   # Answers a server-to-client request received on an SSE stream by invoking the handler registered via
   # `on_server_request` and POSTing its return value back as a JSON-RPC response; the server ACKs with
@@ -768,15 +1025,18 @@ class MCP::Client::HTTP
   # In every case the server is not left waiting, matching how the TypeScript and Python SDKs convert handler
   # failures into JSON-RPC error responses.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:846
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1096
   def dispatch_server_request(message); end
 
   # A header value that is not safe to transmit as-is - non-ASCII, control characters (including CR/LF,
   # which would otherwise allow header injection), or significant leading/trailing whitespace - is wrapped as
   # `=?base64?<base64>?=`. Safe ASCII values are sent unchanged.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:594
+  # pkg:gem/mcp#lib/mcp/client/http.rb:826
   def encode_header_value(value); end
+
+  # pkg:gem/mcp#lib/mcp/client/http.rb:680
+  def enter_modern_mode(protocol_version:, client_info:, capabilities:); end
 
   # Returns the space-separated union of the currently granted scope (read
   # from the stored token response per RFC 6749 Section 5.1) and the scope
@@ -785,10 +1045,10 @@ class MCP::Client::HTTP
   # ones. Returns `nil` when neither side carries a scope so
   # `build_authorization_url` omits the `scope` parameter entirely.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:649
+  # pkg:gem/mcp#lib/mcp/client/http.rb:881
   def escalated_step_up_scope(challenge_scope); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:533
+  # pkg:gem/mcp#lib/mcp/client/http.rb:563
   def headers; end
 
   # True when the response on `forbidden_error` carries a Bearer challenge
@@ -796,8 +1056,11 @@ class MCP::Client::HTTP
   # scope-selection-strategy section. A 403 without that signal is not a
   # step-up challenge and must not trigger re-authorization.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:661
+  # pkg:gem/mcp#lib/mcp/client/http.rb:893
   def insufficient_scope_challenge?(forbidden_error); end
+
+  # pkg:gem/mcp#lib/mcp/client/http.rb:688
+  def leave_modern_mode; end
 
   # Reconnection semantics match the TypeScript and Python SDK clients: a stream that was established and
   # then closed gracefully is retried indefinitely after the server's `retry:` interval (SSE semantics),
@@ -805,17 +1068,34 @@ class MCP::Client::HTTP
   # once they reach `MAX_RECONNECTION_ATTEMPTS`; a successful stream in between resets the count.
   # A 405 stops immediately without retrying, since it is the spec's answer from a server that offers no listening stream.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:751
+  # pkg:gem/mcp#lib/mcp/client/http.rb:985
   def listen_for_server_requests; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:889
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1139
   def parse_json_buffer(buffer, method, params); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:665
+  # pkg:gem/mcp#lib/mcp/client/http.rb:897
   def parse_www_authenticate_from_error(error); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:708
+  # pkg:gem/mcp#lib/mcp/client/http.rb:694
+  def probe_discover; end
+
+  # The reconnection delay in seconds: the server's `retry:` value when it sent one and
+  # the default otherwise, never shortened, raised to `MIN_RECONNECTION_DELAY_MS` when the server
+  # asked for less than that. A `retry:` that is negative or not a run of digits is not a value at all;
+  # the SSE parser drops it, so those arrive here as the default rather than as something to guard.
+  #
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1025
+  def reconnection_delay_seconds(stream); end
+
+  # pkg:gem/mcp#lib/mcp/client/http.rb:940
   def refresh_token_available?; end
+
+  # Seconds left before `deadline`, floored just above zero so a budget consumed down to the last instant
+  # still asks the adapter for a timeout rather than for "no timeout".
+  #
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1033
+  def remaining_reconnection_budget(deadline); end
 
   # Per SEP-2243, mirror the JSON-RPC method and target name/uri into HTTP headers so intermediaries
   # can route and inspect requests without parsing the body. `Mcp-Name` comes from `params.name`
@@ -823,19 +1103,19 @@ class MCP::Client::HTTP
   #
   # https://modelcontextprotocol.io/specification/draft/basic/transports/streamable-http#request-metadata
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:578
+  # pkg:gem/mcp#lib/mcp/client/http.rb:765
   def request_metadata_headers(method, params); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:787
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1037
   def require_faraday!; end
 
   # Determines the logical JSON-RPC body of the exchange after the POST stream finished
   # (or was aborted because the response already arrived).
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:797
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1047
   def resolve_response_body(stream, response, method, params); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:672
+  # pkg:gem/mcp#lib/mcp/client/http.rb:904
   def run_full_authorization_flow!(flow:, params:); end
 
   # Drives the OAuth orchestrator on a 401 from the MCP endpoint.
@@ -848,7 +1128,7 @@ class MCP::Client::HTTP
   #
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#error-handling
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:615
+  # pkg:gem/mcp#lib/mcp/client/http.rb:847
   def run_oauth_flow!(unauthorized_error:); end
 
   # Drives a full Authorization Code + PKCE flow without first attempting
@@ -864,13 +1144,13 @@ class MCP::Client::HTTP
   # on the next operation that needs them.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#scope-selection-strategy
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:635
+  # pkg:gem/mcp#lib/mcp/client/http.rb:867
   def run_step_up_flow!(forbidden_error:); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:600
+  # pkg:gem/mcp#lib/mcp/client/http.rb:832
   def safe_header_value?(value); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:885
+  # pkg:gem/mcp#lib/mcp/client/http.rb:1135
   def send_client_response(response); end
 
   # Per spec, the client MUST include `MCP-Session-Id` (when the server assigned one)
@@ -879,21 +1159,21 @@ class MCP::Client::HTTP
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#session-management
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#protocol-version-header
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:563
+  # pkg:gem/mcp#lib/mcp/client/http.rb:750
   def session_headers; end
 
   # Opens the standalone GET SSE listening stream on a background thread so server-to-client requests
   # can arrive while the main thread is blocked on its own request (e.g. a tools/call awaiting elicitation).
   # Like the TypeScript and Python SDK clients, the GET is fired without waiting for it to be established.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:735
+  # pkg:gem/mcp#lib/mcp/client/http.rb:969
   def start_listening; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:741
+  # pkg:gem/mcp#lib/mcp/client/http.rb:975
   def stop_listening; end
 end
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:12
+# pkg:gem/mcp#lib/mcp/client/http.rb:15
 MCP::Client::HTTP::ACCEPT_HEADER = T.let(T.unsafe(nil), String)
 
 # SEP-1699 reconnection tuning: the SSE `retry:` field from the server takes precedence;
@@ -901,18 +1181,26 @@ MCP::Client::HTTP::ACCEPT_HEADER = T.let(T.unsafe(nil), String)
 # (`DEFAULT_RECONNECTION_DELAY_MS`, `MAX_RECONNECTION_ATTEMPTS`); the TypeScript SDK uses
 # an exponential backoff that the `retry:` field likewise overrides.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:24
+# pkg:gem/mcp#lib/mcp/client/http.rb:27
 MCP::Client::HTTP::DEFAULT_RECONNECTION_DELAY_MS = T.let(T.unsafe(nil), Integer)
 
 # Raised when an `oauth:` provider is paired with an MCP URL that is neither HTTPS nor
 # a loopback `http://` URL, since a bearer token sent over plain HTTP to a remote host
 # is trivially observed and stolen.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:43
+# pkg:gem/mcp#lib/mcp/client/http.rb:75
 class MCP::Client::HTTP::InsecureURLError < ::ArgumentError; end
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:18
+# pkg:gem/mcp#lib/mcp/client/http.rb:21
 MCP::Client::HTTP::LAST_EVENT_ID_HEADER = T.let(T.unsafe(nil), String)
+
+# Upper bound on the tools whose `x-mcp-header` declarations are retained for
+# `Mcp-Param-*` mirroring (SEP-2243). Past the cap, newly listed tools mirror nothing
+# (the spec's guidance to send without custom headers), so a server rotating tool names across
+# `tools/list` responses cannot grow the registry without bound.
+#
+# pkg:gem/mcp#lib/mcp/client/http.rb:70
+MCP::Client::HTTP::MAX_MCP_PARAM_TOOLS = T.let(T.unsafe(nil), Integer)
 
 # Upper bound in bytes on a single JSON-RPC message from the server - an SSE event or
 # a JSON response body - buffered in memory while reading a response. Without a bound,
@@ -920,23 +1208,50 @@ MCP::Client::HTTP::LAST_EVENT_ID_HEADER = T.let(T.unsafe(nil), String)
 # the buffer indefinitely. Matches the 4 MiB default of `MCP::Client::Stdio::MAX_LINE_BYTES`
 # and the server transports' request cap.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:38
+# pkg:gem/mcp#lib/mcp/client/http.rb:64
 MCP::Client::HTTP::MAX_MESSAGE_BYTES = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:25
+# pkg:gem/mcp#lib/mcp/client/http.rb:28
 MCP::Client::HTTP::MAX_RECONNECTION_ATTEMPTS = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:16
+# Budget in seconds for `await_response_after_disconnect`: it gates every wait between reconnection attempts,
+# and whatever is left of it becomes the read timeout of each resumed stream. That method runs on the calling thread,
+# so without a deadline a server answering with a large `retry:` parks a thread of the embedding application for
+# as long as it likes; `MAX_RECONNECTION_ATTEMPTS` caps how many times the client reconnects,
+# not how long it waits for each. A delay that would run past the deadline is not shortened - the client stops
+# reconnecting instead, the same kind of decision the attempt cap already makes, so the server's `retry:` is
+# always honored in full or not acted on at all.
+#
+# Matches `SSE_LISTENER_READ_TIMEOUT`, this client's other "how long to wait on a quiet SSE stream" value.
+# `listen_for_server_requests` has no such deadline: it runs on a thread this client owns and is meant
+# to poll indefinitely, so a long `retry:` there idles the SDK's own listener rather than the application.
+#
+# pkg:gem/mcp#lib/mcp/client/http.rb:51
+MCP::Client::HTTP::MAX_RECONNECTION_WAIT = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/mcp#lib/mcp/client/http.rb:19
 MCP::Client::HTTP::METHOD_HEADER = T.let(T.unsafe(nil), String)
+
+# Floor on the effective reconnection delay. `listen_for_server_requests` treats a graceful close as success
+# and resets `consecutive_failures`, so `retry: 0` never reaches the attempt cap and reconnects in a tight loop.
+# Waiting longer than the server asked for is explicitly allowed: the `retry` field the spec points at is
+# the one defined by WHATWG HTML, whose reconnection algorithm reads "Wait a delay equal to the reconnection time
+# of the event source. Optionally, wait some more." Waiting *less* is what the spec's MUST rules out,
+# and nothing here ever does that.
+#
+# https://html.spec.whatwg.org/multipage/server-sent-events.html#reconnection-time
+#
+# pkg:gem/mcp#lib/mcp/client/http.rb:38
+MCP::Client::HTTP::MIN_RECONNECTION_DELAY_MS = T.let(T.unsafe(nil), Integer)
 
 # Raised inside the streaming callback when the server sends more bytes than
 # `max_message_bytes` without completing a message. Translated into
 # a `RequestHandlerError` (or a listener stop) where the request context is known.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:84
+# pkg:gem/mcp#lib/mcp/client/http.rb:116
 class MCP::Client::HTTP::MessageTooLargeError < ::StandardError; end
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:17
+# pkg:gem/mcp#lib/mcp/client/http.rb:20
 MCP::Client::HTTP::NAME_HEADER = T.let(T.unsafe(nil), String)
 
 # Faraday request middleware that compares the outgoing request URL
@@ -950,37 +1265,37 @@ MCP::Client::HTTP::NAME_HEADER = T.let(T.unsafe(nil), String)
 # the audience-binding check on the OAuth side could be bypassed at
 # the send step.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:55
+# pkg:gem/mcp#lib/mcp/client/http.rb:87
 class MCP::Client::HTTP::OAuthURLGuard
-  # pkg:gem/mcp#lib/mcp/client/http.rb:56
+  # pkg:gem/mcp#lib/mcp/client/http.rb:88
   def initialize(app, expected_url:); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:61
+  # pkg:gem/mcp#lib/mcp/client/http.rb:93
   def call(env); end
 end
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:15
+# pkg:gem/mcp#lib/mcp/client/http.rb:18
 MCP::Client::HTTP::PROTOCOL_VERSION_HEADER = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:14
+# pkg:gem/mcp#lib/mcp/client/http.rb:17
 MCP::Client::HTTP::SESSION_ID_HEADER = T.let(T.unsafe(nil), String)
 
 # Per-exchange SSE state shared between the initial POST stream and any SEP-1699 reconnection GET streams:
 # the incrementally parsed JSON-RPC response, the last received SSE event id (for `Last-Event-ID`),
 # and the server's `retry:` reconnection delay. Non-SSE bodies accumulate in `buffer` for the JSON path.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:90
+# pkg:gem/mcp#lib/mcp/client/http.rb:122
 class MCP::Client::HTTP::SSEStream
-  # pkg:gem/mcp#lib/mcp/client/http.rb:94
+  # pkg:gem/mcp#lib/mcp/client/http.rb:126
   def initialize(abortable:, max_message_bytes: T.unsafe(nil), on_request: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:92
+  # pkg:gem/mcp#lib/mcp/client/http.rb:124
   def abortable; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:92
+  # pkg:gem/mcp#lib/mcp/client/http.rb:124
   def abortable=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:91
+  # pkg:gem/mcp#lib/mcp/client/http.rb:123
   def buffer; end
 
   # Parses an SSE body that was delivered outside the streaming callback:
@@ -988,10 +1303,10 @@ class MCP::Client::HTTP::SSEStream
   # (consumed here so they are not parsed twice), and adapters without `on_data` support
   # yield the whole body only via `fallback_body` (the Faraday `response.body`).
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:144
+  # pkg:gem/mcp#lib/mcp/client/http.rb:176
   def ingest_pending!(fallback_body); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:91
+  # pkg:gem/mcp#lib/mcp/client/http.rb:123
   def last_event_id; end
 
   # Faraday `on_data` streaming callback. SSE chunks are parsed incrementally;
@@ -999,36 +1314,36 @@ class MCP::Client::HTTP::SSEStream
   # by `max_message_bytes`, checked after the awaited response had its chance to
   # abort the stream so an over-limit tail cannot mask a response that already arrived.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:115
+  # pkg:gem/mcp#lib/mcp/client/http.rb:147
   def on_data; end
 
   # Whether the server sent a SEP-1699 priming event (any event carrying an id),
   # which marks the stream as resumable after a graceful close.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:107
+  # pkg:gem/mcp#lib/mcp/client/http.rb:139
   def primed?; end
 
   # A fresh parser for a new HTTP connection (reconnection GET),
   # so a partial line from the previous stream cannot corrupt the next one.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:136
+  # pkg:gem/mcp#lib/mcp/client/http.rb:168
   def reset_parser!; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:91
+  # pkg:gem/mcp#lib/mcp/client/http.rb:123
   def response; end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:91
+  # pkg:gem/mcp#lib/mcp/client/http.rb:123
   def retry_ms; end
 
   private
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:151
+  # pkg:gem/mcp#lib/mcp/client/http.rb:183
   def event_stream?(env); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:157
+  # pkg:gem/mcp#lib/mcp/client/http.rb:189
   def feed(chunk); end
 
-  # pkg:gem/mcp#lib/mcp/client/http.rb:195
+  # pkg:gem/mcp#lib/mcp/client/http.rb:227
   def parser; end
 
   # Bytes the parser has buffered for a not-yet-dispatched event: the partial line
@@ -1039,11 +1354,11 @@ class MCP::Client::HTTP::SSEStream
   # A parser rewrite that buffered elsewhere would make this return 0 and quietly lift the cap -
   # the regression tests feeding an over-limit event guard against that.
   #
-  # pkg:gem/mcp#lib/mcp/client/http.rb:188
+  # pkg:gem/mcp#lib/mcp/client/http.rb:220
   def parser_buffered_bytes; end
 end
 
-# pkg:gem/mcp#lib/mcp/client/http.rb:13
+# pkg:gem/mcp#lib/mcp/client/http.rb:16
 MCP::Client::HTTP::SSE_ACCEPT_HEADER = T.let(T.unsafe(nil), String)
 
 # How long the standalone GET listening stream may stay idle before the read times out
@@ -1051,14 +1366,14 @@ MCP::Client::HTTP::SSE_ACCEPT_HEADER = T.let(T.unsafe(nil), String)
 # `sse_read_timeout` default of 5 minutes; without this, the adapter's default read timeout
 # (60 seconds for Net::HTTP) would recycle quiet streams too eagerly.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:31
+# pkg:gem/mcp#lib/mcp/client/http.rb:57
 MCP::Client::HTTP::SSE_LISTENER_READ_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
 # Internal control-flow signal raised inside the streaming callback to stop reading
 # an SSE stream once the awaited JSON-RPC response has arrived; servers may hold
 # a stream open indefinitely (notably the standalone GET stream), so EOF cannot be relied on.
 #
-# pkg:gem/mcp#lib/mcp/client/http.rb:78
+# pkg:gem/mcp#lib/mcp/client/http.rb:110
 class MCP::Client::HTTP::StreamAbort < ::StandardError; end
 
 # Raised when a server answers with a SEP-2322 Multi Round-Trip `input_required` result instead of
@@ -1066,22 +1381,23 @@ class MCP::Client::HTTP::StreamAbort < ::StandardError; end
 # `inputRequests` (a map of id => `{ "method" => ..., "params" => ... }` request objects with
 # `sampling/createMessage`, `roots/list`, or `elicitation/create` shapes) and re-issue
 # the original request with `inputResponses` plus the echoed opaque `requestState`.
-# This SDK does not yet drive that resume loop automatically; callers can inspect `input_requests`
-# and respond manually.
+# With handlers registered through `on_elicitation`, `on_sampling`, or `on_roots`, the resume loop runs
+# automatically; this error surfaces when no matching handler exists (manual driving via
+# `input_requests` and the `input_responses:`/`request_state:` kwargs), or when the round cap is exhausted.
 # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2322
 #
-# pkg:gem/mcp#lib/mcp/client.rb:61
+# pkg:gem/mcp#lib/mcp/client.rb:75
 class MCP::Client::InputRequiredError < ::StandardError
-  # pkg:gem/mcp#lib/mcp/client.rb:64
+  # pkg:gem/mcp#lib/mcp/client.rb:78
   def initialize(message, input_requests:, request_state: T.unsafe(nil), result: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:62
+  # pkg:gem/mcp#lib/mcp/client.rb:76
   def input_requests; end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:62
+  # pkg:gem/mcp#lib/mcp/client.rb:76
   def request_state; end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:62
+  # pkg:gem/mcp#lib/mcp/client.rb:76
   def result; end
 end
 
@@ -1291,6 +1607,149 @@ class MCP::Client::ListToolsResult < ::Struct
   end
 end
 
+# Upper bound on the number of pages the all-pages methods (`tools`, `resources`,
+# `resource_templates`, `prompts`) will walk. The cursor guard in `fetch_all_pages` only
+# stops a server that repeats or cycles cursors; one that returns a fresh `nextCursor` on
+# every response would otherwise be followed indefinitely, growing the retained pages with it.
+#
+# pkg:gem/mcp#lib/mcp/client.rb:19
+MCP::Client::MAX_PAGES = T.let(T.unsafe(nil), Integer)
+
+# The custom-header half of SEP-2243 (MCP 2026-07-28): scanning a tool's `inputSchema` for
+# `x-mcp-header` declarations and encoding `tools/call` argument values into `Mcp-Param-{Name}` HTTP headers,
+# with the `=?base64?...?=` sentinel for values that cannot ride as plain ASCII field values.
+# Mirrors the TypeScript SDK's `mcpParamHeaders` codec; the standard-header half (`Mcp-Method`, `Mcp-Name`)
+# lives with the transport.
+#
+# https://modelcontextprotocol.io/specification/draft/basic/transports/streamable-http#custom-headers-from-tool-parameters
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:12
+module MCP::Client::McpParamHeaders
+  class << self
+    # Builds the `Mcp-Param-{Name}` headers for one `tools/call` from the scanned declarations and
+    # the call's `arguments`. A `null` or absent value omits its header (the spec's MUST-omit rows);
+    # a non-primitive or non-representable value is omitted rather than emitted malformed.
+    #
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:78
+    def build(declarations, arguments); end
+
+    # Encodes a header value per the spec's value-encoding rules: a safe plain-ASCII field value
+    # passes through unchanged, everything else is wrapped as `=?base64?{base64-of-UTF-8}?=`.
+    #
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:122
+    def encode_value(value); end
+
+    # Converts a primitive argument to its header string per the spec's type-conversion rules:
+    # strings pass through, booleans become lowercase `"true"` / `"false"`, and numbers become
+    # their decimal string. `nil` means "not representable: do not emit a header".
+    #
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:101
+    def primitive_to_string(value); end
+
+    # Scans a tool's `inputSchema` for `x-mcp-header` declarations and validates every constraint
+    # the spec places on them: RFC 9110 token names, case-insensitive uniqueness, primitive-typed
+    # declaring properties, and static reachability through a chain of `properties` keys only.
+    # Returns `{ valid: true, declarations: [...] }` with each declaration `{ path:, header_name:, type: }`,
+    # or `{ valid: false, reason: "..." }` on the first violation.
+    #
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:68
+    def scan(input_schema); end
+
+    private
+
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:232
+    def key?(hash, key); end
+
+    # A value cannot ride as a plain ASCII field value when it is empty, already shaped like
+    # the Base64 sentinel (the spec's ambiguity rule), carries edge whitespace that field parsing
+    # would strip, or contains a byte outside visible ASCII plus interior tab.
+    #
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:208
+    def needs_base64?(value); end
+
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:236
+    def path_name(path); end
+
+    # Schemas and arguments arrive with string keys off the wire but may carry symbol keys
+    # when constructed in Ruby; read both forms like the SDK's other readers.
+    #
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:226
+    def read(hash, key); end
+
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:172
+    def validate_declaration(node, path, reachable, declarations, seen_lower); end
+
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:216
+    def value_at_path(root, path); end
+
+    # pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:130
+    def visit(node, path, reachable, declarations, seen_lower); end
+  end
+end
+
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:59
+MCP::Client::McpParamHeaders::BASE64_SENTINEL_PREFIX = T.let(T.unsafe(nil), String)
+
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:60
+MCP::Client::McpParamHeaders::BASE64_SENTINEL_SUFFIX = T.let(T.unsafe(nil), String)
+
+# The fixed prefix every custom-parameter header carries.
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:14
+MCP::Client::McpParamHeaders::HEADER_PREFIX = T.let(T.unsafe(nil), String)
+
+# Integers beyond 2**53 - 1 lose precision in JSON number interchange, so they are not mirrored;
+# the TypeScript SDK refuses unsafe integers the same way.
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:57
+MCP::Client::McpParamHeaders::MAX_SAFE_INTEGER = T.let(T.unsafe(nil), Integer)
+
+# JSON Schema keywords the SEP-2243 static-reachability constraint excludes from
+# the `properties`-only chain. An `x-mcp-header` under any of these invalidates
+# the tool definition rather than being silently ignored.
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:31
+MCP::Client::McpParamHeaders::NON_REACHABLE_SUBSCHEMA_KEYWORDS = T.let(T.unsafe(nil), Array)
+
+# Keywords whose value maps names to subschemas rather than being one subschema or a list of them.
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:53
+MCP::Client::McpParamHeaders::OBJECT_VALUED_SUBSCHEMA_KEYWORDS = T.let(T.unsafe(nil), Array)
+
+# The spec text admits `string`, `integer`, and `boolean`. `number` is also accepted because
+# the published conformance referee annotates `type: "number"` parameters and expects them
+# mirrored; the TypeScript SDK makes the same accommodation.
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:26
+MCP::Client::McpParamHeaders::PERMITTED_TYPES = T.let(T.unsafe(nil), Array)
+
+# RFC 9110 Section 5.1 `token` syntax (`1*tchar`): rejects empty names, spaces,
+# control characters (including CR/LF), and the HTTP delimiters.
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:21
+MCP::Client::McpParamHeaders::RFC9110_TOKEN = T.let(T.unsafe(nil), Regexp)
+
+# The schema-extension property name a tool's `inputSchema` carries.
+#
+# pkg:gem/mcp#lib/mcp/client/mcp_param_headers.rb:17
+MCP::Client::McpParamHeaders::X_MCP_HEADER_KEY = T.let(T.unsafe(nil), String)
+
+# Stamps the SEP-2575 per-request `_meta` envelope onto outgoing modern requests.
+# The reserved key names are shared with the server-side `MCP::RequestEnvelope`.
+# Reserved keys always win over caller-supplied `_meta` entries because they are
+# wire vocabulary the SDK is responsible for; every other entry is preserved.
+#
+# pkg:gem/mcp#lib/mcp/client/modern_envelope.rb:11
+module MCP::Client::ModernEnvelope
+  extend ::MCP::Client::ModernEnvelope
+
+  # Returns a copy of `request` with `params._meta` carrying the modern triple.
+  # Neither `request` nor its nested hashes are mutated.
+  #
+  # pkg:gem/mcp#lib/mcp/client/modern_envelope.rb:16
+  def stamp(request, protocol_version:, client_info:, capabilities:); end
+end
+
 # OAuth client support for the MCP Authorization spec (PRM discovery,
 # Authorization Server metadata discovery, Dynamic Client Registration,
 # OAuth 2.1 Authorization Code + PKCE, the client_credentials grant,
@@ -1444,7 +1903,7 @@ class MCP::Client::OAuth::CrossAppAccessProvider::InvalidConfigurationError < ::
 
 # Stateless helpers that map MCP-authorization spec URLs and headers into something
 # the `Flow` orchestrator and `MCP::Client::HTTP` transport can act on.
-# The module bundles five concerns that share no state but are closely related to
+# The module bundles six concerns that share no state but are closely related to
 # the spec's "Discovery" and "Communication Security" sections:
 #
 # - **`WWW-Authenticate` parsing** (`parse_www_authenticate`): pulls
@@ -1458,6 +1917,10 @@ class MCP::Client::OAuth::CrossAppAccessProvider::InvalidConfigurationError < ::
 # - **Communication Security check** (`secure_url?`): enforces "HTTPS only"
 #   for every OAuth-facing URL, with the loopback carve-out described in
 #   `secure_url?`'s comment.
+# - **Destination checks** (`same_origin?`, `private_network_host?`):
+#   answer *where* a URL points, which the scheme alone does not. `Flow` uses
+#   them to refuse server-supplied discovery URLs aimed at hosts the MCP server
+#   has no business steering the client toward.
 # - **URL canonicalization** (`canonicalize_url`): normalizes scheme,
 #   host, port, path, percent-encoded dot segments, and fragments
 #   so two URLs that *refer to the same resource* compare as equal,
@@ -1470,7 +1933,7 @@ class MCP::Client::OAuth::CrossAppAccessProvider::InvalidConfigurationError < ::
 # Every entry point is a class method so it can be called from initializers and
 # from any thread without synchronization.
 #
-# pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:36
+# pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:40
 module MCP::Client::OAuth::Discovery
   class << self
     # Returns the candidate Authorization Server metadata URLs to probe, in priority order.
@@ -1486,7 +1949,7 @@ module MCP::Client::OAuth::Discovery
     # - https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2351
     # - https://www.rfc-editor.org/rfc/rfc8414#section-3.1
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:104
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:108
     def authorization_server_metadata_urls(issuer_url); end
 
     # Like `canonicalize_url` but also strips query string, fragment, and
@@ -1501,7 +1964,7 @@ module MCP::Client::OAuth::Discovery
     # message - both of which would defeat the bearer-token-protection
     # purpose of the identity check.
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:268
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:317
     def canonicalize_origin_and_path(url); end
 
     # Returns a canonical form of `url` suitable for comparing two URIs
@@ -1520,7 +1983,7 @@ module MCP::Client::OAuth::Discovery
     # an attacker-supplied URL like `https://srv.example.com/api/%2e%2e/mcp` from sneaking
     # past the PRM `resource` check in `resource_covers?`.
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:135
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:139
     def canonicalize_url(url); end
 
     # Returns true when `url` satisfies the structural requirements for
@@ -1546,7 +2009,7 @@ module MCP::Client::OAuth::Discovery
     #   but different encodings of the same query (`?a=1&b=2` vs `?b=2&a=1`) would yield distinct
     #   `client_id` values for the same logical document.
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:218
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:267
     def client_id_metadata_document_url?(url); end
 
     # Infers the OIDC Dynamic Client Registration `application_type` for a client from its `redirect_uris`.
@@ -1560,7 +2023,7 @@ module MCP::Client::OAuth::Discovery
     # - https://github.com/modelcontextprotocol/modelcontextprotocol/pull/837
     # - https://openid.net/specs/openid-connect-registration-1_0.html#ClientMetadata
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:250
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:299
     def infer_application_type(redirect_uris); end
 
     # Parses a `WWW-Authenticate` header and returns the parameters of
@@ -1572,34 +2035,53 @@ module MCP::Client::OAuth::Discovery
     # - https://www.rfc-editor.org/rfc/rfc9728.html#section-5.1
     # - https://www.rfc-editor.org/rfc/rfc7235.html#section-4.1
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:51
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:55
     def parse_www_authenticate(header); end
+
+    # Returns true when `host` is an IP literal that is not reachable from the public internet,
+    # or the `localhost` name. The ranges are the ones RFC 9728 Section 7.7 and the MCP security best practices name
+    # as SSRF targets, so `169.254.0.0/16` covers the `169.254.169.254` cloud metadata address that motivates the check.
+    #
+    # Hostnames are deliberately NOT resolved. A lookup here would be a second network request driven by
+    # the same untrusted input, and the address it returned could differ from the one the HTTP client connects to
+    # a moment later, so the check would read as a guarantee it cannot make. That leaves names like `vault.corp.internal`
+    # out of reach of this predicate; it is one layer of an SSRF defense, not the whole of one.
+    #
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:227
+    def private_network_host?(host); end
 
     # Returns the candidate Protected Resource Metadata URLs to probe, in priority order.
     # https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#protected-resource-metadata-discovery-requirements
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:79
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:83
     def protected_resource_metadata_urls(server_url:, resource_metadata_url: T.unsafe(nil)); end
 
-    # Returns true when `prm` (a PRM `resource` URL) covers `server`
-    # (the MCP endpoint URL): same scheme/host/port, with PRM's path being
-    # a prefix of the server's path. When PRM also advertises a query
-    # string, the server's query MUST be identical to it
-    # (otherwise a hijacked PRM that advertises `?tenant=evil` would cover
-    # an MCP server at `?tenant=victim` and let the attacker mint
-    # a different tenant's token for the same origin + path).
-    # PRM with *no* query (URI#query returns `nil`) acts as a generic identifier
-    # over the origin + path prefix and covers any server query.
+    # Returns true when `prm` (a PRM `resource` URL) covers `server` (the MCP endpoint URL):
+    # same scheme/host/port, with PRM's path being a prefix of the server's path. When PRM
+    # also advertises a query string, the server's query MUST be identical to it (otherwise
+    # a hijacked PRM that advertises `?tenant=evil` would cover an MCP server at `?tenant=victim`
+    # and let the attacker mint a different tenant's token for the same origin + path).
+    # PRM with *no* query (URI#query returns `nil`) acts as a generic identifier over
+    # the origin + path prefix and covers any server query.
     #
-    # An empty query (`prm_url?` -- URI#query returns `""`) is NOT
-    # treated as wildcard: it represents the URI literally `<...>?`,
-    # which is distinct from "no query at all" and from any non-empty query,
-    # so it must match exactly.
+    # An empty query (`prm_url?` -- URI#query returns `""`) is NOT treated as wildcard:
+    # it represents the URI literally `<...>?`, which is distinct from "no query at all"
+    # and from any non-empty query, so it must match exactly.
     #
     # Both arguments must already be canonicalized.
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:306
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:352
     def resource_covers?(prm:, server:); end
+
+    # Returns true when `url` and `other` share an origin: same scheme, same host,
+    # and same port. Scheme and host compare case-insensitively, and an implicit default port compares
+    # equal to the same port written out, because `URI::HTTP#port` already resolves to the default.
+    #
+    # Anything that fails to parse or carries no host returns false, so a caller using this as
+    # a security gate refuses rather than admits on malformed input.
+    #
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:206
+    def same_origin?(url, other); end
 
     # Returns true when `url` is safe to use for OAuth communication per
     # the MCP authorization spec's "Communication Security" requirement:
@@ -1625,22 +2107,22 @@ module MCP::Client::OAuth::Discovery
     # which would otherwise pass a naive `start_with?("127.")` check.
     # https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#communication-security
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:181
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:185
     def secure_url?(url); end
 
     private
 
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:379
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:473
     def base_url(uri); end
 
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:343
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:412
     def loopback_host?(host); end
 
     # A redirect URI counts as native when it uses a custom non-http(s) scheme
     # (e.g. `com.example.app:/callback`) or when it is an http(s) URI whose host is
     # a loopback address. A URI without a scheme or one that fails to parse is not native.
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:368
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:462
     def native_redirect_uri?(url); end
 
     # Normalizes a URL query string so two URLs that are equivalent in
@@ -1667,10 +2149,27 @@ module MCP::Client::OAuth::Discovery
     # Returns `nil` when the resulting query is empty
     # (matching Faraday's drop-empty-query behavior).
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:407
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:501
     def normalize_query(query); end
 
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:359
+    # Returns true when `host` is written in the numeric IPv4 grammar `inet_aton` accepts
+    # and `IPAddr` rejects: one to four dot-separated parts, each hexadecimal, octal, or
+    # decimal, with the last part filling the remaining bytes. `2130706433`, `127.1`, and
+    # `0x7f000001` all reach 127.0.0.1, and `0xa9fea9fe` reaches the cloud metadata address,
+    # so a check that understood only the canonical form would refuse `169.254.169.254`
+    # while waving through every other spelling of it.
+    #
+    # Such a host is refused outright rather than decoded and range-checked, because its
+    # value is resolver-dependent: a leading zero reads as octal on one platform and decimal
+    # on another, which is the difference between 8.0.0.1 and 10.0.0.1 for `010.0.0.1`.
+    # Deciding here which one it meant would leave whichever reading was not taken as a way
+    # through. No authorization server is legitimately addressed in this notation, so
+    # refusing the grammar entirely costs nothing and leaves no spelling to miss.
+    #
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:452
+    def numeric_ipv4_spelling?(host); end
+
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:428
     def parse_ip_address(candidate); end
 
     # Implements RFC 3986 Section 5.2.4 `remove_dot_segments`. Walks the input
@@ -1679,17 +2178,17 @@ module MCP::Client::OAuth::Discovery
     # `/mcp` and `/foo/./bar` collapses to `/foo/bar`.
     # https://www.rfc-editor.org/rfc/rfc3986#section-5.2.4
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:467
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:561
     def remove_dot_segments(path); end
 
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:498
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:592
     def remove_last_segment(output); end
 
     # Unescapes a `quoted-string` value's `quoted-pair` octets per
     # RFC 7230 Section 3.2.6 (referenced from RFC 7235): `\<char>` becomes `<char>`.
     # https://www.rfc-editor.org/rfc/rfc7230#section-3.2.6
     #
-    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:331
+    # pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:377
     def unescape_quoted_pair(value); end
   end
 end
@@ -1698,7 +2197,7 @@ end
 # `value` is either a quoted string (which can contain commas and spaces)
 # or a bare token, per RFC 7235.
 #
-# pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:40
+# pkg:gem/mcp#lib/mcp/client/oauth/discovery.rb:44
 MCP::Client::OAuth::Discovery::WWW_AUTH_PARAM_PATTERN = T.let(T.unsafe(nil), Regexp)
 
 # Internal orchestrator for the MCP OAuth 2.1 + PKCE + DCR authorization flow.
@@ -1717,7 +2216,7 @@ class MCP::Client::OAuth::Flow
   # The grant is for confidential clients, so a missing `client_id` is a clean configuration error, not a fallback
   # to dynamic registration.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:131
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:141
   def client_credentials_client_info; end
 
   # Per SEP-2352, static machine-to-machine credentials are bound to their authorization
@@ -1729,7 +2228,7 @@ class MCP::Client::OAuth::Flow
   # are pre-registered, not DCR results - so the operator must update the stored credentials.
   # Credentials without a recorded issuer keep working unchanged.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:149
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:159
   def ensure_client_credentials_issuer!(client_info, as_metadata:); end
 
   # Exchanges the saved `refresh_token` for a fresh access token (RFC 6749 Section 6).
@@ -1740,7 +2239,7 @@ class MCP::Client::OAuth::Flow
   # or when the token endpoint refuses the refresh request.
   # https://www.rfc-editor.org/rfc/rfc6749#section-6
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:197
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:207
   def refresh!(server_url:, resource_metadata_url: T.unsafe(nil)); end
 
   # Runs the full discovery, registration, authorization, and token exchange flow.
@@ -1756,7 +2255,7 @@ class MCP::Client::OAuth::Flow
   # The pre-registered `client_id` / `client_secret` come from the provider's stored `client_information`.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:112
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:122
   def run_client_credentials!(as_metadata:, prm:, resource:, scope:); end
 
   # Runs the RFC 7523 `jwt-bearer` grant for the SEP-990 Enterprise Managed Authorization extension:
@@ -1766,7 +2265,7 @@ class MCP::Client::OAuth::Flow
   # The assertion's audience is the issuer identifier that `ensure_issuer_matches!` validated.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/issues/990
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:166
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:176
   def run_jwt_bearer!(as_metadata:, prm:, resource:, scope:); end
 
   private
@@ -1779,8 +2278,8 @@ class MCP::Client::OAuth::Flow
   # the origin the metadata was discovered at (neither the TypeScript nor the Python SDK validates the issuer on this path).
   # When even the metadata document is absent, the legacy spec's default endpoints are used.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:314
-  def authorization_server_metadata(authorization_server:, legacy:); end
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:338
+  def authorization_server_metadata(authorization_server:, legacy:, server_url:); end
 
   # Per RFC 6749 Section 2.3.1, the `client_id` and `client_secret` MUST be
   # `application/x-www-form-urlencoded` encoded before they are joined with
@@ -1789,10 +2288,10 @@ class MCP::Client::OAuth::Flow
   # from being mis-parsed by the authorization server.
   # https://www.rfc-editor.org/rfc/rfc6749#section-2.3.1
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:934
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1017
   def basic_auth_credentials(client_id, client_secret); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:779
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:862
   def build_authorization_url(as_metadata:, client_id:, scope:, state:, code_challenge:, resource:); end
 
   # Returns the canonical RFC 8707 `resource` URI to send on authorization and
@@ -1805,7 +2304,7 @@ class MCP::Client::OAuth::Flow
   # the server URL's path) to prevent a malicious or misconfigured PRM from
   # redirecting credentials to a different audience.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:633
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:716
   def canonical_resource(server_url:, prm_resource:); end
 
   # Same as `client_info_value` but treats blank strings (`""` or only
@@ -1815,27 +2314,33 @@ class MCP::Client::OAuth::Flow
   # `client_information` short-circuit the "is the client registered?"
   # check, or send a literal `client_secret: "   "` to the token endpoint.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:616
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:699
   def client_info_required_value(info, key); end
 
   # Reads `key` from a `client_information` hash that may use either string or
   # symbol keys, so users can persist the result of `JSON.parse` *or* a hand-built
   # `{ client_id:, client_secret: }` and have both work.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:606
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:689
   def client_info_value(info, key); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:965
+  # Deliberately built without redirect-following middleware. Every destination check in
+  # this class runs against the URL as written, before the request goes out, so a connection
+  # that transparently followed a `3xx` would let a server reach a host the checks just refused.
+  # A caller passing `http_client_factory:` takes on that responsibility: add redirect following here
+  # and the guards above only cover the first hop.
+  #
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1053
   def default_http_client; end
 
   # The 2025-03-26 spec's "Fallbacks for Servers without Metadata Discovery": clients MUST use these default endpoint paths
   # relative to the authorization base URL. PKCE S256 is assumed because the legacy spec mandates PKCE and there is no metadata
   # to advertise it (the TypeScript and Python SDKs hardcode S256 on this path too).
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:334
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:358
   def default_legacy_metadata(authorization_base); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:475
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:558
   def ensure_client_registered(as_metadata:); end
 
   # Per RFC 8414 Section 3.3, the AS metadata document's `issuer` value MUST be
@@ -1847,10 +2352,10 @@ class MCP::Client::OAuth::Flow
   # could mask a confused-deputy attempt.
   # https://www.rfc-editor.org/rfc/rfc8414#section-3.3
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:463
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:546
   def ensure_issuer_matches!(expected:, returned:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:430
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:454
   def ensure_pkce_supported!(as_metadata); end
 
   # Per SEP-2352, stored client credentials are bound to the authorization server that issued them;
@@ -1859,26 +2364,56 @@ class MCP::Client::OAuth::Flow
   # Credentials without an `"issuer"` binding predate this check and are allowed through;
   # CIMD `client_id`s are portable.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:589
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:672
   def ensure_refreshable_client_information!(client_info, as_metadata:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:448
-  def ensure_secure_endpoints!(as_metadata); end
+  # Refuses an OAuth URL that points into a private, loopback, link-local, or unique-local address,
+  # which is the SSRF precaution RFC 9728 Section 7.7 and the MCP security best practices ask clients to take.
+  #
+  # The carve-out matters as much as the rule: when the MCP server the caller configured is itself on such an address,
+  # the whole flow is already inside that network and the authorization server legitimately lives there too.
+  # That covers `http://localhost` development, the conformance harness (which runs the MCP server and
+  # the authorization server on two loopback ports), and deployments that never leave a corporate network.
+  # Only a server reachable on the public internet is barred from steering the client inward.
+  # https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization
+  #
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:502
+  def ensure_routable_destination!(url, label:, server_url:); end
+
+  # Requires a URL the *server* chose to sit on the origin the *caller* chose.
+  #
+  # Protected Resource Metadata describes the MCP server itself, so on a real deployment it is
+  # published on that server's own origin. Without this check a `WWW-Authenticate` challenge
+  # can aim the first request of the flow at any host the client can route to: the URL arrives
+  # from the network, it is fetched before the user approves anything, and the `resource` check that
+  # runs afterwards cannot un-send the request.
+  #
+  # RFC 9728 does not itself require the metadata URL to be same-origin, so this is stricter than
+  # the specification. It is enforced unconditionally because no known deployment publishes its PRM
+  # anywhere else, and because the alternative (`Discovery.private_network_host?`) cannot see
+  # internal hosts that are named rather than addressed.
+  # https://www.rfc-editor.org/rfc/rfc9728#section-7.7
+  #
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:485
+  def ensure_same_origin!(url, label:, server_url:); end
+
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:511
+  def ensure_secure_endpoints!(as_metadata, server_url:); end
 
   # Per the MCP authorization spec's Communication Security requirement,
   # OAuth endpoints MUST use HTTPS unless the host is a loopback address.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization#communication-security
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:441
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:465
   def ensure_secure_url!(url, label:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:806
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:889
   def exchange_authorization_code(as_metadata:, client_info:, code:, code_verifier:, resource:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:818
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:901
   def exchange_refresh_token(as_metadata:, client_info:, refresh_token:, resource:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:358
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:382
   def fetch_authorization_server_metadata(issuer_url:); end
 
   # Walks candidate metadata URLs and returns the parsed JSON body of
@@ -1886,10 +2421,10 @@ class MCP::Client::OAuth::Flow
   # failures (`Faraday::Error`) and malformed bodies (`JSON::ParserError`)
   # so callers do not have to handle raw Faraday/JSON exceptions.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:394
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:418
   def fetch_metadata_json(urls, label:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:269
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:288
   def fetch_protected_resource_metadata(server_url:, resource_metadata_url:); end
 
   # Reads `authorization_servers` from a PRM document and returns
@@ -1899,19 +2434,19 @@ class MCP::Client::OAuth::Flow
   # both the full flow and the refresh flow share the same defensive
   # parse instead of each one duplicating a Hash-and-Array check.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:369
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:393
   def first_authorization_server(prm); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:961
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1044
   def http_client; end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:940
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1023
   def http_get(url); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:952
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1035
   def http_post_form(url, form, headers: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:944
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1027
   def http_post_json(url, body); end
 
   # Locates the authorization server for `server_url` and returns `[prm, authorization_server]`.
@@ -1924,7 +2459,7 @@ class MCP::Client::OAuth::Flow
   # Any PRM discovery failure (404s, network errors, malformed documents) selects the legacy path, mirroring both SDKs' behavior.
   # https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization#fallbacks-for-servers-without-metadata-discovery
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:286
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:305
   def locate_authorization_server(server_url:, resource_metadata_url:); end
 
   # Applies the SDK's `offline_access` policy to the resolved scope. The policy has two halves:
@@ -1945,22 +2480,28 @@ class MCP::Client::OAuth::Flow
   # Returns `nil` when the result is empty so `build_authorization_url` omits the `scope` parameter entirely.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2207
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:742
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:825
   def normalize_offline_access_scope(scope, as_metadata:); end
 
   # Submits a form-encoded request to the token endpoint, applying
   # the client authentication method advertised in `client_information` and
   # adding `client_id` (and `client_secret` when not using HTTP Basic).
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:831
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:914
   def post_to_token_endpoint(as_metadata:, client_info:, form:); end
 
   # Per RFC 6749 Section 6, the refresh response MAY omit `refresh_token`, in
   # which case the previous one stays valid. Preserve it explicitly so
   # downstream refresh attempts still work.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:263
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:282
   def preserve_refresh_token(new_tokens, previous_refresh_token); end
+
+  # `ensure_secure_url!` runs first at every call site and already rejects a URL that fails to parse,
+  # so the rescue here is a backstop rather than a leniency.
+  #
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:523
+  def private_network_url?(url); end
 
   # The OAuth flow the provider drives. Dispatching on the provider's
   # declared flow keeps `Flow` from second-guessing intent by parsing
@@ -1969,13 +2510,13 @@ class MCP::Client::OAuth::Flow
   # predates this method is treated as the interactive authorization-code
   # flow it was the only option for.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:773
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:856
   def provider_authorization_flow; end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:252
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:271
   def read_token(key); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:578
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:661
   def rebind_client_information(info, issuer:); end
 
   # Returns the client metadata to submit on Dynamic Client Registration.
@@ -1985,7 +2526,7 @@ class MCP::Client::OAuth::Flow
   # the registered `redirect_uris`; an explicit value always wins.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/837
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:541
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:624
   def registration_client_metadata; end
 
   # Per MCP 2025-11-25 Authorization and the TS/Python SDKs, scope resolution
@@ -1994,10 +2535,10 @@ class MCP::Client::OAuth::Flow
   # scope only if both are absent. The provider-supplied scope must not pre-empt
   # a server-advertised one.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:714
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:797
   def resolve_scope(scope:, prm:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:972
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1060
   def response_body_string(response); end
 
   # Wraps `Discovery.canonicalize_url` so that any URI parsing failure
@@ -2005,15 +2546,22 @@ class MCP::Client::OAuth::Flow
   # endpoints, ...) surfaces as `AuthorizationError` instead of leaking
   # a raw `URI::InvalidURIError` / `ArgumentError`.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:651
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:734
   def safe_canonicalize_url(url, label:); end
+
+  # Strips userinfo and query before a URL reaches an exception message, the same precaution `MCP::Client::HTTP` takes
+  # when it reports a URL: these values come off the network and can carry credentials that would otherwise land in
+  # every log destination the error passes through.
+  #
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:532
+  def sanitized_url(url); end
 
   # Returns `scheme://host[:port]` of `server_url`, the legacy 2025-03-26 authorization base URL for servers without PRM.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:345
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:369
   def server_origin!(server_url); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:754
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:837
   def server_supports_offline_access?(as_metadata); end
 
   # Constant-time comparison for the OAuth `state` parameter to prevent timing-based discovery
@@ -2023,7 +2571,7 @@ class MCP::Client::OAuth::Flow
   # The hand-rolled XOR-sum walks every byte of the equal-length operands, so the running time
   # does not leak the position of the first mismatching byte.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:700
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:783
   def states_match?(returned, expected); end
 
   # Returns the stored `client_information` when it may be used against the authorization server
@@ -2040,14 +2588,14 @@ class MCP::Client::OAuth::Flow
   #
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2352
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:562
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:645
   def stored_client_information_for(issuer:); end
 
   # Extracts the `error` code from an RFC 6749 §5.2 error response body
   # when one is parseable. Returns nil on any parse failure or when
   # the body is not JSON.
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:918
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:1001
   def token_endpoint_error_code(response); end
 
   # Validates the RFC 9207 `iss` authorization response parameter against the issuer of the authorization server
@@ -2067,10 +2615,10 @@ class MCP::Client::OAuth::Flow
   # - https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2468
   # - https://www.rfc-editor.org/rfc/rfc9207
   #
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:673
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:756
   def validate_authorization_response_issuer!(as_metadata:, iss:, iss_provided:); end
 
-  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:760
+  # pkg:gem/mcp#lib/mcp/client/oauth/flow.rb:843
   def wants_refresh_token?; end
 end
 
@@ -2428,30 +2976,46 @@ module MCP::Client::OAuth::StorageBackedProvider
   def tokens; end
 end
 
-# pkg:gem/mcp#lib/mcp/client.rb:23
+# Raised when an all-pages method reaches `max_pages` while the server is still offering
+# another cursor. Use the single-page `list_*` methods to walk such a collection with
+# a policy of your own.
+#
+# pkg:gem/mcp#lib/mcp/client.rb:64
+class MCP::Client::PaginationLimitError < ::StandardError; end
+
+# pkg:gem/mcp#lib/mcp/client.rb:31
 class MCP::Client::RequestHandlerError < ::StandardError
-  # pkg:gem/mcp#lib/mcp/client.rb:26
+  # pkg:gem/mcp#lib/mcp/client.rb:34
   def initialize(message, request, error_type: T.unsafe(nil), original_error: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:24
+  # pkg:gem/mcp#lib/mcp/client.rb:32
   def error_type; end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:24
+  # pkg:gem/mcp#lib/mcp/client.rb:32
   def original_error; end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:24
+  # pkg:gem/mcp#lib/mcp/client.rb:32
   def request; end
 end
 
-# pkg:gem/mcp#lib/mcp/client.rb:13
+# pkg:gem/mcp#lib/mcp/client.rb:115
+MCP::Client::STATE_ONLY_BACKOFF_CAP_SECONDS = T.let(T.unsafe(nil), Float)
+
+# Backoff for `requestState`-only (load shedding) legs: exponential from 50ms to
+# a 250ms cap, matching the Python SDK (the TypeScript SDK uses a fixed 250ms).
+#
+# pkg:gem/mcp#lib/mcp/client.rb:114
+MCP::Client::STATE_ONLY_BACKOFF_INITIAL_SECONDS = T.let(T.unsafe(nil), Float)
+
+# pkg:gem/mcp#lib/mcp/client.rb:21
 class MCP::Client::ServerError < ::StandardError
-  # pkg:gem/mcp#lib/mcp/client.rb:16
+  # pkg:gem/mcp#lib/mcp/client.rb:24
   def initialize(message, code:, data: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:14
+  # pkg:gem/mcp#lib/mcp/client.rb:22
   def code; end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:14
+  # pkg:gem/mcp#lib/mcp/client.rb:22
   def data; end
 end
 
@@ -2461,12 +3025,12 @@ end
 # the sampling spec answers a rejected request with code `-1`.
 # https://modelcontextprotocol.io/specification/2025-11-25/client/sampling
 #
-# pkg:gem/mcp#lib/mcp/client.rb:39
+# pkg:gem/mcp#lib/mcp/client.rb:47
 class MCP::Client::ServerRequestError < ::StandardError
-  # pkg:gem/mcp#lib/mcp/client.rb:42
+  # pkg:gem/mcp#lib/mcp/client.rb:50
   def initialize(message, code:); end
 
-  # pkg:gem/mcp#lib/mcp/client.rb:40
+  # pkg:gem/mcp#lib/mcp/client.rb:48
   def code; end
 end
 
@@ -2475,24 +3039,24 @@ end
 # backward compatibility with callers that rescue the generic error. Per spec,
 # clients MUST start a new session with a fresh `initialize` request in response.
 #
-# pkg:gem/mcp#lib/mcp/client.rb:76
+# pkg:gem/mcp#lib/mcp/client.rb:90
 class MCP::Client::SessionExpiredError < ::MCP::Client::RequestHandlerError
-  # pkg:gem/mcp#lib/mcp/client.rb:77
+  # pkg:gem/mcp#lib/mcp/client.rb:91
   def initialize(message, request, original_error: T.unsafe(nil)); end
 end
 
-# pkg:gem/mcp#lib/mcp/client/stdio.rb:14
+# pkg:gem/mcp#lib/mcp/client/stdio.rb:16
 class MCP::Client::Stdio
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:31
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:39
   def initialize(command:, args: T.unsafe(nil), env: T.unsafe(nil), read_timeout: T.unsafe(nil), max_line_bytes: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:29
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:37
   def args; end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:203
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:194
   def close; end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:29
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:37
   def command; end
 
   # Performs the MCP `initialize` handshake: sends an `initialize` request
@@ -2507,29 +3071,48 @@ class MCP::Client::Stdio
   #
   # @param client_info [Hash, nil] `{ name:, version: }` identifying the client.
   #   Defaults to `{ name: "mcp-ruby-client", version: MCP::VERSION }`.
-  # @param protocol_version [String, nil] Protocol version to offer. Defaults
-  #   to `MCP::Configuration::LATEST_STABLE_PROTOCOL_VERSION`.
+  # @param protocol_version [String, nil] Protocol version to offer on the legacy handshake.
+  #   Defaults to `MCP::Configuration::LATEST_HANDSHAKE_PROTOCOL_VERSION`; a modern version
+  #   raises `ArgumentError` here (modern versions are selected via `mode: :modern`/`:auto`).
   # @param capabilities [Hash] Capabilities advertised by the client. Defaults to `{}`.
   # @return [Hash] The server's `InitializeResult`.
   # @raise [RequestHandlerError] If the server responds with a JSON-RPC error,
   #   a malformed result, or an unsupported protocol version.
+  # @param mode [Symbol] Lifecycle selection (SEP-2575): `:legacy` (default) performs
+  #   the handshake below, `:modern` skips it and probes `server/discover`,
+  #   and `:auto` probes `server/discover` first, falling back to the legacy handshake
+  #   when the server does not serve a mutually supported modern version.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle#initialization
   #
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:76
-  def connect(client_info: T.unsafe(nil), protocol_version: T.unsafe(nil), capabilities: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:92
+  def connect(client_info: T.unsafe(nil), protocol_version: T.unsafe(nil), capabilities: T.unsafe(nil), mode: T.unsafe(nil)); end
 
-  # Returns true once `connect` has completed the handshake. Returns false before the handshake and after `close`.
+  # Returns true once `connect` has completed the handshake or adopted the modern lifecycle.
+  # Returns false before the handshake and after `close`.
   #
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:147
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:129
   def connected?; end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:29
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:37
   def env; end
+
+  # Whether the transport operates in the stateless modern lifecycle (SEP-2575):
+  # no handshake was performed and every request carries the `_meta` envelope.
+  #
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:116
+  def modern?; end
+
+  # The protocol version in use on this connection, independent of its era:
+  # negotiated by `initialize` (legacy) or adopted via `server/discover` (modern).
+  # Returns `nil` before `connect` and after `close`.
+  #
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:123
+  def protocol_version; end
 
   # Sends a JSON-RPC notification (no response expected). Used by `Client#cancel` to deliver
   # `notifications/cancelled` for an in-flight request.
   #
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:167
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:158
   def send_notification(notification:); end
 
   # Transports may yield once the request line has been written to `@stdin`.
@@ -2537,21 +3120,45 @@ class MCP::Client::Stdio
   # write does not race ahead of the request write on the wire. The yield happens inside `@write_mutex`,
   # so any subsequent `send_notification` write waits for the mutex and is guaranteed to land after the request.
   #
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:155
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:137
   def send_request(request:); end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:29
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:37
   def server_info; end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:175
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:166
   def start; end
 
   private
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:277
+  # Probes `server/discover` and adopts the modern lifecycle when the server serves
+  # a mutually supported modern version; otherwise falls back to the legacy handshake.
+  # The fallback intentionally covers a successful discovery without a mutual modern
+  # version as well: during the 2026-07-28 rollout a server may answer discovery while
+  # only serving legacy versions.
+  #
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:337
+  def connect_auto(client_info:, protocol_version:, capabilities:); end
+
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:227
+  def connect_legacy(client_info:, protocol_version:, capabilities:); end
+
+  # Enters the modern lifecycle by probing `server/discover` at the requested (or latest) modern version.
+  # No `initialize` or `notifications/initialized` is sent; the probe response becomes `server_info`.
+  #
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:296
+  def connect_modern(client_info:, protocol_version:, capabilities:); end
+
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:454
   def ensure_running!; end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:323
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:348
+  def leave_modern_mode; end
+
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:369
+  def probe_discover; end
+
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:500
   def raise_connection_error!(method, params); end
 
   # Reads one newline-delimited frame from the server's stdout, bounded by `@max_line_bytes`.
@@ -2560,16 +3167,29 @@ class MCP::Client::Stdio
   # A short final frame without a trailing newline (EOF) is still returned, since its length
   # stays under the limit.
   #
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:303
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:480
   def read_line(method, params); end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:249
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:426
   def read_response(request); end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:287
+  # Modern requests (never notifications, whose `_meta` has no envelope) carry the SEP-2575 triple.
+  #
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:401
+  def stamp_modern(request); end
+
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:464
   def wait_for_readable!(method, params); end
 
-  # pkg:gem/mcp#lib/mcp/client/stdio.rb:235
+  # Bounds the probe read when the caller configured no `read_timeout`, and only for the probe:
+  # regular requests keep the unbounded default so long-running tools are unaffected.
+  # The timeout surfaces as a `RequestHandlerError`, which `connect_auto` treats as legacy evidence
+  # and falls back on.
+  #
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:358
+  def with_probe_read_timeout; end
+
+  # pkg:gem/mcp#lib/mcp/client/stdio.rb:412
   def write_message(message); end
 end
 
@@ -2578,8 +3198,16 @@ end
 # https://github.com/modelcontextprotocol/python-sdk/blob/v1.26.0/src/mcp/client/stdio/__init__.py#L48
 # https://github.com/modelcontextprotocol/typescript-sdk/blob/v1.27.1/src/client/stdio.ts#L221
 #
-# pkg:gem/mcp#lib/mcp/client/stdio.rb:19
+# pkg:gem/mcp#lib/mcp/client/stdio.rb:21
 MCP::Client::Stdio::CLOSE_TIMEOUT = T.let(T.unsafe(nil), Integer)
+
+# Seconds the `server/discover` probe may wait when no `read_timeout` was configured.
+# A compliant legacy server answers the probe with `-32601` immediately, but a non-compliant one
+# that silently drops unknown methods would otherwise block `connect(mode: :auto)` forever.
+# Matches the C# SDK's `DiscoverProbeTimeout` default.
+#
+# pkg:gem/mcp#lib/mcp/client/stdio.rb:35
+MCP::Client::Stdio::DEFAULT_DISCOVER_PROBE_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
 # Default upper bound on a single newline-delimited frame read from the
 # server's stdout. CRuby's `IO#gets` without a limit accumulates bytes until a
@@ -2587,10 +3215,10 @@ MCP::Client::Stdio::CLOSE_TIMEOUT = T.let(T.unsafe(nil), Integer)
 # String until the host process is OOM-killed. 4 MiB is large enough for any
 # realistic JSON-RPC frame, including base64-embedded images.
 #
-# pkg:gem/mcp#lib/mcp/client/stdio.rb:27
+# pkg:gem/mcp#lib/mcp/client/stdio.rb:29
 MCP::Client::Stdio::MAX_LINE_BYTES = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/client/stdio.rb:20
+# pkg:gem/mcp#lib/mcp/client/stdio.rb:22
 MCP::Client::Stdio::STDERR_READ_SIZE = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/mcp#lib/mcp/client/tool.rb:5
@@ -2618,31 +3246,42 @@ end
 # whose `result` field is missing or has the wrong type. This is distinct from a
 # server-returned JSON-RPC error, which is raised as `ServerError`.
 #
-# pkg:gem/mcp#lib/mcp/client.rb:51
+# pkg:gem/mcp#lib/mcp/client.rb:59
 class MCP::Client::ValidationError < ::StandardError; end
 
 # pkg:gem/mcp#lib/mcp/configuration.rb:4
 class MCP::Configuration
-  # pkg:gem/mcp#lib/mcp/configuration.rb:34
-  def initialize(exception_reporter: T.unsafe(nil), around_request: T.unsafe(nil), instrumentation_callback: T.unsafe(nil), protocol_version: T.unsafe(nil), validate_tool_call_arguments: T.unsafe(nil), validate_tool_call_results: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/configuration.rb:56
+  def initialize(exception_reporter: T.unsafe(nil), around_request: T.unsafe(nil), instrumentation_callback: T.unsafe(nil), protocol_version: T.unsafe(nil), validate_tool_call_arguments: T.unsafe(nil), validate_tool_call_results: T.unsafe(nil), instrument_server_context: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:84
+  # pkg:gem/mcp#lib/mcp/configuration.rb:122
   def around_request; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:26
+  # pkg:gem/mcp#lib/mcp/configuration.rb:48
   def around_request=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:88
+  # pkg:gem/mcp#lib/mcp/configuration.rb:126
   def around_request?; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:76
+  # pkg:gem/mcp#lib/mcp/configuration.rb:114
   def exception_reporter; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:26
+  # pkg:gem/mcp#lib/mcp/configuration.rb:48
   def exception_reporter=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:80
+  # pkg:gem/mcp#lib/mcp/configuration.rb:118
   def exception_reporter?; end
+
+  # Opt in to exposing the user-defined `server_context` in the
+  # `around_request` / `instrumentation_callback` data hash. Off by default:
+  # the hash is application-supplied and may hold values a tracing backend
+  # should not receive, so surfacing it has to be a deliberate choice.
+  #
+  # pkg:gem/mcp#lib/mcp/configuration.rb:90
+  def instrument_server_context=(instrument_server_context); end
+
+  # pkg:gem/mcp#lib/mcp/configuration.rb:147
+  def instrument_server_context?; end
 
   # @deprecated Use {#around_request=} instead. `instrumentation_callback`
   #   fires only after a request completes and cannot wrap execution in a
@@ -2653,7 +3292,7 @@ class MCP::Configuration
   #   surrounding block (e.g. for Application Performance Monitoring (APM) spans).
   # @see #around_request
   #
-  # pkg:gem/mcp#lib/mcp/configuration.rb:96
+  # pkg:gem/mcp#lib/mcp/configuration.rb:134
   def instrumentation_callback; end
 
   # @deprecated Use {#around_request=} instead. `instrumentation_callback`
@@ -2665,93 +3304,130 @@ class MCP::Configuration
   #   surrounding block (e.g. for Application Performance Monitoring (APM) spans).
   # @see #around_request
   #
-  # pkg:gem/mcp#lib/mcp/configuration.rb:32
+  # pkg:gem/mcp#lib/mcp/configuration.rb:54
   def instrumentation_callback=(_arg0); end
 
   # @deprecated Use {#around_request?} instead.
   # @see #around_request?
   #
-  # pkg:gem/mcp#lib/mcp/configuration.rb:102
+  # pkg:gem/mcp#lib/mcp/configuration.rb:140
   def instrumentation_callback?; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:117
+  # pkg:gem/mcp#lib/mcp/configuration.rb:159
   def merge(other); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:68
+  # The pin scopes the `initialize` handshake, so an unset pin reads as the version that handshake
+  # settles on by default. Reading the newest version of any era here would hand back a value
+  # the writer rejects, and no caller wants the modern revision: a modern connection carries
+  # its version on every request instead of consulting configuration.
+  #
+  # pkg:gem/mcp#lib/mcp/configuration.rb:106
   def protocol_version; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:50
+  # pkg:gem/mcp#lib/mcp/configuration.rb:74
   def protocol_version=(protocol_version); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:72
+  # pkg:gem/mcp#lib/mcp/configuration.rb:110
   def protocol_version?; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:106
+  # pkg:gem/mcp#lib/mcp/configuration.rb:144
   def validate_tool_call_arguments; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:56
+  # pkg:gem/mcp#lib/mcp/configuration.rb:80
   def validate_tool_call_arguments=(validate_tool_call_arguments); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:109
+  # pkg:gem/mcp#lib/mcp/configuration.rb:151
   def validate_tool_call_arguments?; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:107
+  # pkg:gem/mcp#lib/mcp/configuration.rb:145
   def validate_tool_call_results; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:62
+  # pkg:gem/mcp#lib/mcp/configuration.rb:96
   def validate_tool_call_results=(validate_tool_call_results); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:113
+  # pkg:gem/mcp#lib/mcp/configuration.rb:155
   def validate_tool_call_results?; end
 
   private
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:182
+  # pkg:gem/mcp#lib/mcp/configuration.rb:244
   def default_around_request; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:178
+  # pkg:gem/mcp#lib/mcp/configuration.rb:240
   def default_exception_reporter; end
 
   # @deprecated Use {#default_around_request} instead.
   #
-  # pkg:gem/mcp#lib/mcp/configuration.rb:187
+  # pkg:gem/mcp#lib/mcp/configuration.rb:249
   def default_instrumentation_callback; end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:159
+  # A pin scopes the `initialize` handshake, so only handshake versions are accepted:
+  # a modern version has no handshake to pin (its version rides every request in `_meta`),
+  # and accepting one here would configure nothing. Failing at construction beats
+  # a setting that silently does not apply.
+  #
+  # pkg:gem/mcp#lib/mcp/configuration.rb:206
   def validate_protocol_version!(protocol_version); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:166
+  # pkg:gem/mcp#lib/mcp/configuration.rb:234
+  def validate_value_of_instrument_server_context!(instrument_server_context); end
+
+  # pkg:gem/mcp#lib/mcp/configuration.rb:222
   def validate_value_of_validate_tool_call_arguments!(validate_tool_call_arguments); end
 
-  # pkg:gem/mcp#lib/mcp/configuration.rb:172
+  # pkg:gem/mcp#lib/mcp/configuration.rb:228
   def validate_value_of_validate_tool_call_results!(validate_tool_call_results); end
 
   class << self
-    # pkg:gem/mcp#lib/mcp/configuration.rb:21
+    # pkg:gem/mcp#lib/mcp/configuration.rb:34
+    def handshake_protocol_version?(version); end
+
+    # pkg:gem/mcp#lib/mcp/configuration.rb:30
     def modern_protocol_version?(version); end
+
+    # The one statement of the client-side handshake contract, shared by every transport:
+    # a modern version cannot ride the legacy `initialize` handshake.
+    #
+    # pkg:gem/mcp#lib/mcp/configuration.rb:40
+    def reject_modern_handshake_version!(version); end
   end
 end
 
-# pkg:gem/mcp#lib/mcp/configuration.rb:9
+# pkg:gem/mcp#lib/mcp/configuration.rb:10
 MCP::Configuration::DEFAULT_NEGOTIATED_PROTOCOL_VERSION = T.let(T.unsafe(nil), String)
 
-# Protocol versions of the stateless "modern" lifecycle introduced by the MCP 2026-07-28 spec release (SEP-2575).
-# 2026-07-28 serves both lifecycles of the dual-era model: it is negotiable through the legacy `initialize`
-# handshake (so it also appears in `SUPPORTED_STABLE_PROTOCOL_VERSIONS`), and it is the version of the modern
-# lifecycle, where each request carries its own version in `_meta` and is validated against this list
-# independently, with no handshake.
+# pkg:gem/mcp#lib/mcp/configuration.rb:27
+MCP::Configuration::LATEST_HANDSHAKE_PROTOCOL_VERSION = T.let(T.unsafe(nil), String)
+
+# Protocol versions of the stateless "modern" lifecycle introduced by the MCP 2026-07-28 spec release (SEP-2575),
+# where each request carries its own version in `_meta` and is validated against this list independently,
+# with no handshake. These are reachable only through `server/discover` and the per-request envelope.
 # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2575
 #
-# pkg:gem/mcp#lib/mcp/configuration.rb:17
+# pkg:gem/mcp#lib/mcp/configuration.rb:16
 MCP::Configuration::LATEST_MODERN_PROTOCOL_VERSION = T.let(T.unsafe(nil), String)
 
 # pkg:gem/mcp#lib/mcp/configuration.rb:5
 MCP::Configuration::LATEST_STABLE_PROTOCOL_VERSION = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/configuration.rb:18
+# pkg:gem/mcp#lib/mcp/configuration.rb:6
+MCP::Configuration::ROOTS_SAMPLING_LOGGING_DEPRECATED_PROTOCOL_VERSION = T.let(T.unsafe(nil), String)
+
+# Protocol versions reachable through the legacy `initialize` handshake, derived so the era partition
+# (handshake = stable minus modern) cannot drift when a new revision lands.
+# Per the SEP-2575 era model, an era is a property of the protocol version itself: legacy versions establish
+# a session via `initialize` (2025-11-25 and earlier), and modern versions carry the version on every request
+# in `_meta` with no handshake at all. The handshake therefore never negotiates a modern version:
+# a client asking `initialize` for one is counter-offered
+# `LATEST_HANDSHAKE_PROTOCOL_VERSION`, matching the TypeScript and Python SDKs.
+#
+# pkg:gem/mcp#lib/mcp/configuration.rb:26
+MCP::Configuration::SUPPORTED_HANDSHAKE_PROTOCOL_VERSIONS = T.let(T.unsafe(nil), Array)
+
+# pkg:gem/mcp#lib/mcp/configuration.rb:17
 MCP::Configuration::SUPPORTED_MODERN_PROTOCOL_VERSIONS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/configuration.rb:6
+# pkg:gem/mcp#lib/mcp/configuration.rb:7
 MCP::Configuration::SUPPORTED_STABLE_PROTOCOL_VERSIONS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/mcp#lib/mcp/content.rb:4
@@ -2835,6 +3511,65 @@ class MCP::Content::Text
   def to_h; end
 end
 
+# Builders for elicitation `requestedSchema` definitions per MCP 2025-11-25.
+# Each builder returns an instance whose `to_h` produces the JSON-Schema-shaped Hash
+# a server passes as a property value in `create_form_elicitation(requested_schema:)`.
+#
+# pkg:gem/mcp#lib/mcp/elicitation.rb:7
+module MCP::Elicitation; end
+
+# Builds the four enum schema variants defined by MCP 2025-11-25 (SEP-1330) plus the legacy `enumNames` form
+# retained for backward compatibility.
+#
+# Each class method returns an `EnumSchema` instance; call `to_h` to get the property-value Hash and
+# pass it through `requested_schema` to `ServerSession#create_form_elicitation`.
+#
+# pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:10
+class MCP::Elicitation::EnumSchema
+  # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:104
+  def initialize(type:, extras:, default: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil)); end
+
+  # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:112
+  def to_h; end
+
+  class << self
+    # Legacy single-select retained for backward compatibility with clients implementing
+    # the pre-SEP-1330 form: `{ enum, enumNames }`.
+    #
+    # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:68
+    def legacy_titled(values:, value_titles:, default: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil)); end
+
+    # Multi-select with display titles per option: `{ type: "array", items: { anyOf: [{ const, title }, ...] } }`.
+    #
+    # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:53
+    def titled_multi_select(options:, default: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil)); end
+
+    # Single-select with display titles per option: `{ type: "string", oneOf: [{ const, title }, ...] }`.
+    # `options` is an Array of `{ value:, title: }` hashes.
+    #
+    # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:27
+    def titled_single_select(options:, default: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil)); end
+
+    # Multi-select with plain string values: `{ type: "array", items: { type: "string", enum: [...] } }`.
+    #
+    # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:40
+    def untitled_multi_select(values:, default: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil)); end
+
+    # Single-select with plain string values: `{ type: "string", enum: [...] }`.
+    #
+    # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:13
+    def untitled_single_select(values:, default: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil)); end
+
+    private
+
+    # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:91
+    def validate_titled_options!(options); end
+
+    # pkg:gem/mcp#lib/mcp/elicitation/enum_schema.rb:85
+    def validate_values!(values); end
+  end
+end
+
 # MCP-specific JSON-RPC error codes, complementing the generic codes in `JsonRpcHandler::ErrorCode`.
 #
 # All three constants below are introduced by the stateless lifecycle of the MCP 2026-07-28 draft (SEP-2575):
@@ -2892,7 +3627,7 @@ MCP::Icon::SUPPORTED_THEMES = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/mcp#lib/mcp/instrumentation.rb:4
 module MCP::Instrumentation
-  # pkg:gem/mcp#lib/mcp/instrumentation.rb:41
+  # pkg:gem/mcp#lib/mcp/instrumentation.rb:47
   def add_instrumentation_data(**kwargs); end
 
   # pkg:gem/mcp#lib/mcp/instrumentation.rb:5
@@ -2917,23 +3652,23 @@ MCP::LoggingMessageNotification::LOG_LEVEL_SEVERITY = T.let(T.unsafe(nil), Hash)
 # pkg:gem/mcp#lib/mcp/methods.rb:4
 module MCP::Methods
   class << self
-    # pkg:gem/mcp#lib/mcp/methods.rb:56
+    # pkg:gem/mcp#lib/mcp/methods.rb:77
     def ensure_capability!(method, capabilities); end
 
-    # pkg:gem/mcp#lib/mcp/methods.rb:52
+    # pkg:gem/mcp#lib/mcp/methods.rb:73
     def notification?(method); end
 
     private
 
-    # pkg:gem/mcp#lib/mcp/methods.rb:94
+    # pkg:gem/mcp#lib/mcp/methods.rb:115
     def require_capability!(method, capabilities, *keys); end
   end
 end
 
-# pkg:gem/mcp#lib/mcp/methods.rb:13
+# pkg:gem/mcp#lib/mcp/methods.rb:17
 MCP::Methods::COMPLETION_COMPLETE = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:26
+# pkg:gem/mcp#lib/mcp/methods.rb:44
 MCP::Methods::ELICITATION_CREATE = T.let(T.unsafe(nil), String)
 
 # pkg:gem/mcp#lib/mcp/methods.rb:5
@@ -2942,78 +3677,94 @@ MCP::Methods::INITIALIZE = T.let(T.unsafe(nil), String)
 # pkg:gem/mcp#lib/mcp/methods.rb:7
 MCP::Methods::LOGGING_SET_LEVEL = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:40
+# RPC methods the stateless modern lifecycle removes (MCP 2026-07-28, SEP-2575):
+# `initialize` is replaced by the per-request `_meta` envelope plus `server/discover`,
+# `logging/setLevel` by the envelope's `logLevel` member, and `ping` and the resource
+# subscription pair by the connectionless model, which leaves nothing to keep alive
+# or subscribe on. A modern-era request naming one of these answers with `-32601`
+# Method not found (HTTP 404 on Streamable HTTP).
+#
+# pkg:gem/mcp#lib/mcp/methods.rb:34
+MCP::Methods::MODERN_REMOVED_METHODS = T.let(T.unsafe(nil), Array)
+
+# pkg:gem/mcp#lib/mcp/methods.rb:61
 class MCP::Methods::MissingRequiredCapabilityError < ::StandardError
-  # pkg:gem/mcp#lib/mcp/methods.rb:44
+  # pkg:gem/mcp#lib/mcp/methods.rb:65
   def initialize(method, capability); end
 
-  # pkg:gem/mcp#lib/mcp/methods.rb:42
+  # pkg:gem/mcp#lib/mcp/methods.rb:63
   def capability; end
 
-  # pkg:gem/mcp#lib/mcp/methods.rb:41
+  # pkg:gem/mcp#lib/mcp/methods.rb:62
   def method; end
 end
 
-# pkg:gem/mcp#lib/mcp/methods.rb:37
+# pkg:gem/mcp#lib/mcp/methods.rb:55
 MCP::Methods::NOTIFICATIONS_CANCELLED = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:38
+# pkg:gem/mcp#lib/mcp/methods.rb:56
 MCP::Methods::NOTIFICATIONS_ELICITATION_COMPLETE = T.let(T.unsafe(nil), String)
 
 # Notification methods
 #
-# pkg:gem/mcp#lib/mcp/methods.rb:29
+# pkg:gem/mcp#lib/mcp/methods.rb:47
 MCP::Methods::NOTIFICATIONS_INITIALIZED = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:35
+# pkg:gem/mcp#lib/mcp/methods.rb:53
 MCP::Methods::NOTIFICATIONS_MESSAGE = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:36
+# pkg:gem/mcp#lib/mcp/methods.rb:54
 MCP::Methods::NOTIFICATIONS_PROGRESS = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:31
+# pkg:gem/mcp#lib/mcp/methods.rb:49
 MCP::Methods::NOTIFICATIONS_PROMPTS_LIST_CHANGED = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:32
+# pkg:gem/mcp#lib/mcp/methods.rb:50
 MCP::Methods::NOTIFICATIONS_RESOURCES_LIST_CHANGED = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:33
+# pkg:gem/mcp#lib/mcp/methods.rb:51
 MCP::Methods::NOTIFICATIONS_RESOURCES_UPDATED = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:34
+# pkg:gem/mcp#lib/mcp/methods.rb:52
 MCP::Methods::NOTIFICATIONS_ROOTS_LIST_CHANGED = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:30
+# First message on a `subscriptions/listen` stream (SEP-2575): reports the subset
+# of requested notification types the server agreed to honor.
+#
+# pkg:gem/mcp#lib/mcp/methods.rb:59
+MCP::Methods::NOTIFICATIONS_SUBSCRIPTIONS_ACKNOWLEDGED = T.let(T.unsafe(nil), String)
+
+# pkg:gem/mcp#lib/mcp/methods.rb:48
 MCP::Methods::NOTIFICATIONS_TOOLS_LIST_CHANGED = T.let(T.unsafe(nil), String)
 
 # pkg:gem/mcp#lib/mcp/methods.rb:6
 MCP::Methods::PING = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:11
+# pkg:gem/mcp#lib/mcp/methods.rb:15
 MCP::Methods::PROMPTS_GET = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:12
+# pkg:gem/mcp#lib/mcp/methods.rb:16
 MCP::Methods::PROMPTS_LIST = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:15
+# pkg:gem/mcp#lib/mcp/methods.rb:19
 MCP::Methods::RESOURCES_LIST = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:16
+# pkg:gem/mcp#lib/mcp/methods.rb:20
 MCP::Methods::RESOURCES_READ = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:18
+# pkg:gem/mcp#lib/mcp/methods.rb:22
 MCP::Methods::RESOURCES_SUBSCRIBE = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:17
+# pkg:gem/mcp#lib/mcp/methods.rb:21
 MCP::Methods::RESOURCES_TEMPLATES_LIST = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:19
+# pkg:gem/mcp#lib/mcp/methods.rb:23
 MCP::Methods::RESOURCES_UNSUBSCRIBE = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:24
+# pkg:gem/mcp#lib/mcp/methods.rb:42
 MCP::Methods::ROOTS_LIST = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:25
+# pkg:gem/mcp#lib/mcp/methods.rb:43
 MCP::Methods::SAMPLING_CREATE_MESSAGE = T.let(T.unsafe(nil), String)
 
 # Sessionless capability discovery (MCP 2026-07-28 draft, SEP-2575).
@@ -3021,10 +3772,17 @@ MCP::Methods::SAMPLING_CREATE_MESSAGE = T.let(T.unsafe(nil), String)
 # pkg:gem/mcp#lib/mcp/methods.rb:9
 MCP::Methods::SERVER_DISCOVER = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:21
+# Long-lived notification subscription stream (MCP 2026-07-28, SEP-2575),
+# replacing the legacy HTTP GET listening stream. Served at the transport layer
+# (Streamable HTTP modern path); transports without streaming support answer `-32601`.
+#
+# pkg:gem/mcp#lib/mcp/methods.rb:13
+MCP::Methods::SUBSCRIPTIONS_LISTEN = T.let(T.unsafe(nil), String)
+
+# pkg:gem/mcp#lib/mcp/methods.rb:25
 MCP::Methods::TOOLS_CALL = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/methods.rb:22
+# pkg:gem/mcp#lib/mcp/methods.rb:26
 MCP::Methods::TOOLS_LIST = T.let(T.unsafe(nil), String)
 
 # pkg:gem/mcp#lib/mcp/progress.rb:4
@@ -3092,7 +3850,7 @@ class MCP::Prompt
 
     private
 
-    # pkg:gem/mcp#lib/mcp/prompt.rb:121
+    # pkg:gem/mcp#lib/mcp/prompt.rb:128
     def required_args; end
   end
 end
@@ -3151,44 +3909,100 @@ class MCP::Prompt::Result
   def to_h; end
 end
 
+# Warning texts for the features SEP-2577 deprecates at 2026-07-28.
+#
+# Only the client emits these, from the modern connect, where the capabilities it declares are
+# the ones being deprecated. No server-side trigger remains: the `initialize` handshake never lands on
+# a deprecating revision and `Configuration` rejects a modern pin, so nothing on that side can reach
+# a version these apply to. `LOGGING_MESSAGE` in particular has no caller left
+# (a modern client declares no logging capability, and `notify_log_message` on that wire is
+# the SEP-2575 sanctioned delivery path rather than a deprecated call). It stays public and
+# callable for embedders, and because deleting it would be a breaking change for no gain.
+#
+# pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:15
+module MCP::ProtocolDeprecations
+  extend ::MCP::ProtocolDeprecations
+
+  # pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:35
+  def deprecated_roots_sampling_logging?(protocol_version); end
+
+  # pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:41
+  def warn_for(feature, protocol_version:, uplevel: T.unsafe(nil)); end
+
+  # pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:47
+  def warn_for_client_capabilities(capabilities, protocol_version:, uplevel: T.unsafe(nil)); end
+
+  private
+
+  # pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:57
+  def capability?(capabilities, key); end
+end
+
+# pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:25
+MCP::ProtocolDeprecations::LOGGING_MESSAGE = T.let(T.unsafe(nil), String)
+
+# pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:29
+MCP::ProtocolDeprecations::MESSAGES = T.let(T.unsafe(nil), Hash)
+
+# pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:18
+MCP::ProtocolDeprecations::ROOTS_MESSAGE = T.let(T.unsafe(nil), String)
+
+# pkg:gem/mcp#lib/mcp/protocol_deprecations.rb:22
+MCP::ProtocolDeprecations::SAMPLING_MESSAGE = T.let(T.unsafe(nil), String)
+
 # The per-request `_meta` envelope of the stateless "modern" lifecycle (MCP 2026-07-28, SEP-2575).
-# The modern lifecycle has no `initialize` handshake: every request identifies its protocol version,
-# client, and client capabilities through reserved `_meta` keys, and the server validates
-# each request independently. Servers MUST NOT infer capabilities from prior requests,
-# which is why the envelope is a per-request value object rather than session state.
+# The modern lifecycle has no `initialize` handshake: every request identifies its protocol version
+# and client capabilities through reserved `_meta` keys (plus an optional client identity),
+# and the server validates each request independently. Servers MUST NOT infer capabilities from
+# prior requests, which is why the envelope is a per-request value object rather than session state.
 #
 # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2575
 #
 # pkg:gem/mcp#lib/mcp/request_envelope.rb:11
 class MCP::RequestEnvelope
-  # pkg:gem/mcp#lib/mcp/request_envelope.rb:87
-  def initialize(protocol_version:, client_info:, client_capabilities:, log_level: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/request_envelope.rb:109
+  def initialize(protocol_version:, client_capabilities:, client_info: T.unsafe(nil), log_level: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/request_envelope.rb:85
+  # `client_info` is `nil` when the client chose not to identify itself, which is legal:
+  # it is self-reported data and MUST NOT drive behavior or security decisions anyway.
+  #
+  # pkg:gem/mcp#lib/mcp/request_envelope.rb:107
   def client_capabilities; end
 
-  # pkg:gem/mcp#lib/mcp/request_envelope.rb:85
+  # `client_info` is `nil` when the client chose not to identify itself, which is legal:
+  # it is self-reported data and MUST NOT drive behavior or security decisions anyway.
+  #
+  # pkg:gem/mcp#lib/mcp/request_envelope.rb:107
   def client_info; end
 
-  # pkg:gem/mcp#lib/mcp/request_envelope.rb:85
+  # `client_info` is `nil` when the client chose not to identify itself, which is legal:
+  # it is self-reported data and MUST NOT drive behavior or security decisions anyway.
+  #
+  # pkg:gem/mcp#lib/mcp/request_envelope.rb:107
   def log_level; end
 
-  # pkg:gem/mcp#lib/mcp/request_envelope.rb:85
+  # `client_info` is `nil` when the client chose not to identify itself, which is legal:
+  # it is self-reported data and MUST NOT drive behavior or security decisions anyway.
+  #
+  # pkg:gem/mcp#lib/mcp/request_envelope.rb:107
   def protocol_version; end
 
   class << self
-    # A request is classified as modern only when the full REQUIRED triple is present,
-    # matching the TypeScript SDK's `RequestMetaEnvelopeSchema` and the Python SDK's `_has_modern_envelope`.
-    # A partial triple is treated as legacy so existing `_meta` usage (`progressToken`, trace context) keeps
-    # flowing through the legacy path.
+    # A request claims the modern lifecycle when its `_meta` carries `io.modelcontextprotocol/protocolVersion`,
+    # matching the TypeScript SDK's envelope claim and the Python SDK's `_has_modern_envelope`.
+    # Classification is deliberately looser than validation: a claimed-but-malformed envelope is
+    # rejected by {parse!} with `-32602` instead of silently flowing through the legacy path,
+    # while `_meta` without the claim key (`progressToken`, trace context) stays legacy.
     #
-    # pkg:gem/mcp#lib/mcp/request_envelope.rb:31
+    # pkg:gem/mcp#lib/mcp/request_envelope.rb:43
     def modern?(params); end
 
-    # Parses and validates the envelope. `request` is only used to enrich the raised error;
-    # callers dispatching notifications can omit it.
+    # Parses and validates the envelope: `protocolVersion` and `clientCapabilities` are required,
+    # `clientInfo` is optional. A missing or mistyped field is Invalid params (`-32602`) naming
+    # the offending keys, the code and shape the spec mandates and the reference SDKs emit.
+    # `request` is only used to enrich the raised error; callers dispatching notifications can omit it.
     #
-    # pkg:gem/mcp#lib/mcp/request_envelope.rb:40
+    # pkg:gem/mcp#lib/mcp/request_envelope.rb:54
     def parse!(params, request: T.unsafe(nil)); end
 
     private
@@ -3196,10 +4010,10 @@ class MCP::RequestEnvelope
     # `Server#handle` accepts hashes parsed with either symbol or string keys, so read both forms
     # (the same tolerance as `Server#handle_cancelled_notification`).
     #
-    # pkg:gem/mcp#lib/mcp/request_envelope.rb:72
+    # pkg:gem/mcp#lib/mcp/request_envelope.rb:92
     def extract_meta(params); end
 
-    # pkg:gem/mcp#lib/mcp/request_envelope.rb:79
+    # pkg:gem/mcp#lib/mcp/request_envelope.rb:99
     def read(meta, key); end
   end
 end
@@ -3219,8 +4033,26 @@ MCP::RequestEnvelope::LOG_LEVEL_META_KEY = T.let(T.unsafe(nil), String)
 # pkg:gem/mcp#lib/mcp/request_envelope.rb:12
 MCP::RequestEnvelope::PROTOCOL_VERSION_META_KEY = T.let(T.unsafe(nil), String)
 
-# pkg:gem/mcp#lib/mcp/request_envelope.rb:20
+# `clientInfo` is deliberately absent: it became optional after the SEP was finalized
+# (spec PR modelcontextprotocol/modelcontextprotocol#3002), so servers MUST accept
+# envelopes without it. The TypeScript and Python SDKs validate the same required pair.
+#
+# pkg:gem/mcp#lib/mcp/request_envelope.rb:32
 MCP::RequestEnvelope::REQUIRED_META_KEYS = T.let(T.unsafe(nil), Array)
+
+# Result-side counterpart of the request envelope: the server's identity rides in
+# the result's `_meta` as an optional stamp, not as a top-level field, since the SEP was
+# finalized (spec PR modelcontextprotocol/modelcontextprotocol#3002). A server MAY omit it.
+#
+# pkg:gem/mcp#lib/mcp/request_envelope.rb:27
+MCP::RequestEnvelope::SERVER_INFO_META_KEY = T.let(T.unsafe(nil), String)
+
+# Notification-side reserved key (SEP-2575): correlates a notification delivered on
+# a `subscriptions/listen` stream (and the stream's closing result) with the JSON-RPC id of
+# the `subscriptions/listen` request that opened it. Not part of the request envelope triple.
+#
+# pkg:gem/mcp#lib/mcp/request_envelope.rb:22
+MCP::RequestEnvelope::SUBSCRIPTION_ID_META_KEY = T.let(T.unsafe(nil), String)
 
 # pkg:gem/mcp#lib/mcp/resource/contents.rb:4
 class MCP::Resource
@@ -3515,28 +4347,28 @@ class MCP::Server
   include ::MCP::Instrumentation
   include ::MCP::Server::Pagination
 
-  # pkg:gem/mcp#lib/mcp/server.rb:146
-  def initialize(description: T.unsafe(nil), icons: T.unsafe(nil), name: T.unsafe(nil), title: T.unsafe(nil), version: T.unsafe(nil), website_url: T.unsafe(nil), instructions: T.unsafe(nil), tools: T.unsafe(nil), prompts: T.unsafe(nil), resources: T.unsafe(nil), resource_templates: T.unsafe(nil), server_context: T.unsafe(nil), configuration: T.unsafe(nil), capabilities: T.unsafe(nil), page_size: T.unsafe(nil), ttl_ms: T.unsafe(nil), cache_scope: T.unsafe(nil), transport: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server.rb:187
+  def initialize(description: T.unsafe(nil), icons: T.unsafe(nil), name: T.unsafe(nil), title: T.unsafe(nil), version: T.unsafe(nil), website_url: T.unsafe(nil), instructions: T.unsafe(nil), tools: T.unsafe(nil), prompts: T.unsafe(nil), resources: T.unsafe(nil), resource_templates: T.unsafe(nil), server_context: T.unsafe(nil), configuration: T.unsafe(nil), capabilities: T.unsafe(nil), page_size: T.unsafe(nil), ttl_ms: T.unsafe(nil), cache_scope: T.unsafe(nil), request_state_security: T.unsafe(nil), input_required_legacy_shim: T.unsafe(nil), transport: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:415
+  # pkg:gem/mcp#lib/mcp/server.rb:466
   def build_sampling_params(capabilities, messages:, max_tokens:, system_prompt: T.unsafe(nil), model_preferences: T.unsafe(nil), include_context: T.unsafe(nil), temperature: T.unsafe(nil), stop_sequences: T.unsafe(nil), metadata: T.unsafe(nil), tools: T.unsafe(nil), tool_choice: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:144
+  # pkg:gem/mcp#lib/mcp/server.rb:185
   def cache_scope; end
 
   # SEP-2549 cache hint: whether shared intermediaries may cache the result ("public")
   # or only the requesting client ("private").
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:319
+  # pkg:gem/mcp#lib/mcp/server.rb:370
   def cache_scope=(cache_scope); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def capabilities; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def capabilities=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:144
+  # pkg:gem/mcp#lib/mcp/server.rb:185
   def client_capabilities; end
 
   # Sets a custom handler for `completion/complete` requests.
@@ -3545,34 +4377,34 @@ class MCP::Server
   # @yield [params] The request params containing `:ref`, `:argument`, and optionally `:context`.
   # @yieldreturn [Hash] A hash with `:completion` key containing `:values`, optional `:total`, and `:hasMore`.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:393
+  # pkg:gem/mcp#lib/mcp/server.rb:444
   def completion_handler(&block); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def configuration; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def configuration=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:290
+  # pkg:gem/mcp#lib/mcp/server.rb:341
   def define_custom_method(method_name:, &block); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:255
+  # pkg:gem/mcp#lib/mcp/server.rb:306
   def define_prompt(name: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil), arguments: T.unsafe(nil), &block); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:262
+  # pkg:gem/mcp#lib/mcp/server.rb:313
   def define_resource(uri: T.unsafe(nil), name: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil), icons: T.unsafe(nil), mime_type: T.unsafe(nil), annotations: T.unsafe(nil), size: T.unsafe(nil), meta: T.unsafe(nil), &block); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:274
+  # pkg:gem/mcp#lib/mcp/server.rb:325
   def define_resource_template(uri_template: T.unsafe(nil), name: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil), icons: T.unsafe(nil), mime_type: T.unsafe(nil), annotations: T.unsafe(nil), meta: T.unsafe(nil), &block); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:245
+  # pkg:gem/mcp#lib/mcp/server.rb:296
   def define_tool(name: T.unsafe(nil), title: T.unsafe(nil), description: T.unsafe(nil), input_schema: T.unsafe(nil), output_schema: T.unsafe(nil), annotations: T.unsafe(nil), meta: T.unsafe(nil), &block); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def description; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def description=(_arg0); end
 
   # Processes a parsed JSON-RPC request and returns the response as a Hash.
@@ -3583,7 +4415,7 @@ class MCP::Server
   #   When `nil`, progress and logging notifications from tool handlers are silently skipped.
   # @return [Hash, nil] The JSON-RPC response, or `nil` for notifications.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:226
+  # pkg:gem/mcp#lib/mcp/server.rb:277
   def handle(request, session: T.unsafe(nil)); end
 
   # Processes a JSON-RPC request string and returns the response as a JSON string.
@@ -3594,71 +4426,74 @@ class MCP::Server
   #   When `nil`, progress and logging notifications from tool handlers are silently skipped.
   # @return [String, nil] The JSON-RPC response as JSON, or `nil` for notifications.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:239
+  # pkg:gem/mcp#lib/mcp/server.rb:290
   def handle_json(request, session: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def icons; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def icons=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def instructions; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def instructions=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def logging_message_notification; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def logging_message_notification=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def name; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def name=(_arg0); end
 
   # @deprecated MCP Logging (`logging/setLevel` and `notifications/message`)
   #   is deprecated as of MCP protocol version 2026-07-28 (SEP-2577).
   #   Use stderr or OpenTelemetry instead.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:354
+  # pkg:gem/mcp#lib/mcp/server.rb:405
   def notify_log_message(data:, level:, logger: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:335
+  # pkg:gem/mcp#lib/mcp/server.rb:386
   def notify_prompts_list_changed; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:343
+  # pkg:gem/mcp#lib/mcp/server.rb:394
   def notify_resources_list_changed; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:327
+  # pkg:gem/mcp#lib/mcp/server.rb:378
   def notify_tools_list_changed; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:144
+  # pkg:gem/mcp#lib/mcp/server.rb:185
   def page_size; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:298
+  # pkg:gem/mcp#lib/mcp/server.rb:349
   def page_size=(page_size); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def prompts; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def prompts=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:185
+  def request_state_security; end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def resource_templates; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def resource_templates=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:144
+  # pkg:gem/mcp#lib/mcp/server.rb:185
   def resources; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:285
+  # pkg:gem/mcp#lib/mcp/server.rb:336
   def resources=(resources); end
 
   # Sets a custom handler for `resources/read` requests.
@@ -3668,7 +4503,7 @@ class MCP::Server
   # @yield [params] The request params containing `:uri`.
   # @yieldreturn [Array<Hash>, Hash] Resource contents.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:384
+  # pkg:gem/mcp#lib/mcp/server.rb:435
   def resources_read_handler(&block); end
 
   # Sets a custom handler for `resources/subscribe` requests.
@@ -3677,7 +4512,7 @@ class MCP::Server
   #
   # @yield [params] The request params containing `:uri`.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:402
+  # pkg:gem/mcp#lib/mcp/server.rb:453
   def resources_subscribe_handler(&block); end
 
   # Sets a custom handler for `resources/unsubscribe` requests.
@@ -3686,7 +4521,7 @@ class MCP::Server
   #
   # @yield [params] The request params containing `:uri`.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:411
+  # pkg:gem/mcp#lib/mcp/server.rb:462
   def resources_unsubscribe_handler(&block); end
 
   # Sets a handler for `notifications/roots/list_changed` notifications.
@@ -3698,53 +4533,53 @@ class MCP::Server
   #   version 2026-07-28 (SEP-2577). Use tool parameters, resource URIs,
   #   server configuration, or environment variables instead.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:374
+  # pkg:gem/mcp#lib/mcp/server.rb:425
   def roots_list_changed_handler(&block); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def server_context; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def server_context=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def title; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def title=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def tools; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def tools=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def transport; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def transport=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:144
+  # pkg:gem/mcp#lib/mcp/server.rb:185
   def ttl_ms; end
 
   # SEP-2549 cache hint: freshness lifetime in milliseconds for list and read results
   # (max-age semantics; 0 means do not cache). Emission is opt-in: when both `ttl_ms`
   # and `cache_scope` are nil, results are serialized exactly as before.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:309
+  # pkg:gem/mcp#lib/mcp/server.rb:360
   def ttl_ms=(ttl_ms); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def version; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def version=(_arg0); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def website_url; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:143
+  # pkg:gem/mcp#lib/mcp/server.rb:184
   def website_url=(_arg0); end
 
   private
@@ -3756,87 +4591,104 @@ class MCP::Server
   # happen to be named `server_context` are excluded because the call site passes `server_context:` as a keyword,
   # and a positional slot would receive the `{server_context: ctx}` Hash instead.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:1048
+  # pkg:gem/mcp#lib/mcp/server.rb:1498
   def accepts_server_context?(method_object); end
 
   # Adds the SEP-2549 cache hints (`ttlMs`, `cacheScope`) to a result. Emission is opt-in: nothing is added
-  # unless the server was configured with `ttl_ms`/`cache_scope` or the result already carries one of the fields, in
-  # which case the missing one is filled with the spec defaults (`ttlMs: 0` = do not cache, `cacheScope: "public"`).
+  # unless the server was configured with `ttl_ms`/`cache_scope` or the result already carries one of the fields,
+  # in which case the missing one is filled with `ttlMs: 0` (do not cache) or `cacheScope: "private"`,
+  # the side that cannot leak a user-dependent result through a shared cache (the TypeScript SDK's default).
   # Values already in the result win, enabling per-result overrides.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2549
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:917
+  # pkg:gem/mcp#lib/mcp/server.rb:1360
   def apply_cache_metadata(result); end
 
   # Builds the `resources/read` result. The documented handler contract is "return value becomes `contents`";
   # a Hash with a `:contents` key is also accepted as a full result so a handler can override the server-level
   # `ttlMs`/`cacheScope` cache hints per result (SEP-2549).
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:902
+  # pkg:gem/mcp#lib/mcp/server.rb:1344
   def build_read_resource_result(handler_result); end
 
   # Builds an `MCP::ServerContext` used to give a handler access to session-scoped helpers
   # (progress, cancellation, nested server-to-client requests).
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:987
-  def build_server_context(request:, session:, related_request_id:, cancellation:); end
+  # pkg:gem/mcp#lib/mcp/server.rb:1433
+  def build_server_context(request:, session:, related_request_id:, cancellation:, envelope: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:1078
+  # pkg:gem/mcp#lib/mcp/server.rb:1531
   def call_prompt_template_with_args(prompt, args, server_context); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:867
+  # pkg:gem/mcp#lib/mcp/server.rb:1309
   def call_resource_contents(resource, server_context); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:875
+  # pkg:gem/mcp#lib/mcp/server.rb:1317
   def call_template_contents(template, params, server_context); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:751
-  def call_tool(request, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server.rb:1167
+  def call_tool(request, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil), envelope: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:1056
-  def call_tool_with_args(tool, arguments, context, progress_token: T.unsafe(nil), session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server.rb:1506
+  def call_tool_with_args(tool, arguments, context, progress_token: T.unsafe(nil), session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil), envelope: T.unsafe(nil), retry_fields: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:888
+  # pkg:gem/mcp#lib/mcp/server.rb:964
+  def canonical_json(value); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1330
   def class_based_resources_registered?; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:924
-  def complete(params, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server.rb:1367
+  def complete(params, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil), envelope: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:729
+  # pkg:gem/mcp#lib/mcp/server.rb:1145
   def configure_logging_level(request, session: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:623
+  # pkg:gem/mcp#lib/mcp/server.rb:999
   def default_capabilities; end
 
-  # Handles `server/discover` (MCP 2026-07-28 draft, SEP-2575): sessionless capability discovery.
+  # Handles `server/discover` (MCP 2026-07-28, SEP-2575): sessionless capability discovery.
   # Unlike `init`, this is state-free and idempotent: it stores no client info, does not mark
   # the session initialized, and responds regardless of capability declarations or initialization state,
-  # so clients can probe a server before (or instead of) `initialize`. `serverInfo` is returned unfiltered
-  # because discovery happens before version negotiation. The draft's `ttlMs`/`cacheScope` cache hints
-  # are not included here yet.
+  # so clients can probe a server before (or instead of) `initialize`.
+  #
+  # `supportedVersions` advertises modern versions only, matching the TypeScript and Python SDKs:
+  # legacy versions are negotiated via `initialize`, not selected from discovery. The `ttlMs`/`cacheScope`
+  # cache hints are REQUIRED on `DiscoverResult` (unlike the opt-in SEP-2549 hints on list/read results),
+  # so the spec defaults (`0` = immediately stale, `"private"` = per-authorization-context caching only)
+  # fill in when the server was not configured with `ttl_ms`/`cache_scope`. The server identity rides
+  # in the result `_meta` as the optional `io.modelcontextprotocol/serverInfo` stamp per the finalized
+  # spec (PR #3002), unfiltered because discovery happens before version negotiation.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2575
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:720
+  # pkg:gem/mcp#lib/mcp/server.rb:1115
   def discover(_request); end
+
+  # Capabilities as advertised by `server/discover`. In the modern lifecycle, `listChanged` and `subscribe` flags
+  # promise delivery over `subscriptions/listen` streams, so they are stripped when the transport does not serve that RPC
+  # (e.g. stdio), matching the Python SDK's era-aware capability derivation.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:1133
+  def discover_capabilities; end
 
   # Opt-in `server_context:` dispatch for block-based handlers registered via `resources_read_handler`,
   # `completion_handler`, `resources_subscribe_handler`, `resources_unsubscribe_handler`, or `define_custom_method`.
   # Existing handlers that only accept `params` are called unchanged; handlers that declare a `server_context:`
   # keyword receive an `MCP::ServerContext` wrapping the raw server context with cancellation plumbing.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:955
-  def dispatch_optional_context_handler(handler, params, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server.rb:1400
+  def dispatch_optional_context_handler(handler, params, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil), envelope: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:1008
+  # pkg:gem/mcp#lib/mcp/server.rb:1458
   def error_tool_response(text); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:811
-  def get_prompt(request, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server.rb:1243
+  def get_prompt(request, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil), envelope: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:612
+  # pkg:gem/mcp#lib/mcp/server.rb:988
   def handle_cancelled_notification(params, session: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:524
+  # pkg:gem/mcp#lib/mcp/server.rb:575
   def handle_request(request, method, session: T.unsafe(nil), related_request_id: T.unsafe(nil)); end
 
   # Stricter than `accepts_server_context?`: requires `server_context` to appear as a named keyword parameter
@@ -3850,89 +4702,180 @@ class MCP::Server
   # Tool handlers intentionally allow `**kwargs` opt-in via `accepts_server_context?` because they are invoked
   # via `tool.call(**args, server_context: …)` without a positional argument.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:977
+  # pkg:gem/mcp#lib/mcp/server.rb:1423
   def handler_declares_server_context?(handler); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:1004
+  # pkg:gem/mcp#lib/mcp/server.rb:1454
   def index_resources_by_uri(resources); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:643
+  # pkg:gem/mcp#lib/mcp/server.rb:1019
   def init(params, session: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:805
+  # The params an embedded entry sends on its legacy leg. Entries are forwarded verbatim with
+  # one exception: the 2025-11-25 wire requires `elicitationId` on URL-mode elicitation requests,
+  # a field the 2026-07-28 in-band shape dropped (correlation rides `requestState` there),
+  # so a missing one is synthesized for the leg, matching the TypeScript SDK's shim.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:893
+  def legacy_leg_params(entry); end
+
+  # Lifts the SEP-2575 per-request `_meta` envelope for modern requests. Only a request whose `_meta` carries
+  # the full required triple is classified as modern; a partial triple keeps flowing through the legacy path untouched.
+  # Notifications carry no envelope (their `_meta` is a `NotificationMetaObject`), and `server/discover` is
+  # pre-version discovery, so both are exempt. Era-locked sessions additionally enforce the dual-era rules:
+  # on a modern session, `initialize` is rejected with `-32022` (the modern lifecycle has no handshake)
+  # and the triple becomes required for every other request; on a legacy session, a modern envelope is rejected as
+  # an invalid request because a connection can never change eras.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:759
+  def lift_request_envelope(params, method:, session:); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1237
   def list_prompts(request); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:893
+  # pkg:gem/mcp#lib/mcp/server.rb:1335
   def list_resource_templates(request); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:834
+  # pkg:gem/mcp#lib/mcp/server.rb:1276
   def list_resources(request); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:745
+  # pkg:gem/mcp#lib/mcp/server.rb:1161
   def list_tools(request); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:1130
+  # Whether this request belongs to the modern lifecycle, used to refuse the RPCs SEP-2575 removed from it.
+  # A locked `ServerSession#era` is authoritative; until it locks, the request's own `_meta` envelope is
+  # the signal. Both are needed because `StdioTransport` locks the era only after a response succeeds,
+  # which would otherwise let the first request of a connection reach a method the modern lifecycle does not have.
+  # The Python SDK gates the same way, on the envelope of each request rather than on connection state that
+  # is only settled afterwards.
+  #
+  # A legacy-locked session is deliberately excluded: `lift_request_envelope` answers a modern envelope there
+  # with the lifecycle violation, which names the cause better than Method not found.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:744
+  def modern_request?(request, session); end
+
+  # Digest of the originating arguments, binding a sealed state to retries of
+  # the same call with the same inputs. Keys are stringified and sorted recursively
+  # so symbol/string parses of identical JSON digest identically.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:959
+  def mrtr_arguments_digest(params); end
+
+  # Extracts the SEP-2322 retry fields a client sends when re-issuing a request:
+  # `inputResponses` (answers keyed like the earlier `inputRequests`) and the echoed opaque `requestState`.
+  # They are params-top-level siblings of `name`/`arguments`/ `uri`, not `_meta` entries.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:979
+  def mrtr_retry_fields(params); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:950
+  def mrtr_target(params); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1585
   def normalize_completion_result(result); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:883
+  # pkg:gem/mcp#lib/mcp/server.rb:1325
   def normalize_resource_contents(result); end
 
   # Default `resources/read` handler: routes to class-based resources and resource templates.
   # Fully replaced when `resources_read_handler` is set. When no class-based resource or template is registered,
   # unknown URIs keep the historical no-op `[]` response instead of raising.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:843
+  # pkg:gem/mcp#lib/mcp/server.rb:1285
   def read_resource(request, server_context: T.unsafe(nil)); end
 
   # Invokes `resources/read` via the registered handler. If the handler block opts in to `server_context:`,
   # pass an `MCP::ServerContext` so the handler can observe cancellation via `server_context.cancelled?` or
   # `server_context.raise_if_cancelled!`.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:941
-  def read_resource_contents(request, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server.rb:1385
+  def read_resource_contents(request, session: T.unsafe(nil), related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil), envelope: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:1000
+  # Re-runs the handler of one of the three MRTR-capable methods for
+  # the legacy shim. Legacy wire, so no envelope is threaded.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:904
+  def redispatch_mrtr_method(method, params, session:, related_request_id:, cancellation:); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1450
   def report_exception(exception, server_context = T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:513
+  # Dual-era authoring shim (SEP-2322): a handler on the legacy wire returned an `input_required` result,
+  # which pre-2026 clients cannot understand, so the server fulfills it in place of the client's driver.
+  # Every entry of `inputRequests` is sent as the equivalent real server-to-client request (associated with
+  # the originating request per SEP-2260), the answers are collected under the same keys, and the handler
+  # re-runs with `inputResponses`/`requestState` merged into the original params - the same deterministic replay
+  # contract the modern client driver follows. The `requestState` round-trips in-process as the raw value
+  # the handler wrote; `RequestStateSecurity` sealing is wire hardening and does not apply.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:839
+  def run_legacy_input_required_shim(result, method:, params:, session:, related_request_id:, cancellation:); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:564
   def schema_contains_ref?(schema); end
+
+  # Central gate and serializer for SEP-2322 `input_required` results, run once in the dispatch lambda for
+  # whichever handler produced one. The result type exists only in the 2026-07-28 stateless lifecycle,
+  # so a legacy request (no envelope) must not receive it: pre-2026 clients treat an unknown `resultType` as
+  # a final result. The capability gate enforces the SEP-2575 rule that servers MUST NOT rely on
+  # (or embed requests for) capabilities the client did not declare, and reports every missing capability at
+  # once so the client sees the full set.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:798
+  def serialize_input_required_result(result, envelope:, request:, method:); end
 
   # Per SEP-2106, `structuredContent` may be any JSON value, not only an object.
   # Clients on older protocol versions may only read `content`,
   # so when a tool returns non-object structured content without explicitly
   # providing `content`, mirror the value into serialized JSON text.
   #
-  # pkg:gem/mcp#lib/mcp/server.rb:1030
+  # pkg:gem/mcp#lib/mcp/server.rb:1480
   def serialize_structured_content_fallback(result, content_provided: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:1086
+  # pkg:gem/mcp#lib/mcp/server.rb:1541
   def server_context_with_meta(request); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:632
+  # pkg:gem/mcp#lib/mcp/server.rb:1008
   def server_info; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:456
-  def validate!; end
-
-  # pkg:gem/mcp#lib/mcp/server.rb:1099
-  def validate_completion_params!(params); end
-
-  # pkg:gem/mcp#lib/mcp/server.rb:694
-  def validate_initialize_params!(params); end
-
-  # pkg:gem/mcp#lib/mcp/server.rb:688
-  def validate_resource_subscription_params!(params); end
-
-  # pkg:gem/mcp#lib/mcp/server.rb:1018
-  def validate_tool_call_result!(tool, result); end
+  # Replaces a sealed client-echoed `requestState` with its verified plaintext before dispatch,
+  # so handlers always read the state they wrote. A tampered, expired, or cross-request token is
+  # rejected as invalid params, matching the Python SDK's "Invalid or expired requestState" behavior.
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:925
+  def unseal_request_state(params, method:); end
 
   # pkg:gem/mcp#lib/mcp/server.rb:507
+  def validate!; end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1554
+  def validate_completion_params!(params); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1083
+  def validate_initialize_params!(params); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1077
+  def validate_resource_subscription_params!(params); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:1468
+  def validate_tool_call_result!(tool, result); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:558
   def validate_tool_name!; end
 end
 
+# Methods whose results are cacheable per SEP-2549.
+# On the modern wire (2026-07-28) the `ttlMs`/`cacheScope` hints are REQUIRED on these results,
+# so unset hints get the spec defaults there; on stable protocol versions emission stays opt-in
+# via `apply_cache_metadata`.
+#
+# pkg:gem/mcp#lib/mcp/server.rb:176
+MCP::Server::CACHEABLE_RESULT_METHODS = T.let(T.unsafe(nil), Array)
+
 # Allowed values for the SEP-2549 `cacheScope` cache hint.
 #
-# pkg:gem/mcp#lib/mcp/server.rb:141
+# pkg:gem/mcp#lib/mcp/server.rb:170
 MCP::Server::CACHE_SCOPES = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/mcp#lib/mcp/server/capabilities.rb:5
@@ -3985,24 +4928,109 @@ class MCP::Server::Capabilities
   def to_h; end
 end
 
-# pkg:gem/mcp#lib/mcp/server.rb:31
+# pkg:gem/mcp#lib/mcp/server.rb:37
 MCP::Server::DEFAULT_COMPLETION_RESULT = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/mcp#lib/mcp/server.rb:26
+# pkg:gem/mcp#lib/mcp/server.rb:32
 MCP::Server::DEFAULT_VERSION = T.let(T.unsafe(nil), String)
+
+# A multi round-trip `input_required` result (SEP-2322, MCP 2026-07-28).
+# Handlers for `tools/call`, `prompts/get`, and `resources/read` may return one instead of
+# their normal result to ask the client for additional input: `input_requests` maps server-assigned keys
+# to embedded request shapes (`elicitation/create`, `sampling/createMessage`, or `roots/list`),
+# and `request_state` is an opaque continuation string the client echoes back byte-exactly when it retries
+# the original request with `inputResponses` under the same keys.
+#
+# The server holds no memory between rounds: handlers re-run from the start on every retry and read
+# the answers via `server_context.input_responses` / `server_context.request_state`
+# (deterministic replay, matching the Python SDK). At least one of the two fields must be present;
+# a `request_state`-only result is the load-shedding form ("retry later").
+# https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2322
+#
+# pkg:gem/mcp#lib/mcp/server/input_required_result.rb:20
+class MCP::Server::InputRequiredResult
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:29
+  def initialize(input_requests: T.unsafe(nil), request_state: T.unsafe(nil)); end
+
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:27
+  def input_requests; end
+
+  # The subset of {#required_client_capabilities} the request did not declare.
+  # Per SEP-2575, servers MUST NOT rely on capabilities the client has not declared,
+  # so a non-empty return means the result must not be sent (`-32021`).
+  #
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:68
+  def missing_client_capabilities(declared); end
+
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:27
+  def request_state; end
+
+  # The client capabilities required to fulfill every embedded request, merged into one nested hash.
+  # The mapping matches the TypeScript SDK's `requiredClientCapabilitiesForInputRequest`:
+  # `elicitation/create` with `mode: "url"` requires `elicitation.url`, any other `elicitation/create`
+  # requires `elicitation.form`, `sampling/createMessage` with `tools`/`toolChoice` requires `sampling.tools`
+  # (plain sampling otherwise), and `roots/list` requires `roots`.
+  #
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:59
+  def required_client_capabilities; end
+
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:42
+  def to_h; end
+
+  private
+
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:152
+  def deep_merge(left, right); end
+
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:99
+  def entry_capability(entry); end
+
+  # Walks `required` and keeps only the branches absent from `declared`
+  # (symbol/string tolerant on the declared side).
+  #
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:117
+  def missing_subtree(required, declared); end
+
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:75
+  def normalize_input_requests(input_requests); end
+
+  # 2025 back-compat implication shared with the TypeScript and Python SDKs:
+  # a bare `elicitation: {}` declaration implies form elicitation support, while
+  # an explicit url-only declaration does not.
+  #
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:133
+  def prune_implied_form_elicitation(missing, declared); end
+
+  # pkg:gem/mcp#lib/mcp/server/input_required_result.rb:145
+  def read_key(hash, key); end
+end
+
+# pkg:gem/mcp#lib/mcp/server/input_required_result.rb:21
+MCP::Server::InputRequiredResult::EMBEDDABLE_METHODS = T.let(T.unsafe(nil), Array)
+
+# Fulfilment rounds the legacy shim runs before giving up, matching the TypeScript SDK's legacy shim default (`maxRounds: 8`).
+#
+# pkg:gem/mcp#lib/mcp/server.rb:830
+MCP::Server::LEGACY_INPUT_REQUIRED_MAX_ROUNDS = T.let(T.unsafe(nil), Integer)
 
 # Servers return an array of completion values ranked by relevance, with maximum 100 items per response.
 # https://modelcontextprotocol.io/specification/2025-11-25/server/utilities/completion#completion-results
 #
-# pkg:gem/mcp#lib/mcp/server.rb:35
+# pkg:gem/mcp#lib/mcp/server.rb:41
 MCP::Server::MAX_COMPLETION_VALUES = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/server.rb:123
+# Methods whose results may be `input_required` and whose retried requests carry
+# `inputResponses`/`requestState` (SEP-2322).
+#
+# pkg:gem/mcp#lib/mcp/server.rb:827
+MCP::Server::MRTR_METHODS = T.let(T.unsafe(nil), Array)
+
+# pkg:gem/mcp#lib/mcp/server.rb:152
 class MCP::Server::MethodAlreadyDefinedError < ::StandardError
-  # pkg:gem/mcp#lib/mcp/server.rb:126
+  # pkg:gem/mcp#lib/mcp/server.rb:155
   def initialize(method_name); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:124
+  # pkg:gem/mcp#lib/mcp/server.rb:153
   def method_name; end
 end
 
@@ -4013,9 +5041,9 @@ end
 #
 # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2575
 #
-# pkg:gem/mcp#lib/mcp/server.rb:85
+# pkg:gem/mcp#lib/mcp/server.rb:93
 class MCP::Server::MissingRequiredClientCapabilityError < ::MCP::Server::RequestHandlerError
-  # pkg:gem/mcp#lib/mcp/server.rb:86
+  # pkg:gem/mcp#lib/mcp/server.rb:94
   def initialize(required_capabilities, request = T.unsafe(nil)); end
 end
 
@@ -4030,22 +5058,145 @@ module MCP::Server::Pagination
   def paginate(items, cursor:, page_size:, request:, &block); end
 end
 
-# pkg:gem/mcp#lib/mcp/server.rb:37
+# A one-shot, timeout-aware handoff between the thread awaiting a server-to-client response
+# and whichever thread resolves it (the client's response, a cancellation, or session teardown).
+#
+# `Queue#pop` only accepts a `timeout:` on Ruby 3.2 and later, and this gem supports 2.7,
+# so the wait is expressed with a `ConditionVariable`. The `push`/`pop` names mirror the `Queue`
+# this replaces, keeping the resolving call sites unchanged.
+#
+# First writer wins: a second `push` is ignored, so a cancellation that races a real response
+# cannot overwrite it. `pop` returns the pushed value, or the `on_timeout` result when
+# the deadline passes with nothing pushed.
+#
+# pkg:gem/mcp#lib/mcp/server/pending_response.rb:15
+class MCP::Server::PendingResponse
+  # pkg:gem/mcp#lib/mcp/server/pending_response.rb:16
+  def initialize; end
+
+  # Blocks until a value is pushed or `timeout` seconds elapse, and yields to the caller
+  # on expiry so it can decide what a timeout means. `ConditionVariable#wait` can return spuriously,
+  # so the deadline is re-checked against the monotonic clock.
+  #
+  # The expiry block runs after the lock is released: it typically cancels the request,
+  # which resolves this same object, and Ruby's `Mutex` is not reentrant.
+  #
+  # pkg:gem/mcp#lib/mcp/server/pending_response.rb:40
+  def pop(timeout:); end
+
+  # Resolves the wait. Ignored when a value was already delivered.
+  #
+  # pkg:gem/mcp#lib/mcp/server/pending_response.rb:24
+  def push(value); end
+end
+
+# pkg:gem/mcp#lib/mcp/server.rb:43
 class MCP::Server::RequestHandlerError < ::StandardError
-  # pkg:gem/mcp#lib/mcp/server.rb:40
+  # pkg:gem/mcp#lib/mcp/server.rb:46
   def initialize(message, request, error_type: T.unsafe(nil), original_error: T.unsafe(nil), error_code: T.unsafe(nil), error_data: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:38
+  # pkg:gem/mcp#lib/mcp/server.rb:44
   def error_code; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:38
+  # pkg:gem/mcp#lib/mcp/server.rb:44
   def error_data; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:38
+  # pkg:gem/mcp#lib/mcp/server.rb:44
   def error_type; end
 
-  # pkg:gem/mcp#lib/mcp/server.rb:38
+  # pkg:gem/mcp#lib/mcp/server.rb:44
   def original_error; end
+end
+
+# Opt-in protection for the SEP-2322 `requestState` echo. The opaque continuation string leaves the server,
+# sits in the client's hands, and comes back as client-controlled input, so it must be treated like
+# any other untrusted data. Sealing encrypts the state with AES-256-GCM (clients cannot read it) and binds
+# a claims envelope that unsealing verifies fail-closed:
+#
+# - `exp`: a TTL window (re-sealed each round)
+# - `m` / `t`: the originating method and target (tool/prompt name or resource URI)
+# - `a`: a digest of the originating arguments, so the state only resumes the same call with the same inputs
+# - `aud`: an optional audience, so tokens cannot cross servers sharing a key
+#
+# Pass an instance via `Server.new(request_state_security:)` and the seal/unseal happens transparently;
+# handlers keep reading plaintext through `server_context.request_state`. Without it, the state crosses
+# the wire exactly as the handler wrote it (the author's responsibility, matching the Python SDK's low-level Server).
+# The key must be shared across workers in multi-process
+#
+# deployments; a per-process random key makes retries that land on another worker fail with an invalid-state error,
+# forcing clients to restart the flow.
+#
+# The token format is `v1.<base64url(iv || ciphertext || tag)>`, with the version prefix bound as GCM associated data,
+# following the Python SDK's `AESGCMRequestStateCodec`.
+#
+# pkg:gem/mcp#lib/mcp/server/request_state_security.rb:28
+class MCP::Server::RequestStateSecurity
+  # pkg:gem/mcp#lib/mcp/server/request_state_security.rb:37
+  def initialize(key:, ttl: T.unsafe(nil), audience: T.unsafe(nil)); end
+
+  # Seals a plaintext state into an opaque token bound to the originating request.
+  #
+  # pkg:gem/mcp#lib/mcp/server/request_state_security.rb:51
+  def seal(state, method:, target:, arguments_digest:); end
+
+  # Unseals a client-echoed token and verifies every claim, failing closed with
+  # `InvalidStateError` on tampering, expiry, or a claims mismatch.
+  #
+  # pkg:gem/mcp#lib/mcp/server/request_state_security.rb:73
+  def unseal(sealed, method:, target:, arguments_digest:); end
+
+  private
+
+  # pkg:gem/mcp#lib/mcp/server/request_state_security.rb:122
+  def base64url_decode(encoded); end
+
+  # pkg:gem/mcp#lib/mcp/server/request_state_security.rb:118
+  def base64url_encode(data); end
+
+  # pkg:gem/mcp#lib/mcp/server/request_state_security.rb:108
+  def verify!(claims, method:, target:, arguments_digest:); end
+end
+
+# pkg:gem/mcp#lib/mcp/server/request_state_security.rb:35
+MCP::Server::RequestStateSecurity::DEFAULT_TTL = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/mcp#lib/mcp/server/request_state_security.rb:33
+MCP::Server::RequestStateSecurity::IV_BYTES = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/mcp#lib/mcp/server/request_state_security.rb:29
+class MCP::Server::RequestStateSecurity::InvalidStateError < ::StandardError; end
+
+# pkg:gem/mcp#lib/mcp/server/request_state_security.rb:32
+MCP::Server::RequestStateSecurity::KEY_BYTES = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/mcp#lib/mcp/server/request_state_security.rb:34
+MCP::Server::RequestStateSecurity::TAG_BYTES = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/mcp#lib/mcp/server/request_state_security.rb:31
+MCP::Server::RequestStateSecurity::VERSION_PREFIX = T.let(T.unsafe(nil), String)
+
+# Raised when a server-to-client request (sampling, elicitation, `roots/list`, `ping`) goes unanswered past its timeout.
+# The spec asks implementations to bound every sent request so a peer that never answers cannot exhaust the sender's resources,
+# and to cancel the request on expiry; the transport sends `notifications/cancelled` before raising this.
+# These requests exist only on connections speaking 2025-11-25 or earlier, since the modern lifecycle forbids them.
+#
+# Left uncaught in a handler, this answers the client's originating request with `-32001` rather than a generic
+# internal error, so the peer that failed to answer can tell a timeout apart from a server fault. The code is not
+# spec-allocated: it sits in the implementation-defined server range and is the value the Python SDK reports for
+# this condition, so a client that already recognizes it there reads the same meaning here.
+#
+# https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle#timeouts
+#
+# pkg:gem/mcp#lib/mcp/server.rb:142
+class MCP::Server::RequestTimeoutError < ::MCP::Server::RequestHandlerError
+  # pkg:gem/mcp#lib/mcp/server.rb:145
+  def initialize(message, request_id:, timeout:); end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:143
+  def request_id; end
+
+  # pkg:gem/mcp#lib/mcp/server.rb:143
+  def timeout; end
 end
 
 # Raised when a requested resource URI does not exist. Per SEP-2164,
@@ -4060,9 +5211,9 @@ end
 #
 # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2164
 #
-# pkg:gem/mcp#lib/mcp/server.rb:108
+# pkg:gem/mcp#lib/mcp/server.rb:116
 class MCP::Server::ResourceNotFoundError < ::MCP::Server::RequestHandlerError
-  # pkg:gem/mcp#lib/mcp/server.rb:109
+  # pkg:gem/mcp#lib/mcp/server.rb:117
   def initialize(uri, request = T.unsafe(nil)); end
 end
 
@@ -4074,13 +5225,13 @@ class MCP::Server::Transports::StdioTransport < ::MCP::Transport
   # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:19
   def initialize(server, max_line_bytes: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:61
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:63
   def close; end
 
   # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:35
   def open; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:71
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:73
   def send_notification(method, params = T.unsafe(nil)); end
 
   # NOTE: This signature deliberately matches the abstract `Transport#send_request` contract
@@ -4091,13 +5242,32 @@ class MCP::Server::Transports::StdioTransport < ::MCP::Transport
   # cancellation has very limited value here regardless; servers that need cancellation propagation for nested
   # server-to-client requests should use `StreamableHTTPTransport`.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:92
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:94
   def send_request(method, params = T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:65
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:67
   def send_response(message); end
 
   private
+
+  # Serves one frame under the dual-era model (SEP-2575): the first era-distinctive message to succeed locks
+  # the connection era. A successful `initialize` locks `:legacy` inside `Server#init`; a successful `server/discover`
+  # or a successful request carrying the full modern `_meta` triple locks `:modern`. Era-violating frames
+  # (an `initialize` after a modern lock, a modern envelope after a legacy lock, or a missing envelope after a modern lock)
+  # are rejected in-band by `Server#lift_request_envelope`.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:170
+  def dispatch_with_era(parsed); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:176
+  def lock_modern_era_on_success(parsed, response); end
+
+  # Parses a frame once so era classification can inspect its method and `_meta`.
+  # Returns `nil` for frames that are not JSON objects; those fall back to
+  # `ServerSession#handle_json` so protocol-level error responses stay identical.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:158
+  def parse_line(line); end
 
   # Reads one newline-delimited frame, bounded by `@max_line_bytes`. Returns
   # the line (including its trailing newline) or `nil` at EOF. Raises when the
@@ -4105,7 +5275,7 @@ class MCP::Server::Transports::StdioTransport < ::MCP::Transport
   # an unbounded frame. A short final frame without a trailing newline (EOF) is
   # still returned, since its length stays under the limit.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:134
+  # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:142
   def read_line(io); end
 end
 
@@ -4121,7 +5291,7 @@ MCP::Server::Transports::StdioTransport::MAX_LINE_BYTES = T.let(T.unsafe(nil), I
 # pkg:gem/mcp#lib/mcp/server/transports/stdio_transport.rb:10
 MCP::Server::Transports::StdioTransport::STATUS_INTERRUPTED = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:18
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:19
 class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # Creates a Streamable HTTP transport that can be mounted as a Rack app.
   #
@@ -4152,13 +5322,23 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   #   ownership is not enforced.
   # @param max_request_bytes [Integer] upper bound in bytes on a POST request body; larger
   #   requests are rejected with HTTP 413. Defaults to 4 MiB.
+  # @param max_listen_subscriptions [Integer, nil] cap on concurrent `subscriptions/listen`
+  #   streams; a listen request past the cap is rejected with HTTP 503, and `nil` disables
+  #   the cap.
+  # @param listen_keepalive_interval [Numeric, nil] seconds between SSE keepalive comment frames
+  #   on a `subscriptions/listen` stream; the periodic write frees the stream's slot when the peer
+  #   has gone away. Defaults to `DEFAULT_LISTEN_KEEPALIVE_INTERVAL` (15); pass `nil` to disable
+  #   when an upstream proxy already keeps the stream alive.
+  # @param server_to_client_request_timeout [Numeric] seconds a server-to-client request waits for its
+  #   response before the transport stops waiting and raises `MCP::Server::RequestTimeoutError`.
+  #   Defaults to `DEFAULT_SERVER_TO_CLIENT_REQUEST_TIMEOUT` (600); individual calls override it with `timeout:`.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:83
-  def initialize(server, stateless: T.unsafe(nil), enable_json_response: T.unsafe(nil), session_idle_timeout: T.unsafe(nil), max_sessions: T.unsafe(nil), allowed_origins: T.unsafe(nil), allowed_hosts: T.unsafe(nil), dns_rebinding_protection: T.unsafe(nil), session_request_validator: T.unsafe(nil), max_request_bytes: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:135
+  def initialize(server, stateless: T.unsafe(nil), enable_json_response: T.unsafe(nil), session_idle_timeout: T.unsafe(nil), max_sessions: T.unsafe(nil), allowed_origins: T.unsafe(nil), allowed_hosts: T.unsafe(nil), dns_rebinding_protection: T.unsafe(nil), session_request_validator: T.unsafe(nil), max_request_bytes: T.unsafe(nil), max_listen_subscriptions: T.unsafe(nil), listen_keepalive_interval: T.unsafe(nil), server_to_client_request_timeout: T.unsafe(nil)); end
 
   # Rack app interface. This transport can be mounted as a Rack app.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:153
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:259
   def call(env); end
 
   # Unblocks a `send_request` awaiting a response when the peer is being cancelled.
@@ -4171,49 +5351,59 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # if `:cancelled` arrives first, any later client response is silently dropped in `handle_response`
   # because the pending entry has been removed.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:410
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:613
   def cancel_pending_request(request_id, reason: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:173
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:320
   def close; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:296
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:464
   def close_streams(streams); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:234
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:402
   def deliver_broadcast_notification(notification); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:206
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:374
   def deliver_targeted_notification(notification, session_id, related_request_id); end
 
   # Removes a stream that failed to accept a write. A request-scoped stream is dropped on its own;
   # a session-scoped (GET SSE) failure tears down the whole session. The `@sessions` mutation runs
   # under `@mutex`, and the affected streams are closed outside it.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:280
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:448
   def drop_broken_stream(session_id, stream, related_request_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:157
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:269
   def handle_request(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:187
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:336
   def send_notification(method, params = T.unsafe(nil), session_id: T.unsafe(nil), related_request_id: T.unsafe(nil)); end
 
-  # Sends a server-to-client JSON-RPC request (e.g., `sampling/createMessage`) and
-  # blocks until the client responds.
+  # Sends a server-to-client JSON-RPC request (e.g., `sampling/createMessage`) and blocks until
+  # the client responds.
   #
-  # Uses a `Queue` for cross-thread synchronization. This method creates a `Queue`,
-  # sends the request via SSE stream, then blocks on `queue.pop`.
-  # When the client POSTs a response, `handle_response` matches it by `request_id`
-  # and pushes the result onto the queue, unblocking this thread.
+  # Uses a `PendingResponse` for cross-thread synchronization: this method registers one,
+  # sends the request via SSE stream, then waits on it. When the client POSTs a response,
+  # `handle_response` matches it by `request_id` and resolves the pending response,
+  # unblocking this thread. A cancellation and session teardown resolve it the same way.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:309
-  def send_request(method, params = T.unsafe(nil), session_id: T.unsafe(nil), related_request_id: T.unsafe(nil), parent_cancellation: T.unsafe(nil), server_session: T.unsafe(nil)); end
+  # The wait is bounded by `timeout` (defaulting to the transport's `server_to_client_request_timeout`),
+  # so a client that never answers cannot park the calling thread for good. On expiry the peer is
+  # sent `notifications/cancelled` and `MCP::Server::RequestTimeoutError` is raised.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:481
+  def send_request(method, params = T.unsafe(nil), session_id: T.unsafe(nil), related_request_id: T.unsafe(nil), parent_cancellation: T.unsafe(nil), server_session: T.unsafe(nil), timeout: T.unsafe(nil)); end
+
+  # The `subscriptions/listen` notification stream (SEP-2575) is served on the modern path,
+  # so `Server#discover` may advertise `listChanged`/`subscribe` capability flags.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:265
+  def serves_subscriptions_listen?; end
 
   # Writes a notification to an SSE stream without holding `@mutex`. On a write error,
   # drops the broken stream and returns false; on success returns true.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:268
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:436
   def write_notification(stream, notification, session_id, related_request_id); end
 
   private
@@ -4224,124 +5414,206 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # request-scoped messages from leaking to the wrong stream.
   # When `related_request_id` is nil, returns the GET SSE stream.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:963
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1653
   def active_stream(session, related_request_id: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1138
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1828
   def already_initialized_response(request_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:618
+  # Reads a nested capability flag tolerating both symbol and string keys, since user-supplied capability hashes arrive
+  # in either form. The flag that promises delivery (`listChanged` / `subscribe`) decides honoring, the same derivation
+  # `Server#discover` uses for its era-aware capability stripping; the mere presence of the primitive's capability is not enough.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:979
+  def capability_flag?(capabilities, name, flag); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1284
   def cleanup_and_collect_stream(session_id, streams_to_close); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:591
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1257
   def cleanup_session(session_id); end
 
   # Removes a session from `@sessions` and returns it. Does not close the stream.
   # Callers must close the stream outside the mutex to avoid holding the lock during
   # potentially blocking I/O.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:605
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1271
   def cleanup_session_unsafe(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:631
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1297
   def close_post_request_streams(session); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:625
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1291
   def close_stream_safely(stream); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1168
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1858
   def create_sse_body(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:747
+  # Mirrors `MCP::Client::HTTP#encode_header_value`: a value wrapped as `=?base64?<base64>?=` decodes to
+  # its original UTF-8 string; anything else is taken verbatim. Duplicated here because the client transport
+  # requires faraday, which servers do not depend on.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1072
+  def decode_header_value(value); end
+
+  # Fans a notification out to every `subscriptions/listen` stream whose honored filter opted in to it,
+  # stamping the correlating `subscriptionId` into `_meta`. Matching against the honored filter
+  # (not the requested one) enforces the MUST NOT-send-unrequested-types rule.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:989
+  def deliver_to_listen_subscriptions(method, params); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1413
   def discover_request?(body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:971
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1661
   def dispatch_handle_json(body_string, server_session); end
 
   # Dispatches a client-originated notification (e.g. `notifications/cancelled`,
   # `notifications/initialized`) through the server so it can update session state.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:774
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1464
   def dispatch_notification(body_string, session_id); end
 
   # Each stateless POST is self-contained (SEP-2567): handlers run against an ephemeral per-request `ServerSession`
   # so client info, logging level, and initialized state never leak onto the shared `Server` instance or across concurrent requests.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2567
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1017
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1707
   def ephemeral_session; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:639
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1305
   def extract_session_id(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1106
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1796
   def forbidden_response(message = T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1006
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1696
   def get_session_stream(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:881
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1571
   def handle_accepted; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:568
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1234
   def handle_delete(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:544
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1210
   def handle_get(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:812
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1502
   def handle_initialization(request, body_string, body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:460
-  def handle_post(request); end
+  # Serves one request of the stateless modern lifecycle (MCP 2026-07-28, SEP-2575):
+  # a single POST/JSON exchange with no session. The modern path never consults
+  # `@stateless`, `@sessions`, or `@enable_json_response`, and never issues or accepts
+  # an `Mcp-Session-Id`. GET (the legacy listening stream, replaced by `subscriptions/listen`)
+  # and DELETE (session termination) have no modern meaning.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:668
+  def handle_modern(request, header_version, body_string: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:893
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1102
+  def handle_post(request, body_string: T.unsafe(nil)); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1583
   def handle_regular_request(body_string, session_id, related_request_id: T.unsafe(nil)); end
 
   # Returns the POST response as an SSE stream so the server can send
   # JSON-RPC requests and notifications during request processing.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#sending-messages-to-the-server
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:925
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1615
   def handle_request_with_sse_response(body_string, session_id, server_session, related_request_id: T.unsafe(nil)); end
 
   # Verifies that the response came from the expected session to prevent
   # cross-session response injection if request IDs are ever leaked.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:796
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1486
   def handle_response(body, session_id:); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:743
+  # Serves `subscriptions/listen` (SEP-2575): opens a long-lived SSE stream whose first message is
+  # `notifications/subscriptions/acknowledged` with the subset of requested notification types
+  # the server agreed to honor. Notifications delivered on the stream carry `io.modelcontextprotocol/subscriptionId`
+  # (= the listen request id) in `_meta`. A graceful teardown (transport `close`) sends a `SubscriptionsListenResult`
+  # response; an abrupt disconnect sends nothing. A keepalive comment frame is written every
+  # `listen_keepalive_interval` seconds so a dropped connection frees its slot.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:819
+  def handle_subscriptions_listen(body); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1060
+  def header_mismatch_response(message, id); end
+
+  # Per SEP-2575, the server MUST NOT send notification types the client has not requested,
+  # and the acknowledgement only includes types the server actually supports
+  # (derived from its declared capabilities).
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:961
+  def honored_filter(filter); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1409
   def initialize_request?(body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:735
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1401
   def invalid_json_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1142
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1832
   def invalid_request_response(message, request_id: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:763
-  def json_rpc_error_response(status:, code:, message:); end
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1451
+  def json_rpc_error_response(status:, code:, message:, data: T.unsafe(nil), id: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1114
+  # Era sniff for a sessionless POST under a dual-era header version: only an `initialize` body
+  # WITHOUT the modern `_meta` envelope is legacy-distinctive. An `initialize` carrying
+  # the envelope comes from a modern client naming a method its lifecycle removed, so it stays
+  # on the modern path and answers with -32601/404 (SEP-2575).
+  # Unparsable or non-object bodies go to the modern path, whose error responses cover them.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1430
+  def legacy_handshake_body?(body_string); end
+
+  # The proc registers the stream and returns, leaving the response open like
+  # the legacy GET stream (`create_sse_body`).
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:881
+  def listen_sse_body(request_id, honored); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:942
+  def listen_subscription_active?(request_id); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:864
+  def listen_subscriptions_full?; end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1804
   def method_not_allowed_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1122
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1812
   def missing_session_id_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:695
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1089
+  def modern_http_status(response); end
+
+  # Each modern request is self-contained: handlers run against an ephemeral per-request `ServerSession` locked to
+  # the modern era. The session carries a fresh unregistered `session_id` so notification and server-initiated-request plumbing
+  # keyed by session lookup degrades gracefully (delivery returns `false`) instead of broadcasting to unrelated legacy sessions
+  # via the `session_id.nil?` branch.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1085
+  def modern_session; end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1361
   def not_acceptable_response(required_types); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:768
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1458
   def notification?(body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:677
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1343
   def parse_accept_header(header); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:727
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1393
   def parse_request_body(body_string); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:719
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1385
   def payload_too_large_response; end
 
   # Reads the request body with a hard byte cap so an unbounded POST cannot exhaust
@@ -4350,19 +5622,22 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # a missing or spoofed `Content-Length` (e.g. chunked transfer) is still caught.
   # Returns `nil` when the body exceeds the cap.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:708
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1374
   def read_bounded_body(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:432
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:635
   def reap_expired_sessions; end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1027
+  def remove_listen_subscription(request_id); end
 
   # Extracts the host name from a `Host` header value, stripping any port and IPv6 brackets
   # (`[::1]:8080` becomes `::1`, `127.0.0.1:8080` becomes `127.0.0.1`).
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1085
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1775
   def request_hostname(host); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:790
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1480
   def response?(body); end
 
   # Compares the `Origin` authority (host:port) against the request's own `Host`.
@@ -4370,16 +5645,22 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # but the `Origin`'s scheme is used to drop a redundant default port (`:80` for http, `:443` for https) from
   # both sides so `http://example.com` matches `Host: example.com:80`. Comparison is case-insensitive.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1095
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1785
   def same_origin?(origin, request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1207
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1897
   def send_keepalive_ping(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:455
+  # Resolves the stream under the lock, then writes outside it so a stalled reader cannot block
+  # every other subscription on `@mutex`. A write error propagates to end the keepalive loop.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:948
+  def send_listen_keepalive_ping(request_id); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:658
   def send_ping_to_stream(stream); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:449
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:652
   def send_to_stream(stream, data); end
 
   # Returns true iff a session exists and is not past its idle timeout. Expired sessions
@@ -4387,46 +5668,70 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # the reaper hasn't yet pruned. Does NOT update `last_active_at`; callers that are
   # rejecting a request must not extend the session's lifetime.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1025
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1715
   def session_active?(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1203
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1893
   def session_active_with_stream?(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1154
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1844
   def session_already_connected_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1010
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1700
   def session_exists?(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1225
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1915
   def session_expired?(session); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1130
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1820
   def session_not_found_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1162
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1852
   def setup_sse_stream(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1190
+  # A version with no modern meaning, whose header can only accompany legacy traffic.
+  # A modern version's header (2026-07-28) can accompany either era's traffic - the handshake never negotiates it,
+  # but requests of an established legacy session may stamp it - so that value needs further disambiguation.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1420
+  def stable_only_version?(version); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1880
   def start_keepalive_thread(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:421
+  # Periodically writes an SSE keepalive comment frame to a listen stream so a silently dropped
+  # connection is detected and its slot freed, rather than held until the next fan-out write.
+  # Mirrors the legacy GET stream's `start_keepalive_thread`; a comment frame (not a data frame)
+  # cannot corrupt an interleaved notification's JSON.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:920
+  def start_listen_keepalive_thread(request_id); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:624
   def start_reaper_thread; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1175
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1865
   def store_stream_for_session(session_id, stream); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:885
+  # Graceful teardown (SEP-2575): each open listen stream receives its `SubscriptionsListenResult` response
+  # before the stream closes.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1033
+  def teardown_listen_subscriptions; end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:870
+  def too_many_listen_subscriptions_response(request_id); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1575
   def too_many_sessions_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:664
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1330
   def validate_accept_header(request, required_types); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:979
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1669
   def validate_and_touch_session(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:683
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1349
   def validate_content_type(request); end
 
   # Per MCP 2025-11-25, servers MUST validate the `Origin` header and SHOULD bind only to localhost
@@ -4435,22 +5740,30 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # performs the check). The `Host` header is validated against the loopback defaults plus `allowed_hosts:`,
   # and the `Origin` header, when present, must be same-origin or in `allowed_origins:`.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1051
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1741
   def validate_dns_rebinding(request); end
 
   # Rejects a rebound `Host` (e.g. `evil.example.com` re-pointed at 127.0.0.1).
   # A request without a `Host` header (e.g. HTTP/1.0) is allowed; the rebinding vector this guards against always carries one.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1059
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1749
   def validate_host(request); end
+
+  # Enforces the SEP-2575 header/body match rules (`-32020`, HTTP 400): the `MCP-Protocol-Version` header
+  # MUST match the `_meta`-carried version, and the `Mcp-Method` / `Mcp-Name` mirror headers MUST match
+  # the body when sent. Absent mirror headers are tolerated for interoperability while other SDK serving stacks
+  # converge on enforcement.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:760
+  def validate_modern_headers(request, body, header_version); end
 
   # A request without an `Origin` header (typical for non-browser MCP clients) is allowed. A browser cross-origin request is
   # rejected unless the origin is same-origin or explicitly allow-listed via `allowed_origins:`.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1074
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1764
   def validate_origin(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:751
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1439
   def validate_protocol_version_header(request); end
 
   # Session-ownership gate for requests against an existing session (the spec's session-binding guidance).
@@ -4463,15 +5776,32 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # - The application-supplied `session_request_validator`, which can enforce true ownership when it has
   #   an authenticated principal.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:652
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1318
   def validate_session_request(request, session_id); end
 end
+
+# Interval in seconds between SSE keepalive comment frames on a `subscriptions/listen` stream.
+# Without them a silently dropped connection holds its slot until the next fan-out write fails,
+# so on a quiet server a dead peer would occupy a `max_listen_subscriptions` slot indefinitely.
+# The periodic write detects the dead peer and frees the slot. Matches the TypeScript SDK's
+# 15-second default; pass `listen_keepalive_interval: nil` when an upstream proxy pings the stream.
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:94
+MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_LISTEN_KEEPALIVE_INTERVAL = T.let(T.unsafe(nil), Integer)
 
 # Loopback hosts always accepted by DNS rebinding protection. A locally bound MCP server (the canonical pattern) is
 # protected out of the box; non-loopback deployments widen the list via `allowed_hosts:`.
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:150
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:232
 MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_LOOPBACK_HOSTS = T.let(T.unsafe(nil), Array)
+
+# Cap on concurrent `subscriptions/listen` streams (SEP-2575). Each stream holds an open SSE connection
+# for its lifetime, so without a bound an unauthenticated client can retain unbounded connections,
+# like the session-flood case `DEFAULT_MAX_SESSIONS` guards. A listen request past the cap is rejected with HTTP 503;
+# pass `max_listen_subscriptions: nil` to opt out.
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:49
+MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_MAX_LISTEN_SUBSCRIPTIONS = T.let(T.unsafe(nil), Integer)
 
 # Default upper bound on the JSON-RPC request body. `handle_post` reads the whole
 # body into memory and parses it, so without a cap a single unauthenticated POST
@@ -4480,11 +5810,28 @@ MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_LOOPBACK_HOSTS = T.let
 # payload); raise `max_request_bytes:` for unusually large payloads. Matches the
 # TypeScript SDK's 4 MB default.
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:48
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:76
 MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_MAX_REQUEST_BYTES = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:36
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:43
 MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_MAX_SESSIONS = T.let(T.unsafe(nil), Integer)
+
+# Default deadline in seconds for a server-to-client request (sampling, elicitation, `roots/list`, `ping`).
+# The spec asks implementations to bound every sent request so a peer that never answers cannot exhaust
+# the sender's resources; without one, a client that opens a session and simply never replies parks
+# a worker thread for good.
+#
+# Ten minutes matches the TypeScript SDK, which raises its uniform 60-second request default to 600 seconds
+# for the legs of its legacy `input_required` shim because they are "human-paced, so the 60s protocol default
+# is wrong". Every request this transport can send is that kind of leg: someone answering an elicitation
+# prompt, or the client's own model producing a sample. (The Python SDK leaves the deadline unset and bounds
+# nothing by default.) Deployments that want a tighter bound pass a smaller value here; a single handler
+# that legitimately waits longer passes `timeout:`.
+#
+# https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle#timeouts
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:68
+MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_SERVER_TO_CLIENT_REQUEST_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
 # Secure defaults for stateful mode. Without a finite idle timeout, sessions live until an explicit client DELETE,
 # so an unauthenticated `initialize` flood retains unbounded `ServerSession` objects until memory is exhausted.
@@ -4495,50 +5842,84 @@ MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_MAX_SESSIONS = T.let(T
 # an attacker's behalf, at the cost of refusing new sessions while genuinely full. Pass `session_idle_timeout: nil` to
 # opt out of expiry and `max_sessions: nil` to opt out of the cap.
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:35
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:42
 MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_SESSION_IDLE_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:19
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:20
 class MCP::Server::Transports::StreamableHTTPTransport::InvalidJsonError < ::StandardError; end
+
+# Maps broadcast notification methods to the `SubscriptionFilter` field that opts in to them on
+# a `subscriptions/listen` stream (SEP-2575). `notifications/resources/updated` is matched by URI
+# against `resourceSubscriptions` instead.
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:240
+MCP::Server::Transports::StreamableHTTPTransport::LISTEN_FILTER_FIELDS = T.let(T.unsafe(nil), Hash)
 
 # Conservative bound on JSON nesting depth, so a deeply nested body cannot exhaust
 # the stack or amplify parse cost (complements the byte cap).
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:52
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:80
 MCP::Server::Transports::StreamableHTTPTransport::MAX_JSON_NESTING = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:144
+# Cap on the notifications buffered for one modern request (SEP-2575). The sink holds them
+# in memory until the handler returns, so a handler that emits notifications in proportion to
+# client-supplied input would otherwise let one request grow memory without bound.
+# Notifications past the cap are not delivered and the notify helpers report `false`,
+# the same non-delivery degradation they have on every other undeliverable path.
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:87
+MCP::Server::Transports::StreamableHTTPTransport::MAX_MODERN_REQUEST_NOTIFICATIONS = T.let(T.unsafe(nil), Integer)
+
+# JSON-RPC error codes that surface as HTTP 400 on the modern path. `-32601` maps to 404
+# (disambiguating an unknown method from a legacy HTTP+SSE 404) and everything else, including internal errors,
+# stays 200, matching the Python SDK's status ladder.
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:249
+MCP::Server::Transports::StreamableHTTPTransport::MODERN_BAD_REQUEST_CODES = T.let(T.unsafe(nil), Array)
+
+# JSON-RPC methods whose target name is mirrored into the `Mcp-Name` header (SEP-2575).
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:235
+MCP::Server::Transports::StreamableHTTPTransport::NAME_BEARING_METHODS = T.let(T.unsafe(nil), Array)
+
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:226
 MCP::Server::Transports::StreamableHTTPTransport::REQUIRED_GET_ACCEPT_TYPES = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:143
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:225
 MCP::Server::Transports::StreamableHTTPTransport::REQUIRED_POST_ACCEPT_TYPES_JSON = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:142
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:224
 MCP::Server::Transports::StreamableHTTPTransport::REQUIRED_POST_ACCEPT_TYPES_SSE = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:146
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:228
 MCP::Server::Transports::StreamableHTTPTransport::SESSION_REAP_INTERVAL = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:21
+# `x-accel-buffering: no` tells reverse proxies (nginx and friends) not to buffer the response,
+# which the spec asks of every SSE stream: a buffering proxy holds events back instead of
+# delivering them as they are written, and on a long-lived `subscriptions/listen` stream that
+# also swallows the keepalive frames a dropped peer would otherwise be detected by.
+# The TypeScript and Python SDKs send it on their SSE responses for the same reason.
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:27
 MCP::Server::Transports::StreamableHTTPTransport::SSE_HEADERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:145
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:227
 MCP::Server::Transports::StreamableHTTPTransport::STREAM_WRITE_ERRORS = T.let(T.unsafe(nil), Array)
 
 # Distinguishes "argument omitted, apply the secure default" from an explicit `nil` (opt out of expiry).
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:39
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:52
 MCP::Server::Transports::StreamableHTTPTransport::UNSET_IDLE_TIMEOUT = T.let(T.unsafe(nil), Object)
 
-# pkg:gem/mcp#lib/mcp/server.rb:29
+# pkg:gem/mcp#lib/mcp/server.rb:35
 MCP::Server::UNSUPPORTED_PROPERTIES_UNTIL_2025_03_26 = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server.rb:28
+# pkg:gem/mcp#lib/mcp/server.rb:34
 MCP::Server::UNSUPPORTED_PROPERTIES_UNTIL_2025_06_18 = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server.rb:50
+# pkg:gem/mcp#lib/mcp/server.rb:56
 class MCP::Server::URLElicitationRequiredError < ::MCP::Server::RequestHandlerError
-  # pkg:gem/mcp#lib/mcp/server.rb:51
+  # pkg:gem/mcp#lib/mcp/server.rb:57
   def initialize(elicitations); end
 end
 
@@ -4548,29 +5929,44 @@ end
 #
 # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2575
 #
-# pkg:gem/mcp#lib/mcp/server.rb:67
+# pkg:gem/mcp#lib/mcp/server.rb:73
 class MCP::Server::UnsupportedProtocolVersionError < ::MCP::Server::RequestHandlerError
-  # pkg:gem/mcp#lib/mcp/server.rb:68
-  def initialize(requested, request = T.unsafe(nil), supported: T.unsafe(nil)); end
+  # No keyword parameters here: with one present, Ruby 2.7 would split a trailing symbol-keyed `request` Hash
+  # into keywords and fail with "unknown keywords".
+  #
+  # pkg:gem/mcp#lib/mcp/server.rb:76
+  def initialize(requested, request = T.unsafe(nil)); end
 end
 
 # Raised when a client response fails server-side validation, e.g., a success response
 # whose `result` field is missing or has the wrong type. This is distinct from a
 # client-returned JSON-RPC error.
 #
-# pkg:gem/mcp#lib/mcp/server.rb:135
+# pkg:gem/mcp#lib/mcp/server.rb:164
 class MCP::Server::ValidationError < ::StandardError; end
 
 # pkg:gem/mcp#lib/mcp/server_context.rb:4
 class MCP::ServerContext
-  # pkg:gem/mcp#lib/mcp/server_context.rb:7
-  def initialize(context, progress:, notification_target:, related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server_context.rb:18
+  def initialize(context, progress:, notification_target:, related_request_id: T.unsafe(nil), cancellation: T.unsafe(nil), envelope: T.unsafe(nil), input_responses: T.unsafe(nil), request_state: T.unsafe(nil)); end
 
   # pkg:gem/mcp#lib/mcp/server_context.rb:5
   def cancellation; end
 
-  # pkg:gem/mcp#lib/mcp/server_context.rb:15
+  # pkg:gem/mcp#lib/mcp/server_context.rb:38
   def cancelled?; end
+
+  # Client capabilities for the current request, with the same envelope-first resolution as {#client_info}.
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:61
+  def client_capabilities; end
+
+  # Client identity for the current request. Modern requests carry it in the `_meta` envelope;
+  # legacy sessions fall back to the state stored by `initialize`. The envelope always wins
+  # because servers MUST NOT infer identity from prior requests.
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:54
+  def client_info; end
 
   # Delegates to the session so the request is scoped to the originating client.
   # Falls back to `@context` (via `method_missing`) when `@notification_target`
@@ -4578,7 +5974,7 @@ class MCP::ServerContext
   # The originating request id is stamped as a non-overridable
   # `related_request_id`, as with `create_sampling_message` (SEP-2260).
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:120
+  # pkg:gem/mcp#lib/mcp/server_context.rb:197
   def create_form_elicitation(**kwargs); end
 
   # Delegates to the session so the request is scoped to the originating client.
@@ -4593,7 +5989,7 @@ class MCP::ServerContext
   #   MCP protocol version 2026-07-28 (SEP-2577). Use direct LLM provider
   #   APIs instead.
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:105
+  # pkg:gem/mcp#lib/mcp/server_context.rb:182
   def create_sampling_message(**kwargs); end
 
   # Delegates to the session so the request is scoped to the originating client.
@@ -4601,8 +5997,28 @@ class MCP::ServerContext
   # The originating request id is stamped as a non-overridable `related_request_id`,
   # as with `create_sampling_message` (SEP-2260).
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:134
+  # pkg:gem/mcp#lib/mcp/server_context.rb:211
   def create_url_elicitation(**kwargs); end
+
+  # The SEP-2575 per-request envelope (`MCP::RequestEnvelope`) when the request was classified as modern;
+  # `nil` on legacy requests.
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:9
+  def envelope; end
+
+  # Reads one entry of {#input_responses} by its `inputRequests` key, tolerating symbol or string keys.
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:31
+  def input_response(key); end
+
+  # SEP-2322 multi round-trip retry fields, present when the client re-issued the request after
+  # an `input_required` result: `input_responses` maps the keys of the earlier `inputRequests` to
+  # the client's answers, and `request_state` is the opaque continuation string echoed back byte-exactly.
+  # Both are `nil` on a first-round request. Only handlers that opt in to `server_context:` can read them
+  # (the same access model as the envelope readers).
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:16
+  def input_responses; end
 
   # Delegates to the session so the request is scoped to the originating client.
   # The originating request id is stamped as `related_request_id`, satisfying
@@ -4613,8 +6029,8 @@ class MCP::ServerContext
   #   version 2026-07-28 (SEP-2577). Use tool parameters, resource URIs,
   #   server configuration, or environment variables instead.
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:64
-  def list_roots; end
+  # pkg:gem/mcp#lib/mcp/server_context.rb:141
+  def list_roots(timeout: T.unsafe(nil)); end
 
   # Forward arguments explicitly with `*args, **kwargs, &block` rather than the `...` forwarding syntax.
   # The gem supports Ruby 2.7.0 (see `required_ruby_version`), but RuboCop's Parser backend only runs on Ruby 2.7.8,
@@ -4622,12 +6038,17 @@ class MCP::ServerContext
   # raises a `SyntaxError` on Ruby 2.7.0 through 2.7.2 (it was added in Ruby 2.7.3). Explicit forwarding keeps
   # this method loadable on Ruby 2.7.0.
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:160
+  # pkg:gem/mcp#lib/mcp/server_context.rb:237
   def method_missing(name, *args, **kwargs, &block); end
+
+  # Whether the current request follows the stateless modern lifecycle (SEP-2575).
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:47
+  def modern?; end
 
   # Delegates to the session so the notification is scoped to the originating client.
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:145
+  # pkg:gem/mcp#lib/mcp/server_context.rb:222
   def notify_elicitation_complete(**kwargs); end
 
   # Sends a log message notification scoped to the originating session.
@@ -4639,14 +6060,14 @@ class MCP::ServerContext
   #   is deprecated as of MCP protocol version 2026-07-28 (SEP-2577).
   #   Use stderr or OpenTelemetry instead.
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:41
+  # pkg:gem/mcp#lib/mcp/server_context.rb:110
   def notify_log_message(data:, level:, logger: T.unsafe(nil)); end
 
   # Sends a resource updated notification scoped to the originating session.
   #
   # @param uri [String] The URI of the updated resource.
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:50
+  # pkg:gem/mcp#lib/mcp/server_context.rb:127
   def notify_resources_updated(uri:); end
 
   # Sends a `ping` request to the originating client to verify it is still responsive.
@@ -4664,10 +6085,16 @@ class MCP::ServerContext
   #
   # @see https://modelcontextprotocol.io/specification/2025-11-25/basic/utilities/ping
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:86
-  def ping; end
+  # pkg:gem/mcp#lib/mcp/server_context.rb:163
+  def ping(timeout: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server_context.rb:19
+  # The protocol version the current request was made with. `nil` on legacy requests,
+  # where the version is a session-level negotiation result rather than per-request data.
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:69
+  def protocol_version; end
+
+  # pkg:gem/mcp#lib/mcp/server_context.rb:42
   def raise_if_cancelled!; end
 
   # Reports progress for the current tool operation.
@@ -4677,13 +6104,37 @@ class MCP::ServerContext
   # @param total [Numeric, nil] Total expected value.
   # @param message [String, nil] Human-readable status message.
   #
-  # pkg:gem/mcp#lib/mcp/server_context.rb:29
+  # pkg:gem/mcp#lib/mcp/server_context.rb:98
   def report_progress(progress, total: T.unsafe(nil), message: T.unsafe(nil)); end
+
+  # SEP-2322 multi round-trip retry fields, present when the client re-issued the request after
+  # an `input_required` result: `input_responses` maps the keys of the earlier `inputRequests` to
+  # the client's answers, and `request_state` is the opaque continuation string echoed back byte-exactly.
+  # Both are `nil` on a first-round request. Only handlers that opt in to `server_context:` can read them
+  # (the same access model as the envelope readers).
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:16
+  def request_state; end
+
+  # Guards the current request on a declared client capability (SEP-2575). `path` names nested capability keys,
+  # e.g. `require_client_capability!(:elicitation, :form)`. Raises `Server::MissingRequiredClientCapabilityError`
+  # (JSON-RPC error `-32021` with `data: { requiredCapabilities: ... }`) when the capability was not declared.
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:76
+  def require_client_capability!(*path); end
 
   private
 
-  # pkg:gem/mcp#lib/mcp/server_context.rb:168
+  # pkg:gem/mcp#lib/mcp/server_context.rb:245
   def respond_to_missing?(name, include_private = T.unsafe(nil)); end
+
+  # An omitted `timeout:` is not forwarded at all, so the delegated call keeps the shape it had
+  # before per-request timeouts existed. A notification target that predates the keyword
+  # (a custom object standing in for a session) keeps working until a caller actually asks for a timeout,
+  # and the transport applies its own default in that case.
+  #
+  # pkg:gem/mcp#lib/mcp/server_context.rb:255
+  def timeout_kwarg(timeout); end
 end
 
 # Holds per-connection state for a single client session.
@@ -4691,32 +6142,32 @@ end
 #
 # pkg:gem/mcp#lib/mcp/server_session.rb:9
 class MCP::ServerSession
-  # pkg:gem/mcp#lib/mcp/server_session.rb:12
-  def initialize(server:, transport:, session_id: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:19
+  def initialize(server:, transport:, session_id: T.unsafe(nil), era: T.unsafe(nil)); end
 
   # Flips the `Cancellation` for a matching in-flight request received from the peer.
   # Silently ignores unknown IDs per MCP spec (cancellation utilities, item 5).
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:57
+  # pkg:gem/mcp#lib/mcp/server_session.rb:82
   def cancel_incoming(request_id:, reason: T.unsafe(nil)); end
 
   # Sends `notifications/cancelled` to the peer for a previously-issued request.
   # Also unblocks any transport-level `send_request` waiting on a response for `request_id`.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:64
+  # pkg:gem/mcp#lib/mcp/server_session.rb:89
   def cancel_request(request_id:, reason: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server_session.rb:10
+  # pkg:gem/mcp#lib/mcp/server_session.rb:12
   def client; end
 
   # Returns per-session client capabilities, falling back to global.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:96
+  # pkg:gem/mcp#lib/mcp/server_session.rb:121
   def client_capabilities; end
 
   # Called by `Server#configure_logging_level`.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:91
+  # pkg:gem/mcp#lib/mcp/server_session.rb:116
   def configure_logging(logging_message_notification); end
 
   # Sends an `elicitation/create` request (form mode) scoped to this session.
@@ -4725,8 +6176,8 @@ class MCP::ServerSession
   # request; prefer `server_context.create_form_elicitation` inside a handler,
   # which stamps the association automatically.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:147
-  def create_form_elicitation(message:, requested_schema:, related_request_id: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:177
+  def create_form_elicitation(message:, requested_schema:, related_request_id: T.unsafe(nil), timeout: T.unsafe(nil)); end
 
   # Sends a `sampling/createMessage` request scoped to this session.
   #
@@ -4737,8 +6188,8 @@ class MCP::ServerSession
   #   MCP protocol version 2026-07-28 (SEP-2577). Use direct LLM provider
   #   APIs instead.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:135
-  def create_sampling_message(related_request_id: T.unsafe(nil), **kwargs); end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:160
+  def create_sampling_message(related_request_id: T.unsafe(nil), timeout: T.unsafe(nil), **kwargs); end
 
   # Sends an `elicitation/create` request (URL mode) scoped to this session.
   #
@@ -4746,18 +6197,34 @@ class MCP::ServerSession
   # request; prefer `server_context.create_url_elicitation` inside a handler,
   # which stamps the association automatically.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:164
-  def create_url_elicitation(message:, url:, elicitation_id:, related_request_id: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:199
+  def create_url_elicitation(message:, url:, elicitation_id:, related_request_id: T.unsafe(nil), timeout: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server_session.rb:76
+  # Connection-era lock of the dual-era serving model (SEP-2575): `nil` until the first era-distinctive message succeeds,
+  # then `:legacy` or `:modern` for the connection's lifetime. Modern-era transports construct their per-request sessions
+  # with `era: :modern` up front.
+  #
+  # pkg:gem/mcp#lib/mcp/server_session.rb:17
+  def era; end
+
+  # Sends an embedded SEP-2322 `inputRequests` entry as a real server-to-client request on the legacy wire,
+  # for the server's dual-era fulfilment shim.
+  # The entry is forwarded verbatim - per the spec, clients treat each entry exactly like the equivalent
+  # standalone request - and stays associated with the originating client request per SEP-2260.
+  # Returns the client's result.
+  #
+  # pkg:gem/mcp#lib/mcp/server_session.rb:221
+  def fulfill_input_request(method, params, related_request_id:); end
+
+  # pkg:gem/mcp#lib/mcp/server_session.rb:101
   def handle(request); end
 
-  # pkg:gem/mcp#lib/mcp/server_session.rb:80
+  # pkg:gem/mcp#lib/mcp/server_session.rb:105
   def handle_json(request_json); end
 
   # Whether `initialize` has already completed for this session.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:25
+  # pkg:gem/mcp#lib/mcp/server_session.rb:36
   def initialized?; end
 
   # Sends a `roots/list` request scoped to this session.
@@ -4770,25 +6237,31 @@ class MCP::ServerSession
   #   version 2026-07-28 (SEP-2577). Use tool parameters, resource URIs,
   #   server configuration, or environment variables instead.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:109
-  def list_roots(related_request_id: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:134
+  def list_roots(related_request_id: T.unsafe(nil), timeout: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server_session.rb:10
+  # One-shot era lock. Locking the already-locked era is a no-op; flipping an established era raises,
+  # because a connection can never change eras.
+  #
+  # pkg:gem/mcp#lib/mcp/server_session.rb:53
+  def lock_era!(era); end
+
+  # pkg:gem/mcp#lib/mcp/server_session.rb:12
   def logging_message_notification; end
 
-  # pkg:gem/mcp#lib/mcp/server_session.rb:51
+  # pkg:gem/mcp#lib/mcp/server_session.rb:76
   def lookup_in_flight(request_id); end
 
   # Called by `Server#init` after a successful `initialize` response, so subsequent
   # `initialize` requests on the same session can be rejected per MCP spec
   # (the initialization phase MUST be the first interaction).
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:32
-  def mark_initialized!; end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:43
+  def mark_initialized!(protocol_version: T.unsafe(nil)); end
 
   # Sends an elicitation complete notification scoped to this session.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:194
+  # pkg:gem/mcp#lib/mcp/server_session.rb:243
   def notify_elicitation_complete(elicitation_id:); end
 
   # Sends a log message notification to this session only.
@@ -4796,27 +6269,30 @@ class MCP::ServerSession
   #   is deprecated as of MCP protocol version 2026-07-28 (SEP-2577).
   #   Use stderr or OpenTelemetry instead.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:225
+  # pkg:gem/mcp#lib/mcp/server_session.rb:274
   def notify_log_message(data:, level:, logger: T.unsafe(nil), related_request_id: T.unsafe(nil)); end
 
   # Sends a progress notification to this session only.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:208
+  # pkg:gem/mcp#lib/mcp/server_session.rb:257
   def notify_progress(progress_token:, progress:, total: T.unsafe(nil), message: T.unsafe(nil), related_request_id: T.unsafe(nil)); end
 
   # Sends a resource updated notification to this session only.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:201
+  # pkg:gem/mcp#lib/mcp/server_session.rb:250
   def notify_resources_updated(uri:); end
 
   # Sends a `ping` request scoped to this session.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:120
-  def ping(related_request_id: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:145
+  def ping(related_request_id: T.unsafe(nil), timeout: T.unsafe(nil)); end
+
+  # pkg:gem/mcp#lib/mcp/server_session.rb:12
+  def protocol_version; end
 
   # Registers a `Cancellation` token for an in-flight request.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:37
+  # pkg:gem/mcp#lib/mcp/server_session.rb:62
   def register_in_flight(request_id); end
 
   # Sends `notifications/cancelled` to the peer for a nested server-to-client request
@@ -4825,18 +6301,18 @@ class MCP::ServerSession
   # (e.g. the parent's POST response stream on `StreamableHTTPTransport`) rather than
   # the GET SSE stream.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:181
+  # pkg:gem/mcp#lib/mcp/server_session.rb:230
   def send_peer_cancellation(nested_request_id:, related_request_id: T.unsafe(nil), reason: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server_session.rb:10
+  # pkg:gem/mcp#lib/mcp/server_session.rb:12
   def session_id; end
 
   # Called by `Server#init` during the initialization handshake.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:85
+  # pkg:gem/mcp#lib/mcp/server_session.rb:110
   def store_client_info(client:, capabilities: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server_session.rb:45
+  # pkg:gem/mcp#lib/mcp/server_session.rb:70
   def unregister_in_flight(request_id); end
 
   private
@@ -4846,7 +6322,7 @@ class MCP::ServerSession
   # working while preserving compatibility with custom transports that implement only the abstract
   # `(method, params = nil)` contract.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:275
+  # pkg:gem/mcp#lib/mcp/server_session.rb:337
   def forward_to_transport(transport_method, method, params, kwargs); end
 
   # Forwards `send_notification` to the transport with only the kwargs the transport's method signature
@@ -4854,7 +6330,7 @@ class MCP::ServerSession
   # contract continue to work unchanged; bundled transports that declare `session_id:` / `related_request_id:`
   # receive the session-scoped routing information.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:243
+  # pkg:gem/mcp#lib/mcp/server_session.rb:304
   def send_to_transport(method, params, related_request_id: T.unsafe(nil)); end
 
   # Forwards `send_request` to the transport with only the kwargs the transport's method signature
@@ -4864,8 +6340,11 @@ class MCP::ServerSession
   # When `related_request_id` names an in-flight request, its `Cancellation` token is looked up
   # so that cancelling the parent also cancels this nested server-to-client request.
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:258
-  def send_to_transport_request(method, params, related_request_id: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server_session.rb:319
+  def send_to_transport_request(method, params, related_request_id: T.unsafe(nil), timeout: T.unsafe(nil)); end
+
+  # pkg:gem/mcp#lib/mcp/server_session.rb:296
+  def validate_era!(era); end
 
   # Per SEP-2260, servers MUST send `roots/list`, `sampling/createMessage`, and `elicitation/create` only
   # in association with an originating client request (`ping` is exempt). A request without `related_request_id:` is
@@ -4873,9 +6352,12 @@ class MCP::ServerSession
   # warn so callers migrate to the `server_context` helpers before this becomes an error.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2260
   #
-  # pkg:gem/mcp#lib/mcp/server_session.rb:297
+  # pkg:gem/mcp#lib/mcp/server_session.rb:359
   def warn_unassociated_request(method_name, related_request_id); end
 end
+
+# pkg:gem/mcp#lib/mcp/server_session.rb:10
+MCP::ServerSession::ERAS = T.let(T.unsafe(nil), Array)
 
 # pkg:gem/mcp#lib/mcp/string_utils.rb:4
 module MCP::StringUtils
@@ -5163,9 +6645,9 @@ end
 # pkg:gem/mcp#lib/mcp/tool/schema.rb:13
 MCP::Tool::Schema::ValidationCache::DEFAULT_MAX_SIZE = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/mcp#lib/mcp/server.rb:16
+# pkg:gem/mcp#lib/mcp/server.rb:22
 class MCP::ToolNotUnique < ::StandardError
-  # pkg:gem/mcp#lib/mcp/server.rb:17
+  # pkg:gem/mcp#lib/mcp/server.rb:23
   def initialize(duplicated_tool_names); end
 end
 
@@ -5242,9 +6724,16 @@ class MCP::Transport
   # pkg:gem/mcp#lib/mcp/transport.rb:14
   def send_response(response); end
 
+  # Whether the transport serves the `subscriptions/listen` notification stream (MCP 2026-07-28, SEP-2575).
+  # `Server#discover` strips the `listChanged`/`subscribe` capability flags when the transport cannot deliver
+  # those notifications in the modern lifecycle.
+  #
+  # pkg:gem/mcp#lib/mcp/transport.rb:56
+  def serves_subscriptions_listen?; end
+
   private
 
-  # pkg:gem/mcp#lib/mcp/transport.rb:55
+  # pkg:gem/mcp#lib/mcp/transport.rb:62
   def generate_request_id; end
 end
 

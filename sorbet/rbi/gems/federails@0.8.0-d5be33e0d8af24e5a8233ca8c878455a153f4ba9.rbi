@@ -620,7 +620,7 @@ class Federails::ClientController < ::Federails::ApplicationController
   private
 
   def _layout(lookup_context, formats, keys); end
-  def _layout_from_proc; end
+  def _layout_from_proc(controller); end
   def render_serialized(resource_class, object, status: T.unsafe(nil), location: T.unsafe(nil), params: T.unsafe(nil)); end
 
   class << self
@@ -939,6 +939,12 @@ module Federails::DataTransformer::Note
     # @param content [String] Note content
     # @param name [String, nil] Optional name/title
     # @param custom [Hash] Optional additional keys (e.g.: attachment, icon, ...). Defaults will override these.
+    # @param to [Array<String>, nil] Recipients for the object itself. Defaults to the public collection.
+    # @param cc [Array<String>, nil] Copied recipients for the object itself. Defaults to the actor's followers.
+    #
+    #   Objects must carry their own addressing: some implementations (e.g. Hollo/Fedify)
+    #   derive object visibility from the object's to/cc only, and treat an unaddressed
+    #   object as a direct message, hiding it from profiles and searches.
     #
     # @return [Hash]
     #
@@ -949,8 +955,8 @@ module Federails::DataTransformer::Note
     #   - https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object
     #   - https://www.w3.org/TR/activitystreams-vocabulary/#dfn-note
     #
-    # pkg:gem/federails#lib/federails/data_transformer/note.rb:23
-    def to_federation(entity, content:, name: T.unsafe(nil), custom: T.unsafe(nil)); end
+    # pkg:gem/federails#lib/federails/data_transformer/note.rb:29
+    def to_federation(entity, content:, name: T.unsafe(nil), custom: T.unsafe(nil), to: T.unsafe(nil), cc: T.unsafe(nil)); end
   end
 end
 
