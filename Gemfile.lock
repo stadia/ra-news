@@ -344,7 +344,7 @@ GEM
       logger (~> 1.6)
     letter_opener (1.10.0)
       launchy (>= 2.2, < 4)
-    lexxy (0.9.30)
+    lexxy (0.9.31)
       rails (>= 8.0.2)
     link_header (0.0.8)
     lint_roller (1.1.0)
@@ -650,7 +650,7 @@ GEM
     rbi (0.4.3)
       prism (~> 1.0)
       rbs (>= 4.0.1)
-    rbs (4.1.3)
+    rbs (4.2.0)
       logger
       prism (>= 1.6.0)
       tsort
@@ -990,7 +990,7 @@ DEPENDENCIES
   inkmark
   jbuilder
   letter_opener
-  lexxy (~> 0.9.24)
+  lexxy (~> 0.9.31)
   madmin (~> 2.4)
   meta-tags
   minitest (~> 6.0)
