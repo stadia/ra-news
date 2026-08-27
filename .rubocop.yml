@@ -166,6 +166,12 @@ Style/RbsInline/MissingTypeAnnotation:
 
 Sorbet/BlockMethodDefinition:
   Enabled: false
+# 이 cop은 줄 끝 `#: String` 을 "Sorbet이 어차피 추론하는 T.let" 으로 보고 지우라고
+# 하지만, 이 프로젝트에서 `#:` 는 rbs-inline 주석이다. 상수의 타입 선언은 이 주석이
+# 유일한 출처이므로 지우면 타입 정보가 사라진다. 같은 이유로 꺼둔 Style/RbsInline/*
+# 항목들과 궤를 같이한다.
+Sorbet/RedundantTLetForLiteral:
+  Enabled: false
 Sorbet/FalseSigil:
   Enabled: true
   Exclude:
