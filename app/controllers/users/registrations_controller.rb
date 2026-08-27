@@ -34,11 +34,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
     end
   end
 
+  # JSON(현재 사용자 조회)은 Api::V1::AccountController#show로 이관했다.
   def edit
-    respond_to do |format|
-      format.html { render Views::Users::Edit.new(user: resource) }
-      format.json { render json: { user: UserSerializer.new(resource).serializable_hash } }
-    end
+    render Views::Users::Edit.new(user: resource)
   end
 
   def password

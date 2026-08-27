@@ -7,11 +7,11 @@ RSpec.describe 'Current User', type: :request do
 
   # Helper to get a valid JWT
   def auth_token(user)
-    post user_session_path, params: { user: { email: user.email, password: 'password' } }, as: :json
+    post api_v1_auth_login_path, params: { user: { email: user.email, password: 'password' } }, as: :json
     response.headers['Authorization']
   end
 
-  path '/account/edit' do
+  path '/api/v1/account' do
     get '현재 사용자 정보 조회' do
       tags 'Account'
       description '현재 로그인된 사용자의 프로필 정보를 반환합니다. 인증이 필요합니다.'

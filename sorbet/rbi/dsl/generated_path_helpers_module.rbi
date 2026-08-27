@@ -25,6 +25,9 @@ module GeneratedPathHelpersModule
   def actor_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def api_v1_account_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_v1_article_boost_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -34,13 +37,28 @@ module GeneratedPathHelpersModule
   def api_v1_articles_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def api_v1_auth_login_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_auth_logout_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_v1_auth_refresh_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_feed_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def api_v1_post_boost_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def api_v1_post_like_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_boost_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_like_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def article_path(*args); end
@@ -245,6 +263,12 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def others_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_boost_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_like_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_path(*args); end

@@ -25,6 +25,9 @@ module GeneratedUrlHelpersModule
   def actor_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def api_v1_account_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_v1_article_boost_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -34,13 +37,28 @@ module GeneratedUrlHelpersModule
   def api_v1_articles_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def api_v1_auth_login_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_auth_logout_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_v1_auth_refresh_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def api_v1_feed_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def api_v1_post_boost_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def api_v1_post_like_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_boost_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_like_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def article_post_url(*args); end
@@ -245,6 +263,12 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def others_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_boost_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_like_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_url(*args); end
