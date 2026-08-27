@@ -142,7 +142,7 @@ gem "rack-cors"
 
 gem "rails-ai-context"
 gem "rails_semantic_logger"
-gem "reactionview", "~> 0.3.0"
+gem "reactionview", "~> 0.4.0"
 # OpenAPI/Swagger documentation
 gem "discordrb-webhooks"
 gem "resend"
