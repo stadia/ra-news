@@ -262,7 +262,9 @@ TEST_VERNIER=1 bin/rails test
 - `SAMPLE=100 bin/rails test` — 전체에서 100개만 무작위 샘플 실행
 
 ### CI에서 보기
-PR마다 `profile` 잡이 `test` 잡과 병렬로 돌며 두 스위트를 프로파일한다. `continue-on-error`라 계측이 깨져도 머지를 막지 않는다(테스트 통과 여부는 `test` 잡이 판정한다).
+`profile` 잡이 **main push마다** 두 스위트를 프로파일한다. `continue-on-error`라 계측이 깨져도 머지를 막지 않는다(테스트 통과 여부는 `test` 잡이 판정한다).
+
+PR에서는 돌지 않는다. 계측 고유 비용은 15초 남짓이지만 별도 잡이라 셋업이 통째로 중복돼 PR 파이프라인 벽시계가 2분에서 3분으로 늘어났다. 특정 PR을 프로파일하려면 로컬에서 위 명령을 직접 돌린다.
 
 - **표**: Actions 실행 요약 화면에 EventProf·TagProf 결과가 바로 뜬다. `bin/test-profile-summary`가 로그에서 리포트 블록만 뽑아 `$GITHUB_STEP_SUMMARY`에 쓴다.
 - **플레임그래프**: `test-profile` 아티팩트(보존 7일)를 내려받아 Vernier JSON을 https://profiler.firefox.com 에 올린다. 두 러너의 산출물은 `TEST_PROF_REPORT` 접미사로 갈라져 있다(`...-minitest.json`, `...-rspec.json`).
