@@ -3,6 +3,7 @@
 # rbs_inline: enabled
 
 class ProfilesController < ApplicationController
+  include WebOnlyFormats
   include Pagy::Method
 
   skip_before_action :authenticate_user!, only: [ :show, :posts, :comments, :blog, :boosts ]

@@ -7,6 +7,10 @@ class PostsController < ApplicationController
   include PostViewing
 
   before_action :authenticate_user!, only: [ :create, :destroy ]
+  # 인증 뒤에 포맷을 본다. 위 `before_action`이 전역 `authenticate_user!`를
+  # 다시 등록해 체인 끝으로 옮기므로, concern을 먼저 include하면 미인증 JSON
+  # 요청이 401 대신 406을 받는다.
+  include WebOnlyFormats
   before_action :set_article, only: [ :create, :destroy ], if: :article_scoped_request?
   before_action :set_post, only: [ :destroy ]
   before_action :check_rate_limit, only: [ :create ]

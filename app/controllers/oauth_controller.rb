@@ -3,6 +3,8 @@
 # rbs_inline: enabled
 
 class OauthController < ApplicationController
+  include WebOnlyFormats
+
   skip_before_action :authenticate_user!
 
   def install
