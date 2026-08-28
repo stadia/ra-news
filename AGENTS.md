@@ -234,6 +234,48 @@ Rules:
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
 
+## Test Profiling (TestProf)
+
+테스트가 느릴 때 원인을 찾는 계측 도구. **전부 ENV 변수로만 켜지며, 변수 없이 실행하면 아무 영향이 없다.** minitest / RSpec 양쪽에 붙어 있고, `bin/rails test`와 `bundle exec rspec` 모두 아래 변수를 그대로 받는다.
+
+### 어디에 시간이 쓰이는가 (EventProf)
+```sh
+EVENT_PROF=sql.active_record bin/rails test          # 그룹별 SQL 시간 순위
+EVENT_PROF=sql.active_record EVENT_PROF_EXAMPLES=1 bundle exec rspec   # 테스트 단위까지
+```
+`sql.active_record` 외에 `ActiveSupport::Notifications` 이벤트라면 무엇이든 쓸 수 있다(`render_template.action_view`, `process_action.action_controller` 등). `EVENT_PROF_RANK=count`로 시간 대신 호출 수 기준 정렬, `EVENT_PROF_TOP=N`으로 표시 개수 조정.
+
+### 어떤 종류의 테스트가 느린가 (TagProf)
+```sh
+TAG_PROF=type bundle exec rspec
+```
+
+### 어떤 코드가 느린가 (Vernier — 플레임그래프)
+```sh
+TEST_VERNIER=1 bin/rails test
+```
+`tmp/test_prof/vernier-report-wall-total.json`이 생성된다. https://profiler.firefox.com 에 올려서 본다.
+`TEST_VERNIER=boot`으로 부팅 구간만, `TEST_VERNIER_MODE=retained`로 메모리 프로파일링.
+
+### 그 외
+- `TEST_MEM_PROF=alloc bin/rails test` — 메모리 할당 상위 테스트 (모드는 `alloc`/`rss`/`gc` 셋뿐이고, 그 밖의 값은 에러 없이 `rss`로 폴백한다)
+- `SAMPLE=100 bin/rails test` — 전체에서 100개만 무작위 샘플 실행
+
+### CI에서 보기
+`profile` 잡이 **main push마다** 두 스위트를 프로파일한다. `continue-on-error`라 계측이 깨져도 머지를 막지 않는다(테스트 통과 여부는 `test` 잡이 판정한다).
+
+PR에서는 돌지 않는다. 계측 고유 비용은 15초 남짓이지만 별도 잡이라 셋업이 통째로 중복돼 PR 파이프라인 벽시계가 2분에서 3분으로 늘어났다. 특정 PR을 프로파일하려면 로컬에서 위 명령을 직접 돌린다.
+
+- **표**: Actions 실행 요약 화면에 EventProf·TagProf 결과가 바로 뜬다. `bin/test-profile-summary`가 로그에서 리포트 블록만 뽑아 `$GITHUB_STEP_SUMMARY`에 쓴다.
+- **플레임그래프**: `test-profile` 아티팩트(보존 7일)를 내려받아 Vernier JSON을 https://profiler.firefox.com 에 올린다. 두 러너의 산출물은 `TEST_PROF_REPORT` 접미사로 갈라져 있다(`...-minitest.json`, `...-rspec.json`).
+
+로그 파싱이 필요한 이유: TestProf는 Vernier를 뺀 리포트를 파일로 내보내지 않고 리포터가 표준출력에 직접 찍는다.
+
+### 주의
+- 이 프로젝트는 fixtures 기반이므로 FactoryProf / FactoryDoctor는 해당 없음.
+- minitest 6.0이 젬 플러그인 자동 탐색을 없앴으므로 `test/test_helper.rb`가 `Minitest.load "test_prof"`로 명시 등록한다. 이 줄을 지우면 minitest 쪽 EventProf/TagProf가 조용히 동작하지 않는다.
+- 산출물은 `tmp/test_prof/`에 쌓이며 `.gitignore`의 `/tmp/*`가 이미 덮는다.
+
 ## Quality Gates
 
 This project uses automated quality gates. **Run `bin/rake quality` before declaring any task complete.** Do not commit if any gate fails. Report the gate numbers in your response so regressions are visible.

@@ -12,7 +12,11 @@ module Reactions
     class << self
       # `params`를 통째로 받는 건 id 파라미터 이름(`post_id`/`article_id`)이
       # 대상 타입에서 파생되기 때문이다. 호출부 4곳의 중복을 없앤다.
-      #: (type: untyped, params: untyped, ?kept_only: bool) -> untyped
+      #
+      # `kept_only`가 부스트에서만 참인 건 기존 동작을 그대로 보존한 결과다.
+      # 폐기된(discarded) 기사는 좋아요는 되고 부스트는 422로 거부된다.
+      # 정책을 통일하려면 별도 PR에서 양쪽 호출부를 함께 바꿔야 한다.
+      #: (type: String?, params: ActionController::Parameters, ?kept_only: bool) -> (Post | Article | nil)
       def find(type:, params:, kept_only: false)
         klass = resolve(type)
         return nil if klass.nil?

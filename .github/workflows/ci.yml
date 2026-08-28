@@ -170,6 +170,102 @@ jobs:
           PGGSSENCMODE: disable
         run: bin/rails test
 
+  # 테스트 프로파일링. 결과는 Actions 요약 화면에 바로 뜨고, Vernier
+  # 플레임그래프는 아티팩트로 받아 profiler.firefox.com 에 올린다.
+  #
+  # PR이 아니라 main push에만 돈다. 계측 고유 비용은 15초 남짓인데, 별도 잡을
+  # 두는 한 셋업(Ruby 설치·libvips·컨테이너)이 통째로 중복되고 test 잡과
+  # 병렬로 같은 캐시·네트워크를 다투느라 잡 하나가 3분을 먹었다 -- PR 파이프라인
+  # 벽시계가 2분에서 3분으로 늘어난다. 프로파일은 회귀 추이를 보는 용도라
+  # 머지마다 쌓이면 충분하다.
+  #
+  # `continue-on-error`: 계측이 깨져도 머지를 막지 않는다. 테스트 통과 여부는
+  # test 잡이 판정한다.
+  profile:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    permissions:
+      packages: write
+
+    services:
+      postgres:
+        image: ghcr.io/stadia/ra-pg:18
+        credentials:
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKER_PASSWD }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+
+    env:
+      RAILS_ENV: test
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/ra-news_test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      PGGSSENCMODE: disable
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
+      - name: Prepare database
+        run: bin/rails db:create db:migrate
+
+      # 프로파일러 ENV는 잡이 아니라 스텝에만 건다. 잡 레벨에 두면 test-prof가
+      # Bundler.require로 부팅 때 실려 있는 탓에 `db:create db:migrate`까지
+      # 프로파일돼, 접미사 없는 Vernier 리포트가 아티팩트에 섞인다.
+      #
+      # 두 러너의 Vernier 산출물은 같은 파일명을 쓰므로 TEST_PROF_REPORT로
+      # 접미사를 갈라 뒤 실행이 앞 실행을 덮어쓰지 않게 한다.
+      #
+      # `|| true`: 프로파일 실행이 실패해도 요약과 아티팩트는 남겨야 한다.
+      # 테스트 통과 여부는 test 잡이 판정하므로 여기서 중단할 이유가 없다.
+      - name: Profile minitest
+        env:
+          EVENT_PROF: sql.active_record
+          EVENT_PROF_TOP: "10"
+          TAG_PROF: type
+          TEST_VERNIER: "1"
+          TEST_PROF_REPORT: minitest
+        run: bin/rails test 2>&1 | tee tmp/profile-minitest.log || true
+
+      - name: Profile RSpec
+        env:
+          EVENT_PROF: sql.active_record
+          EVENT_PROF_TOP: "10"
+          TAG_PROF: type
+          TEST_VERNIER: "1"
+          TEST_PROF_REPORT: rspec
+        run: bundle exec rspec 2>&1 | tee tmp/profile-rspec.log || true
+
+      - name: Write step summary
+        run: |
+          bin/test-profile-summary \
+            minitest:tmp/profile-minitest.log \
+            rspec:tmp/profile-rspec.log >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload profile artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-profile
+          path: |
+            tmp/test_prof/
+            tmp/profile-*.log
+          retention-days: 7
+
   # system-test:
   #   runs-on: ubuntu-latest
 

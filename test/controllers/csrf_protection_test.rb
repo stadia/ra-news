@@ -33,9 +33,149 @@ class CsrfProtectionTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "CSRF 토큰 없는 HTML API 로그인 POST는 거부된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "JSON format suffix does not bypass CSRF for form encoded API login" do
+    user = users(:john)
+
+    post "#{api_v1_auth_login_path}.json",
+         params: { user: { email: user.email, password: "password" } }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "본문 없는 익명 API 로그아웃은 CSRF 검증 없이 허용된다" do
+    delete api_v1_auth_logout_path
+
+    assert_response :no_content
+  end
+
+  test "CSRF 토큰 없는 세션 쿠키 로그아웃은 거부된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+
+    delete api_v1_auth_logout_path
+
+    assert_response :unprocessable_entity
+  end
+
+  test "본문 없는 Bearer API 로그아웃은 CSRF 검증 없이 허용된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    cookies.to_hash.keys.each { |key| cookies.delete(key) }
+
+    delete api_v1_auth_logout_path, headers: { "Authorization" => token }
+
+    assert_response :no_content
+    assert_equal 0, user.refresh_tokens.active.count
+  end
+
   test "CSRF 토큰 없는 HTML 부스트 POST는 거부된다" do
     post article_boost_path(articles(:ruby_article))
 
     assert_response :unprocessable_entity
+  end
+
+  test "세션 쿠키만 있는 HTML API 좋아요 POST는 거부된다" do
+    user = users(:john)
+    article = articles(:ruby_article)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+
+    post api_v1_article_like_path(article), params: { likeable_type: "Article" }
+
+    assert_response :unprocessable_entity
+    assert_not user.reload.likes?(article)
+  end
+
+  test "세션 쿠키만 있는 HTML API 부스트 POST는 거부된다" do
+    user = users(:john)
+    article = articles(:ruby_article)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+
+    post api_v1_article_boost_path(article), params: { boostable_type: "Article" }
+
+    assert_response :unprocessable_entity
+    assert_not user.reload.boosts?(article)
+  end
+
+  test "JSON API 좋아요 POST는 CSRF 검증 없이 허용된다" do
+    user = users(:john)
+    article = articles(:ruby_article)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+
+    post api_v1_article_like_path(article),
+         params: { likeable_type: "Article" },
+         headers: { "Authorization" => token },
+         as: :json
+
+    assert_response :created
+    assert user.reload.likes?(article)
+  end
+
+  test "본문 없는 Bearer API 좋아요 취소는 CSRF 검증 없이 허용된다" do
+    user = users(:john)
+    article = articles(:ruby_article)
+    user.like!(article)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    cookies.to_hash.keys.each { |key| cookies.delete(key) }
+
+    delete api_v1_article_like_path(article), headers: { "Authorization" => token }
+
+    assert_response :success
+    assert_not user.reload.likes?(article)
+  end
+
+  test "본문 없는 Bearer API 부스트 취소는 CSRF 검증 없이 허용된다" do
+    user = users(:john)
+    article = articles(:ruby_article)
+    user.boost!(article)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    cookies.to_hash.keys.each { |key| cookies.delete(key) }
+
+    delete api_v1_article_boost_path(article), headers: { "Authorization" => token }
+
+    assert_response :success
+    assert_not user.reload.boosts?(article)
+  end
+
+  test "만료·무효 Bearer의 본문 없는 DELETE는 401 JSON으로 거부된다" do
+    article = articles(:ruby_article)
+
+    delete api_v1_article_like_path(article), headers: { "Authorization" => "Bearer invalid.token.value" }
+
+    assert_response :unauthorized
+    assert_equal "unauthorized", JSON.parse(response.body)["error"]
   end
 end

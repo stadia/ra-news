@@ -58,7 +58,9 @@ RSpec.describe 'Sessions', type: :request do
                },
                required: %w[user refresh_token]
 
-        run_test!
+        run_test! do |response|
+          expect(response.headers["Cache-Control"]).to eq("no-store")
+        end
       end
 
       response '401', '로그인 실패' do
