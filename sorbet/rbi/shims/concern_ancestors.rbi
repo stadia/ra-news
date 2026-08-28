@@ -172,3 +172,17 @@ module ArticlePresentable
     def included(base = T.unsafe(nil), &block); end
   end
 end
+
+# LikesController와 BoostsController가 include한다. 둘 다 ApplicationController를
+# 상속하므로 그 인스턴스를 self로 선언하면 `request`/`head`가 해소된다.
+# `included` 블록은 `before_action`을 부르므로 바인드를 includer의 클래스로 준다.
+module WebOnlyFormats
+  extend T::Helpers
+
+  requires_ancestor { ApplicationController }
+
+  class << self
+    sig { params(base: T.untyped, block: T.nilable(T.proc.bind(T.class_of(ApplicationController)).void)).returns(T.untyped) }
+    def included(base = T.unsafe(nil), &block); end
+  end
+end
