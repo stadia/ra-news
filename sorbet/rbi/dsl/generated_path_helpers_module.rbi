@@ -52,6 +52,12 @@ module GeneratedPathHelpersModule
   def api_v1_post_like_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def article_boost_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_like_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def article_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -254,6 +260,12 @@ module GeneratedPathHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def others_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_boost_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_like_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_path(*args); end

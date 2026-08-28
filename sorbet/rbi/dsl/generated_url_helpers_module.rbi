@@ -52,6 +52,12 @@ module GeneratedUrlHelpersModule
   def api_v1_post_like_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def article_boost_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def article_like_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def article_post_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
@@ -254,6 +260,12 @@ module GeneratedUrlHelpersModule
 
   sig { params(args: T.untyped).returns(String) }
   def others_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_boost_url(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
+  def post_like_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def post_url(*args); end
