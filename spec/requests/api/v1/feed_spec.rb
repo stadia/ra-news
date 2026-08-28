@@ -66,7 +66,7 @@ RSpec.describe 'Feed', type: :request do
                  pagination: {
                    type: :object,
                    properties: {
-                     next_page: { type: :string, nullable: true },
+                     next_page: { type: :integer, nullable: true },
                      limit: { type: :integer }
                    },
                    required: %w[limit]
@@ -76,6 +76,21 @@ RSpec.describe 'Feed', type: :request do
 
         let(:Authorization) { auth_token(users(:john)) }
         run_test!
+
+        # 기본 케이스는 다음 페이지가 없어 next_page가 null이라 타입이 검증되지
+        # 않는다. 2페이지가 생기는 상황을 따로 태워 정수임을 고정한다.
+        context '다음 페이지가 있을 때' do
+          before { 25.times { |i| Post.create!(body: "feed post #{i}", user: users(:john)) } }
+
+          let(:Authorization) { auth_token(users(:john)) }
+
+          run_test! do |response|
+            next_page = JSON.parse(response.body).dig('pagination', 'next_page')
+
+            expect(next_page).to be_a(Integer)
+            expect(next_page).to eq(2)
+          end
+        end
       end
 
       response '401', '인증 실패' do

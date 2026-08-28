@@ -15,7 +15,7 @@ module Feeds
         actor = user.federails_actor
         return Post.none if actor.nil?
 
-        following_ids = following_actor_ids(actor)
+        following_ids = following_actor_ids_scope(actor)
 
         Post
           .includes(*INCLUDES)
@@ -35,7 +35,7 @@ module Feeds
         actor = user.federails_actor
         return {} if posts.blank? || actor.nil?
 
-        candidate_actor_ids = following_actor_ids(actor).to_a + [ actor.id ]
+        candidate_actor_ids = following_actor_ids(actor) + [ actor.id ]
 
         attribution_post_ids = posts.reject { |post|
           post.user_id == user.id ||
@@ -56,8 +56,19 @@ module Feeds
 
       private
 
-      def following_actor_ids(actor)
+      # 서브쿼리용 relation. `where(federails_actor_id: ...)`에 넘기면 Rails가
+      # `SELECT target_actor_id FROM ...` 하위 질의로 펼쳐 왕복을 아낀다.
+      def following_actor_ids_scope(actor)
         Federails::Following.accepted.where(actor: actor).select(:target_actor_id)
+      end
+
+      # 값 배열. 루비에서 `include?`로 비교하거나 `+`로 이어붙일 때는 반드시
+      # 이쪽을 쓴다. relation에 `to_a`를 부르면 `target_actor_id`만 채워진
+      # `Federails::Following` 레코드 배열(`id: nil`)이 나와서,
+      # 정수 actor id와 `include?` 비교가 항상 거짓이 되고
+      # `where(actor_id:)`에 넘기면 기본키(nil)로 캐스팅돼 `actor_id IS NULL`이 된다.
+      def following_actor_ids(actor)
+        following_actor_ids_scope(actor).pluck(:target_actor_id)
       end
 
       def boosted_post_ids(actor, following_ids)
