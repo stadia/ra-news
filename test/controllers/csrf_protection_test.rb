@@ -51,6 +51,21 @@ class CsrfProtectionTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "본문 없는 Bearer API 로그아웃은 CSRF 검증 없이 허용된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    cookies.to_hash.keys.each { |key| cookies.delete(key) }
+
+    delete api_v1_auth_logout_path, headers: { "Authorization" => token }
+
+    assert_response :no_content
+    assert_equal 0, user.refresh_tokens.active.count
+  end
+
   test "CSRF 토큰 없는 HTML 부스트 POST는 거부된다" do
     post api_v1_article_boost_path(articles(:ruby_article))
 
