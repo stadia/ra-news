@@ -4,6 +4,8 @@
 
 # 웹 UI(부스트 버튼)의 turbo_stream 토글. JSON 응답은 Api::V1::BoostsController가 맡는다.
 class BoostsController < ApplicationController
+  include WebOnlyFormats
+
   before_action :set_boostable
 
   def create

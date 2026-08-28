@@ -4,6 +4,8 @@
 
 # 웹 UI(좋아요 버튼)의 turbo_stream 토글. JSON 응답은 Api::V1::LikesController가 맡는다.
 class LikesController < ApplicationController
+  include WebOnlyFormats
+
   before_action :set_likeable
 
   def create

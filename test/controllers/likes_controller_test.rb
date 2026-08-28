@@ -66,11 +66,26 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
   end
 
 
-  test "웹 컨트롤러는 JSON 요청에 응답하지 않는다" do
+  test "웹 컨트롤러는 JSON 요청에 406으로 응답하며 상태를 바꾸지 않는다" do
     sign_in_as(@user)
 
-    post article_like_path(@article), params: { likeable_type: "Article" }, as: :json
+    assert_no_difference("Like.count") do
+      post article_like_path(@article), params: { likeable_type: "Article" }, as: :json
+    end
 
     assert_response :not_acceptable
+    assert_not @user.reload.likes?(@article)
+  end
+
+  test "JSON DELETE도 406으로 끊기고 기존 반응을 지우지 않는다" do
+    sign_in_as(@user)
+    @user.like!(@article)
+
+    assert_no_difference("Like.count") do
+      delete article_like_path(@article), params: { likeable_type: "Article" }, as: :json
+    end
+
+    assert_response :not_acceptable
+    assert @user.reload.likes?(@article)
   end
 end
