@@ -107,4 +107,42 @@ class WebOnlyFormatsTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "text/markdown", response.media_type
   end
+
+  # 자동저장 액션은 가드를 끄는 게 아니라 지원 포맷(html·turbo_stream·json)만
+  # 넓힌 것이다. 나머지 미지원 포맷은 저장 **전에** 끊겨야 한다.
+  test "초안 생성은 미지원 포맷 요청에 부작용 없이 406으로 끊긴다" do
+    sign_in_as(@user)
+
+    assert_no_difference("Post.count") do
+      post blog_posts_path,
+           params: { post: { body: "xml draft" } },
+           headers: { "Accept" => "application/xml" }
+    end
+
+    assert_response :not_acceptable
+  end
+
+  test "초안 수정은 미지원 포맷 요청에 부작용 없이 406으로 끊긴다" do
+    sign_in_as(@user)
+    draft = posts(:blog_draft)
+    original_body = draft.body
+
+    patch blog_post_path(draft),
+          params: { post: { body: "xml updated" } },
+          headers: { "Accept" => "application/xml" }
+
+    assert_response :not_acceptable
+    assert_equal original_body, draft.reload.body
+  end
+
+  test "초안 수정 JSON은 계속 동작한다" do
+    sign_in_as(@user)
+    draft = posts(:blog_draft)
+
+    patch blog_post_path(draft), params: { post: { body: "json updated" } }, as: :json
+
+    assert_response :success
+    assert_equal "ok", JSON.parse(response.body)["status"]
+    assert_equal "json updated", draft.reload.body
+  end
 end

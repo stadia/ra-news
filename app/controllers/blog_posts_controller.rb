@@ -4,8 +4,9 @@
 
 class BlogPostsController < ApplicationController
   include WebOnlyFormats
+
   # create·update는 초안 자동저장 JSON을 정식 제공한다.
-  skip_before_action :ensure_web_format, only: %i[create update]
+  AUTOSAVE_JSON_ACTIONS = %w[create update].freeze
 
   before_action :authenticate_user!
   before_action :set_post, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
@@ -175,6 +176,16 @@ class BlogPostsController < ApplicationController
     scope = Post.blog
     scope = scope.kept unless %w[undiscard destroy_permanently].include?(action_name)
     @post = scope.find_by!(slug: params[:id])
+  end
+
+  # 가드를 끄는 대신 지원 포맷만 넓힌다. `skip_before_action`으로 껐다면
+  # XML 등 나머지 미지원 포맷도 액션에 들어와 `@post.save`/`update`가 커밋된
+  # 뒤에야 `respond_to`가 406을 냈다 — 클라이언트에는 실패인데 데이터는 바뀐다.
+  #: () -> Array[Symbol]
+  def supported_web_formats
+    return super + %i[json] if AUTOSAVE_JSON_ACTIONS.include?(action_name)
+
+    super
   end
 
   def authorize_owner!
