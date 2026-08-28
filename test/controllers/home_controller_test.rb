@@ -122,7 +122,58 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: /이용약관/
   end
 
+  # Relation 을 그대로 캐시하면 레코드가 아니라 쿼리가 직렬화된다. 그러면 캐시가
+  # 아무것도 아껴주지 못할 뿐 아니라, without_toast 가 굳혀 둔 컬럼 목록이 캐시
+  # 수명(1시간) 동안 살아남아 컬럼 리네임 이후 옛 이름으로 질의한다
+  # (federails_actor_id -> fedipub_actor_id 리네임 때 /rss 가 500 을 냈다).
+  # 이 테스트가 없으면 to_a 를 지워도 양 스위트가 0 failures 다.
+  test "GET rss caches loaded records so a cache hit issues no article query" do
+    create_featured_article!(
+      title: "RSS cache article",
+      title_ko: "RSS 캐시 기사",
+      slug: "rss-cache-article",
+      summary_key: [ "요약" ]
+    )
+
+    with_memory_cache do
+      get rss_path
+
+      assert_response :success
+
+      cached = Rails.cache.read(Article::RSS_CACHE_KEY)
+
+      refute_kind_of ActiveRecord::Relation, cached,
+                     "지연 평가 Relation 이 캐시됐다. 캐시 히트마다 쿼리가 다시 나가고 스키마 변경에 깨진다"
+      assert_kind_of Array, cached
+      assert_predicate cached, :any?
+
+      sql = capture_article_queries { get rss_path }
+
+      assert_response :success
+      assert_empty sql, "캐시 히트인데 articles 를 다시 조회했다: #{sql.inspect}"
+    end
+  end
+
   private
+
+  def with_memory_cache
+    original_cache = Rails.cache
+    Rails.cache = ActiveSupport::Cache::MemoryStore.new
+    yield
+  ensure
+    Rails.cache = original_cache
+  end
+
+  def capture_article_queries(&block)
+    statements = []
+    subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*, payload|
+      statements << payload[:sql] if payload[:sql]&.include?('FROM "articles"')
+    end
+    block.call
+    statements
+  ensure
+    ActiveSupport::Notifications.unsubscribe(subscriber)
+  end
 
   def capture_like_queries(&block)
     capture_queries(&block).select { |sql| sql.include?('"likes"') }

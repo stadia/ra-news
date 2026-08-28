@@ -72,8 +72,17 @@ class HomeController < ApplicationController
   # GET /rss
   def rss
     cacheable_page!(max_age: 1.hour)
-    @articles = Rails.cache.fetch("rss_articles", expires_in: 1.hour) do
-      Article.includes(:user, :site, :thumbnail_attachment).kept.confirmed.related.without_toast.order(created_at: :desc).limit(100)
+    # to_a 가 핵심이다. Relation 을 그대로 캐시하면 레코드가 아니라 쿼리가
+    # 직렬화되므로, 캐시 히트마다 SQL 이 다시 나가 캐시가 아무것도 아껴주지 못한다.
+    # 게다가 without_toast 가 select(column_names - ...) 로 컬럼 목록을 문자열
+    # 배열로 굳혀 두기 때문에, 캐시가 살아 있는 동안 컬럼이 리네임되면 옛 이름으로
+    # 질의해 PG::UndefinedColumn 이 난다(federails_actor_id 리네임 때 실제 발생).
+    # with_attached_thumbnail 은 뷰의 thumbnail.blob 접근이 캐시 히트마다
+    # N+1 을 내지 않도록 blob 까지 함께 적재한다.
+    @articles = Rails.cache.fetch(Article::RSS_CACHE_KEY, expires_in: 1.hour) do
+      Article.includes(:user, :site).with_attached_thumbnail
+             .kept.confirmed.related.without_toast
+             .order(created_at: :desc).limit(100).to_a
     end
     response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
     render "rss", formats: [ :rss ], layout: false
