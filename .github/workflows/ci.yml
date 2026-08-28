@@ -170,6 +170,87 @@ jobs:
           PGGSSENCMODE: disable
         run: bin/rails test
 
+  # 테스트 프로파일링. test 잡과 병렬로 돌며 머지를 막지 않는다(계측이 깨져도
+  # 테스트는 test 잡이 판정한다). 결과는 Actions 요약 화면에 바로 뜨고,
+  # Vernier 플레임그래프는 아티팩트로 받아 profiler.firefox.com 에 올린다.
+  profile:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    permissions:
+      packages: write
+
+    services:
+      postgres:
+        image: ghcr.io/stadia/ra-pg:18
+        credentials:
+          username: ${{ github.actor }}
+          password: ${{ secrets.DOCKER_PASSWD }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+
+    env:
+      RAILS_ENV: test
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/ra-news_test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      PGGSSENCMODE: disable
+      # 프로파일러는 전부 ENV로만 켜진다. 세 개를 한 실행에 함께 켜도 서로
+      # 간섭하지 않는다.
+      EVENT_PROF: sql.active_record
+      EVENT_PROF_TOP: "10"
+      TAG_PROF: type
+      TEST_VERNIER: "1"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
+      - name: Prepare database
+        run: bin/rails db:create db:migrate
+
+      # 두 러너의 Vernier 산출물이 같은 파일명을 쓰므로 TEST_PROF_REPORT로
+      # 접미사를 갈라 뒤 실행이 앞 실행을 덮어쓰지 않게 한다.
+      #
+      # `|| true`: 프로파일 실행이 실패해도 요약과 아티팩트는 남겨야 한다.
+      # 테스트 통과 여부는 test 잡이 판정하므로 여기서 중단할 이유가 없다.
+      - name: Profile minitest
+        env:
+          TEST_PROF_REPORT: minitest
+        run: bin/rails test 2>&1 | tee tmp/profile-minitest.log || true
+
+      - name: Profile RSpec
+        env:
+          TEST_PROF_REPORT: rspec
+        run: bundle exec rspec 2>&1 | tee tmp/profile-rspec.log || true
+
+      - name: Write step summary
+        run: |
+          bin/test-profile-summary \
+            minitest:tmp/profile-minitest.log \
+            rspec:tmp/profile-rspec.log >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload profile artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-profile
+          path: |
+            tmp/test_prof/
+            tmp/profile-*.log
+          retention-days: 7
+
   # system-test:
   #   runs-on: ubuntu-latest
 

@@ -261,6 +261,14 @@ TEST_VERNIER=1 bin/rails test
 - `TEST_MEM_PROF=alloc bin/rails test` — 메모리 할당 상위 테스트 (모드는 `alloc`/`rss`/`gc` 셋뿐이고, 그 밖의 값은 에러 없이 `rss`로 폴백한다)
 - `SAMPLE=100 bin/rails test` — 전체에서 100개만 무작위 샘플 실행
 
+### CI에서 보기
+PR마다 `profile` 잡이 `test` 잡과 병렬로 돌며 두 스위트를 프로파일한다. `continue-on-error`라 계측이 깨져도 머지를 막지 않는다(테스트 통과 여부는 `test` 잡이 판정한다).
+
+- **표**: Actions 실행 요약 화면에 EventProf·TagProf 결과가 바로 뜬다. `bin/test-profile-summary`가 로그에서 리포트 블록만 뽑아 `$GITHUB_STEP_SUMMARY`에 쓴다.
+- **플레임그래프**: `test-profile` 아티팩트(보존 7일)를 내려받아 Vernier JSON을 https://profiler.firefox.com 에 올린다. 두 러너의 산출물은 `TEST_PROF_REPORT` 접미사로 갈라져 있다(`...-minitest.json`, `...-rspec.json`).
+
+로그 파싱이 필요한 이유: TestProf는 Vernier를 뺀 리포트를 파일로 내보내지 않고 리포터가 표준출력에 직접 찍는다.
+
 ### 주의
 - 이 프로젝트는 fixtures 기반이므로 FactoryProf / FactoryDoctor는 해당 없음.
 - minitest 6.0이 젬 플러그인 자동 탐색을 없앴으므로 `test/test_helper.rb`가 `Minitest.load "test_prof"`로 명시 등록한다. 이 줄을 지우면 minitest 쪽 EventProf/TagProf가 조용히 동작하지 않는다.

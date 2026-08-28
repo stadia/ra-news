@@ -59,6 +59,16 @@ module HumanizeKoreanGoldenChecks
 end
 
 module Quality
+  module TestProfileReport
+    class Section
+      sig { returns(String) }
+      def title; end
+
+      sig { returns(String) }
+      def body; end
+    end
+  end
+
   class Report
     class GateResult
       sig { returns(String) }
