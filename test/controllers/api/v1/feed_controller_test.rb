@@ -42,4 +42,15 @@ class Api::V1::FeedControllerTest < ActionDispatch::IntegrationTest
     refute own_post_data["boosted"], "Unboosted post should have boosted: false"
     assert own_post_data.key?("author_avatar_url"), "Post should expose author_avatar_url key"
   end
+
+  # 응답 포맷 분리 고정: JSON 본문은 api/v1만 내놓는다. 웹 `/feed`는 406이고
+  # (FeedControllerTest), 여기서 HTML 뷰가 되돌아오면 media_type이 어긋난다.
+  test "api/v1 피드는 HTML을 요청해도 JSON으로 답한다" do
+    sign_in_as(@user)
+
+    get api_v1_feed_path, headers: { "Accept" => "text/html" }
+
+    assert_response :success
+    assert_equal "application/json", response.media_type
+  end
 end

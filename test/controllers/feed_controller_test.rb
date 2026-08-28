@@ -207,6 +207,22 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
     assert_includes @response.body, %(feed-reply-parent-id-value="#{post.id}")
   end
 
+  test "웹 피드는 JSON Accept 요청을 406으로 끊는다" do
+    sign_in_as(@user)
+
+    get feed_path, as: :json
+
+    assert_response :not_acceptable
+  end
+
+  test "웹 피드는 .json 확장자 요청을 406으로 끊는다" do
+    sign_in_as(@user)
+
+    get "#{feed_path}.json"
+
+    assert_response :not_acceptable
+  end
+
   private
 
   def capture_like_queries

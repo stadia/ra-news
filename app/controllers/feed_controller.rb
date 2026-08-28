@@ -3,6 +3,7 @@
 # rbs_inline: enabled
 
 class FeedController < ApplicationController
+  include WebOnlyFormats
   include Pundit::Authorization
   include Pagy::Method
 
