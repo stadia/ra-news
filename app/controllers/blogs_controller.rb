@@ -3,6 +3,7 @@
 # rbs_inline: enabled
 
 class BlogsController < ApplicationController
+  include WebOnlyFormats
   include PostViewing
 
   skip_before_action :authenticate_user!, only: [ :show ]

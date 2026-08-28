@@ -3,6 +3,10 @@
 # rbs_inline: enabled
 
 class BlogPostsController < ApplicationController
+  include WebOnlyFormats
+  # create·update는 초안 자동저장 JSON을 정식 제공한다.
+  skip_before_action :ensure_web_format, only: %i[create update]
+
   before_action :authenticate_user!
   before_action :set_post, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]
   before_action :authorize_owner!, only: [ :edit, :update, :publish, :destroy, :undiscard, :destroy_permanently ]

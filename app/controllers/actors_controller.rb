@@ -3,6 +3,10 @@
 # rbs_inline: enabled
 
 class ActorsController < ApplicationController
+  include WebOnlyFormats
+  # show는 respond_to로 ActivityPub JSON을 정식 제공한다.
+  skip_before_action :ensure_web_format, only: %i[show]
+
   include Pundit::Authorization
 
   skip_before_action :authenticate_user!

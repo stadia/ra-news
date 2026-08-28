@@ -5,6 +5,10 @@
 require "schema_dot_org/news_media_organization"
 
 class HomeController < ApplicationController
+  include WebOnlyFormats
+  # rss·llms·robots는 각각 RSS XML과 text/plain을 의도적으로 내놓는다.
+  skip_before_action :ensure_web_format, only: %i[rss llms robots]
+
   skip_before_action :authenticate_user!
 
   # Locale-aware publisher (NewsMediaOrganization) schema — reused in
