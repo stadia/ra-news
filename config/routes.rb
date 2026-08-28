@@ -56,7 +56,10 @@ Rails.application.routes.draw do
   end
 
   resource :push_subscription, only: %i[ create destroy ]
-  resources :posts, only: [ :show, :create ]
+  resources :posts, only: [ :show, :create ] do
+    resource :like, only: %i[create destroy], controller: :likes, defaults: { likeable_type: "Post" }
+    resource :boost, only: %i[create destroy], controller: :boosts, defaults: { boostable_type: "Post" }
+  end
   resources :blog_posts, only: [ :create, :edit, :update, :destroy ] do
     member do
       patch :publish
@@ -69,6 +72,8 @@ Rails.application.routes.draw do
   match "blog_posts/new", to: "blog_posts#new", as: :new_blog_post, via: [ :get, :post ]
   resources :articles, only: %i[index show new create] do
     resources :posts, only: %i[create destroy]
+    resource :like, only: %i[create destroy], controller: :likes, defaults: { likeable_type: "Article" }
+    resource :boost, only: %i[create destroy], controller: :boosts, defaults: { boostable_type: "Article" }
   end
 
   get "others" => "articles#others"

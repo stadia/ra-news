@@ -2,51 +2,28 @@
 # frozen_string_literal: true
 # rbs_inline: enabled
 
-class Api::V1::LikesController < ApplicationController
-  before_action :authenticate_user!
+class Api::V1::LikesController < Api::V1::BaseController
   before_action :set_likeable
-
-  skip_before_action :verify_authenticity_token, if: :skip_csrf_for_json_write?
-
-  LIKEABLE_CLASSES = {
-    "Post" => Post,
-    "Article" => Article
-  }.freeze
 
   def create
     current_user.like!(@likeable)
     @likeable.reload
 
-    respond_to do |format|
-      format.turbo_stream { render Views::Likes::ToggleTurboStream.new(likeable: @likeable) }
-      format.html { redirect_back fallback_location: fallback_location }
-      format.json { render json: like_status_json, status: :created }
-    end
+    render json: like_status_json, status: :created
   end
 
   def destroy
     current_user.unlike!(@likeable)
     @likeable.reload
 
-    respond_to do |format|
-      format.turbo_stream { render Views::Likes::ToggleTurboStream.new(likeable: @likeable) }
-      format.html { redirect_back fallback_location: fallback_location }
-      format.json { render json: like_status_json, status: :ok }
-    end
+    render json: like_status_json, status: :ok
   end
 
   private
 
   def set_likeable
-    likeable_class = LIKEABLE_CLASSES[params.require(:likeable_type)]
-    head(:unprocessable_entity) and return unless likeable_class
-
-    likeable_id = params.require(:"#{likeable_class.model_name.singular}_id")
-    @likeable = find_likeable(likeable_class, likeable_id)
-  end
-
-  def fallback_location
-    feed_path
+    @likeable = Reactions::TargetLookup.find(type: params[:likeable_type], params: params)
+    head :unprocessable_entity if @likeable.nil?
   end
 
   def like_status_json
@@ -56,13 +33,5 @@ class Api::V1::LikesController < ApplicationController
       liked: current_user.likes?(@likeable),
       likes_count: @likeable.likes_count
     }
-  end
-
-  def find_likeable(likeable_class, likeable_id)
-    if likeable_class.respond_to?(:friendly)
-      likeable_class.friendly.find(likeable_id)
-    else
-      likeable_class.find(likeable_id)
-    end
   end
 end
