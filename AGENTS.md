@@ -258,7 +258,7 @@ TEST_VERNIER=1 bin/rails test
 `TEST_VERNIER=boot`으로 부팅 구간만, `TEST_VERNIER_MODE=retained`로 메모리 프로파일링.
 
 ### 그 외
-- `TEST_MEM_PROF=allocations bin/rails test` — 메모리 할당 상위 테스트
+- `TEST_MEM_PROF=alloc bin/rails test` — 메모리 할당 상위 테스트 (모드는 `alloc`/`rss`/`gc` 셋뿐이고, 그 밖의 값은 에러 없이 `rss`로 폴백한다)
 - `SAMPLE=100 bin/rails test` — 전체에서 100개만 무작위 샘플 실행
 
 ### 주의
