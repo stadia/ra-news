@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+  # base를 걸러내지 않는다. 스택 PR(앞선 PR의 브랜치를 base로 삼는 PR)에도
+  # CI가 붙어야 하는데, `branches: [main]` 이면 스택의 2번째부터는 base가
+  # main이 될 때까지 아무 잡도 돌지 않는다.
   pull_request:
-    branches: [main]
 
 jobs:
   scan_ruby:
