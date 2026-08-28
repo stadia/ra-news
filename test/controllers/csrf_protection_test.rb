@@ -26,7 +26,7 @@ class CsrfProtectionTest < ActionDispatch::IntegrationTest
   test "CSRF 토큰 없는 JSON 로그인 POST는 허용된다" do
     user = users(:john)
 
-    post user_session_path,
+    post api_v1_auth_login_path,
          params: { user: { email: user.email, password: "password" } },
          as: :json
 

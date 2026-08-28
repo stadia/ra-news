@@ -15,7 +15,7 @@ class Api::V1::ArticlesControllerTest < ActionDispatch::IntegrationTest
 
   test "GET index with valid JWT returns 200" do
     user = users(:john)
-    post user_session_path,
+    post api_v1_auth_login_path,
          params: { user: { email: user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]

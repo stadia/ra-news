@@ -75,7 +75,7 @@ class Api::V1::LikesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "JSON like create with valid JWT succeeds" do
-    post user_session_path,
+    post api_v1_auth_login_path,
          params: { user: { email: @user.email, password: "password" } },
          as: :json
     token = response.headers["Authorization"]

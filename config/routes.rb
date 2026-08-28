@@ -29,7 +29,15 @@ Rails.application.routes.draw do
     namespace :v1 do
       namespace :auth do
         post :refresh, to: "tokens#refresh"
+
+        # Devise 컨트롤러는 매핑 스코프 안에서만 resource를 해석할 수 있다.
+        devise_scope :user do
+          post   :login,  to: "sessions#create"
+          delete :logout, to: "sessions#destroy"
+        end
       end
+
+      resource :account, only: %i[show], controller: :account
 
       resources :articles, only: %i[index] do
         collection do

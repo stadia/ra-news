@@ -6,7 +6,7 @@ RSpec.describe 'Feed', type: :request do
   fixtures :users, :federails_actors
 
   def auth_token(user)
-    post user_session_path, params: { user: { email: user.email, password: 'password' } }, as: :json
+    post api_v1_auth_login_path, params: { user: { email: user.email, password: 'password' } }, as: :json
     response.headers['Authorization']
   end
 
