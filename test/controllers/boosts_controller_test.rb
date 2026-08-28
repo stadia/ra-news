@@ -64,4 +64,13 @@ class BoostsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, @article.reload.boosters_count
     assert_not_includes response.body, ">1<"
   end
+
+
+  test "웹 컨트롤러는 JSON 요청에 응답하지 않는다" do
+    sign_in_as(@user)
+
+    post article_boost_path(@article), params: { boostable_type: "Article" }, as: :json
+
+    assert_response :not_acceptable
+  end
 end

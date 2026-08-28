@@ -23,7 +23,7 @@ class Api::V1::LikesController < Api::V1::BaseController
 
   def set_likeable
     @likeable = Reactions::TargetLookup.find(type: params[:likeable_type], params: params)
-    head :unprocessable_entity if @likeable.nil?
+    render_unsupported_target_type if @likeable.nil?
   end
 
   def like_status_json

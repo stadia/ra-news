@@ -23,7 +23,7 @@ class Api::V1::BoostsController < Api::V1::BaseController
 
   def set_boostable
     @boostable = Reactions::TargetLookup.find(type: params[:boostable_type], params: params, kept_only: true)
-    head :unprocessable_entity if @boostable.nil?
+    render_unsupported_target_type if @boostable.nil?
   end
 
   def boost_status_json

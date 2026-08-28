@@ -13,8 +13,15 @@ class JsonFailureApp < Devise::FailureApp
 
   private
 
+  # 본문 없는 Bearer DELETE는 Content-Type이 비어 format이 HTML로 잡힌다.
+  # Authorization 헤더까지 봐야 만료·무효 토큰이 302 로그인 리다이렉트가 아니라
+  # 401 JSON으로 떨어져 API 클라이언트가 원인을 알 수 있다.
   def json_request?
-    request.format.json? || request.content_type.to_s.include?("json")
+    request.format.json? || request.content_type.to_s.include?("json") || bearer_request?
+  end
+
+  def bearer_request?
+    request.headers["Authorization"].to_s.start_with?("Bearer ")
   end
 
   def json_error_response

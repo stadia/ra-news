@@ -64,4 +64,13 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 0, @article.reload.likers_count
     assert_not_includes response.body, ">1<"
   end
+
+
+  test "웹 컨트롤러는 JSON 요청에 응답하지 않는다" do
+    sign_in_as(@user)
+
+    post article_like_path(@article), params: { likeable_type: "Article" }, as: :json
+
+    assert_response :not_acceptable
+  end
 end

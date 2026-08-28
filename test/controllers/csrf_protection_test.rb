@@ -152,4 +152,30 @@ class CsrfProtectionTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_not user.reload.likes?(article)
   end
+
+  test "본문 없는 Bearer API 부스트 취소는 CSRF 검증 없이 허용된다" do
+    user = users(:john)
+    article = articles(:ruby_article)
+    user.boost!(article)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    cookies.to_hash.keys.each { |key| cookies.delete(key) }
+
+    delete api_v1_article_boost_path(article), headers: { "Authorization" => token }
+
+    assert_response :success
+    assert_not user.reload.boosts?(article)
+  end
+
+  test "만료·무효 Bearer의 본문 없는 DELETE는 401 JSON으로 거부된다" do
+    article = articles(:ruby_article)
+
+    delete api_v1_article_like_path(article), headers: { "Authorization" => "Bearer invalid.token.value" }
+
+    assert_response :unauthorized
+    assert_equal "unauthorized", JSON.parse(response.body)["error"]
+  end
 end
