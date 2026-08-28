@@ -49,7 +49,7 @@ class Components::Comments::Comment < Components::Base
       div(class: "flex items-center space-x-3") do
         render Components::UserAvatar.new(
           user: @comment.user,
-          federails_actor: @comment.federails_actor,
+          fedipub_actor: @comment.fedipub_actor,
           name: @comment.author_name
         )
         author_info

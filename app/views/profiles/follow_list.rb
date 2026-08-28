@@ -48,7 +48,7 @@ class Views::Profiles::FollowList < Views::Base
   def following_row(following)
     actor = @type == :followers ? following.actor : following.target_actor
 
-    site_host = URI.parse(Federails.configuration.site_host).host
+    site_host = URI.parse(Fedipub.configuration.site_host).host
     is_local = actor.server.blank? || actor.server == site_host
     handle = is_local ? "@#{actor.username}" : "@#{actor.username}@#{actor.server}"
 

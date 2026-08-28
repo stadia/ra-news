@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'Current User', type: :request do
-  fixtures :users, :federails_actors
+  fixtures :users, :fedipub_actors
 
   # Helper to get a valid JWT
   def auth_token(user)

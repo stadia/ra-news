@@ -5,13 +5,13 @@ require "test_helper"
 class Feeds::TimelineTest < ActiveSupport::TestCase
   setup do
     @john = users(:john)
-    @john_actor = federails_actors(:john_actor)
-    @jane_actor = federails_actors(:jane_actor)
+    @john_actor = fedipub_actors(:john_actor)
+    @jane_actor = fedipub_actors(:jane_actor)
 
-    assert Federails::Following.accepted.exists?(actor: @john_actor, target_actor: @jane_actor),
+    assert Fedipub::Following.accepted.exists?(actor: @john_actor, target_actor: @jane_actor),
       "test premise: john은 jane을 팔로우해야 한다"
 
-    @stranger = Federails::Actor.create!(
+    @stranger = Fedipub::Actor.create!(
       federated_url: "https://remote.example/users/stranger",
       username: "stranger",
       name: "Stranger",
@@ -27,7 +27,7 @@ class Feeds::TimelineTest < ActiveSupport::TestCase
 
     # jane_actor는 local이라 `local?` 분기에 먼저 걸려 `include?` 분기를
     # 검증하지 못한다. 원격 팔로잉이 있어야 그 분기가 실제로 평가된다.
-    @followed_remote = Federails::Actor.create!(
+    @followed_remote = Fedipub::Actor.create!(
       federated_url: "https://remote.example/users/followed",
       username: "followed",
       name: "Followed Remote",
@@ -40,7 +40,7 @@ class Feeds::TimelineTest < ActiveSupport::TestCase
       actor_type: "Person",
       local: false
     )
-    Federails::Following.create!(actor: @john_actor, target_actor: @followed_remote, status: "accepted")
+    Fedipub::Following.create!(actor: @john_actor, target_actor: @followed_remote, status: "accepted")
   end
 
   # 팔로우 대상 actor id를 값 배열로 다루지 않으면 (relation에 to_a를 부르면)
@@ -49,7 +49,7 @@ class Feeds::TimelineTest < ActiveSupport::TestCase
   test "팔로우한 액터의 부스트가 귀속된다" do
     post = Post.create!(
       body: "stranger post boosted by jane",
-      federails_actor: @stranger,
+      fedipub_actor: @stranger,
       federated_url: "https://remote.example/notes/boosted"
     )
     Boost.create!(actor: @jane_actor, boostable: post)
@@ -64,7 +64,7 @@ class Feeds::TimelineTest < ActiveSupport::TestCase
   test "팔로우한 원격 액터가 쓴 글은 본인이 부스트했어도 귀속하지 않는다" do
     post = Post.create!(
       body: "followed remote post",
-      federails_actor: @followed_remote,
+      fedipub_actor: @followed_remote,
       federated_url: "https://remote.example/notes/followed-own"
     )
     Boost.create!(actor: @john_actor, boostable: post)
@@ -75,15 +75,15 @@ class Feeds::TimelineTest < ActiveSupport::TestCase
   end
 
   test "본인이 쓴 글은 귀속하지 않는다" do
-    post = Post.create!(body: "john's own post", user: @john, federails_actor: @john_actor)
+    post = Post.create!(body: "john's own post", user: @john, fedipub_actor: @john_actor)
     Boost.create!(actor: @john_actor, boostable: post)
 
     assert_empty Feeds::Timeline.boosters_for(posts: [ post ], user: @john)
   end
 
   test "로컬 액터의 글은 팔로우하지 않아도 뜨므로 귀속하지 않는다" do
-    admin_actor = federails_actors(:admin_actor)
-    post = Post.create!(body: "admin local post", user: users(:admin), federails_actor: admin_actor)
+    admin_actor = fedipub_actors(:admin_actor)
+    post = Post.create!(body: "admin local post", user: users(:admin), fedipub_actor: admin_actor)
     Boost.create!(actor: @jane_actor, boostable: post)
 
     assert_empty Feeds::Timeline.boosters_for(posts: [ post ], user: @john)
@@ -92,7 +92,7 @@ class Feeds::TimelineTest < ActiveSupport::TestCase
   test "팔로우하지 않은 액터의 부스트는 귀속하지 않는다" do
     post = Post.create!(
       body: "stranger post boosted by stranger",
-      federails_actor: @stranger,
+      fedipub_actor: @stranger,
       federated_url: "https://remote.example/notes/self-boosted"
     )
     Boost.create!(actor: @stranger, boostable: post)
@@ -103,7 +103,7 @@ class Feeds::TimelineTest < ActiveSupport::TestCase
   test "피드는 팔로우한 액터가 부스트한 글을 포함한다" do
     post = Post.create!(
       body: "boost-only visible post",
-      federails_actor: @stranger,
+      fedipub_actor: @stranger,
       federated_url: "https://remote.example/notes/boost-only"
     )
     Boost.create!(actor: @jane_actor, boostable: post)

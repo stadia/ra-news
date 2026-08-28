@@ -251,8 +251,8 @@ class ArticleTest < ActiveSupport::TestCase
     assert_respond_to @user, :like!
   end
 
-  test "federails 좋아요 콜백으로 좋아요와 취소를 처리한다" do
-    actor = Federails::Actor.create!(
+  test "fedipub 좋아요 콜백으로 좋아요와 취소를 처리한다" do
+    actor = Fedipub::Actor.create!(
       federated_url: "https://remote.example/users/article-liker-#{SecureRandom.hex(4)}",
       username: "article_liker",
       name: "Article Liker",
@@ -291,7 +291,7 @@ class ArticleTest < ActiveSupport::TestCase
 
   test "기사를 파괴하는 대신 폐기해야 한다" do
     article = @article
-    article.stub(:create_federails_activity, nil) do
+    article.stub(:create_fedipub_activity, nil) do
       article.discard!
     end
 
@@ -780,7 +780,7 @@ class ArticleTest < ActiveSupport::TestCase
   test "폐기 후 RSS 캐시를 지워야 한다" do
     deleted_keys = []
     Rails.cache.stub(:delete, ->(key, *args, **kwargs) { deleted_keys << key; true }) do
-      @article.stub(:create_federails_activity, nil) do
+      @article.stub(:create_fedipub_activity, nil) do
         @article.discard!
       end
     end
@@ -789,7 +789,7 @@ class ArticleTest < ActiveSupport::TestCase
   end
 
   test "discard하면 Delete 활동이 생성되고 SocialDeleteJob이 등록된다" do
-    assert_difference -> { Federails::Activity.where(action: "Delete", entity: @article).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Delete", entity: @article).count }, 1 do
       assert_enqueued_with(job: SocialDeleteJob, args: [ @article.id ]) do
         @article.discard!
       end
@@ -799,13 +799,13 @@ class ArticleTest < ActiveSupport::TestCase
   test "undiscard하면 Undo 활동이 생성된다" do
     @article.discard!
 
-    assert_difference -> { Federails::Activity.where(action: "Undo", entity: @article).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Undo", entity: @article).count }, 1 do
       @article.undiscard!
     end
   end
 
   test "인바운드 연합 삭제는 기사를 soft discard한다" do
-    @article.run_callbacks(:on_federails_delete_requested)
+    @article.run_callbacks(:on_fedipub_delete_requested)
 
     assert_predicate @article.reload, :discarded?
     assert Article.exists?(@article.id)
@@ -857,7 +857,7 @@ class ArticleTest < ActiveSupport::TestCase
     # Pinned to `nil` by the initial assignment otherwise, which rejects the
     # assignment made inside the block below.
     captured = nil #: Hash[Symbol, untyped]?
-    Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
+    Fedipub::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
 
@@ -879,7 +879,7 @@ class ArticleTest < ActiveSupport::TestCase
     # Pinned to `nil` by the initial assignment otherwise, which rejects the
     # assignment made inside the block below.
     captured = nil #: Hash[Symbol, untyped]?
-    Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
+    Fedipub::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
 
@@ -901,7 +901,7 @@ class ArticleTest < ActiveSupport::TestCase
     # Pinned to `nil` by the initial assignment otherwise, which rejects the
     # assignment made inside the block below.
     captured = nil #: Hash[Symbol, untyped]?
-    Federails::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
+    Fedipub::DataTransformer::Note.stub(:to_federation, ->(entity, name:, content:, custom:) { captured = { entity:, name:, content:, custom: }; { "ok" => true } }) do
       article.to_activitypub_object
     end
 

@@ -120,7 +120,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
       article
     end
     article = articles.first
-    Like.create!(actor: user.federails_actor, likeable: article, created_at: Time.current)
+    Like.create!(actor: user.fedipub_actor, likeable: article, created_at: Time.current)
     sign_in_as(user)
 
     like_queries = capture_like_queries do
@@ -150,7 +150,7 @@ class ArticlesControllerTest < ActionDispatch::IntegrationTest
       site: sites(:hn_site)
     )
     article.stub(:generate_metadata, nil) { article.save! }
-    Like.create!(actor: user.federails_actor, likeable: article, created_at: Time.current)
+    Like.create!(actor: user.fedipub_actor, likeable: article, created_at: Time.current)
     sign_in_as(user)
 
     like_queries = capture_like_queries do

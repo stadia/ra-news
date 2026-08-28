@@ -43,7 +43,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should replace existing remote mention text with profile link in reply body" do
-    actor = Federails::Actor.create!(
+    actor = Fedipub::Actor.create!(
       federated_url: "https://remote.example/users/alice",
       username: "alice",
       name: "Alice",
@@ -56,7 +56,7 @@ class PostsControllerTest < ActionDispatch::IntegrationTest
       actor_type: "Person",
       local: false
     )
-    parent = Post.create!(body: "리모트 부모 포스트", federails_actor: actor, federated_url: "https://remote.example/notes/1")
+    parent = Post.create!(body: "리모트 부모 포스트", fedipub_actor: actor, federated_url: "https://remote.example/notes/1")
 
     assert_difference("Post.count") do
       post posts_url, params: { post: { body: "@alice@remote.example 집에 가서 해볼게", parent_id: parent.id } }, as: :turbo_stream

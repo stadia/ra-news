@@ -13,8 +13,8 @@ class ActorsController < ApplicationController
   after_action :verify_authorized
 
   def show
-    @actor = Federails::Actor.find_param(params[:id])
-    authorize @actor, policy_class: Federails::Client::ActorPolicy
+    @actor = Fedipub::Actor.find_param(params[:id])
+    authorize @actor, policy_class: Fedipub::Client::ActorPolicy
     render_show
   end
 
@@ -26,9 +26,10 @@ class ActorsController < ApplicationController
       return
     end
 
-    @actor = Federails::Actor.find_by_account(account)
-    raise ActiveRecord::RecordNotFound if @actor.nil?
-    authorize @actor, policy_class: Federails::Client::ActorPolicy
+    # find_by_account 는 실패 시 ActiveRecord::RecordNotFound 를 raise 하고 nil 을
+    # 돌려주지 않는다. 예외는 그대로 404 로 올라간다.
+    @actor = Fedipub::Actor.find_by_account(account)
+    authorize @actor, policy_class: Fedipub::Client::ActorPolicy
     render_show
   end
 

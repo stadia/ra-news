@@ -38,7 +38,7 @@ module Posts::Federation
       custom["url"] = public_url
     end
 
-    Federails::DataTransformer::Note.to_federation(self, content: content, name: name, custom: custom)
+    Fedipub::DataTransformer::Note.to_federation(self, content: content, name: name, custom: custom)
   end
 
   # Public, human-readable URL for this post. Blog posts live under the account

@@ -9,7 +9,7 @@ class LikeTest < ActiveSupport::TestCase
     @user = users(:john)
     @local_post = posts(:root_post)
     @local_article = articles(:ruby_article)
-    @remote_actor = Federails::Actor.create!(
+    @remote_actor = Fedipub::Actor.create!(
       federated_url: "https://remote.example/@alice",
       username: "alice",
       name: "Alice",
@@ -24,7 +24,7 @@ class LikeTest < ActiveSupport::TestCase
     )
     @remote_post = Post.create!(
       body: "원격 포스트",
-      federails_actor: @remote_actor,
+      fedipub_actor: @remote_actor,
       federated_url: "https://remote.example/notes/1"
     )
     Article.insert!({
@@ -36,7 +36,7 @@ class LikeTest < ActiveSupport::TestCase
       slug: "remote-article-1",
       published_at: Time.zone.now,
       user_id: @user.id,
-      federails_actor_id: @remote_actor.id,
+      fedipub_actor_id: @remote_actor.id,
       federated_url: "https://remote.example/articles/1",
       created_at: Time.current,
       updated_at: Time.current
@@ -45,72 +45,72 @@ class LikeTest < ActiveSupport::TestCase
   end
 
   test "local user liking a local post creates a public Like activity" do
-    assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
+    assert_difference("Fedipub::Activity.where(action: 'Like').count", 1) do
       @user.like!(@local_post)
     end
 
-    activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+    activity = Fedipub::Activity.where(action: "Like").order(created_at: :desc).first
 
-    assert_equal @user.federails_actor, activity.actor
+    assert_equal @user.fedipub_actor, activity.actor
     assert_equal @local_post, activity.entity
     assert_includes Array(activity.to), Fediverse::Collection::PUBLIC
-    assert_includes Array(activity.cc), @user.federails_actor.followers_url
+    assert_includes Array(activity.cc), @user.fedipub_actor.followers_url
   end
 
   test "local user unliking a post creates an Undo activity referencing the Like" do
     @user.like!(@local_post)
 
-    assert_difference("Federails::Activity.where(action: 'Undo').count", 1) do
+    assert_difference("Fedipub::Activity.where(action: 'Undo').count", 1) do
       @user.unlike!(@local_post)
     end
 
-    undo = Federails::Activity.where(action: "Undo").order(created_at: :desc).first
+    undo = Fedipub::Activity.where(action: "Undo").order(created_at: :desc).first
 
-    assert_equal @user.federails_actor, undo.actor
-    assert_instance_of Federails::Activity, undo.entity
+    assert_equal @user.fedipub_actor, undo.actor
+    assert_instance_of Fedipub::Activity, undo.entity
     assert_equal "Like", undo.entity.action
   end
 
   test "local user liking a local article creates a public Like activity" do
-    assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
+    assert_difference("Fedipub::Activity.where(action: 'Like').count", 1) do
       @user.like!(@local_article)
     end
 
-    activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+    activity = Fedipub::Activity.where(action: "Like").order(created_at: :desc).first
 
-    assert_equal @user.federails_actor, activity.actor
+    assert_equal @user.fedipub_actor, activity.actor
     assert_equal @local_article, activity.entity
   end
 
   test "local user liking an article without a federation URL does not create an outbound activity" do
     @local_article.update_columns(title_ko: nil, deleted_at: Time.current)
 
-    assert_no_difference("Federails::Activity.where(action: 'Like').count") do
+    assert_no_difference("Fedipub::Activity.where(action: 'Like').count") do
       @user.like!(@local_article)
     end
   end
 
   test "local user liking a remote post creates an outbound Like activity" do
-    assert_difference("Federails::Activity.where(action: 'Like').count", 1) do
+    assert_difference("Fedipub::Activity.where(action: 'Like').count", 1) do
       @user.like!(@remote_post)
     end
 
-    activity = Federails::Activity.where(action: "Like").order(created_at: :desc).first
+    activity = Fedipub::Activity.where(action: "Like").order(created_at: :desc).first
 
-    assert_equal @user.federails_actor, activity.actor
+    assert_equal @user.fedipub_actor, activity.actor
     assert_equal @remote_post, activity.entity
   end
 
   test "local user unliking a remote post creates an Undo activity" do
     @user.like!(@remote_post)
 
-    assert_difference("Federails::Activity.where(action: 'Undo').count", 1) do
+    assert_difference("Fedipub::Activity.where(action: 'Undo').count", 1) do
       @user.unlike!(@remote_post)
     end
 
-    undo = Federails::Activity.where(action: "Undo").order(created_at: :desc).first
+    undo = Fedipub::Activity.where(action: "Undo").order(created_at: :desc).first
 
-    assert_instance_of Federails::Activity, undo.entity
+    assert_instance_of Fedipub::Activity, undo.entity
     assert_equal "Like", undo.entity.action
   end
 
@@ -139,7 +139,7 @@ class LikeTest < ActiveSupport::TestCase
       "object" => @local_post.federated_url
     }
 
-    assert_no_difference("Federails::Activity.where(action: 'Like', actor: @remote_actor).count") do
+    assert_no_difference("Fedipub::Activity.where(action: 'Like', actor: @remote_actor).count") do
       Fediverse::Inbox::LikeHandler.handle_like(activity)
     end
   end

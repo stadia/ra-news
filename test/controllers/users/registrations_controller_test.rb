@@ -144,10 +144,10 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  test "GET federails server actor는 프로필 icon url을 노출한다" do
+  test "GET fedipub server actor는 프로필 icon url을 노출한다" do
     @user.avatar.attach(io: File.open(@avatar_path), filename: "avatar.png", content_type: "image/png")
 
-    get federails.server_actor_path(@user.federails_actor), headers: { "Accept" => "application/activity+json" }
+    get fedipub.server_actor_path(@user.fedipub_actor), headers: { "Accept" => "application/activity+json" }
 
     assert_response :success
     json = JSON.parse(response.body)

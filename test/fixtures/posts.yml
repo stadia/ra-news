@@ -17,7 +17,7 @@ reply_post:
 
 remote_post:
   body: "리모트에서 온 포스트입니다."
-  federails_actor: john_actor
+  fedipub_actor: john_actor
   federated_url: "https://remote.example.com/notes/123"
   lft: 5
   rgt: 6

@@ -18,7 +18,7 @@ module Posts::FederationIngest
 
       # 이중 방어선. id 없는 객체는 handle_federated_object? 에서 이미 거부되므로
       # 여기 도달하면 인박스 필터를 우회한 호출이다(직접 호출 또는 필터 회귀).
-      # 그대로 두면 federated_url 이 nil 인 채로 진행되어, federails 의
+      # 그대로 두면 federated_url 이 nil 인 채로 진행되어, fedipub 의
       # `find_by federated_url: nil` 이 무관한 로컬 post 를 매칭한다.
       logger.warn { "from_activitypub_object: id-less object bypassed the inbox filter (inReplyTo=#{in_reply_to.truncate(200).inspect})" } if hash["id"].blank?
 
@@ -140,9 +140,9 @@ module Posts::FederationIngest
 
     #: (Hash[String, untyped]) -> bool
     def handle_federated_object?(hash)
-      # id 없는 객체는 수락 자체를 거부한다. federails 는 엔티티를
+      # id 없는 객체는 수락 자체를 거부한다. fedipub 는 엔티티를
       # `find_by federated_url: hash['id']` 로 찾는데(utils/object.rb), 로컬 post 는
-      # 전부 federated_url 이 NULL 이다(젬의 local_federails_entities 스코프가
+      # 전부 federated_url 이 NULL 이다(젬의 local_fedipub_entities 스코프가
       # `where federated_url: nil`). 따라서 id 가 nil 이면 이 조회가 무관한 로컬
       # post 를 반환하고, Update 액티비티는 그 레코드를 assign_attributes + save! 로
       # 덮어쓴다(data_entity.rb). 로깅만으로는 막을 수 없는 자리다.

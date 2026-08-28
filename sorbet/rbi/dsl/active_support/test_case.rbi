@@ -11,25 +11,25 @@ class ActiveSupport::TestCase
   sig { params(fixture_name: T.any(String, Symbol), other_fixtures: T.any(String, Symbol)).returns(T::Array[Article]) }
   def articles(fixture_name = nil, *other_fixtures); end
 
-  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Federails::Actor]) }
-  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Federails::Actor) }
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Fedipub::Actor]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Fedipub::Actor) }
   sig do
     params(
       fixture_name: T.any(String, Symbol),
       other_fixtures: T.any(String, Symbol)
-    ).returns(T::Array[Federails::Actor])
+    ).returns(T::Array[Fedipub::Actor])
   end
-  def federails_actors(fixture_name = nil, *other_fixtures); end
+  def fedipub_actors(fixture_name = nil, *other_fixtures); end
 
-  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Federails::Following]) }
-  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Federails::Following) }
+  sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[Fedipub::Following]) }
+  sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(Fedipub::Following) }
   sig do
     params(
       fixture_name: T.any(String, Symbol),
       other_fixtures: T.any(String, Symbol)
-    ).returns(T::Array[Federails::Following])
+    ).returns(T::Array[Fedipub::Following])
   end
-  def federails_followings(fixture_name = nil, *other_fixtures); end
+  def fedipub_followings(fixture_name = nil, *other_fixtures); end
 
   sig { params(fixture_name: NilClass, other_fixtures: NilClass).returns(T::Array[NotificationChannel]) }
   sig { params(fixture_name: T.any(String, Symbol), other_fixtures: NilClass).returns(NotificationChannel) }

@@ -1,0 +1,25 @@
+Federation:
+
+<ul>
+  <%# Available publicly %>
+  <li><%= link_to 'Activities', activities_url %></li>
+
+  <%# Available when user has an associated actor %>
+  <% if Fedipub::Client::ActivityPolicy.new(user, nil).feed? %>
+    <li><%= link_to 'Feed', feed_activities_url %></li>
+  <%end %>
+
+  <%# Available when user has an associated actor. The actor must exist to create the link %>
+  <% if Fedipub.actor_entity?(user) && user.fedipub_actor.present? %>
+    <li><%= link_to "You (#{user.fedipub_actor.username})", actor_path(user.fedipub_actor) %></li>
+  <% end %>
+</ul>
+
+<%# Debug information%>
+<% if !user %>
+  Register or login to view your actor's information
+<% elsif !Fedipub::actor_entity?(user) %>
+  <p><%= user.class.name %> is not configured to have an associated actor; you won't be allowed to follow or be followed</p>
+<% elsif !user.fedipub_actor.present? %>
+  <p>Your account does not have an associated actor; you won't be allowed to follow or be followed</p>
+<% end %>

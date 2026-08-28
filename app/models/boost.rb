@@ -4,7 +4,7 @@
 
 class Boost < ApplicationRecord
   belongs_to :actor,
-             class_name: "Federails::Actor",
+             class_name: "Fedipub::Actor",
              counter_cache: :boostees_count
   belongs_to :boostable,
              polymorphic: true,
@@ -17,14 +17,14 @@ class Boost < ApplicationRecord
   class << self
     # Article/Post boosts for a profile activity feed, newest first.
     # A class method (not a scope) so the nil early-return is unambiguous.
-    #: ((User | Federails::Actor)?) -> ActiveRecord::Relation
+    #: ((User | Fedipub::Actor)?) -> ActiveRecord::Relation
     def for_actor(actor)
       return none if actor.nil?
 
       where(actor: actor, boostable_type: %w[Article Post]).order(created_at: :desc)
     end
 
-    #: (booster: (User | Federails::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
+    #: (booster: (User | Fedipub::Actor)?, boostable_type: String, boostable_ids: Array[Integer]) -> Array[Integer]
     def boosted_ids_for(booster:, boostable_type:, boostable_ids:)
       actor = resolve_actor(booster)
       return [] unless actor
@@ -37,15 +37,15 @@ class Boost < ApplicationRecord
       ).pluck(:boostable_id)
     end
 
-    #: (untyped) -> Federails::Actor?
+    #: (untyped) -> Fedipub::Actor?
     def resolve_actor(booster)
       case booster
       when nil
         nil
-      when Federails::Actor
+      when Fedipub::Actor
         booster
       else
-        booster.try(:federails_actor)
+        booster.try(:fedipub_actor)
       end
     end
   end
@@ -65,7 +65,7 @@ class Boost < ApplicationRecord
   def publish_undo_activity
     return unless federatable_boostable?
 
-    announce_activity = Federails::Activity
+    announce_activity = Fedipub::Activity
       .where(actor: actor, action: "Announce", entity: boostable)
       .order(created_at: :desc)
       .first
@@ -80,6 +80,6 @@ class Boost < ApplicationRecord
   end
 
   def federatable_boostable?
-    boostable.is_a?(Federails::DataEntity)
+    boostable.is_a?(Fedipub::DataEntity)
   end
 end

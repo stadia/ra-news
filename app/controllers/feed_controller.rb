@@ -10,7 +10,7 @@ class FeedController < ApplicationController
   after_action :verify_authorized
 
   def show
-    authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
+    authorize Fedipub::Activity, policy_class: Fedipub::Client::ActivityPolicy
 
     @pagy, @posts = pagy(:countless, Feeds::Timeline.posts_for(current_user), limit: 20)
 

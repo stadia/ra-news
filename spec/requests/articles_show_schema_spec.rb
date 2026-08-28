@@ -6,7 +6,7 @@ require "rails_helper"
 # (author / translationOfWork / speakable)를 포함하고, publisher 호스트가
 # 요청 호스트에 맞는지 검증한다. JSON-LD 는 pretty-print 되므로 파싱해서 확인한다.
 RSpec.describe "Articles show NewsArticle JSON-LD", type: :request do
-  fixtures :articles, :users, :sites, :federails_actors
+  fixtures :articles, :users, :sites, :fedipub_actors
 
   let(:article) { articles(:ruby_article) }
 

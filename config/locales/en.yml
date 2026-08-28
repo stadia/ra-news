@@ -134,7 +134,7 @@ en:
       form_errors:
         one: "%{count} error found"
         other: "%{count} errors found"
-  federails_layout:
+  fedipub_layout:
     brand_subtitle: Social
     menu: Menu
     nav:

@@ -29,7 +29,7 @@ production:
   discarded_article_cleanup_job:
     class: "DiscardedArticleCleanupJob"
     schedule: "0 4 * * 0"
-  federails_sync_hosts:
-    command: "Federails::Maintenance::HostsUpdater.run"
+  fedipub_sync_hosts:
+    command: "Fedipub::Maintenance::HostsUpdater.run"
     schedule: "15 3 * * *"
     queue: federation

@@ -202,7 +202,7 @@ Use `rails_get_component_catalog(component:"Name")` for full details.
 - **ThemeToggle** (phlex)
 - **TypographyBlockquote** (phlex)
 - **UserAvatar** (phlex)
-  props: user:nil, federails_actor:nil, name, size:"h-8 w-8", fallback_class:"bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold"
+  props: user:nil, fedipub_actor:nil, name, size:"h-8 w-8", fallback_class:"bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold"
 - **Users::Form** (phlex)
   props: user
 - **Users::Form::Actions** (phlex)

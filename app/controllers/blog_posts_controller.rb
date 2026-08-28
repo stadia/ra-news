@@ -112,7 +112,7 @@ class BlogPostsController < ApplicationController
   end
 
   def destroy_permanently
-    # Hard-destroy removes the row for good. Federails' after_destroy emits a
+    # Hard-destroy removes the row for good. Fedipub' after_destroy emits a
     # Delete for a published post; since trash items were already soft-discarded
     # (which emitted a Delete too), remotes may receive a duplicate Delete. That
     # is benign — the tombstone already exists remotely, so the second Delete is

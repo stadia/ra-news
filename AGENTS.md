@@ -17,19 +17,19 @@
 - Performance: 5 issues detected
 ## Key models (21 total)
 - **ActsAsTaggableOn::Tag** (1a, 3v) - has_many :taggings
-- **Article** (13a, 7v) - has_many :boosts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
+- **Article** (13a, 7v) - has_many :boosts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :fedipub_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, missing_japanese, hangul_leftover_japanese, needs_japanese, for_admin_index | INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
 - **Boost** (2a, 2v) - belongs_to :actor, belongs_to :boostable
 - **DiscordChannel** (1a, 3v) - has_many :notification_deliveries
 - **DiscordDelivery** (2a, 5v) - belongs_to :article, belongs_to :notification_channel
-- **Federails::Actor** (14a, 14v) - belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
+- **Fedipub::Actor** (14a, 14v) - belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
 - **JwtDenylist**
 - **Like** (2a, 2v) - belongs_to :actor, belongs_to :likeable
 - **NotificationChannel** (1a, 3v) - has_many :notification_deliveries
   scopes: active, delivery_ready
 - **NotificationDelivery** (2a, 5v) - belongs_to :article, belongs_to :notification_channel
 - **OauthAccount** (1a, 5v) - belongs_to :user
-- **Post** (10a, 5v) - has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
+- **Post** (10a, 5v) - has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :fedipub_actor
   scopes: comments, standalone, visible, published_blog
 - **Preference** (0a, 2v)
 - **PushSubscription** (1a, 6v) - belongs_to :user
@@ -186,6 +186,7 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 - 소셜 미디어 연동 코드는 `SocialMediaService` 기반 구조와 플랫폼별 서비스 분리를 유지한다.
 - 변경을 마무리하기 전에 테스트 여부와 미실행 사유를 명확히 남긴다.
 - **젬을 올리면(`bundle update`, `bundle add`, Gemfile 수정) 같은 커밋에서 `bin/tapioca gem`을 돌린다.** `srb tc`는 `sorbet/rbi/gems`의 파일을 그대로 읽을 뿐 Gemfile.lock과 맞는지 묻지 않아, RBI 드리프트는 로컬에서 전혀 보이지 않다가 CI의 `tapioca gem --verify`에서 터진다. `Gemfile.lock`이 스테이징되면 lefthook의 `tapioca-gem-drift` 훅이 이를 검사한다(검증만 하고 재생성은 하지 않는다).
+- **`bin/tapioca gem`을 돌린 뒤에는 `ruby script/patch_generated_gem_rbis.rb`를 이어서 돌린다.** tapioca는 Ruby 3.2+ 익명 파라미터 포워딩(`def m(*)`, `(**, &)`)에서 `Method#parameters`가 이름을 주지 않아 타입이 빈 sig(`params(_arg1: , _arg2: )`)를 생성하고, `srb tc`가 이를 "Malformed type declaration"으로 거부한다. 이는 tapioca의 한계이지 젬의 결함이 아니므로 **젬 소스를 관용구 이전으로 되돌려 우회하지 않는다.** 도구의 한계는 소비하는 쪽인 이 앱의 RBI 레이어에서 흡수한다. `tapioca gem --verify`는 파일 집합만 검사하므로 이 후처리는 CI를 깨지 않는다. upstream 수정은 [Shopify/tapioca#2687](https://github.com/Shopify/tapioca/pull/2687)(APPROVED, 머지 대기)이며, **이 PR이 머지된 뒤 첫 릴리스에서 스크립트를 통째로 지운다**(최신 v0.19.2가 PR보다 앞서므로 v0.19.3 또는 v0.20.0이 후보). 젬을 올릴 때 스크립트가 "보정할 항목 없음"을 내면 회수 시점이다.
 - 관련 배경 문서가 필요하면 `docs/CLAUDE_WORKFLOW.md`, `docs/postgresql-extensions.md`를 우선 참고한다.
 - 뷰 클래스는 `Views::Base`를, 컴포넌트 클래스는 `Components::Base`를 상속한다.
 - `OperationService`(`Dry::Operation`)의 `call` 메서드에서 `return Failure(:x)`를 직접 반환하면 `Dry::Operation`이 이를 `Success(Failure(:x))`로 감싸버린다. `Failure`를 반환하려면 반드시 `step`을 통해야 한다. guard clause도 `step validate_something(...)` 형태로 호출한다.
@@ -218,8 +219,8 @@ AI 에이전트를 위한 프로젝트 룰북입니다.
 
 ## 외부 프로젝트 경로
 
-- **federails**: `../federails` — federails 관련 코드 조회·수정 시 반드시 이 로컬 경로를 사용한다. 번들러 캐시(`~/.local/share/mise/.../bundler/gems/federails-*`)는 읽지 않는다.
-- federails 수정이 필요하거나 원인이 federails에 있다고 판단되면, 앱에서 임시 우회 패치를 넣기 전에 반드시 `../federails`를 직접 확인하고 그 저장소에서 우선 수정한다.
+- **fedipub**: `../federails` — 젬 이름은 fedipub으로 바뀌었지만 저장소 디렉터리 이름은 `federails` 그대로다. fedipub 관련 코드 조회·수정 시 반드시 이 로컬 경로를 사용한다. 번들러 캐시(`~/.local/share/mise/.../bundler/gems/fedipub-*`)는 읽지 않는다.
+- fedipub 수정이 필요하거나 원인이 fedipub에 있다고 판단되면, 앱에서 임시 우회 패치를 넣기 전에 반드시 `../federails`를 직접 확인하고 그 저장소에서 우선 수정한다.
 
 ## graphify
 

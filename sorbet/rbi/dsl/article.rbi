@@ -396,8 +396,8 @@ class Article
     sig { params(value: T::Enumerable[::Boost]).void }
     def boosts=(value); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
-    def build_federails_actor(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Fedipub::Actor) }
+    def build_fedipub_actor(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::PgSearch::Document) }
     def build_pg_search_document(*args, &blk); end
@@ -414,11 +414,11 @@ class Article
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def build_user(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
-    def create_federails_actor(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Fedipub::Actor) }
+    def create_fedipub_actor(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
-    def create_federails_actor!(*args, &blk); end
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Fedipub::Actor) }
+    def create_fedipub_actor!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(::PgSearch::Document) }
     def create_pg_search_document(*args, &blk); end
@@ -450,17 +450,17 @@ class Article
     sig { params(args: T.untyped, blk: T.untyped).returns(::User) }
     def create_user!(*args, &blk); end
 
-    sig { returns(T.nilable(::Federails::Actor)) }
-    def federails_actor; end
+    sig { returns(T.nilable(::Fedipub::Actor)) }
+    def fedipub_actor; end
 
-    sig { params(value: T.nilable(::Federails::Actor)).void }
-    def federails_actor=(value); end
-
-    sig { returns(T::Boolean) }
-    def federails_actor_changed?; end
+    sig { params(value: T.nilable(::Fedipub::Actor)).void }
+    def fedipub_actor=(value); end
 
     sig { returns(T::Boolean) }
-    def federails_actor_previously_changed?; end
+    def fedipub_actor_changed?; end
+
+    sig { returns(T::Boolean) }
+    def fedipub_actor_previously_changed?; end
 
     # This method is created by ActiveRecord on the `Article` class because it declared `has_many :notification_deliveries`.
     # 🔗 [Rails guide for `has_many` association](https://guides.rubyonrails.org/association_basics.html#the-has-many-association)
@@ -496,8 +496,8 @@ class Article
     sig { params(value: T::Enumerable[::Post]).void }
     def posts=(value); end
 
-    sig { returns(T.nilable(::Federails::Actor)) }
-    def reload_federails_actor; end
+    sig { returns(T.nilable(::Fedipub::Actor)) }
+    def reload_fedipub_actor; end
 
     sig { returns(T.nilable(::PgSearch::Document)) }
     def reload_pg_search_document; end
@@ -515,7 +515,7 @@ class Article
     def reload_user; end
 
     sig { void }
-    def reset_federails_actor; end
+    def reset_fedipub_actor; end
 
     sig { void }
     def reset_pg_search_document; end
@@ -634,7 +634,7 @@ class Article
     def discarded(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def distant_federails_entities(*args, &blk); end
+    def distant_fedipub_entities(*args, &blk); end
 
     sig { params(value: T::Boolean).returns(PrivateAssociationRelation) }
     def distinct(value = true); end
@@ -697,7 +697,7 @@ class Article
     def limit(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
-    def local_federails_entities(*args, &blk); end
+    def local_fedipub_entities(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateAssociationRelation) }
     def lock(*args, &blk); end
@@ -1037,51 +1037,6 @@ class Article
     sig { void }
     def embedding_will_change!; end
 
-    sig { returns(T.nilable(::Integer)) }
-    def federails_actor_id; end
-
-    sig { params(value: T.nilable(::Integer)).returns(T.nilable(::Integer)) }
-    def federails_actor_id=(value); end
-
-    sig { returns(T::Boolean) }
-    def federails_actor_id?; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def federails_actor_id_before_last_save; end
-
-    sig { returns(T.untyped) }
-    def federails_actor_id_before_type_cast; end
-
-    sig { returns(T::Boolean) }
-    def federails_actor_id_came_from_user?; end
-
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
-    def federails_actor_id_change; end
-
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
-    def federails_actor_id_change_to_be_saved; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def federails_actor_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def federails_actor_id_in_database; end
-
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
-    def federails_actor_id_previous_change; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def federails_actor_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
-    sig { returns(T.nilable(::Integer)) }
-    def federails_actor_id_previously_was; end
-
-    sig { returns(T.nilable(::Integer)) }
-    def federails_actor_id_was; end
-
-    sig { void }
-    def federails_actor_id_will_change!; end
-
     sig { returns(T.nilable(::String)) }
     def federated_url; end
 
@@ -1126,6 +1081,231 @@ class Article
 
     sig { void }
     def federated_url_will_change!; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def fedipub_actor_id; end
+
+    sig { params(value: T.nilable(::Integer)).returns(T.nilable(::Integer)) }
+    def fedipub_actor_id=(value); end
+
+    sig { returns(T::Boolean) }
+    def fedipub_actor_id?; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def fedipub_actor_id_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def fedipub_actor_id_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def fedipub_actor_id_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def fedipub_actor_id_change; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def fedipub_actor_id_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def fedipub_actor_id_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def fedipub_actor_id_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def fedipub_actor_id_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def fedipub_actor_id_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Integer)) }
+    def fedipub_actor_id_previously_was; end
+
+    sig { returns(T.nilable(::Integer)) }
+    def fedipub_actor_id_was; end
+
+    sig { void }
+    def fedipub_actor_id_will_change!; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def grounding_checked_at; end
+
+    sig { params(value: T.nilable(::ActiveSupport::TimeWithZone)).returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def grounding_checked_at=(value); end
+
+    sig { returns(T::Boolean) }
+    def grounding_checked_at?; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def grounding_checked_at_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def grounding_checked_at_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def grounding_checked_at_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def grounding_checked_at_change; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def grounding_checked_at_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_checked_at_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def grounding_checked_at_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def grounding_checked_at_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_checked_at_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def grounding_checked_at_previously_was; end
+
+    sig { returns(T.nilable(::ActiveSupport::TimeWithZone)) }
+    def grounding_checked_at_was; end
+
+    sig { void }
+    def grounding_checked_at_will_change!; end
+
+    sig { returns(T::Boolean) }
+    def grounding_flagged; end
+
+    sig { params(value: T::Boolean).returns(T::Boolean) }
+    def grounding_flagged=(value); end
+
+    sig { returns(T::Boolean) }
+    def grounding_flagged?; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def grounding_flagged_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def grounding_flagged_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def grounding_flagged_came_from_user?; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def grounding_flagged_change; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def grounding_flagged_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_flagged_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def grounding_flagged_in_database; end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def grounding_flagged_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_flagged_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def grounding_flagged_previously_was; end
+
+    sig { returns(T.nilable(T::Boolean)) }
+    def grounding_flagged_was; end
+
+    sig { void }
+    def grounding_flagged_will_change!; end
+
+    sig { returns(T.untyped) }
+    def grounding_issues; end
+
+    sig { params(value: T.untyped).returns(T.untyped) }
+    def grounding_issues=(value); end
+
+    sig { returns(T::Boolean) }
+    def grounding_issues?; end
+
+    sig { returns(T.untyped) }
+    def grounding_issues_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def grounding_issues_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def grounding_issues_came_from_user?; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def grounding_issues_change; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def grounding_issues_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_issues_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def grounding_issues_in_database; end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def grounding_issues_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_issues_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.untyped) }
+    def grounding_issues_previously_was; end
+
+    sig { returns(T.untyped) }
+    def grounding_issues_was; end
+
+    sig { void }
+    def grounding_issues_will_change!; end
+
+    sig { returns(T.nilable(::Float)) }
+    def grounding_score; end
+
+    sig { params(value: T.nilable(::Float)).returns(T.nilable(::Float)) }
+    def grounding_score=(value); end
+
+    sig { returns(T::Boolean) }
+    def grounding_score?; end
+
+    sig { returns(T.nilable(::Float)) }
+    def grounding_score_before_last_save; end
+
+    sig { returns(T.untyped) }
+    def grounding_score_before_type_cast; end
+
+    sig { returns(T::Boolean) }
+    def grounding_score_came_from_user?; end
+
+    sig { returns(T.nilable([T.nilable(::Float), T.nilable(::Float)])) }
+    def grounding_score_change; end
+
+    sig { returns(T.nilable([T.nilable(::Float), T.nilable(::Float)])) }
+    def grounding_score_change_to_be_saved; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_score_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Float)) }
+    def grounding_score_in_database; end
+
+    sig { returns(T.nilable([T.nilable(::Float), T.nilable(::Float)])) }
+    def grounding_score_previous_change; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def grounding_score_previously_changed?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable(::Float)) }
+    def grounding_score_previously_was; end
+
+    sig { returns(T.nilable(::Float)) }
+    def grounding_score_was; end
+
+    sig { void }
+    def grounding_score_will_change!; end
 
     sig { returns(T.nilable(::String)) }
     def host; end
@@ -1593,10 +1773,22 @@ class Article
     def restore_embedding!; end
 
     sig { void }
-    def restore_federails_actor_id!; end
+    def restore_federated_url!; end
 
     sig { void }
-    def restore_federated_url!; end
+    def restore_fedipub_actor_id!; end
+
+    sig { void }
+    def restore_grounding_checked_at!; end
+
+    sig { void }
+    def restore_grounding_flagged!; end
+
+    sig { void }
+    def restore_grounding_issues!; end
+
+    sig { void }
+    def restore_grounding_score!; end
 
     sig { void }
     def restore_host!; end
@@ -1706,17 +1898,41 @@ class Article
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def saved_change_to_embedding?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
-    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
-    def saved_change_to_federails_actor_id; end
-
-    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def saved_change_to_federails_actor_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
-
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_federated_url; end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def saved_change_to_federated_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::Integer), T.nilable(::Integer)])) }
+    def saved_change_to_fedipub_actor_id; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_fedipub_actor_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::ActiveSupport::TimeWithZone), T.nilable(::ActiveSupport::TimeWithZone)])) }
+    def saved_change_to_grounding_checked_at; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_grounding_checked_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T::Boolean, T::Boolean])) }
+    def saved_change_to_grounding_flagged; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_grounding_flagged?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.untyped, T.untyped])) }
+    def saved_change_to_grounding_issues; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_grounding_issues?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { returns(T.nilable([T.nilable(::Float), T.nilable(::Float)])) }
+    def saved_change_to_grounding_score; end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def saved_change_to_grounding_score?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { returns(T.nilable([T.nilable(::String), T.nilable(::String)])) }
     def saved_change_to_host; end
@@ -2610,10 +2826,22 @@ class Article
     def will_save_change_to_embedding?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def will_save_change_to_federails_actor_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def will_save_change_to_federated_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
-    def will_save_change_to_federated_url?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+    def will_save_change_to_fedipub_actor_id?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_grounding_checked_at?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_grounding_flagged?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_grounding_issues?(from: T.unsafe(nil), to: T.unsafe(nil)); end
+
+    sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
+    def will_save_change_to_grounding_score?(from: T.unsafe(nil), to: T.unsafe(nil)); end
 
     sig { params(from: T.untyped, to: T.untyped).returns(T::Boolean) }
     def will_save_change_to_host?(from: T.unsafe(nil), to: T.unsafe(nil)); end
@@ -2717,7 +2945,7 @@ class Article
     def discarded(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def distant_federails_entities(*args, &blk); end
+    def distant_fedipub_entities(*args, &blk); end
 
     sig { params(value: T::Boolean).returns(PrivateRelation) }
     def distinct(value = true); end
@@ -2780,7 +3008,7 @@ class Article
     def limit(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
-    def local_federails_entities(*args, &blk); end
+    def local_fedipub_entities(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(PrivateRelation) }
     def lock(*args, &blk); end

@@ -134,7 +134,7 @@ ko:
       form_errors:
         one: "%{count}건의 오류가 있습니다"
         other: "%{count}건의 오류가 있습니다"
-  federails_layout:
+  fedipub_layout:
     brand_subtitle: 소셜
     menu: 메뉴
     nav:

@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'Feed', type: :request do
-  fixtures :users, :federails_actors
+  fixtures :users, :fedipub_actors
 
   def auth_token(user)
     post api_v1_auth_login_path, params: { user: { email: user.email, password: 'password' } }, as: :json

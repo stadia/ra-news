@@ -5,7 +5,7 @@ require "test_helper"
 
 class ActorsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @actor = federails_actors(:john_actor)
+    @actor = fedipub_actors(:john_actor)
   end
 
   test "GET show returns 200" do

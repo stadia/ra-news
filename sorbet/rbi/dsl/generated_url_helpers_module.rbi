@@ -127,7 +127,7 @@ module GeneratedUrlHelpersModule
   def edit_user_registration_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
-  def federails_url(*args); end
+  def fedipub_url(*args); end
 
   sig { params(args: T.untyped).returns(String) }
   def feed_url(*args); end

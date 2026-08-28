@@ -30,7 +30,7 @@ class Views::Profiles::Show < Views::Base
     content_for :title, "@#{@user.username} — #{@user.name}"
 
     if @actor
-      site_host = URI.parse(Federails.configuration.site_host).host
+      site_host = URI.parse(Fedipub.configuration.site_host).host
       content_for :head, tag.meta(name: "fediverse:creator", content: "@#{@user.username}@#{site_host}")
     end
 
@@ -131,7 +131,7 @@ class Views::Profiles::Show < Views::Base
   end
 
   def fediverse_badge
-    site_host = URI.parse(Federails.configuration.site_host).host
+    site_host = URI.parse(Fedipub.configuration.site_host).host
     handle = "@#{@user.username}@#{site_host}"
 
     div(class: "flex flex-col sm:flex-row sm:items-center gap-3") do

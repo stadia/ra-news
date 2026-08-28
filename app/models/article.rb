@@ -21,9 +21,9 @@ class Article < ApplicationRecord
   # ── Includes ─────────────────────────────────────────────────────────
   include PgSearch::Model
   include Discard::Model
-  include Federails::DataEntity
-  include FederailsLikeable
-  include FederailsBoostable
+  include Fedipub::DataEntity
+  include FedipubLikeable
+  include FedipubBoostable
   include Articles::LocalizedDisplay
   include Articles::Activitypub
 
@@ -50,7 +50,7 @@ class Article < ApplicationRecord
   # ── Associations ─────────────────────────────────────────────────────
   belongs_to :user
   belongs_to :site, optional: true
-  belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
+  belongs_to :fedipub_actor, class_name: "Fedipub::Actor", optional: true
 
   has_many :posts, dependent: :nullify
   has_many :notification_deliveries, dependent: :destroy
@@ -167,14 +167,14 @@ class Article < ApplicationRecord
   after_undiscard :handle_after_undiscard
 
   # ── Federation ───────────────────────────────────────────────────────
-  acts_as_federails_data handles: "Note",
+  acts_as_fedipub_data handles: "Note",
                          actor_entity_method: :bot_user,
                          soft_deleted_method: :discarded?,
                          soft_delete_date_method: :deleted_at,
                          should_federate_method: :should_federate?
 
-  on_federails_delete_requested :handle_federails_delete_requested
-  on_federails_undelete_requested :undiscard!
+  on_fedipub_delete_requested :handle_fedipub_delete_requested
+  on_fedipub_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────
 
@@ -257,13 +257,13 @@ class Article < ApplicationRecord
   end
 
   # 기사의 ActivityPub actor 는 항상 발행 봇 user 의 actor 다.
-  # federails_actor_id 컬럼은 과거에 비워진 채 생성된 기사가 많아
-  # (create_federails_activity 와 동일하게) 봇 actor 로 폴백한다.
-  # federails published 엔드포인트의 직렬화(Note.to_federation / PublishableResource)가
-  # federails_actor 를 직접 참조하므로 nil 이면 500 이 발생한다.
-  #: () -> Federails::Actor?
-  def federails_actor
-    super || bot_user&.federails_actor
+  # fedipub_actor_id 컬럼은 과거에 비워진 채 생성된 기사가 많아
+  # (create_fedipub_activity 와 동일하게) 봇 actor 로 폴백한다.
+  # fedipub published 엔드포인트의 직렬화(Note.to_federation / PublishableResource)가
+  # fedipub_actor 를 직접 참조하므로 nil 이면 500 이 발생한다.
+  #: () -> Fedipub::Actor?
+  def fedipub_actor
+    super || bot_user&.fedipub_actor
   end
 
   #: () -> Integer
@@ -289,16 +289,16 @@ class Article < ApplicationRecord
   def handle_after_discard
     clear_rss_cache
     SocialDeleteJob.perform_later(id)
-    create_federails_activity "Delete"
+    create_fedipub_activity "Delete"
   end
 
   #: () -> void
   def handle_after_undiscard
-    create_federails_activity "Undo"
+    create_fedipub_activity "Undo"
   end
 
   #: () -> void
-  def handle_federails_delete_requested
+  def handle_fedipub_delete_requested
     logger.info { "Federated article deletion requested #{id}" }
     discard!
   end
@@ -317,13 +317,13 @@ class Article < ApplicationRecord
     User.first_bot
   end
 
-  #: (String action, ?actor: (Federails::Actor)?, ?to: untyped, ?cc: untyped) -> void
-  def create_federails_activity(action, actor: nil, to: nil, cc: nil)
-    actor ||= federails_actor || bot_user&.federails_actor
+  #: (String action, ?actor: (Fedipub::Actor)?, ?to: untyped, ?cc: untyped) -> void
+  def create_fedipub_activity(action, actor: nil, to: nil, cc: nil)
+    actor ||= fedipub_actor || bot_user&.fedipub_actor
     return if actor.blank?
 
     if action == "Update"
-      if Federails::Activity.exists?(entity: self, action: "Create")
+      if Fedipub::Activity.exists?(entity: self, action: "Create")
         logger.info do
           {
             message: "[Federation] Skipping repeated Article update activity",

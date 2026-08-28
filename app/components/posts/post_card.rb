@@ -55,7 +55,7 @@ class Components::Posts::PostCard < Components::Base
     div(class: "flex items-center gap-3") do
       render Components::UserAvatar.new(
         user: @post.user,
-        federails_actor: @post.federails_actor,
+        fedipub_actor: @post.fedipub_actor,
         name: author_name,
         size: "h-8 w-8 sm:h-10 sm:w-10"
       )
@@ -222,7 +222,7 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def author_name
-    @post.user&.name || @post.federails_actor&.name || t("posts.post_card.unknown_author")
+    @post.user&.name || @post.fedipub_actor&.name || t("posts.post_card.unknown_author")
   end
 
   def booster_name
@@ -230,7 +230,7 @@ class Components::Posts::PostCard < Components::Base
   end
 
   def parent_author_name
-    @post.parent.user&.name || @post.parent.federails_actor&.name || t("posts.post_card.unknown_author")
+    @post.parent.user&.name || @post.parent.fedipub_actor&.name || t("posts.post_card.unknown_author")
   end
 
   def body_preview

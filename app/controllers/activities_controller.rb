@@ -8,10 +8,10 @@ class ActivitiesController < ApplicationController
   after_action :verify_authorized
 
   def index
-    authorize Federails::Activity, policy_class: Federails::Client::ActivityPolicy
-    @activities = policy_scope(Federails::Activity, policy_scope_class: Federails::Client::ActivityPolicy::Scope).all
-    @activities = @activities.where(actor: Federails::Actor.find_param(params[:actor_id])) if params[:actor_id]
-    render template: "federails/client/activities/index"
+    authorize Fedipub::Activity, policy_class: Fedipub::Client::ActivityPolicy
+    @activities = policy_scope(Fedipub::Activity, policy_scope_class: Fedipub::Client::ActivityPolicy::Scope).all
+    @activities = @activities.where(actor: Fedipub::Actor.find_param(params[:actor_id])) if params[:actor_id]
+    render template: "fedipub/client/activities/index"
   end
 
   private

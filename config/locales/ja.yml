@@ -134,7 +134,7 @@ ja:
       form_errors:
         one: "%{count}件のエラーがあります"
         other: "%{count}件のエラーがあります"
-  federails_layout:
+  fedipub_layout:
     brand_subtitle: ソーシャル
     menu: メニュー
     nav:

@@ -416,10 +416,34 @@ class SolidQueue::Job
 
   module GeneratedAssociationMethods
     sig { returns(T.untyped) }
+    def batch; end
+
+    sig { params(value: T.untyped).void }
+    def batch=(value); end
+
+    sig { returns(T::Boolean) }
+    def batch_changed?; end
+
+    sig { returns(T.untyped) }
+    def batch_execution; end
+
+    sig { params(value: T.untyped).void }
+    def batch_execution=(value); end
+
+    sig { returns(T::Boolean) }
+    def batch_previously_changed?; end
+
+    sig { returns(T.untyped) }
     def blocked_execution; end
 
     sig { params(value: T.untyped).void }
     def blocked_execution=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
+    def build_batch(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
+    def build_batch_execution(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def build_blocked_execution(*args, &blk); end
@@ -444,6 +468,18 @@ class SolidQueue::Job
 
     sig { params(value: T.untyped).void }
     def claimed_execution=(value); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
+    def create_batch(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
+    def create_batch!(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
+    def create_batch_execution(*args, &blk); end
+
+    sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
+    def create_batch_execution!(*args, &blk); end
 
     sig { params(args: T.untyped, blk: T.untyped).returns(T.untyped) }
     def create_blocked_execution(*args, &blk); end
@@ -500,6 +536,12 @@ class SolidQueue::Job
     def recurring_execution=(value); end
 
     sig { returns(T.untyped) }
+    def reload_batch; end
+
+    sig { returns(T.untyped) }
+    def reload_batch_execution; end
+
+    sig { returns(T.untyped) }
     def reload_blocked_execution; end
 
     sig { returns(T.untyped) }
@@ -516,6 +558,12 @@ class SolidQueue::Job
 
     sig { returns(T.untyped) }
     def reload_scheduled_execution; end
+
+    sig { void }
+    def reset_batch; end
+
+    sig { void }
+    def reset_batch_execution; end
 
     sig { void }
     def reset_blocked_execution; end

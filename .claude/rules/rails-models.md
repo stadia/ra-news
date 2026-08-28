@@ -10,9 +10,9 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
 - ActsAsTaggableOn::Tag (table: tags) - 1 assoc, 3 validations
   methods: count, taggings, validates_name_uniqueness?
 - Article (table: articles) - 13 assocs, 7 validations
-  concerns: FederailsBoostable, FederailsLikeable
+  concerns: FedipubBoostable, FedipubLikeable
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, missing_japanese, hangul_leftover_japanese, needs_japanese, for_admin_index
-  methods: to_markdown, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, federails_actor, likes_count, boosts_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, announce!, apply_remote_boost, apply_remote_like, apply_remote_unboost, apply_remote_unlike, available_in?
+  methods: to_markdown, generate_metadata, youtube_id, update_slug, user_name, base_content, should_federate?, fedipub_actor, likes_count, boosts_count, add_custom_context, all_tags_list, all_tags_list_on, all_tags_on, announce!, apply_remote_boost, apply_remote_like, apply_remote_unboost, apply_remote_unlike, available_in?
   INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
 - Boost (table: boosts) - 2 assocs, 2 validations
   methods: actor, boostable
@@ -22,7 +22,7 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
 - DiscordDelivery (table: notification_deliveries) - 2 assocs, 5 validations
   methods: article, failed!, failed?, notification_channel, sent!, sent?
   status: sent, failed
-- Federails::Actor (table: federails_actors) - 14 assocs, 14 validations
+- Fedipub::Actor (table: fedipub_actors) - 14 assocs, 14 validations
   methods: accepted_followers, accepted_following_followers, accepted_following_follows, accepted_follows, acct_uri, activities, activities_as_entity, actor_type, announce!, at_address, dislike!, distant?, entity, entity_configuration, feature, featured_items, featured_tags, federated_url, followed_by?, followers
 - JwtDenylist (table: jwt_denylists) - 0 assocs, 0 validations
 - Like (table: likes) - 2 assocs, 2 validations
@@ -37,7 +37,7 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
 - OauthAccount (table: oauth_accounts) - 1 assoc, 5 validations
   methods: user
 - Post (table: posts) - 10 assocs, 5 validations
-  concerns: FederailsBoostable, FederailsLikeable, HtmlSanitizable
+  concerns: FedipubBoostable, FedipubLikeable, HtmlSanitizable
   scopes: comments, standalone, visible, published_blog
   methods: federation_actor_entity, should_federate?, likes_count, boosts_count, reply, federation_reply_recipients, author_name, author_host, acts_as_nested_set_options, acts_as_nested_set_options?, add_custom_context, add_scope_conditions_to_options, after_move_to, all_tags_list, all_tags_list_on, all_tags_on, ancestors, announce!, apply_remote_boost, apply_remote_like
   post_type: short, blog, comment
@@ -65,6 +65,6 @@ _Quick reference - use `rails_get_model_details(model:"Name")` for live data wit
   methods: count, taggings, validates_name_uniqueness?
 - User (table: users) - 8 assocs, 13 validations
   scopes: with_role, admins
-  methods: admin?, full_name, has_role?, accept_follow, avatar_attached?, avatar_url, remove_avatar!, sync_federails_actor_extensions, to_activitypub_object, like!, unlike!, likes?, boost!, unboost!, boosts?, after_confirmation, articles, avatar, avatar_attachment, avatar_blob
+  methods: admin?, full_name, has_role?, accept_follow, avatar_attached?, avatar_url, remove_avatar!, sync_fedipub_actor_extensions, to_activitypub_object, like!, unlike!, likes?, boost!, unboost!, boosts?, after_confirmation, articles, avatar, avatar_attachment, avatar_blob
   SUPPORTED_LOCALES: ko, ja, en
   SUPPORTED_SIGNUP_HOSTS: ruby-news.dev, ruby-news.jp

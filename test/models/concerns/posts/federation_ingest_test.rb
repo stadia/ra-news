@@ -31,7 +31,7 @@ class Posts::FederationIngestTest < ActiveSupport::TestCase
   end
 
   test "article_id from a federated parent is an Integer" do
-    parent = Post.create!(body: "미러링된 리모트 기사", federails_actor: federails_actors(:john_actor),
+    parent = Post.create!(body: "미러링된 리모트 기사", fedipub_actor: fedipub_actors(:john_actor),
                           federated_url: "https://hackers.pub/ap/notes/parent-1", article: @article)
     hash = { "id" => "https://hackers.pub/ap/notes/child-1", "content" => "답글",
              "inReplyTo" => "https://hackers.pub/ap/notes/parent-1" }
@@ -49,7 +49,7 @@ class Posts::FederationIngestTest < ActiveSupport::TestCase
   # normally rather than being orphaned. Pinned to lock in the real behavior.
 
   test "reply to a discarded federated parent still resolves parent_id and article_id" do
-    parent = Post.create!(body: "삭제된 원격 부모", federails_actor: federails_actors(:john_actor),
+    parent = Post.create!(body: "삭제된 원격 부모", fedipub_actor: fedipub_actors(:john_actor),
                           federated_url: "https://remote.example.com/notes/discarded", article: @article)
     parent.discard!
 
@@ -62,7 +62,7 @@ class Posts::FederationIngestTest < ActiveSupport::TestCase
   end
 
   test "handle_federated_object? accepts a reply to a discarded parent's federated_url" do
-    parent = Post.create!(body: "삭제된 원격 부모", federails_actor: federails_actors(:john_actor),
+    parent = Post.create!(body: "삭제된 원격 부모", fedipub_actor: fedipub_actors(:john_actor),
                           federated_url: "https://remote.example.com/notes/discarded-2")
     parent.discard!
 
@@ -75,9 +75,9 @@ class Posts::FederationIngestTest < ActiveSupport::TestCase
   # ── id-less objects ─────────────────────────────────────────────────
   #
   # An object without "id" must be rejected at the inbox filter, not merely
-  # logged. federails looks the entity up with
+  # logged. fedipub looks the entity up with
   # `find_by federated_url: hash['id']` (utils/object.rb), and every *local*
-  # post has federated_url NULL (the gem's own `local_federails_entities`
+  # post has federated_url NULL (the gem's own `local_fedipub_entities`
   # scope is `where federated_url: nil`). So a nil id matches an arbitrary
   # local post, and an Update activity then overwrites it via
   # `assign_attributes` + `save!` (data_entity.rb).
