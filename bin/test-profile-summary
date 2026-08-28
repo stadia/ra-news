@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+# rbs_inline: disabled
+
+# TestProf 프로파일 로그를 GitHub Actions step summary용 마크다운으로 옮긴다.
+#
+#   bin/test-profile-summary minitest:tmp/profile-minitest.log rspec:tmp/profile-rspec.log
+#
+# Rails를 부팅하지 않는다. 프로파일 잡은 테스트가 끝난 뒤 실행되므로 앱을
+# 다시 올릴 이유가 없고, 부팅이 실패해도 요약만은 나와야 한다.
+
+require_relative "../lib/quality/test_profile_report"
+
+if ARGV.empty?
+  warn "usage: #{$PROGRAM_NAME} <runner>:<log path> [<runner>:<log path> ...]"
+  exit 1
+end
+
+logs = ARGV.to_h do |arg|
+  runner, path = arg.split(":", 2)
+
+  if path.nil? || path.empty?
+    warn "인자는 '<runner>:<log path>' 형식이어야 한다: #{arg}"
+    exit 1
+  end
+
+  # 로그가 없으면 러너가 실행조차 못 한 것이다. 여기서 죽으면 다른 러너의
+  # 결과까지 잃으므로, 빈 문자열을 넘겨 "출력 없음"으로 보고하게 둔다.
+  [ runner, File.exist?(path) ? File.read(path) : "" ]
+end
+
+puts Quality::TestProfileReport.to_markdown(logs)
