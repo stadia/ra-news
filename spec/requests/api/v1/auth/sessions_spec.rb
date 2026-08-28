@@ -5,7 +5,7 @@ require 'swagger_helper'
 RSpec.describe 'Sessions', type: :request do
   fixtures :users, :federails_actors
 
-  path '/login' do
+  path '/api/v1/auth/login' do
     post '로그인' do
       tags 'Authentication'
       description <<~DESC
@@ -58,7 +58,9 @@ RSpec.describe 'Sessions', type: :request do
                },
                required: %w[user refresh_token]
 
-        run_test!
+        run_test! do |response|
+          expect(response.headers["Cache-Control"]).to eq("no-store")
+        end
       end
 
       response '401', '로그인 실패' do
@@ -75,17 +77,16 @@ RSpec.describe 'Sessions', type: :request do
     end
   end
 
-  path '/logout' do
-    get '로그아웃' do
+  path '/api/v1/auth/logout' do
+    delete '로그아웃' do
       tags 'Authentication'
       description '현재 사용자의 세션을 종료하고 모든 리프레시 토큰을 폐기합니다. 인증이 필요합니다.'
       produces 'application/json'
       security [ bearer_auth: [] ]
 
       response '204', '로그아웃 성공' do
-        # Note: GET /logout handles JSON format by returning 204
         let(:Authorization) do
-          post user_session_path, params: { user: { email: users(:john).email, password: 'password' } }, as: :json
+          post api_v1_auth_login_path, params: { user: { email: users(:john).email, password: 'password' } }, as: :json
           response.headers['Authorization']
         end
 

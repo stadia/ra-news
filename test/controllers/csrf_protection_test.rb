@@ -26,11 +26,62 @@ class CsrfProtectionTest < ActionDispatch::IntegrationTest
   test "CSRF 토큰 없는 JSON 로그인 POST는 허용된다" do
     user = users(:john)
 
-    post user_session_path,
+    post api_v1_auth_login_path,
          params: { user: { email: user.email, password: "password" } },
          as: :json
 
     assert_response :success
+  end
+
+  test "CSRF 토큰 없는 HTML API 로그인 POST는 거부된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "JSON format suffix does not bypass CSRF for form encoded API login" do
+    user = users(:john)
+
+    post "#{api_v1_auth_login_path}.json",
+         params: { user: { email: user.email, password: "password" } }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "본문 없는 익명 API 로그아웃은 CSRF 검증 없이 허용된다" do
+    delete api_v1_auth_logout_path
+
+    assert_response :no_content
+  end
+
+  test "CSRF 토큰 없는 세션 쿠키 로그아웃은 거부된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+
+    delete api_v1_auth_logout_path
+
+    assert_response :unprocessable_entity
+  end
+
+  test "본문 없는 Bearer API 로그아웃은 CSRF 검증 없이 허용된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } },
+         as: :json
+    token = response.headers["Authorization"]
+    cookies.to_hash.keys.each { |key| cookies.delete(key) }
+
+    delete api_v1_auth_logout_path, headers: { "Authorization" => token }
+
+    assert_response :no_content
+    assert_equal 0, user.refresh_tokens.active.count
   end
 
   test "CSRF 토큰 없는 HTML 부스트 POST는 거부된다" do
