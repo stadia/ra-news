@@ -10,7 +10,7 @@ RSpec.describe 'Feed', type: :request do
     response.headers['Authorization']
   end
 
-  path '/feed' do
+  path '/api/v1/feed' do
     get '피드 조회' do
       tags 'Feed'
       description '현재 사용자의 팔로잉, 자신의 포스트, 부스트된 포스트를 시간순으로 반환합니다. 인증이 필요합니다.'

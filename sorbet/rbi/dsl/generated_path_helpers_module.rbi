@@ -46,6 +46,9 @@ module GeneratedPathHelpersModule
   def api_v1_auth_refresh_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
+  def api_v1_feed_path(*args); end
+
+  sig { params(args: T.untyped).returns(String) }
   def api_v1_post_boost_path(*args); end
 
   sig { params(args: T.untyped).returns(String) }
