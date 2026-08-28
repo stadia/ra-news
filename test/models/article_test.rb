@@ -785,7 +785,7 @@ class ArticleTest < ActiveSupport::TestCase
       end
     end
 
-    assert_includes deleted_keys, "rss_articles"
+    assert_includes deleted_keys, Article::RSS_CACHE_KEY
   end
 
   test "discard하면 Delete 활동이 생성되고 SocialDeleteJob이 등록된다" do

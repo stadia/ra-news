@@ -339,9 +339,16 @@ class Article < ApplicationRecord
     super(action, actor: actor, to: to, cc: cc)
   end
 
+  # HomeController#rss 가 읽고 이 콜백이 지운다. 캐시에는 반드시 로드된 레코드가
+  # 들어가야 한다 - 지연 평가 Relation 을 넣으면 컬럼 목록이 문자열로 굳어져
+  # 스키마 변경 이후 재생될 때 깨진다(아래 v2 주석 참고).
+  # v2: federails_actor_id -> fedipub_actor_id 리네임 시점에 v1 항목이 옛 컬럼
+  # 목록을 들고 있어 PG::UndefinedColumn 을 냈다. 키를 올려 오염된 항목을 버린다.
+  RSS_CACHE_KEY = "rss_articles/v2"
+
   #: () -> void
   def clear_rss_cache
-    Rails.cache.delete("rss_articles")
+    Rails.cache.delete(RSS_CACHE_KEY)
   end
 
   INDEX_NOW_WATCHED_ATTRIBUTES = %w[slug title title_ko title_ja body summary_body summary_body_ja published_at].freeze
