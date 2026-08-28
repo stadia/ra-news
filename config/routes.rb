@@ -39,6 +39,8 @@ Rails.application.routes.draw do
 
       resource :account, only: %i[show], controller: :account
 
+      get "feed", to: "feed#show", as: :feed
+
       resources :articles, only: %i[index] do
         collection do
           get :others
