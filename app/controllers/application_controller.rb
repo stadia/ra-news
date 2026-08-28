@@ -49,7 +49,7 @@ class ApplicationController < ActionController::Base
     )
   end
 
-  # CSRF 면제는 JSON 쓰기 요청에만 적용해야 한다. Rails는 `if:`와 `only:`를
+  # CSRF 면제는 실제 JSON Content-Type의 쓰기 요청에만 적용해야 한다. Rails는 `if:`와 `only:`를
   # OR로 평가해 HTML POST까지 통째로 면제되므로, 하나의 술어 안에서 AND로
   # 조합해야 한다.
   #: () -> bool
@@ -59,7 +59,7 @@ class ApplicationController < ActionController::Base
 
   #: () -> bool
   def json_request?
-    request.format.json?
+    request.content_mime_type == Mime[:json]
   end
 
   def cacheable_page!(max_age: 5.minutes)
