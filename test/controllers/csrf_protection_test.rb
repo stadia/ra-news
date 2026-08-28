@@ -33,6 +33,15 @@ class CsrfProtectionTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "CSRF 토큰 없는 HTML API 로그인 POST는 거부된다" do
+    user = users(:john)
+
+    post api_v1_auth_login_path,
+         params: { user: { email: user.email, password: "password" } }
+
+    assert_response :unprocessable_entity
+  end
+
   test "CSRF 토큰 없는 HTML 부스트 POST는 거부된다" do
     post api_v1_article_boost_path(articles(:ruby_article))
 

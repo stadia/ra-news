@@ -7,9 +7,9 @@
 # 액세스 토큰(JWT)은 devise-jwt가 dispatch_requests 매칭으로 Authorization
 # 헤더에 실어주므로 여기서는 리프레시 토큰만 직접 발급한다.
 class Api::V1::Auth::SessionsController < Devise::SessionsController
-  skip_before_action :verify_authenticity_token, raise: false
-  # create는 Devise가 `warden.authenticate!`로 파라미터 인증을 수행하므로
-  # 선행 인증 필터를 걷어낸다(걸어두면 로그인 자체가 401이 된다).
+  skip_before_action :verify_authenticity_token, if: :skip_csrf_for_json_write?
+  # create는 Devise가 `allow_params_authentication!`와 `warden.authenticate!`로
+  # 파라미터 인증을 수행하므로 ApplicationController의 인증 callback과 중복되지 않게 제외한다.
   skip_before_action :authenticate_user!, only: :create
 
   respond_to :json
@@ -21,8 +21,15 @@ class Api::V1::Auth::SessionsController < Devise::SessionsController
 
   private
 
+  def verify_signed_out_user
+    return if request.headers["Authorization"].present? && current_user.present?
+
+    super
+  end
+
   def respond_with(resource, _opts = {})
     _record, raw = RefreshToken.issue(resource)
+    response.headers["Cache-Control"] = "no-store"
 
     render json: {
       user: UserSerializer.new(resource).serializable_hash,

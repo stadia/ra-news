@@ -42,7 +42,9 @@ RSpec.describe 'Current User', type: :request do
 
         let(:Authorization) { auth_token(users(:john)) }
 
-        run_test!
+        run_test! do |response|
+          expect(response.headers["Cache-Control"]).to eq("no-store")
+        end
       end
 
       response '401', '인증 실패' do
