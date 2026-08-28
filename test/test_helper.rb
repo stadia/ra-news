@@ -19,6 +19,17 @@ require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"
 
+# 테스트 프로파일러. 계측은 전부 ENV 변수로만 켜지고, 변수가 없으면 아무것도
+# 하지 않는다. 샘플링 프로파일러(TEST_VERNIER)는 이 require가
+# `TestProf.activate` 훅으로 알아서 기동한다.
+require "test-prof"
+
+# EventProf/TagProf/MemoryProf/Sample은 test-prof가 싣는 minitest 플러그인이
+# 담당한다. minitest 6.0이 `Minitest.run`에서 젬 자동 탐색(`load_plugins`)을
+# 없앴으므로 명시적으로 등록해야 한다 -- Rails도 같은 이유로 "rails" 하나만
+# 등록해 둔다.
+Minitest.load "test_prof"
+
 Warning[:deprecated] = true
 module ActiveSupport
   class TestCase

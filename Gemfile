@@ -77,6 +77,11 @@ group :development, :test do
   gem "flog", require: false
   gem "simplecov", require: false
   gem "tapioca", require: false
+
+  # Test profiling [https://github.com/test-prof/test-prof]
+  # 계측은 ENV 변수로만 켜진다. 평소 실행에는 아무 영향이 없다.
+  gem "test-prof", "~> 1.6"
+  gem "vernier", require: false # TEST_VERNIER=1 일 때만 로드되는 샘플링 프로파일러
 end
 
 group :development do

@@ -10,6 +10,10 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# 테스트 프로파일러. EventProf/TagProf/Vernier 리스너를 RSpec에 자동 등록한다.
+# ENV(EVENT_PROF, TAG_PROF, TEST_VERNIER)가 없으면 아무것도 하지 않는다.
+require 'test-prof'
+
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end

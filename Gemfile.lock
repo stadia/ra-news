@@ -911,6 +911,8 @@ GEM
       tsort
     terminal-table (4.0.0)
       unicode-display_width (>= 1.1.1, < 4)
+    test-prof (1.6.3)
+      logger
     thor (1.5.0)
     timeout (0.6.1)
     tsort (0.2.0)
@@ -926,6 +928,7 @@ GEM
     useragent (0.16.11)
     validated_object (2.3.4)
       activemodel (>= 3.2.21)
+    vernier (1.11.0)
     version_gem (1.1.15)
     warden (1.2.9)
       rack (>= 2.0.9)
@@ -1080,8 +1083,10 @@ DEPENDENCIES
   tailwind_merge (~> 1.5)
   tailwindcss-rails (~> 4.5)
   tapioca
+  test-prof (~> 1.6)
   turbo-rails
   tzinfo-data
+  vernier
   web-console
   web-push (~> 3.1)
   youtube-transcript-rb (~> 0.2.0)
