@@ -17,19 +17,19 @@
 - Performance: 5 issues detected
 ## Key models (21 total)
 - **ActsAsTaggableOn::Tag** (1a, 3v) - has_many :taggings
-- **Article** (13a, 7v) - has_many :boosts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :federails_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
+- **Article** (13a, 7v) - has_many :boosts, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, has_one :pg_search_document, belongs_to :user, belongs_to :site, belongs_to :fedipub_actor, has_many :posts, has_many :notification_deliveries, has_one :thumbnail_attachment, has_one :thumbnail_blob
   scopes: full_text_search_for, related, unrelated, confirmed, without_toast, missing_japanese, hangul_leftover_japanese, needs_japanese, for_admin_index | INDEX_NOW_WATCHED_ATTRIBUTES: slug, title, title_ko, title_ja, body, summary_body, summary_body_ja, published_at
 - **Boost** (2a, 2v) - belongs_to :actor, belongs_to :boostable
 - **DiscordChannel** (1a, 3v) - has_many :notification_deliveries
 - **DiscordDelivery** (2a, 5v) - belongs_to :article, belongs_to :notification_channel
-- **Federails::Actor** (14a, 14v) - belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
+- **Fedipub::Actor** (14a, 14v) - belongs_to :entity, has_many :activities, has_many :activities_as_entity, has_many :following_followers, has_many :following_follows, has_many :followers, has_many :follows, has_many :accepted_following_followers, has_many :accepted_following_follows, has_many :accepted_followers, has_many :accepted_follows, has_many :featured_items, has_many :featured_tags, belongs_to :host
 - **JwtDenylist**
 - **Like** (2a, 2v) - belongs_to :actor, belongs_to :likeable
 - **NotificationChannel** (1a, 3v) - has_many :notification_deliveries
   scopes: active, delivery_ready
 - **NotificationDelivery** (2a, 5v) - belongs_to :article, belongs_to :notification_channel
 - **OauthAccount** (1a, 5v) - belongs_to :user
-- **Post** (10a, 5v) - has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :federails_actor
+- **Post** (10a, 5v) - has_many :boosts, belongs_to :parent, has_many :children, has_many :taggings, has_many :base_tags, has_many :tag_taggings, has_many :tags, belongs_to :user, belongs_to :article, belongs_to :fedipub_actor
   scopes: comments, standalone, visible, published_blog
 - **Preference** (0a, 2v)
 - **PushSubscription** (1a, 6v) - belongs_to :user

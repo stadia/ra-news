@@ -138,8 +138,8 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
   test "GET likes as owner Turbo frame renders liked articles and posts" do
     user = users(:john)
     sign_in user
-    Like.create!(actor: user.federails_actor, likeable: articles(:ruby_article), created_at: Time.current)
-    Like.create!(actor: user.federails_actor, likeable: posts(:root_post), created_at: 1.minute.ago)
+    Like.create!(actor: user.fedipub_actor, likeable: articles(:ruby_article), created_at: Time.current)
+    Like.create!(actor: user.fedipub_actor, likeable: posts(:root_post), created_at: 1.minute.ago)
 
     get "/@#{user.username}/likes", headers: { "Turbo-Frame" => "true" }
 
@@ -252,8 +252,8 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "GET boosts as anonymous user renders boosted articles and posts" do
     user = users(:john)
-    Boost.create!(actor: user.federails_actor, boostable: articles(:ruby_article), created_at: Time.current)
-    Boost.create!(actor: user.federails_actor, boostable: posts(:root_post), created_at: 1.minute.ago)
+    Boost.create!(actor: user.fedipub_actor, boostable: articles(:ruby_article), created_at: Time.current)
+    Boost.create!(actor: user.fedipub_actor, boostable: posts(:root_post), created_at: 1.minute.ago)
 
     get "/@#{user.username}/boosts"
 

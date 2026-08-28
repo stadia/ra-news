@@ -16,9 +16,9 @@ class Post < ApplicationRecord
   include Posts::Federation
   include Posts::FederationIngest
   include Discard::Model
-  include Federails::DataEntity
-  include FederailsLikeable
-  include FederailsBoostable
+  include Fedipub::DataEntity
+  include FedipubLikeable
+  include FedipubBoostable
 
   self.discard_column = :deleted_at
 
@@ -33,7 +33,7 @@ class Post < ApplicationRecord
   # ── Associations ─────────────────────────────────────────────────────
   belongs_to :user, optional: true
   belongs_to :article, optional: true, counter_cache: :posts_count
-  belongs_to :federails_actor, class_name: "Federails::Actor", optional: true
+  belongs_to :fedipub_actor, class_name: "Fedipub::Actor", optional: true
 
   # ── Scopes ───────────────────────────────────────────────────────────
   scope :comments, -> { where(post_type: :comment) }
@@ -48,14 +48,14 @@ class Post < ApplicationRecord
   validate :validate_user_or_actor
   validate :validate_parent_post
 
-  # Federails::DataEntity가 추가하는 federails_actor presence 검증을 제거
-  federails_actor_presence_validator = _validate_callbacks
+  # Fedipub::DataEntity가 추가하는 fedipub_actor presence 검증을 제거
+  fedipub_actor_presence_validator = _validate_callbacks
     .map(&:filter)
     .find do |filter|
       filter.is_a?(ActiveRecord::Validations::PresenceValidator) &&
-        filter.attributes == [ :federails_actor ]
+        filter.attributes == [ :fedipub_actor ]
     end
-  skip_callback :validate, :before, federails_actor_presence_validator if federails_actor_presence_validator
+  skip_callback :validate, :before, fedipub_actor_presence_validator if fedipub_actor_presence_validator
 
   # ── Callbacks ────────────────────────────────────────────────────────
   before_validation :type_article_post_as_comment, on: :create
@@ -69,7 +69,7 @@ class Post < ApplicationRecord
   after_undiscard :handle_after_undiscard
 
   # ── Federation ───────────────────────────────────────────────────────
-  acts_as_federails_data handles: "Note",
+  acts_as_fedipub_data handles: "Note",
                          actor_entity_method: :federation_actor_entity,
                          soft_deleted_method: :discarded?,
                          soft_delete_date_method: :deleted_at,
@@ -78,20 +78,20 @@ class Post < ApplicationRecord
   # Only blog posts support soft delete (trash/restore). Short posts and
   # comments hard-destroy, both locally and on inbound federated Delete, so
   # their rows (and counter caches) are removed as before.
-  on_federails_delete_requested :handle_federails_delete_requested
-  on_federails_undelete_requested :undiscard!
+  on_fedipub_delete_requested :handle_fedipub_delete_requested
+  on_fedipub_undelete_requested :undiscard!
 
   # ── Public Instance Methods ──────────────────────────────────────────
 
-  #: () -> (User | Federails::Actor)?
+  #: () -> (User | Fedipub::Actor)?
   def federation_actor_entity
-    user || federails_actor
+    user || fedipub_actor
   end
 
   #: () -> bool
   def should_federate?
     # Only published posts federate. Drafts must stay local — without the
-    # published? gate, Federails' after_create/after_update would push an
+    # published? gate, Fedipub' after_create/after_update would push an
     # unpublished draft (and every autosave) to remote followers. Discarded
     # posts keep status :published, so after_discard can still emit a Delete.
     federation_actor_entity.present? && published?
@@ -118,7 +118,7 @@ class Post < ApplicationRecord
 
   #: () -> Array[String]
   def federation_reply_recipients
-    actor = parent&.federails_actor
+    actor = parent&.fedipub_actor
     if actor&.distant?
       [ actor.federated_url ]
     else
@@ -128,14 +128,14 @@ class Post < ApplicationRecord
 
   #: () -> String
   def author_name
-    user&.full_name || federails_actor&.username || "익명"
+    user&.full_name || fedipub_actor&.username || "익명"
   end
 
   #: () -> String?
   def author_host
     return if user_id.present?
-    return if federails_actor.nil? || federails_actor&.server.blank?
-    "(#{federails_actor&.server})"
+    return if fedipub_actor.nil? || fedipub_actor&.server.blank?
+    "(#{fedipub_actor&.server})"
   end
 
   # ── Private Instance Methods ─────────────────────────────────────────
@@ -143,29 +143,29 @@ class Post < ApplicationRecord
 
   #: () -> void
   def handle_after_discard
-    create_federails_activity "Delete" if published?
+    create_fedipub_activity "Delete" if published?
   end
 
   #: () -> void
   def handle_after_undiscard
-    create_federails_activity "Undo" if published?
+    create_fedipub_activity "Undo" if published?
   end
 
   #: () -> void
-  def handle_federails_delete_requested
+  def handle_fedipub_delete_requested
     logger.info { "Federated post deletion requested #{id}" }
     blog? ? discard! : destroy!
   end
 
-  def create_federails_activity(action, actor: nil, to: nil, cc: nil)
-    actor ||= federails_actor || user&.federails_actor
+  def create_fedipub_activity(action, actor: nil, to: nil, cc: nil)
+    actor ||= fedipub_actor || user&.fedipub_actor
     return if actor.blank?
 
     # A draft never federated, so its first publish fires an "Update" (via the
     # after_update callback) that remotes would drop — there's no object to
     # update yet. Promote that first Update to a "Create" so the post is
     # actually delivered. Once a Create exists, later edits federate as Updates.
-    if action == "Update" && !Federails::Activity.exists?(entity: self, action: "Create")
+    if action == "Update" && !Fedipub::Activity.exists?(entity: self, action: "Create")
       action = "Create"
     end
 
@@ -224,7 +224,7 @@ class Post < ApplicationRecord
   end
 
   #: () -> void
-  def set_federails_actor
+  def set_fedipub_actor
     return if federation_actor_entity.nil?
 
     super
@@ -232,8 +232,8 @@ class Post < ApplicationRecord
 
   #: () -> void
   def validate_user_or_actor
-    unless user_id.present? || federails_actor_id.present?
-      errors.add(:base, "user 또는 federails_actor가 필요합니다")
+    unless user_id.present? || fedipub_actor_id.present?
+      errors.add(:base, "user 또는 fedipub_actor가 필요합니다")
     end
   end
 

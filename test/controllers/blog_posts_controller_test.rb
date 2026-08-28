@@ -228,7 +228,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
   test "deleting a draft does not create a Delete activity" do
     sign_in @user
 
-    assert_no_difference -> { Federails::Activity.where(action: "Delete").count } do
+    assert_no_difference -> { Fedipub::Activity.where(action: "Delete").count } do
       delete blog_post_url(@draft)
     end
   end
@@ -244,7 +244,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
   test "deleting a published blog federates a Delete activity" do
     sign_in @user
 
-    assert_difference -> { Federails::Activity.where(action: "Delete", entity: @published).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Delete", entity: @published).count }, 1 do
       delete blog_post_url(@published)
     end
   end
@@ -292,7 +292,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     @published.discard!
 
-    assert_difference -> { Federails::Activity.where(action: "Undo", entity: @published).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Undo", entity: @published).count }, 1 do
       patch undiscard_blog_post_url(@published)
     end
   end
@@ -330,7 +330,7 @@ class BlogPostsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     @published.discard!
 
-    assert_difference -> { Federails::Activity.where(action: "Delete", entity: @published).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Delete", entity: @published).count }, 1 do
       delete destroy_permanently_blog_post_url(@published)
     end
   end

@@ -22,14 +22,14 @@ class PostTest < ActiveSupport::TestCase
     assert_predicate post, :valid?, post.errors.full_messages.join(", ")
   end
 
-  test "federails_actor가 있는 post는 유효하다" do
-    actor = federails_actors(:john_actor)
-    post = Post.new(body: "리모트 포스트", federails_actor: actor, federated_url: "https://example.com/notes/1")
+  test "fedipub_actor가 있는 post는 유효하다" do
+    actor = fedipub_actors(:john_actor)
+    post = Post.new(body: "리모트 포스트", fedipub_actor: actor, federated_url: "https://example.com/notes/1")
 
     assert_predicate post, :valid?, post.errors.full_messages.join(", ")
   end
 
-  test "user도 federails_actor도 없으면 유효하지 않다" do
+  test "user도 fedipub_actor도 없으면 유효하지 않다" do
     post = Post.new(body: "고아 포스트")
 
     assert_not post.valid?
@@ -79,16 +79,16 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @root_post.user, @root_post.federation_actor_entity
   end
 
-  test "federation_actor_entity는 federails_actor를 반환한다 (리모트)" do
-    assert_equal @remote_post.federails_actor, @remote_post.federation_actor_entity
+  test "federation_actor_entity는 fedipub_actor를 반환한다 (리모트)" do
+    assert_equal @remote_post.fedipub_actor, @remote_post.federation_actor_entity
   end
 
   test "should_federate?는 entity가 있으면 true" do
     assert_predicate @root_post, :should_federate?
   end
 
-  test "federails 좋아요 콜백으로 좋아요와 취소를 처리한다" do
-    actor = Federails::Actor.create!(
+  test "fedipub 좋아요 콜백으로 좋아요와 취소를 처리한다" do
+    actor = Fedipub::Actor.create!(
       federated_url: "https://remote.example/users/post-liker-#{SecureRandom.hex(4)}",
       username: "post_liker",
       name: "Post Liker",
@@ -163,8 +163,8 @@ class PostTest < ActiveSupport::TestCase
     assert_equal @user.full_name, @root_post.author_name
   end
 
-  test "author_name은 user가 없으면 federails_actor의 username을 반환한다" do
-    assert_equal @remote_post.federails_actor.username, @remote_post.author_name
+  test "author_name은 user가 없으면 fedipub_actor의 username을 반환한다" do
+    assert_equal @remote_post.fedipub_actor.username, @remote_post.author_name
   end
 
   test "author_name은 user도 actor도 없으면 익명을 반환한다" do
@@ -173,8 +173,8 @@ class PostTest < ActiveSupport::TestCase
     assert_equal "익명", post.author_name
   end
 
-  test "author_host는 federails_actor가 있으면 서버 정보를 반환한다" do
-    assert_equal "(#{@remote_post.federails_actor.server})", @remote_post.author_host
+  test "author_host는 fedipub_actor가 있으면 서버 정보를 반환한다" do
+    assert_equal "(#{@remote_post.fedipub_actor.server})", @remote_post.author_host
   end
 
   test "author_host는 로컬 user가 있으면 nil을 반환한다" do
@@ -182,7 +182,7 @@ class PostTest < ActiveSupport::TestCase
     assert_nil @comment_post.author_host
   end
 
-  test "author_host는 federails_actor가 없으면 nil을 반환한다" do
+  test "author_host는 fedipub_actor가 없으면 nil을 반환한다" do
     assert_nil @root_post.author_host
   end
 
@@ -307,7 +307,7 @@ class PostTest < ActiveSupport::TestCase
   test "발행된 장문을 discard하면 Delete 활동이 생성된다" do
     published = posts(:blog_published)
 
-    assert_difference -> { Federails::Activity.where(action: "Delete", entity: published).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Delete", entity: published).count }, 1 do
       published.discard!
     end
   end
@@ -316,7 +316,7 @@ class PostTest < ActiveSupport::TestCase
     published = posts(:blog_published)
     published.discard!
 
-    assert_difference -> { Federails::Activity.where(action: "Undo", entity: published).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Undo", entity: published).count }, 1 do
       published.undiscard!
     end
   end
@@ -325,7 +325,7 @@ class PostTest < ActiveSupport::TestCase
     draft = posts(:blog_draft)
     draft.discard!
 
-    assert_no_difference -> { Federails::Activity.where(action: "Undo").count } do
+    assert_no_difference -> { Fedipub::Activity.where(action: "Undo").count } do
       draft.undiscard!
     end
   end
@@ -354,8 +354,8 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "parent에 user가 없으면 알림이 가지 않는다" do
-    actor = federails_actors(:john_actor)
-    remote_root = Post.create!(body: "리모트 루트", federails_actor: actor, federated_url: "https://remote.example/notes/rr1")
+    actor = fedipub_actors(:john_actor)
+    remote_root = Post.create!(body: "리모트 루트", fedipub_actor: actor, federated_url: "https://remote.example/notes/rr1")
     assert_no_enqueued_jobs(only: ReplyNotificationJob) do
       Post.create!(body: "로컬 답글", user: @user, parent: remote_root)
     end
@@ -503,7 +503,7 @@ class PostTest < ActiveSupport::TestCase
   test "from_activitypub_object는 리모트 article URL이 미러링된 post를 가리키면 parent_id로 연결한다" do
     mirrored = Post.create!(
       body: "미러링된 리모트 기사",
-      federails_actor: federails_actors(:john_actor),
+      fedipub_actor: fedipub_actors(:john_actor),
       federated_url: "https://hackers.pub/ap/articles/019f4f28-dc1a-7d42-9e95-2ea7da505e1f"
     )
     hash = {
@@ -558,7 +558,7 @@ class PostTest < ActiveSupport::TestCase
     # Pinned to `nil` by the initial assignment otherwise, which rejects the
     # assignment made inside the block below.
     captured = nil #: Hash[Symbol, untyped]?
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
+    Fedipub::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -578,7 +578,7 @@ class PostTest < ActiveSupport::TestCase
     # Pinned to `nil` by the initial assignment otherwise, which rejects the
     # assignment made inside the block below.
     captured = nil #: Hash[Symbol, untyped]?
-    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
+    Fedipub::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -587,7 +587,7 @@ class PostTest < ActiveSupport::TestCase
   end
 
   test "federation_reply_recipients는 원격 parent의 actor URL을 반환한다" do
-    remote_actor = Federails::Actor.create!(
+    remote_actor = Fedipub::Actor.create!(
       federated_url: "https://remote.example/users/original",
       username: "original",
       name: "Original",
@@ -600,7 +600,7 @@ class PostTest < ActiveSupport::TestCase
       actor_type: "Person",
       local: false
     )
-    remote_root = Post.create!(body: "원격 포스트", federails_actor: remote_actor, federated_url: "https://remote.example/notes/456")
+    remote_root = Post.create!(body: "원격 포스트", fedipub_actor: remote_actor, federated_url: "https://remote.example/notes/456")
     reply = Post.create!(body: "원격 포스트에 대한 답글", user: @user, parent: remote_root)
 
     assert_equal [ "https://remote.example/users/original" ], reply.federation_reply_recipients
@@ -667,7 +667,7 @@ class PostTest < ActiveSupport::TestCase
     # Pinned to `nil` by the initial assignment otherwise, which rejects the
     # assignment made inside the block below.
     captured = nil #: Hash[Symbol, untyped]?
-    Federails::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
+    Fedipub::DataTransformer::Note.stub(:to_federation, ->(record, content:, name:, custom:) { captured = { record:, content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -700,7 +700,7 @@ class PostTest < ActiveSupport::TestCase
     # Pinned to `nil` by the initial assignment otherwise, which rejects the
     # assignment made inside the block below.
     captured = nil #: Hash[Symbol, untyped]?
-    Federails::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
+    Fedipub::DataTransformer::Note.stub(:to_federation, ->(_record, content:, name:, custom:) { captured = { content:, name:, custom: }; { "ok" => true } }) do
       post.to_activitypub_object
     end
 
@@ -712,11 +712,11 @@ class PostTest < ActiveSupport::TestCase
 
   # 초안은 원격에 객체가 없으므로 첫 발행은 Create로 전달해야 한다. publish!는
   # save!가 일으키는 자동 Update를 억제하고 Create를 명시적으로 발행한다.
-  test "publish!는 초안 첫 발행 시 Federails Create 활동을 발행한다" do
+  test "publish!는 초안 첫 발행 시 Fedipub Create 활동을 발행한다" do
     post = posts(:blog_draft)
 
-    assert_difference -> { Federails::Activity.where(action: "Create", entity: post).count }, 1 do
-      assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
+    assert_difference -> { Fedipub::Activity.where(action: "Create", entity: post).count }, 1 do
+      assert_no_difference -> { Fedipub::Activity.where(action: "Update", entity: post).count } do
         post.publish!
       end
     end
@@ -726,11 +726,11 @@ class PostTest < ActiveSupport::TestCase
   # 유지한다. Create 승격은 Create 활동이 없는 최초 발행에만 적용된다.
   test "이미 Create가 발행된 글의 수정은 Update 경로를 유지한다" do
     post = posts(:blog_published)
-    Federails::Activity.create!(actor: federails_actors(:john_actor), entity: post, action: "Create")
+    Fedipub::Activity.create!(actor: fedipub_actors(:john_actor), entity: post, action: "Create")
     post.body = "수정된 본문"
 
-    assert_difference -> { Federails::Activity.where(action: "Update", entity: post).count }, 1 do
-      assert_no_difference -> { Federails::Activity.where(action: "Create", entity: post).count } do
+    assert_difference -> { Fedipub::Activity.where(action: "Update", entity: post).count }, 1 do
+      assert_no_difference -> { Fedipub::Activity.where(action: "Create", entity: post).count } do
         post.save!
       end
     end
@@ -740,19 +740,19 @@ class PostTest < ActiveSupport::TestCase
   test "발행 장문을 discard하면 Delete 활동을 발행한다" do
     post = posts(:blog_published)
 
-    assert_difference -> { Federails::Activity.where(action: "Delete", entity: post).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(action: "Delete", entity: post).count }, 1 do
       post.discard
     end
 
     assert_predicate post.reload, :discarded?
   end
 
-  # soft_deleted_method: :discarded? 설정으로 삭제된 레코드는 federails_tombstoned?가
+  # soft_deleted_method: :discarded? 설정으로 삭제된 레코드는 fedipub_tombstoned?가
   # 참이 되어, deleted_at 갱신이 일으키는 일반 Update 활동은 억제된다.
   test "발행 장문을 discard하면 Update 활동은 발행하지 않는다" do
     post = posts(:blog_published)
 
-    assert_no_difference -> { Federails::Activity.where(action: "Update", entity: post).count } do
+    assert_no_difference -> { Fedipub::Activity.where(action: "Update", entity: post).count } do
       post.discard
     end
   end
@@ -760,7 +760,7 @@ class PostTest < ActiveSupport::TestCase
   # 초안은 발행 전까지 로컬에만 머물러야 한다. should_federate?가 published?를
   # 게이트하지 않으면 생성·자동저장마다 미발행 초안이 원격 팔로워에게 새어 나간다.
   test "장문 초안은 생성 시 연합 활동을 발행하지 않는다" do
-    assert_no_difference -> { Federails::Activity.where(action: [ "Create", "Update" ]).count } do
+    assert_no_difference -> { Fedipub::Activity.where(action: [ "Create", "Update" ]).count } do
       @user.posts.create!(post_type: :blog, status: :draft, title: "비공개 초안", body: "")
     end
   end
@@ -768,7 +768,7 @@ class PostTest < ActiveSupport::TestCase
   test "장문 초안은 자동저장(update) 시 연합 활동을 발행하지 않는다" do
     draft = posts(:blog_draft)
 
-    assert_no_difference -> { Federails::Activity.where(entity: draft).count } do
+    assert_no_difference -> { Fedipub::Activity.where(entity: draft).count } do
       draft.update!(title: "자동 저장됨", body: "<p>본문</p>")
     end
   end
@@ -776,7 +776,7 @@ class PostTest < ActiveSupport::TestCase
   test "초안을 발행하면 그때 연합된다" do
     draft = @user.posts.create!(post_type: :blog, status: :draft, title: "초안", body: "<p>본문</p>")
 
-    assert_difference -> { Federails::Activity.where(entity: draft).count }, 1 do
+    assert_difference -> { Fedipub::Activity.where(entity: draft).count }, 1 do
       draft.publish!
     end
   end
@@ -785,7 +785,7 @@ class PostTest < ActiveSupport::TestCase
   test "인바운드 연합 삭제는 장문을 soft discard한다" do
     post = posts(:blog_published)
 
-    post.run_callbacks(:on_federails_delete_requested)
+    post.run_callbacks(:on_fedipub_delete_requested)
 
     assert_predicate post.reload, :discarded?
     assert Post.exists?(post.id)
@@ -794,7 +794,7 @@ class PostTest < ActiveSupport::TestCase
   test "인바운드 연합 삭제는 댓글을 hard destroy한다" do
     post = @comment_post
 
-    post.run_callbacks(:on_federails_delete_requested)
+    post.run_callbacks(:on_fedipub_delete_requested)
 
     assert_not Post.exists?(post.id)
   end

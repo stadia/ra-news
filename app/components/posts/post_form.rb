@@ -130,7 +130,7 @@ class Components::Posts::PostForm < Components::Base
   def reply_target_label
     return unless parent_post.present?
 
-    parent_post.user&.name || parent_post.federails_actor&.name || parent_post.author_name
+    parent_post.user&.name || parent_post.fedipub_actor&.name || parent_post.author_name
   end
 
   def reply_preview_text
@@ -143,6 +143,6 @@ class Components::Posts::PostForm < Components::Base
     return @parent_post if defined?(@parent_post)
     return @parent_post = nil if @post.parent_id.blank?
 
-    @parent_post = Post.includes(:user, :federails_actor).find_by(id: @post.parent_id)
+    @parent_post = Post.includes(:user, :fedipub_actor).find_by(id: @post.parent_id)
   end
 end

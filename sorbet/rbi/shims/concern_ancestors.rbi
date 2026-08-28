@@ -3,7 +3,7 @@
 # Self-types for model concerns.
 #
 # A concern calls methods that its includer provides -- `title_ko` on an
-# Article, `federails_actor` on a Post -- but nothing in the module says what
+# Article, `fedipub_actor` on a Post -- but nothing in the module says what
 # the includer is, so Sorbet resolves `self` to the bare module and reports
 # every such call as a missing method.
 #
@@ -70,11 +70,11 @@ end
 # superclass below ActiveRecord::Base -- and `persisted?`, the only thing these
 # modules ask of their includer, comes from there anyway.
 #
-# Their `included` blocks register Federails callbacks on an Active Record class.
+# Their `included` blocks register Fedipub callbacks on an Active Record class.
 # Sorbet's `bind` takes a single class name -- no intersection -- so they name
 # `Article`, one of the two includers. Post carries the identical surface (both
 # models include both concerns), so nothing goes unchecked by the choice.
-module FederailsBoostable
+module FedipubBoostable
   extend T::Helpers
 
   requires_ancestor { ActiveRecord::Base }
@@ -90,7 +90,7 @@ module FederailsBoostable
   end
 end
 
-module FederailsLikeable
+module FedipubLikeable
   extend T::Helpers
 
   requires_ancestor { ActiveRecord::Base }

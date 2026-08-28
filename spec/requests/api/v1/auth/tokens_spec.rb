@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'API V1 Auth Tokens', type: :request do
-  fixtures :users, :federails_actors
+  fixtures :users, :fedipub_actors
 
   path '/api/v1/auth/refresh' do
     post '액세스 토큰 갱신' do

@@ -2,9 +2,9 @@
 # frozen_string_literal: true
 
 class Components::UserAvatar < Components::Base
-  def initialize(user: nil, federails_actor: nil, name:, size: "h-8 w-8", fallback_class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold")
+  def initialize(user: nil, fedipub_actor: nil, name:, size: "h-8 w-8", fallback_class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted text-sm font-bold")
     @user = user
-    @federails_actor = federails_actor
+    @fedipub_actor = fedipub_actor
     @name = name
     @size = size
     @fallback_class = fallback_class
@@ -25,6 +25,6 @@ class Components::UserAvatar < Components::Base
   private
 
   def avatar_url
-    @user&.avatar_url || @federails_actor&.extensions&.dig("icon", "url")
+    @user&.avatar_url || @fedipub_actor&.extensions&.dig("icon", "url")
   end
 end

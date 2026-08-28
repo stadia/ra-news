@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'Likes', type: :request do
-  fixtures :users, :articles, :sites, :federails_actors
+  fixtures :users, :articles, :sites, :fedipub_actors
 
   # Helper to get a valid JWT
   def auth_token(user)

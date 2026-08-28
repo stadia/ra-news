@@ -10,21 +10,21 @@ class FollowingsController < ApplicationController
   after_action :verify_authorized, except: [ :new ]
 
   def new
-    actor = Federails::Actor.find_or_create_by_federation_url(params.require(:uri))
+    actor = Fedipub::Actor.find_or_create_by_federation_url(params.require(:uri))
     skip_authorization
     redirect_to actor_path(actor)
   end
 
   def create
     @following = build_following
-    @following.actor = current_user.federails_actor
-    authorize @following, policy_class: Federails::Client::FollowingPolicy
+    @following.actor = current_user.fedipub_actor
+    authorize @following, policy_class: Fedipub::Client::FollowingPolicy
 
     persist_following(@following.target_actor)
   end
 
   def follow
-    authorize Federails::Following, policy_class: Federails::Client::FollowingPolicy
+    authorize Fedipub::Following, policy_class: Fedipub::Client::FollowingPolicy
 
     @following = build_following_from_account
     return render_follow_lookup_error unless @following
@@ -48,8 +48,8 @@ class FollowingsController < ApplicationController
   private
 
   def set_following
-    @following = Federails::Following.find_param(params[:id])
-    authorize @following, policy_class: Federails::Client::FollowingPolicy
+    @following = Fedipub::Following.find_param(params[:id])
+    authorize @following, policy_class: Fedipub::Client::FollowingPolicy
   end
 
   def following_params
@@ -57,13 +57,13 @@ class FollowingsController < ApplicationController
   end
 
   def build_following
-    Federails::Following.new(following_params)
+    Fedipub::Following.new(following_params)
   end
 
   def build_following_from_account
-    Federails::Following.new_from_account(
+    Fedipub::Following.new_from_account(
       params.require(:account),
-      actor: current_user.federails_actor
+      actor: current_user.fedipub_actor
     )
   rescue ActiveRecord::RecordNotFound
     nil
@@ -72,11 +72,11 @@ class FollowingsController < ApplicationController
   def persist_following(target_actor)
     respond_to do |format|
       if @following.save
-        format.html { redirect_to actor_path(current_user.federails_actor), notice: "팔로우했습니다." }
+        format.html { redirect_to actor_path(current_user.fedipub_actor), notice: "팔로우했습니다." }
         format.turbo_stream { render_follow_actions_stream(target_actor) }
         format.json { render json: { status: @following.status }, status: :created }
       else
-        format.html { redirect_to actor_path(current_user.federails_actor), alert: "팔로우에 실패했습니다." }
+        format.html { redirect_to actor_path(current_user.fedipub_actor), alert: "팔로우에 실패했습니다." }
         format.turbo_stream { render_follow_actions_stream(target_actor) }
         format.json { render json: @following.errors, status: :unprocessable_entity }
       end

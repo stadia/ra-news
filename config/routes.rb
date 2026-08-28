@@ -146,7 +146,7 @@ Rails.application.routes.draw do
     mount RubyLLM::Monitoring::Engine, at: "/monitoring"
   end
 
-  # Federails client 대체 라우트
+  # Fedipub client 대체 라우트
   resources :followings, only: [ :new, :create, :destroy ] do
     collection do
       post :follow
@@ -164,5 +164,5 @@ Rails.application.routes.draw do
 
   get "/feed", to: "feed#show", as: :feed
 
-  mount Federails::Engine => "/"
+  mount Fedipub::Engine => "/"
 end

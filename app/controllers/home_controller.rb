@@ -174,7 +174,7 @@ class HomeController < ApplicationController
   def recent_comments
     Post.comments.kept
       .joins(:article)
-      .preload(:article, :federails_actor, user: { avatar_attachment: :blob })
+      .preload(:article, :fedipub_actor, user: { avatar_attachment: :blob })
       .where(article: { deleted_at: nil })
       .order(created_at: :desc)
       .limit(10)

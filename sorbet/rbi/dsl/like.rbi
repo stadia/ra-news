@@ -361,10 +361,10 @@ class Like
   end
 
   module GeneratedAssociationMethods
-    sig { returns(T.nilable(::Federails::Actor)) }
+    sig { returns(T.nilable(::Fedipub::Actor)) }
     def actor; end
 
-    sig { params(value: T.nilable(::Federails::Actor)).void }
+    sig { params(value: T.nilable(::Fedipub::Actor)).void }
     def actor=(value); end
 
     sig { returns(T::Boolean) }
@@ -373,13 +373,13 @@ class Like
     sig { returns(T::Boolean) }
     def actor_previously_changed?; end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Fedipub::Actor) }
     def build_actor(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Fedipub::Actor) }
     def create_actor(*args, &blk); end
 
-    sig { params(args: T.untyped, blk: T.untyped).returns(::Federails::Actor) }
+    sig { params(args: T.untyped, blk: T.untyped).returns(::Fedipub::Actor) }
     def create_actor!(*args, &blk); end
 
     sig { returns(T.untyped) }
@@ -394,7 +394,7 @@ class Like
     sig { returns(T::Boolean) }
     def likeable_previously_changed?; end
 
-    sig { returns(T.nilable(::Federails::Actor)) }
+    sig { returns(T.nilable(::Fedipub::Actor)) }
     def reload_actor; end
 
     sig { returns(T.untyped) }

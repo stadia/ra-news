@@ -3,12 +3,12 @@
 require 'rails_helper'
 
 RSpec.describe Boost, type: :model do
-  set_fixture_class federails_actors: Federails::Actor
-  fixtures :users, :articles, :sites, :federails_actors
+  set_fixture_class fedipub_actors: Fedipub::Actor
+  fixtures :users, :articles, :sites, :fedipub_actors
 
   describe '.for_actor' do
-    let(:actor) { federails_actors(:john_actor) }
-    let(:other_actor) { federails_actors(:jane_actor) }
+    let(:actor) { fedipub_actors(:john_actor) }
+    let(:other_actor) { fedipub_actors(:jane_actor) }
     let(:article) { articles(:ruby_article) }
     let(:other_article) { articles(:similar_article) }
 

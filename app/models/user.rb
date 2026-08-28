@@ -42,12 +42,12 @@ class User < ApplicationRecord
   normalizes :locale, with: ->(v) { v.presence }
   normalizes :signup_host, with: ->(v) { v.to_s.strip.downcase.presence }
 
-  include Federails::ActorEntity
-  acts_as_federails_actor username_field: :username, name_field: :name, profile_url_method: :user_profile_url
+  include Fedipub::ActorEntity
+  acts_as_fedipub_actor username_field: :username, name_field: :name, profile_url_method: :user_profile_url
 
   after_followed :accept_follow
 
-  after_commit :sync_federails_actor_extensions
+  after_commit :sync_fedipub_actor_extensions
 
   scope :with_role, ->(role_name) do
     where("? = ANY (roles)", role_name.to_s)
@@ -94,11 +94,11 @@ class User < ApplicationRecord
     return unless avatar_attached?
 
     avatar.purge
-    sync_federails_actor_extensions
+    sync_fedipub_actor_extensions
   end
 
-  def sync_federails_actor_extensions
-    federails_actor&.update(extensions: to_activitypub_object)
+  def sync_fedipub_actor_extensions
+    fedipub_actor&.update(extensions: to_activitypub_object)
   end
 
   def to_activitypub_object
@@ -119,44 +119,44 @@ class User < ApplicationRecord
 
   #: (ActiveRecord::Base likeable) -> Like
   def like!(likeable)
-    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+    actor = fedipub_actor or raise ArgumentError, "fedipub_actor is required"
 
     Like.create_or_find_by!(actor: actor, likeable: likeable)
   end
 
   #: (ActiveRecord::Base likeable) -> void
   def unlike!(likeable)
-    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+    actor = fedipub_actor or raise ArgumentError, "fedipub_actor is required"
 
     Like.where(actor: actor, likeable: likeable).destroy_all
   end
 
   #: (ActiveRecord::Base likeable) -> bool
   def likes?(likeable)
-    return false unless federails_actor
+    return false unless fedipub_actor
 
-    Like.exists?(actor: federails_actor, likeable: likeable)
+    Like.exists?(actor: fedipub_actor, likeable: likeable)
   end
 
   #: (ActiveRecord::Base boostable) -> Boost
   def boost!(boostable)
-    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+    actor = fedipub_actor or raise ArgumentError, "fedipub_actor is required"
 
     Boost.create_or_find_by!(actor: actor, boostable: boostable)
   end
 
   #: (ActiveRecord::Base boostable) -> void
   def unboost!(boostable)
-    actor = federails_actor or raise ArgumentError, "federails_actor is required"
+    actor = fedipub_actor or raise ArgumentError, "fedipub_actor is required"
 
     Boost.where(actor: actor, boostable: boostable).destroy_all
   end
 
   #: (ActiveRecord::Base boostable) -> bool
   def boosts?(boostable)
-    return false unless federails_actor
+    return false unless fedipub_actor
 
-    Boost.exists?(actor: federails_actor, boostable: boostable)
+    Boost.exists?(actor: fedipub_actor, boostable: boostable)
   end
 
   private

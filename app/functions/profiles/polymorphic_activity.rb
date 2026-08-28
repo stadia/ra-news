@@ -15,7 +15,7 @@ module Profiles
         articles_by_id = Article.kept.where(id: article_ids)
                                 .includes(:user, :site, :tags).index_by(&:id)
         posts_by_id = Post.where(id: post_ids)
-                          .includes(:user, :federails_actor, :article, :tags).index_by(&:id)
+                          .includes(:user, :fedipub_actor, :article, :tags).index_by(&:id)
 
         type_id_pairs.map { |type, id|
           case type

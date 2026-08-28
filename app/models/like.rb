@@ -4,7 +4,7 @@
 
 class Like < ApplicationRecord
   belongs_to :actor,
-             class_name: "Federails::Actor",
+             class_name: "Fedipub::Actor",
              counter_cache: :likees_count
   belongs_to :likeable,
              polymorphic: true,
@@ -17,14 +17,14 @@ class Like < ApplicationRecord
   class << self
     # Article/Post likes for a profile activity feed, newest first.
     # A class method (not a scope) so the nil early-return is unambiguous.
-    #: ((User | Federails::Actor)?) -> ActiveRecord::Relation
+    #: ((User | Fedipub::Actor)?) -> ActiveRecord::Relation
     def for_actor(actor)
       return none if actor.nil?
 
       where(actor: actor, likeable_type: %w[Article Post]).order(created_at: :desc)
     end
 
-    #: (liker: (User | Federails::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
+    #: (liker: (User | Fedipub::Actor)?, likeable_type: String, likeable_ids: Array[Integer]) -> Array[Integer]
     def liked_ids_for(liker:, likeable_type:, likeable_ids:)
       actor = resolve_actor(liker)
       return [] unless actor
@@ -37,15 +37,15 @@ class Like < ApplicationRecord
       ).pluck(:likeable_id)
     end
 
-    #: (untyped) -> Federails::Actor?
+    #: (untyped) -> Fedipub::Actor?
     def resolve_actor(liker)
       case liker
       when nil
         nil
-      when Federails::Actor
+      when Fedipub::Actor
         liker
       else
-        liker.try(:federails_actor)
+        liker.try(:fedipub_actor)
       end
     end
   end
@@ -65,7 +65,7 @@ class Like < ApplicationRecord
   def publish_undo_activity
     return unless federatable_likeable?
 
-    like_activity = Federails::Activity
+    like_activity = Fedipub::Activity
       .where(actor: actor, action: "Like", entity: likeable)
       .order(created_at: :desc)
       .first
@@ -80,6 +80,6 @@ class Like < ApplicationRecord
   end
 
   def federatable_likeable?
-    likeable.is_a?(Federails::DataEntity)
+    likeable.is_a?(Fedipub::DataEntity)
   end
 end

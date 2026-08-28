@@ -6,13 +6,13 @@
 
 # Constants that the generated gem RBIs do not cover.
 
-# Federails ships its policies as engine-autoloaded files under app/policies,
+# Fedipub ships its policies as engine-autoloaded files under app/policies,
 # so `tapioca gem` -- which only reflects over what `require` loads -- never
-# sees Federails::FederailsPolicy. Its subclasses in the generated RBI then
+# sees Fedipub::FedipubPolicy. Its subclasses in the generated RBI then
 # point at an unresolved parent, and inherited lookups like
-# Federails::Client::ActivityPolicy::Scope fail.
-module Federails
-  class FederailsPolicy
+# Fedipub::Client::ActivityPolicy::Scope fail.
+module Fedipub
+  class FedipubPolicy
     class Scope; end
   end
 
@@ -21,7 +21,7 @@ module Federails
     # RBI has no entry for it -- unlike its siblings (ActorPolicy::Scope,
     # FollowingPolicy::Scope), which the gem declares outright. Referenced by
     # ActivitiesController#index.
-    class ActivityPolicy::Scope < ::Federails::FederailsPolicy::Scope; end
+    class ActivityPolicy::Scope < ::Fedipub::FedipubPolicy::Scope; end
   end
 end
 

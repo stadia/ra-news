@@ -16,13 +16,13 @@ class ProfilesController < ApplicationController
   end
 
   def followers
-    actor = @user.federails_actor
+    actor = @user.fedipub_actor
     @follow_actors = actor ? actor.following_followers.to_a : []
     render_activity_page(:followers)
   end
 
   def following
-    actor = @user.federails_actor
+    actor = @user.fedipub_actor
     @follow_actors = actor ? actor.following_follows.to_a : []
     render_activity_page(:following)
   end
@@ -30,7 +30,7 @@ class ProfilesController < ApplicationController
   def posts
     @pagy, @posts = pagy(
       @user.posts.standalone.visible
-        .includes(:user, :federails_actor, :article, :tags)
+        .includes(:user, :fedipub_actor, :article, :tags)
         .order(created_at: :desc)
     )
     @liked_post_ids = liked_ids_for_posts(@posts)
@@ -41,7 +41,7 @@ class ProfilesController < ApplicationController
   def comments
     @pagy, @posts = pagy(
       @user.posts.comments.kept
-        .includes(:user, :federails_actor, :article, :tags)
+        .includes(:user, :fedipub_actor, :article, :tags)
         .order(created_at: :desc)
     )
     @liked_post_ids = liked_ids_for_posts(@posts)
@@ -50,14 +50,14 @@ class ProfilesController < ApplicationController
   end
 
   def likes
-    @pagy, page_likes = pagy(:offset, Like.for_actor(@user.federails_actor))
+    @pagy, page_likes = pagy(:offset, Like.for_actor(@user.fedipub_actor))
 
     @likeables = Profiles::PolymorphicActivity.resolve(page_likes.pluck(:likeable_type, :likeable_id))
     render_activity_page(:likes)
   end
 
   def boosts
-    @pagy, page_boosts = pagy(:offset, Boost.for_actor(@user.federails_actor))
+    @pagy, page_boosts = pagy(:offset, Boost.for_actor(@user.fedipub_actor))
 
     @boostables = Profiles::PolymorphicActivity.resolve(page_boosts.pluck(:boostable_type, :boostable_id))
     render_activity_page(:boosts)
@@ -66,7 +66,7 @@ class ProfilesController < ApplicationController
   def blog
     @pagy, @posts = pagy(
       @user.posts.published_blog.kept
-        .includes(:user, :federails_actor, :article, :tags)
+        .includes(:user, :fedipub_actor, :article, :tags)
         .order(published_at: :desc)
     )
     @liked_post_ids = liked_ids_for_posts(@posts)
@@ -119,7 +119,7 @@ class ProfilesController < ApplicationController
     end
 
     def render_show_with_activity(active_tab:)
-      actor = @user.federails_actor
+      actor = @user.fedipub_actor
       render Views::Profiles::Show.new(
         user: @user,
         actor: actor,

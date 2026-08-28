@@ -28,7 +28,7 @@ class Api::V1::FeedControllerTest < ActionDispatch::IntegrationTest
 
   test "GET feed as JSON includes liked and boosted state" do
     own_post = Post.create!(body: "own json post", user: @user)
-    Like.create!(actor: @user.federails_actor, likeable: own_post)
+    Like.create!(actor: @user.fedipub_actor, likeable: own_post)
 
     sign_in_as(@user)
     get api_v1_feed_path, headers: { "Accept" => "application/json" }

@@ -15,7 +15,7 @@ class Views::Followings::FollowActions < Views::Base
 
   def view_template
     current = view_context.current_user
-    policy = Federails::Client::FollowingPolicy.new(current, Federails::Following)
+    policy = Fedipub::Client::FollowingPolicy.new(current, Fedipub::Following)
 
     div(id: self.class.dom_id_for(@actor), class: "flex flex-wrap items-center gap-3 mt-2") do
       if policy.create?
@@ -29,7 +29,7 @@ class Views::Followings::FollowActions < Views::Base
   private
 
   def authenticated_actions(current)
-    follow = current.federails_actor.follows?(@actor)
+    follow = current.fedipub_actor.follows?(@actor)
 
     if @actor.entity == current
       span(class: "text-content-muted text-sm") { t("followings.follow_actions.own_account") }
@@ -65,7 +65,7 @@ class Views::Followings::FollowActions < Views::Base
   end
 
   def incoming_follow_request(current)
-    followed = @actor.follows?(current.federails_actor)
+    followed = @actor.follows?(current.fedipub_actor)
     return unless followed
 
     if followed.pending?

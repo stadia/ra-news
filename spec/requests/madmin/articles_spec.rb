@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Madmin::Articles', type: :request do
   include Devise::Test::IntegrationHelpers
 
-  fixtures :users, :articles, :sites, :federails_actors
+  fixtures :users, :articles, :sites, :fedipub_actors
 
   let(:admin) { users(:admin) }
   let(:article) { articles(:ruby_article) }

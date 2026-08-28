@@ -9,13 +9,13 @@ class RssSitePageJob
   class << self
     sig do
       params(
-        ids: T::Array[::Integer],
+        ids: T.any(::Integer, T::Array[::Integer]),
         block: T.nilable(T.proc.params(job: RssSitePageJob).void)
       ).returns(T.any(RssSitePageJob, FalseClass))
     end
     def perform_later(ids, &block); end
 
-    sig { params(ids: T::Array[::Integer]).void }
+    sig { params(ids: T.any(::Integer, T::Array[::Integer])).void }
     def perform_now(ids); end
   end
 end

@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'Sessions', type: :request do
-  fixtures :users, :federails_actors
+  fixtures :users, :fedipub_actors
 
   path '/api/v1/auth/login' do
     post '로그인' do

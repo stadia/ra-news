@@ -32,7 +32,7 @@ class Components::RecentCommentsSidebar < Components::Base
       div(class: "flex items-center gap-2 mb-2") do
         render Components::UserAvatar.new(
           user: comment.user,
-          federails_actor: comment.federails_actor,
+          fedipub_actor: comment.fedipub_actor,
           name: comment.author_name,
           size: "h-7 w-7",
           fallback_class: "bg-surface-muted text-accent-text ring-1 ring-inset ring-border-muted font-bold"

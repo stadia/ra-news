@@ -33,7 +33,7 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
 
   test "GET feed preloads liked posts for authenticated user" do
     post = Post.create!(body: "liked feed post", user: @user)
-    Like.create!(actor: @user.federails_actor, likeable: post, created_at: Time.current)
+    Like.create!(actor: @user.fedipub_actor, likeable: post, created_at: Time.current)
 
     sign_in_as(@user)
 
@@ -61,11 +61,11 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET feed includes current user and accepted followings in reverse chronological order" do
-    john_actor = federails_actors(:john_actor)
-    jane_actor = federails_actors(:jane_actor)
+    john_actor = fedipub_actors(:john_actor)
+    jane_actor = fedipub_actors(:jane_actor)
 
     older_post = Post.create!(body: "older followed post", user: users(:jane))
-    Federails::Activity.create!(
+    Fedipub::Activity.create!(
       actor: jane_actor,
       entity: older_post,
       action: "Create",
@@ -74,7 +74,7 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
     )
 
     newest_post = Post.create!(body: "newest own post", user: @user)
-    Federails::Activity.create!(
+    Fedipub::Activity.create!(
       actor: john_actor,
       entity: newest_post,
       action: "Create",
@@ -82,7 +82,7 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
       updated_at: 1.hour.ago
     )
 
-    remote_actor = Federails::Actor.create!(
+    remote_actor = Fedipub::Actor.create!(
       federated_url: "https://remote.example/users/stranger",
       username: "stranger",
       name: "Stranger",
@@ -97,7 +97,7 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
     )
     excluded_post = Post.create!(
       body: "excluded unfollowed remote post",
-      federails_actor: remote_actor,
+      fedipub_actor: remote_actor,
       federated_url: "https://remote.example/notes/excluded",
       created_at: 30.minutes.ago,
       updated_at: 30.minutes.ago
@@ -116,10 +116,10 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET feed includes posts from local actors even when not followed" do
-    admin_actor = federails_actors(:admin_actor)
+    admin_actor = fedipub_actors(:admin_actor)
 
     local_unfollowed_post = Post.create!(body: "local unfollowed post", user: users(:admin))
-    Federails::Activity.create!(
+    Fedipub::Activity.create!(
       actor: admin_actor,
       entity: local_unfollowed_post,
       action: "Create",
@@ -127,7 +127,7 @@ class FeedControllerTest < ActionDispatch::IntegrationTest
       updated_at: 30.minutes.ago
     )
 
-    refute Federails::Following.accepted.exists?(actor: @user.federails_actor, target_actor: admin_actor),
+    refute Fedipub::Following.accepted.exists?(actor: @user.fedipub_actor, target_actor: admin_actor),
       "test premise: john must not follow admin"
 
     sign_in_as(@user)

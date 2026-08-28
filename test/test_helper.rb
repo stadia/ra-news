@@ -39,9 +39,9 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Federails 엔진 픽스처 클래스 매핑 (테이블 이름에서 모델 클래스를 자동 감지할 수 없으므로)
-    set_fixture_class federails_actors: Federails::Actor
-    set_fixture_class federails_followings: Federails::Following
+    # Fedipub 엔진 픽스처 클래스 매핑 (테이블 이름에서 모델 클래스를 자동 감지할 수 없으므로)
+    set_fixture_class fedipub_actors: Fedipub::Actor
+    set_fixture_class fedipub_followings: Fedipub::Following
 
     def stub_constructor(klass, replacement)
       singleton_class = class << klass

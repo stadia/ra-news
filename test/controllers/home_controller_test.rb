@@ -47,7 +47,7 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
 
   test "GET root preloads liked articles for signed in user" do
     user = users(:john)
-    Like.create!(actor: user.federails_actor, likeable: articles(:ruby_article), created_at: Time.current)
+    Like.create!(actor: user.fedipub_actor, likeable: articles(:ruby_article), created_at: Time.current)
     sign_in_as(user)
 
     like_queries = capture_like_queries do

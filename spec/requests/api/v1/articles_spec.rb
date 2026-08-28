@@ -3,7 +3,7 @@
 require 'swagger_helper'
 
 RSpec.describe 'API V1 Articles', type: :request do
-  fixtures :articles, :users, :sites, :federails_actors
+  fixtures :articles, :users, :sites, :fedipub_actors
 
   def self.article_schema
     {

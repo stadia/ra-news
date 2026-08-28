@@ -38,7 +38,7 @@ module Articles
         custom["attachment"] = [ { "type" => "Image", "mediaType" => thumbnail.blob.content_type, "url" => thumb_url } ]
       end
 
-      Federails::DataTransformer::Note.to_federation(
+      Fedipub::DataTransformer::Note.to_federation(
         self, name: title_ko, content: full_content, custom:
       )
     end

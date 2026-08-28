@@ -6,9 +6,9 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @john = users(:john)
     @jane = users(:jane)
-    @jane_actor = federails_actors(:jane_actor)
+    @jane_actor = fedipub_actors(:jane_actor)
     @korean_user = users(:korean_user)
-    @korean_actor = federails_actors(:korean_user_actor)
+    @korean_actor = fedipub_actors(:korean_user_actor)
   end
 
   # --- Authentication ---
@@ -32,7 +32,7 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
 
   test "POST create with target_actor_id creates following" do
     sign_in_as(@john)
-    assert_difference "Federails::Following.count", 1 do
+    assert_difference "Fedipub::Following.count", 1 do
       post followings_path, params: { following: { target_actor_id: @korean_actor.id } }
     end
   end
@@ -70,9 +70,9 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
   # --- accept ---
 
   test "PUT accept accepts pending following" do
-    following = Federails::Following.create!(
+    following = Fedipub::Following.create!(
       actor: @korean_actor,
-      target_actor: @john.federails_actor,
+      target_actor: @john.fedipub_actor,
       status: :pending
     )
 
@@ -88,8 +88,8 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
   # --- destroy ---
 
   test "DELETE destroy removes following and responds with turbo_stream" do
-    following = Federails::Following.create!(
-      actor: @john.federails_actor,
+    following = Fedipub::Following.create!(
+      actor: @john.fedipub_actor,
       target_actor: @korean_actor
     )
 
@@ -103,8 +103,8 @@ class FollowingsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "DELETE destroy responds with json" do
-    following = Federails::Following.create!(
-      actor: @john.federails_actor,
+    following = Fedipub::Following.create!(
+      actor: @john.fedipub_actor,
       target_actor: @korean_actor
     )
 

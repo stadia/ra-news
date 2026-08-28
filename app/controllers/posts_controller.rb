@@ -125,8 +125,8 @@ class PostsController < ApplicationController
   def reply_body_with_mention(body:, parent_id:)
     return body if parent_id.blank?
 
-    parent = Post.includes(:user, :federails_actor).find_by(id: parent_id)
-    actor = parent&.user&.federails_actor || parent&.federails_actor
+    parent = Post.includes(:user, :fedipub_actor).find_by(id: parent_id)
+    actor = parent&.user&.fedipub_actor || parent&.fedipub_actor
     return body if actor.nil? || actor.profile_url.blank?
 
     return body if body.to_s.include?(actor.profile_url)

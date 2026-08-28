@@ -1,0 +1,8 @@
+# frozen_string_literal: true
+
+john_follows_jane:
+  actor_id: <%= ActiveRecord::FixtureSet.identify(:john_actor, :fedipub_actors) %>
+  target_actor_id: <%= ActiveRecord::FixtureSet.identify(:jane_actor, :fedipub_actors) %>
+  status: 1
+  created_at: <%= Time.current %>
+  updated_at: <%= Time.current %>

@@ -9,7 +9,7 @@ require "rails_helper"
 # 또한 ruby-news.dev 와 ruby-news.jp 는 완전히 독립적인 사이트로 취급하므로
 # 로케일 간 hreflang alternate 링크는 어떤 페이지에도 발행하지 않는다.
 RSpec.describe "Articles show noindex by translation availability", type: :request do
-  fixtures :articles, :users, :sites, :federails_actors
+  fixtures :articles, :users, :sites, :fedipub_actors
 
   let(:article) { articles(:ruby_article) }
 

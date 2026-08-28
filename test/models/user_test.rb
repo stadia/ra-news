@@ -310,8 +310,8 @@ class UserTest < ActiveSupport::TestCase
     assert_nil @user.avatar_url
   end
 
-  test "프로필 아바타를 제거하면 federails_actor extensions에서도 icon이 제거되어야 한다" do
-    actor = federails_actors(:john_actor)
+  test "프로필 아바타를 제거하면 fedipub_actor extensions에서도 icon이 제거되어야 한다" do
+    actor = fedipub_actors(:john_actor)
 
     @user.avatar.attach(
       io: File.open(Rails.root.join("public/apple-touch-icon.png")),

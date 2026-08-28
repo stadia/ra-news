@@ -8,7 +8,7 @@
 module PostViewing
   extend ActiveSupport::Concern
 
-  POST_SHOW_INCLUDES = [ :user, :federails_actor, :article, :tags, { parent: [ :user, :federails_actor ] } ].freeze
+  POST_SHOW_INCLUDES = [ :user, :fedipub_actor, :article, :tags, { parent: [ :user, :fedipub_actor ] } ].freeze
 
   private
 
