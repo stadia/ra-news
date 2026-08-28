@@ -94,3 +94,26 @@ module Mail
     def defaults(&block); end
   end
 end
+
+class Madmin::Resource
+  class << self
+    # lib/madmin/resource.rb -- the block is stored as a `Madmin::MemberAction`
+    # and `instance_exec`d on the show view's context
+    # (madmin's app/views/madmin/application/show.html.erb), which is where
+    # `button_to`, `safe_join` and the `*_madmin_*_path` route helpers live.
+    #
+    # `HelperProxy` is tapioca's model of that context: it subclasses
+    # ActionView::Base and includes GeneratedPathHelpersModule.
+    #
+    # The yielded record stays `T.untyped` -- `Madmin::Resource` is not bound to
+    # one model, and the blocks in app/madmin/resources narrow it themselves
+    # with `record.is_a?(...)`.
+    sig do
+      params(
+        collection: T.untyped,
+        block: T.proc.bind(::Madmin::ResourceController::HelperProxy).params(arg0: T.untyped).returns(T.untyped)
+      ).returns(T.untyped)
+    end
+    def member_action(collection: T.unsafe(nil), &block); end
+  end
+end
