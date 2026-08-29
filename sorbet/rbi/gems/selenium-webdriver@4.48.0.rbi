@@ -8242,7 +8242,7 @@ module Selenium::WebDriver::BiDi::Protocol::ErrorCode
   class << self
     # The exception class for a wire error code, or WebDriverError for an unknown one.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:36
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:40
     def for(code); end
   end
 end
@@ -16976,38 +16976,27 @@ class Selenium::WebDriver::BiDi::Protocol::WebExtension::UninstallParameters < :
 end
 
 # Wire round-trip runtime for the generated protocol layer: the value-type bases
-# (Record, Union), the omit sentinel (UNSET), outbound enum validation, and the
-# strict-inbound toggle.
+# (Record, Union), the omit sentinel (UNSET), and outbound enum validation.
 #
 # @api private
 #
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:27
 module Selenium::WebDriver::BiDi::Serialization
   class << self
-    # Strict inbound mode. Off by default: a required field missing from a response is
-    # tolerated as omitted and warned, so a schema ahead of the browser does not block the
-    # caller. When SE_BIDI_STRICT is set to anything but 0/false, that same case escalates
-    # to an error for callers who want it.
-    #
-    # @api private
-    #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:43
-    def strict?; end
-
     # Inbound: map a wire token (or list) back to its enum symbol, raising on a token
     # outside our schema so a non-compliant (or newer-than-schema) browser value fails
     # loud instead of silently passing through untyped.
     #
     # @api private
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:78
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:66
     def to_symbol(name, value, enum); end
 
     # Outbound: map a validated enum symbol (or list) to the wire token(s) to serialize.
     #
     # @api private
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:67
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:55
     def to_wire(value, enum); end
 
     # Validates an outbound enum argument: +value+ is a symbol (or list of symbols) that
@@ -17017,7 +17006,7 @@ module Selenium::WebDriver::BiDi::Serialization
     #
     # @api private
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:54
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:42
     def validate!(name, value, enum); end
   end
 end
@@ -17048,10 +17037,10 @@ end
 #
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:71
 module Selenium::WebDriver::BiDi::Serialization::Record::Deserializer
-  # Inbound: builds from the wire. A missing required field is omitted and warned (or
-  # raised in strict mode, in +wire_value+); enum tokens are mapped back to symbols and an
-  # unrecognized one raises (in +read+); an undeclared property is captured silently
-  # (extensible) or warned and dropped (closed) — strict on shape, lenient on extras.
+  # Inbound: builds from the wire. A missing required field raises (in +wire_value+); enum
+  # tokens are mapped back to symbols and an unrecognized one raises (in +read+); an
+  # undeclared property is captured silently (extensible) or warned and dropped (closed)
+  # — strict on shape, lenient on extras.
   #
   # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:86
   def from_json(json_payload); end
@@ -17080,40 +17069,32 @@ module Selenium::WebDriver::BiDi::Serialization::Record::Deserializer
   # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:194
   def check_outbound_shape(field, value); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:284
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:281
   def check_primitive(field, raw); end
 
   # A declared list must arrive as an array; a scalar-shaped field (enum or ref, not a
   # list) must not. An opaque field carries no shape descriptor, so it passes through.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:267
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:261
   def check_shape(field, raw); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:291
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:288
   def enum_hash(field); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:339
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:336
   def extra(json_payload); end
 
   # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:213
   def fixed?(field); end
 
-  # A required field absent from the response is tolerated as omitted (UNSET) and warned, so a
-  # schema ahead of the browser does not block the caller; strict mode (SE_BIDI_STRICT) escalates
-  # to an error for callers who want it. Omitted (UNSET) stays distinct from an explicit null (nil),
-  # which matters for the required-and-nullable fields the schema flags.
-  #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:229
-  def missing_required(field); end
-
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:237
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:228
   def read(field, raw); end
 
   # Parses each element. A `scalar` field is a map encoded as `[key, value]` pairs, so
   # every element must be a 2-item pair — each is read as one, and a malformed entry is
   # rejected. Non-scalar lists recurse into nested lists; other elements deserialize.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:298
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:295
   def read_list(field, raw, klass); end
 
   # A map entry is a `[key, value]` pair. The key is `Ref / text` — an object key
@@ -17122,7 +17103,7 @@ module Selenium::WebDriver::BiDi::Serialization::Record::Deserializer
   # there is rejected (object_only holds at the value position). A non-pair element is a
   # malformed entry and is rejected outright.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:315
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:312
   def read_map_entry(field, element, klass); end
 
   # Reads a ref-typed value into its class. A `scalar` position is an inline union with
@@ -17130,16 +17111,16 @@ module Selenium::WebDriver::BiDi::Serialization::Record::Deserializer
   # passes through instead of being handed to the object_only union, but only when it
   # matches the arm's primitive (+scalar+ carries it). A list recurses per element.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:258
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:252
   def read_ref(field, raw); end
 
   # A bare scalar at a scalar-tolerant union position must match one of the union's
   # scalar-arm primitives (+scalar+ is a primitive name or an array of them); a
   # wrong-typed scalar (a number where a string is expected) is a wire error, not
-  # something to pass through. An unrecognized primitive (none in PRIMITIVE_TYPES) is
+  # something to pass through. An unrecognized primitive (none in PRIMITIVE_CHECKS) is
   # left unchecked, matching the lenient default elsewhere.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:331
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:328
   def scalar_value(field, value); end
 
   # A nullable constant (`literal / null`) is caller-settable but its only non-null value is
@@ -17194,20 +17175,27 @@ module Selenium::WebDriver::BiDi::Serialization::Record::Deserializer
   # schema drift is visible (an extensible type keeps its extras silently — the spec sanctions
   # them). Tagged +:bidi_undeclared_property+ so a caller can silence it via +logger.ignore+.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:347
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:344
   def warn_undeclared(undeclared); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:217
+  # A required field absent from the response cannot yield a valid typed object, so it raises
+  # rather than substitute a placeholder or represent the field as omitted; a remote end that
+  # lags the schema is handled by a project schema override, not by runtime tolerance.
+  #
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:220
   def wire_value(field, json_payload); end
 end
 
-# Ruby classes a checkable primitive admits. `number` is any Numeric (JSON has one
-# number type); `integer` requires an Integer — a browser emits `5`, not `5.0`, for an
-# integer (JS has no int/float split), so this rarely false-positives yet still rejects
-# a genuine non-integer like 1.5. A field with no primitive descriptor is left unchecked.
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:274
+Selenium::WebDriver::BiDi::Serialization::Record::Deserializer::PRIMITIVE_CHECKS = T.let(T.unsafe(nil), Hash)
+
+# The check a schema primitive admits, by JSON kind rather than Ruby class: `number` is
+# any Numeric (JSON has one number type), and `integer` is any whole one — a browser is
+# free to send `5` or `5.0` (JS has no int/float split), while a fractional value like
+# 1.5 is a real mismatch. A field with no primitive descriptor is left unchecked.
 #
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:279
-Selenium::WebDriver::BiDi::Serialization::Record::Deserializer::PRIMITIVE_TYPES = T.let(T.unsafe(nil), Hash)
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:273
+Selenium::WebDriver::BiDi::Serialization::Record::Deserializer::WHOLE_FLOAT = T.let(T.unsafe(nil), Proc)
 
 # Named Field, not Member, to avoid colliding with +::Data#members+.
 #
@@ -17263,11 +17251,11 @@ end
 
 # @api private
 #
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:356
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:353
 module Selenium::WebDriver::BiDi::Serialization::Record::Serializable
   # Omit UNSET fields; emit null only for nullable ones.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:367
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:364
   def as_json(*_arg0); end
 
   private
@@ -17278,11 +17266,11 @@ module Selenium::WebDriver::BiDi::Serialization::Record::Serializable
   # cannot slip past the guard and then reappear as a duplicate wire key once serialized. The
   # single gate every outbound path funnels through: +new+, +with+, and in-place mutation.
   #
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:388
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:385
   def merge_extensions!(payload); end
 
   class << self
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:357
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/record.rb:354
     def as_json(value); end
   end
 end
@@ -17292,7 +17280,7 @@ end
 #
 # @api private
 #
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:33
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization.rb:32
 Selenium::WebDriver::BiDi::Serialization::UNSET = T.let(T.unsafe(nil), Object)
 
 # Resolves a wire payload to the right Data variant: a shared discriminator gives
@@ -17315,7 +17303,7 @@ class Selenium::WebDriver::BiDi::Serialization::Union
     # (asserted at generation), so they match the kwargs by symbol. A mismatch here
     # is a caller error (unlike an unknown inbound value), so it fails loudly.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:79
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:83
     def build(**kwargs); end
 
     # values maps each variant's discriminator symbol to its wire token, so an
@@ -17327,11 +17315,10 @@ class Selenium::WebDriver::BiDi::Serialization::Union
     # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:45
     def fallback(path); end
 
-    # A non-Hash payload is a bare scalar arm (e.g. input.Origin's "viewport") with no
-    # object to dispatch on, so it is returned unchanged — unless every arm is an object
-    # (object_only), where a non-Hash cannot match any variant and is a wire error.
+    # A non-Hash payload is a bare scalar arm (e.g. input.Origin's "viewport"), valid only
+    # as a literal the schema pins; under object_only it cannot match any variant at all.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:59
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:58
     def from_json(json_payload); end
 
     # Declared (via the schema's `objectOnly` signal) on a union whose every arm is an
@@ -17355,7 +17342,7 @@ class Selenium::WebDriver::BiDi::Serialization::Union
     # A non-object_only union (e.g. input.Origin) also admits one of its pinned bare-scalar
     # literals; an object (a Hash or another union's record) that matched no variant does not.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:96
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:100
     def valid_outbound?(value); end
 
     # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:43
@@ -17366,41 +17353,41 @@ class Selenium::WebDriver::BiDi::Serialization::Union
     # An explicit nil kwarg still counts as supplied; a non-nullable field set to nil is
     # rejected at construction (Data.new), not here.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:130
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:134
     def outbound_variant(kwargs); end
 
     # The wire tag mapped back to its variant symbol (the table's key); an
     # unrecognized tag falls through as-is so select misses and from_json raises.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:145
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:149
     def payload_tag(json_payload); end
 
     # A bare-scalar arm must be one of the literals the schema pinned for this union
     # (scalar_values, e.g. input.Origin's "viewport" / "pointer"). The generator guarantees a
     # non-object_only union declares them, so no runtime guard is needed here.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:107
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:111
     def scalar_arm?(value); end
 
     # The discriminator value may legitimately be null (e.g. script.NullValue's
     # "null" tag), so it is matched by key presence.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:124
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:128
     def select(json_payload); end
 
     # A variant that is itself a union recurses; a record variant is matched by instance.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:117
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:121
     def variant_accepts?(ref, value); end
 
     # The matching variant's ref, or nil when none matches (the fallback if declared).
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:136
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:140
     def variant_for(tag, &supplied); end
 
     # Every variant's class name: the discriminated table, the presence paths, and the fallback.
     #
-    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:112
+    # pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/serialization/union.rb:116
     def variant_refs; end
   end
 end
@@ -19704,7 +19691,7 @@ class Selenium::WebDriver::Error::InvalidSelectorError < ::Selenium::WebDriver::
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/error.rb:216
 class Selenium::WebDriver::Error::InvalidSessionIdError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::InvalidWebExtensionError < ::Selenium::WebDriver::Error::WebDriverError; end
 
 # An error occurred while executing JavaScript supplied by the user.
@@ -19744,31 +19731,31 @@ class Selenium::WebDriver::Error::NoSuchElementError < ::Selenium::WebDriver::Er
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/error.rb:70
 class Selenium::WebDriver::Error::NoSuchFrameError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchHandleError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchHistoryEntryError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchInterceptError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchNetworkCollectorError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchNetworkDataError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchNodeError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchRequestError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchScreencastError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchScriptError < ::Selenium::WebDriver::Error::WebDriverError; end
 
 # The element does not have a shadow root.
@@ -19776,7 +19763,7 @@ class Selenium::WebDriver::Error::NoSuchScriptError < ::Selenium::WebDriver::Err
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/error.rb:133
 class Selenium::WebDriver::Error::NoSuchShadowRootError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchStoragePartitionError < ::Selenium::WebDriver::Error::WebDriverError; end
 
 # A command to find a devtools target could not be satisfied because
@@ -19785,10 +19772,10 @@ class Selenium::WebDriver::Error::NoSuchStoragePartitionError < ::Selenium::WebD
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/error.rb:127
 class Selenium::WebDriver::Error::NoSuchTargetError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchUserContextError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::NoSuchWebExtensionError < ::Selenium::WebDriver::Error::WebDriverError; end
 
 # A command to switch to a window could not be satisfied because
@@ -19804,6 +19791,12 @@ Selenium::WebDriver::Error::SUPPORT_MSG = T.let(T.unsafe(nil), String)
 #
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/error.rb:157
 class Selenium::WebDriver::Error::ScriptTimeoutError < ::Selenium::WebDriver::Error::WebDriverError; end
+
+# Raised locally when a BiDi wire payload does not match this Selenium's generated
+# schema. It is not a protocol error code; the (de)serialization layer raises it directly.
+#
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+class Selenium::WebDriver::Error::SerializationError < ::Selenium::WebDriver::Error::WebDriverError; end
 
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/remote/server_error.rb:23
 class Selenium::WebDriver::Error::ServerError < ::StandardError
@@ -19834,7 +19827,7 @@ Selenium::WebDriver::Error::URLS = T.let(T.unsafe(nil), Hash)
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/error.rb:209
 class Selenium::WebDriver::Error::UnableToCaptureScreenError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::UnableToCloseBrowserError < ::Selenium::WebDriver::Error::WebDriverError; end
 
 # A command to set a cookie's value could not be satisfied.
@@ -19842,13 +19835,13 @@ class Selenium::WebDriver::Error::UnableToCloseBrowserError < ::Selenium::WebDri
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/error.rb:145
 class Selenium::WebDriver::Error::UnableToSetCookieError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::UnableToSetFileInputError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::UnavailableNetworkDataError < ::Selenium::WebDriver::Error::WebDriverError; end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:28
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/bidi/error.rb:32
 class Selenium::WebDriver::Error::UnderspecifiedStoragePartitionError < ::Selenium::WebDriver::Error::WebDriverError; end
 
 # A modal dialog was open, blocking this operation.
@@ -24224,69 +24217,104 @@ Selenium::WebDriver::Wait::DEFAULT_INTERVAL = T.let(T.unsafe(nil), Float)
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/wait.rb:23
 Selenium::WebDriver::Wait::DEFAULT_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:24
+# @api private
+#
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:25
 class Selenium::WebDriver::WebSocketConnection
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:38
+  # 100MB
+  #
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:48
   def initialize(url:); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:80
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:83
   def add_callback(event, &block); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:76
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:79
   def callbacks; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:53
+  # Idempotent: the listener may already have initiated shutdown (see
+  # #frame_dropped?), so always close the socket and join threads rather
+  # than short-circuiting on @closing.
+  #
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:67
   def close; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:87
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:90
   def remove_callback(event, id); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:99
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:102
   def send_cmd(**payload); end
 
   private
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:126
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:186
+  def apply_frame_size_limit; end
+
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:136
   def attach_socket_listener; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:168
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:207
   def callback_thread(params); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:151
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:153
+  def close_socket; end
+
+  # True when the buffered frame could not be decoded (e.g. exceeds MAX_FRAME_SIZE).
+  # websocket-ruby swallows the error and keeps returning nil, so surface it and close
+  # the connection here instead of leaving a dead listener on an open socket.
+  #
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:176
+  def frame_dropped?; end
+
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:190
   def incoming_frame; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:117
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:127
   def messages; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:206
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:245
   def next_id; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:155
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:194
   def process_frame(frame); end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:121
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:131
   def process_handshake; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:189
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:160
+  def process_incoming_frames; end
+
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:228
   def socket; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:185
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:224
   def wait; end
 
-  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:202
+  # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:241
   def ws; end
 end
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:25
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:26
 Selenium::WebDriver::WebSocketConnection::CONNECTION_ERRORS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:36
+# websocket-ruby defaults to a 20MB limit and silently drops larger
+# frames, which can stall the listener. CDP payloads (e.g. large data:
+# URLs) can exceed that, so raise the ceiling for our connections.
+# The gem only exposes the limit as process-global state, so it is
+# raised (never lowered) and not restored on close - concurrent
+# connections share the value. Other bindings rely on their own
+# websocket clients' limits; this constant only affects websocket-ruby.
+#
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:46
+Selenium::WebDriver::WebSocketConnection::MAX_FRAME_SIZE = T.let(T.unsafe(nil), Integer)
+
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:37
 Selenium::WebDriver::WebSocketConnection::MAX_LOG_MESSAGE_SIZE = T.let(T.unsafe(nil), Integer)
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:34
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:35
 Selenium::WebDriver::WebSocketConnection::RESPONSE_WAIT_INTERVAL = T.let(T.unsafe(nil), Float)
 
-# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:33
+# pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/websocket_connection.rb:34
 Selenium::WebDriver::WebSocketConnection::RESPONSE_WAIT_TIMEOUT = T.let(T.unsafe(nil), Integer)
 
 # pkg:gem/selenium-webdriver#lib/selenium/webdriver/common/interactions/scroll_origin.rb:22

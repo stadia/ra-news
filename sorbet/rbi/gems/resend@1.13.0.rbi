@@ -1424,13 +1424,18 @@ module Resend::Segments
 
     # https://resend.com/docs/api-reference/segments/list-segments
     #
-    # pkg:gem/resend#lib/resend/segments.rb:20
+    # pkg:gem/resend#lib/resend/segments.rb:26
     def list(params = T.unsafe(nil)); end
 
     # https://resend.com/docs/api-reference/segments/delete-segment
     #
-    # pkg:gem/resend#lib/resend/segments.rb:26
+    # pkg:gem/resend#lib/resend/segments.rb:32
     def remove(segment_id = T.unsafe(nil)); end
+
+    # https://resend.com/docs/api-reference/segments/update-segment
+    #
+    # pkg:gem/resend#lib/resend/segments.rb:20
+    def update(params = T.unsafe(nil)); end
   end
 end
 
@@ -1659,6 +1664,19 @@ module Resend::Webhooks
     # pkg:gem/resend#lib/resend/webhooks.rb:82
     def get(webhook_id = T.unsafe(nil)); end
 
+    # Retrieve a webhook event
+    #
+    # @param webhook_id [String] The webhook ID
+    # @param event_id [String] The webhook event ID
+    #
+    # @return [Hash] The webhook event with full details
+    #
+    # @example
+    #   Resend::Webhooks.get_event("4dd369bc-aa82-4ff3-97de-514ae3000ee0", "msg_123")
+    #
+    # pkg:gem/resend#lib/resend/webhooks.rb:115
+    def get_event(webhook_id, event_id); end
+
     # Retrieve a list of webhooks for the authenticated user
     #
     # @param params [Hash] The pagination parameters
@@ -1677,6 +1695,48 @@ module Resend::Webhooks
     # pkg:gem/resend#lib/resend/webhooks.rb:69
     def list(params = T.unsafe(nil)); end
 
+    # Retrieve delivery attempts for a webhook event
+    #
+    # @param webhook_id [String] The webhook ID
+    # @param event_id [String] The webhook event ID
+    # @param params [Hash] The pagination parameters
+    # @option params [Integer] :limit Number of delivery attempts to retrieve (max: 100, min: 1)
+    # @option params [String] :after The ID after which to retrieve more delivery attempts
+    #
+    # @return [Hash] A paginated list of webhook event delivery attempts
+    #
+    # @example
+    #   Resend::Webhooks.list_event_attempts("4dd369bc-aa82-4ff3-97de-514ae3000ee0", "msg_123")
+    #
+    # @example With pagination
+    #   Resend::Webhooks.list_event_attempts(
+    #     "4dd369bc-aa82-4ff3-97de-514ae3000ee0",
+    #     "msg_123",
+    #     limit: 20,
+    #     after: "atmpt_123"
+    #   )
+    #
+    # pkg:gem/resend#lib/resend/webhooks.rb:140
+    def list_event_attempts(webhook_id, event_id, params = T.unsafe(nil)); end
+
+    # Retrieve webhook events
+    #
+    # @param webhook_id [String] The webhook ID
+    # @param params [Hash] The pagination parameters
+    # @option params [Integer] :limit Number of webhook events to retrieve (max: 100, min: 1)
+    # @option params [String] :after The ID after which to retrieve more webhook events
+    #
+    # @return [Hash] A paginated list of webhook events
+    #
+    # @example
+    #   Resend::Webhooks.list_events("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
+    #
+    # @example With pagination
+    #   Resend::Webhooks.list_events("4dd369bc-aa82-4ff3-97de-514ae3000ee0", limit: 20, after: "msg_123")
+    #
+    # pkg:gem/resend#lib/resend/webhooks.rb:101
+    def list_events(webhook_id, params = T.unsafe(nil)); end
+
     # Remove an existing webhook
     #
     # @param webhook_id [String] The webhook ID
@@ -1686,7 +1746,7 @@ module Resend::Webhooks
     # @example
     #   Resend::Webhooks.remove("4dd369bc-aa82-4ff3-97de-514ae3000ee0")
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:118
+    # pkg:gem/resend#lib/resend/webhooks.rb:177
     def remove(webhook_id = T.unsafe(nil)); end
 
     # Update an existing webhook configuration
@@ -1707,7 +1767,7 @@ module Resend::Webhooks
     #     status: "enabled"
     #   )
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:104
+    # pkg:gem/resend#lib/resend/webhooks.rb:163
     def update(params = T.unsafe(nil)); end
 
     # Verify a webhook payload using HMAC-SHA256 signature validation
@@ -1733,19 +1793,19 @@ module Resend::Webhooks
     #     webhook_secret: "whsec_1234567890abcdez"
     #   )
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:145
+    # pkg:gem/resend#lib/resend/webhooks.rb:204
     def verify(params = T.unsafe(nil)); end
 
     private
 
     # Decode the signing secret (strip whsec_ prefix and base64 decode)
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:198
+    # pkg:gem/resend#lib/resend/webhooks.rb:257
     def decode_secret(webhook_secret); end
 
     # Generate HMAC-SHA256 signature and return it as base64
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:220
+    # pkg:gem/resend#lib/resend/webhooks.rb:279
     def generate_signature(secret, content); end
 
     # Constant-time string comparison to prevent timing attacks
@@ -1753,37 +1813,37 @@ module Resend::Webhooks
     # Note: We implement this manually for Ruby 2.7 compatibility.
     # Ruby 3.0+ could use OpenSSL.fixed_length_secure_compare instead.
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:229
+    # pkg:gem/resend#lib/resend/webhooks.rb:288
     def secure_compare(str_a, str_b); end
 
     # Validate required headers are present
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:180
+    # pkg:gem/resend#lib/resend/webhooks.rb:239
     def validate_headers(headers); end
 
     # Validate payload is present
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:170
+    # pkg:gem/resend#lib/resend/webhooks.rb:229
     def validate_payload(payload); end
 
     # Validate required parameters
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:163
+    # pkg:gem/resend#lib/resend/webhooks.rb:222
     def validate_required_params(payload, headers, webhook_secret); end
 
     # Validate timestamp to prevent replay attacks
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:187
+    # pkg:gem/resend#lib/resend/webhooks.rb:246
     def validate_timestamp(timestamp_header); end
 
     # Validate webhook secret is present
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:175
+    # pkg:gem/resend#lib/resend/webhooks.rb:234
     def validate_webhook_secret(webhook_secret); end
 
     # Verify signature using constant-time comparison
     #
-    # pkg:gem/resend#lib/resend/webhooks.rb:206
+    # pkg:gem/resend#lib/resend/webhooks.rb:265
     def verify_signature(signature_header, expected_signature); end
   end
 end

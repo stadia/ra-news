@@ -5461,16 +5461,22 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   #   on a `subscriptions/listen` stream; the periodic write frees the stream's slot when the peer
   #   has gone away. Defaults to `DEFAULT_LISTEN_KEEPALIVE_INTERVAL` (15); pass `nil` to disable
   #   when an upstream proxy already keeps the stream alive.
+  # @param serve_subscriptions_listen [Boolean] whether `subscriptions/listen` opens a stream.
+  #   A host that buffers responses and cannot serve an open SSE stream (e.g. the Rails controller pattern,
+  #   which builds a fresh transport per request and renders the body) passes `false`:
+  #   the method then answers 404 with JSON-RPC `-32601` like any unimplemented method,
+  #   and `Server#discover` stops advertising the `listChanged`/`subscribe` capability flags,
+  #   keeping the advertisement and the actual behavior in agreement. Defaults to `true`.
   # @param server_to_client_request_timeout [Numeric] seconds a server-to-client request waits for its
   #   response before the transport stops waiting and raises `MCP::Server::RequestTimeoutError`.
   #   Defaults to `DEFAULT_SERVER_TO_CLIENT_REQUEST_TIMEOUT` (600); individual calls override it with `timeout:`.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:135
-  def initialize(server, stateless: T.unsafe(nil), enable_json_response: T.unsafe(nil), session_idle_timeout: T.unsafe(nil), max_sessions: T.unsafe(nil), allowed_origins: T.unsafe(nil), allowed_hosts: T.unsafe(nil), dns_rebinding_protection: T.unsafe(nil), session_request_validator: T.unsafe(nil), max_request_bytes: T.unsafe(nil), max_listen_subscriptions: T.unsafe(nil), listen_keepalive_interval: T.unsafe(nil), server_to_client_request_timeout: T.unsafe(nil)); end
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:141
+  def initialize(server, stateless: T.unsafe(nil), enable_json_response: T.unsafe(nil), session_idle_timeout: T.unsafe(nil), max_sessions: T.unsafe(nil), allowed_origins: T.unsafe(nil), allowed_hosts: T.unsafe(nil), dns_rebinding_protection: T.unsafe(nil), session_request_validator: T.unsafe(nil), max_request_bytes: T.unsafe(nil), max_listen_subscriptions: T.unsafe(nil), listen_keepalive_interval: T.unsafe(nil), serve_subscriptions_listen: T.unsafe(nil), server_to_client_request_timeout: T.unsafe(nil)); end
 
   # Rack app interface. This transport can be mounted as a Rack app.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:259
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:268
   def call(env); end
 
   # Unblocks a `send_request` awaiting a response when the peer is being cancelled.
@@ -5483,32 +5489,32 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # if `:cancelled` arrives first, any later client response is silently dropped in `handle_response`
   # because the pending entry has been removed.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:618
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:629
   def cancel_pending_request(request_id, reason: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:320
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:331
   def close; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:469
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:480
   def close_streams(streams); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:402
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:413
   def deliver_broadcast_notification(notification); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:374
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:385
   def deliver_targeted_notification(notification, session_id, related_request_id); end
 
   # Removes a stream that failed to accept a write. A request-scoped stream is dropped on its own;
   # a session-scoped (GET SSE) failure tears down the whole session. The `@sessions` mutation runs
   # under `@mutex`, and the affected streams are closed outside it.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:448
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:459
   def drop_broken_stream(session_id, stream, related_request_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:269
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:280
   def handle_request(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:336
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:347
   def send_notification(method, params = T.unsafe(nil), session_id: T.unsafe(nil), related_request_id: T.unsafe(nil)); end
 
   # Sends a server-to-client JSON-RPC request (e.g., `sampling/createMessage`) and blocks until
@@ -5523,22 +5529,30 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # so a client that never answers cannot park the calling thread for good. On expiry the peer is
   # sent `notifications/cancelled` and `MCP::Server::RequestTimeoutError` is raised.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:486
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:497
   def send_request(method, params = T.unsafe(nil), session_id: T.unsafe(nil), related_request_id: T.unsafe(nil), parent_cancellation: T.unsafe(nil), server_session: T.unsafe(nil), timeout: T.unsafe(nil)); end
 
-  # The `subscriptions/listen` notification stream (SEP-2575) is served on the modern path,
-  # so `Server#discover` may advertise `listChanged`/`subscribe` capability flags.
+  # Whether this transport serves the `subscriptions/listen` notification stream (SEP-2575).
+  # Gates both the route (a refusing transport answers the method as unimplemented) and
+  # the `listChanged`/`subscribe` capability flags `Server#discover` advertises,
+  # so the two always agree. Set via the `serve_subscriptions_listen:` constructor keyword.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:265
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:276
   def serves_subscriptions_listen?; end
 
   # Writes a notification to an SSE stream without holding `@mutex`. On a write error,
   # drops the broken stream and returns false; on success returns true.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:436
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:447
   def write_notification(stream, notification, session_id, related_request_id); end
 
   private
+
+  # Marks a listen subscription eligible for delivery once its acknowledgement write has completed.
+  # The entry may already be gone when the transport closed concurrently.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:970
+  def activate_listen_subscription(request_id); end
 
   # Returns the SSE stream available for server-to-client messages.
   # When `related_request_id` is given, returns only the POST response
@@ -5546,93 +5560,93 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # request-scoped messages from leaking to the wrong stream.
   # When `related_request_id` is nil, returns the GET SSE stream.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1674
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1749
   def active_stream(session, related_request_id: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1849
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1924
   def already_initialized_response(request_id); end
 
   # Reads a nested capability flag tolerating both symbol and string keys, since user-supplied capability hashes arrive
   # in either form. The flag that promises delivery (`listChanged` / `subscribe`) decides honoring, the same derivation
   # `Server#discover` uses for its era-aware capability stripping; the mere presence of the primitive's capability is not enough.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:984
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1040
   def capability_flag?(capabilities, name, flag); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1289
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1364
   def cleanup_and_collect_stream(session_id, streams_to_close); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1262
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1337
   def cleanup_session(session_id); end
 
   # Removes a session from `@sessions` and returns it. Does not close the stream.
   # Callers must close the stream outside the mutex to avoid holding the lock during
   # potentially blocking I/O.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1276
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1351
   def cleanup_session_unsafe(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1302
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1377
   def close_post_request_streams(session); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1296
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1371
   def close_stream_safely(stream); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1889
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1964
   def create_sse_body(session_id); end
 
   # Mirrors `MCP::Client::HTTP#encode_header_value`: a value wrapped as `=?base64?<base64>?=` decodes to
   # its original UTF-8 string; anything else is taken verbatim. Duplicated here because the client transport
   # requires faraday, which servers do not depend on.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1077
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1152
   def decode_header_value(value); end
 
   # Fans a notification out to every `subscriptions/listen` stream whose honored filter opted in to it,
   # stamping the correlating `subscriptionId` into `_meta`. Matching against the honored filter
   # (not the requested one) enforces the MUST NOT-send-unrequested-types rule.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:994
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1050
   def deliver_to_listen_subscriptions(method, params); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1418
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1493
   def discover_request?(body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1682
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1757
   def dispatch_handle_json(body_string, server_session); end
 
   # Dispatches a client-originated notification (e.g. `notifications/cancelled`,
   # `notifications/initialized`) through the server so it can update session state.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1469
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1544
   def dispatch_notification(body_string, session_id); end
 
   # Each stateless POST is self-contained (SEP-2567): handlers run against an ephemeral per-request `ServerSession`
   # so client info, logging level, and initialized state never leak onto the shared `Server` instance or across concurrent requests.
   # https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2567
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1728
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1803
   def ephemeral_session; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1310
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1385
   def extract_session_id(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1817
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1892
   def forbidden_response(message = T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1717
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1792
   def get_session_stream(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1576
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1651
   def handle_accepted; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1239
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1314
   def handle_delete(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1215
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1290
   def handle_get(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1507
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1582
   def handle_initialization(request, body_string, body); end
 
   # Serves one request of the stateless modern lifecycle (MCP 2026-07-28, SEP-2575):
@@ -5641,26 +5655,26 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # an `Mcp-Session-Id`. GET (the legacy listening stream, replaced by `subscriptions/listen`)
   # and DELETE (session termination) have no modern meaning.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:673
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:684
   def handle_modern(request, header_version, body_string: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1107
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1182
   def handle_post(request, body_string: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1588
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1663
   def handle_regular_request(body_string, session_id, related_request_id: T.unsafe(nil)); end
 
   # Returns the POST response as an SSE stream so the server can send
   # JSON-RPC requests and notifications during request processing.
   # https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#sending-messages-to-the-server
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1628
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1703
   def handle_request_with_sse_response(body_string, session_id, server_session, related_request_id: T.unsafe(nil)); end
 
   # Verifies that the response came from the expected session to prevent
   # cross-session response injection if request IDs are ever leaked.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1491
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1566
   def handle_response(body, session_id:); end
 
   # Serves `subscriptions/listen` (SEP-2575): opens a long-lived SSE stream whose first message is
@@ -5670,29 +5684,29 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # response; an abrupt disconnect sends nothing. A keepalive comment frame is written every
   # `listen_keepalive_interval` seconds so a dropped connection frees its slot.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:824
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:840
   def handle_subscriptions_listen(body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1065
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1140
   def header_mismatch_response(message, id); end
 
   # Per SEP-2575, the server MUST NOT send notification types the client has not requested,
   # and the acknowledgement only includes types the server actually supports
   # (derived from its declared capabilities).
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:966
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1022
   def honored_filter(filter); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1414
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1489
   def initialize_request?(body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1406
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1481
   def invalid_json_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1853
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1928
   def invalid_request_response(message, request_id: T.unsafe(nil)); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1456
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1531
   def json_rpc_error_response(status:, code:, message:, data: T.unsafe(nil), id: T.unsafe(nil)); end
 
   # Era sniff for a sessionless POST under a dual-era header version: only an `initialize` body
@@ -5701,28 +5715,34 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # on the modern path and answers with -32601/404 (SEP-2575).
   # Unparsable or non-object bodies go to the modern path, whose error responses cover them.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1435
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1510
   def legacy_handshake_body?(body_string); end
 
-  # The proc registers the stream and returns, leaving the response open like
+  # The body registers the stream and returns, leaving the response open like
   # the legacy GET stream (`create_sse_body`).
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:886
+  # Registration and activation are split on purpose: the entry is inserted inactive
+  # (reserving the id and the cap slot atomically), the acknowledgement is written outside the lock,
+  # and only then does the entry become eligible for delivery. A concurrent notification between
+  # the insert and the acknowledgement write skips the inactive entry,
+  # enforcing the SEP-2575 rule that no notification precedes the acknowledgement.
+  #
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:932
   def listen_sse_body(request_id, honored); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:947
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1003
   def listen_subscription_active?(request_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:869
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:885
   def listen_subscriptions_full?; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1825
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1900
   def method_not_allowed_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1833
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1908
   def missing_session_id_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1094
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1169
   def modern_http_status(response); end
 
   # Each modern request is self-contained: handlers run against an ephemeral per-request `ServerSession` locked to
@@ -5730,22 +5750,22 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # keyed by session lookup degrades gracefully (delivery returns `false`) instead of broadcasting to unrelated legacy sessions
   # via the `session_id.nil?` branch.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1090
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1165
   def modern_session; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1366
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1441
   def not_acceptable_response(required_types); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1463
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1538
   def notification?(body); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1348
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1423
   def parse_accept_header(header); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1398
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1473
   def parse_request_body(body_string); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1390
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1465
   def payload_too_large_response; end
 
   # Reads the request body with a hard byte cap so an unbounded POST cannot exhaust
@@ -5754,28 +5774,28 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # a missing or spoofed `Content-Length` (e.g. chunked transfer) is still caught.
   # Returns `nil` when the body exceeds the cap.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1379
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1454
   def read_bounded_body(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:640
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:651
   def reap_expired_sessions; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1032
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1100
   def remove_listen_subscription(request_id); end
 
   # Extracts the host name from a `Host` header value, stripping any port and IPv6 brackets
   # (`[::1]:8080` becomes `::1`, `127.0.0.1:8080` becomes `127.0.0.1`).
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1796
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1871
   def request_hostname(host); end
 
   # The POST counterpart of the GET conflict above. A request id already in flight cannot be given
   # a stream of its own, because the id is what routes request-scoped messages back.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1875
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1950
   def request_id_conflict_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1485
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1560
   def response?(body); end
 
   # Compares the `Origin` authority (host:port) against the request's own `Host`.
@@ -5783,22 +5803,22 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # but the `Origin`'s scheme is used to drop a redundant default port (`:80` for http, `:443` for https) from
   # both sides so `http://example.com` matches `Host: example.com:80`. Comparison is case-insensitive.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1806
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1881
   def same_origin?(origin, request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1928
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:2003
   def send_keepalive_ping(session_id); end
 
   # Resolves the stream under the lock, then writes outside it so a stalled reader cannot block
   # every other subscription on `@mutex`. A write error propagates to end the keepalive loop.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:953
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1009
   def send_listen_keepalive_ping(request_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:663
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:674
   def send_ping_to_stream(stream); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:657
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:668
   def send_to_stream(stream, data); end
 
   # Returns true iff a session exists and is not past its idle timeout. Expired sessions
@@ -5806,35 +5826,35 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # the reaper hasn't yet pruned. Does NOT update `last_active_at`; callers that are
   # rejecting a request must not extend the session's lifetime.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1736
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1811
   def session_active?(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1924
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1999
   def session_active_with_stream?(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1865
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1940
   def session_already_connected_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1721
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1796
   def session_exists?(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1946
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:2021
   def session_expired?(session); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1841
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1916
   def session_not_found_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1883
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1958
   def setup_sse_stream(session_id); end
 
   # A version with no modern meaning, whose header can only accompany legacy traffic.
   # A modern version's header (2026-07-28) can accompany either era's traffic - the handshake never negotiates it,
   # but requests of an established legacy session may stamp it - so that value needs further disambiguation.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1425
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1500
   def stable_only_version?(version); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1911
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1986
   def start_keepalive_thread(session_id); end
 
   # Periodically writes an SSE keepalive comment frame to a listen stream so a silently dropped
@@ -5842,34 +5862,34 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # Mirrors the legacy GET stream's `start_keepalive_thread`; a comment frame (not a data frame)
   # cannot corrupt an interleaved notification's JSON.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:925
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:981
   def start_listen_keepalive_thread(request_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:629
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:640
   def start_reaper_thread; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1896
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1971
   def store_stream_for_session(session_id, stream); end
 
   # Graceful teardown (SEP-2575): each open listen stream receives its `SubscriptionsListenResult` response
   # before the stream closes.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1038
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1106
   def teardown_listen_subscriptions; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:875
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:891
   def too_many_listen_subscriptions_response(request_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1580
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1655
   def too_many_sessions_response; end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1335
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1410
   def validate_accept_header(request, required_types); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1690
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1765
   def validate_and_touch_session(session_id); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1354
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1429
   def validate_content_type(request); end
 
   # Per MCP 2025-11-25, servers MUST validate the `Origin` header and SHOULD bind only to localhost
@@ -5878,13 +5898,13 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # performs the check). The `Host` header is validated against the loopback defaults plus `allowed_hosts:`,
   # and the `Origin` header, when present, must be same-origin or in `allowed_origins:`.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1762
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1837
   def validate_dns_rebinding(request); end
 
   # Rejects a rebound `Host` (e.g. `evil.example.com` re-pointed at 127.0.0.1).
   # A request without a `Host` header (e.g. HTTP/1.0) is allowed; the rebinding vector this guards against always carries one.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1770
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1845
   def validate_host(request); end
 
   # Enforces the SEP-2575 header/body match rules (`-32020`, HTTP 400): the `MCP-Protocol-Version` header
@@ -5892,16 +5912,16 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # the body when sent. Absent mirror headers are tolerated for interoperability while other SDK serving stacks
   # converge on enforcement.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:765
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:781
   def validate_modern_headers(request, body, header_version); end
 
   # A request without an `Origin` header (typical for non-browser MCP clients) is allowed. A browser cross-origin request is
   # rejected unless the origin is same-origin or explicitly allow-listed via `allowed_origins:`.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1785
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1860
   def validate_origin(request); end
 
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1444
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1519
   def validate_protocol_version_header(request); end
 
   # Session-ownership gate for requests against an existing session (the spec's session-binding guidance).
@@ -5914,7 +5934,7 @@ class MCP::Server::Transports::StreamableHTTPTransport < ::MCP::Transport
   # - The application-supplied `session_request_validator`, which can enforce true ownership when it has
   #   an authenticated principal.
   #
-  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1323
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:1398
   def validate_session_request(request, session_id); end
 end
 
@@ -5930,7 +5950,7 @@ MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_LISTEN_KEEPALIVE_INTER
 # Loopback hosts always accepted by DNS rebinding protection. A locally bound MCP server (the canonical pattern) is
 # protected out of the box; non-loopback deployments widen the list via `allowed_hosts:`.
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:232
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:241
 MCP::Server::Transports::StreamableHTTPTransport::DEFAULT_LOOPBACK_HOSTS = T.let(T.unsafe(nil), Array)
 
 # Cap on concurrent `subscriptions/listen` streams (SEP-2575). Each stream holds an open SSE connection
@@ -5990,8 +6010,25 @@ class MCP::Server::Transports::StreamableHTTPTransport::InvalidJsonError < ::Sta
 # a `subscriptions/listen` stream (SEP-2575). `notifications/resources/updated` is matched by URI
 # against `resourceSubscriptions` instead.
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:240
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:249
 MCP::Server::Transports::StreamableHTTPTransport::LISTEN_FILTER_FIELDS = T.let(T.unsafe(nil), Hash)
+
+# The Rack streaming body of a `subscriptions/listen` response. It responds to `call`
+# and deliberately not to `each`, so Rack keeps classifying it as a streaming body;
+# `first` exists only to turn the buffered-host mistake (e.g. `render(json: body.first)`
+# in the Rails controller pattern) from a bare `NoMethodError` into guidance naming the fix.
+#
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:904
+class MCP::Server::Transports::StreamableHTTPTransport::ListenStreamBody
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:905
+  def initialize(&block); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:909
+  def call(stream); end
+
+  # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:913
+  def first; end
+end
 
 # Conservative bound on JSON nesting depth, so a deeply nested body cannot exhaust
 # the stack or amplify parse cost (complements the byte cap).
@@ -6012,24 +6049,24 @@ MCP::Server::Transports::StreamableHTTPTransport::MAX_MODERN_REQUEST_NOTIFICATIO
 # (disambiguating an unknown method from a legacy HTTP+SSE 404) and everything else, including internal errors,
 # stays 200, matching the Python SDK's status ladder.
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:249
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:258
 MCP::Server::Transports::StreamableHTTPTransport::MODERN_BAD_REQUEST_CODES = T.let(T.unsafe(nil), Array)
 
 # JSON-RPC methods whose target name is mirrored into the `Mcp-Name` header (SEP-2575).
 #
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:235
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:244
 MCP::Server::Transports::StreamableHTTPTransport::NAME_BEARING_METHODS = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:226
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:235
 MCP::Server::Transports::StreamableHTTPTransport::REQUIRED_GET_ACCEPT_TYPES = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:225
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:234
 MCP::Server::Transports::StreamableHTTPTransport::REQUIRED_POST_ACCEPT_TYPES_JSON = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:224
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:233
 MCP::Server::Transports::StreamableHTTPTransport::REQUIRED_POST_ACCEPT_TYPES_SSE = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:228
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:237
 MCP::Server::Transports::StreamableHTTPTransport::SESSION_REAP_INTERVAL = T.let(T.unsafe(nil), Integer)
 
 # `x-accel-buffering: no` tells reverse proxies (nginx and friends) not to buffer the response,
@@ -6041,7 +6078,7 @@ MCP::Server::Transports::StreamableHTTPTransport::SESSION_REAP_INTERVAL = T.let(
 # pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:27
 MCP::Server::Transports::StreamableHTTPTransport::SSE_HEADERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:227
+# pkg:gem/mcp#lib/mcp/server/transports/streamable_http_transport.rb:236
 MCP::Server::Transports::StreamableHTTPTransport::STREAM_WRITE_ERRORS = T.let(T.unsafe(nil), Array)
 
 # Distinguishes "argument omitted, apply the secure default" from an explicit `nil` (opt out of expiry).

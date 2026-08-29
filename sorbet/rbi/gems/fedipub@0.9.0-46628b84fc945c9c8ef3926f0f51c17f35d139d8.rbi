@@ -15,12 +15,8 @@
 # rbs_inline: enabled
 # rbs_inline: enabled
 # rbs_inline: enabled
-# rbs_inline: enabled
-# rbs_inline: enabled
-# rbs_inline: enabled
-# rbs_inline: enabled
 #
-# pkg:gem/fedipub#lib/fedipub/version.rb:3
+# pkg:gem/fedipub#lib/fedipub/version.rb:4
 module Fedipub
   # pkg:gem/fedipub#lib/fedipub.rb:27
   def configuration; end
@@ -29,7 +25,7 @@ module Fedipub
     # @return [Hash] The configuration for the given actor entity
     #
     # pkg:gem/fedipub#lib/fedipub.rb:76
-    sig { params(class_or_instance: T.untyped).returns(T::Hash[::Symbol, T.untyped]) }
+    sig { params(class_or_instance: ::Object).returns(T::Hash[::Symbol, ::Object]) }
     def actor_entity(class_or_instance); end
 
     # @return [Boolean] True if the given model is a possible actor
@@ -38,7 +34,7 @@ module Fedipub
     #   puts "Follow #{some_actor.name}" if actor_entity? current_user
     #
     # pkg:gem/fedipub#lib/fedipub.rb:70
-    sig { params(class_or_instance: T.untyped).returns(T::Boolean) }
+    sig { params(class_or_instance: ::Object).returns(T::Boolean) }
     def actor_entity?(class_or_instance); end
 
     # pkg:gem/fedipub#lib/fedipub.rb:44
@@ -49,19 +45,19 @@ module Fedipub
     def configuration; end
 
     # pkg:gem/fedipub#lib/fedipub.rb:32
-    sig { params(_arg0: T.untyped).void }
+    sig { params(_arg0: ).void }
     def configure(&_arg0); end
 
     # @return [Boolean] True if the given model is a possible data entity
     #
     # pkg:gem/fedipub#lib/fedipub.rb:85
-    sig { params(class_or_instance: T.untyped).returns(T::Boolean) }
+    sig { params(class_or_instance: ::Object).returns(T::Boolean) }
     def data_entity?(class_or_instance); end
 
     # @return [Hash] The configuration for the given data entity
     #
     # pkg:gem/fedipub#lib/fedipub.rb:129
-    sig { params(class_or_instance: T.untyped).returns(T::Hash[::Symbol, T.untyped]) }
+    sig { params(class_or_instance: ::Object).returns(T::Hash[::Symbol, ::Object]) }
     def data_entity_configuration(class_or_instance); end
 
     # Finds configured data type from route path segment
@@ -99,19 +95,19 @@ module Fedipub
     sig { returns(::Logger) }
     def logger; end
 
-    # pkg:gem/fedipub#lib/fedipub/engine.rb:7
+    # pkg:gem/fedipub#lib/fedipub/engine.rb:11
     def railtie_helpers_paths; end
 
-    # pkg:gem/fedipub#lib/fedipub/engine.rb:7
+    # pkg:gem/fedipub#lib/fedipub/engine.rb:11
     def railtie_namespace; end
 
-    # pkg:gem/fedipub#lib/fedipub/engine.rb:7
+    # pkg:gem/fedipub#lib/fedipub/engine.rb:11
     def railtie_routes_url_helpers(include_path_helpers = T.unsafe(nil)); end
 
-    # pkg:gem/fedipub#lib/fedipub/engine.rb:7
+    # pkg:gem/fedipub#lib/fedipub/engine.rb:11
     def table_name_prefix; end
 
-    # pkg:gem/fedipub#lib/fedipub/engine.rb:7
+    # pkg:gem/fedipub#lib/fedipub/engine.rb:11
     def use_relative_model_naming?; end
 
     private
@@ -119,7 +115,7 @@ module Fedipub
     # @return [String] Class name of the provided class or instance
     #
     # pkg:gem/fedipub#lib/fedipub.rb:140
-    sig { params(class_or_instance: T.untyped).returns(::String) }
+    sig { params(class_or_instance: ::Object).returns(T.nilable(::String)) }
     def class_or_instance_name(class_or_instance); end
   end
 end
@@ -128,13 +124,14 @@ class Fedipub::Activity < ::Fedipub::ApplicationRecord
   include ::Fedipub::Activity::GeneratedAttributeMethods
   include ::Fedipub::Activity::GeneratedAssociationMethods
   include ::Fedipub::HasUuid
+  extend ::Fedipub::HasUuid::ClassMethods
 
   def _run_commit_callbacks(&block); end
   def _run_save_callbacks(&block); end
   def autosave_associated_records_for_actor(*args); end
   def autosave_associated_records_for_entity(*args); end
 
-  sig { returns(T.untyped) }
+  sig { returns(T.nilable(::ActiveRecord::Base)) }
   def entity; end
 
   def undo!; end
@@ -152,9 +149,6 @@ class Fedipub::Activity < ::Fedipub::ApplicationRecord
 
   class << self
     def feed_for(*args, **_arg1); end
-
-    sig { params(param: ::String).returns(T.untyped) }
-    def find_param(param); end
 
     private
 
@@ -196,6 +190,7 @@ class Fedipub::Actor < ::Fedipub::ApplicationRecord
   include ::Fedipub::HandlesDeleteRequests
   include ::Fedipub::Likeable
   include ::Fedipub::Announceable
+  extend ::Fedipub::HasUuid::ClassMethods
   extend ::Fedipub::HandlesDeleteRequests::ClassMethods
 
   def _on_fedipub_delete_requested_callbacks; end
@@ -359,11 +354,8 @@ class Fedipub::Actor < ::Fedipub::ApplicationRecord
     sig { params(url: T.nilable(::String)).returns(::Fedipub::Actor) }
     def find_or_create_by_federation_url(url); end
 
-    sig { params(object: T.any(::String, T::Hash[::String, T.untyped])).returns(::Fedipub::Actor) }
+    sig { params(object: ::Object).returns(::Fedipub::Actor) }
     def find_or_create_by_object(object); end
-
-    sig { params(param: ::String).returns(T.untyped) }
-    def find_param(param); end
 
     def local(*args, **_arg1); end
     def not_tombstoned(*args, **_arg1); end
@@ -501,7 +493,7 @@ module Fedipub::ActorEntity::ClassMethods
 
   private
 
-  sig { params(name: ::Symbol, instance: T.untyped, _arg2: T.untyped).void }
+  sig { params(name: ::Symbol, instance: T.untyped, _arg2: ).void }
   def dispatch_callback(name, instance, *_arg2); end
 
   sig { params(instance: T.untyped, follow: ::Fedipub::Following, follow_activity: ::Fedipub::Activity).void }
@@ -802,221 +794,221 @@ end
 
 # Stores the Fedipub configuration in a _singleton_.
 #
-# pkg:gem/fedipub#lib/fedipub/configuration.rb:10
+# pkg:gem/fedipub#lib/fedipub/configuration.rb:11
 module Fedipub::Configuration
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:130
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:131
   def actor_types; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:56
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:57
   def app_layout; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:56
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:57
   def app_layout=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:12
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:13
   def app_name; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:12
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:13
   def app_name=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:16
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:17
   def app_version; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:16
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:17
   def app_version=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:80
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:81
   def base_client_controller; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:80
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:81
   def base_client_controller=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:76
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:77
   def client_routes_path; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:76
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:77
   def client_routes_path=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:139
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:140
   def data_types; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:32
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:33
   def enable_discovery; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:32
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:33
   def enable_discovery=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:20
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:21
   def force_ssl; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:20
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:21
   def force_ssl=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:126
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:127
   def job_queue; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:126
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:127
   def job_queue=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:61
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:62
   def logger=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:47
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:48
   def nodeinfo_metadata=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:37
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:38
   def open_registrations=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:118
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:119
   def remote_entities_cache_duration; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:118
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:119
   def remote_entities_cache_duration=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:100
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:101
   def remote_follow_url_method; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:100
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:101
   def remote_follow_url_method=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:72
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:73
   def server_routes_path; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:72
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:73
   def server_routes_path=(val); end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:24
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:25
   def site_host; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:28
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:29
   def site_port; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:122
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:123
   def verify_signatures; end
 
-  # pkg:gem/fedipub#lib/fedipub/configuration.rb:122
+  # pkg:gem/fedipub#lib/fedipub/configuration.rb:123
   def verify_signatures=(val); end
 
   class << self
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:130
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:131
     def actor_types; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:56
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:57
     def app_layout; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:56
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:57
     def app_layout=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:12
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:13
     def app_name; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:12
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:13
     def app_name=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:16
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:17
     def app_version; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:16
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:17
     def app_version=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:80
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:81
     def base_client_controller; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:80
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:81
     def base_client_controller=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:76
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:77
     def client_routes_path; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:76
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:77
     def client_routes_path=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:139
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:140
     def data_types; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:32
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:33
     def enable_discovery; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:32
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:33
     def enable_discovery=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:20
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:21
     def force_ssl; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:20
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:21
     def force_ssl=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:126
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:127
     def job_queue; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:126
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:127
     def job_queue=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:65
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:66
     sig { returns(::Logger) }
     def logger; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:61
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:62
     def logger=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:51
-    sig { returns(T::Hash[::String, T.untyped]) }
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:52
+    sig { returns(T::Hash[::String, ::Object]) }
     def nodeinfo_metadata; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:47
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:48
     def nodeinfo_metadata=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:41
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:42
     sig { returns(T::Boolean) }
     def open_registrations; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:37
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:38
     def open_registrations=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:134
-    sig { params(klass: ::Class, config: T::Hash[::Symbol, T.untyped]).void }
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:135
+    sig { params(klass: ::Class, config: T::Hash[::Symbol, ::Object]).void }
     def register_actor_class(klass, config = T.unsafe(nil)); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:143
-    sig { params(klass: ::Class, config: T::Hash[::Symbol, T.untyped]).void }
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:144
+    sig { params(klass: ::Class, config: T::Hash[::Symbol, ::Object]).void }
     def register_data_type(klass, config = T.unsafe(nil)); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:118
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:119
     def remote_entities_cache_duration; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:118
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:119
     def remote_entities_cache_duration=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:100
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:101
     def remote_follow_url_method; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:100
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:101
     def remote_follow_url_method=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:72
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:73
     def server_routes_path; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:72
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:73
     def server_routes_path=(val); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:24
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:25
     def site_host; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:104
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:105
     sig { params(value: T.nilable(::String)).void }
     def site_host=(value); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:28
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:29
     def site_port; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:110
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:111
     sig { params(value: T.nilable(::Integer)).void }
     def site_port=(value); end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:122
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:123
     def verify_signatures; end
 
-    # pkg:gem/fedipub#lib/fedipub/configuration.rb:122
+    # pkg:gem/fedipub#lib/fedipub/configuration.rb:123
     def verify_signatures=(val); end
   end
 end
@@ -1089,10 +1081,10 @@ end
 Fedipub::DataEntity::LIFECYCLE_FEDIPUB_ACTIONS = T.let(T.unsafe(nil), Array)
 class Fedipub::DataEntity::TombstonedError < ::StandardError; end
 
-# pkg:gem/fedipub#lib/fedipub/data_transformer/note.rb:6
+# pkg:gem/fedipub#lib/fedipub/data_transformer/note.rb:7
 module Fedipub::DataTransformer; end
 
-# pkg:gem/fedipub#lib/fedipub/data_transformer/note.rb:7
+# pkg:gem/fedipub#lib/fedipub/data_transformer/note.rb:8
 module Fedipub::DataTransformer::Note
   class << self
     # Renders a Note. The entity is used to determine actor and generic fields data
@@ -1117,24 +1109,24 @@ module Fedipub::DataTransformer::Note
     #   - https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object
     #   - https://www.w3.org/TR/activitystreams-vocabulary/#dfn-note
     #
-    # pkg:gem/fedipub#lib/fedipub/data_transformer/note.rb:29
+    # pkg:gem/fedipub#lib/fedipub/data_transformer/note.rb:30
     def to_federation(entity, content:, name: T.unsafe(nil), custom: T.unsafe(nil), to: T.unsafe(nil), cc: T.unsafe(nil)); end
   end
 end
 
-# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:4
+# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:5
 class Fedipub::DeliveryError < ::StandardError
-  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:7
+  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:8
   def initialize(message, response_code: T.unsafe(nil), inbox_url: T.unsafe(nil)); end
 
-  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:5
+  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:6
   def inbox_url; end
 
-  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:5
+  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:6
   def response_code; end
 end
 
-# pkg:gem/fedipub#lib/fedipub/engine.rb:6
+# pkg:gem/fedipub#lib/fedipub/engine.rb:10
 class Fedipub::Engine < ::Rails::Engine; end
 
 class Fedipub::FeaturedItem < ::Fedipub::ApplicationRecord
@@ -1242,6 +1234,7 @@ class Fedipub::Following < ::Fedipub::ApplicationRecord
   include ::Fedipub::Following::GeneratedAttributeMethods
   include ::Fedipub::Following::GeneratedAssociationMethods
   include ::Fedipub::HasUuid
+  extend ::Fedipub::HasUuid::ClassMethods
 
   def _on_fedipub_delete_requested_callbacks; end
   def _run_create_callbacks(&block); end
@@ -1251,7 +1244,7 @@ class Fedipub::Following < ::Fedipub::ApplicationRecord
   def _run_save_callbacks(&block); end
   def _run_update_callbacks(&block); end
 
-  sig { params(follow_activity: ::Fedipub::Activity).void }
+  sig { params(follow_activity: ::Fedipub::Activity).returns(::Fedipub::Activity) }
   def accept!(follow_activity:); end
 
   def autosave_associated_records_for_activities(*args); end
@@ -1287,9 +1280,6 @@ class Fedipub::Following < ::Fedipub::ApplicationRecord
     def _on_fedipub_delete_requested_callbacks; end
     def _on_fedipub_delete_requested_callbacks=(value); end
     def accepted(*args, **_arg1); end
-
-    sig { params(param: ::String).returns(T.untyped) }
-    def find_param(param); end
 
     sig { params(account: ::String, actor: ::Fedipub::Actor).returns(::Fedipub::Following) }
     def new_from_account(account, actor:); end
@@ -1347,10 +1337,10 @@ module Fedipub::HandlesDeleteRequests
 end
 
 module Fedipub::HandlesDeleteRequests::ClassMethods
-  sig { params(_arg0: T.untyped).returns(T.untyped) }
+  sig { params(_arg0: ).returns(T.untyped) }
   def on_fedipub_delete_requested(*_arg0); end
 
-  sig { params(_arg0: T.untyped).returns(T.untyped) }
+  sig { params(_arg0: ).returns(T.untyped) }
   def on_fedipub_undelete_requested(*_arg0); end
 end
 
@@ -1361,16 +1351,16 @@ module Fedipub::HandlesSocialActivities
 end
 
 module Fedipub::HandlesSocialActivities::ClassMethods
-  sig { params(method_name: T.nilable(::Symbol), _arg1: T.untyped, _arg2: T.untyped).returns(T.untyped) }
+  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_announce_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
 
-  sig { params(method_name: T.nilable(::Symbol), _arg1: T.untyped, _arg2: T.untyped).returns(T.untyped) }
+  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_like_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
 
-  sig { params(method_name: T.nilable(::Symbol), _arg1: T.untyped, _arg2: T.untyped).returns(T.untyped) }
+  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_undo_announce_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
 
-  sig { params(method_name: T.nilable(::Symbol), _arg1: T.untyped, _arg2: T.untyped).returns(T.untyped) }
+  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_undo_like_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
 
   private
@@ -1389,6 +1379,8 @@ end
 module Fedipub::HasUuid
   extend ::ActiveSupport::Concern
 
+  mixes_in_class_methods ::Fedipub::HasUuid::ClassMethods
+
   sig { returns(::String) }
   def to_param; end
 
@@ -1399,6 +1391,11 @@ module Fedipub::HasUuid
 
   sig { void }
   def generate_uuid; end
+end
+
+module Fedipub::HasUuid::ClassMethods
+  sig { params(param: ::String).returns(T.untyped) }
+  def find_param(param); end
 end
 
 class Fedipub::Host < ::Fedipub::ApplicationRecord
@@ -1462,7 +1459,7 @@ end
 module Fedipub::Host::GeneratedAttributeMethods; end
 Fedipub::Host::SYNC_FAILURES = T.let(T.unsafe(nil), Array)
 
-# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:15
+# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:16
 class Fedipub::InvalidDeliveryPayloadError < ::Fedipub::PermanentDeliveryError; end
 
 module Fedipub::Likeable
@@ -1514,12 +1511,12 @@ class Fedipub::Maintenance::ActorsUpdater
   end
 end
 
-# pkg:gem/fedipub#lib/fedipub/maintenance/hosts_updater.rb:5
+# pkg:gem/fedipub#lib/fedipub/maintenance/hosts_updater.rb:6
 class Fedipub::Maintenance::HostsUpdater
   class << self
     # Update information for all known hosts, and complete if some are missing
     #
-    # pkg:gem/fedipub#lib/fedipub/maintenance/hosts_updater.rb:8
+    # pkg:gem/fedipub#lib/fedipub/maintenance/hosts_updater.rb:9
     def run(cache_interval: T.unsafe(nil)); end
   end
 end
@@ -1535,7 +1532,7 @@ class Fedipub::NotifyInboxJob < ::Fedipub::ApplicationJob
   end
 end
 
-# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:14
+# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:15
 class Fedipub::PermanentDeliveryError < ::Fedipub::DeliveryError; end
 
 module Fedipub::SerializerSupport
@@ -1985,12 +1982,12 @@ module Fedipub::ServerHelper
   def set_json_ld_context(json, additional: T.unsafe(nil)); end
 end
 
-# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:17
+# pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:18
 class Fedipub::TemporaryDeliveryError < ::Fedipub::DeliveryError
-  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:20
+  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:21
   def initialize(message, response_code: T.unsafe(nil), inbox_url: T.unsafe(nil), retry_after: T.unsafe(nil)); end
 
-  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:18
+  # pkg:gem/fedipub#lib/fedipub/delivery_errors.rb:19
   def retry_after; end
 end
 
@@ -2084,7 +2081,7 @@ end
 
 # Simple wrapper to make requests expecting JSON
 #
-# pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:9
+# pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:10
 module Fedipub::Utils::JsonRequest
   class << self
     # Makes a GET request and returns a +Hash+ from the parsed body
@@ -2099,15 +2096,15 @@ module Fedipub::Utils::JsonRequest
     #
     # @raise [UnhandledResponseStatus] when response status is not the expected_status
     #
-    # pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:28
+    # pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:29
     def get_json(url, params: T.unsafe(nil), headers: T.unsafe(nil), follow_redirects: T.unsafe(nil), expected_status: T.unsafe(nil)); end
   end
 end
 
-# pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:12
+# pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:13
 Fedipub::Utils::JsonRequest::BASE_HEADERS = T.let(T.unsafe(nil), Hash)
 
-# pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:10
+# pkg:gem/fedipub#lib/fedipub/utils/json_request.rb:11
 class Fedipub::Utils::JsonRequest::UnhandledResponseStatus < ::StandardError; end
 
 # Methods to manipulate incoming objects
@@ -2136,7 +2133,7 @@ class Fedipub::Utils::Object
     #
     # @return [ApplicationRecord, nil] Entity or nil when invalid/not found
     #
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:75
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:76
     def find_or_create!(object_or_id); end
 
     # Finds data from an object or its ID.
@@ -2159,7 +2156,7 @@ class Fedipub::Utils::Object
     #
     # @return [ApplicationRecord, nil] Entity or nil when invalid/not found
     #
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:58
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:59
     def find_or_initialize!(object_or_id); end
 
     # Returns the timestamps to use from an ActivityPub object
@@ -2168,7 +2165,7 @@ class Fedipub::Utils::Object
     #
     # @return [Hash] Hash with timestamps
     #
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:96
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:97
     def timestamp_attributes(hash); end
 
     private
@@ -2178,34 +2175,38 @@ class Fedipub::Utils::Object
     # expects a String, so normalize to the first URL. Passing the raw Array
     # would raise `NoMethodError: undefined method 'match?' for an Array`.
     #
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:157
-    sig { params(attributed_to: T.untyped).returns(T.nilable(::String)) }
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:158
+    sig { params(attributed_to: ::Fedipub::Utils::Object).returns(T.nilable(::String)) }
     def attributed_to_url(attributed_to); end
 
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:124
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:125
     def fallback_local_config(route_path_segment); end
 
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:134
-    sig { params(federated_url: T.any(::String, T::Hash[::String, T.untyped])).returns(T.untyped) }
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:135
+    sig do
+      params(
+        federated_url: T.any(::String, T::Hash[::String, T.untyped])
+      ).returns(T.nilable(::ActiveRecord::Base))
+    end
     def from_distant_server(federated_url); end
 
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:115
-    sig { params(route: T::Hash[::Symbol, ::String]).returns(T.untyped) }
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:116
+    sig { params(route: T::Hash[::Symbol, ::String]).returns(T.nilable(::ActiveRecord::Base)) }
     def from_local_route(route); end
 
-    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:106
+    # pkg:gem/fedipub#lib/fedipub/utils/object.rb:107
     sig { params(url: ::String).returns(T.nilable(T::Hash[::Symbol, ::String])) }
     def local_route(url); end
   end
 end
 
-# pkg:gem/fedipub#lib/fedipub/utils/response_codes.rb:5
+# pkg:gem/fedipub#lib/fedipub/utils/response_codes.rb:6
 module Fedipub::Utils::ResponseCodes; end
 
-# pkg:gem/fedipub#lib/fedipub/utils/response_codes.rb:6
+# pkg:gem/fedipub#lib/fedipub/utils/response_codes.rb:7
 Fedipub::Utils::ResponseCodes::UNPROCESSABLE_CONTENT = T.let(T.unsafe(nil), Symbol)
 
-# pkg:gem/fedipub#lib/fedipub/version.rb:4
+# pkg:gem/fedipub#lib/fedipub/version.rb:5
 Fedipub::VERSION = T.let(T.unsafe(nil), String)
 
 # This module includes classes and helpers to interact with the Fediverse.
@@ -2220,21 +2221,24 @@ module Fediverse; end
 
 # pkg:gem/fedipub#lib/fediverse/collection.rb:5
 class Fediverse::Collection < ::Array
-  # pkg:gem/fedipub#lib/fediverse/collection.rb:19
+  # pkg:gem/fedipub#lib/fediverse/collection.rb:24
   sig { params(url: ::String, max_pages: ::Integer).returns(T.self_type) }
   def fetch(url, max_pages: T.unsafe(nil)); end
 
-  # pkg:gem/fedipub#lib/fediverse/collection.rb:10
+  # pkg:gem/fedipub#lib/fediverse/collection.rb:13
+  sig { returns(T.nilable(::String)) }
   def id; end
 
-  # pkg:gem/fedipub#lib/fediverse/collection.rb:9
+  # pkg:gem/fedipub#lib/fediverse/collection.rb:10
+  sig { returns(T.nilable(::Integer)) }
   def total_items; end
 
-  # pkg:gem/fedipub#lib/fediverse/collection.rb:11
+  # pkg:gem/fedipub#lib/fediverse/collection.rb:16
+  sig { returns(T.nilable(::String)) }
   def type; end
 
   class << self
-    # pkg:gem/fedipub#lib/fediverse/collection.rb:14
+    # pkg:gem/fedipub#lib/fediverse/collection.rb:19
     sig { params(url: ::String, max_pages: ::Integer).returns(::Fediverse::Collection) }
     def fetch(url, max_pages: T.unsafe(nil)); end
   end
@@ -2246,13 +2250,13 @@ Fediverse::Collection::DEFAULT_MAX_PAGES = T.let(T.unsafe(nil), Integer)
 # pkg:gem/fedipub#lib/fediverse/collection.rb:6
 Fediverse::Collection::PUBLIC = T.let(T.unsafe(nil), String)
 
-# pkg:gem/fedipub#lib/fediverse/collection.rb:42
+# pkg:gem/fedipub#lib/fediverse/collection.rb:47
 module Fediverse::Errors; end
 
-# pkg:gem/fedipub#lib/fediverse/collection.rb:43
+# pkg:gem/fedipub#lib/fediverse/collection.rb:48
 class Fediverse::Errors::NotACollection < ::StandardError; end
 
-# pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:6
+# pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:7
 class Fediverse::Inbox
   class << self
     # Dispatches an incoming ActivityPub activity to the appropriate handler.
@@ -2299,33 +2303,38 @@ class Fediverse::Inbox
 
     # Extracts local collection URLs from to/cc/audience addressing fields.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:180
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:179
     sig { params(payload: T::Hash[::String, T.untyped]).returns(T::Array[::String]) }
     def addressed_local_collections(payload); end
 
     # Resolves the entity (polymorphic object) for a processed activity record.
     # Falls back to actor when the actual object cannot be resolved.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:208
-    sig { params(payload: T::Hash[::String, T.untyped], actor: ::Fedipub::Actor).returns(T.untyped) }
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:207
+    sig do
+      params(
+        payload: T::Hash[::String, T.untyped],
+        actor: ::Fedipub::Actor
+      ).returns(T.nilable(::ActiveRecord::Base))
+    end
     def entity_for_processed_activity(payload, actor); end
 
     # Returns merged handlers matching the given activity and object types,
     # including wildcard ('*') registrations.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:138
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:137
     def get_handlers(activity_type, object_type); end
 
     # Checks if a URL resolves to a local followers collection via route recognition.
     # AP Section 7.1.2: forwarding targets followers collections only, not following.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:187
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:186
     sig { params(url: ::String).returns(T::Boolean) }
     def local_collection_url?(url); end
 
     # Checks if a URL resolves to any local Fedipub resource via route recognition.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:196
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:195
     sig { params(url: ::String).returns(T::Boolean) }
     def local_object_reference?(url); end
 
@@ -2339,51 +2348,51 @@ class Fediverse::Inbox
 
     # Returns true if to/cc/audience addresses a collection owned by this server.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:159
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:158
     sig { params(payload: T::Hash[::String, T.untyped]).returns(T::Boolean) }
     def references_local_collection?(payload); end
 
     # Returns true if inReplyTo, object, target, or tag references an object owned by this server.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:165
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:164
     sig { params(payload: T::Hash[::String, T.untyped]).returns(T::Boolean) }
     def references_local_object?(payload); end
 
     # Compares host and port of two URLs for same-origin verification (AP Section 7.3).
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:147
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:146
     sig { params(actor_url: T.nilable(::String), object_url: T.nilable(::String)).returns(T::Boolean) }
     def same_origin?(actor_url, object_url); end
 
-    # pkg:gem/fedipub#lib/fediverse/inbox.rb:222
+    # pkg:gem/fedipub#lib/fediverse/inbox.rb:221
     sig { params(activity: ::Fedipub::Activity, payload: T::Hash[::String, T.untyped]).void }
     def update_processed_activity!(activity, payload); end
   end
 end
 
-# pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:7
+# pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:8
 module Fediverse::Inbox::AnnounceHandler
   class << self
-    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:9
+    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:10
     def handle_announce(activity); end
 
-    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:16
+    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:17
     def handle_undo_announce(activity); end
 
     private
 
-    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:28
+    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:29
     def dispatch_callback(entity, callback_name, actor); end
 
-    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:36
+    # pkg:gem/fedipub#lib/fediverse/inbox/announce_handler.rb:37
     def resolve_target_entity(object); end
   end
 end
 
-# pkg:gem/fedipub#lib/fediverse/inbox/block_handler.rb:5
+# pkg:gem/fedipub#lib/fediverse/inbox/block_handler.rb:6
 module Fediverse::Inbox::BlockHandler
   class << self
-    # pkg:gem/fedipub#lib/fediverse/inbox/block_handler.rb:8
+    # pkg:gem/fedipub#lib/fediverse/inbox/block_handler.rb:9
     def handle_block(activity); end
 
     # pkg:gem/fedipub#lib/fediverse/inbox/block_handler.rb:23
@@ -2398,7 +2407,7 @@ module Fediverse::Inbox::DeleteHandler
     # Handles the Delete case where the target object may already be gone remotely.
     #
     # pkg:gem/fedipub#lib/fediverse/inbox/delete_handler.rb:13
-    sig { params(payload: T::Hash[::String, T.untyped]).returns(T.untyped) }
+    sig { params(payload: T::Hash[::String, T.untyped]).returns(T.nilable(::Object)) }
     def dispatch_delete_request(payload); end
 
     # Triggers on_fedipub_delete_requested callback on the matching local object.
@@ -2420,7 +2429,7 @@ module Fediverse::Inbox::FollowHandler
   class << self
     # Marks a pending Following as accepted when the target actor confirms.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:39
+    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:38
     sig { params(activity: T::Hash[::String, T.untyped]).returns(T.nilable(::Fedipub::Activity)) }
     def handle_accept_follow_request(activity); end
 
@@ -2433,13 +2442,13 @@ module Fediverse::Inbox::FollowHandler
     # Destroys a pending Following when the target actor rejects the request.
     # AP Section 7.7: MUST NOT add to Following collection on Reject.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:89
+    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:87
     sig { params(activity: T::Hash[::String, T.untyped]).returns(T.nilable(::Fedipub::Following)) }
     def handle_reject_follow_request(activity); end
 
     # Destroys a Following record when the follower undoes their Follow.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:74
+    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:72
     sig { params(activity: T::Hash[::String, T.untyped]).returns(T.nilable(::Fedipub::Following)) }
     def handle_undo_follow_request(activity); end
 
@@ -2455,7 +2464,7 @@ module Fediverse::Inbox::FollowHandler
     end
     def dispatch_followed_callback(target_actor, following, follow_activity); end
 
-    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:123
+    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:124
     sig do
       params(
         actor: ::Fedipub::Actor,
@@ -2469,27 +2478,27 @@ module Fediverse::Inbox::FollowHandler
     # under a new activity id. De-duplication in dispatch_request ensures this path is only
     # reached for genuinely new inbound Follow activities.
     #
-    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:110
+    # pkg:gem/fedipub#lib/fediverse/inbox/follow_handler.rb:108
     sig { params(following: ::Fedipub::Following, follow_activity: T.nilable(::Fedipub::Activity)).void }
     def resend_accept_for_duplicate_follow(following, follow_activity); end
   end
 end
 
-# pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:7
+# pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:8
 module Fediverse::Inbox::LikeHandler
   class << self
-    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:9
+    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:10
     def handle_like(activity); end
 
-    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:16
+    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:17
     def handle_undo_like(activity); end
 
     private
 
-    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:28
+    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:29
     def dispatch_callback(entity, callback_name, actor); end
 
-    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:36
+    # pkg:gem/fedipub#lib/fediverse/inbox/like_handler.rb:37
     def resolve_target_entity(object); end
   end
 end
@@ -2498,7 +2507,7 @@ end
 class Fediverse::NodeInfo
   class << self
     # pkg:gem/fedipub#lib/fediverse/node_info.rb:15
-    sig { params(domain: ::String).returns(T::Hash[::Symbol, T.untyped]) }
+    sig { params(domain: ::String).returns(T::Hash[::Symbol, ::Object]) }
     def fetch(domain); end
 
     private
@@ -2530,7 +2539,7 @@ class Fediverse::Notifier
     # @param activity [Fedipub::Activity]
     # @param inbox_url [String]
     #
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:27
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:30
     def deliver_to_inbox(activity, inbox_url); end
 
     # Enqueues a separate delivery job for each recipient inbox.
@@ -2540,7 +2549,7 @@ class Fediverse::Notifier
     # pkg:gem/fedipub#lib/fediverse/notifier.rb:16
     def enqueue_deliveries(activity); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:53
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:59
     sig do
       params(
         payload: T::Hash[::String, T.untyped],
@@ -2554,40 +2563,40 @@ class Fediverse::Notifier
     #
     # @param activity [Fedipub::Activity]
     #
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:38
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:41
     def post_to_inboxes(activity); end
 
     private
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:135
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:141
     sig { params(actor_url: T.nilable(::String)).returns(T.nilable(::String)) }
     def actor_inbox_for(actor_url); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:278
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:284
     sig { params(url: ::String).returns(T.nilable(T::Array[::Fedipub::Actor])) }
     def actors_for_local_collection(url); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:112
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:118
     sig { params(url: ::String, max_depth: ::Integer).returns(T::Array[::Fedipub::Actor]) }
     def collection_to_actors(url, max_depth: T.unsafe(nil)); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:226
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:232
     sig do
       params(
         inbox_url: ::String,
         status: ::Integer,
-        body: T.untyped,
+        body: ::String,
         retry_after: T.nilable(::String),
         permanent: T::Boolean
       ).returns(::String)
     end
     def delivery_error_message(inbox_url:, status:, body:, retry_after:, permanent:); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:214
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:220
     sig { params(message: ::String).returns(::String) }
     def digest(message); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:144
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:150
     sig { params(collection_urls: T::Array[::String]).returns(T.nilable(::Fedipub::Actor)) }
     def forwarding_sender_for(collection_urls); end
 
@@ -2595,42 +2604,48 @@ class Fediverse::Notifier
     #
     # @return [Array<Fedipub::Actor>]
     #
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:77
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:83
     def inboxes_for(activity); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:256
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:262
     sig { params(activity: ::Fedipub::Activity, json: T::Hash[::Symbol, T.untyped]).returns(::String) }
     def invalid_payload_message(activity, json); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:156
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:162
     sig { params(activity: ::Fedipub::Activity).returns(::String) }
     def payload(activity); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:221
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:227
     sig { params(status: ::Integer).returns(T::Boolean) }
     def permanent_delivery_status?(status); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:164
-    sig { params(inbox_url: ::String, message: ::String, from: T.nilable(::Fedipub::Actor)).returns(T.untyped) }
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:170
+    sig do
+      params(
+        inbox_url: ::String,
+        message: ::String,
+        from: T.nilable(::Fedipub::Actor)
+      ).returns(::Faraday::Response)
+    end
     def post_to_inbox(inbox_url:, message:, from: T.unsafe(nil)); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:201
-    sig { params(url: ::String, message: ::String).returns(T.untyped) }
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:207
+    sig { params(url: ::String, message: ::String).returns(::Faraday::Request) }
     def request(url:, message:); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:194
-    sig { params(url: ::String, message: ::String, from: T.nilable(::Fedipub::Actor)).returns(T.untyped) }
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:200
+    sig { params(url: ::String, message: ::String, from: T.nilable(::Fedipub::Actor)).returns(::Faraday::Request) }
     def signed_request(url:, message:, from:); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:251
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:257
     sig { params(json: T::Hash[::Symbol, T.untyped]).returns(T::Boolean) }
     def update_object_id_missing?(json); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:273
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:279
     sig { params(activity: ::Fedipub::Activity, message: ::String).void }
     def validate_message!(activity, message); end
 
-    # pkg:gem/fedipub#lib/fediverse/notifier.rb:239
+    # pkg:gem/fedipub#lib/fediverse/notifier.rb:245
     sig { params(activity: ::Fedipub::Activity, json: T::Hash[::Symbol, T.untyped]).void }
     def validate_payload!(activity, json); end
   end
@@ -2660,11 +2675,11 @@ class Fediverse::Request
     private
 
     # pkg:gem/fedipub#lib/fediverse/request.rb:33
-    sig { params(json: T::Hash[::String, T.untyped]).returns(T::Hash[::String, T.untyped]) }
+    sig { params(json: T::Hash[::String, ::Object]).returns(T::Hash[::String, ::Object]) }
     def compact_json_ld(json); end
 
     # pkg:gem/fedipub#lib/fediverse/request.rb:24
-    sig { params(id: ::String).returns(T.nilable(T::Hash[::String, T.untyped])) }
+    sig { params(id: ::String).returns(T.nilable(T::Hash[::String, ::Object])) }
     def get(id); end
   end
 end
@@ -2683,7 +2698,7 @@ class Fediverse::Signature
     def parse_signature_header(header); end
 
     # pkg:gem/fedipub#lib/fediverse/signature.rb:10
-    sig { params(sender: ::Fedipub::Actor, request: T.untyped).returns(::String) }
+    sig { params(sender: ::Fedipub::Actor, request: ::Faraday::Request).returns(::String) }
     def sign(sender:, request:); end
 
     # Performs a signed GET request on behalf of a local actor
@@ -2696,20 +2711,20 @@ class Fediverse::Signature
     def signed_get(url, actor:); end
 
     # pkg:gem/fedipub#lib/fediverse/signature.rb:58
-    sig { params(sender: ::Fedipub::Actor, request: T.untyped).returns(T::Boolean) }
+    sig { params(sender: ::Fedipub::Actor, request: ::ActionDispatch::Request).returns(T::Boolean) }
     def verify(sender:, request:); end
 
     # Verify the Digest header matches the request body (cavage draft format)
     #
     # pkg:gem/fedipub#lib/fediverse/signature.rb:97
-    sig { params(request: T.untyped).void }
+    sig { params(request: ::ActionDispatch::Request).void }
     def verify_digest!(request); end
 
     # Verify an inbound request's HTTP Signature, returning the sending actor.
     # Supports both cavage draft and RFC 9421 formats.
     #
     # pkg:gem/fedipub#lib/fediverse/signature.rb:114
-    sig { params(request: T.untyped).returns(::Fedipub::Actor) }
+    sig { params(request: ::ActionDispatch::Request).returns(::Fedipub::Actor) }
     def verify_request!(request); end
 
     private
@@ -2773,7 +2788,7 @@ class Fediverse::Signature::SignatureVerificationError < ::StandardError; end
 
 # Methods related to Webfinger: find accounts, fetch actors,...
 #
-# pkg:gem/fedipub#lib/fediverse/webfinger.rb:9
+# pkg:gem/fedipub#lib/fediverse/webfinger.rb:10
 class Fediverse::Webfinger
   class << self
     # Fetches a distant actor
@@ -2784,7 +2799,7 @@ class Fediverse::Webfinger
     # @return [Fedipub::Actor]
     # @raise [ActiveRecord::RecordNotFound] when the actor cannot be resolved
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:39
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:40
     def fetch_actor(username, domain); end
 
     # Fetches an actor given its URL
@@ -2794,7 +2809,7 @@ class Fediverse::Webfinger
     # @return [Fedipub::Actor]
     # @raise [ActiveRecord::RecordNotFound] when the actor cannot be resolved
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:49
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:50
     def fetch_actor_url(url); end
 
     # Determines if a given account string should be a local account (same host as configured one)
@@ -2803,7 +2818,7 @@ class Fediverse::Webfinger
     #
     # @return [Boolean]
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:28
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:29
     def local_user?(hash); end
 
     # Returns remote follow link template, or complete link if actor_url is provided
@@ -2814,7 +2829,7 @@ class Fediverse::Webfinger
     #
     # @return [String] The URL to use as follow URL
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:83
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:84
     def remote_follow_url(username, domain, actor_url: T.unsafe(nil)); end
 
     # Extracts username and domain from an account string.
@@ -2824,7 +2839,7 @@ class Fediverse::Webfinger
     #
     # @return [MatchData, nil] Matches with +:username+ and +:domain+ or +nil+
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:19
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:20
     def split_account(account); end
 
     # Gets the real actor's federation URL from its username and domain
@@ -2834,7 +2849,7 @@ class Fediverse::Webfinger
     #
     # @return [String, nil] Federation URL if found
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:64
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:65
     def webfinger(username, domain); end
 
     private
@@ -2843,13 +2858,13 @@ class Fediverse::Webfinger
     # @return [Hash]
     # @raise [ActiveRecord::RecordNotFound] when the response is invalid
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:175
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:176
     def get_json(url, params = T.unsafe(nil)); end
 
     # Extracts the server and port from a string, omitting common ports
     # @return [String] Server and port
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:111
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:112
     def server_and_port(string); end
 
     # Performs a signed GET request using a local actor for authentication
@@ -2857,20 +2872,20 @@ class Fediverse::Webfinger
     # @return [Hash]
     # @raise [ActiveRecord::RecordNotFound] when no local actor exists or request fails
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:152
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:153
     def signed_get_json(url); end
 
     # Makes a webfinger request for a given username/domain
     # @return [Hash] Webfinger response's content
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:104
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:105
     def webfinger_response(username, domain); end
 
     # Builds a +Fedipub::Actor+ from a Webfinger response
     # @param data [Hash] Webfinger response
     # @return [Fedipub::Actor]
     #
-    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:123
+    # pkg:gem/fedipub#lib/fediverse/webfinger.rb:124
     def webfinger_to_actor(data); end
   end
 end
