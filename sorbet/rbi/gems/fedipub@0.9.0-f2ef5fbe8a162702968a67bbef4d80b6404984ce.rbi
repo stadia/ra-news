@@ -24,7 +24,7 @@ module Fedipub
   class << self
     # @return [Hash] The configuration for the given actor entity
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:76
+    # pkg:gem/fedipub#lib/fedipub.rb:75
     sig { params(class_or_instance: ::Object).returns(T::Hash[::Symbol, ::Object]) }
     def actor_entity(class_or_instance); end
 
@@ -33,30 +33,29 @@ module Fedipub
     # @example
     #   puts "Follow #{some_actor.name}" if actor_entity? current_user
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:70
+    # pkg:gem/fedipub#lib/fedipub.rb:69
     sig { params(class_or_instance: ::Object).returns(T::Boolean) }
     def actor_entity?(class_or_instance); end
 
-    # pkg:gem/fedipub#lib/fedipub.rb:44
+    # pkg:gem/fedipub#lib/fedipub.rb:43
     sig { params(name: T.any(::String, ::Symbol)).void }
     def config_from(name); end
 
     # pkg:gem/fedipub#lib/fedipub.rb:27
     def configuration; end
 
-    # pkg:gem/fedipub#lib/fedipub.rb:32
-    sig { params(_arg0: ).void }
+    # pkg:gem/fedipub#lib/fedipub.rb:31
     def configure(&_arg0); end
 
     # @return [Boolean] True if the given model is a possible data entity
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:85
+    # pkg:gem/fedipub#lib/fedipub.rb:84
     sig { params(class_or_instance: ::Object).returns(T::Boolean) }
     def data_entity?(class_or_instance); end
 
     # @return [Hash] The configuration for the given data entity
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:129
+    # pkg:gem/fedipub#lib/fedipub.rb:128
     sig { params(class_or_instance: ::Object).returns(T::Hash[::Symbol, ::Object]) }
     def data_entity_configuration(class_or_instance); end
 
@@ -68,7 +67,7 @@ module Fedipub
     # @example
     #   data_entity_handled_on :articles
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:122
+    # pkg:gem/fedipub#lib/fedipub.rb:121
     def data_entity_handled_on(route_path_segment); end
 
     # Finds the configured handler for a given ActivityPub object
@@ -77,7 +76,7 @@ module Fedipub
     #
     # @return [Hash, nil] Data entity configuration
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:105
+    # pkg:gem/fedipub#lib/fedipub.rb:104
     def data_entity_handler_for(hash); end
 
     # Finds configured data types from ActivityPub type
@@ -88,10 +87,10 @@ module Fedipub
     # @example
     #   data_entity_handlers_for 'Note'
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:96
+    # pkg:gem/fedipub#lib/fedipub.rb:95
     def data_entity_handlers_for(type); end
 
-    # pkg:gem/fedipub#lib/fedipub.rb:38
+    # pkg:gem/fedipub#lib/fedipub.rb:37
     sig { returns(::Logger) }
     def logger; end
 
@@ -114,7 +113,7 @@ module Fedipub
 
     # @return [String] Class name of the provided class or instance
     #
-    # pkg:gem/fedipub#lib/fedipub.rb:140
+    # pkg:gem/fedipub#lib/fedipub.rb:139
     sig { params(class_or_instance: ::Object).returns(T.nilable(::String)) }
     def class_or_instance_name(class_or_instance); end
   end
@@ -493,7 +492,6 @@ module Fedipub::ActorEntity::ClassMethods
 
   private
 
-  sig { params(name: ::Symbol, instance: T.untyped, _arg2: ).void }
   def dispatch_callback(name, instance, *_arg2); end
 
   sig { params(instance: T.untyped, follow: ::Fedipub::Following, follow_activity: ::Fedipub::Activity).void }
@@ -1337,10 +1335,7 @@ module Fedipub::HandlesDeleteRequests
 end
 
 module Fedipub::HandlesDeleteRequests::ClassMethods
-  sig { params(_arg0: ).returns(T.untyped) }
   def on_fedipub_delete_requested(*_arg0); end
-
-  sig { params(_arg0: ).returns(T.untyped) }
   def on_fedipub_undelete_requested(*_arg0); end
 end
 
@@ -1351,16 +1346,9 @@ module Fedipub::HandlesSocialActivities
 end
 
 module Fedipub::HandlesSocialActivities::ClassMethods
-  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_announce_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
-
-  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_like_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
-
-  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_undo_announce_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
-
-  sig { params(method_name: T.nilable(::Symbol), _arg1: , _arg2: ).returns(T.untyped) }
   def on_fedipub_undo_like_received(method_name = T.unsafe(nil), **_arg1, &_arg2); end
 
   private
