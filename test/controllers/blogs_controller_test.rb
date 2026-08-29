@@ -20,7 +20,7 @@ class BlogsControllerTest < ActionDispatch::IntegrationTest
     get user_profile_blog_post_url(username: post.user.username, slug: post)
 
     assert_includes response.body, %(<meta property="og:type" content="article">)
-    assert_includes response.body, %(content="#{post.blog_summary}")
+    assert_includes response.body, %(<meta property="og:description" content="#{post.blog_summary}">)
     assert_includes response.body, %(<meta property="og:title" content="#{post.title}">)
   end
 
