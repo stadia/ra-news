@@ -18,7 +18,32 @@ module PostViewing
     @posts = build_thread(post.root)
     @liked_post_ids = current_user ? Like.liked_ids_for(liker: current_user, likeable_type: "Post", likeable_ids: @posts.map(&:id)) : []
     @boosted_post_ids = current_user ? Boost.boosted_ids_for(booster: current_user, boostable_type: "Post", boostable_ids: @posts.map(&:id)) : []
+    assign_blog_meta_tags(post) if post.blog?
     render Views::Posts::Show.new(posts: @posts, liked_post_ids: @liked_post_ids, boosted_post_ids: @boosted_post_ids)
+  end
+
+  # 원격 인스턴스(마스토돈 등)는 발행된 Note의 링크를 크롤링해 프리뷰 카드를
+  # 만든다. 요약만 나가는 장문은 이 카드가 유일한 맥락이므로 상세 페이지에
+  # article OG 태그를 채워준다.
+  def assign_blog_meta_tags(post)
+    @page_description = post.blog_summary
+    @og_type = "article"
+    @og_image = blog_og_image(post)
+    @og_article = {
+      published_time: post.published_at&.iso8601,
+      modified_time: post.updated_at.iso8601,
+      tag: post.tag_list.presence
+    }.compact
+  end
+
+  # 본문 첫 이미지를 카드 썸네일로 쓰고, 없으면 레이아웃 기본 이미지로 폴백한다.
+  def blog_og_image(post)
+    src = Nokogiri::HTML5.fragment(post.body.to_s).at_css("img")&.[]("src")
+    return nil if src.blank?
+
+    URI.join(request.base_url, src).to_s
+  rescue URI::Error
+    nil
   end
 
   # A post is publicly viewable when visible (published & kept). The owner may
