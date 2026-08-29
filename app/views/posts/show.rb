@@ -17,13 +17,18 @@ class Views::Posts::Show < Views::Base
   def view_template
     content_for :title, page_title
 
-    div(class: "max-w-2xl mx-auto space-y-4") do
+    div(class: "#{container_width} mx-auto space-y-4") do
       back_link
       render_posts
     end
   end
 
   private
+
+  # 블로그 글은 본문 가독폭을 넓게(896px) 잡고, 일반 포스트는 기존 폭을 유지한다.
+  def container_width
+    @posts.first&.blog? ? "max-w-4xl" : "max-w-2xl"
+  end
 
   def page_title
     root = @posts.first
