@@ -12,6 +12,27 @@ class BlogsControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, post.title
   end
 
+  # 마스토돈 등 원격 클라이언트가 링크 프리뷰 카드를 만들 수 있도록,
+  # 장문 상세는 요약을 og:description으로 노출한다.
+  test "published blog post exposes article open graph tags" do
+    post = posts(:blog_published)
+
+    get user_profile_blog_post_url(username: post.user.username, slug: post)
+
+    assert_includes response.body, %(<meta property="og:type" content="article">)
+    assert_includes response.body, %(content="#{post.blog_summary}")
+    assert_includes response.body, %(<meta property="og:title" content="#{post.title}">)
+  end
+
+  test "blog post with a body image uses it as the preview card image" do
+    post = posts(:blog_published)
+    post.update!(body: %(<p>본문</p><img src="/uploads/cover.png">))
+
+    get user_profile_blog_post_url(username: post.user.username, slug: post)
+
+    assert_includes response.body, %(<meta property="og:image" content="http://example.com/uploads/cover.png">)
+  end
+
   test "draft blog post is not served to anonymous visitors" do
     draft = posts(:blog_draft)
 

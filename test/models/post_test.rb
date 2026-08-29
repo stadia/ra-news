@@ -672,7 +672,8 @@ class PostTest < ActiveSupport::TestCase
     end
 
     assert_equal post, captured[:record]
-    assert_equal post.blog_summary, captured[:content]
+    assert_includes captured[:content], post.blog_summary
+    assert_includes captured[:content], post.public_url
     assert_equal post.title, captured[:name]
     assert_equal Rails.application.routes.url_helpers.user_profile_blog_post_url(username: post.user.username, slug: post), captured[:custom]["url"]
   end
@@ -690,8 +691,23 @@ class PostTest < ActiveSupport::TestCase
     note = post.to_activitypub_object
 
     assert_equal post.title, note["name"]
-    assert_equal post.blog_summary, note["content"]
+    assert_equal "<p>#{post.blog_summary}</p><p><a href=\"#{post.public_url}\">#{post.public_url}</a></p>", note["content"]
     assert_equal Rails.application.routes.url_helpers.user_profile_blog_post_url(username: post.user.username, slug: post), note["url"]
+  end
+
+  test "to_activitypub_object는 장문 요약의 HTML 특수문자를 이스케이프한다" do
+    post = Post.create!(
+      title: "꺾쇠 <b>제목</b>",
+      body: "<p>a &lt; b 이고 5 &gt; 3 입니다.</p>",
+      user: @user,
+      post_type: :blog,
+      status: :published,
+      published_at: Time.current
+    )
+
+    note = post.to_activitypub_object
+
+    assert_includes note["content"], "a &lt; b 이고 5 &gt; 3 입니다."
   end
 
   test "to_activitypub_object는 단문 본문 전체 발행을 유지한다" do

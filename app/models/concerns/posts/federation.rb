@@ -33,12 +33,21 @@ module Posts::Federation
     name = nil
 
     if blog?
-      content = blog_summary
+      content = blog_federation_content
       name = title
       custom["url"] = public_url
     end
 
     Fedipub::DataTransformer::Note.to_federation(self, content: content, name: name, custom: custom)
+  end
+
+  # Remote timelines only get the summary, so the original URL rides along in
+  # the content itself - most clients render `content` but hide `url`.
+  # blog_summary comes out of FullSanitizer, so its text is already entity-encoded.
+  #: () -> String
+  def blog_federation_content
+    url = ERB::Util.html_escape(public_url)
+    "<p>#{blog_summary}</p><p><a href=\"#{url}\">#{url}</a></p>"
   end
 
   # Public, human-readable URL for this post. Blog posts live under the account
