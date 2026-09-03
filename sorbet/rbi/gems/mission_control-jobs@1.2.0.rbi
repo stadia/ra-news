@@ -117,37 +117,47 @@ end
 #
 # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:6
 class ActiveJob::JobProxy < ::ActiveJob::Base
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:11
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:13
   def initialize(job_data); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:32
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:34
   def blocked?; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:27
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:29
   def duration; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:32
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:34
   def failed?; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:32
+  # Raw data with the sensitive user data filtered out.
+  #
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:11
+  def filtered_raw_data; end
+
+  # Raw data with the sensitive user data filtered out.
+  #
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:11
+  def filtered_raw_data=(_arg0); end
+
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:34
   def finished?; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:32
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:34
   def in_progress?; end
 
   # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:9
   def job_class_name; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:32
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:34
   def pending?; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:23
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:25
   def perform_now; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:32
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:34
   def scheduled?; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:17
+  # pkg:gem/mission_control-jobs#lib/active_job/job_proxy.rb:19
   def serialize; end
 end
 
@@ -733,31 +743,34 @@ class ActiveJob::QueueAdapters::ResqueExt::ResqueJobs
 
   private
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:233
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:246
   def clear_failed_queue; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:225
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:238
   def count_fetched_jobs; end
 
   # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:187
   def deserialize_resque_job(resque_job_hash, index); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:207
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:220
   def direct_jobs_count; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:288
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:301
   def discard_all_in_batches; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:274
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:287
   def discard_all_one_by_one; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:282
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:295
   def discard_jobs(jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:198
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:211
   def execution_error_from_resque_job(resque_job_hash); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:221
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:207
+  def extract_args_hash(raw_data); end
+
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:234
   def failed_jobs_count; end
 
   # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:176
@@ -769,40 +782,43 @@ class ActiveJob::QueueAdapters::ResqueExt::ResqueJobs
   # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:168
   def fetch_resque_jobs; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:296
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:199
+  def filter_raw_data_arguments(raw_data); end
+
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:309
   def handle_resque_job_error(job, error); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:243
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:256
   def in_transactional_jobs_batches(jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:292
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:305
   def jobs_by_id; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:211
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:224
   def pending_jobs_count; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:229
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:242
   def queue_redis_key; end
 
   # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:156
   def redis; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:264
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:277
   def requeue(job); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:259
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:272
   def resque_requeue_and_discard(job); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:255
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:268
   def retry_all_in_batches; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:237
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:250
   def retry_jobs(jobs); end
 
   # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:164
   def targeting_all_jobs?; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:251
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/resque_ext.rb:264
   def use_batches?; end
 end
 
@@ -821,75 +837,78 @@ module ActiveJob::QueueAdapters::SolidQueueExt
   include ::ActiveJob::QueueAdapters::SolidQueueExt::Workers
   include ::ActiveJob::QueueAdapters::SolidQueueExt::RecurringTasks
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:22
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:24
   def clear_queue(queue_name); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:64
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:66
   def discard_all_jobs(jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:68
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:70
   def discard_job(job, jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:72
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:74
   def dispatch_job(job, jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:50
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:52
   def fetch_jobs(jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:76
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:78
   def find_job(job_id, *_arg1); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:46
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:48
   def jobs_count(jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:26
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:28
   def pause_queue(queue_name); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:34
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:36
   def queue_paused?(queue_name); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:18
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:20
   def queue_size(queue_name); end
 
   # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:5
   def queues; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:30
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:32
   def resume_queue(queue_name); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:56
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:58
   def retry_all_jobs(jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:60
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:62
   def retry_job(job, jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:42
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:44
   def supported_job_filters(*_arg0); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:38
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:40
   def supported_job_statuses; end
 
   private
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:95
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:97
   def deserialize_and_proxy_solid_queue_job(solid_queue_job, job_status = T.unsafe(nil)); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:125
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:139
   def dispatch_immediately(job); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:116
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:125
   def execution_error_from_solid_queue_job(solid_queue_job); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:83
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:115
+  def filter_raw_data_arguments(raw_data); end
+
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:85
   def find_queue_by_name(queue_name); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:91
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:93
   def find_solid_queue_job(job_id, jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:87
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:89
   def find_solid_queue_job!(job_id, jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:112
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:121
   def status_from_solid_queue_job(solid_queue_job); end
 end
 
@@ -919,123 +938,123 @@ module ActiveJob::QueueAdapters::SolidQueueExt::RecurringTasks
   def recurring_task_last_enqueued_at(task_keys); end
 end
 
-# pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:136
+# pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:150
 class ActiveJob::QueueAdapters::SolidQueueExt::SolidQueueJobs
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:146
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:160
   def initialize(jobs_relation); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:154
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:168
   def count; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def default_page_size(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:164
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:178
   def discard_all; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:158
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:172
   def find_job(active_job_id); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def finished_at(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def job_class_name(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:150
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:164
   def jobs; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def limit_value(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def limit_value_provided?(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def offset_value(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def queue_name(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def recurring_task_id(*_arg0, **_arg1, &_arg2); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:168
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:182
   def retry_all; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:175
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
   def worker_id(*_arg0, **_arg1, &_arg2); end
 
   private
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:215
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:229
   def direct_count; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:225
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:239
   def execution_class_by_status; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:178
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:192
   def executions; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:253
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:267
   def filter_executions_by_class(executions); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:257
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:271
   def filter_executions_by_process_id(executions); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:239
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:253
   def filter_executions_by_queue(executions); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:267
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:281
   def filter_executions_by_task_key(executions); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:271
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:285
   def filter_jobs_by_class(jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:275
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:289
   def filter_jobs_by_finished_at(jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:249
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:263
   def filter_jobs_by_queue(jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:189
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:203
   def finished_jobs; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:235
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:249
   def include_execution_association(executions); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:219
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:233
   def internally_limited_count; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:173
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:187
   def jobs_relation; end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:279
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:293
   def limit(executions_or_jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:291
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:305
   def matches_queue_name?(job); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:211
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:225
   def matches_relation_filters?(job); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:287
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:301
   def matches_status?(job); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:283
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:297
   def offset(executions_or_jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:202
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:216
   def order_executions(executions); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:198
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:212
   def order_finished_jobs(jobs); end
 
-  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:295
+  # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:309
   def solid_queue_status; end
 end
 
-# pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:137
+# pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext.rb:151
 ActiveJob::QueueAdapters::SolidQueueExt::SolidQueueJobs::STATUS_MAP = T.let(T.unsafe(nil), Hash)
 
 # pkg:gem/mission_control-jobs#lib/active_job/queue_adapters/solid_queue_ext/workers.rb:1
@@ -1130,6 +1149,12 @@ module MissionControl::Jobs
   # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:17
   def applications=(val); end
 
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:28
+  def back_to_main_app_path; end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:28
+  def back_to_main_app_path=(val); end
+
   # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:27
   def backtrace_cleaner; end
 
@@ -1148,28 +1173,34 @@ module MissionControl::Jobs
   # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:21
   def delay_between_bulk_operation_batches=(val); end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:36
+  def filter_arguments; end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:36
+  def filter_arguments=(val); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:34
   def http_basic_auth_enabled; end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:34
   def http_basic_auth_enabled=(val); end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
   def http_basic_auth_password; end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
   def http_basic_auth_password=(val); end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:31
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
   def http_basic_auth_user; end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:31
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
   def http_basic_auth_user=(val); end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:29
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:30
   def importmap; end
 
-  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:29
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:30
   def importmap=(val); end
 
   # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:20
@@ -1209,6 +1240,12 @@ module MissionControl::Jobs
     # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:17
     def applications=(val); end
 
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:28
+    def back_to_main_app_path; end
+
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:28
+    def back_to_main_app_path=(val); end
+
     # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:27
     def backtrace_cleaner; end
 
@@ -1227,28 +1264,34 @@ module MissionControl::Jobs
     # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:21
     def delay_between_bulk_operation_batches=(val); end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:36
+    def filter_arguments; end
+
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:36
+    def filter_arguments=(val); end
+
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:34
     def http_basic_auth_enabled; end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:34
     def http_basic_auth_enabled=(val); end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
     def http_basic_auth_password; end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:33
     def http_basic_auth_password=(val); end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:31
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
     def http_basic_auth_user; end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:31
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:32
     def http_basic_auth_user=(val); end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:29
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:30
     def importmap; end
 
-    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:29
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:30
     def importmap=(val); end
 
     # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:20
@@ -1256,6 +1299,9 @@ module MissionControl::Jobs
 
     # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:20
     def internal_query_count_limit=(val); end
+
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:38
+    def job_arguments_filter; end
 
     # pkg:gem/mission_control-jobs#lib/mission_control/jobs.rb:24
     def logger; end
@@ -1447,6 +1493,7 @@ class MissionControl::Jobs::Application
 end
 
 class MissionControl::Jobs::ApplicationController < ::Madmin::ApplicationController
+  include ::MissionControl::Jobs::HostRouteHelpers
   include ::MissionControl::Jobs::BasicAuthentication
   include ::MissionControl::Jobs::NotFoundRedirections
   include ::MissionControl::Jobs::ApplicationScoped
@@ -1574,6 +1621,25 @@ class MissionControl::Jobs::Applications < ::MissionControl::Jobs::IdentifiedEle
   # pkg:gem/mission_control-jobs#lib/mission_control/jobs/applications.rb:3
   def add(name, queue_adapters_by_name = T.unsafe(nil)); end
 end
+
+# Replaces argument values with [FILTERED] for any keys that match a filter.
+#
+# pkg:gem/mission_control-jobs#lib/mission_control/jobs/arguments_filter.rb:2
+class MissionControl::Jobs::ArgumentsFilter
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/arguments_filter.rb:5
+  def initialize(filter); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/arguments_filter.rb:9
+  def apply_to(arguments); end
+
+  private
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/arguments_filter.rb:23
+  def filter; end
+end
+
+# pkg:gem/mission_control-jobs#lib/mission_control/jobs/arguments_filter.rb:3
+MissionControl::Jobs::ArgumentsFilter::FILTERED = T.let(T.unsafe(nil), String)
 
 # pkg:gem/mission_control-jobs#lib/mission_control/jobs/authentication.rb:3
 class MissionControl::Jobs::Authentication < ::Rails::Command::Base
@@ -1796,6 +1862,1012 @@ end
 
 MissionControl::Jobs::FailedJobsBulkOperations::MAX_NUMBER_OF_JOBS_FOR_BULK_OPERATIONS = T.let(T.unsafe(nil), Integer)
 
+# Route helpers of the host app that the engine doesn't define itself, routed through +main_app+.
+#
+# Mission Control's controllers inherit from the host app's +ApplicationController+ (see
+# +base_controller_class+), so host code such as a +before_action+ redirecting to
+# +new_session_path+ runs inside the engine, where route helpers resolve against the engine's
+# routes and raise +ActionController::UrlGenerationError+. This module defines, for every route
+# helper the host app has and the engine doesn't, a method delegating to the host app's routes,
+# so that code keeps working unchanged.
+#
+# Helpers defined by both, like +root_path+, keep resolving to the engine's, as in any isolated
+# engine; use +main_app.root_path+ for the host's.
+#
+# pkg:gem/mission_control-jobs#lib/mission_control/jobs/host_route_helpers.rb:12
+module MissionControl::Jobs::HostRouteHelpers
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def about_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def about_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def accept_following_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def accept_following_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def account_blog_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def account_blog_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def account_password_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def account_password_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def actor_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def actor_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_account_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_account_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_article_boost_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_article_boost_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_article_like_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_article_like_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_articles_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_articles_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_auth_login_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_auth_login_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_auth_logout_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_auth_logout_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_auth_refresh_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_auth_refresh_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_feed_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_feed_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_post_boost_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_post_boost_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_post_like_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def api_v1_post_like_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_boost_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_boost_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_like_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_like_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_posts_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_posts_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def articles_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def articles_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def blog_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def blog_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def blog_posts_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def blog_posts_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def cancel_user_registration_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def cancel_user_registration_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def destroy_permanently_blog_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def destroy_permanently_blog_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def destroy_user_session_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def destroy_user_session_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def discard_madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def discard_madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def discard_madmin_site_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def discard_madmin_site_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def discord_oauth_callback_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def discord_oauth_callback_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_blog_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_blog_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_active_storage_attachment_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_active_storage_attachment_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_preference_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_preference_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_role_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_role_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_site_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_site_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_tag_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_tag_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_user_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_madmin_user_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_user_password_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_user_password_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_user_registration_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def edit_user_registration_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def fedipub_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def fedipub_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def feed_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def feed_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def follow_followings_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def follow_followings_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def following_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def following_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def followings_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def followings_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def llms_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def llms_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def lookup_actors_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def lookup_actors_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_active_storage_attachment_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_active_storage_attachment_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_active_storage_attachments_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_active_storage_attachments_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_articles_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_articles_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_preference_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_preference_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_preferences_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_preferences_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_role_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_role_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_roles_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_roles_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_root_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_root_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_site_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_site_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_sites_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_sites_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_social_index_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_social_index_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_tag_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_tag_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_tags_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_tags_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_user_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_user_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_users_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def madmin_users_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def mark_unrelated_madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def mark_unrelated_madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def mission_control_jobs_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def mission_control_jobs_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_blog_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_blog_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_following_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_following_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_active_storage_attachment_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_active_storage_attachment_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_preference_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_preference_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_role_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_role_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_site_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_site_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_tag_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_tag_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_user_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_madmin_user_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_rails_conductor_inbound_email_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_rails_conductor_inbound_email_source_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_rails_conductor_inbound_email_source_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_rails_conductor_inbound_email_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_confirmation_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_confirmation_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_oauth_registration_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_oauth_registration_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_password_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_password_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_registration_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_registration_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_session_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def new_user_session_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def oauth_install_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def oauth_install_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def oauth_result_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def oauth_result_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def others_api_v1_articles_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def others_api_v1_articles_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def others_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def others_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def post_boost_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def post_boost_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def post_like_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def post_like_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def posts_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def posts_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def privacy_policy_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def privacy_policy_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def publish_blog_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def publish_blog_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def push_subscription_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def push_subscription_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def pwa_manifest_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def pwa_manifest_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def pwa_service_worker_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def pwa_service_worker_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_blob_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_blob_representation_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_blob_representation_proxy_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_blob_representation_proxy_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_blob_representation_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_blob_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_incinerate_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_incinerate_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_reroute_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_reroute_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_sources_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_sources_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_email_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_emails_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_conductor_inbound_emails_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_direct_uploads_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_direct_uploads_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_disk_service_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_disk_service_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_health_check_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_health_check_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_notes_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_notes_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_properties_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_properties_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_routes_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_routes_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_info_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mailers_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mailers_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mailgun_inbound_emails_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mailgun_inbound_emails_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mandrill_inbound_emails_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mandrill_inbound_emails_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mandrill_inbound_health_check_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_mandrill_inbound_health_check_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_postmark_inbound_emails_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_postmark_inbound_emails_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_relay_inbound_emails_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_relay_inbound_emails_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_representation_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_representation_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_sendgrid_inbound_emails_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_sendgrid_inbound_emails_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_service_blob_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_service_blob_proxy_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_service_blob_proxy_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_service_blob_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_storage_proxy_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_storage_proxy_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_storage_redirect_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rails_storage_redirect_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def regenerate_thumbnail_madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def regenerate_thumbnail_madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def reprocess_madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def reprocess_madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def restore_madmin_article_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def restore_madmin_article_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def restore_madmin_site_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def restore_madmin_site_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def robots_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def robots_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rss_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rss_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rswag_api_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rswag_api_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rswag_ui_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def rswag_ui_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def ruby_llm_monitoring_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def ruby_llm_monitoring_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def slack_events_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def slack_events_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def slack_oauth_callback_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def slack_oauth_callback_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def social_provider_authorize_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def social_provider_authorize_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def social_provider_callback_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def social_provider_callback_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def tag_api_v1_articles_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def tag_api_v1_articles_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def tag_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def tag_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def terms_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def terms_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def turbo_recede_historical_location_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def turbo_recede_historical_location_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def turbo_refresh_historical_location_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def turbo_refresh_historical_location_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def turbo_resume_historical_location_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def turbo_resume_historical_location_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def undiscard_blog_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def undiscard_blog_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def update_rails_disk_service_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def update_rails_disk_service_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_apple_omniauth_authorize_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_apple_omniauth_authorize_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_apple_omniauth_callback_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_apple_omniauth_callback_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_confirmation_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_confirmation_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_github_omniauth_authorize_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_github_omniauth_authorize_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_github_omniauth_callback_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_github_omniauth_callback_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_google_oauth2_omniauth_authorize_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_google_oauth2_omniauth_authorize_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_google_oauth2_omniauth_callback_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_google_oauth2_omniauth_callback_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_oauth_registration_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_oauth_registration_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_password_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_password_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_base_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_base_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_blog_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_blog_post_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_blog_post_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_blog_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_boosts_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_boosts_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_comments_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_comments_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_followers_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_followers_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_following_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_following_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_likes_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_likes_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_posts_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_posts_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_profile_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_registration_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_registration_url(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_session_path(*args); end
+
+  # pkg:gem/mission_control-jobs#lib/mission_control/jobs/engine.rb:39
+  def user_session_url(*args); end
+
+  class << self
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs/host_route_helpers.rb:14
+    def define_from(host_routes, engine_routes); end
+
+    private
+
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs/host_route_helpers.rb:29
+    def defined_helpers; end
+
+    # pkg:gem/mission_control-jobs#lib/mission_control/jobs/host_route_helpers.rb:24
+    def undefine_all; end
+  end
+end
+
 # pkg:gem/mission_control-jobs#lib/mission_control/jobs/i18n_config.rb:1
 class MissionControl::Jobs::I18nConfig < ::I18n::Config
   # pkg:gem/mission_control-jobs#lib/mission_control/jobs/i18n_config.rb:6
@@ -1961,6 +3033,7 @@ end
 
 module MissionControl::Jobs::JobsHelper
   def attribute_names_for_job_status(status); end
+  def blocked_job_expiration(job); end
   def clean_backtrace?; end
   def failed_job_backtrace(job, server); end
   def failed_job_error(job); end
@@ -1977,6 +3050,7 @@ module MissionControl::Jobs::JobsHelper
 end
 
 module MissionControl::Jobs::NavigationHelper
+  def back_to_main_app_path; end
   def current_section; end
   def jobs_count_with_status(status); end
   def navigation(title: T.unsafe(nil), section: T.unsafe(nil)); end

@@ -145,7 +145,6 @@ gem "phlex-rails", "~> 2.4"
 gem "prosopite"
 gem "rack-cors"
 
-gem "rails-ai-context"
 gem "rails_semantic_logger"
 gem "reactionview", "~> 0.4.0"
 # OpenAPI/Swagger documentation

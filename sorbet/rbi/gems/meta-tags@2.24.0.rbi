@@ -19,12 +19,12 @@ end
 
 # MetaTags gem namespace.
 #
-# pkg:gem/meta-tags#lib/meta_tags.rb:7
+# pkg:gem/meta-tags#lib/meta_tags.rb:8
 module MetaTags
   class << self
     # Returns MetaTags gem configuration.
     #
-    # pkg:gem/meta-tags#lib/meta_tags.rb:9
+    # pkg:gem/meta-tags#lib/meta_tags.rb:10
     def config; end
 
     # Configures MetaTags gem.
@@ -35,8 +35,13 @@ module MetaTags
     #     # config.title_limit = 100
     #   end
     #
-    # pkg:gem/meta-tags#lib/meta_tags.rb:20
+    # pkg:gem/meta-tags#lib/meta_tags.rb:26
     def configure; end
+
+    # Returns the deprecator used for MetaTags API warnings.
+    #
+    # pkg:gem/meta-tags#lib/meta_tags.rb:15
+    def deprecator; end
   end
 end
 
@@ -46,99 +51,111 @@ end
 class MetaTags::Configuration
   # Initializes a new instance of Configuration class.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:50
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:58
   def initialize; end
 
   # Returns the default meta tag prefixes and names that use `property`.
   #
   # @return [Array<String>] default property tag names.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:57
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:65
   def default_property_tags; end
 
   # How many characters to truncate description to.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:19
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:23
   def description_limit; end
 
   # How many characters to truncate description to.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:19
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:23
   def description_limit=(_arg0); end
 
   # How many characters to truncate keywords to.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:22
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:26
   def keywords_limit; end
 
   # How many characters to truncate keywords to.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:22
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:26
   def keywords_limit=(_arg0); end
 
   # Should keywords be forced into lowercase?
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:28
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:32
   def keywords_lowercase; end
 
   # Should keywords be forced into lowercase?
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:28
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:32
   def keywords_lowercase=(_arg0); end
 
   # Keywords separator - a string to join keywords with.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:25
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:29
   def keywords_separator; end
 
   # Keywords separator - a string to join keywords with.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:25
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:29
   def keywords_separator=(_arg0); end
 
   # When true, the output will not include new line characters between meta tags.
   # Default is false.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:36
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:40
   def minify_output; end
 
   # When true, the output will not include new line characters between meta tags.
   # Default is false.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:36
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:40
   def minify_output=(_arg0); end
 
   # Switches between open (<meta ... >) and closed (<meta ... />) meta tags.
   # Default is true, which means "open".
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:32
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:36
   def open_meta_tags; end
 
   # Switches between open (<meta ... >) and closed (<meta ... />) meta tags.
   # Default is true, which means "open".
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:32
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:36
   def open_meta_tags=(_arg0); end
 
   # Indicates whether meta tags should be rendered with open tag syntax.
   #
   # @return [Boolean] true when open meta tags are enabled.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:86
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:94
   def open_meta_tags?; end
 
   # Custom meta tags that should use the `property` attribute instead of `name`.
   # An array of strings or symbols representing their names or name prefixes.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:40
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:48
   def property_tags; end
 
   # Restores the default configuration values.
   #
   # @return [void]
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:93
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:101
   def reset_defaults!; end
+
+  # When true, Symbols inside nested meta tag arrays resolve as references to
+  # normalized top-level tags. Default is false until MetaTags 3.0.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:44
+  def resolve_symbolic_references_in_arrays; end
+
+  # When true, Symbols inside nested meta tag arrays resolve as references to
+  # normalized top-level tags. Default is false until MetaTags 3.0.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:44
+  def resolve_symbolic_references_in_arrays=(_arg0); end
 
   # Configure whether MetaTags should skip canonical links on pages with
   # `noindex: true`.
@@ -146,7 +163,7 @@ class MetaTags::Configuration
   # contradictory signals.
   # https://www.reddit.com/r/TechSEO/comments/8yahdr/2_questions_about_the_canonical_tag/e2dey9i/
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:47
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:55
   def skip_canonical_links_on_noindex; end
 
   # Configure whether MetaTags should skip canonical links on pages with
@@ -155,7 +172,7 @@ class MetaTags::Configuration
   # contradictory signals.
   # https://www.reddit.com/r/TechSEO/comments/8yahdr/2_questions_about_the_canonical_tag/e2dey9i/
   #
-  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:47
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:55
   def skip_canonical_links_on_noindex=(_arg0); end
 
   # How many characters to truncate title to.
@@ -177,6 +194,18 @@ class MetaTags::Configuration
   #
   # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:10
   def title_tag_attributes=(_arg0); end
+
+  # When true, multi-item arrays stop at item boundaries instead of
+  # truncating the overflowing item.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:20
+  def truncate_array_items_at_boundaries; end
+
+  # When true, multi-item arrays stop at item boundaries instead of
+  # truncating the overflowing item.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/configuration.rb:20
+  def truncate_array_items_at_boundaries=(_arg0); end
 
   # A string or regexp separator to truncate text at a natural break.
   #
@@ -281,7 +310,7 @@ class MetaTags::MetaTagsCollection
   #
   # @param names [Array<String, Symbol>] list of meta tags to delete.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:93
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:90
   def delete(*names); end
 
   # Deletes and returns a meta tag value by name.
@@ -289,35 +318,35 @@ class MetaTags::MetaTagsCollection
   # @param name [String, Symbol] meta tag name.
   # @return [Object] meta tag value.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:86
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:83
   def extract(name); end
 
   # Extracts full page title and deletes all related meta tags.
   #
   # @return [String] page title.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:100
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:97
   def extract_full_title; end
 
-  # Extracts noindex settings as a Hash mapping noindex tag name to value.
+  # Extracts robots settings as a Hash mapping tag names to rendered values.
   #
-  # @return [Hash{String => String}] noindex attributes.
+  # @return [Hash{String => String}] robots attributes.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:143
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:147
   def extract_robots; end
 
   # Extracts title separator as a string.
   #
   # @return [String] page title separator.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:126
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:130
   def extract_separator; end
 
   # Extracts page title as an array of segments without site title and separators.
   #
   # @return [Array<String>] segments of page title.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:112
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:109
   def extract_title; end
 
   # Constructs the full title as if it would be rendered in title meta tag.
@@ -330,6 +359,13 @@ class MetaTags::MetaTagsCollection
 
   # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:7
   def meta_tags; end
+
+  # Returns whether robots settings produce a noindex directive.
+  #
+  # @return [Boolean] true when a noindex directive will be rendered.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:160
+  def noindex?; end
 
   # Constructs the title without site title (for normalized parameters). When title is empty,
   # use the site title instead.
@@ -362,12 +398,12 @@ class MetaTags::MetaTagsCollection
   # Records a robots directive unless it has already been set for the same key.
   #
   # @param result [Hash{String => Array<String>}] robots directives grouped by tag name.
-  # @param name [String, Symbol] robots tag name.
+  # @param name [String] robots tag name.
   # @param value [String] robots directive value.
   # @param processed [Set<String>] names already recorded in this pass.
   # @return [void]
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:220
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:292
   def apply_robots_value(result, name, value, processed); end
 
   # Appends resolved robots directives while preserving first-write priority.
@@ -376,15 +412,15 @@ class MetaTags::MetaTagsCollection
   # @param attributes [Symbol, Array<Symbol>] robots attributes to resolve.
   # @return [void]
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:199
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:271
   def calculate_robots_attributes(result, attributes); end
 
   # Extracts a robots attribute name/value pair (noindex, nofollow, etc.).
   #
   # @param name [String, Symbol] noindex attribute name.
-  # @return [Array<String>] noindex attribute name and value pair.
+  # @return [Array<Object>] normalized robots tag name(s) and directive value.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:186
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:241
   def extract_robots_attribute(name); end
 
   # Extracts separator segment without deleting it from meta tags list.
@@ -394,16 +430,32 @@ class MetaTags::MetaTagsCollection
   # @param default [String] default value.
   # @return [String] separator segment value.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:178
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:233
   def extract_separator_section(name, default); end
 
   # Converts input hash to HashWithIndifferentAccess and renames :open_graph to :og.
+  # When both aliases contain hashes, they are deep-merged with :og taking precedence.
   #
   # @param meta_tags [Hash] list of meta tags.
   # @return [ActiveSupport::HashWithIndifferentAccess] normalized meta tags list.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:166
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:214
   def normalize_open_graph(meta_tags); end
+
+  # Returns robots settings without modifying the collection.
+  #
+  # @return [Hash{String => String}] robots attributes.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:180
+  def robots; end
+
+  # Returns whether a robots attribute resolves to at least one target.
+  #
+  # @param value [Object] robots attribute value.
+  # @return [Boolean] true when the attribute produces a directive.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/meta_tags_collection.rb:262
+  def robots_attribute_present?(value); end
 end
 
 # Hooks MetaTags helpers into Rails controllers and views.
@@ -443,7 +495,7 @@ class MetaTags::Renderer
   # @param name [String, Symbol] tag key.
   # @return [Symbol] meta tag attribute name (:property or :name).
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:274
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:312
   def configured_name_key(name); end
 
   # Recursive method to process an array of meta tags.
@@ -453,7 +505,7 @@ class MetaTags::Renderer
   # @param content [Array] array of nested meta tag attributes or values.
   # @param itemprop [String, Symbol, nil] value of the itemprop attribute.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:253
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:261
   def process_array(tags, property, content, itemprop: T.unsafe(nil)); end
 
   # Recursive method to process a hash of meta tags.
@@ -463,8 +515,18 @@ class MetaTags::Renderer
   # @param content [Hash] nested meta tag attributes.
   # @param itemprop [String, Symbol, nil] inherited itemprop value.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:227
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:232
   def process_hash(tags, property, content, itemprop: T.unsafe(nil)); end
+
+  # Resolves a Symbol reference and processes its normalized value once.
+  #
+  # @param tags [Array<Tag>] a buffer object to store tags in.
+  # @param property [String, Symbol] the meta tag property name.
+  # @param reference [Symbol] normalized top-level meta tag reference.
+  # @param itemprop [String, Symbol, nil] value of the itemprop attribute.
+  #
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:283
+  def process_reference(tags, property, reference, itemprop: T.unsafe(nil)); end
 
   # Recursive method to process all hashes and arrays in meta tags.
   #
@@ -474,7 +536,7 @@ class MetaTags::Renderer
   #   reference to a top-level meta tag.
   # @param itemprop [String, Symbol, nil] value of the itemprop attribute.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:210
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:211
   def process_tree(tags, property, content, itemprop: T.unsafe(nil)); end
 
   # Returns true when a configured property tag matches the exact meta tag
@@ -484,7 +546,7 @@ class MetaTags::Renderer
   # @param tag_name [String] configured property tag name or namespace prefix.
   # @return [Boolean]
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:288
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:326
   def property_tag?(name, tag_name); end
 
   # Renders alternate link tags.
@@ -498,7 +560,7 @@ class MetaTags::Renderer
   #
   # @param tags [Array<Tag>] a buffer object to store tags in.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:161
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:162
   def render_canonical_link(tags); end
 
   # Renders charset tag.
@@ -512,7 +574,7 @@ class MetaTags::Renderer
   #
   # @param tags [Array<Tag>] a buffer object to store tags in.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:194
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:195
   def render_custom(tags); end
 
   # Renders a complex hash object by key.
@@ -520,14 +582,14 @@ class MetaTags::Renderer
   # @param tags [Array<Tag>] a buffer object to store tags in.
   # @param key [String, Symbol] top-level meta tag key.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:183
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:184
   def render_hash(tags, key); end
 
   # Renders complex hash objects.
   #
   # @param tags [Array<Tag>] a buffer object to store tags in.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:173
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:174
   def render_hashes(tags); end
 
   # Renders icon(s) tag.
@@ -541,7 +603,7 @@ class MetaTags::Renderer
   #
   # @param tags [Array<Tag>] a buffer object to store tags in.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:148
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:149
   def render_links(tags); end
 
   # Renders noindex and nofollow meta tags.
@@ -555,7 +617,7 @@ class MetaTags::Renderer
   #
   # @param tags [Array<Tag>] a buffer object to store tags in.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:134
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:135
   def render_open_search(tags); end
 
   # Renders refresh meta tag.
@@ -573,7 +635,7 @@ class MetaTags::Renderer
   #   top-level meta tag.
   # @param itemprop [String, Symbol, nil] value of the itemprop attribute.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:264
+  # pkg:gem/meta-tags#lib/meta_tags/renderer.rb:302
   def render_tag(tags, name, value, itemprop: T.unsafe(nil)); end
 
   # Renders title tag.
@@ -742,7 +804,7 @@ module MetaTags::TextNormalizer
   # @param separator [String] separator inserted between segments.
   # @return [Integer] remaining number of characters.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/text_normalizer.rb:184
+  # pkg:gem/meta-tags#lib/meta_tags/text_normalizer.rb:185
   def calculate_limit_left(limit, length, result, separator); end
 
   # Calculates the title length limits for the site title and page title.
@@ -753,7 +815,7 @@ module MetaTags::TextNormalizer
   # @param global_limit [Integer] total allowed title length.
   # @return [Array<Integer>] site title limit and page title limit.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/text_normalizer.rb:215
+  # pkg:gem/meta-tags#lib/meta_tags/text_normalizer.rb:216
   def calculate_title_limits(site_title, title, separator, global_limit); end
 
   # Truncates the site title and page title segments to the configured limit.
@@ -763,7 +825,7 @@ module MetaTags::TextNormalizer
   # @param separator [String] separator used between segments.
   # @return [Array] truncated site title and title segments.
   #
-  # pkg:gem/meta-tags#lib/meta_tags/text_normalizer.rb:194
+  # pkg:gem/meta-tags#lib/meta_tags/text_normalizer.rb:195
   def truncate_title(site_title, title, separator); end
 end
 
@@ -816,6 +878,9 @@ module MetaTags::ViewHelper
   # @option default [String, Integer] :refresh (nil) meta refresh tag;
   # @option default [Hash] :open_graph ({}) add Open Graph meta tags.
   # @option default [Hash] :open_search ({}) add Open Search link tag.
+  # @option default [Hash] :robots ({}) add robots meta tags.
+  # @option default [Hash] :googlebot ({}) add googlebot meta tags.
+  # @option default [Hash] :bingbot ({}) add bingbot meta tags.
   # @return [String] HTML meta tags to render in HEAD section of the
   #   HTML document.
   # @example Render meta tags in a layout
@@ -827,7 +892,7 @@ module MetaTags::ViewHelper
   #     </head>
   #   ERB
   #
-  # pkg:gem/meta-tags#lib/meta_tags/view_helper.rb:164
+  # pkg:gem/meta-tags#lib/meta_tags/view_helper.rb:167
   def display_meta_tags(defaults = T.unsafe(nil)); end
 
   # Returns full page title as a string without surrounding <title> tag.
@@ -855,7 +920,7 @@ module MetaTags::ViewHelper
   #     </div>
   #   ERB
   #
-  # pkg:gem/meta-tags#lib/meta_tags/view_helper.rb:192
+  # pkg:gem/meta-tags#lib/meta_tags/view_helper.rb:195
   def display_title(defaults = T.unsafe(nil)); end
 
   # Set the legacy keywords meta tag.

@@ -52,8 +52,3 @@ AlNews Rails 프로젝트의 구조와 맥락을 빠르게 파악하는 분석 �
 - Tailwind v4 시맨틱 토큰
 - Devise 인증 (`current_user`)
 - PostgreSQL 전용
-
-## 에러 핸들링
-
-- MCP 도구 실패 시 CLI 폴백 사용: `rails-ai-context tool TOOL_NAME param=value`
-- CLI도 실패하면 파일을 직접 읽되, 최소한의 파일만 읽는다
